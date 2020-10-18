@@ -1,0 +1,16 @@
+apiVersion: monitoring.coreos.com/v1
+kind: Prometheus
+metadata:
+  name: default
+  labels:
+    prometheus: k8s
+spec:
+  replicas: 1
+  serviceAccountName: prometheus-k8s
+  securityContext: {}
+  serviceMonitorSelector:
+    matchLabels:
+      cassandra.datastax.com/cluster: cluster-name
+  ruleSelector: {}
+  alerting:
+    alertmanagers: []

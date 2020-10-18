@@ -1,0 +1,25 @@
+---
+apiVersion: integreatly.org/v1alpha1
+kind: Grafana
+metadata:
+  name: default
+spec:
+  ingress:
+    enabled: false
+  config:
+    auth:
+      disable_signout_menu: true
+    auth.anonymous:
+      enabled: false
+    log:
+      level: warn
+      mode: console
+    security:
+      admin_password: secret
+      admin_user: admin
+  dashboardLabelSelector:
+    - matchExpressions:
+        - key: app
+          operator: In
+          values:
+            - grafana
