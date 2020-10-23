@@ -10,24 +10,16 @@ spec:
   serverVersion: "3.11.7"
   managementApiAuth:
     insecure: {}
-  size: 3
+  size: 1
   storageConfig:
     cassandraDataVolumeClaimSpec:
-      storageClassName: server-storage
+      storageClassName: standard
       accessModes:
         - ReadWriteOnce
       resources:
         requests:
           storage: 5Gi
   config:    
-    cassandra-yaml:
-      authenticator: org.apache.cassandra.auth.PasswordAuthenticator
-      authorizer: org.apache.cassandra.auth.CassandraAuthorizer
-      role_manager: org.apache.cassandra.auth.CassandraRoleManager
     jvm-options:
       initial_heap_size: "800M"
       max_heap_size: "800M"
-      additional-jvm-opts:
-        # As the database comes up for the first time, set system keyspaces to RF=3
-        - "-Ddse.system_distributed_replication_dc_names=dc1"
-        - "-Ddse.system_distributed_replication_per_dc=3"
