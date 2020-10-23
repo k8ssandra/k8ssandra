@@ -7,6 +7,11 @@ clusterName: cluster1
 
 replicaCount: 1
 
+cass-operator:
+  # Namespace-scoped installs are currently not (well) supported.
+  # See K8C-19 for details.
+  clusterWideInstall: true
+
 image:
   repository: nginx
   pullPolicy: IfNotPresent
