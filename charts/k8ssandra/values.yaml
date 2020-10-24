@@ -10,3 +10,31 @@ cass-operator:
   # We need to use an image built from cass-operator master until 1.5
   # is released. See K8C-41 for details
   image: jsanda/cass-operator:a75754989cd29a38dd6406fdb75a5bad010f782d
+
+kube-prometheus-stack:
+  alertmanager:
+    enabled: false
+
+  kubeStateMetrics:
+    enabled: false
+
+  grafana:
+    enabled: false
+
+  nodeExporter:
+    enabled: false
+
+  kubeletService:
+    enabled: false
+
+  kubeControllerManager:
+    enabled: false
+
+  kubelet:
+    enabled: false
+
+  kubeApiServer:
+    enabled: false
+
+  prometheus:
+    enabled: false

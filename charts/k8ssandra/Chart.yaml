@@ -30,3 +30,7 @@ dependencies:
     # changes in master that are needed for K8C-19. For now we will sync (i.e., copy) the
     # cass-operator chart into the charts subdirectory.
     #repository: https://github.com/datastax/cass-operator/tree/master/charts
+
+  - name: kube-prometheus-stack
+    version: 10.1.2
+    repository: https://prometheus-community.github.io/helm-charts
