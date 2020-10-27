@@ -1,7 +1,7 @@
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
-  name: {{ .Release.Name }}-servicemonitor
+  name: {{ .Release.Name }}-k8ssandra
   labels:
 {{ include "k8ssandra.labels" . | indent 4 }}
 spec:
