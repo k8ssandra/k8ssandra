@@ -1,14 +1,14 @@
 apiVersion: monitoring.coreos.com/v1
 kind: Prometheus
 metadata:
-  name: {{ .Release.Name }}-k8ssandra
+  name: {{ .Release.Name }}-prometheus-k8ssandra
   labels:
 {{ include "k8ssandra.labels" . | indent 4 }}
 spec:
   replicas: 1
   baseImage: quay.io/prometheus/prometheus
   version: v2.21.0
-  serviceAccountName: {{ .Release.Name }}-k8ssandra
+  serviceAccountName: {{ .Release.Name }}-prometheus-k8ssandra
   securityContext:
     runAsGroup: 2000
     runAsNonRoot: true
