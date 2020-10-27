@@ -9,11 +9,11 @@ The charts are not yet deployed to a Helm repo. For now you need use the charts 
 First you need to deploy the k8ssandra stack:
 
 ```
-$ helm install k8ssandra charts/k8ssandra
+$ helm install k8ssandra ./k8ssandra
 ```
 
 Next, create a cluster:
 
 ```
-$ helm install k8ssandra-cluster charts/k8ssandra-cluster
+$ helm install k8ssandra-cluster ./k8ssandra-cluster
 ```
