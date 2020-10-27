@@ -38,3 +38,4 @@ kube-prometheus-stack:
 
   prometheus:
     enabled: false
+
