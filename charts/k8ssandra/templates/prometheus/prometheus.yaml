@@ -1,0 +1,17 @@
+apiVersion: monitoring.coreos.com/v1
+kind: Prometheus
+metadata:
+  name: {{ .Release.Name }}
+  labels:
+{{ include "k8ssandra.labels" . | indent 4 }}
+spec:
+  replicas: 1
+  serviceAccountName: prometheus
+  securityContext: {}
+  serviceMonitorSelector:
+    matchLabels:
+      app.kubernetes.io/instance: {{ .Release.Name }}
+      app.kubernetes.io/part-of: k8ssandra
+  ruleSelector: {}
+  alerting:
+    alertmanagers: []
