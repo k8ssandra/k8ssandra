@@ -1,0 +1,18 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: {{ .Release.Name }}-grafana-k8ssandra
+  labels:
+{{ include "k8ssandra.labels" . | indent 4 }}
+rules:
+  - apiGroups:
+      - integreatly.org
+    resources:
+      - grafanadashboards
+      - grafanadashboards/status
+    verbs: ['get', 'list', 'update', 'watch']
+  - apiGroups:
+      - ""
+    resources:
+      - namespaces
+    verbs: ['get', 'list', 'watch']
