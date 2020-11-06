@@ -1,3 +1,4 @@
+{{- if .Values.reaperOperator.enabled }}
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
@@ -72,3 +73,4 @@ rules:
   - get
   - patch
   - update
+{{- end }}
