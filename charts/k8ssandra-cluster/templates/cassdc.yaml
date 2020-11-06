@@ -8,7 +8,7 @@ metadata:
 {{ include "k8ssandra-cluster.labels" . | indent 4 }}
   annotations:
 {{- if .Values.reaper.enabled }}
-  reaper.cassandra-reaper.io/instance: {{ .Release.Name }}-reaper-k8ssandra
+    reaper.cassandra-reaper.io/instance: {{ .Release.Name }}-reaper-k8ssandra
 {{- end }}
 spec:
   clusterName: {{ .Values.clusterName }}
