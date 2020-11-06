@@ -15,6 +15,7 @@ spec:
       labels:
         name: {{ .Release.Name }}-reaper-operator-k8ssandra
     spec:
+      serviceAccountName: {{ .Release.Name }}-reaper-operator-k8ssandra
       containers:
         - args:
           - --enable-leader-election

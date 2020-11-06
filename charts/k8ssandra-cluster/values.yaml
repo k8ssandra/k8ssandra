@@ -4,3 +4,12 @@
 
 name: k8ssandra
 clusterName: k8ssandra
+datacenterName: dc1
+size: 1
+
+reaper:
+  enabled: true
+
+  jmx:
+    username: ""
+    password: ""
