@@ -14,7 +14,7 @@ spec:
       clusterName: {{ .Values.clusterName }}
       replication:
         networkTopologyStrategy:
-          reaper-test: {{ min .Values.size 1}}
+          {{ .Values.datacenterName }}: {{ min .Values.size 1}}
       # This is a bit of a hack. We really should not be specifying the service name here as it is
       # implementation detail of cass-operator. reaper-operator needs to be updated to simply take
       # the name of the CassandraDatacenter here.
