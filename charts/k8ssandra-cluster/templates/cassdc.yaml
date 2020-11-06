@@ -3,7 +3,13 @@
 apiVersion: cassandra.datastax.com/v1beta1
 kind: CassandraDatacenter
 metadata:
-  name: {{ .Values.name }}
+  name: {{ .Values.datacenterName }}
+  labels:
+{{ include "k8ssandra-cluster.labels" . | indent 4 }}
+  annotations:
+{{- if .Values.reaper.enabled }}
+  reaper.cassandra-reaper.io/instance: {{ .Release.Name }}-reaper-k8ssandra
+{{- end }}
 spec:
   clusterName: {{ .Values.clusterName }}
   serverType: cassandra
@@ -23,3 +29,34 @@ spec:
     jvm-options:
       initial_heap_size: "800M"
       max_heap_size: "800M"
+  {{- if .Values.reaper.enabled }}
+  podTemplateSpec:
+    spec:
+      initContainers:
+        - name: jmx-credentials
+          image: busybox
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: JMX_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-reaper-secret-k8ssandra
+                  key: username
+            - name: JMX_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-reaper-secret-k8ssandra
+                  key: password
+          args:
+            - /bin/sh
+            - -c
+            - echo -n "$JMX_USERNAME $JMX_PASSWORD" > /config/jmxremote.password
+          volumeMounts:
+            - mountPath: /config
+              name: server-config
+      containers:
+        - name: cassandra
+          env:
+            - name: LOCAL_JMX
+              value: "no"
+  {{- end}}
