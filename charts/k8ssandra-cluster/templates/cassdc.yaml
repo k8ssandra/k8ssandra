@@ -16,7 +16,7 @@ spec:
   serverVersion: "3.11.7"
   managementApiAuth:
     insecure: {}
-  size: 1
+  size: {{ .Values.size }}
   storageConfig:
     cassandraDataVolumeClaimSpec:
       storageClassName: standard
