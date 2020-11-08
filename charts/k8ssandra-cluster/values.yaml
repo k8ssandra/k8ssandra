@@ -7,6 +7,9 @@ clusterName: k8ssandra
 datacenterName: dc1
 size: 1
 
+reaperOperator:
+  enabled: true
+
 reaper:
   enabled: true
 
