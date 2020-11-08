@@ -16,3 +16,6 @@ reaper:
   jmx:
     username: ""
     password: ""
+
+k8ssandra:
+  enabled: true
