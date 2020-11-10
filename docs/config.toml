@@ -1,4 +1,4 @@
-baseURL = "/"
+baseURL = "https://k8ssandra.io/"
 title = "K8ssandra"
 
 enableRobotsTXT = true
