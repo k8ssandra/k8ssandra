@@ -1,4 +1,3 @@
-
 # Created by https://www.toptal.com/developers/gitignore/api/go,osx,vim,linux,emacs,visualstudiocode,intellij+all
 # Edit at https://www.toptal.com/developers/gitignore?templates=go,osx,vim,linux,emacs,visualstudiocode,intellij+all
 
@@ -251,3 +250,10 @@ tags
 
 # Helm chart lock
 charts/*/Chart.lock
+
+# Docs
+docs/public/
+docs/resources/
+docs/node_modules/
+docs/tech-doc-hugo
+docs/bin/

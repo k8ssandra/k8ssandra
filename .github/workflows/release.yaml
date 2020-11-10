@@ -179,18 +179,18 @@ jobs:
           export_default_credentials: true
       - name: Download current index from Google Cloud
         env:
-          GCP_BUCKET_NAME: ${{ secrets.GCP_BUCKET_NAME }}
-        run: gsutil cp gs://$GCP_BUCKET_NAME/index.yaml ./
+          GCP_HELM_BUCKET_NAME: ${{ secrets.GCP_HELM_BUCKET_NAME }}
+        run: gsutil cp gs://$GCP_HELM_BUCKET_NAME/index.yaml ./
         working-directory: build
       - name: Regenerate Helm index
         env:
-          GCP_BUCKET_NAME: ${{ secrets.GCP_BUCKET_NAME }}
-        run: helm repo index . --merge index.yaml --url "https://$GCP_BUCKET_NAME/"
+          GCP_HELM_BUCKET_NAME: ${{ secrets.GCP_HELM_BUCKET_NAME }}
+        run: helm repo index . --merge index.yaml --url "https://$GCP_HELM_BUCKET_NAME/"
         working-directory: build
       - name: Upload packages and index
         env:
-          GCP_BUCKET_NAME: ${{ secrets.GCP_BUCKET_NAME }}
+          GCP_HELM_BUCKET_NAME: ${{ secrets.GCP_HELM_BUCKET_NAME }}
         run: |
-          gsutil cp ./*.tgz gs://$GCP_BUCKET_NAME/
-          gsutil cp ./index.yaml gs://$GCP_BUCKET_NAME/
+          gsutil cp ./*.tgz gs://$GCP_HELM_BUCKET_NAME/
+          gsutil cp ./index.yaml gs://$GCP_HELM_BUCKET_NAME/
         working-directory: build
