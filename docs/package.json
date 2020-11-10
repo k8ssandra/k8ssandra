@@ -1,0 +1,24 @@
+{
+  "name": "k8ssandra",
+  "version": "0.0.1",
+  "description": "K8ssandra website and technical documentation.",
+  "main": "none.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/k8ssandra/k8ssandra-io.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/k8ssandra/k8ssandra-io/issues"
+  },
+  "homepage": "https://github.com/k8ssandra/k8ssandra-io#readme",
+  "dependencies": {},
+  "devDependencies": {
+    "autoprefixer": "^9.8.6",
+    "postcss-cli": "^7.1.2"
+  }
+}
