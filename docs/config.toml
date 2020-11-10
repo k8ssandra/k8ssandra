@@ -160,35 +160,35 @@ enable = false
 # End user relevant links. These will show up on left side of footer and in the community page if you have one.
 [[params.links.user]]
 	name = "User mailing list"
-	url = "https://example.org/mail"
+	url = "https://groups.google.com/g/k8ssandra-users"
 	icon = "fa fa-envelope"
-        desc = "Discussion and help from your fellow users"
+	desc = "Discussion and help from your fellow users"
 [[params.links.user]]
 	name ="Twitter"
 	url = "https://twitter.com/k8ssandra"
 	icon = "fab fa-twitter"
         desc = "Follow us on Twitter to get the latest news!"
-[[params.links.user]]
-	name = "Stack Overflow"
-	url = "https://example.org/stack"
-	icon = "fab fa-stack-overflow"
-        desc = "Practical questions and curated answers"
+# [[params.links.user]]
+# 	name = "Stack Overflow"
+# 	url = "https://example.org/stack"
+# 	icon = "fab fa-stack-overflow"
+# 	desc = "Practical questions and curated answers"
 # Developer relevant links. These will show up on right side of footer and in the community page if you have one.
 [[params.links.developer]]
 	name = "GitHub"
 	url = "https://github.com/k8ssandra/k8ssandra"
 	icon = "fab fa-github"
-        desc = "Development takes place here!"
-[[params.links.developer]]
-	name = "Slack"
-	url = "https://example.org/slack"
-	icon = "fab fa-slack"
-        desc = "Chat with other project developers"
+	desc = "Development takes place here!"
+# [[params.links.developer]]
+# 	name = "Slack"
+# 	url = "https://example.org/slack"
+# 	icon = "fab fa-slack"
+#   desc = "Chat with other project developers"
 [[params.links.developer]]
 	name = "Developer mailing list"
-	url = "https://example.org/mail"
+	url = "https://groups.google.com/g/k8ssandra-developers"
 	icon = "fa fa-envelope"
-        desc = "Discuss development issues around the project"
+  desc = "Discuss development issues around the project"
 
 [deployment]
 # By default, files are uploaded in an arbitrary order.
