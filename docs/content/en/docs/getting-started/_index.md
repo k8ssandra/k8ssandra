@@ -47,8 +47,8 @@ From a packaging perspective, K8ssandra is composed of a number of helm charts. 
 
 ```console
 # Install shared dependencies / tooling
-helm install k8ssandra-tools k8ssandra
+helm install k8ssandra-tools k8ssandra/k8ssandra
 
 # Provision a K8ssandra cluster named "k8ssandra-cluster-a"
-helm install k8ssandra-cluster-a k8ssandra-cluster
+helm install k8ssandra-cluster-a k8ssandra/k8ssandra-cluster
 ```
