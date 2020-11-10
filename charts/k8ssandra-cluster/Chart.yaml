@@ -22,11 +22,5 @@ version: 0.1.0
 # follow Semantic Versioning. They should reflect the version the application is using.
 appVersion: 3.11.7
 
-dependencies:
-  - name: k8ssandra
-    version: 0.1.0
-#    repository: file://../../../k8ssandra
-    repository: file:///Users/jsanda/Development/k8ssandra/k8ssandra/charts/k8ssandra
-    condition: k8ssandra.enabled
 
 
