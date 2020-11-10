@@ -60,7 +60,7 @@ func TestCassOperator(t *testing.T) {
 	assert.NotNil(t, result)
 
 	util.Install(t, helmOptions, chartPath, namespace, releaseName)
-	k8s.WaitUntilPodAvailable(t, kubeOptions, dc1Name, 5, 15*time.Second)
+	k8s.WaitUntilPodAvailable(t, kubeOptions, dc1Name, 5, 2*time.Second)
 
 	k8s.KubectlApply(t, kubeOptions, dc1Yaml)
 
