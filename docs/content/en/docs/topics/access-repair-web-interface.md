@@ -2,7 +2,7 @@
 title: "Access the Repair Web Interface (Reaper)"
 linkTitle: "Access the Repair Web Interface (Reaper)"
 weight: 1
-date: 2020-11-01
+date: 2020-11-11
 description: Use Reaper to repair Cassandra in Kubernetes
 ---
 
