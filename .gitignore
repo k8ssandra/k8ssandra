@@ -251,6 +251,3 @@ tags
 
 # Helm chart lock
 charts/*/Chart.lock
-
-# Test artifacts output
-.output/*
