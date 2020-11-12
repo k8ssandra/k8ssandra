@@ -39,7 +39,7 @@ helm repo update
 
 Alternatively, you may download the individual charts directly from the project's [releases](https://github.com/k8ssandra/k8ssandra/releases) page.
 
-![K8ssandra Releases](docs/images/helm-packages2.png)
+![K8ssandra Releases](/docs/content/en/docs/images/helm-packages2.png)
 
 ## Install K8ssandra
 
