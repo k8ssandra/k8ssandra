@@ -29,8 +29,13 @@ forwarding rules for the following ports:
   is deployed you **must** add additional ports here.
 * `9142` - C* TLS traffic - Secure Cassandra traffic, multiple clusters may run
   behind this single port.
-
+  
 ### [`kind.config.yaml`](kind.config.yaml)
+
+The `kind.config.yaml` file referenced here is located in:
+  
+  https://github.com/k8ssandra/k8ssandra/tree/main/docs/content/en/docs/topics/accessing-services/traefik/configuring-kind/kind.config.yaml
+
 ```yaml
 kind: Cluster
 apiVersion: kind.x-k8s.io/v1alpha4
@@ -84,6 +89,10 @@ Have a question, bug, or feature request? Let us know! https://kind.sigs.k8s.io/
 Note the service type of `NodePort`. It is used here as it is the port _on the
 Docker container running Kind_ which is forwarded to our local machine.
 
+The traefik.values.yaml file referenced below is located in:
+
+https://github.com/k8ssandra/k8ssandra/tree/main/docs/content/en/docs/topics/accessing-services/traefik/configuring-kind/traefik.values.yaml
+
 ### [`traefik.values.yaml`](traefik.values.yaml)
 ```yaml
 providers:
@@ -134,6 +143,6 @@ TEST SUITE: None
 ![Traefik dashboard screenshot](traefik-dashboard.png)
 
 With the deployment complete we may now access the Traefik dashboard at
-[http://127.0.0.1:9000/dashboard/](http://127.0.0.1:9000/dashboard/). Feel free
-to explore the other [Traefik]({{< ref "traefik" >}}) topics now that you have a local
-environment configured.
+[http://127.0.0.1:9000/dashboard/](http://127.0.0.1:9000/dashboard/). 
+
+Feel free to explore the other [Traefik]({{< ref "traefik" >}}) topics now that you have a local environment configured.
