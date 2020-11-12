@@ -422,4 +422,4 @@ Again, verify the upgrade:
 
 ## Next
 
-Learn how to [restore data(docs/restore-a-backup) from a Cassandra DB backup.
+Learn how to [restore data](docs/restore-a-backup) from a Cassandra DB backup.
