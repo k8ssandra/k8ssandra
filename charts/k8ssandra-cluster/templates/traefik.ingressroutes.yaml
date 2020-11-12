@@ -13,7 +13,9 @@ metadata:
 {{ include "k8ssandra-cluster.labels" . | indent 4 }}
 spec:
   entryPoints:
-    - {{ $traefik.repair.entrypoint }}
+  {{- range $traefik.repair.entrypoints }}
+    - {{ . }}
+  {{- end }}
   routes:
   - match: Host(`{{ $traefik.repair.host }}`)
     kind: Rule
@@ -31,7 +33,9 @@ metadata:
 {{ include "k8ssandra-cluster.labels" . | indent 4 }}
 spec:
   entryPoints:
-    - {{ $traefik.cassandra.entrypoint }}
+  {{- range $traefik.cassandra.entrypoints }}
+    - {{ . }}
+  {{- end }}
   routes:
     - match: HostSNI(`*`)
       services:

@@ -2,9 +2,12 @@
   "cSpell.words": [
     "Grafana",
     "Roadmap",
+    "Traefik",
+    "entrypoints",
     "k",
     "k ssandra",
     "ssandra",
-    "ssandra's"
+    "ssandra's",
+    "templating"
   ]
 }

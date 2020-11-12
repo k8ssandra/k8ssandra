@@ -23,14 +23,22 @@ repair:
 # secion.
 ingress:
   traefik:
+    # Set to `true` to enable the templating of Traefik ingress custom resources
     enabled: false
 
-    # Repair service interface
+    # Repair service
     repair: 
+      # Note this will **only** work if `traefik.enabled` is also `true`
       enabled: true
-      entrypoint: web
+
+      # Name of the Traefik entrypoints where we want to source traffic.
+      entrypoints: 
+        - web
+
+      # Hostname Traefik should use for matching requests.
       host: repair.k8ssandra.cluster.local
 
     cassandra:
       enabled: false
-      entrypoint: cassandra
+      entrypoints: 
+        - cassandra
