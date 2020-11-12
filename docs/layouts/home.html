@@ -1,0 +1,13 @@
+<!doctype html>
+<html lang="{{ .Site.Language.Lang }}" class="no-js">
+  <head>
+    {{ partial "head.html" . }}
+  </head>
+  <body class="td-{{ .Kind }}">
+    {{ with .Content }}
+    {{ . }}
+    {{ end }}
+    {{ partial "footer.html" . }}
+    {{ partialCached "scripts.html" . }}
+  </body>
+</html>
