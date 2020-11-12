@@ -140,9 +140,8 @@ TEST SUITE: None
 
 ## 5. Access Traefik Dashboard
 
-![Traefik dashboard screenshot](traefik-dashboard.png)
+With the deployment complete we may now access the Traefik dashboard at [http://127.0.0.1:9000/dashboard/](http://127.0.0.1:9000/dashboard/). Example:
 
-With the deployment complete we may now access the Traefik dashboard at
-[http://127.0.0.1:9000/dashboard/](http://127.0.0.1:9000/dashboard/). 
+![Traefik dashboard screenshot](traefik-dashboard.png)
 
 Feel free to explore the other [Traefik]({{< ref "traefik" >}}) topics now that you have a local environment configured.
