@@ -1,4 +1,4 @@
-{{- if .Values.reaperOperator.enabled }}
+{{- if and .Values.repair.reaper.enabled .Values.repair.reaper.operator.enabled }}
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:

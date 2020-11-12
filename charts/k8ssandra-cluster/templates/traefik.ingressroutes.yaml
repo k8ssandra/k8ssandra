@@ -1,0 +1,40 @@
+{{- $releaseName := .Release.Name -}}
+{{- $clusterName := .Values.clusterName -}}
+{{- $datacenterName := .Values.datacenterName -}}
+{{- $traefik := .Values.ingress.traefik -}}
+
+{{- if and $traefik.enabled $traefik.repair.enabled }}
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: {{ $releaseName }}-k8ssandra-repair
+  labels:
+{{ include "k8ssandra-cluster.labels" . | indent 4 }}
+spec:
+  entryPoints:
+    - {{ $traefik.repair.entrypoint }}
+  routes:
+  - match: Host(`{{ $traefik.repair.host }}`)
+    kind: Rule
+    services:
+    - name: {{ $releaseName }}-reaper-k8ssandra-reaper-service
+      kind: Service
+      port: 8080
+{{- end }}
+{{- if and $traefik.enabled $traefik.cassandra.enabled }}
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRouteTCP
+metadata:
+  name: {{ $releaseName }}-k8ssandra-cassandra
+{{ include "k8ssandra-cluster.labels" . | indent 4 }}
+spec:
+  entryPoints:
+    - {{ $traefik.cassandra.entrypoint }}
+  routes:
+    - match: HostSNI(`*`)
+      services:
+        - name: {{ $clusterName }}-{{ $datacenterName }}-service
+          port: 9042
+{{- end }}

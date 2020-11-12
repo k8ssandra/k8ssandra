@@ -7,13 +7,30 @@ clusterName: k8ssandra
 datacenterName: dc1
 size: 1
 
-reaperOperator:
-  enabled: true
+# Configuration regarding configuration of repair services
+repair:
+  # Reaper repair service and UI
+  reaper:
+    enabled: true
+    jmx:
+      username: ""
+      password: ""
+    operator:
+      enabled: true
 
-reaper:
-  enabled: true
+# Support for accessing the various web-interfaces via K8s ingress controllers.
+# Depending on the ingress available in your clsuter enable the appropriate
+# secion.
+ingress:
+  traefik:
+    enabled: false
 
-  jmx:
-    username: ""
-    password: ""
+    # Repair service interface
+    repair: 
+      enabled: true
+      entrypoint: web
+      host: repair.k8ssandra.cluster.local
 
+    cassandra:
+      enabled: false
+      entrypoint: cassandra
