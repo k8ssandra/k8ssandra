@@ -89,7 +89,7 @@ Have a question, bug, or feature request? Let us know! https://kind.sigs.k8s.io/
 Note the service type of `NodePort`. It is used here as it is the port _on the
 Docker container running Kind_ which is forwarded to our local machine.
 
-The traefik.values.yaml file referenced below is located in:
+The `traefik.values.yaml` file referenced here is located in:
 
 https://github.com/k8ssandra/k8ssandra/tree/main/docs/content/en/docs/topics/accessing-services/traefik/configuring-kind/traefik.values.yaml
 
