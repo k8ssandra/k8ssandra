@@ -30,16 +30,16 @@ If you do not have a Kubernetes cluster available consider one of the following 
 
 ## Configure Helm Repository
 
-K8ssandra is delivered as a collection of Helm Charts. In order to leverage these charts we have provided a Helm Repository for easy installation. Alternatively, users may download the individual charts directly from the project's [releases](https://github.com/k8ssandra/k8ssandra/releases) page.
+K8ssandra is delivered as a collection of Helm Charts. In order to leverage these charts we have provided a Helm Repository for easy installation. 
 
 ```console
 helm repo add k8ssandra https://helm.k8ssandra.io/
 helm repo update
 ```
 
-or
+Alternatively, you may download the individual charts directly from the project's [releases](https://github.com/k8ssandra/k8ssandra/releases) page.
 
-![K8ssandra Releases](helm-packages.png)
+![K8ssandra Releases](docs/images/helm-packages2.png)
 
 ## Install K8ssandra
 
