@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="{{ .Site.Language.Lang }}" class="no-js">
+  <head>
+    {{ partial "head.html" . }}
+  </head>
+  <body class="td-community">
+    <div class="sky-hero">
+      <header>
+        {{ partial "navbar.html" . }}
+      </header>
+      {{ block "main" . }}{{ end }}
+      {{ with .Content }}
+      {{ . }}
+      {{ end }}
+    </div>
+    {{ partial "community_links.html" . }}
+    {{ partial "footer.html" . }}
+    {{ partialCached "scripts.html" . }}
+  </body>
+</html>

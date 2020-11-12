@@ -1,57 +1,108 @@
 ---
 title: K8ssandra
 linkTitle: K8ssandra
-
 ---
 
-{{< blocks/cover title="Welcome to K8ssandra" image_anchor="top" height="full" color="orange" >}}
-<div class="mx-auto">
-	<a class="btn btn-lg btn-primary mr-3 mb-4" href="{{< relref "/docs" >}}">
-		Learn More <i class="fas fa-arrow-alt-circle-right ml-2"></i>
-	</a>
-	<a class="btn btn-lg btn-secondary mr-3 mb-4" href="https://github.com/k8ssandra/k8ssandra">
-		Download <i class="fab fa-github ml-2 "></i>
-	</a>
-	<p class="lead mt-5">Apache Cassandra on Kubernetes!</p>
-	{{< blocks/link-down color="info" >}}
-</div>
-{{< /blocks/cover >}}
-
-
-{{% blocks/lead color="primary" %}}
-K8ssandra provides a production-ready platform for running Apache Cassandra on Kubernetes. This includes automation for operational tasks such as repairs, backups, and monitoring.
-{{% /blocks/lead %}}
-
-{{< blocks/section color="dark" >}}
-{{% blocks/feature icon="fa-ship" title="Helm!" url="/docs/getting-started/helm/" %}}
-Install the entire k8ssandra stack in seconds with Helm.
-{{% /blocks/feature %}}
-
-
-{{% blocks/feature icon="fab fa-github" title="Contributions welcome!" url="https://github.com/k8ssandra/k8ssandra-io" %}}
-We do a [Pull Request](https://github.com/k8ssandra/k8ssandra-io/pulls) contributions workflow on **GitHub**. New users are always welcome!
-{{% /blocks/feature %}}
-
-
-{{% blocks/feature icon="fab fa-twitter" title="Follow us on Twitter!" url="https://twitter.com/k8ssandra" %}}
-For announcement of latest features etc.
-{{% /blocks/feature %}}
-
-
-{{< /blocks/section >}}
-
-
-{{< blocks/section >}}
-<div class="col">
-<h1 class="text-center">User Quote 1</h1>
-</div>
-
-{{< /blocks/section >}}
-
-{{< blocks/section >}}
-
-<div class="col-12">
-<h1 class="text-center">Monitoring screenshot.</h1>
+<div id="home-header" class="container-fluid">
+	<header class="row">
+		<div class="col">
+			<div class="container">
+				<nav class="navbar navbar-expand-lg">
+					<a class="navbar-brand" href="/"><img id="logo" src="/images/k8ssandra-stacked.svg" /><span class="sr-only">K8ssandra</span></a>
+					<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#home-navigation-collapsible" aria-controls="home-navigation-collapsible" aria-expanded="false" aria-label="Toggle navigation">
+						<i class="fas fa-bars"></i>
+					</button>
+					<div class="collapse navbar-collapse justify-content-end" id="home-navigation-collapsible">
+						<ul class="navbar-nav">
+							<li class="nav-item">
+								<a class="nav-link" href="/about/">About</a>
+							</li>
+							<li class="nav-item">
+								<a class="nav-link" href="/docs/">Documentation</a>
+							</li>
+							<li class="nav-item">
+								<a class="nav-link" href="/community/">Community</a>
+							</li>
+						</ul>
+						<form class="form-inline my-2 my-lg-0">
+							<input type="search" class="form-control td-search-input" placeholder="&#xf002 Search this site…" aria-label="Search this site…" autocomplete="off">
+						</form>
+					</div>
+				</nav>
+				<div class="row">
+					<div id="hero" class="col text-align-center">
+						<div class="w-75 mx-auto text">
+							K8ssandra provides a production-ready platform for running Apache Cassandra on Kubernetes. This includes automation for operational tasks such as repairs, backups, and monitoring.
+						</div>
+						<div class="mx-auto">
+							<a class="btn btn-lg btn-primary" href="{{< relref "docs" >}}">
+								Learn More
+							</a>
+							<a class="btn btn-lg btn-secondary" href="https://github.com/k8ssandra/k8ssandra/releases">
+								Download
+							</a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</header>
 </div>
 
-{{< /blocks/section >}}
+<div class="container">
+	<main role="main" class="td-main">
+		<div class="row">
+			<section class="col">
+				<div class="card text-center">
+					<img src="/images/icons/helm.svg" />
+					<h2>Helm</h2>
+					<div class="description">
+						Install the entire K8ssandra stack in <em>seconds</em> with Helm.<br /><br />
+					</div>
+					<div class="action">
+						<a href="{{<relref "getting-started" >}}">Learn More</a>
+					</div>
+				</div>
+			</section>
+			<section class="col">
+				<div class="card text-center">
+					<img src="/images/icons/github.svg" />
+					<h2>Contributions Welcome</h2>
+					<div class="description">
+						We follow the <a href="https://github.com/k8ssandra/k8ssandra/pulls">Pull Request</a> contributions workflow on <strong>GitHub</strong>. New users are always welcome!
+					</div>
+					<div class="action">
+						<a href="https://github.com/k8ssandra/k8ssandra/pulls" target="_blank">Contribute</a>
+					</div>
+				</div>
+			</section>
+			<section class="col">
+				<div class="card text-center">
+					<img src="/images/icons/twitter.svg" />
+					<h2>Follow Us on Twitter</h2>
+					<div class="description">
+						for announcements of latest features and releases.<br /><br />
+					</div>
+					<div class="action">
+						<a href="https://twitter.com/k8ssandra">Follow @k8ssandra</a>
+					</div>
+				</div>
+			</section>
+		</div>
+		<div class="row">
+			<div class="col col-md-10 mx-auto quote">
+				<blockquote>
+					“K8ssandra is essentially the best thing since sliced bread, and that was pretty sweet.”
+				</blockquote>
+				<cite>
+				<strong>Christopher Bradford</strong>, Product Manager at DataStax 
+				</cite>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col text-center">
+				<script id="asciicast-8bIMgeYjixDHBT4b7T2WuxNDd" src="https://asciinema.org/a/8bIMgeYjixDHBT4b7T2WuxNDd.js" async data-cols="128"></script>
+			</div>
+		</div>
+	</main>
+</div>
