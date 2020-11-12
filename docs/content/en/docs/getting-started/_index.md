@@ -43,7 +43,7 @@ or
 
 ## Install K8ssandra
 
-From a packaging perspective, K8ssandra is composed of a number of helm charts. One handles installation of operators and custom resources while another is focused on provisioning cluster instances. This loose coupling allows for separate lifecycles of components at the cost additional `helm install` commands.
+From a packaging perspective, K8ssandra is composed of a number of helm charts. One handles installation of operators and custom resources while another is focused on provisioning cluster instances. This loose coupling allows for separate lifecycles of components with very minimal cost - just two `helm install` commands.
 
 ```console
 # Install shared dependencies / tooling
