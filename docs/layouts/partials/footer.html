@@ -6,8 +6,8 @@
         {{ with .Site.Params.copyright }}<p>&copy; {{ now.Year}} {{ . }} {{ T "footer_all_rights_reserved" }}</p>{{ end }}
         <p>
           {{ with .Site.Params.privacy_policy }}<a href="{{ . }}" target="_blank">{{ T "footer_privacy_policy" }}</a>{{ end }}
-          |
-          {{ with .Site.GetPage "about" }}<a href="{{ .RelPermalink }}">{{ .Title }}</a>{{ end }}
+          <!--|
+          {{ with .Site.GetPage "about" }}<a href="{{ .RelPermalink }}">{{ .Title }}</a>{{ end }}-->
         </p>
       </div>
     </div>
