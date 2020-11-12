@@ -7,7 +7,7 @@ metadata:
   labels:
 {{ include "k8ssandra-cluster.labels" . | indent 4 }}
   annotations:
-{{- if .Values.reaper.enabled }}
+{{- if .Values.repair.reaper.enabled }}
     reaper.cassandra-reaper.io/instance: {{ .Release.Name }}-reaper-k8ssandra
 {{- end }}
 spec:
@@ -29,7 +29,7 @@ spec:
     jvm-options:
       initial_heap_size: "800M"
       max_heap_size: "800M"
-  {{- if .Values.reaper.enabled }}
+  {{- if .Values.repair.reaper.enabled }}
   podTemplateSpec:
     spec:
       initContainers:

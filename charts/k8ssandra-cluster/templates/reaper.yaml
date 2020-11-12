@@ -1,4 +1,4 @@
-{{- if .Values.reaper.enabled }}
+{{- if .Values.repair.reaper.enabled }}
 apiVersion: reaper.cassandra-reaper.io/v1alpha1
 kind: Reaper
 metadata:
@@ -14,7 +14,7 @@ spec:
       clusterName: {{ .Values.clusterName }}
       replication:
         networkTopologyStrategy:
-          {{ .Values.datacenterName }}: {{ min .Values.size 1}}
+          {{ .Values.datacenterName }}: {{ min .Values.size 3}}
       # This is a bit of a hack. We really should not be specifying the service name here as it is
       # implementation detail of cass-operator. reaper-operator needs to be updated to simply take
       # the name of the CassandraDatacenter here.

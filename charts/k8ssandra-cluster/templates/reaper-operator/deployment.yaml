@@ -1,4 +1,4 @@
-{{- if .Values.reaperOperator.enabled }}
+{{- if and .Values.repair.reaper.enabled .Values.repair.reaper.operator.enabled }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
