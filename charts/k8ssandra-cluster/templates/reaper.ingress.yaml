@@ -11,4 +11,6 @@ spec:
             backend:
               # TODO - update with service values from for Reaper
               serviceName: {{ .Release.Name }}-reaper-k8ssandra-reaper-service
-              servicePort: 80
+              # reaper-operator uses 8080 for the reaper service and it currently not
+              # configurable.
+              servicePort: 8080
