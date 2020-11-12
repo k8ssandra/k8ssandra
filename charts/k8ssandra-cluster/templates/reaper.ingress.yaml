@@ -1,0 +1,16 @@
+kind: Ingress
+apiVersion: networking.k8s.io/v1beta1
+metadata:
+  name: k8ssandra-{{ .Release.Name }}-repair
+spec:
+  rules:
+    - host: repair.{{ .Release.Name }}.k8ssandra
+      http:
+        paths:
+          - path: /
+            backend:
+              # TODO - update with service values from for Reaper
+              serviceName: {{ .Release.Name }}-reaper-k8ssandra-reaper-service
+              # reaper-operator uses 8080 for the reaper service and it currently not
+              # configurable.
+              servicePort: 8080

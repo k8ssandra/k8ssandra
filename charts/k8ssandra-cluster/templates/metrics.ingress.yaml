@@ -1,0 +1,30 @@
+kind: Ingress
+apiVersion: networking.k8s.io/v1beta1
+metadata:
+  name: k8ssandra-{{ .Release.Name }}-metrics
+spec:
+  rules:
+    - host: metrics.{{ .Release.Name }}.k8ssandra
+      http:
+        paths:
+          - path: /
+            backend:
+              # TODO - update with service values for Grafana
+              serviceName: k8ssandra-{{ .Release.Name }}-grafana
+              servicePort: 80
+    - host: grafana.metrics.{{ .Release.Name }}.k8ssandra
+      http:
+        paths:
+          - path: /
+            backend:
+              # TODO - update with service values for Grafana
+              serviceName: k8ssandra-{{ .Release.Name }}-grafana
+              servicePort: 80
+    - host: prometheus.metrics.{{ .Release.Name }}.k8ssandra
+      http:
+        paths:
+          - path: /
+            backend:
+              # TODO - update with service values for Grafana
+              serviceName: k8ssandra-{{ .Release.Name }}-prometheus
+              servicePort: 80
