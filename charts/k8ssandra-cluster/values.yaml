@@ -18,6 +18,20 @@ repair:
     operator:
       enabled: true
 
+backupRestore:
+  medusa:
+    enabled: true
+
+    # Accepted values are s3 and gcs
+    storage: s3
+
+    # Must be set to the name of the remote storage bucket where backups will be stored.
+    bucketName: ""
+
+    # Must be set and specify the name of the secret that stores the key file for Google
+    # Cloud or AWS
+    bucketSecret: ""
+
 # Support for accessing the various web-interfaces via K8s ingress controllers.
 # Depending on the ingress available in your clsuter enable the appropriate
 # secion.
