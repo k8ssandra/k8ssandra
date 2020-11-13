@@ -7,6 +7,13 @@ clusterName: k8ssandra
 datacenterName: dc1
 size: 1
 
+k8ssandra:
+  # The k8ssandra chart installs operators with cluster scope. It can be installed in a
+  # different namespace. The namespace and name of the k8ssandra chart release are needed
+  # to configure some resources like the Grafana data source.
+  namespace: default
+  name: k8ssandra
+
 # Configuration regarding configuration of repair services
 repair:
   # Reaper repair service and UI
@@ -57,3 +64,8 @@ ingress:
       enabled: false
       entrypoints: 
         - cassandra
+
+grafana:
+  name: default
+  adminUser: admin
+  adminPassword: secret
