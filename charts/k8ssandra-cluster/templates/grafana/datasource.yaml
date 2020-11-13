@@ -12,6 +12,6 @@ spec:
         timeInterval: 5s
       name: Prometheus
       type: prometheus
-      url: 'http://prometheus-operated:9090'
+      url: http://{{ .Values.k8ssandra.name }}-prometheus-k8ssandra.{{ .Values.k8ssandra.namespace }}:9090
       version: 1
   name: prometheus-datasources.yaml

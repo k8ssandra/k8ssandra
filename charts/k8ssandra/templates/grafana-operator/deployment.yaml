@@ -32,9 +32,8 @@ spec:
             - name: TEMPLATE_PATH
               value: /usr/local/bin/templates
             - name: WATCH_NAMESPACE
-              valueFrom:
-                fieldRef:
-                  fieldPath: metadata.namespace
+              # Leave this unset so that grafana-operator watches all namespaces
+              value: ""
             - name: POD_NAME
               valueFrom:
                 fieldRef:
