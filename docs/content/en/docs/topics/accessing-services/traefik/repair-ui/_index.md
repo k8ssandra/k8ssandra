@@ -79,13 +79,21 @@ _Note this step is optional. The next step will also prove the configuration is 
 With the ingress routes configured and deployed to Kubernetes we can access the Traefik dashboard to validate the configuration has been picked up and is detecting the appropriate services.
 
 1. Open your web browser and point it at the Traefik dashboard. This may require `kubectl port-forward` or the steps in our [Configuring Kind]({{< ref "configuring-kind" >}}) guide.
+
+    ![Traefik Dashboard](traefik-dashboard.png)
+
 2. Navigate to the HTTP Routers page
-    // TODO - Screenshot of routers page with repair rule
+    
+    ![Traefik HTTP Routers](traefik-http-routers.png)
+
+    There should be an entry representing the hostname based rule created as part of the Helm command. Note the Kubernetes logo to the right of the table indicating it was provisioned via a Kubernetes custom resource.
 3. Navigate to the HTTP Services page
-    // TODO - Screenshot of services page with repair service 
+    ![Traefik HTTP Services](traefik-http-services.png)
+
+    There should be an entry representing the Reaper service. Note the Kubernetes logo to the right of the table indicating it was provisioned via a Kubernetes custom resource.
 
 ## Accessing Repair Interface
 
-// TODO - insert reaper screenshot
+![Reaper UI](reaper-ui.png)
 
 With configuration complete and validated all that is left it to point your browser at the DNS name and access the GUI. Assuming the DNS name of `repair.cluster-name.k8ssandra.cluster.local` we would visit [http://repair.cluster-name.k8ssandra.cluster.local/webui](http://repair.cluster-name.k8ssandra.cluster.local/webui). Traefik receives the request, matches the `Host` header against the rule specified in our `IngressRoute` and proxies the request to the upstream service. Should this service go down and the pod get rescheduled everything will automatically update and continue functioning.
