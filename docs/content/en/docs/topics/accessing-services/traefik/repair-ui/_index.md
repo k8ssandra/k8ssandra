@@ -2,10 +2,12 @@
 title: "Repair UI"
 linkTitle: "Repair UI"
 weight: 1
-date: 2020-11-07
+date: 2020-11-13
 description: |
   Configuring Traefik to expose the Reaper Repair interface
 ---
+
+Follow these steps to configure and install a `Traefik Ingress` controller for access into your Kubernetes cluster; then access the k8ssandra Repair Web Interface (Cassandra&reg; Reaper).
 
 ## Prerequisites
 
@@ -92,8 +94,25 @@ With the ingress routes configured and deployed to Kubernetes we can access the 
 
     There should be an entry representing the Reaper service. Note the Kubernetes logo to the right of the table indicating it was provisioned via a Kubernetes custom resource.
 
-## Accessing Repair Interface
+## Accessing the Repair Web Interface (Cassandra Reaper)
+
+With the configuration complete and validated, now you can point your browser at the DNS name to access the Repair Web Interface (Cassandra Reaper) UI. 
+
+For example, given a DNS name of `repair.cluster-name.k8ssandra.cluster.local`, you would visit:
+
+[http://repair.cluster-name.k8ssandra.cluster.local/webui](http://repair.cluster-name.k8ssandra.cluster.local/webui). 
+
+Example:
 
 ![Reaper UI](reaper-ui.png)
 
-With configuration complete and validated all that is left it to point your browser at the DNS name and access the GUI. Assuming the DNS name of `repair.cluster-name.k8ssandra.cluster.local` we would visit [http://repair.cluster-name.k8ssandra.cluster.local/webui](http://repair.cluster-name.k8ssandra.cluster.local/webui). Traefik receives the request, matches the `Host` header against the rule specified in our `IngressRoute` and proxies the request to the upstream service. Should this service go down and the pod get rescheduled everything will automatically update and continue functioning.
+Traefik receives the request, matches the `Host` header against the rule specified in our `IngressRoute`, and proxies the request to the upstream service. Should this service go down and the pod gets rescheduled, everything will automatically update and continue functioning.
+
+## What can I do in Reaper?
+
+For details about the tasks you can perform in Reaper, see these topics in the Cassandra Reaper documentation:
+
+* [Check a cluster's health](http://cassandra-reaper.io/docs/usage/health/)
+* [Run a cluster repair](http://cassandra-reaper.io/docs/usage/single/)
+* [Schedule a cluster repair](http://cassandra-reaper.io/docs/usage/schedule/)
+* [Monitor Cassandra diagnostic events](http://cassandra-reaper.io/docs/usage/cassandra-diagnostics/)
