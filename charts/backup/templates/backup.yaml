@@ -1,0 +1,9 @@
+apiVersion: cassandra.k8ssandra.io/v1alpha1
+kind: CassandraBackup
+metadata:
+  name: {{ .Values.name }}
+  labels:
+{{ include "backup.labels" . | indent 4 }}
+spec:
+  name: {{ .Values.name }}
+  cassandraDatacenter: {{ .Values.cassandraDatacenter.name }}

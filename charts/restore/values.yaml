@@ -1,0 +1,12 @@
+# Default values for restore.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+# The name of the CassandraRestore
+name: restore
+
+backup:
+  name: backup
+
+cassandraDatacenter:
+  name: dc1

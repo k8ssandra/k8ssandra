@@ -1,0 +1,9 @@
+# Default values for backup.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+# The name of the backup
+name: backup
+
+cassandraDatacenter:
+  name: dc1

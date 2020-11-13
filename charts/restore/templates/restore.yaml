@@ -1,0 +1,11 @@
+apiVersion: cassandra.k8ssandra.io/v1alpha1
+kind: CassandraRestore
+metadata:
+  name: {{ .Values.name }}
+spec:
+  backup: {{ .Values.backup.name }}
+  cassandraDatacenter:
+    name: {{ .Values.cassandraDatacenter.name }}
+    # The CRD currently requires clusterName but the operator uses reuses the cluster name
+    # from the backup CassandraDatacenter
+    clusterName: {{ .Values.cassandraDatacenter.name }}
