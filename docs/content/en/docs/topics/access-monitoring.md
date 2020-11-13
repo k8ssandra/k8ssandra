@@ -18,7 +18,7 @@ In the [Getting Started](/docs/getting-started) topic, when you used helm to ins
 
 For example, in the Google Cloud console for GKE, the running services are displayed:
 
-![Google Cloud console, GKE pane, shows installed and running Prometheus and Grafana services](/docs/content/en/docs/images/gcpConsoleServices.png "Prometheus and Grafana services running in GKE")
+![Google Cloud console, GKE pane, shows installed and running Prometheus and Grafana services](gcpConsoleServices.png "Prometheus and Grafana services running in GKE")
 
 ## Steps
 
@@ -28,7 +28,7 @@ http://localhost:9090/
 
 Example:
 
-![Grafana dashboard shows metrics about Cassandra resources in Kubernetes](/docs/content/en/docs/images/cassandraMetrics.png "Grafana dashboard shows metrics about Cassandra resources in Kubernetes")
+![Grafana dashboard shows metrics about Cassandra resources in Kubernetes](cassandraMetrics.png "Grafana dashboard shows metrics about Cassandra resources in Kubernetes")
 
 
 <!--- http://127.0.0.1:3000/ (username: admin, password: secret) ? -->
