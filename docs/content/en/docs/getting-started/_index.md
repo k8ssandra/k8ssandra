@@ -6,7 +6,7 @@ description: |
   Kick the tires and take it for a spin!
 ---
 
-Welcome to K8ssandra! The following guide will get you up and running with a single node Apache Cassandra cluster on Kubernetes. If you are interested in a more detailed component walkthroughs check out the [topics]({{< ref "topics">}}) section.
+Welcome to K8ssandra! The following guide will get you up and running with a single node Apache Cassandra&reg; cluster on Kubernetes. If you are interested in a more detailed component walkthroughs check out the [topics]({{< ref "topics">}}) section.
 
 ## Prerequisites
 
@@ -39,11 +39,11 @@ helm repo update
 
 Alternatively, you may download the individual charts directly from the project's [releases](https://github.com/k8ssandra/k8ssandra/releases) page.
 
-![K8ssandra Releases](/docs/content/en/docs/images/helm-packages2.png)
+![K8ssandra Releases](/docs/content/en/docs/images/helm-packages3.png)
 
 ## Install K8ssandra
 
-From a packaging perspective, K8ssandra is composed of a number of helm charts. One handles installation of operators and custom resources while another is focused on provisioning cluster instances. This loose coupling allows for separate lifecycles of components with very minimal cost - just two `helm install` commands.
+From a packaging perspective, K8ssandra is composed of a number of helm charts. The `k8ssandra-tools` chart handles the installation of operators and custom resources. The `k8ssandra-cluster` chart (which you can uniquely name) is focused on provisioning cluster instances. This loose coupling allows for separate lifecycles of components with an easy procedure - submitting just two `helm install` commands.
 
 ```console
 # Install shared dependencies / tooling
