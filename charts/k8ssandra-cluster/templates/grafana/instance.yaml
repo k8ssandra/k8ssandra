@@ -2,7 +2,7 @@
 apiVersion: integreatly.org/v1alpha1
 kind: Grafana
 metadata:
-  name: default
+  name: {{ .Values.grafana.name }}
 spec:
   ingress:
     enabled: false
@@ -15,8 +15,8 @@ spec:
       level: warn
       mode: console
     security:
-      admin_password: secret
-      admin_user: admin
+      admin_password: {{ .Values.grafana.adminPassword }}
+      admin_user: {{ .Values.grafana.adminUsername }}
   dashboardLabelSelector:
     - matchExpressions:
         - key: app
