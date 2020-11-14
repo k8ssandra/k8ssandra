@@ -14,39 +14,38 @@ description: |
 ## Prerequisites
 
 1. Kubernetes cluster with the following elements deployed:
-   * [Traefik]({{< ref "traefik" >}})
    * [K8ssandra Operators]({{< ref "getting-started#install-k8ssandra" >}})
    * [K8ssandra Cluster]({{< ref "getting-started#install-k8ssandra" >}})
-
-   See the [Configuring Kind]({{< ref "kind-deployment" >}}) for an example of
-   how to set up a local installation.
-1. DNS name for the Grafana service
-1. DNS name for the Prometheus service
+   * [Ingress Controller]({{< ref "ingress" >}})
+1. DNS name for the Grafana service, referred to as _GRAFANA DOMAIN_ below.
+1. DNS name for the Prometheus service, referred to as _PROMETHEUS DOMAIN_ below.
 
 ## Access Grafana Interface
 
 ![Grafana UI](grafana-dashboard.png)
 
-Now that Traefik is configured you may now access the web interface by visiting
-the domain name provided within the `values.yaml` file. Traefik receives the
-HTTP request then performs the following actions:
+With the prerequisites satisfied the repair GUI should be available at the following address:
 
-* Extract the HTTP `Host` header 
-* Match the `Host` against the rules specified in our `IngressRoutes`
-* Proxies the request to the upstream Kubernetes Service.
+**http://GRAFANA_DOMAIN/**
+
+### What can I do in Grafana?
+
+* Cluster health
+* Traffic metrics
 
 ## Access Prometheus Interface
 
-![Prometheus UI](grafana-dashboard.png)
+![Prometheus UI](prometheus-dashboard.png)
 
-Now that Traefik is configured you may now access the web interface by visiting
-the domain name provided within the `values.yaml` file. Traefik receives the
-HTTP request then performs the following actions:
+Prometheus is available at the following address:
 
-* Extract the HTTP `Host` header 
-* Match the `Host` against the rules specified in our `IngressRoutes`
-* Proxies the request to the upstream Kubernetes Service.
+**http://PROMETHEUS_DOMAIN/**
+
+### What can I do in Prometheus?
+
+* Validate serves being scraped
+* Confirm metrics collection
 
 ## Next
 
-Access the [Repair Web interface](docs/topics/access-repair-interface/).
+Access the [Repair Web interface]({{ ref "repair" }}).

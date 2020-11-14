@@ -27,10 +27,6 @@ With the prerequisites satisfied the repair GUI should be available at the follo
 
 http://REPAIR_DOMAIN/webui
 
-Upon receiving a request the Ingress Controller detects which application should be routed to by matching on the `Host` header. Upon finding a match it then forwards the request to the downstream system, in this case Reaper.
-
-_Note_ depending on the ingress there _may_ be a rule in place to redirect from a URL with the bare domain and no path to one with `/webui` appended. This is not guaranteed and is heavily dependent on the ingress controller in use.
-
 ## What can I do in Reaper?
 
 For details about the tasks you can perform in Reaper, see these topics in the
