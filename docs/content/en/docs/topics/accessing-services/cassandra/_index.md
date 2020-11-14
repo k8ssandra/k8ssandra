@@ -19,7 +19,7 @@ description: |
    * [K8ssandra Cluster]({{< ref "getting-started#install-k8ssandra" >}})
    * [Ingress Controller]({{< ref "ingress" >}})
 1. DNS name _**and port**_ for the non-TLS Cassandra service
-1. _Optional_ DNS name for the TLS Cassandraa service
+1. _Optional_ DNS name for the TLS Cassandra service
 1. _Optional_ CA certificate
 1. _Optional_ TLS client certificate and key
 
