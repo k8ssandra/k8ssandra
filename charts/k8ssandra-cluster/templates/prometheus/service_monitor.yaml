@@ -3,15 +3,15 @@ kind: ServiceMonitor
 metadata:
   name: {{ .Release.Name }}-prometheus-k8ssandra
   labels:
-{{ include "k8ssandra.labels" . | indent 4 }}
+{{ include "k8ssandra-cluster.labels" . | indent 4 }}
 spec:
   selector:
     matchLabels:
       app.kubernetes.io/managed-by: cass-operator
       cassandra.datastax.com/prom-metrics: "true"
     matchExpressions:
-      - {key: cassandra.datastax.com/cluster, operator: Exists}
-      - {key: cassandra.datastax.com/datacenter, operator: Exists}
+      - {key: cassandra.datastax.com/cluster, operator: In, values: [{{ .Values.clusterName }}]}
+      - {key: cassandra.datastax.com/datacenter, operator: In, values: [{{ .Values.datacenterName }}]}
   targetLabels:
   - cassandra.datastax.com/cluster
   - cassandra.datastax.com/datacenter
