@@ -2,7 +2,7 @@
 title: "Kind Deployment"
 linkTitle: "Kind Deployment"
 weight: 1
-date: 2020-11-07
+date: 2020-11-12
 description: |
   Deploy a local Kind cluster with Traefik installed and configured.
 ---
@@ -34,36 +34,9 @@ forwarding rules for the following ports:
 
 The `kind.config.yaml` file referenced here is located in:
   
-  https://github.com/k8ssandra/k8ssandra/tree/main/docs/content/en/docs/topics/accessing-services/traefik/configuring-kind/kind.config.yaml
+  https://github.com/k8ssandra/k8ssandra/tree/main/docs/content/en/docs/topics/accessing-services/traefik/kind-deployment/kind.config.yaml
 
-```yaml
-kind: Cluster
-apiVersion: kind.x-k8s.io/v1alpha4
-nodes:
-- role: control-plane
-  kubeadmConfigPatches:
-  - |
-    kind: InitConfiguration
-    nodeRegistration:
-      kubeletExtraArgs:
-        node-labels: "ingress-ready=true"
-  extraPortMappings:
-  - containerPort: 32080
-    hostPort: 8080
-    protocol: TCP
-  - containerPort: 32443
-    hostPort: 8443
-    protocol: TCP
-  - containerPort: 32090
-    hostPort: 9000
-    protocol: TCP
-  - containerPort: 32091
-    hostPort: 9042
-    protocol: TCP
-  - containerPort: 32092
-    hostPort: 9142
-    protocol: TCP
-```
+{{< readfilerel file="kind.config.yaml"  highlight="yaml" >}}
 
 ## 2. Start Kind Cluster
 
@@ -91,48 +64,20 @@ Docker container running Kind_ which is forwarded to our local machine.
 
 The `traefik.values.yaml` file referenced here is located in:
 
-https://github.com/k8ssandra/k8ssandra/tree/main/docs/content/en/docs/topics/accessing-services/traefik/configuring-kind/traefik.values.yaml
+https://github.com/k8ssandra/k8ssandra/tree/main/docs/content/en/docs/topics/accessing-services/traefik/kind-deployment/traefik.values.yaml
 
 ### [`traefik.values.yaml`](traefik.values.yaml)
-```yaml
-providers:
-  kubernetesCRD:
-    namespaces:
-      - default
-      - traefik
-  kubernetesIngress:
-    namespaces:
-      - default
-      - traefik
-
-ports:
-  traefik:
-    expose: true
-    nodePort: 32090
-  web:
-    nodePort: 32080
-  websecure:
-    nodePort: 32443
-  cassandra:
-    port: 9042
-    nodePort: 32091
-  cassandrasecure:
-    port: 9142
-    nodePort: 32092
-
-service:
-  type: NodePort
-```
+{{< readfilerel file="traefik.values.yaml"  highlight="yaml" >}}
 
 ## 4. Install Traefik via Helm
 
 ```bash
 $ helm repo add traefik https://helm.traefik.io/traefik
 $ helm repo update
-$ helm install traefik traefik/traefik --create-namespace -f traefik.values.yaml
+$ helm install traefik traefik/traefik -n traefik --create-namespace -f traefik.values.yaml
 NAME: traefik
 LAST DEPLOYED: Thu Nov 12 16:59:40 2020
-NAMESPACE: default
+NAMESPACE: traefik
 STATUS: deployed
 REVISION: 1
 TEST SUITE: None

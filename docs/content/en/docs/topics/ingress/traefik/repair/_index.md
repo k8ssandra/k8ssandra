@@ -1,15 +1,15 @@
 ---
-title: "Monitoring UI"
-linkTitle: "Monitoring UI"
-weight: 1
+title: "Repair"
+linkTitle: "Repair"
+weight: 2
 date: 2020-11-13
 description: |
-  Configuring Traefik to expose the K8ssandra monitoring interfaces.
+  Configuring Traefik to expose the K8ssandra repair interface
 ---
 
 Follow these steps to configure and install `Traefik Ingress` custom resources
-for accessing your K8ssandra cluster's monitoring interface (provided by Grafana
-& Prometheus).
+for accessing your K8ssandra cluster's repair interface (provided by Cassandra
+Reaper).
 
 ## Tools
 
@@ -22,16 +22,14 @@ for accessing your K8ssandra cluster's monitoring interface (provided by Grafana
    * [K8ssandra Operators]({{< ref "getting-started#install-k8ssandra" >}})
    * [K8ssandra Cluster]({{< ref "getting-started#install-k8ssandra" >}})
 
-   See the [Configuring Kind]({{< ref "configuring-kind" >}}) for an example of
+   See the [Configuring Kind]({{< ref "kind-deployment" >}}) for an example of
    how to set up a local installation.
-1. DNS name for the Grafana service
-1. DNS name for the Prometheus service
+1. DNS name where the repair service should be listening.
 
-_Note_ if you do not have a DNS name available, consider using a service like
-[xip.io](http://xip.io) to generate a domain name based on the ingress IP
-address. For local Kind clusters this may look like
-`monitoring.127.0.0.1.xip.io` which would return the address `127.0.0.1` during
-DNS lookup.
+   _Note_ if you do not have a DNS name available, consider using a service like
+   [xip.io](http://xip.io) to generate a domain name based on the ingress IP
+   address. For local Kind clusters this may look like `repair.127.0.0.1.xip.io`
+   which would return the address `127.0.0.1` during DNS lookup.
 
 ## Helm Parameters
 
@@ -46,32 +44,20 @@ ingress:
     # Set to `true` to enable the templating of Traefik ingress custom resources
     enabled: false
 
-    # Monitoring ingress
-    monitoring: 
-      grafana:
-        # Note this will **only** work if `traefik.enabled` is also `true`
-        enabled: true
+    # Repair service
+    repair: 
+      # Note this will **only** work if `traefik.enabled` is also `true`
+      enabled: true
 
-        # Name of the Traefik entrypoints where we want to source traffic.
-        entrypoints: 
-          - web
+      # Name of the Traefik entrypoints where we want to source traffic.
+      entrypoints: 
+        - web
 
-        # Hostname Traefik should use for matching requests.
-        host: grafana.k8ssandra.cluster.local
-      
-      prometheus:
-        # Note this will **only** work if `traefik.enabled` is also `true`
-        enabled: true
-
-        # Name of the Traefik entrypoints where we want to source traffic.
-        entrypoints: 
-          - web
-
-        # Hostname Traefik should use for matching requests.
-        host: prometheus.k8ssandra.cluster.local
+      # Hostname Traefik should use for matching requests.
+      host: repair.k8ssandra.cluster.local
 ```
 
-Note the `host` parameters, this is where the DNS names must be provided.
+Note the `host` parameter, this is where the DNS name must be provided.
 
 ## Enabling Traefik Ingress
 
@@ -95,14 +81,12 @@ helm upgrade cluster-name k8ssandra/k8ssandra-cluster -f traefik.values.yaml
 # New Install
 helm install cluster-name k8ssandra/k8ssandra-cluster \
   --set ingress.traefik.enabled=true \
-  --set ingress.traefik.monitoring.grafana.host=grafana.cluster-name.k8ssandra.cluster.local \
-  --set ingress.traefik.monitoring.prometheus.host=prometheus.cluster-name.k8ssandra.cluster.local
+  --set ingress.traefik.repair.host=repair.cluster-name.k8ssandra.cluster.local
 
 # Existing Cluster
 helm upgrade cluster-name k8ssandra/k8ssandra-cluster \
   --set ingress.traefik.enabled=true \
-  --set ingress.traefik.monitoring.grafana.host=grafana.cluster-name.k8ssandra.cluster.local \
-  --set ingress.traefik.monitoring.prometheus.host=prometheus.cluster-name.k8ssandra.cluster.local
+  --set ingress.traefik.repair.host=repair.cluster-name.k8ssandra.cluster.local
 ```
 
 ## Validate Traefik Configuration
@@ -116,7 +100,7 @@ detecting the appropriate services.
 
 1. Open your web browser and point it at the Traefik dashboard. This may require
    `kubectl port-forward` or the steps in our [Configuring Kind]({{< ref
-   "configuring-kind" >}}) guide.
+   "kind-deployment" >}}) guide.
 
     ![Traefik Dashboard](traefik-dashboard.png)
 
@@ -124,31 +108,19 @@ detecting the appropriate services.
 
     ![Traefik HTTP Routers](traefik-http-routers.png)
 
-    There should be entries representing the hostname based rules created as
+    There should be an entry representing the hostname based rule created as
     part of the Helm command. Note the Kubernetes logo to the right of the table
     indicating it was provisioned via a Kubernetes custom resource.
 3. Navigate to the HTTP Services page ![Traefik HTTP
     Services](traefik-http-services.png)
 
-    There should be entries representing the Prometheus and Grafana services.
-    Note the Kubernetes logo to the right of the table indicating it was
-    provisioned via a Kubernetes custom resource.
+    There should be an entry representing the Reaper service. Note the
+    Kubernetes logo to the right of the table indicating it was provisioned via
+    a Kubernetes custom resource.
 
-## Access Grafana Interface
+## Access Repair Interface
 
-![Grafana UI](grafana-dashboard.png)
-
-Now that Traefik is configured you may now access the web interface by visiting
-the domain name provided within the `values.yaml` file. Traefik receives the
-HTTP request then performs the following actions:
-
-* Extract the HTTP `Host` header 
-* Match the `Host` against the rules specified in our `IngressRoutes`
-* Proxies the request to the upstream Kubernetes Service.
-
-## Access Prometheus Interface
-
-![Prometheus UI](grafana-dashboard.png)
+![Reaper UI](reaper-ui.png)
 
 Now that Traefik is configured you may now access the web interface by visiting
 the domain name provided within the `values.yaml` file. Traefik receives the
@@ -158,6 +130,12 @@ HTTP request then performs the following actions:
 * Match the `Host` against the rules specified in our `IngressRoutes`
 * Proxies the request to the upstream Kubernetes Service.
 
-## Next
+## What can I do in Reaper?
 
-Access the [Repair Web interface](docs/topics/access-repair-interface/).
+For details about the tasks you can perform in Reaper, see these topics in the
+Cassandra Reaper documentation:
+
+* [Check a cluster's health](http://cassandra-reaper.io/docs/usage/health/)
+* [Run a cluster repair](http://cassandra-reaper.io/docs/usage/single/)
+* [Schedule a cluster repair](http://cassandra-reaper.io/docs/usage/schedule/)
+* [Monitor Cassandra diagnostic events](http://cassandra-reaper.io/docs/usage/cassandra-diagnostics/)
