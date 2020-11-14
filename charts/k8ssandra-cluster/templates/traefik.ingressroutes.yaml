@@ -59,8 +59,9 @@ spec:
   - match: Host(`{{ $traefik.monitoring.grafana.host }}`)
     kind: Rule
     services:
-    # TODO - update to match naming scheme for grafana service
-    - name: {{ $releaseName }}-k8ssandra-monitoring-grafana
+    # The grafana service name is hard coded because it does not look like grafana-operator
+    # allows you to override the name.
+    - name: grafana-service
       kind: Service
       port: 3000
 {{- end }}
@@ -81,8 +82,8 @@ spec:
   - match: Host(`{{ $traefik.monitoring.prometheus.host }}`)
     kind: Rule
     services:
-    # TODO - update to match naming scheme for prometheus service
-    - name: {{ $releaseName }}-k8ssandra-monitoring-prometheus
+    # TODO - Change this once K8C-94 gets merged
+    - name: {{ .Values.k8ssandra.name }}-prometheus-k8ssandra.{{ .Values.k8ssandra.namespace }}
       kind: Service
       port: 9090
 {{- end }}
