@@ -4,15 +4,8 @@ linkTitle: "Monitoring UI"
 weight: 1
 date: 2020-11-13
 description: |
-  Configuring Traefik to expose the K8ssandra monitoring interfaces.
+  Follow these simple steps to access the Prometheus and Grafana monitoring interfaces.
 ---
-
-# TODO Rewrite Intro
-# TODO Remove Traefik references
-
-Follow these steps to configure and install `Traefik Ingress` custom resources
-for accessing your K8ssandra cluster's monitoring interface (provided by Grafana
-& Prometheus).
 
 ## Tools
 

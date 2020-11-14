@@ -4,15 +4,8 @@ linkTitle: "Repair UI"
 weight: 1
 date: 2020-11-13
 description: |
-  Accessing the Cassandra Reaper, repair interface
+  Follow these simple steps to access the Reaper repair interface.
 ---
-
-# TODO Rewrite Intro
-# TODO Remove Traefik references
-
-Follow these steps to configure and install `Traefik Ingress` custom resources
-for accessing your K8ssandra cluster's repair interface (provided by Cassandra
-Reaper).
 
 ## Tools
 
@@ -21,27 +14,22 @@ Reaper).
 ## Prerequisites
 
 1. Kubernetes cluster with the following elements deployed:
-   * [K8ssandra Operators]({{< ref "getting-started#install-k8ssandra" >}})
-   * [K8ssandra Cluster]({{< ref "getting-started#install-k8ssandra" >}})
-   * Kubernetes Ingress Controller
-1. DNS name where the repair service should be listening.
-
-   _Note_ if you do not have a DNS name available, consider using a service like
-   [xip.io](http://xip.io) to generate a domain name based on the ingress IP
-   address. For local Kind clusters this may look like `repair.127.0.0.1.xip.io`
-   which would return the address `127.0.0.1` during DNS lookup.
+   * [K8ssandra Operators]({{< ref "getting-started#install-k8ssandra" >}}) Helm Chart
+   * [K8ssandra Cluster]({{< ref "getting-started#install-k8ssandra" >}}) Helm Chart
+   * [Ingress Controller]({{< ref "ingress" >}})
+1. DNS name configured for the repair interface, referred to as _REPAIR DOMAIN_ below.
 
 ## Access Repair Interface
 
 ![Reaper UI](reaper-ui.png)
 
-Now that Traefik is configured you may now access the web interface by visiting
-the domain name provided within the `values.yaml` file. Traefik receives the
-HTTP request then performs the following actions:
+With the prerequisites satisfied the repair GUI should be available at the following address:
 
-* Extract the HTTP `Host` header 
-* Match the `Host` against the rules specified in our `IngressRoutes`
-* Proxies the request to the upstream Kubernetes Service.
+http://REPAIR_DOMAIN/webui
+
+Upon receiving a request the Ingress Controller detects which application should be routed to by matching on the `Host` header. Upon finding a match it then forwards the request to the downstream system, in this case Reaper.
+
+_Note_ depending on the ingress there _may_ be a rule in place to redirect from a URL with the bare domain and no path to one with `/webui` appended. This is not guaranteed and is heavily dependent on the ingress controller in use.
 
 ## What can I do in Reaper?
 

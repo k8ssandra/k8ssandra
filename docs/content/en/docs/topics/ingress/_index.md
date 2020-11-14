@@ -2,15 +2,14 @@
 title: "Ingress"
 linkTitle: "Ingress"
 weight: 1
-date: 2020-11-07
+date: 2020-11-14
 description: |
-  
+  Routing from the outside in.
 ---
 
-External connectivity, meaning connectivity for applications running outside of
-your Kubernetes cluster can be tricky. There are many solutions in this space
-ranging from which focus on pure HTTP workloads to others which allow for custom
-TCP and UDP routing. Kubernetes provides an
+External connectivity can be tricky with Kubernetes. There are many solutions in
+this space ranging from some which focus on pure HTTP workloads to others which
+allow for custom TCP and UDP routing. Kubernetes provides an
 [`Ingress`](https://kubernetes.io/docs/concepts/services-networking/ingress/)
 resource type, but does **not** provide an [`Ingress
 Controller`](https://kubernetes.io/docs/concepts/services-networking/ingress-controllers/).
