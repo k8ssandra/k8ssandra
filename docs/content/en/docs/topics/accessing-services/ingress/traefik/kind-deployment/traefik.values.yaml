@@ -18,9 +18,11 @@ ports:
   websecure:
     nodePort: 32443
   cassandra:
+    expose: true
     port: 9042
     nodePort: 32091
   cassandrasecure:
+    expose: true
     port: 9142
     nodePort: 32092
 

@@ -1,0 +1,27 @@
+---
+providers:
+  kubernetesCRD:
+    namespaces:
+      - default
+      - traefik
+  kubernetesIngress:
+    namespaces:
+      - default
+      - traefik
+
+ports:
+  traefik:
+    expose: true
+    nodePort: 32090
+  web:
+    nodePort: 32080
+  websecure:
+    nodePort: 32443
+  cassandra:
+    expose: true
+    port: 9042
+    nodePort: 32091
+  cassandrasecure:
+    expose: true
+    port: 9142
+    nodePort: 32092
