@@ -18,13 +18,15 @@ description: |
    * [K8ssandra Cluster]({{< ref "getting-started#install-k8ssandra" >}})
    * [Ingress Controller]({{< ref "ingress" >}})
 1. DNS name for the Grafana service, referred to as _GRAFANA DOMAIN_ below.
-1. DNS name for the Prometheus service, referred to as _PROMETHEUS DOMAIN_ below.
+1. DNS name for the Prometheus service, referred to as _PROMETHEUS DOMAIN_
+   below.
 
 ## Access Grafana Interface
 
 ![Grafana UI](grafana-dashboard.png)
 
-With the prerequisites satisfied the repair GUI should be available at the following address:
+With the prerequisites satisfied the repair GUI should be available at the
+following address:
 
 **http://GRAFANA_DOMAIN/**
 

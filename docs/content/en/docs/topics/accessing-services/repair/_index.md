@@ -14,16 +14,20 @@ description: |
 ## Prerequisites
 
 1. Kubernetes cluster with the following elements deployed:
-   * [K8ssandra Operators]({{< ref "getting-started#install-k8ssandra" >}}) Helm Chart
-   * [K8ssandra Cluster]({{< ref "getting-started#install-k8ssandra" >}}) Helm Chart
+   * [K8ssandra Operators]({{< ref "getting-started#install-k8ssandra" >}}) Helm
+     Chart
+   * [K8ssandra Cluster]({{< ref "getting-started#install-k8ssandra" >}}) Helm
+     Chart
    * [Ingress Controller]({{< ref "ingress" >}})
-1. DNS name configured for the repair interface, referred to as _REPAIR DOMAIN_ below.
+1. DNS name configured for the repair interface, referred to as _REPAIR DOMAIN_
+   below.
 
 ## Access Repair Interface
 
 ![Reaper UI](reaper-ui.png)
 
-With the prerequisites satisfied the repair GUI should be available at the following address:
+With the prerequisites satisfied the repair GUI should be available at the
+following address:
 
 http://REPAIR_DOMAIN/webui
 
@@ -35,4 +39,5 @@ Cassandra Reaper documentation:
 * [Check a cluster's health](http://cassandra-reaper.io/docs/usage/health/)
 * [Run a cluster repair](http://cassandra-reaper.io/docs/usage/single/)
 * [Schedule a cluster repair](http://cassandra-reaper.io/docs/usage/schedule/)
-* [Monitor Cassandra diagnostic events](http://cassandra-reaper.io/docs/usage/cassandra-diagnostics/)
+* [Monitor Cassandra diagnostic
+  events](http://cassandra-reaper.io/docs/usage/cassandra-diagnostics/)
