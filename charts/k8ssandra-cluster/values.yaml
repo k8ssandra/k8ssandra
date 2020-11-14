@@ -50,7 +50,7 @@ ingress:
 
     # Repair service
     repair: 
-      # Note this will **only** work if `traefik.enabled` is also `true`
+      # Note this will **only** work if `ingress.traefik.enabled` is also `true`
       enabled: true
 
       # Name of the Traefik entrypoints where we want to source traffic.
@@ -60,10 +60,38 @@ ingress:
       # Hostname Traefik should use for matching requests.
       host: repair.k8ssandra.cluster.local
 
+    # Cassandra native transport ingress support
     cassandra:
+      # Note this will **only** work if `ingress.traefik.enabled` is also `true`
       enabled: false
+
+      # Name of the Traefik entrypoints for source traffic
       entrypoints: 
         - cassandra
+
+    # Monitoring web interfaces for Promtheus and Grafana
+    monitoring:
+      grafana:
+        # Note this will **only** work if `ingress.traefik.enabled` is also `true`
+        enabled: true
+
+        # Name of the Traefik entrypoints where we want to source traffic.
+        entrypoints:
+          - web
+
+        # Hostname Traefik should use for matching requests.
+        host: grafana.k8ssandra.cluster.local
+
+      prometheus:
+        # Note this will **only** work if `ingress.traefik.enabled` is also `true`
+        enabled: true
+
+        # Name of the Traefik entrypoints where we want to source traffic.
+        entrypoints:
+          - web
+
+        # Hostname Traefik should use for matching requests.
+        host: prometheus.k8ssandra.cluster.local
 
 grafana:
   name: default
