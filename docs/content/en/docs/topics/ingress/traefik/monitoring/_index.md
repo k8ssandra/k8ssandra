@@ -18,7 +18,7 @@ for accessing your K8ssandra cluster's monitoring interface (provided by Grafana
 ## Prerequisites
 
 1. Kubernetes cluster with the following elements deployed:
-   * [Traefik]({{< ref "traefik" >}})
+   * [Traefik]({{< ref "docs/topics/ingress/traefik" >}})
    * [K8ssandra Operators]({{< ref "getting-started#install-k8ssandra" >}})
    * [K8ssandra Cluster]({{< ref "getting-started#install-k8ssandra" >}})
 
@@ -134,30 +134,6 @@ detecting the appropriate services.
     Note the Kubernetes logo to the right of the table indicating it was
     provisioned via a Kubernetes custom resource.
 
-## Access Grafana Interface
+## Next Steps
 
-![Grafana UI](grafana-dashboard.png)
-
-Now that Traefik is configured you may now access the web interface by visiting
-the domain name provided within the `values.yaml` file. Traefik receives the
-HTTP request then performs the following actions:
-
-* Extract the HTTP `Host` header 
-* Match the `Host` against the rules specified in our `IngressRoutes`
-* Proxies the request to the upstream Kubernetes Service.
-
-## Access Prometheus Interface
-
-![Prometheus UI](grafana-dashboard.png)
-
-Now that Traefik is configured you may now access the web interface by visiting
-the domain name provided within the `values.yaml` file. Traefik receives the
-HTTP request then performs the following actions:
-
-* Extract the HTTP `Host` header 
-* Match the `Host` against the rules specified in our `IngressRoutes`
-* Proxies the request to the upstream Kubernetes Service.
-
-## Next
-
-Access the [Repair Web interface](docs/topics/access-repair-interface/).
+Check out how to [Access the Monitoring Interface]({{< ref "docs/topics/accessing-services/monitoring" >}})

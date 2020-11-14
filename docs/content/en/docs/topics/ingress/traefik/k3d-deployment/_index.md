@@ -97,5 +97,5 @@ Traefik dashboard is at
 
 ![Traefik dashboard screenshot](traefik-dashboard.png)
 
-Feel free to explore the other [Traefik]({{< ref "traefik" >}}) topics now that
+Feel free to explore the other [Traefik]({{< ref "docs/topics/ingress/traefik" >}}) topics now that
 you have a local environment configured.

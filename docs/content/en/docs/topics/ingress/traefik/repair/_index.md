@@ -18,7 +18,7 @@ Reaper).
 ## Prerequisites
 
 1. Kubernetes cluster with the following elements deployed:
-   * [Traefik]({{< ref "traefik" >}})
+   * [Traefik]({{< ref "docs/topics/ingress/traefik" >}})
    * [K8ssandra Operators]({{< ref "getting-started#install-k8ssandra" >}})
    * [K8ssandra Cluster]({{< ref "getting-started#install-k8ssandra" >}})
 
@@ -118,24 +118,6 @@ detecting the appropriate services.
     Kubernetes logo to the right of the table indicating it was provisioned via
     a Kubernetes custom resource.
 
-## Access Repair Interface
+## Next Steps
 
-![Reaper UI](reaper-ui.png)
-
-Now that Traefik is configured you may now access the web interface by visiting
-the domain name provided within the `values.yaml` file. Traefik receives the
-HTTP request then performs the following actions:
-
-* Extract the HTTP `Host` header 
-* Match the `Host` against the rules specified in our `IngressRoutes`
-* Proxies the request to the upstream Kubernetes Service.
-
-## What can I do in Reaper?
-
-For details about the tasks you can perform in Reaper, see these topics in the
-Cassandra Reaper documentation:
-
-* [Check a cluster's health](http://cassandra-reaper.io/docs/usage/health/)
-* [Run a cluster repair](http://cassandra-reaper.io/docs/usage/single/)
-* [Schedule a cluster repair](http://cassandra-reaper.io/docs/usage/schedule/)
-* [Monitor Cassandra diagnostic events](http://cassandra-reaper.io/docs/usage/cassandra-diagnostics/)
+Check out how to [Access the Repair Interface]({{< ref "docs/topics/accessing-services/repair" >}})

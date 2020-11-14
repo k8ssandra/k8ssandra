@@ -89,4 +89,4 @@ With the deployment complete we may now access the Traefik dashboard at [http://
 
 ![Traefik dashboard screenshot](traefik-dashboard.png)
 
-Feel free to explore the other [Traefik]({{< ref "traefik" >}}) topics now that you have a local environment configured.
+Feel free to explore the other [Traefik]({{< ref "docs/topics/ingress/traefik" >}}) topics now that you have a local environment configured.
