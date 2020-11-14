@@ -1,14 +1,13 @@
 apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRoleBinding
+kind: RoleBinding
 metadata:
   name: {{ .Release.Name }}-prometheus-k8ssandra
   labels:
-{{ include "k8ssandra.labels" . | indent 4 }}
+{{ include "k8ssandra-cluster.labels" . | indent 4 }}
 roleRef:
   apiGroup: rbac.authorization.k8s.io
-  kind: ClusterRole
+  kind: Role
   name: {{ .Release.Name }}-prometheus-k8ssandra
 subjects:
 - kind: ServiceAccount
   name: {{ .Release.Name }}-prometheus-k8ssandra
-  namespace: {{ .Release.Namespace }}

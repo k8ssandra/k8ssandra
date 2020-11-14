@@ -20,7 +20,8 @@ repair:
 
 backupRestore:
   medusa:
-    enabled: true
+    # If enabled, bucketName and bucketSecret must be defined.
+    enabled: false
 
     # Accepted values are s3 and gcs
     storage: s3
