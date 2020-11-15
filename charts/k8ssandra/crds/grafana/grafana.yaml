@@ -106,7 +106,7 @@ spec:
                 labels:
                   type: object
                   description: Additional labels for the service
-                nodeSelector: 
+                nodeSelector:
                   type: object
                   description: Additional labels for the running grafana pods in a labeled node.
                 tolerations:

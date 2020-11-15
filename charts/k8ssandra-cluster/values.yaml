@@ -7,6 +7,13 @@ clusterName: k8ssandra
 datacenterName: dc1
 size: 1
 
+k8ssandra:
+  # The k8ssandra chart installs operators with cluster scope. It can be installed in a
+  # different namespace. The namespace and name of the k8ssandra chart release are needed
+  # to configure some resources like the Grafana data source.
+  namespace: default
+  name: k8ssandra
+
 # Configuration regarding configuration of repair services
 repair:
   # Reaper repair service and UI
@@ -43,7 +50,7 @@ ingress:
 
     # Repair service
     repair: 
-      # Note this will **only** work if `traefik.enabled` is also `true`
+      # Note this will **only** work if `ingress.traefik.enabled` is also `true`
       enabled: true
 
       # Name of the Traefik entrypoints where we want to source traffic.
@@ -53,7 +60,39 @@ ingress:
       # Hostname Traefik should use for matching requests.
       host: repair.k8ssandra.cluster.local
 
+    # Cassandra native transport ingress support
     cassandra:
+      # Note this will **only** work if `ingress.traefik.enabled` is also `true`
       enabled: false
+
+      # Name of the Traefik entrypoints for source traffic
       entrypoints: 
         - cassandra
+
+    # Monitoring web interfaces for Promtheus and Grafana
+    monitoring:
+      grafana:
+        # Note this will **only** work if `ingress.traefik.enabled` is also `true`
+        enabled: true
+
+        # Name of the Traefik entrypoints where we want to source traffic.
+        entrypoints:
+          - web
+
+        # Hostname Traefik should use for matching requests.
+        host: grafana.k8ssandra.cluster.local
+
+      prometheus:
+        # Note this will **only** work if `ingress.traefik.enabled` is also `true`
+        enabled: true
+
+        # Name of the Traefik entrypoints where we want to source traffic.
+        entrypoints:
+          - web
+
+        # Hostname Traefik should use for matching requests.
+        host: prometheus.k8ssandra.cluster.local
+
+grafana:
+  adminUser: admin
+  adminPassword: secret

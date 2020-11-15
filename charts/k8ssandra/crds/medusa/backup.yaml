@@ -878,10 +878,10 @@ spec:
                                         - containerPort
                                       type: object
                                     type: array
-                                    x-kubernetes-list-map-keys:
-                                      - containerPort
-                                      - protocol
-                                    x-kubernetes-list-type: map
+#                                    x-kubernetes-list-map-keys:
+#                                      - containerPort
+#                                      - protocol
+#                                    x-kubernetes-list-type: map
                                   readinessProbe:
                                     description: 'Periodic probe of container service readiness. Container will be removed from service endpoints if the probe fails. Cannot be updated. More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#container-probes'
                                     properties:
@@ -2372,10 +2372,10 @@ spec:
                                         - containerPort
                                       type: object
                                     type: array
-                                    x-kubernetes-list-map-keys:
-                                      - containerPort
-                                      - protocol
-                                    x-kubernetes-list-type: map
+#                                    x-kubernetes-list-map-keys:
+#                                      - containerPort
+#                                      - protocol
+#                                    x-kubernetes-list-type: map
                                   readinessProbe:
                                     description: 'Periodic probe of container service readiness. Container will be removed from service endpoints if the probe fails. Cannot be updated. More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#container-probes'
                                     properties:
