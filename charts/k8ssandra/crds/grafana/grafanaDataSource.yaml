@@ -13,23 +13,23 @@ spec:
   subresources:
     status: {}
   version: v1alpha1
-#  validation:
-#    openAPIV3Schema:
-#      properties:
-#        apiVersion:
-#          type: string
-#        kind:
-#          type: string
-#        metadata:
-#          type: object
-#        spec:
-#          required: ["datasources", "name"]
-#          properties:
-#            name:
-#              type: string
-#              minimum: 1
-#            datasources:
-#              type: array
-#              items:
-#                description: Grafana Datasource Object
-#                type: object
+  validation:
+    openAPIV3Schema:
+      properties:
+        apiVersion:
+          type: string
+        kind:
+          type: string
+        metadata:
+          type: object
+        spec:
+          required: ["datasources", "name"]
+          properties:
+            name:
+              type: string
+              minimum: 1
+            datasources:
+              type: array
+              items:
+                description: Grafana Datasource Object
+                type: object
