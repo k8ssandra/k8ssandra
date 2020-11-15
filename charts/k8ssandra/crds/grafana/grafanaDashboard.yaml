@@ -13,31 +13,31 @@ spec:
   subresources:
     status: {}
   version: v1alpha1
-  validation:
-    openAPIV3Schema:
-      properties:
-        spec:
-          properties:
-            name:
-              type: string
-            json:
-              type: string
-            jsonnet:
-              description: Jsonnet source. Has access to grafonnet.
-              type: string
-            url:
-              type: string
-              description: URL to dashboard json
-            datasources:
-              type: array
-              items:
-                description: Input datasources to resolve before importing
-                type: object
-            plugins:
-              type: array
-              items:
-                description: Grafana Plugin Object
-                type: object
-            customFolderName:
-              description: Folder name that this dashboard will be assigned to.
-              type: string
+#  validation:
+#    openAPIV3Schema:
+#      properties:
+#        spec:
+#          properties:
+#            name:
+#              type: string
+#            json:
+#              type: string
+#            jsonnet:
+#              description: Jsonnet source. Has access to grafonnet.
+#              type: string
+#            url:
+#              type: string
+#              description: URL to dashboard json
+#            datasources:
+#              type: array
+#              items:
+#                description: Input datasources to resolve before importing
+#                type: object
+#            plugins:
+#              type: array
+#              items:
+#                description: Grafana Plugin Object
+#                type: object
+#            customFolderName:
+#              description: Folder name that this dashboard will be assigned to.
+#              type: string

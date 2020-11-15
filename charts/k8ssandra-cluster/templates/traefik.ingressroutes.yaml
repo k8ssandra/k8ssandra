@@ -82,8 +82,7 @@ spec:
   - match: Host(`{{ $traefik.monitoring.prometheus.host }}`)
     kind: Rule
     services:
-    # TODO - Change this once K8C-94 gets merged
-    - name: {{ .Values.k8ssandra.name }}-prometheus-k8ssandra.{{ .Values.k8ssandra.namespace }}
+    - name: {{ .Release.Name }}-prometheus-k8ssandra
       kind: Service
       port: 9090
 {{- end }}
