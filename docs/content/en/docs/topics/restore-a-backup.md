@@ -6,6 +6,8 @@ date: 2020-11-16
 description: K8ssandra provides backup/restore via Apache Medusa
 ---
 
+This topic walks you through the steps to backup and restore Cassandra data running in a Kubernetes cluster.
+
 ## Tools
 
 * K8ssandra-tools Helm chart
@@ -23,7 +25,7 @@ All other prerequisites are handled by the installed tools listed above. The sam
 
 ## Steps
 
-### Verify prereqs met
+### Verify you've met the prereqs
 
 If you haven’t already, install the k8ssandra chart.
 
@@ -69,16 +71,17 @@ In the YAML, notice the `stringData` property valuye: `medusa_s3_credentials`.  
 Apply the YAML to your Kubernetes environment:
 
 `% kubectl apply -f medusa-bucket-key.yaml`
+`secret/medusa-bucket-key configured`
 
 ### Create or update the k8ssandra-cluster
 
-Install the k8ssandra-cluster chart with the following properties. 
+Install the k8ssandra-cluster chart with the following properties. Backup and restore operations are enabled by default. In the following example, `bucketName` corresponds to the name of the S3 bucket: `K8ssanda-bucket-dev`.  The `bucketSecret` corresponds to the secret credentials.
 
 `% helm install k8ssandra-cluster-1 k8ssandra/k8ssandra-cluster --set backupRestore.medusa.bucketName=k8ssanda-bucket-dev, 
 backupRestore.medusa.bucketSecret=medusa-bucket-secret`
 
-Backup and restore operations are enabled by default. The `bucketName` corresponds to the name of the S3 bucket: `K8ssanda-bucket-dev` in this example.  
-The `bucketSecret` corresponds to the secret credentials.
+**Internal note: check with JS on this error**
+...command not found: backupRestore.medusa.bucketSecret=medusa-bucket-secret
 
 Notice that the `k8ssandra-cluster` Helm chart added some properties -- which we’ll highlight here -- in the `cassdc` datacenter.  
 
@@ -249,3 +252,5 @@ You can look again at the cassandrarestore helm-test YAML for the start and endi
 ![Log output from restore operation](k8ssanda-restore-start-end-timestamps-example.png "Restore log entries including start and end timestamps")
 
 ## Next
+
+Learn how to ( next topic ) 
