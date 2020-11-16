@@ -1,7 +1,7 @@
 ---
 title: "cass-operator Helm Chart"
 linkTitle: "cass-operator"
-weight: 1
+weight: 3
 description: >
   Installs cass-operator
 ---

@@ -1,7 +1,7 @@
 ---
 title: "k8ssandra-cluster Helm Chart"
 linkTitle: "k8ssandra-cluster"
-weight: 1
+weight: 2
 description: >
   Provisions an instance of the k8ssandra stack
 ---

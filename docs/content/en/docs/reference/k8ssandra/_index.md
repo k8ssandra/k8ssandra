@@ -3,7 +3,7 @@ title: "k8ssandra Helm Chart"
 linkTitle: "k8ssandra"
 weight: 1
 description: >
-  Handles installation of all required operators for a K8ssandra stack.
+  Handles installation of all required operators for K8ssandra stacks.
 ---
 
 ## `cass-operator`
