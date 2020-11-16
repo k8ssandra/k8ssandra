@@ -1,21 +1,21 @@
-package tests
+package integration
 
 import (
+	"fmt"
 	"strings"
 	"sync"
 	"testing"
-	"time"
 
-	util "./util"
 	"github.com/gruntwork-io/terratest/modules/helm"
 	"github.com/gruntwork-io/terratest/modules/k8s"
+	"github.com/k8ssandra/k8ssandra/tests/integration/util"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 var (
-	chartName = "cass-operator"
-	chartPath = "../../charts/k8ssandra/charts/cass-operator"
-	// TODO: put your own config path here ...
+	chartName         = "cass-operator"
+	chartPath         = "../../charts/k8ssandra/charts/cass-operator"
 	configPath        = "C:\\Users\\Jeff Banks\\.kube\\config"
 	crdDefinitionYaml = "../../charts/k8ssandra/charts/cass-operator/crds/customresourcedefinition.yaml"
 	crdResourceName   = "cassandradatacenters.cassandra.datastax.com"
@@ -24,8 +24,8 @@ var (
 	dc1Yaml          = "../../cassandra/example-cassdc-minimal.yaml"
 	defaultNamespace = "default"
 
-	namespacePrefix = "test-minimal-cassdc"
-	releaseName     = "test-release-minimal-cassdc"
+	namespacePrefix = "test-ns-cassop"
+	releaseName     = "test-release-cassop"
 	testName        = "Helm Chart cass-cluster"
 )
 
@@ -33,13 +33,23 @@ var (
 func setup(t *testing.T) (string, *k8s.KubectlOptions, *helm.Options) {
 
 	t.Parallel()
-	namespace := util.GenerateNamespaceName(namespacePrefix)
+	var setupWaiter sync.WaitGroup
+	var namespace string
+
+	setupWaiter.Add(1)
+	go func() {
+		defer setupWaiter.Done()
+		namespace = util.GenerateNamespaceName(namespacePrefix)
+	}()
+	setupWaiter.Wait()
+
 	kubeOptions := k8s.NewKubectlOptions("", "", namespace)
 	helmOptions := &helm.Options{KubectlOptions: kubeOptions}
 
 	var cleanupWaiter sync.WaitGroup
 	cleanup(t, helmOptions, &cleanupWaiter)
 	cleanupWaiter.Wait()
+
 	return namespace, kubeOptions, helmOptions
 }
 
@@ -56,56 +66,71 @@ func TestCassOperator(t *testing.T) {
 	// Setup
 	namespace, kubeOptions, helmOptions := setup(t)
 
-	result := util.CreateTestNamespace(t, kubeOptions, releaseName, namespace)
-	assert.NotNil(t, result)
+	assert.NotNil(t, namespace)
+	assert.NotNil(t, kubeOptions)
+	assert.NotNil(t, helmOptions)
 
-	util.Install(t, helmOptions, chartPath, namespace, releaseName)
-	k8s.WaitUntilPodAvailable(t, kubeOptions, dc1Name, 5, 2*time.Second)
+	util.CreateNamespace(t, helmOptions)
+	util.ApplyAnnotation(t, helmOptions, releaseName)
+	
+	isInstalled := installCassOperator(t, helmOptions)
+	require.True(t, isInstalled)
 
-	k8s.KubectlApply(t, kubeOptions, dc1Yaml)
-
-	k8s.WaitUntilServiceAvailable(t, kubeOptions, "cass-operator", 3, time.Second*3)
-
-	// teardown(t, helmOptions)
+	lookupResult := util.LookupCRDByName(t, helmOptions, "cassandradatacenters.cassandra.datastax.com")
+	require.Equal(t, "customresourcedefinition.apiextensions.k8s.io/cassandradatacenters.cassandra.datastax.com", lookupResult)
 }
 
-// Test for cleaning up manually as needed.
-func TestCleanup(t *testing.T) {
+// installCassOperator provides apply and returned result of cass operator
+// based on selector provided by caller.
+func installCassOperator(t *testing.T, helmOptions *helm.Options) bool {
 
-	var cleanupWaiter sync.WaitGroup
+	var applyWaiter sync.WaitGroup
+	var installErr error
+	namespace := helmOptions.KubectlOptions.Namespace
 
-	t.Parallel()
-	namespace := "test-cleanup-1"
-	kubeOptions := k8s.NewKubectlOptions("", "", namespace)
-	helmOptions := &helm.Options{KubectlOptions: kubeOptions}
+	applyWaiter.Add(1)
 
-	cleanup(t, helmOptions, &cleanupWaiter)
-	cleanupWaiter.Wait()
+	go func() {
+		defer applyWaiter.Done()
+		installErr = k8s.KubectlApplyE(t, helmOptions.KubectlOptions, crdDefinitionYaml)
+		util.Log(t, "K8s", fmt.Sprintf("Install cass-operator namespace:%s release:%s", namespace, releaseName), "", installErr)
+	}()
+	applyWaiter.Wait()
+	return (installErr == nil)
 }
 
+// Cleanup testing artifacts scoped to default and test namespaces.
+// Utilizes a wait group for caller coordination with cleanup activities.
 func cleanup(t *testing.T, helmOptions *helm.Options, waiter *sync.WaitGroup) {
 
 	namespaces, err := util.GetNamespaces(t, helmOptions.KubectlOptions)
+	util.Log(t, "Namespace", "lookup", strings.Join(namespaces, ","), err)
+
 	for _, ns := range namespaces {
 
 		// Must match our namespace pattern for it to be cleaned up.
-		if strings.Contains(ns, namespacePrefix) || strings.Contains(ns, defaultNamespace) {
+		if strings.Contains(ns, namespacePrefix) {
 
 			namespace := strings.TrimPrefix(ns, "namespace/")
 			kubeOptions := k8s.NewKubectlOptions("", "", namespace)
+			helmOptions := &helm.Options{KubectlOptions: kubeOptions}
 
+			util.ApplyAnnotation(t, helmOptions, releaseName)
+			util.Log(t, "Processing", fmt.Sprintf("Cleanup Deployment ns:%s", namespace), "", nil)
 			waiter.Add(1)
 			go func() {
 				defer waiter.Done()
 				util.CleanupDeployment(t, kubeOptions, chartName)
 			}()
 
+			util.Log(t, "Processing", fmt.Sprintf("Cleanup CRD ns:%s", namespace), "", nil)
 			waiter.Add(1)
 			go func() {
 				defer waiter.Done()
 				util.CleanupCRD(t, kubeOptions, crdResourceName, crdDefinitionYaml)
 			}()
 
+			util.Log(t, "Processing", fmt.Sprintf("Cleanup Release ns:%s", namespace), "", nil)
 			waiter.Add(1)
 			go func() {
 				defer waiter.Done()
@@ -113,13 +138,13 @@ func cleanup(t *testing.T, helmOptions *helm.Options, waiter *sync.WaitGroup) {
 			}()
 
 			if namespace != defaultNamespace {
+				util.Log(t, "Processing", fmt.Sprintf("Delete Namespace ns:%s", namespace), "", nil)
 				waiter.Add(1)
 				go func() {
 					defer waiter.Done()
-					k8s.DeleteNamespace(t, kubeOptions, namespace)
+					k8s.DeleteNamespaceE(t, kubeOptions, namespace)
 				}()
 			}
 		}
 	}
-	util.Log(t, "Namespace", "lookup", strings.Join(namespaces, ","), err)
 }
