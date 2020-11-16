@@ -6,7 +6,7 @@ description: |
   Kick the tires and take it for a spin!
 ---
 
-Welcome to K8ssandra! The following guide will get you up and running with a single node Apache Cassandra&reg; cluster on Kubernetes. If you are interested in a more detailed component walkthroughs check out the [topics]({{< ref "topics">}}) section.
+Welcome to K8ssandra! This guide gets you up and running with a single-node Apache Cassandra&reg; cluster on Kubernetes. If you are interested in a more detailed component walkthroughs check out the [topics]({{< ref "topics">}}) section.
 
 ## Prerequisites
 
@@ -30,10 +30,13 @@ If you do not have a Kubernetes cluster available consider one of the following 
 
 ## Configure Helm Repository
 
-K8ssandra is delivered as a collection of Helm Charts. In order to leverage these charts we have provided a Helm Repository for easy installation. 
+K8ssandra is delivered as a collection of Helm Charts. In order to leverage these charts we have provided a k8ssandra Helm Repository for easy installation. 
+
+Also add the Traefik Ingress repo - you'll need its resources to access services from outside the Kubernetes cluster.
 
 ```console
 helm repo add k8ssandra https://helm.k8ssandra.io/
+helm repo add traefik https://helm.traefik.io/traefik
 helm repo update
 ```
 
@@ -49,6 +52,6 @@ From a packaging perspective, K8ssandra is composed of a number of helm charts. 
 # Install shared dependencies / tooling
 helm install k8ssandra-tools k8ssandra/k8ssandra
 
-# Provision a K8ssandra cluster named "k8ssandra-cluster-a"
-helm install k8ssandra-cluster-a k8ssandra/k8ssandra-cluster
+# Provision a K8ssandra cluster named "k8ssandra-cluster-a" - later you can upgrade this cluster with Traefik Ingress options, as needed
+helm install k8ssandra-cluster-a k8ssandra/k8ssandra-cluster  
 ```
