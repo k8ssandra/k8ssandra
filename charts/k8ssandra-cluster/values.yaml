@@ -23,6 +23,9 @@ backupRestore:
     # If enabled, bucketName and bucketSecret must be defined.
     enabled: false
 
+    # Set to true to use the same bucket across multiple clusters.
+    multiTenant: false
+
     # Accepted values are s3 and gcs
     storage: s3
 
