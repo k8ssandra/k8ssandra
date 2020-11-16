@@ -76,7 +76,7 @@ spec:
           - name: MEDUSA_MODE
             value: RESTORE
         volumeMounts:
-          - name: medusa-config
+          - name: {{ .Release.Name }}-medusa-config-k8ssandra
             mountPath: /etc/medusa/medusa.ini
             subPath: medusa.ini
           - name: server-config
@@ -122,7 +122,7 @@ spec:
             command: [ "/bin/grpc_health_probe", "-addr=:50051" ]
           initialDelaySeconds: 10
         volumeMounts:
-          - name: medusa-config
+          - name: {{ .Release.Name }}-medusa-config-k8ssandra
             mountPath: /etc/medusa/medusa.ini
             subPath: medusa.ini
           - name: cassandra-config
@@ -132,9 +132,9 @@ spec:
           - mountPath: /etc/medusa-secrets
             name: {{ .Values.backupRestore.medusa.bucketSecret }}
       volumes:
-      - name: medusa-config
+      - name: {{ .Release.Name }}-medusa-config-k8ssandra
         configMap:
-          name: {{ .Release.Name }}-prometheus-k8ssandra
+          name: {{ .Release.Name }}-medusa-config-k8ssandra
           items:
             - key: medusa.ini
               path: medusa.ini
