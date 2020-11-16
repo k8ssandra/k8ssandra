@@ -104,7 +104,7 @@ status:
 ```
 ### Add test data
 
-Now let’s create some test data.  The `test_data.cql` file in GitHub contains:
+Now let’s create some test data.  The `test_data.cql` file in GitHub **(location TBD)** contains:
 
 ```
 CREATE KEYSPACE medusa_test WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 1};
@@ -161,9 +161,9 @@ Also get the deployment status, so far:
 
 `% kubectl get deployment`
 
-(screen capture)
+![Get deployment output](k8ssandra-medusa-pods.png "Deployment shows k8ssanda and Medusa pods are running")
 
-The command output above shows the addition of medusa-test-medusa-operator-k8ssandra pod. 
+The output above shows the addition of medusa-test-medusa-operator-k8ssandra pod. 
 
 ### Create the backup
 
@@ -185,11 +185,11 @@ The Status section in the YAML shows the backup operation’s start and finish t
 
 ### Amazon S3 dashboard
 
-Let's look at the resources in the Amazon S3 dashboard:
+Let's look at the resources in the Amazon S3 dashboard. 
 
-( screen shot ) 
+S3 maintains the `backup_index` bucket so it only has to store a single copy of an SSTable across backups.  S3 stores pointers in the index to the SSTables. That implementation avoids a large amount of storage.  For example:\
 
-S3 maintains the `backup_index` bucket so it only has to store a single copy of an SSTable across backups.  S3 stores pointers in the index to the SSTables. That implementation avoids a large amount of storage.
+![Amazon S3 with Medusa buckets](s3K8ssandraMedusaBuckets.png "S3 UI described in surrounding text")
 
 ### Restore data from the backup
 
@@ -213,7 +213,7 @@ To view the result of the restore in cqlsh:
 
 Look for the running pod, `k8ssandra-grafana-operator-k8ssandra-<pod-id>`.  In this example:
 
-(running pods screen shot here and notice pod id) 
+![Running pods showing Grafana pod's ID](k8ssandra-get-pods-in-progress.png "Running pods showing Grafana pod's ID needed for next command")
 
 Then enter, for example:
 
@@ -240,13 +240,12 @@ cqlsh:medusa_test> select * from medusa_test.users;
     tom@yes.com | Tom and Jerry |    NV
 
 (4 rows)
-
 ```
 
 You can look again at the cassandrarestore helm-test YAML for the start and ending timestamps:
 
 % kubectl get cassadrarestore helm-test -o yaml
 
-( restore screen shot ) 
+![Log output from restore operation](k8ssanda-restore-start-end-timestamps-example.png "Restore log entries including start and end timestamps")
 
 ## Next
