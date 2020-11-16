@@ -1,7 +1,7 @@
 ---
 title: "Backup and Restore"
 linkTitle: "Backup and Restore"
-weight: 1
+weight: 3
 date: 2020-11-16
 description: K8ssandra provides backup/restore via Apache Medusa
 ---
@@ -50,7 +50,7 @@ Before creating the k8ssandra-cluster, we need to supply credentials so that Apa
 
 To do this, start by creating a secret with the credentials for the S3 bucket.
 
-The `medusa-bucket-key.yaml` sample in GitHub **(location TBD)** contains:
+The `medusa-bucket-key.yaml` sample in GitHub contains:
 
 ```
 apiVersion: v1
@@ -80,9 +80,6 @@ Install the k8ssandra-cluster chart with the following properties. Backup and re
 `% helm install k8ssandra-cluster-1 k8ssandra/k8ssandra-cluster --set backupRestore.medusa.bucketName=k8ssanda-bucket-dev, 
 backupRestore.medusa.bucketSecret=medusa-bucket-secret`
 
-**Internal note: check with JS on this error**
-...command not found: backupRestore.medusa.bucketSecret=medusa-bucket-secret
-
 Notice that the `k8ssandra-cluster` Helm chart added some properties -- which we’ll highlight here -- in the `cassdc` datacenter.  
 
 `% kubectl get cassdc dc1 -o yaml`
@@ -107,7 +104,7 @@ status:
 ```
 ### Add test data
 
-Now let’s create some test data.  The `test_data.cql` file in GitHub **(location TBD)** contains:
+Now let’s create some test data.  The `test_data.cql` file in GitHub contains:
 
 ```
 CREATE KEYSPACE medusa_test WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 1};
@@ -154,17 +151,19 @@ Exit out of CQLSH:
 
 Review the current charts that are in use, so far:
 
-% helm list
+`% helm list`
 
+```
 NAME               	NAMESPACE	REVISION	UPDATED                             	STATUS  	CHART                  	APP VERSION
 k8ssandra-cluster-1	default  	1       	2020-11-16 11:34:23.240881 -0700 MST	deployed	k8ssandra-cluster-0.3.0	3.11.7     
-k8ssandra-tools    	default  	1       	2020-11-16 10:27:36.947788 -0700 MST	deployed	k8ssandra-0.3.0        	3.11.7     
+k8ssandra-tools    	default  	1       	2020-11-16 10:27:36.947788 -0700 MST	deployed	k8ssandra-0.3.0        	3.11.7  
+```
 
 Also get the deployment status, so far:
 
 `% kubectl get deployment`
 
-![Get deployment output](k8ssandra-medusa-pods.png "Deployment shows k8ssanda and Medusa pods are running")
+![Get deployment output](k8ssandra-medusa-pods.png)
 
 The output above shows the addition of medusa-test-medusa-operator-k8ssandra pod. 
 
@@ -186,13 +185,13 @@ Examine the YAML:
 
 The Status section in the YAML shows the backup operation’s start and finish timestamps.
 
-### Amazon S3 dashboard
+### Amazon S3 buckets
 
 Let's look at the resources in the Amazon S3 dashboard. 
 
-S3 maintains the `backup_index` bucket so it only has to store a single copy of an SSTable across backups.  S3 stores pointers in the index to the SSTables. That implementation avoids a large amount of storage.  For example:\
+S3 maintains the `backup_index` bucket so it only has to store a single copy of an SSTable across backups.  S3 stores pointers in the index to the SSTables. That implementation avoids a large amount of storage.  For example: 
 
-![Amazon S3 with Medusa buckets](s3K8ssandraMedusaBuckets.png "S3 UI described in surrounding text")
+![Amazon S3 with Medusa buckets](s3K8ssandraMedusaBuckets.png)
 
 ### Restore data from the backup
 
@@ -214,9 +213,9 @@ To view the result of the restore in cqlsh:
 
 `% kubectl get pods`
 
-Look for the running pod, `k8ssandra-grafana-operator-k8ssandra-<pod-id>`.  In this example:
+Look for the running pod, `k8ssandra-grafana-operator-k8ssandra-<pod-id>`. In this example:
 
-![Running pods showing Grafana pod's ID](k8ssandra-get-pods-in-progress.png "Running pods showing Grafana pod's ID needed for next command")
+![Running pods showing Grafana pod's ID](k8ssandra-get-pods-in-progress.png)
 
 Then enter, for example:
 
@@ -249,8 +248,8 @@ You can look again at the cassandrarestore helm-test YAML for the start and endi
 
 % kubectl get cassadrarestore helm-test -o yaml
 
-![Log output from restore operation](k8ssanda-restore-start-end-timestamps-example.png "Restore log entries including start and end timestamps")
+![Log output from restore operation](k8ssanda-restore-start-end-timestamps-example.png)
 
 ## Next
 
-Learn how to ( next topic ) 
+Learn how to use the Repair Web Interface (Reaper).
