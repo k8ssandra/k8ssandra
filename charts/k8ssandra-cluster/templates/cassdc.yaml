@@ -134,7 +134,7 @@ spec:
       volumes:
       - name: medusa-config
         configMap:
-          name: medusa-config
+          name: {{ .Release.Name }}-prometheus-k8ssandra
           items:
             - key: medusa.ini
               path: medusa.ini
