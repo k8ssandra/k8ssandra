@@ -35,7 +35,7 @@ Reaper).
 
 The `k8ssandra-cluster` Helm chart contains templates for Traefik `IngressRoute`
 and `IngressRouteTCP` Custom Resources. These may be enabled at any time either
-through a `values.yaml` file of command-line flags.
+through a `values.yaml` file or via command-line flags.
 
 ### `values.yaml`
 ```yaml
@@ -57,7 +57,9 @@ ingress:
       host: repair.k8ssandra.cluster.local
 ```
 
-Note the `host` parameter, this is where the DNS name must be provided.
+Note the `host` parameter, this is where the DNS name must be provided. You will reference this DNS when accessing Reaper in a Web URL. 
+
+If you maintain a values.yaml or traefik.values.yaml file, change the `ingress.traefik.enabled` Boolean from `false` to `true`.  Or, specify `--set ingress.traefik.enabled=true` on the helm install command line. 
 
 ## Enabling Traefik Ingress
 
