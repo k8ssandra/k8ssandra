@@ -6,16 +6,6 @@
 {{- if and $traefik.enabled $traefik.repair.enabled }}
 ---
 apiVersion: traefik.containo.us/v1alpha1
-kind: Middleware
-metadata:
-  name: {{ $releaseName }}-k8ssandra-repair-redirect
-spec:
-  redirectRegex:
-    permanent: true
-    regex: ^http://{{ $traefik.repair.host }}/$
-    replacement: http://{{ $traefik.repair.host }}/webui
----
-apiVersion: traefik.containo.us/v1alpha1
 kind: IngressRoute
 metadata:
   name: {{ $releaseName }}-k8ssandra-repair
@@ -29,8 +19,6 @@ spec:
   routes:
   - match: Host(`{{ $traefik.repair.host }}`)
     kind: Rule
-    middlewares:
-    - {{ $releaseName }}-k8ssandra-repair-redirect
     services:
     - name: {{ $releaseName }}-reaper-k8ssandra-reaper-service
       kind: Service
