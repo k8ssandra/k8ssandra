@@ -9,7 +9,7 @@ description: K8ssandra provides backup/restore via Apache Medusa
 ## Tools
 
 * K8ssandra-tools Helm chart
-* K8ssandra-cluster Helm chart, which we'll extend with `backupRestore` Medusa buckets for S3 integration
+* K8ssandra-cluster Helm chart, which we'll extend with `backupRestore` Medusa buckets for Amazon S3 integration
 * Sample files in GitHub:
   * `medusa-bucket-key.yaml` to create a secret with credentials for an S3 bucket
   * `test_data.cql` to populate a Cassandra keyspace and table with data
@@ -44,11 +44,11 @@ The first `kubectl` command above installed the cass-operator, the Grafana opera
 
 ### Create secret for read/write access to an S3 bucket
 
-Before creating the k8ssandra-cluster, we need to supply credentials so that Apache Medusa has read/write to an S3 bucket, which is where the backup will be stored.  Currently, Medusa supports local, S3, GKE, and other bucket types. In this example, we’re using S3.
+Before creating the k8ssandra-cluster, we need to supply credentials so that Apache Medusa has read/write to an S3 bucket, which is where the backup will be stored.  Currently, Medusa supports local, Amazon S3, GKE, and other bucket types. In this example, we’re using S3.
 
 To do this, start by creating a secret with the credentials for the S3 bucket.
 
-The `medusa-bucket-key.yaml` sample in GitHub contains:
+The `medusa-bucket-key.yaml` sample in GitHub **(location TBD)** contains:
 
 ```
 apiVersion: v1
@@ -84,7 +84,7 @@ Notice that the `k8ssandra-cluster` Helm chart added some properties -- which we
 
 `% kubectl get cassdc dc1 -o yaml`
 
-In the command's output, see the `podTemplateSpec` property; two containers were added for Medusa.  Here’s the entry for the GRPC backup service:
+In the output, see the `podTemplateSpec` property; two containers were added for Medusa.  Here’s the entry for the GRPC backup service:
 
 `    name: medusa`
 
@@ -129,6 +129,9 @@ Exec open cqlsh:
 `% kubectl exec -it cassandra-dc1-default-sts-0 -c cassandra -- cqlsh`
 
 ```
+Connected to k8ssandra at 127.0.0.1:9042.
+[cqlsh 5.0.1 | Cassandra 3.11.7 | CQL spec 3.4.4 | Native protocol v4]
+Use HELP for help.
 cqlsh> use medusa_test;
 cqlsh:medusa_test> select * from medusa_test.users;
 
@@ -142,6 +145,108 @@ cqlsh:medusa_test> select * from medusa_test.users;
 (4 rows)
 ```
 
-More coming...
+Exit out of CQLSH:
+
+`cqlsh:medusa_test> exit`
+
+Review the current charts that are in use, so far:
+
+% helm list
+
+NAME               	NAMESPACE	REVISION	UPDATED                             	STATUS  	CHART                  	APP VERSION
+k8ssandra-cluster-1	default  	1       	2020-11-16 11:34:23.240881 -0700 MST	deployed	k8ssandra-cluster-0.3.0	3.11.7     
+k8ssandra-tools    	default  	1       	2020-11-16 10:27:36.947788 -0700 MST	deployed	k8ssandra-0.3.0        	3.11.7     
+
+Also get the deployment status, so far:
+
+`% kubectl get deployment`
+
+(screen capture)
+
+The command output above shows the addition of medusa-test-medusa-operator-k8ssandra pod. 
+
+### Create the backup
+
+Now create a backup using a `test` chart:
+
+`% helm install test ./backup --set name=test,cassandraDatacenter.name=dc1`
+
+```
+% kubectl get cassandrabackup
+NAME       AGE
+test       17s
+```
+
+Examine the YAML:
+
+`% kubectl get cassandrabackup test -o yaml`
+
+The Status section in the YAML shows the backup operation’s start and finish timestamps.
+
+### Amazon S3 dashboard
+
+Let's look at the resources in the Amazon S3 dashboard:
+
+( screen shot ) 
+
+S3 maintains the `backup_index` bucket so it only has to store a single copy of an SSTable across backups.  S3 stores pointers in the index to the SSTables. That implementation avoids a large amount of storage.
+
+### Restore data from the backup
+
+<!--- this restore in place assumes the Nov 15 implementation --> 
+
+`% helm install restore-test ./restore --set name=helm-test,backup.name=test,cassandraDatacenter.name=dc1`
+
+Examine the YAML:
+
+` kubectl get cassandrarestore helm-test -o yaml`
+
+The output shows the restore operation’s start time and that the cassandraDatacenter is being recreated.
+
+You can also examine the in-progress logs:
+
+`% kubectl logs cassandra-dc1-default-sts-0 -c medusa-restore`
+
+To view the result of the restore in cqlsh:
+
+`% kubectl get pods`
+
+Look for the running pod, `k8ssandra-grafana-operator-k8ssandra-<pod-id>`.  In this example:
+
+(running pods screen shot here and notice pod id) 
+
+Then enter, for example:
+
+`% kubectl exec -it k8ssandra-grafana-operator-k8ssandra-7c887cbb6-rds7w`
+
+### Launch cqlsh again and verify the restore
+
+Exec into cqlsh and select the data again, to verify the restore operation.
+
+```
+% kubectl exec -it k8ssandra-dc1-default-stc-0 -c cassandra -cqlsh
+
+Connected to k8ssandra at 127.0.0.1:9042.
+[cqlsh 5.0.1 | Cassandra 3.11.7 | CQL spec 3.4.4 | Native protocol v4]
+Use HELP for help.
+cqlsh> use medusa_test;
+cqlsh:medusa_test> select * from medusa_test.users;
+
+ email          | name          | state
+----------------+---------------+-------
+ john@gamil.com |    John Smith |    NC
+  joe@gamil.com |     Joe Jones |    VA
+   sue@help.com |       Sue Sas |    CA
+    tom@yes.com | Tom and Jerry |    NV
+
+(4 rows)
+
+```
+
+You can look again at the cassandrarestore helm-test YAML for the start and ending timestamps:
+
+% kubectl get cassadrarestore helm-test -o yaml
+
+( restore screen shot ) 
 
 ## Next
