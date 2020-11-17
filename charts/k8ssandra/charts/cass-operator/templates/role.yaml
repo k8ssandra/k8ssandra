@@ -16,6 +16,16 @@ rules:
   - secrets
   verbs:
   - '*'
+  - ""
+- apiGroups:
+  - ""
+  resources:
+  - nodes
+  - persistentvolumes
+  verbs:
+  - get
+  - list
+  - watch
 - apiGroups:
   - ""
   resources:
