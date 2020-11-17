@@ -7,6 +7,11 @@ description: |
   Follow these simple steps to access the Prometheus and Grafana monitoring interfaces.
 ---
 
+
+With the prerequisites that are identified below satisfied, you can access the preconfigured Grafana dashboard for K8ssandra. Example:
+
+http://grafana.localhost:8080/
+
 ## Tools
 
 * Web Browser
@@ -23,12 +28,40 @@ description: |
 
 ## Access Grafana Interface
 
-![Grafana UI](grafana-dashboard.png)
+Check that the pods configured by K8ssandra are running:
 
-With the prerequisites satisfied the repair GUI should be available at the
-following address:
+`kubectl get pods`
+```
+NAME                                                              READY   STATUS      RESTARTS   AGE
+cass-operator-65956c4f6d-f25nl                                    1/1     Running     0          4h26m
+grafana-deployment-8467d8bc9d-czsg5                               1/1     Running     0          4h13m
+k8ssandra-cluster-a-grafana-operator-k8ssandra-5bcb746b8d-4nlhz   1/1     Running     0          4h22m
+k8ssandra-cluster-a-reaper-k8ssandra-6cf5b87b8f-vxrwj             1/1     Running     0          4h5m
+k8ssandra-cluster-a-reaper-k8ssandra-schema-pjmv8                 0/1     Completed   5          4h8m
+k8ssandra-cluster-a-reaper-operator-k8ssandra-55dc486998-f4r46    1/1     Running     0          4h22m
+k8ssandra-dc1-default-sts-0                                       2/2     Running     0          4h22m
+k8ssandra-tools-kube-prome-operator-6d57f758dd-7zd92              1/1     Running     0          4h26m
+prometheus-k8ssandra-cluster-a-prometheus-k8ssandra-0             2/2     Running     1          4h22m
+```
 
-**http://GRAFANA_DOMAIN/**
+Notice that the Grafana Operator is running, as well as other services.
+
+For example, if you are running a local Kubernetes environment, you can access the Grafana dashboard with a URL such as:
+
+http://grafana.localhost:8080/
+
+From the Grafana start page, click the Dashboards icon, and select the Manage pane:
+
+![OK](grafana-dashboards-icon.png)
+
+Grafana loads its dashboard options. Enable the Default checkbox, and click one of the dashboards provided when you installed the k8ssandra-cluster instance. For example:
+
+![OK](grafana-dashboards-default-selected1.png)
+
+Here's an example of the Cassandra Cluster Condensed dashboard in Grafana:
+
+![OK](grafana-cass-cluster-condensed.png)
+
 
 ### What can I do in Grafana?
 
@@ -37,11 +70,15 @@ following address:
 
 ## Access Prometheus Interface
 
-![Prometheus UI](prometheus-dashboard.png)
+![Prometheus UI](prometheus-example.png)
 
 Prometheus is available at the following address:
 
 **http://PROMETHEUS_DOMAIN/**
+
+For example:
+
+http://prometheus.localhost:8080/
 
 ### What can I do in Prometheus?
 
