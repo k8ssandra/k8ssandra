@@ -3,7 +3,7 @@ title: "Backup and Restore"
 linkTitle: "Backup and Restore"
 weight: 3
 date: 2020-11-16
-description: K8ssandra provides backup/restore via Apache Medusa
+description: K8ssandra provides backup/restore via Medusa
 ---
 
 This topic walks you through the steps to backup and restore Cassandra data running in a Kubernetes cluster.
@@ -50,11 +50,13 @@ The first `kubectl` command above installed the cass-operator and the Prometheus
 
 ### Create secret for read/write access to an S3 bucket
 
-Before creating the k8ssandra-cluster, we need to supply credentials so that Apache Medusa has read/write to an S3 bucket, which is where the backup will be stored.  Currently, Medusa supports local, Amazon S3, GKE, and other bucket types. In this example, we’re using S3.
+Before creating the k8ssandra-cluster, we need to supply credentials so that Medusa has read/write to an S3 bucket, which is where the backup will be stored.  Currently, Medusa supports local, Amazon S3, GKE, and other bucket types. In this example, we’re using S3.
+
+**Note:** See [AWS S3 setup](https://github.com/thelastpickle/cassandra-medusa/blob/master/docs/aws_s3_setup.md) on the Medusa wiki for more details for configuring S3.
 
 To do this, start by creating a secret with the credentials for the S3 bucket.
 
-The `medusa-bucket-key.yaml` sample in GitHub contains:
+The [medusa-bucket-key.yaml](./medusa-bucket-key.yaml) sample in GitHub contains:
 
 ```
 apiVersion: v1
