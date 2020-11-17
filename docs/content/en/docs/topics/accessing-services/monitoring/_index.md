@@ -7,14 +7,15 @@ description: |
   Follow these simple steps to access the Prometheus and Grafana monitoring interfaces.
 ---
 
+When you used Helm to install a `k8ssandra-cluster` instance in Kubernetes, one of the key features provided was a set of preconfigured Grafana dashboards. They visualize data collected about your environment by the Prometheus Operator, which is also packaged with K8ssandra. Use the Grafana dashboards to monitor your K8ssandra cluster's health and traffic metrics.  
 
-With the prerequisites that are identified below satisfied, you can access the preconfigured Grafana dashboard for K8ssandra. Example:
+After you've met the prerequisites identified below, access the preconfigured Grafana dashboards. For example:
 
 http://grafana.localhost:8080/
 
 ## Tools
 
-* Web Browser
+* Web browser
 
 ## Prerequisites
 
@@ -44,9 +45,9 @@ k8ssandra-tools-kube-prome-operator-6d57f758dd-7zd92              1/1     Runnin
 prometheus-k8ssandra-cluster-a-prometheus-k8ssandra-0             2/2     Running     1          4h22m
 ```
 
-Notice that the Grafana Operator is running, as well as other services.
+Notice that the Grafana Operator is running, as well as other services such as Prometheus.
 
-For example, if you are running a local Kubernetes environment, you can access the Grafana dashboard with a URL such as:
+If you are running a local Kubernetes environment, you can access the Grafana dashboard with a URL such as:
 
 http://grafana.localhost:8080/
 
@@ -65,7 +66,6 @@ Grafana loads its dashboard options:
 Here's an example of the Cassandra Cluster Condensed dashboard in Grafana:
 
 ![OK](grafana-cass-cluster-condensed.png)
-
 
 ### What can I do in Grafana?
 
