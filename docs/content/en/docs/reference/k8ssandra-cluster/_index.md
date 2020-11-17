@@ -1,44 +1,108 @@
 ---
-title: "k8ssandra-cluster Helm Chart"
+title: "K8ssandra Cluster Helm Chart"
 linkTitle: "k8ssandra-cluster"
 weight: 2
 description: >
   Provisions an instance of the k8ssandra stack
 ---
 
-* `name`
-  _string_
-  default: `k8ssandra`
-  Name of the cluster instance
+```yaml
+name: k8ssandra
+clusterName: k8ssandra
+datacenterName: dc1
+size: 1
 
-* `clusterName`
-  _string_
-  default: `k8ssandra`
-  validation: lowercase and consist of characters [a-z0-9\-]
-  Name of the C\* cluster
+k8ssandra:
+  # The k8ssandra chart installs operators with cluster scope. It can be installed in a
+  # different namespace. The namespace and name of the k8ssandra chart release are needed
+  # to configure some resources like the Grafana data source.
+  namespace: default
+  name: k8ssandra
 
-* `datacenterName`
-  _string_
-  default: `dc1`
-  validation: lowercase and consist of characters [a-z0-9\-]
-  Name of the datacenter
+# Repair service configuration
+repair:
+  # Reaper repair service and UI
+  reaper:
+    enabled: true
+    jmx:
+      username: ""
+      password: ""
+    operator:
+      enabled: true
 
-* `size`
-  _integer_
-  default: 1
-  Number of nodes in the datacenter
+# Backup service configuration
+backupRestore:
+  medusa:
+    # If enabled, bucketName and bucketSecret must be defined.
+    enabled: false
 
-## `reaper`
+    # Set to true to use the same bucket across multiple clusters.
+    multiTenant: false
 
-* `enabled`
-  _boolean_
-  default: true
-  Enables support for the Reaper repair service
+    # Accepted values are s3 and gcs
+    storage: s3
 
-* `jmx`
-  _object_
+    # Must be set to the name of the remote storage bucket where backups will be stored.
+    bucketName: ""
 
-  * `username`
-    _string_
-  * `password`
-    _string_
+    # Must be set and specify the name of the secret that stores the key file for Google
+    # Cloud or AWS
+    bucketSecret: ""
+
+# Support for accessing the various web-interfaces via K8s ingress controllers.
+# Depending on the ingress available in your cluster enable the appropriate
+# section.
+ingress:
+  traefik:
+    # Set to `true` to enable the templating of Traefik ingress custom resources
+    enabled: false
+
+    # Repair service
+    repair: 
+      # Note this will **only** work if `ingress.traefik.enabled` is also `true`
+      enabled: true
+
+      # Name of the Traefik entrypoints where we want to source traffic.
+      entrypoints: 
+        - web
+
+      # Hostname Traefik should use for matching requests.
+      host: repair.k8ssandra.cluster.local
+
+    # Cassandra native transport ingress support
+    cassandra:
+      # Note this will **only** work if `ingress.traefik.enabled` is also `true`
+      enabled: false
+
+      # Name of the Traefik entrypoints for source traffic
+      entrypoints: 
+        - cassandra
+
+    # Monitoring web interfaces for Promtheus and Grafana
+    monitoring:
+      grafana:
+        # Note this will **only** work if `ingress.traefik.enabled` is also `true`
+        enabled: true
+
+        # Name of the Traefik entrypoints where we want to source traffic.
+        entrypoints:
+          - web
+
+        # Hostname Traefik should use for matching requests.
+        host: grafana.k8ssandra.cluster.local
+
+      prometheus:
+        # Note this will **only** work if `ingress.traefik.enabled` is also `true`
+        enabled: true
+
+        # Name of the Traefik entrypoints where we want to source traffic.
+        entrypoints:
+          - web
+
+        # Hostname Traefik should use for matching requests.
+        host: prometheus.k8ssandra.cluster.local
+
+grafana:
+  adminUser: admin
+  adminPassword: secret
+```
