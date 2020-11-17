@@ -54,7 +54,11 @@ From the Grafana start page, click the Dashboards icon, and select the Manage pa
 
 ![OK](grafana-dashboards-icon.png)
 
-Grafana loads its dashboard options. Enable the Default checkbox, and click one of the dashboards provided when you installed the k8ssandra-cluster instance. For example:
+Grafana loads its dashboard options:
+
+1. Enable the Default checkbox.
+1. Click the checkbox for one of the dashboards that K8ssandra created when you installed the `k8ssandra-cluster` instance
+1. To open the selected dashboard, click on its text link. In this example, you'd click on Cassandra Cluster Condensed:
 
 ![OK](grafana-dashboards-default-selected1.png)
 
