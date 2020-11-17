@@ -22,7 +22,7 @@ for accessing your K8ssandra cluster's monitoring interface (provided by Grafana
    * [K8ssandra Operators]({{< ref "getting-started#install-k8ssandra" >}})
    * [K8ssandra Cluster]({{< ref "getting-started#install-k8ssandra" >}})
 
-   See the [Configuring Kind]({{< ref "kind-deployment" >}}) for an example of
+   See [Configuring Kind]({{< ref "kind-deployment" >}}) for an example of
    how to set up a local installation.
 1. DNS name for the Grafana service
 1. DNS name for the Prometheus service
@@ -127,11 +127,13 @@ detecting the appropriate services.
     There should be entries representing the hostname based rules created as
     part of the Helm command. Note the Kubernetes logo to the right of the table
     indicating it was provisioned via a Kubernetes custom resource.
-3. Navigate to the HTTP Services page ![Traefik HTTP
-    Services](traefik-http-services.png)
+    
+3. Navigate to the HTTP Services page
 
-    There should be entries representing the Prometheus and Grafana services.
-    Note the Kubernetes logo to the right of the table indicating it was
+    ![Traefik HTTP Services](traefik-http-services.png)
+
+    On this page, you'll find entries representing the Prometheus and Grafana services.
+    Note the Kubernetes logo to the right of the table indicating that it was
     provisioned via a Kubernetes custom resource.
 
 ## Next Steps
