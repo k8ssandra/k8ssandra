@@ -10,7 +10,7 @@ description: |
 ## Tools
 
 * Web Browser
-* values.yaml configuration, or use --set flags on the command line
+* values.yaml configuration, or use `--set` flags on the command line
 
 ## Prerequisites
 
