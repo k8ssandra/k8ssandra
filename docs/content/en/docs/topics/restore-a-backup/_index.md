@@ -70,8 +70,10 @@ In the YAML, notice the `stringData` property valuye: `medusa_s3_credentials`.  
 
 Apply the YAML to your Kubernetes environment:
 
-`% kubectl apply -f medusa-bucket-key.yaml`
-`secret/medusa-bucket-key configured`
+```
+% kubectl apply -f medusa-bucket-key.yaml
+secret/medusa-bucket-key configured
+```
 
 ### Create or update the k8ssandra-cluster
 
