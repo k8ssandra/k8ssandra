@@ -422,4 +422,4 @@ Again, verify the upgrade:
 
 ## Next
 
-Use Medusa to [backup and restore]({{< ref "/docs/topics/restore-a-backup" >}}) data from/to a Cassandra database. 
+Use Medusa to [backup and restore]({{< ref "/docs/topics/restore-a-backup/" >}}) data from/to a Cassandra database. 
