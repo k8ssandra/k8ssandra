@@ -17,7 +17,6 @@ K8ssandra goes a step further providing a deployment of Prometheus and Grafana f
 * Grafana `Dashboard` resources
 
 ![Grafana Cluster](grafana-cluster.png)
-![Grafana OS Dashboard](grafana-os.png)
 
 ## Next
 
