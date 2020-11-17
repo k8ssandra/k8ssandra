@@ -104,7 +104,7 @@ status:
 
 ### Add test data
 
-Now let’s create some test data.  The `test_data.cql` file in GitHub contains:
+Now let’s create some test data.  The `test_data.cql` sample file in GitHub contains:
 
 ```
 CREATE KEYSPACE medusa_test WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 1};
@@ -116,17 +116,17 @@ insert into users (email, name, state) values ('sue@help.com', 'Sue Sas', 'CA');
 insert into users (email, name, state) values ('tom@yes.com', 'Tom and Jerry', 'NV');
 ```
 
-Copy the cql file to the Kubernetes container (pod) :
+Copy the cql file to the k8ssandra container (pod) :
 
-`kubectl cp test_data.cql cassandra-dc1-default-sts-0:/tmp -c cassandra`
+`kubectl cp test_data.cql k8ssandra-dc1-default-sts-0:/tmp -c cassandra`
 
-Add this data to the Kubernetes-hosted Cassandra database:
+Add the data to the Cassandra database:
 
-`kubectl exec -it cassandra-dc1-default-sts-0 -c cassandra -- cqlsh -f /tmp/test_data.cql`
+`kubectl exec -it k8ssandra-dc1-default-sts-0 -c cassandra -- cqlsh -f /tmp/test_data.cql`
 
 Exec open cqlsh:
 
-`kubectl exec -it cassandra-dc1-default-sts-0 -c cassandra -- cqlsh`
+`kubectl exec -it k8ssandra-dc1-default-sts-0 -c cassandra -- cqlsh`
 
 ```
 Connected to k8ssandra at 127.0.0.1:9042.
@@ -155,23 +155,33 @@ Review the current charts that are in use, so far:
 
 ```
 NAME               	NAMESPACE	REVISION	UPDATED                             	STATUS  	CHART                  	APP VERSION
-k8ssandra-cluster-1	default  	1       	2020-11-16 11:34:23.240881 -0700 MST	deployed	k8ssandra-cluster-0.3.0	3.11.7     
-k8ssandra-tools    	default  	1       	2020-11-16 10:27:36.947788 -0700 MST	deployed	k8ssandra-0.3.0        	3.11.7  
+k8ssandra-cluster-1	default  	1       	2020-11-16 20:29:55.58913 -0700 MST 	deployed	k8ssandra-cluster-0.8.0	3.11.7     
+k8ssandra-tools    	default  	1       	2020-11-16 20:17:23.107265 -0700 MST	deployed	k8ssandra-0.8.0        	3.11.7  
 ```
 
 Also get the deployment status, so far:
 
 `kubectl get deployment`
+```
+NAME                                             READY   UP-TO-DATE   AVAILABLE   AGE
+cass-operator                                    1/1     1            1           39m
+grafana-deployment                               1/1     1            1           26m
+k8ssandra-cluster-1-grafana-operator-k8ssandra   1/1     1            1           26m
+k8ssandra-cluster-1-reaper-k8ssandra             1/1     1            1           24m
+k8ssandra-cluster-1-reaper-operator-k8ssandra    1/1     1            1           26m
+k8ssandra-tools-kube-prome-operator              1/1     1            1           39m
+```
 
-![Get deployment output](k8ssandra-medusa-pods.png)
+<!--- Ask JS about medusa pods not being listed 
+![Get deployment output](k8ssandra-medusa-pods.png) --> 
 
 The output above shows the addition of medusa-test-medusa-operator-k8ssandra pod. 
 
 ### Create the backup
 
-Now create a backup using a `test` chart:
+Now create a backup using a `test` chart:  <!--- this does not work for me --> 
 
-`helm install test ./backup --set name=test,cassandraDatacenter.name=dc1`
+`helm install test charts/backup --set name=test,cassandraDatacenter.name=dc1`
 
 ```
 kubectl get cassandrabackup
