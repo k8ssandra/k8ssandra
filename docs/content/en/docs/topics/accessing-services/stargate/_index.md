@@ -34,12 +34,12 @@ provided by Stargate.
 
 ## Access REST interface
 
-# TODO 
+### TODO 
 
 ## Access GraphQL interface
 
-# TODO
+### TODO
 
 ## Access CQL interface
 
-# TODO
+### TODO
