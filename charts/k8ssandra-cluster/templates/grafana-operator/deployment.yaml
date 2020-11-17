@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: {{ .Release.Name }}-grafana-operator-k8ssandra
   labels:
-{{ include "k8ssandra.labels" . | indent 4 }}
+{{ include "k8ssandra-cluster.labels" . | indent 4 }}
 spec:
   replicas: 1
   selector:
@@ -26,14 +26,13 @@ spec:
           command:
             - grafana-operator
           imagePullPolicy: IfNotPresent
-          args:
-          - --scan-all
           env:
             - name: TEMPLATE_PATH
               value: /usr/local/bin/templates
             - name: WATCH_NAMESPACE
-              # Leave this unset so that grafana-operator watches all namespaces
-              value: ""
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
             - name: POD_NAME
               valueFrom:
                 fieldRef:
