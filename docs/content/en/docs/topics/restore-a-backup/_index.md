@@ -13,13 +13,15 @@ This topic walks you through the steps to backup and restore Cassandra data runn
 * K8ssandra-tools Helm chart
 * K8ssandra-cluster Helm chart, which we'll extend with `backupRestore` Medusa buckets for Amazon S3 integration
 * Sample files in GitHub:
-  * `medusa-bucket-key.yaml` to create a secret with credentials for an S3 bucket
+  * `medusa-bucket-key.yaml` to create a secret with credentials for AWS S3 buckets
   * `test_data.cql` to populate a Cassandra keyspace and table with data
 
 ## Prerequisites
 
 * A Kubernetes environment
+* Storage for the backups - see below
 * [Helm](https://helm.sh/), a packaging manager for Kubernetes
+* An edited version of `medusa-bucket-key.yaml`, as noted below
 
 All other prerequisites are handled by the installed tools listed above. The sample files are checked into GitHub.
 
@@ -27,11 +29,15 @@ All other prerequisites are handled by the installed tools listed above. The sam
 
 ### Verify you've met the prereqs
 
-If you haven’t already, install the k8ssandra chart.
+You will need storage for the backups. This topic shows the use of AWS S3 buckets.
+
+* If you'll use AWS S3, before proceeding with the configuration described below, verify that you know the `aws_access_key_id` and `aws_secret_access_key` values. Or  contact your IT team if they manage those assets. You'll provide those details in an edited version of the `medusa-bucket-key.yaml` file. For information about the S3 setup steps, see this helpful [readme](https://github.com/thelastpickle/cassandra-medusa/blob/master/docs/aws_s3_setup.md).  
+
+* If you haven’t already, install the k8ssandra chart.
 
 `helm install k8ssandra-tools k8ssandra/k8ssandra`
 
-Check the pod status:
+Allowing a few minutes for the pods to start and proceed to a Ready state, check the pod status:
 
 ```
 kubectl get pods                              
@@ -64,7 +70,9 @@ stringData:
    aws_secret_access_key = my_secret_key
 ```
    
-In the YAML, notice the `stringData` property valuye: `medusa_s3_credentials`.  The secret gets mounted to this location; this is where Medusa expects to get the AWS credentials.
+Make a copy of the `medusa-bucket-key.yaml` template, replacing `my_access_key` and `my_secret_key` with your S3 values in your version. 
+
+In the YAML, notice the `stringData` property value: `medusa_s3_credentials`.  The secret gets mounted to this location; this is where Medusa expects to get the AWS credentials.
 
 Apply the YAML to your Kubernetes environment:
 
