@@ -33,9 +33,9 @@ forwarding rules for the following ports:
 ### [`kind.config.yaml`](kind.config.yaml)
 
 The `kind.config.yaml` file referenced here is located in:
-  
-  https://github.com/k8ssandra/k8ssandra/tree/main/docs/content/en/docs/topics/accessing-services/traefik/kind-deployment/kind.config.yaml
 
+https://github.com/k8ssandra/k8ssandra/blob/main/docs/content/en/docs/topics/ingress/traefik/kind-deployment/kind.config.yaml
+ 
 {{< readfilerel file="kind.config.yaml"  highlight="yaml" >}}
 
 ## 2. Start Kind Cluster
@@ -64,7 +64,7 @@ Docker container running Kind_ which is forwarded to our local machine.
 
 The `traefik.values.yaml` file referenced here is located in:
 
-https://github.com/k8ssandra/k8ssandra/tree/main/docs/content/en/docs/topics/accessing-services/traefik/kind-deployment/traefik.values.yaml
+https://github.com/k8ssandra/k8ssandra/blob/main/docs/content/en/docs/topics/ingress/traefik/kind-deployment/traefik.values.yaml
 
 ### [`traefik.values.yaml`](traefik.values.yaml)
 {{< readfilerel file="traefik.values.yaml"  highlight="yaml" >}}
