@@ -52,6 +52,8 @@ From a packaging perspective, K8ssandra is composed of a number of helm charts. 
 # Install shared dependencies / tooling
 helm install k8ssandra-tools k8ssandra/k8ssandra
 
-# Provision a K8ssandra cluster named "k8ssandra-cluster-a" - later you can upgrade this cluster with Traefik Ingress options, as needed
+# Provision a K8ssandra cluster named "k8ssandra-cluster-a" 
 helm install k8ssandra-cluster-a k8ssandra/k8ssandra-cluster  
 ```
+
+In later steps, you can upgrade your k8ssandra-cluster via `helm upgrade` commands, for example to access services from outside Kubernetes via a Traefik Ingress controller.
