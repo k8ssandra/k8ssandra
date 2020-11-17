@@ -14,7 +14,7 @@ This topic walks you through the steps to backup and restore Cassandra data runn
 * K8ssandra-cluster Helm chart, which we'll extend with `backupRestore` Medusa buckets for Amazon S3 integration
 * Sample files in GitHub:
   * [medusa-bucket-key.yaml](./medusa-bucket-key.yaml) to create a secret with credentials for AWS S3 buckets
-  * `test_data.cql` to populate a Cassandra keyspace and table with data
+  * [test_data.cql](./test_data.cql) to populate a Cassandra keyspace and table with data
 
 ## Prerequisites
 
@@ -114,7 +114,7 @@ status:
 
 ### Add test data
 
-Now let’s create some test data.  The `test_data.cql` sample file in GitHub contains:
+Now let’s create some test data.  The [test_data.cql](./test_data.cql) sample file in GitHub contains:
 
 ```
 CREATE KEYSPACE medusa_test WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 1};
