@@ -38,7 +38,6 @@ kubectl get pods
 NAME                                                         READY   STATUS    RESTARTS   AGE
 cass-operator-86d4dc45cd-8p7cq                               1/1     Running   0          98s
 k8ssandra-tools-kube-prome-operator-6bcdf668d4-b2r6v         1/1     Running   0          98s
-
 ```
 
 The first `kubectl` command above installed the cass-operator and the Prometheus operator.
@@ -78,8 +77,7 @@ secret/medusa-bucket-key configured
 
 Install the k8ssandra-cluster chart with the following properties. Backup and restore operations are enabled by default. In the following example, `bucketName` corresponds to the name of the S3 bucket: `K8ssanda-bucket-dev`.  The `bucketSecret` corresponds to the secret credentials.
 
-```
-helm install k8ssandra-cluster-1 k8ssandra/k8ssandra-cluster --set backupRestore.medusa.bucketName=k8ssanda-bucket-dev --set backupRestore.medusa.bucketSecret=medusa-bucket-secret`
+`helm install k8ssandra-cluster-1 k8ssandra/k8ssandra-cluster --set backupRestore.medusa.bucketName=k8ssanda-bucket-dev --set backupRestore.medusa.bucketSecret=medusa-bucket-secret`
 
 The `k8ssandra-cluster` Helm chart includes cluster services and the Grafana Operator. Notice that `k8ssandra-cluster` add a number of properties in the `cassdc` datacenter.  
 
@@ -95,14 +93,15 @@ Here’s the entry for the restore’s init container. K8ssandra looks for an en
 
 After a few minutes, once the pods have started, check the status:
 
-`kubectl get cassdc dc1 -o yaml`
 ```
+kubectl get cassdc dc1 -o yaml`
 .
 .
 .
 status:
   cassandrOperatorProgress: Ready
 ```
+
 ### Add test data
 
 Now let’s create some test data.  The `test_data.cql` file in GitHub contains:
