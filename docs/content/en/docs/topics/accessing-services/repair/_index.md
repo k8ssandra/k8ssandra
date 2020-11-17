@@ -9,6 +9,8 @@ description: |
 
 Repairs are a critical anti-entropy operation in Apache Cassandra&reg;. In the past, there have been many custom solutions to manage them outside of your main Cassandra Installation. K8ssandra provides the Repair Web Interface (also known as Cassandra Reaper) that eliminates the need for a custom solution. Just like K8ssandra makes Cassandra setup easy, Reaper makes configuration of repairs even easier.
 
+**Note:** The requirement for your environment may vary considerably, however the general recommendation is to run a repair operation on your Cassandra clusters about once a week. 
+
 ## Tools
 
 * Web Browser
@@ -97,6 +99,6 @@ On the repair job you just configured, click **Run now**.
 
 Notice the repair job kicking off.
 
-See [Run a cluster repair](http://cassandra-reaper.io/docs/usage/single/)
+See [Run a cluster repair](http://cassandra-reaper.io/docs/usage/single/).
 
 For more reading on Reaper visit [this article](https://medium.com/rahasak/orchestrate-repairs-with-cassandra-reaper-26094bdb59f6).
