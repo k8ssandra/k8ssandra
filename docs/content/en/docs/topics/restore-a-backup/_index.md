@@ -3,7 +3,7 @@ title: "Backup and Restore"
 linkTitle: "Backup and Restore"
 weight: 3
 date: 2020-11-16
-description: K8ssandra provides backup/restore via Apache Medusa
+description: K8ssandra provides backup/restore via Medusa
 ---
 
 This topic walks you through the steps to backup and restore Cassandra data running in a Kubernetes cluster.
@@ -13,7 +13,7 @@ This topic walks you through the steps to backup and restore Cassandra data runn
 * K8ssandra-tools Helm chart
 * K8ssandra-cluster Helm chart, which we'll extend with `backupRestore` Medusa buckets for Amazon S3 integration
 * Sample files in GitHub:
-  * `medusa-bucket-key.yaml` to create a secret with credentials for AWS S3 buckets
+  * [medusa-bucket-key.yaml](./medusa-bucket-key.yaml) to create a secret with credentials for AWS S3 buckets
   * `test_data.cql` to populate a Cassandra keyspace and table with data
 
 ## Prerequisites
@@ -21,7 +21,7 @@ This topic walks you through the steps to backup and restore Cassandra data runn
 * A Kubernetes environment
 * Storage for the backups - see below
 * [Helm](https://helm.sh/), a packaging manager for Kubernetes
-* An edited version of `medusa-bucket-key.yaml`, as noted below
+* An edited version of [medusa-bucket-key.yaml](./medusa-bucket-key.yaml), as noted below
 
 All other prerequisites are handled by the installed tools listed above. The sample files are checked into GitHub.
 
@@ -31,7 +31,7 @@ All other prerequisites are handled by the installed tools listed above. The sam
 
 You will need storage for the backups. This topic shows the use of AWS S3 buckets.
 
-* If you'll use AWS S3, before proceeding with the configuration described below, verify that you know the `aws_access_key_id` and `aws_secret_access_key` values. Or  contact your IT team if they manage those assets. You'll provide those details in an edited version of the `medusa-bucket-key.yaml` file. For information about the S3 setup steps, see this helpful [readme](https://github.com/thelastpickle/cassandra-medusa/blob/master/docs/aws_s3_setup.md).  
+* If you'll use AWS S3, before proceeding with the configuration described below, verify that you know the `aws_access_key_id` and `aws_secret_access_key` values. Or  contact your IT team if they manage those assets. You'll provide those details in an edited version of the [medusa-bucket-key.yaml](./medusa-bucket-key.yaml) file. For information about the S3 setup steps, see this helpful [readme](https://github.com/thelastpickle/cassandra-medusa/blob/master/docs/aws_s3_setup.md).  
 
 * If you haven’t already, install the k8ssandra chart.
 
@@ -50,11 +50,13 @@ The first `kubectl` command above installed the cass-operator and the Prometheus
 
 ### Create secret for read/write access to an S3 bucket
 
-Before creating the k8ssandra-cluster, we need to supply credentials so that Apache Medusa has read/write to an S3 bucket, which is where the backup will be stored.  Currently, Medusa supports local, Amazon S3, GKE, and other bucket types. In this example, we’re using S3.
+Before creating the k8ssandra-cluster, we need to supply credentials so that Medusa has read/write to an S3 bucket, which is where the backup will be stored.  Currently, Medusa supports local, Amazon S3, GKE, and other bucket types. In this example, we’re using S3.
+
+**Note:** See [AWS S3 setup](https://github.com/thelastpickle/cassandra-medusa/blob/master/docs/aws_s3_setup.md) on the Medusa wiki for more details for configuring S3.
 
 To do this, start by creating a secret with the credentials for the S3 bucket.
 
-The `medusa-bucket-key.yaml` sample in GitHub contains:
+The [medusa-bucket-key.yaml](./medusa-bucket-key.yaml) sample in GitHub contains:
 
 ```
 apiVersion: v1
