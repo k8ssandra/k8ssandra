@@ -18,7 +18,7 @@ Any way you want. But think of it this way:  "Kate" + "Sandra".
 
 ### What does K8ssandra include?
 
-At a pure component level, K8ssandra integrates an packages together:
+At a pure component level, K8ssandra integrates and packages together:
 
 * Apache Cassandra
 * Kubernetes Operator for Apache Cassandra (cass-operator)
@@ -62,18 +62,19 @@ Cassandra Reaper is a tool that helps manage the critical maintenance task of an
 
 ### What is Medusa?
 
-Cassandra Medusa is also a sub-project of Apache Cassandra via Spotify and The Last Pickle. Backing up a distributed system takes a different approach than most DBAs have done. Medusa not only helps coordinate those tasks, but it manages the placement of the data at rest. The initial implementation allows backup sets to be stored and retrieved on cloud object storage (such as AWS S3 buckets) with more options on the way. K8ssandra offers this [backup and restore](/docs/topics/restore-a-backup/) feature to ensure you can recover data when issues occur.
+Cassandra Medusa is also a sub-project of Apache Cassandra via Spotify and The Last Pickle. Backing up and restoring a distributed system takes a different approach than most DBAs have done. Medusa not only helps coordinate those tasks, but it manages the placement of the data at rest. The initial implementation allows backup sets to be stored and retrieved on cloud object storage (such as AWS S3 buckets) with more options on the way. K8ssandra offers this [backup and restore](/docs/topics/restore-a-backup/) feature to ensure you can recover data when issues occur.
 
-### How can I access my Kubernetes resources from outside the environment?
+### How can I access Kubernetes resources from outside the environment?
 
+K8ssandra provides [preconfigured](/docs/topics/ingress/traefik/) Traefik Ingress integrations. Traefik is a modern reverse proxy and load balancer that makes deploying microservices easy.  Traefik integrates with your existing infrastructure components and configures itself automatically and dynamically. Traefik handles advanced ingress deployments including mTLS of TCP with SNI and UDP. Operators define rules for routing traffic to downstream systems through Kubernetes Ingress objects or more specific Custom Resource Definitions. K8ssandra supports deploying `IngressRoute objects` as part of a deployment to expose metrics, repair, and Cassandra interfaces. For more, start in the [Traefik](/docs/topics/ingress/traefik/) topic.
+
+### How can I monitor the health of my Kubernetes + Cassandra cluster?
+
+Configure Traefik to expose the K8ssandra monitoring interfaces. See [Monitoring](/docs/topics/ingress/traefik/monitoring/) for the steps to enable the Traefik Ingress. Then see [Monitoring UI] for details about how to access the preconfigured Grafana dashboards that K8ssandra provides. After completing the prerequisites, for example in your local environment, you can open http://grafana.localhost:8080/ in your browser. 
 
 ### What kind of provisioning tasks can I perform with K8ssandra?
 
 Among the tasks are dynamically scaling up or down the size of your cluster. See [Provisioning a cluster](/docs/topics/provision-a-cluster/).  
-
-### More FAQs coming!
-
-...
 
 ## Next
 
