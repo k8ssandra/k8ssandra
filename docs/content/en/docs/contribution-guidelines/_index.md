@@ -22,7 +22,7 @@ Here's a quick guide to updating the docs. It assumes you're familiar with the
 GitHub workflow and you're happy to use the automated preview of your doc
 updates:
 
-1. Fork the [K8ssandra docs repo](https://github.com/k8ssandra/k8ssandra-io) on GitHub.
+1. **Fork** the [K8ssandra docs repo](https://github.com/k8ssandra/k8ssandra.git) on GitHub. 
 1. Make your changes and send a pull request (PR).
 1. If you're not yet ready for a review, add "WIP" to the PR name to indicate 
   it's a work in progress. (**Don't** add the Hugo property 
@@ -32,7 +32,7 @@ updates:
   the content.
 1. When you're ready for a review, add a comment to the PR, and remove any
   "WIP" markers.
-1. After the Pull Request is reviewed and merged it will automatically be deployed.
+1. After the Pull Request is reviewed and merged it will be deployed automatically. There is usually a delay of 10 or more minutes between deployment and when the updates are online. 
 
 ## Updating a single page
 
@@ -46,11 +46,11 @@ If you've just spotted something you'd like to change while using the docs, K8ss
 
 If you want to run your own local Hugo server to preview your changes as you work:
 
-1. Follow the instructions in [Getting started](/docs/getting-started) to install Hugo and any other tools you need. You'll need at least **Hugo version 0.45** (we recommend using the most recent available version), and it must be the **extended** version, which supports SCSS.
-1. Fork the [K8ssandra.io repo](https://github.com/k8ssandra/k8ssandra-io) repo into your own project, then create a local copy using `git clone`. Don’t forget to use `--recurse-submodules` or you won’t pull down some of the code you need to generate a working site.
+1. Follow the [instructions](/docs) to install [Hugo](https://gohugo.io/) and any other tools you need. You'll need at least **Hugo version 0.45** (we recommend using the most recent available version), and it must be the **extended** version, which supports SCSS.
+1. Fork the [K8ssandra repo](https://github.com/k8ssandra/k8ssandra) repo into your own project, then create a local copy using `git clone`. Don’t forget to use `--recurse-submodules` or you won’t pull down some of the code you need to generate a working site.
 
     ```
-    git clone --recurse-submodules --depth 1 https://github.com/k8ssandra/k8ssandra-io.git
+    git clone --recurse-submodules --depth 1 https://github.com/k8ssandra/k8ssandra.git
     ```
 
 1. Run `hugo server` in the site root directory. By default your site will be available at http://localhost:1313/. Now that you're serving your site locally, Hugo will watch for changes to the content and automatically refresh your site.
@@ -59,7 +59,7 @@ If you want to run your own local Hugo server to preview your changes as you wor
 
 ## Creating an issue
 
-If you've found a problem in the docs, but you're not sure how to fix it yourself, please create an issue in the [K8ssandra.io repo](https://github.com/k8ssandra/k8ssandra-io/issues). You can also create an issue about a specific page by clicking the **Create Issue** button in the top right hand corner of the page.
+If you've found a problem in the docs, but you're not sure how to fix it yourself, please create an issue in the [K8ssandra repo](https://github.com/k8ssandra/k8ssandra/issues). You can also create an issue about a specific page by clicking the **Create Issue** button in the top right hand corner of the page.
 
 ## Useful resources
 
