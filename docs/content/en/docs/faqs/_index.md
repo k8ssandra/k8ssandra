@@ -33,19 +33,9 @@ An illustration always helps:
 
 In addition to the set of components, it's important to emphasize that K8ssandra is really a collection of experience from the community of Cassandra + Kubernetes users, packaged and ready for everyone to use freely. 
 
-### What computing challenges does K8ssandra solve?
-
-Backup and restores, repair, monitoring all wired up for you already. More that managing state with operator
-
-
-
 ### How do I get started and install K8ssandra?
 
-It's easy! There are several options, but we recommend using [Helm](https://helm.sh/docs/intro/install/) commands. If you haven't already, use git to clone this repo to your local environment. Starting from https://github.com/k8ssandra/k8ssandra notice the Code button. Copy the desired protocol - such as `git@github.com:k8ssandra/k8ssandra.git` for SSH.  Then on your machine, enter:
-
-`git clone git@github.com:k8ssandra/k8ssandra.git`
-
-To get started, `cd` to the downloaded `k8ssandra` directory, and enter:
+It's easy! There are several options, but we recommend using [Helm](https://helm.sh/docs/intro/install/) commands. 
 
 ```
 helm repo add k8ssandra https://helm.k8ssandra.io/
