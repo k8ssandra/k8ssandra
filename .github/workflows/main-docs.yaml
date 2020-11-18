@@ -60,5 +60,5 @@ jobs:
           service_account_key: ${{ secrets.GCP_SA_KEY }}
           export_default_credentials: true
       - name: Deploy site
-        run: ./bin/hugo deploy
+        run: ./bin/hugo deploy -e production
         working-directory: docs
