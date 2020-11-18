@@ -91,7 +91,11 @@ Configure Traefik to expose the K8ssandra monitoring interfaces. See [Monitoring
 
 ### What kind of provisioning tasks can I perform with K8ssandra?
 
-Among the tasks are dynamically scaling up or down the size of your cluster. See [Provisioning a cluster](/docs/topics/provision-a-cluster/).  
+Among the tasks are dynamically scaling up or down the size of your cluster. See [Provisioning a cluster](/docs/topics/provision-a-cluster/). 
+
+### How can I contribute to the K8ssandra docs?
+
+See the documentation [guidelines](/docs/contribution-guidelines/) topic. 
 
 ## Next
 
