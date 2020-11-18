@@ -92,16 +92,16 @@ linkTitle: K8ssandra
 		<div class="row">
 			<div class="col col-md-10 mx-auto quote">
 				<blockquote>
-					“K8ssandra is essentially the best thing since sliced bread, and that was pretty sweet.”
+					“New Relic is highly supportive of standardizing community-supported tools for operating and managing Cassandra clusters. We are excited about the K8ssandra launch and look forward to actively contributing and collaborating with the broader open source community. This is a great starting point for new and existing users to run Cassandra in Kubernetes and benefit from direct access to the best available Cassandra expertise and practices,”
 				</blockquote>
 				<cite>
-				<strong>Christopher Bradford</strong>, Product Manager at DataStax 
+				<strong>Tom Offerman</strong>, Senior Software Engineer at New Relic 
 				</cite>
 			</div>
 		</div>
 		<div class="row">
 			<div class="col text-center">
-				<script id="asciicast-8bIMgeYjixDHBT4b7T2WuxNDd" src="https://asciinema.org/a/8bIMgeYjixDHBT4b7T2WuxNDd.js" async data-cols="128"></script>
+				<script id="asciicast-q6Hsqr6L2CSudxdqgCL5UeVa9" src="https://asciinema.org/a/q6Hsqr6L2CSudxdqgCL5UeVa9.js" async data-cols="128"></script>
 			</div>
 		</div>
 	</main>
