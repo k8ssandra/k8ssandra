@@ -95,7 +95,7 @@ linkTitle: K8ssandra
 					“New Relic is highly supportive of standardizing community-supported tools for operating and managing Cassandra clusters. We are excited about the K8ssandra launch and look forward to actively contributing and collaborating with the broader open source community. This is a great starting point for new and existing users to run Cassandra in Kubernetes and benefit from direct access to the best available Cassandra expertise and practices,”
 				</blockquote>
 				<cite>
-				<strong>Tom Offerman</strong>, Senior Software Engineer at New Relic 
+				<strong>Tom Offermann</strong>, Lead Software Engineer at New Relic
 				</cite>
 			</div>
 		</div>
