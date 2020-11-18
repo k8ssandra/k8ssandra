@@ -51,13 +51,43 @@ If you are running a local Kubernetes environment, you can access the Grafana da
 
 http://grafana.localhost:8080/
 
-From the Grafana start page, click the Dashboards icon, and select the Manage pane:
+### Grafana credentials
+
+The default configured credentials for Grafana are:
+
+```
+grafana:
+  adminUser: admin
+  adminPassword: secret
+```
+
+Refer to:
+
+https://github.com/k8ssandra/k8ssandra/blob/main/charts/k8ssandra-cluster/values.yaml
+
+You can change the credentials in several ways:
+
+* In the Grafana admin UI. See:
+
+    http://grafana.localhost:8080/profile/password. 
+
+* Or edit a **copy** of [values.yaml](https://github.com/k8ssandra/k8ssandra/blob/main/charts/k8ssandra-cluster/values.yaml); update the credentials; submit a `helm upgrade` command to the cluster. Example: 
+
+    `helm upgrade cluster-name k8ssandra/k8ssandra-cluster -f my-values.yaml`
+ 
+* Or pass in a `--set grafana.adminPassword` flag. Example:
+
+    `helm upgrade cluster-name k8ssandra/k8ssandra-cluster --set  grafana.adminPassword=NewpAssw0rd!`
+
+### Navigating in Grafana
+
+From the Grafana start page, http://grafana.localhost:8080/ in local installs, click the Dashboards icon shown below and select the **Manage** pane:
 
 ![OK](grafana-dashboards-icon.png)
 
 Grafana loads its dashboard options:
 
-1. Enable the Default checkbox.
+1. Enable the **Default** checkbox.
 1. Click the checkbox for one of the dashboards that K8ssandra created when you installed the `k8ssandra-cluster` instance
 1. To open the selected dashboard, click on its text link. In this example, you'd click on Cassandra Cluster Condensed:
 
