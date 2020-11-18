@@ -5,8 +5,6 @@ weight: 7
 description: K8ssandra roadmap ideas for community consideration.
 ---
 
-## Roadmap
-
 K8ssandra today is deployed as an entire stack. This open-source technology
 currently assumes your deployment uses the entire stack. Trading out certain
 components for others is not supported at this time. As part of the roadmap, one

@@ -27,6 +27,8 @@ jobs:
       - run: scripts/install-npm-dependencies.sh
         working-directory: docs
       - name: Build site
+        env:
+          HUGO_ENV: production
         run: ./bin/hugo
         working-directory: docs
       - name: Upload artifact
