@@ -42,8 +42,6 @@ helm repo update
 
 Alternatively, you may download the individual charts directly from the project's [releases](https://github.com/k8ssandra/k8ssandra/releases) page.
 
-![K8ssandra Releases](helm-packages3.png)
-
 ## Install K8ssandra
 
 From a packaging perspective, K8ssandra is composed of a number of helm charts. The `k8ssandra-tools` chart handles the installation of operators and custom resources. The `k8ssandra-cluster` chart (which you can uniquely name) is focused on provisioning cluster instances. This loose coupling allows for separate lifecycles of components with an easy procedure - submitting just two `helm install` commands.
