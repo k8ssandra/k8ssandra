@@ -12,7 +12,7 @@ If you're new to K8ssandra, this FAQ is for you! Whether you're viewing this pag
 
 K8ssandra is an open-source project that anyone in the community can use, improve, and enjoy. K8ssandra is a cloud native distribution of Apache Cassandra&reg; that runs on Kubernetes. Accompanying Cassandra is a suite of tools to ease and automate operational tasks. This includes metrics, data anti-entropy services, and backup/restore tools. As part of K8ssandra’s installation process, all of these components are installed and wired together, freeing your teams from having to perform the tedious plumbing of components.
 
-### Ok - how do you pronounce "K8ssandra"?
+### Ok - how should I pronounce "K8ssandra"?
 
 Any way you want. But think of it this way:  "Kate" + "Sandra".
 
@@ -33,9 +33,15 @@ An illustration always helps:
 
 In addition to the set of components, it's important to emphasize that K8ssandra is really a collection of experience from the community of Cassandra + Kubernetes users, packaged and ready for everyone to use freely. 
 
+### What computing challenges does K8ssandra solve?
+
+Backup and restores, repair, monitoring all wired up for you already. More that managing state with operator
+
+
+
 ### How do I get started and install K8ssandra?
 
-It's easy! There are several options, but we recommend using [Helm](https://helm.sh/docs/intro/install/) commands. If you haven't already, use git to clone this repo to your local environment. Starting from https://github.com/k8ssandra/k8ssandra, notice the Code button. Copy the desired protocol - such as `git@github.com:k8ssandra/k8ssandra.git` for SSH.  Then on your machine, enter:
+It's easy! There are several options, but we recommend using [Helm](https://helm.sh/docs/intro/install/) commands. If you haven't already, use git to clone this repo to your local environment. Starting from https://github.com/k8ssandra/k8ssandra notice the Code button. Copy the desired protocol - such as `git@github.com:k8ssandra/k8ssandra.git` for SSH.  Then on your machine, enter:
 
 `git clone git@github.com:k8ssandra/k8ssandra.git`
 
@@ -51,6 +57,27 @@ helm install k8ssandra-cluster-a k8ssandra/k8ssandra-cluster
 
 For more, see [Getting Started](/docs/getting-started).
 
+### What exactly do k8ssandra and k8ssandra-cluster install?
+
+Referring to the helm commands from the prior FAQ:
+
+* `k8ssandra` installs Kubernetes Operator for Apache Cassandra (cass-operator) and the Prometheus Operator.
+* `k8ssandra-cluster` installs an instance of the stack: reaper (repairs), medusa (backup/restores), the Grafana Operator, and instances.
+
+After those installs, and all the pods are in a Ready state, from `kubectl get pods` you'll see output similar to:
+
+```
+NAME                                                              READY   STATUS      RESTARTS   AGE
+cass-operator-65956c4f6d-f25nl                                    1/1     Running     0          10m
+grafana-deployment-8467d8bc9d-czsg5                               1/1     Running     0           6m
+k8ssandra-cluster-a-grafana-operator-k8ssandra-5bcb746b8d-4nlhz   1/1     Running     0           6m
+k8ssandra-cluster-a-reaper-k8ssandra-6cf5b87b8f-vxrwj             1/1     Running     6           6m
+k8ssandra-cluster-a-reaper-k8ssandra-schema-pjmv8                 0/1     Completed   5           6m
+k8ssandra-cluster-a-reaper-operator-k8ssandra-55dc486998-f4r46    1/1     Running     2           6m
+k8ssandra-dc1-default-sts-0                                       2/2     Running     0          10m
+k8ssandra-tools-kube-prome-operator-6d57f758dd-7zd92              1/1     Running     0          10m
+prometheus-k8ssandra-cluster-a-prometheus-k8ssandra-0             2/2     Running     1          10m
+```
 
 ### What is cass-operator?
 
