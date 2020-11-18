@@ -72,14 +72,14 @@ stringData:
    aws_secret_access_key = my_secret_key
 ```
    
-Make a copy of the `medusa-bucket-key.yaml` template, replacing `my_access_key` and `my_secret_key` with your S3 values in your version. 
+**Make a copy** of [medusa-bucket-key.yaml](./medusa-bucket-key.yaml), and then replace `my_access_key` and `my_secret_key` with your S3 values. 
 
-In the YAML, notice the `stringData` property value: `medusa_s3_credentials`.  The secret gets mounted to this location; this is where Medusa expects to get the AWS credentials.
+In the YAML, notice the `stringData` property value: `medusa_s3_credentials`. The secret gets mounted to this location; this is where Medusa expects to get the AWS credentials.
 
-Apply the YAML to your Kubernetes environment:
+Apply the YAML to your Kubernetes environment. In this example, assume that you had copied medusa-bucket-key.yaml to my-medusa-bucket-key.yaml:
 
 ```
-kubectl apply -f medusa-bucket-key.yaml
+kubectl apply -f my-medusa-bucket-key.yaml
 secret/medusa-bucket-key configured
 ```
 
@@ -189,7 +189,7 @@ The output above shows the addition of medusa-test-medusa-operator-k8ssandra pod
 
 ### Create the backup
 
-Now create a backup using a `test` chart:  <!--- this does not work for me --> 
+Now create a backup using a `test` chart:
 
 `helm install test charts/backup --set name=test,cassandraDatacenter.name=dc1`
 
@@ -230,18 +230,6 @@ The output shows the restore operation’s start time and that the `cassandraDat
 You can also examine the in-progress logs:
 
 `kubectl logs cassandra-dc1-default-sts-0 -c medusa-restore`
-
-To view the result of the restore in cqlsh:
-
-`kubectl get pods`
-
-Look for the running pod, `k8ssandra-grafana-operator-k8ssandra-<pod-id>`. In this example:
-
-![Running pods showing Grafana pod's ID](k8ssandra-get-pods-in-progress.png)
-
-Then enter, for example:
-
-`kubectl exec -it k8ssandra-grafana-operator-k8ssandra-7c887cbb6-rds7w`
 
 ### Launch cqlsh again and verify the restore
 
