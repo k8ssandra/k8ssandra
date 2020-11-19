@@ -20,7 +20,7 @@ Any way you want! But think of it this way:  "Kate" + "Sandra".
 
 At a pure component level, K8ssandra integrates and packages together:
 
-* Apache Cassandra
+* Apache Cassandra 3.11.7
 * Kubernetes Operator for Apache Cassandra (cass-operator)
 * Reaper, also known as the Repair Web Interface
 * Medusa for backup and restore
@@ -89,10 +89,13 @@ The objects installed by the k8ssandra chart are all currently configured to be 
 
 Yes, you can install multiple releases of k8ssandra-cluster. Do to this [issue](https://github.com/integr8ly/grafana-operator/issues/306) with grafana-operator, each release should be installed in a separate namespace.
 
-
 ### What is cass-operator?
 
 Kubernetes Operator for Apache Cassandra -- [cass-operator](https://github.com/datastax/cass-operator) -- is the most critical element bridging Kubernetes and Cassandra. The community has been focusing much of its attention on operators over the past two years, as the appropriate starting place. If there is magic happening, it’s all in the operator. The cass-operator serves as the translation layer between the control plane of Kubernetes and actual operation done by the Cassandra cluster. Recently, the Apache Cassandra project agreed on gathering around a single operator: cass-operator. Some great contributions from Orange with CassKop will be merged with the DataStax operator and a final version will be merged into the Apache project. This is the best example of actual production knowledge finding its way into code. Community members contributing to cass-operator are running large amounts of Cassandra in Kubernetes every day. 
+
+### What version of Cassandra does K8ssandra install and manage via the cass-operator?
+
+It's Apache Cassandra 3.11.7 currently.
 
 ### What is Reaper?
 
@@ -117,6 +120,12 @@ The default configured Grafana username is `admin`, and the password is `secret`
 ### What kind of provisioning tasks can I perform with K8ssandra?
 
 Among the tasks are dynamically scaling up or down the size of your cluster. See [Provisioning a cluster]({{< ref "/docs/topics/provision-a-cluster/" >}}). 
+
+### Can you illustrate the steps and sample commands I'll use with K8ssandra?
+
+Yes - here they are in a single graphic:
+
+![Commands used with K8ssandra](k8ssandra-steps-commands.png)
 
 ### How can I contribute to the K8ssandra docs?
 
