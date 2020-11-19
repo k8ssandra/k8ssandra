@@ -22,9 +22,9 @@ At a pure component level, K8ssandra integrates and packages together:
 
 * Apache Cassandra
 * Kubernetes Operator for Apache Cassandra (cass-operator)
-* Cassandra Reaper, also known as the Repair Web Interface
-* Cassandra Medusa for backup and restore
-* Metrics Collector, which Prometheus integration and visualization via preconfigured Grafana dashboards
+* Reaper, also known as the Repair Web Interface
+* Medusa for backup and restore
+* Metrics Collector, with Prometheus integration, and visualization via preconfigured Grafana dashboards
 * Templates for connections into your Kubernetes environment via Ingress solutions such as Traefik
 
 An illustration always helps:
@@ -75,11 +75,11 @@ Kubernetes Operator for Apache Cassandra -- [cass-operator](https://github.com/d
 
 ### What is Reaper?
 
-Cassandra Reaper is a tool that helps manage the critical maintenance task of anti-entropy **repair** in a Cassandra cluster. We also refer to Reaper as the [Repair Web Interface]({{< ref "/docs/topics/accessing-services/repair/" >}}). Originally created by Spotify, later adopted and maintained by The Last Pickle, Cassandra Reaper is now a sub-project of Apache Cassandra. If you were to sit a group of Cassandra DBAs down to talk about what they do, chances are they would talk a lot about running repairs. It’s an important operation because it keeps data consistent despite inevitable issues that happen like node failures and network partitions. In K8ssandra, Reaper runs it for you automatically! And because this is built for SREs, you can expect a good set of pre-built metrics to verify everything is working great. 
+Reaper is a tool that helps manage the critical maintenance task of anti-entropy **repair** in a Cassandra cluster. We also refer to Reaper as the [Repair Web Interface]({{< ref "/docs/topics/accessing-services/repair/" >}}). Originally created by Spotify, later adopted and maintained by The Last Pickle. If you were to sit a group of Cassandra DBAs down to talk about what they do, chances are they would talk a lot about running repairs. It’s an important operation because it keeps data consistent despite inevitable issues that happen like node failures and network partitions. In K8ssandra, Reaper runs it for you automatically! And because this is built for SREs, you can expect a good set of pre-built metrics to verify everything is working great. 
 
 ### What is Medusa?
 
-Cassandra Medusa is also a sub-project of Apache Cassandra via Spotify and The Last Pickle. Backing up and restoring a distributed system takes a different approach than most DBAs have done. Medusa not only helps coordinate those tasks, but it manages the placement of the data at rest. The initial implementation allows backup sets to be stored and retrieved on cloud object storage (such as AWS S3 buckets) with more options on the way. K8ssandra offers this [backup and restore]({{< ref "/docs/topics/restore-a-backup/" >}}) feature to ensure you can recover data when issues occur.
+Medusa provides backup/restore functionality for Cassandra data; this project also originated at Spotify. Medusa not only helps coordinate backup &amp; restore tasks, it manages the placement of the data at rest. The initial implementation allows backup sets to be stored and retrieved on cloud object storage (such as AWS S3 buckets) with more options on the way. K8ssandra offers this [backup and restore]({{< ref "/docs/topics/restore-a-backup/" >}}) feature to help you recover Cassandra data when inevitable real-world issues occur.
 
 ### How can I access Kubernetes resources from outside the environment?
 
@@ -88,6 +88,10 @@ K8ssandra provides [preconfigured]({{< ref "/docs/topics/ingress/traefik/" >}}) 
 ### How can I monitor the health of my Kubernetes + Cassandra cluster?
 
 Configure Traefik to expose the K8ssandra monitoring interfaces. See [Monitoring]({{< ref "/docs/topics/ingress/traefik/monitoring/" >}}) for the steps to enable the Traefik Ingress. Then see [Monitoring UI]({{< ref "/docs/topics/accessing-services/monitoring/" >}}) for details about how to access the preconfigured Grafana dashboards that K8ssandra provides. After completing the prerequisites, for example in your local environment, you can open http://grafana.localhost:8080/ in your browser. 
+
+### What is the login for the Grafana dashboards?
+
+The default configured Grafana username is `admin`, and the password is `secret`. See the topic about managing [Grafana credentials]({{< ref "/docs/topics/accessing-services/monitoring/_index.md#grafana-credentials" >}}).
 
 ### What kind of provisioning tasks can I perform with K8ssandra?
 
