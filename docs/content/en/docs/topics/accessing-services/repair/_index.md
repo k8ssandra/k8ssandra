@@ -36,9 +36,9 @@ following address:
 
 http://REPAIR_DOMAIN/webui
 
-For example, with local installs:
+For example, to upgrade a previously installed `k8ssandra-cluster` that's running locally:
 
-`helm install k8ssandra-cluster-a k8ssandra/k8ssandra-cluster --set ingress.traefik.enabled=true --set ingress.traefik.repair.host=repair.localhost  --set ingress.traefik.monitoring.grafana.host=grafana.localhost  --set ingress.traefik.monitoring.prometheus.host=prometheus.localhost`
+`helm upgrade k8ssandra-cluster-a k8ssandra/k8ssandra-cluster --set ingress.traefik.enabled=true --set ingress.traefik.repair.host=repair.localhost`
 
 Notice how in this example, the DNS host name is specified on the command line as `repair.localhost`.
 
@@ -59,11 +59,11 @@ prometheus-mycluster-prometheus-k8ssandra-0                     3/3     Running 
 
 ## What can I do in Reaper?
 
-To access Reaper, if you are running locally, navigate to http://repair.localhost:8080/webui/
+To access Reaper, if you are running locally, navigate to [http://repair.localhost:8080/webui/](http://repair.localhost:8080/webui/).
 
 ### Check the cluster’s health
 
-In the Reaper UI, notice way that the nodes are displayed inside the datacenter for the cluster.
+In the Reaper UI, notice how the nodes are displayed inside the datacenter for the cluster.
 
 ![OK](https://github.com/DataStax-Academy/kubecon2020/blob/main/Images/reaper1.png?raw=true)
 
@@ -99,4 +99,4 @@ Notice the repair job kicking off.
 
 See [Run a cluster repair](http://cassandra-reaper.io/docs/usage/single/).
 
-For more reading on Reaper visit [this article](https://medium.com/rahasak/orchestrate-repairs-with-cassandra-reaper-26094bdb59f6).
+For more reading on Reaper, visit [this article](https://medium.com/rahasak/orchestrate-repairs-with-cassandra-reaper-26094bdb59f6) on medium.com.
