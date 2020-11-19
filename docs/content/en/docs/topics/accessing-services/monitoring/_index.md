@@ -29,7 +29,11 @@ After you've met the prerequisites identified below, access the preconfigured Gr
 
 ## Access Grafana Interface
 
-Check that the pods configured by K8ssandra are running:
+If you haven't already, upgrade an existing `k8ssandra-cluster` by enabling the Traefik Ingress and passing in Prometheus and Grafana host flags. A command-line example when the host is local:
+
+`helm upgrade k8ssandra-cluster-a k8ssandra/k8ssandra-cluster --set ingress.traefik.enabled=true --set ingress.traefik.monitoring.grafana.host=grafana.localhost --set ingress.traefik.monitoring.prometheus.host=prometheus.localhost`
+
+After a few minutes, check that the pods configured by K8ssandra are running:
 
 `kubectl get pods`
 ```
