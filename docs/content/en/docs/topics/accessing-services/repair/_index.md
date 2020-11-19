@@ -36,11 +36,9 @@ following address:
 
 http://REPAIR_DOMAIN/webui
 
-For example, if installed `k8ssandra-cluster` with this Helm command:
+For example, with local installs:
 
-`helm install k8ssandra-cluster-a k8ssandra/k8ssandra-cluster --set ingress.traefik.enabled=true --set ingress.traefik.repair.host=repair.${ADDRESS}  --set ingress.traefik.monitoring.grafana.host=grafana.${ADDRESS}  --set ingress.traefik.monitoring.prometheus.host=prometheus.${ADDRESS}`
-
-If you are using your own instances, replace `${ADDRESS}` with `127.0.0.1`
+`helm install k8ssandra-cluster-a k8ssandra/k8ssandra-cluster --set ingress.traefik.enabled=true --set ingress.traefik.repair.host=repair.localhost  --set ingress.traefik.monitoring.grafana.host=grafana.localhost  --set ingress.traefik.monitoring.prometheus.host=prometheus.localhost`
 
 Notice how in this example, the DNS host name is specified on the command line as `repair.localhost`.
 
