@@ -27,7 +27,9 @@ jobs:
       - run: scripts/install-npm-dependencies.sh
         working-directory: docs
       - name: Build site
-        run: ./bin/hugo -e production
+        env:
+          HUGO_ENV: production
+        run: ./bin/hugo --environment ${HUGO_ENV}
         working-directory: docs
       - name: Upload artifact
         uses: actions/upload-artifact@v1
@@ -60,7 +62,9 @@ jobs:
           service_account_key: ${{ secrets.GCP_SA_KEY }}
           export_default_credentials: true
       - name: Deploy site
-        run: ./bin/hugo deploy --environment production --target production --verbose
+        env:
+          HUGO_ENV: production
+        run: ./bin/hugo deploy --environment ${HUGO_ENV} --target production --verbose
         working-directory: docs
       - name: Purge CDN Cache
         env:
