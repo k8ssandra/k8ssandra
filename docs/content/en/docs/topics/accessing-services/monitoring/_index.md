@@ -11,7 +11,7 @@ When you used Helm to install a `k8ssandra-cluster` instance in Kubernetes, one 
 
 After you've met the prerequisites identified below, access the preconfigured Grafana dashboards. For example:
 
-http://grafana.localhost:8080/
+[http://grafana.localhost:8080/](http://grafana.localhost:8080/)
 
 ## Tools
 
@@ -49,7 +49,7 @@ Notice that the Grafana Operator is running, as well as other services such as P
 
 If you are running a local Kubernetes environment, you can access the Grafana dashboard with a URL such as:
 
-http://grafana.localhost:8080/
+[http://grafana.localhost:8080/](http://grafana.localhost:8080/)
 
 ### Grafana credentials
 
@@ -69,7 +69,7 @@ You can change the credentials in several ways:
 
 * In the Grafana admin UI. See:
 
-    http://grafana.localhost:8080/profile/password. 
+    [http://grafana.localhost:8080/profile/password](http://grafana.localhost:8080/profile/password)
 
 * Or edit a **copy** of [values.yaml](https://github.com/k8ssandra/k8ssandra/blob/main/charts/k8ssandra-cluster/values.yaml); update the credentials; submit a `helm upgrade` command to the cluster. Example: 
 
@@ -81,7 +81,7 @@ You can change the credentials in several ways:
 
 ### Navigating in Grafana
 
-From the Grafana start page, http://grafana.localhost:8080/ in local installs, click the Dashboards icon shown below and select the **Manage** pane:
+From the Grafana start page, [http://grafana.localhost:8080/](http://grafana.localhost:8080/) in local installs, click the Dashboards icon shown below and select the **Manage** pane:
 
 ![OK](grafana-dashboards-icon.png)
 
@@ -112,7 +112,7 @@ Prometheus is available at the following address:
 
 For example:
 
-http://prometheus.localhost:8080/
+[http://prometheus.localhost:8080/](http://prometheus.localhost:8080/)
 
 ### What can I do in Prometheus?
 
