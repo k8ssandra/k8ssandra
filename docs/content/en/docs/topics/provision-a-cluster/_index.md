@@ -13,7 +13,7 @@ description: Steps to provision a cluster in Kubernetes
 ## Prerequisites
 
 * A Kubernetes environment
-* k8ssandra-tool and k8ssandra-cluster installed and running in Kubernetes - see [Getting Started](docs/getting-started)
+* k8ssandra-tool and k8ssandra-cluster installed and running in Kubernetes - see [Getting Started]({{< ref "getting-started" >}})
 
 ## Steps
 
@@ -21,7 +21,7 @@ description: Steps to provision a cluster in Kubernetes
 
 For many basic configuration options, you may change values in the deployed YAML files. For example, you can scale up or scale down, as needed, by updated the YAML.
 
-Let's check the currently running values. First let's get the list of installed charts that we installed in [Getting Started](docs/getting-started):
+Let's check the currently running values. First let's get the list of installed charts that we installed in [Getting Started]({{< ref "getting-started" >}}):
 
 `helm list`
 ```
