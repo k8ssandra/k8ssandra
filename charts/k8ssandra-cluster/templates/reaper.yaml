@@ -11,12 +11,9 @@ spec:
     storageType: cassandra
     jmxUserSecretName: {{ .Release.Name }}-reaper-secret-k8ssandra
     cassandraBackend:
-      clusterName: {{ .Values.clusterName }}
+      cassandraDatacenter:
+        name: {{ .Values.datacenterName }}
       replication:
         networkTopologyStrategy:
           {{ .Values.datacenterName }}: {{ min .Values.size 3}}
-      # This is a bit of a hack. We really should not be specifying the service name here as it is
-      # implementation detail of cass-operator. reaper-operator needs to be updated to simply take
-      # the name of the CassandraDatacenter here.
-      cassandraService: {{ .Values.clusterName }}-{{ .Values.datacenterName }}-service
 {{- end }}
