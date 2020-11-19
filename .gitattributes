@@ -1,3 +1,5 @@
-*.python linguist-detectable=true 
-*.html linguist-detectable=false  
+*.python linguist-detectable=true
 *.go linguist-detectable=true
+*.html linguist-detectable=false
+*.yaml linguist-detectable=false
+*.json linguist-detectable=false
