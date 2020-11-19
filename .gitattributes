@@ -1,0 +1,3 @@
+*.python linguist-detectable=true 
+*.html linguist-detectable=false  
+*.go linguist-detectable=true
