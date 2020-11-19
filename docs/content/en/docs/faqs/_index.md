@@ -69,6 +69,27 @@ k8ssandra-tools-kube-prome-operator-6d57f758dd-7zd92              1/1     Runnin
 prometheus-k8ssandra-cluster-a-prometheus-k8ssandra-0             2/2     Running     1          10m
 ```
 
+### Do k8ssandra and k8ssandra-cluster have to be installed in a particular namespace?
+
+Both charts can be installed in any namespace. Furthermore, you can install them in separate namespaces. The following example demonstrates this:
+
+```
+# Install k8ssandra-tool in the k8ssandra namespace
+$ helm install k8ssandra-tools k8ssandra/k8ssandra -n k8ssandra --create-namespace
+
+# Install k8ssandra in the k8ssandra-dev namespace
+$ helm install dev-cluster k8ssandra/k8ssandra-cluster -n k8ssandra-dev --create-namespace
+```
+
+### Can I install multiple releases of k8ssandra?
+
+The objects installed by the k8ssandra chart are all currently configured to be cluster-scoped; consequently, you should only install it once.
+
+### Can I install multiple releases of k8ssandra-cluster?
+
+Yes, you can install multiple releases of k8ssandra-cluster. Do to this [issue](https://github.com/integr8ly/grafana-operator/issues/306) with grafana-operator, each release should be installed in a separate namespace.
+
+
 ### What is cass-operator?
 
 Kubernetes Operator for Apache Cassandra -- [cass-operator](https://github.com/datastax/cass-operator) -- is the most critical element bridging Kubernetes and Cassandra. The community has been focusing much of its attention on operators over the past two years, as the appropriate starting place. If there is magic happening, it’s all in the operator. The cass-operator serves as the translation layer between the control plane of Kubernetes and actual operation done by the Cassandra cluster. Recently, the Apache Cassandra project agreed on gathering around a single operator: cass-operator. Some great contributions from Orange with CassKop will be merged with the DataStax operator and a final version will be merged into the Apache project. This is the best example of actual production knowledge finding its way into code. Community members contributing to cass-operator are running large amounts of Cassandra in Kubernetes every day. 
