@@ -54,4 +54,33 @@ helm install k8ssandra-tools k8ssandra/k8ssandra
 helm install k8ssandra-cluster-a k8ssandra/k8ssandra-cluster  
 ```
 
+## Upgrade K8ssandra
 In later steps, you can upgrade your k8ssandra-cluster via `helm upgrade` commands, for example to access services from outside Kubernetes via a Traefik Ingress controller.
+
+```console
+# Upgrade shared dependencies / tooling
+helm upgrade k8ssandra-tools k8ssandra/k8ssandra
+
+# Upgrade the K8ssandra cluster created before: "k8ssandra-cluster-a" 
+helm upgrade k8ssandra-cluster-a k8ssandra/k8ssandra-cluster  
+```
+
+
+## Uninstall K8ssandra
+To uninstall the K8ssandra, just need to run below:
+
+```console
+# Uninstall shared dependencies / tooling
+helm uninstall k8ssandra-tools k8ssandra/k8ssandra
+
+# Uninstall the K8ssandra cluster named "k8ssandra-cluster-a" 
+helm uninstall k8ssandra-cluster-a k8ssandra/k8ssandra-cluster  
+```
+
+Delete the below CRDs manually:
+```console
+kubectl delete crd cassandrabackups.cassandra.k8ssandra.io
+kubectl delete crd cassandradatacenters.cassandra.datastax.com 
+kubectl delete crd cassandrarestores.cassandra.k8ssandra.io
+kubectl delete crd reapers.reaper.cassandra-reaper.io
+```
