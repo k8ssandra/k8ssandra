@@ -30,6 +30,7 @@ apiVersion: traefik.containo.us/v1alpha1
 kind: IngressRouteTCP
 metadata:
   name: {{ $releaseName }}-k8ssandra-cassandra
+  labels:
 {{ include "k8ssandra-cluster.labels" . | indent 4 }}
 spec:
   entryPoints:
