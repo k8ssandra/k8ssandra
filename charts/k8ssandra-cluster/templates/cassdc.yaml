@@ -22,12 +22,16 @@ spec:
   size: {{ .Values.size }}
   storageConfig:
     cassandraDataVolumeClaimSpec:
+{{- if (eq "-" .Values.k8ssandra.persistentVolume.storageClass) }}
       storageClassName: standard
+{{- else }}
+      storageClassName: "{{ .Values.k8ssandra.persistentVolume.storageClass }}"
+{{- end }}        
       accessModes:
         - ReadWriteOnce
       resources:
         requests:
-          storage: 5Gi
+          storage: "{{ .Values.k8ssandra.persistentVolume.size }}"
   config:    
     jvm-options:
       initial_heap_size: "800M"
