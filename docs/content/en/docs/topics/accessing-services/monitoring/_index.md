@@ -120,7 +120,7 @@ For example:
 
 ### What can I do in Prometheus?
 
-* Validate serves being scraped
+* Validate servers being scraped
 * Confirm metrics collection
 
 ## Next

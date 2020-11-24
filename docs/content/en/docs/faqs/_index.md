@@ -125,7 +125,7 @@ Among the tasks are dynamically scaling up or down the size of your cluster. See
 
 Yes - here they are in a single graphic:
 
-![Commands used with K8ssandra](k8ssandra-steps-commands.png)
+![Commands used with K8ssandra](k8ssandra-steps.png)
 
 ### How can I contribute to the K8ssandra docs?
 
