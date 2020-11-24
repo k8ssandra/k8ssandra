@@ -121,3 +121,7 @@ monitoring:
         # Set to to true to serve Grafana from subpath specified in rootUrl. If set to
         # true, rootUrl should be set as well.
         serveFromSubPath: false
+
+  prometheus:
+    # The external URL the Prometheus instances will be available under.
+    externalUrl: ""

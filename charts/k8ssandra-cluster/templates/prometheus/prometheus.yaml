@@ -18,6 +18,9 @@ spec:
     matchLabels:
       app.kubernetes.io/instance: {{ .Release.Name }}
       app.kubernetes.io/name: {{ template "k8ssandra-cluster.name" . }}
+{{- if not (empty .Values.monitoring.prometheus.externalUrl) }}
+  externalUrl: {{ .Values.monitoring.prometheus.externalUrl }}
+{{- end }}
   ruleSelector: {}
   alerting:
     alertmanagers: []
