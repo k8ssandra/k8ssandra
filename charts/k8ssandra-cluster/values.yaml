@@ -96,6 +96,27 @@ ingress:
         # Hostname Traefik should use for matching requests.
         host: prometheus.k8ssandra.cluster.local
 
-grafana:
-  adminUser: admin
-  adminPassword: secret
+monitoring:
+  grafana:
+    security:
+      # TODO Add support for configuring credentials via a secret
+
+      # The admin username
+      adminUser: admin
+
+      # The admin password
+      adminPassword: secret
+
+    # Grafana server configuration settings. Corresponds to settings in /etc/grafana/grafana.ini.
+    config:
+      # Corresponds to properties in the server section of grafana.ini.
+      server:
+        # This is the full URL used to access Grafana from a web browser. This setting
+        # is also important if you have a reverse proxy in front of Grafana that
+        # exposes it through a subpath. In that case add the subpath to the end of this
+        # URL setting.
+        rootUrl: ""
+
+        # Set to to true to serve Grafana from subpath specified in rootUrl. If set to
+        # true, rootUrl should be set as well.
+        serveFromSubPath: false
