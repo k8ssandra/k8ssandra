@@ -18,6 +18,7 @@ k8ssandra:
 repair:
   # Reaper repair service and UI
   reaper:
+    autoschedule: false
     enabled: true
     jmx:
       username: ""

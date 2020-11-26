@@ -8,6 +8,10 @@ metadata:
 spec:
   image: thelastpickle/cassandra-reaper:2.0.5
   serverConfig:
+    {{- if .Values.repair.reaper.autoschedule }}
+    autoScheduling:
+      enabled: {{ .Values.repair.reaper.autoschedule }}
+    {{- end}}
     storageType: cassandra
     jmxUserSecretName: {{ .Release.Name }}-reaper-secret-k8ssandra
     cassandraBackend:

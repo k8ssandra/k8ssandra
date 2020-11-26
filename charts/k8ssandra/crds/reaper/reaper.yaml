@@ -34,6 +34,12 @@ spec:
               type: string
             serverConfig:
               properties:
+                autoScheduling:
+                  description: Configure reaper autoscheduling
+                  properties:
+                    enabled:
+                      type: boolean
+                  type: object
                 cassandraBackend:
                   properties:
                     authProvider:
