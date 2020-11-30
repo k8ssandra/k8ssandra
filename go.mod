@@ -5,9 +5,10 @@ go 1.15
 require (
 	github.com/datastax/cass-operator v1.4.1
 	github.com/gruntwork-io/terratest v0.30.15
-	github.com/k8ssandra/reaper-operator v0.0.0-20201204054951-d4834fcfac4d
+	github.com/k8ssandra/reaper-operator v0.0.0-20201124165544-2b87dd8e68b5
 	github.com/onsi/ginkgo v1.14.2
 	github.com/onsi/gomega v1.10.3
+	k8s.io/apimachinery v0.18.6
 )
 
 replace (
