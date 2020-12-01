@@ -21,6 +21,9 @@ spec:
 {{- if not (empty .Values.monitoring.prometheus.externalUrl) }}
   externalUrl: {{ .Values.monitoring.prometheus.externalUrl }}
 {{- end }}
+{{- if not (empty .Values.monitoring.prometheus.routePrefix) }}
+  routePrefix: {{ .Values.monitoring.prometheus.routePrefix }}
+{{- end}}
   ruleSelector: {}
   alerting:
     alertmanagers: []
