@@ -36,27 +36,36 @@ func TestCassOperatorAndClusterInstall(t *testing.T) {
 	fmt.Println("helmOptions namespace is", helmOptions.KubectlOptions.Namespace)
 	require.NotNil(t, helmOptions)
 
-	operatorInstallPreconditions(t, helmOptions, operatorReleaseName)
-
-	util.Annotate(t, helmOptions, operatorReleaseName)
-
-	// cass-operator install
-	isOperatorInstalled := install(t, helmOptions, operatorReleaseName, "k8ssandra/k8ssandra")
-	require.True(t, isOperatorInstalled)
-	assert.True(t, repoUpdate(t, helmOptions))
-
-	// verification of crd existence
+	// operator installation
+	installOperator(t, helmOptions, operatorReleaseName)
 	lookupResult := util.LookupCRDByName(t, helmOptions, "cassandradatacenters.cassandra.datastax.com")
 	require.Equal(t, "customresourcedefinition.apiextensions.k8s.io/cassandradatacenters.cassandra.datastax.com",
 		lookupResult)
+	// todo: adding verifications of operator installation
 
-	// cluster install
+	// cluster installation
+	installCluster(t, helmOptions, clusterReleaseName)
+	// todo: adding verifications of cluster installation
+
+}
+
+// installCluster function for installation of the cluster with basic assertions
+func installCluster(t *testing.T, helmOptions *helm.Options, releaseName string) {
 	clusterInstallPreconditions(t, helmOptions, clusterReleaseName)
 	util.Annotate(t, helmOptions, clusterReleaseName)
 	isClusterInstalled := install(t, helmOptions, clusterReleaseName, "k8ssandra/k8ssandra-cluster")
 	require.True(t, isClusterInstalled)
 	assert.True(t, repoUpdate(t, helmOptions))
+}
 
+// installOperator function for installation of the operator with basic assertions
+func installOperator(t *testing.T, helmOptions *helm.Options, releaseName string) {
+
+	operatorInstallPreconditions(t, helmOptions, operatorReleaseName)
+	util.Annotate(t, helmOptions, operatorReleaseName)
+	isOperatorInstalled := install(t, helmOptions, operatorReleaseName, "k8ssandra/k8ssandra")
+	require.True(t, isOperatorInstalled)
+	assert.True(t, repoUpdate(t, helmOptions)) // cass-operator install
 }
 
 // clusterInstallPreconditions provides test cleanup and preconditions prior to test function execution
