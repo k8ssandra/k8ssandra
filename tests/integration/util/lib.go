@@ -33,8 +33,8 @@ type CRDIdentity struct {
 	CRDMetaName     string
 }
 
-// K8ssandraClusterIdentity test model for cluster
-type K8ssandraClusterIdentity struct {
+// ClusterIdentity test model for cluster
+type ClusterIdentity struct {
 	ClusterName            string
 	RenderedCassdcTemplate string
 }
@@ -46,6 +46,33 @@ func CreateOperatorIdentity() CRDIdentity {
 		CRDName:         "crd/cassandradatacenters.cassandra.datastax.com",
 		CRDHookName:     "cass-operator-webhook",
 		CRDResourceName: "cassandradatacenters.cassandra.datastax.com"}
+}
+
+// CreateClusterIdentity performs construction of cluster identity
+// includes checks for required chart used along with associated rendered template.
+func CreateClusterIdentity(t *testing.T, kubeOptions *k8s.KubectlOptions,
+	clusterName string, releaseName string) ClusterIdentity {
+
+	var renderedMap map[string]interface{}
+	helmChartPath, err := filepath.Abs("../../charts/k8ssandra-cluster")
+	require.NoError(t, err)
+
+	options := &helm.Options{
+		SetStrValues:   map[string]string{"name": kubeOptions.Namespace, "clusterName": clusterName},
+		KubectlOptions: kubeOptions,
+	}
+
+	renderedOutput := helm.RenderTemplate(
+		t, options, helmChartPath, releaseName,
+		[]string{"templates/cassdc.yaml"},
+	)
+	jsonRendered, err := yaml.YAMLToJSON([]byte(renderedOutput))
+	require.NoError(t, json.Unmarshal(jsonRendered, &renderedMap))
+
+	return ClusterIdentity{
+		ClusterName:            clusterName,
+		RenderedCassdcTemplate: renderedOutput,
+	}
 }
 
 // Annotate of release name, and release namespace, scoped to namespace
@@ -151,9 +178,9 @@ func DeleteNamespace(t *testing.T, helmOptions *helm.Options) bool {
 	return deleteErr == nil
 }
 
-// DeleteCRD performs lookup of resource targets specific to CRD resourc name.
+// DeleteOperatorCRD performs lookup of resource targets specific to CRD resource name.
 // Removes the dependency resources and finalizers
-func DeleteCRD(t *testing.T, kubeOptions *k8s.KubectlOptions, crdIdentity CRDIdentity, timeoutSeconds int) bool {
+func DeleteOperatorCRD(t *testing.T, kubeOptions *k8s.KubectlOptions, crdIdentity CRDIdentity, timeoutSeconds int) bool {
 
 	Log(t, "\n===== DELETE CRD", "", "", nil)
 	Log(t, "DeleteCRD", "lookup CRD by metaName: ", crdIdentity.CRDResourceName, nil)
@@ -172,6 +199,22 @@ func DeleteCRD(t *testing.T, kubeOptions *k8s.KubectlOptions, crdIdentity CRDIde
 		}
 
 		isCRDDeleted := deleteCustomResourceDefinition(t, kubeOptions, crdIdentity.CRDName, timeoutSeconds)
+		if !isCRDDeleted {
+			Log(t, "CRD NOT deleted.", "deleteCustomResourceDefinition", "", nil)
+			return false
+		}
+	}
+	return true
+}
+
+// DeleteClusterCRD removes the k8ssandra c* cluster CRD
+func DeleteClusterCRD(t *testing.T, kubeOptions *k8s.KubectlOptions, crdIdentity ClusterIdentity, timeoutSeconds int) bool {
+
+	Log(t, "\n===== DELETE CRD", "", "", nil)
+	Log(t, "DeleteCRD", "lookup CRD by metaName: ", crdIdentity.ClusterName, nil)
+	if lookupCRDByMetaName(t, kubeOptions, crdIdentity.ClusterName) {
+
+		isCRDDeleted := deleteCustomResourceDefinition(t, kubeOptions, crdIdentity.ClusterName, timeoutSeconds)
 		if !isCRDDeleted {
 			Log(t, "CRD NOT deleted.", "deleteCustomResourceDefinition", "", nil)
 			return false
@@ -241,33 +284,6 @@ func DeleteDeployment(t *testing.T, helmOptions *helm.Options, chartName string)
 func CreateNamespace(t *testing.T, helmOptions *helm.Options) {
 	namespace := helmOptions.KubectlOptions.Namespace
 	k8s.CreateNamespaceE(t, helmOptions.KubectlOptions, namespace)
-}
-
-// createK8ssandraClusterIdentity performs construction of cluster identity for k8ssandra
-// includes checks for required chart used along with associated rendered template.
-func createK8ssandraClusterIdentity(t *testing.T, kubeOptions *k8s.KubectlOptions,
-	clusterName string, releaseName string) K8ssandraClusterIdentity {
-
-	var renderedMap map[string]interface{}
-	helmChartPath, err := filepath.Abs("../../../charts/k8ssandra-cluster")
-	require.NoError(t, err)
-
-	options := &helm.Options{
-		SetStrValues:   map[string]string{"name": kubeOptions.Namespace, "clusterName": clusterName},
-		KubectlOptions: kubeOptions,
-	}
-
-	renderedOutput := helm.RenderTemplate(
-		t, options, helmChartPath, releaseName,
-		[]string{"templates/cassdc.yaml"},
-	)
-	jsonRendered, err := yaml.YAMLToJSON([]byte(renderedOutput))
-	require.NoError(t, json.Unmarshal(jsonRendered, &renderedMap))
-
-	return K8ssandraClusterIdentity{
-		ClusterName:            clusterName,
-		RenderedCassdcTemplate: renderedOutput,
-	}
 }
 
 // lookupNamespaces provides a string array list of namspaces found during test.
