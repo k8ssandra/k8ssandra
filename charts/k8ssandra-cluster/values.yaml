@@ -121,3 +121,13 @@ monitoring:
         # Set to to true to serve Grafana from subpath specified in rootUrl. If set to
         # true, rootUrl should be set as well.
         serveFromSubPath: false
+
+  prometheus:
+    # The external URL the Prometheus instances will be available under.
+    externalUrl: ""
+
+    # The route prefix Prometheus registers HTTP handlers for. This is useful,
+    # if using ExternalURL and a proxy is rewriting HTTP routes of a request,
+    # and the actual ExternalURL is still true, but the server serves requests
+    # under a different route prefix. For example for use with `kubectl proxy`.
+    routePrefix: ""
