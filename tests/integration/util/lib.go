@@ -396,9 +396,6 @@ func getChildResources() []string {
 func deleteCustomResourceDefinition(t *testing.T, kubeOptions *k8s.KubectlOptions,
 	crdResourceName string, timeoutSeconds int) bool {
 
-	// deleteErr := k8s.RunKubectlE(t, kubeOptions,
-	// 	"delete", "-f", resourceDefinitionFile, fmt.Sprintf("--timeout=%ds", timeoutSeconds))
-
 	deleteErr := k8s.RunKubectlE(t, kubeOptions,
 		"delete", crdResourceName, fmt.Sprintf("--timeout=%ds", timeoutSeconds))
 	return deleteErr == nil
