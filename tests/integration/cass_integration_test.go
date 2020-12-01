@@ -38,11 +38,17 @@ func TestCassOperatorAndClusterInstall(t *testing.T) {
 
 	operatorInstallPreconditions(t, helmOptions, operatorReleaseName)
 
-	// util.Annotate(t, helmOptions, operatorReleaseName)
+	util.Annotate(t, helmOptions, operatorReleaseName)
+
 	// cass-operator install
-	//isOperatorInstalled := install(t, helmOptions, operatorReleaseName, "k8ssandra/k8ssandra")
-	//require.True(t, isOperatorInstalled)
-	//assert.True(t, repoUpdate(t, helmOptions))
+	isOperatorInstalled := install(t, helmOptions, operatorReleaseName, "k8ssandra/k8ssandra")
+	require.True(t, isOperatorInstalled)
+	assert.True(t, repoUpdate(t, helmOptions))
+
+	// verification of crd existence
+	lookupResult := util.LookupCRDByName(t, helmOptions, "cassandradatacenters.cassandra.datastax.com")
+	require.Equal(t, "customresourcedefinition.apiextensions.k8s.io/cassandradatacenters.cassandra.datastax.com",
+		lookupResult)
 
 	// cluster install
 	clusterInstallPreconditions(t, helmOptions, clusterReleaseName)
@@ -50,11 +56,6 @@ func TestCassOperatorAndClusterInstall(t *testing.T) {
 	isClusterInstalled := install(t, helmOptions, clusterReleaseName, "k8ssandra/k8ssandra-cluster")
 	require.True(t, isClusterInstalled)
 	assert.True(t, repoUpdate(t, helmOptions))
-
-	// verification of crd existence
-	// lookupResult := util.LookupCRDByName(t, helmOptions, "cassandradatacenters.cassandra.datastax.com")
-	//require.Equal(t, "customresourcedefinition.apiextensions.k8s.io/cassandradatacenters.cassandra.datastax.com",
-	//		lookupResult)
 
 }
 
