@@ -54,8 +54,7 @@ var _ = Describe("Verify Reaper template", func() {
 			}
 
 			renderTemplate(options)
-			// Requires new version of reaper-operator and k8ssandra PR merged
-			//Expect(reaper.Spec.ServerConfig.CassandraBackend.CassandraDatacenter.Name).To(Equal(targetDcName))
+			Expect(reaper.Spec.ServerConfig.CassandraBackend.CassandraDatacenter.Name).To(Equal(targetDcName))
 		})
 
 		It("modifying autoscheduling option", func() {
@@ -65,7 +64,6 @@ var _ = Describe("Verify Reaper template", func() {
 			}
 
 			renderTemplate(options)
-			// Requires new version of reaper-operator and k8ssandra PR merged
 			//Expect(reaper.Spec.ServerConfig.Autoscheduler).ToNot(BeNil())
 		})
 	})

@@ -10,15 +10,20 @@ import (
 	"path/filepath"
 )
 
-var releaseName = "k8ssandra-test"
-var defaultTestNamespace = "k8ssandra"
-var defaultKubeCtlOptions = k8s.NewKubectlOptions("", "", defaultTestNamespace)
+var (
+	reaperInstanceAnnotation = "reaper.cassandra-reaper.io/instance"
+	helmReleaseName          = "k8ssandra-test"
+	reaperInstanceValue      = fmt.Sprintf("%s-reaper-k8ssandra", helmReleaseName)
+	medusaConfigVolumeName   = fmt.Sprintf("%s-medusa-config-k8ssandra", helmReleaseName)
+	defaultTestNamespace     = "k8ssandra"
+	defaultKubeCtlOptions    = k8s.NewKubectlOptions("", "", defaultTestNamespace)
+)
 
 var _ = Describe("Verify CassandraDatacenter template", func() {
 	var (
 		helmChartPath string
-		err error
-		cassdc *cassdcv1beta1.CassandraDatacenter
+		err           error
+		cassdc        *cassdcv1beta1.CassandraDatacenter
 	)
 
 	BeforeEach(func() {
@@ -33,7 +38,7 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 
 	renderTemplate := func(options *helm.Options) {
 		renderedOutput := helm.RenderTemplate(
-			GinkgoT(), options, helmChartPath, releaseName,
+			GinkgoT(), options, helmChartPath, helmReleaseName,
 			[]string{"templates/cassdc.yaml"},
 		)
 
@@ -52,7 +57,7 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 
 			// Reaper should be enabled in default - verify
 			// Verify reaper annotation is set
-			Expect(cassdc.Annotations).Should(HaveKeyWithValue("reaper.cassandra-reaper.io/instance", fmt.Sprintf("%s-reaper-k8ssandra", releaseName)))
+			Expect(cassdc.Annotations).Should(HaveKeyWithValue(reaperInstanceAnnotation, reaperInstanceValue))
 			// Initcontainer should only have one (reaper, not medusa)
 			Expect(len(cassdc.Spec.PodTemplateSpec.Spec.InitContainers)).To(Equal(1))
 			// Verify initContainers includes JMX credentials
@@ -66,17 +71,21 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 
 		It("disabling reaper", func() {
 			options := &helm.Options{
-				SetValues:   map[string]string{"repair.reaper.enabled": "false"},
+				SetValues:      map[string]string{"repair.reaper.enabled": "false"},
 				KubectlOptions: defaultKubeCtlOptions,
 			}
 
 			renderTemplate(options)
-			Expect(cassdc.Annotations).ShouldNot(HaveKeyWithValue("reaper.cassandra-reaper.io/instance", fmt.Sprintf("%s-reaper-k8ssandra", releaseName)))
+			Expect(cassdc.Annotations).ShouldNot(HaveKeyWithValue(reaperInstanceAnnotation, reaperInstanceValue))
+
+			Expect(len(cassdc.Spec.PodTemplateSpec.Spec.Containers)).To(Equal(1))
+			// No reaper or medusa env variables should be present
+			Expect(len(cassdc.Spec.PodTemplateSpec.Spec.Containers[0].Env)).To(Equal(0))
 		})
 
 		It("enabling only medusa", func() {
 			options := &helm.Options{
-				SetValues:   map[string]string{"backupRestore.medusa.enabled": "true", "repair.reaper.enabled": "false"},
+				SetValues:      map[string]string{"backupRestore.medusa.enabled": "true", "repair.reaper.enabled": "false"},
 				KubectlOptions: defaultKubeCtlOptions,
 			}
 
@@ -96,12 +105,19 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			Expect(cassdc.Spec.PodTemplateSpec.Spec.Containers[0].Env[0].Name).To(Equal("JVM_EXTRA_OPTS"))
 			// Second container should be medusa
 			Expect(cassdc.Spec.PodTemplateSpec.Spec.Containers[1].Name).To(Equal("medusa"))
+
+			// Verify volumeMounts and volumes
+			Expect(len(cassdc.Spec.PodTemplateSpec.Spec.Containers[1].VolumeMounts)).To(Equal(4))
+			Expect(cassdc.Spec.PodTemplateSpec.Spec.Containers[1].VolumeMounts[0].Name).To(Equal(medusaConfigVolumeName))
+
+			Expect(len(cassdc.Spec.PodTemplateSpec.Spec.Volumes)).To(Equal(3))
+			Expect(cassdc.Spec.PodTemplateSpec.Spec.Volumes[0].Name).To(Equal(medusaConfigVolumeName))
 		})
 
 		It("enabling reaper and medusa", func() {
 			// Simple verification that both have properties correctly applied
 			options := &helm.Options{
-				SetValues:   map[string]string{"backupRestore.medusa.enabled": "true"},
+				SetValues:      map[string]string{"backupRestore.medusa.enabled": "true"},
 				KubectlOptions: defaultKubeCtlOptions,
 			}
 

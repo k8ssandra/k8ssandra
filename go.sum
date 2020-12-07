@@ -653,9 +653,10 @@ github.com/jstemmer/go-junit-report v0.9.1/go.mod h1:Brl9GWCQeLvo8nXZwPNNblvFj/X
 github.com/jtolds/gls v4.20.0+incompatible/go.mod h1:QJZ7F/aHp+rZTRtaJ1ow/lLfFfVYBRgL+9YlvaHOwJU=
 github.com/julienschmidt/httprouter v1.2.0/go.mod h1:SYymIcj16QtmaHHD7aYtjjsJG7VTCxuUUipMqKk8s4w=
 github.com/julienschmidt/httprouter v1.3.0/go.mod h1:JR6WtHb+2LUe8TCKY3cZOxFyyO8IZAc4RVcycCCAKdM=
+github.com/k8ssandra/reaper-client-go v0.3.0 h1:77F37hIJrP/YrwIYbJ1LOucJ7CwKWLAt8OM7TD0mDBk=
 github.com/k8ssandra/reaper-client-go v0.3.0/go.mod h1:1yol6YTcKcLOmPH9CfAdeFnVg/KCCTSbIUXMsF1cKII=
-github.com/k8ssandra/reaper-operator v0.0.0-20201124165544-2b87dd8e68b5 h1:GvuW648KKEVyUqJwUPWiy3D0x0Ag1l/0gE8YdduGTe8=
-github.com/k8ssandra/reaper-operator v0.0.0-20201124165544-2b87dd8e68b5/go.mod h1:I9rHky3x4988ch7erva5PRgVj/ZD/4vmnRhb3W9wL2U=
+github.com/k8ssandra/reaper-operator v0.0.0-20201204054951-d4834fcfac4d h1:U9TZ10PCnePMR3l2IFdW58Mp0GIwj4DubUCf/SoOg30=
+github.com/k8ssandra/reaper-operator v0.0.0-20201204054951-d4834fcfac4d/go.mod h1:I9rHky3x4988ch7erva5PRgVj/ZD/4vmnRhb3W9wL2U=
 github.com/kardianos/osext v0.0.0-20190222173326-2bc1f35cddc0/go.mod h1:1NbS8ALrpOvjt0rHPNLyCIeMtbizbir8U//inJ+zuB8=
 github.com/karrick/godirwalk v1.7.5/go.mod h1:2c9FRhkDxdIbgkOnCEvnSWs71Bhugbl46shStcFDJ34=
 github.com/karrick/godirwalk v1.10.12/go.mod h1:RoGL9dQei4vP9ilrpETWE8CLOZ1kiN0LhBygSwrAsHA=

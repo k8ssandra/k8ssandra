@@ -5,16 +5,19 @@ go 1.15
 require (
 	github.com/datastax/cass-operator v1.4.1
 	github.com/gruntwork-io/terratest v0.30.15
+	github.com/k8ssandra/reaper-operator v0.0.0-20201204054951-d4834fcfac4d
 	github.com/onsi/ginkgo v1.14.2
 	github.com/onsi/gomega v1.10.3
-	github.com/stretchr/testify v1.6.1
+	gopkg.in/yaml.v3 v3.0.0-20200313102051-9f266ea9e77c
 	k8s.io/api v0.18.6
 	k8s.io/apimachinery v0.18.6
-	github.com/k8ssandra/reaper-operator v0.0.0-20201124165544-2b87dd8e68b5
+	k8s.io/client-go v12.0.0+incompatible
+	sigs.k8s.io/controller-runtime v0.6.2
 )
 
 replace (
 	github.com/datastax/cass-operator => github.com/jsanda/cass-operator v1.0.1-0.20201111154347-91205f4d8f1e
+	github.com/k8ssandra/reaper-operator => github.com/k8ssandra/reaper-operator v0.0.0-20201204054951-d4834fcfac4d
 	k8s.io/api => k8s.io/api v0.18.6
 	k8s.io/apiextensions-apiserver => k8s.io/apiextensions-apiserver v0.18.6
 	k8s.io/apimachinery => k8s.io/apimachinery v0.18.6
