@@ -1,0 +1,42 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-k8ssandra-stargate
+  labels:
+    app: {{ .Release.Name }}-k8ssandra-stargate
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-k8ssandra-stargate
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-k8ssandra-stargate
+    spec:
+      containers:
+        - name: {{ .Release.Name }}-k8ssandra-stargate
+          image: stargateio/stargate-3_11:v0.0.9
+          ports:
+            - containerPort: 8080
+            - containerPort: 8081
+            - containerPort: 8082
+          resources:
+            limits:
+              memory: "2G"
+          env:
+            - name: JAVA_OPTS
+              value: "-Xmx2G"
+            - name: CLUSTER_NAME
+              value: "{{ .Values.clusterName }}"
+            - name: CLUSTER_VERSION
+              value: "3.11"
+            - name: SEED
+              value: "{{ .Values.clusterName }}-seed-service"
+            - name: DATACENTER_NAME
+              value: "{{ .Values.datacenterName }}"
+            - name: RACK_NAME
+              value: "default"
+            - name: ENABLE_AUTH
+              value: "true"
