@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	chartsPath = ("../../charts/k8ssandra-cluster")
+	chartsPath = ("../../charts/k8ssandra")
 )
 
 func TestTests(t *testing.T) {

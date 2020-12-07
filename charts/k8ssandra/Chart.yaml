@@ -1,6 +1,6 @@
 apiVersion: v2
-name: k8ssandra
-description: Configures and provisions the full k8ssandra stack
+name: k8ssandra-cluster
+description: Configures and creates a k8ssandra cluster
 
 # A chart can be either an 'application' or a 'library' chart.
 #
@@ -15,13 +15,11 @@ type: application
 # This is the chart version. This version number should be incremented each time you make changes
 # to the chart and its templates, including the app version.
 # Versions are expected to follow Semantic Versioning (https://semver.org/)
-version: 0.18.0
+version: 0.19.0
 
 # This is the version number of the application being deployed. This version number should be
 # incremented each time you make changes to the application. Versions are not expected to
 # follow Semantic Versioning. They should reflect the version the application is using.
-#
-# This is set to the C* version that is currently hard coded in the cassdc.yaml template.
 appVersion: 3.11.7
 dependencies:
   - name: cass-operator
@@ -29,7 +27,7 @@ dependencies:
     # The cass-operator chart lives in https://github.com/datastax/cass-operator. There are
     # changes in master that are needed for K8C-19. For now we will sync (i.e., copy) the
     # cass-operator chart into the charts subdirectory.
-    #repository: https://github.com/datastax/cass-operator/tree/master/charts
+#    repository: https://github.com/datastax/cass-operator/tree/master/charts/cass-operator-chart
 
   - name: kube-prometheus-stack
     version: 11.1.6
