@@ -3,13 +3,14 @@ package util
 import (
 	"encoding/json"
 	"fmt"
-	"testing"
+	"strings"
 	"time"
 
 	"github.com/gruntwork-io/terratest/modules/helm"
 	"github.com/gruntwork-io/terratest/modules/k8s"
 	"github.com/gruntwork-io/terratest/modules/logger"
-	"github.com/stretchr/testify/require"
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
 	"k8s.io/apimachinery/pkg/util/wait"
 )
 
@@ -24,70 +25,135 @@ type ReleaseDetail struct {
 	AppVersion string
 }
 
-// Options model for cluster and operator
-type Options struct {
-	Cluster  *helm.Options
-	Operator *helm.Options
+// PodDetail model
+type PodDetail struct {
+	Name   string
+	Ready  string
+	Status string
+}
+
+// K8ssandraOptionsContext options model for cluster and operator
+type K8ssandraOptionsContext struct {
+	Cluster  OptionsContext
+	Operator OptionsContext
+}
+
+// OptionsContext model for testing options context.
+type OptionsContext struct {
+	helmOptions *helm.Options
+	kubeOptions *k8s.KubectlOptions
+	namespace   string
+}
+
+// CreateK8ssandraOptionsContext creates an options context model for k8ssandra test usage.
+func CreateK8ssandraOptionsContext(
+	operatorOptions *helm.Options, clusterOptions *helm.Options) K8ssandraOptionsContext {
+
+	operatorCtx := OptionsContext{
+		helmOptions: operatorOptions,
+		kubeOptions: operatorOptions.KubectlOptions,
+		namespace:   operatorOptions.KubectlOptions.Namespace}
+
+	clusterCtx := OptionsContext{
+		helmOptions: clusterOptions,
+		kubeOptions: clusterOptions.KubectlOptions,
+		namespace:   clusterOptions.KubectlOptions.Namespace}
+
+	return K8ssandraOptionsContext{Operator: operatorCtx, Cluster: clusterCtx}
 }
 
 // InstallChart chart with specific release.
-func InstallChart(t *testing.T, helmOptions *helm.Options, chartName string, releaseName string) {
+func InstallChart(ctx OptionsContext, chartName string, releaseName string) {
 
-	result, err := helm.RunHelmCommandAndGetOutputE(t, helmOptions, "install", "-n",
-		helmOptions.KubectlOptions.Namespace, releaseName, chartName)
+	result, err := helm.RunHelmCommandAndGetOutputE(GinkgoT(), ctx.helmOptions, "install", "-n",
+		ctx.namespace, releaseName, chartName)
+	Log(ctx, "Helm", "Install", result, err)
 
-	Log(t, "Helm", "Install", result, err)
-	require.Nil(t, err)
-	k8s.WaitUntilAllNodesReadyE(t, helmOptions.KubectlOptions, 15, 3*time.Second)
+	Ω(err).Should(BeNil())
+	k8s.WaitUntilAllNodesReadyE(GinkgoT(), ctx.kubeOptions, 15, 3*time.Second)
 }
 
 // UninstallRelease release target to be uninstalled.
-func UninstallRelease(t *testing.T, helmOptions *helm.Options, releaseName string) {
+func UninstallRelease(ctx OptionsContext, releaseName string) {
 
-	result, err := helm.RunHelmCommandAndGetOutputE(t, helmOptions, "uninstall", "-n",
-		helmOptions.KubectlOptions.Namespace, releaseName, "--no-hooks")
-	Log(t, "Helm", "Uninstall", result, err)
-	Pause(t, "Pause for Uninstall completion", 1, 6*time.Second)
+	result, err := helm.RunHelmCommandAndGetOutputE(GinkgoT(), ctx.helmOptions, "uninstall", "-n",
+		ctx.namespace, releaseName, "--no-hooks")
+	Log(ctx, "Helm", "Uninstall", result, err)
+
+	Pause(ctx, "Pause for Uninstall completion", 1, 6*time.Second)
 }
 
 // LookupReleases constructs results of current release details.  nil returned upon error condition.
-func LookupReleases(t *testing.T, helmOptions *helm.Options) []ReleaseDetail {
+func LookupReleases(ctx OptionsContext) []ReleaseDetail {
 
 	var releaseDetail []ReleaseDetail
-	result, err := helm.RunHelmCommandAndGetOutputE(t, helmOptions, "ls", "-n", helmOptions.KubectlOptions.Namespace, "-o", "json")
+	result, err := helm.RunHelmCommandAndGetOutputE(GinkgoT(), ctx.helmOptions,
+		"ls", "-n", ctx.namespace, "-o", "json")
 	if err != nil {
 		return nil
 	}
-
 	json.Unmarshal([]byte(result), &releaseDetail)
 	return releaseDetail
 }
 
+// IsReleaseDeployed indicates status of a named release
+func IsReleaseDeployed(ctx OptionsContext, name string) bool {
+
+	for _, rel := range LookupReleases(ctx) {
+		if rel.Status == "deployed" && rel.Name == name {
+			return true
+		}
+	}
+	return false
+}
+
+// IsPodRunning indicates if a running pod exists and has the prefix supplied.
+func IsPodRunning(ctx OptionsContext, prefix string) bool {
+
+	for _, pod := range LookupRunningPods(ctx) {
+		if prefix != "" && strings.Contains(pod, prefix) {
+			return true
+		}
+	}
+	return false
+}
+
+// LookupRunningPods provides current state of pods scoped by namespace.
+func LookupRunningPods(ctx OptionsContext) []string {
+
+	result, err := k8s.RunKubectlAndGetOutputE(GinkgoT(), ctx.kubeOptions, "get", "pods", "-n",
+		ctx.namespace, "--field-selector=status.phase=Running", "-o", "name")
+	Ω(err).Should(BeNil())
+
+	return strings.Split(result, "\n")
+
+}
+
 // Log helper for output of action details.
-func Log(t *testing.T, subject string, action string, result string, errorDetail error) {
+func Log(ctx OptionsContext, subject string, action string, result string, errorDetail error) {
 
 	if errorDetail != nil {
-		logger.Log(t, fmt.Sprintf("[ %s ] [ %s] [ Error: %s]", subject, action, errorDetail.Error()))
+		logger.Log(GinkgoT(), fmt.Sprintf("[ %s ] [ %s] [ Error: %s]", subject, action, errorDetail.Error()))
 	} else {
 		if result != "" {
-			logger.Log(t, fmt.Sprintf("[ %s ] [ %s ] [ %s]", subject, action, result))
+			logger.Log(GinkgoT(), fmt.Sprintf("[ %s ] [ %s ] [ %s]", subject, action, result))
 		} else {
-			logger.Log(t, fmt.Sprintf("[ %s ] [ %s ]", subject, action))
+			logger.Log(GinkgoT(), fmt.Sprintf("[ %s ] [ %s ]", subject, action))
 		}
 	}
 }
 
-// LogResults helper for output of map-based result details
-func LogResults(t *testing.T, message string, results map[string]string) {
+// LogResults helper for output of map-based result details.
+func LogResults(ctx OptionsContext, message string, results map[string]string) {
 	for k, v := range results {
-		logger.Log(t, fmt.Sprintf("%s Id: %s Result: %s", message, k, v))
+		logger.Log(GinkgoT(), fmt.Sprintf("%s Id: %s Result: %s", message, k, v))
 	}
 }
 
 // Pause helper responsible for pausing for a specified time duration and interval.
-func Pause(t *testing.T, message string, interval, timeout time.Duration) {
+func Pause(ctx OptionsContext, message string, interval, timeout time.Duration) {
 
-	logger.Log(t, fmt.Sprintf("%s Timeout: %s", message, timeout))
+	logger.Log(GinkgoT(), fmt.Sprintf("%s Timeout: %s", message, timeout))
 	wait.Poll(interval, timeout, func() (bool, error) {
 		if true {
 			time.Sleep(1 * time.Second)

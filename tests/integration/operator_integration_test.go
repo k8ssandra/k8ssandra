@@ -3,67 +3,79 @@ package integration
 import (
 	"testing"
 
-	"github.com/stretchr/testify/require"
-
 	"github.com/gruntwork-io/terratest/modules/helm"
 	"github.com/gruntwork-io/terratest/modules/k8s"
 	. "github.com/k8ssandra/k8ssandra/tests/integration/util"
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
 )
 
 var (
-	testSuite          = "k8ssandra-integration"
-	releaseName        = "k8ssandra"
-	namespace          = "k8ssandra"
-	operatorChart      = "../../charts/k8ssandra"
-	clusterChart       = "../../charts/k8ssandra-cluster"
-	clusterReleaseName = "cassdc"
-	deployedStatus     = "deployed"
+	suiteName           = "k8ssandra-integration-suite"
+	operatorReleaseName = "k8ssandra"
+	namespace           = "k8ssandra"
+	operatorChart       = "../../charts/k8ssandra"
+	clusterChart        = "../../charts/k8ssandra-cluster"
+	clusterReleaseName  = "cassdc"
 )
 
-func setup(t *testing.T) Options {
+func Test(t *testing.T) {
+	RegisterFailHandler(Fail)
+	RunSpecs(t, suiteName)
+}
+
+// setup used for creating test option context and cleanup of operator and cluster.
+func setup() K8ssandraOptionsContext {
 
 	kubeOptions := k8s.NewKubectlOptions("", "", namespace)
 	operatorOptions := &helm.Options{KubectlOptions: kubeOptions}
 	clusterOptions := &helm.Options{KubectlOptions: kubeOptions}
 
-	UninstallRelease(t, clusterOptions, clusterReleaseName)
-	UninstallRelease(t, operatorOptions, releaseName)
-	return Options{Cluster: clusterOptions, Operator: operatorOptions}
-
+	ctx := CreateK8ssandraOptionsContext(operatorOptions, clusterOptions)
+	UninstallRelease(ctx.Cluster, clusterReleaseName)
+	UninstallRelease(ctx.Operator, operatorReleaseName)
+	return ctx
 }
 
-func TestOperatorAndClusterInstall(t *testing.T) {
+var _ = Describe(suiteName, func() {
 
-	options := setup(t)
+	var options K8ssandraOptionsContext
 
-	InstallChart(t, options.Operator, operatorChart, releaseName)
-	var releases = LookupReleases(t, options.Operator)
-	require.Len(t, releases, 1, "Expected a single k8ssandra release entry.")
+	Describe("baseline required preconditions", func() {
 
-	var release = releases[0]
-	require.Equal(t, release.Name, releaseName)
-	require.Equal(t, release.Status, deployedStatus)
-	require.Equal(t, release.Namespace, namespace)
+		It("should perform setup followed by operator install", func() {
 
-	// k8ssandra-cluster requires that the previous operator is installed.
-	InstallChart(t, options.Cluster, clusterChart, clusterReleaseName)
-	releases = LookupReleases(t, options.Cluster)
-	require.Len(t, releases, 2, "Expected two k8ssandra namespaced release entries.")
+			options = setup()
+			By("Expecting operator and cluster options to be setup")
+			Ω(options).ShouldNot(BeNil())
+			Ω(options.Cluster).ShouldNot(BeNil())
+			Ω(options.Operator).ShouldNot(BeNil())
 
-	for _, rel := range releases {
-		if rel.Name == clusterReleaseName {
-			require.True(t, rel.Status == deployedStatus && rel.Namespace == namespace)
-		}
-	}
-}
+			InstallChart(options.Operator, operatorChart, operatorReleaseName)
 
-func TestK8ssandraSetup(t *testing.T) {
+			By("Expecting the operator to be in a deployed status")
+			Ω(IsReleaseDeployed(options.Operator, "k8ssandra")).Should(BeTrue())
+		})
+	})
 
-	options := setup(t)
-	require.NotNil(t, options)
-	require.NotNil(t, options.Cluster)
-	require.NotNil(t, options.Operator)
+	Describe("k8ssandra cluster integration", func() {
 
-	var releases = LookupReleases(t, options.Operator)
-	require.Len(t, releases, 0, "Expected there is not a k8ssandra release entry.")
-}
+		BeforeEach(func() {
+			options = setup()
+		})
+
+		It("should install utilizing charts; k8ssandra operator then cluster", func() {
+
+			InstallChart(options.Operator, operatorChart, operatorReleaseName)
+			InstallChart(options.Cluster, clusterChart, clusterReleaseName)
+
+			By("Expecting to have the operator and cluster in deployed status")
+			Ω(IsReleaseDeployed(options.Operator, "k8ssandra")).Should(BeTrue())
+			Ω(IsReleaseDeployed(options.Cluster, "cassdc")).Should(BeTrue())
+
+			By("Expecting to have running cass-operator pod")
+			Ω(IsPodRunning(options.Operator, "cass-operator")).Should(BeTrue())
+
+		})
+	})
+})
