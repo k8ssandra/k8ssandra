@@ -1,4 +1,4 @@
-package integration
+package operator
 
 import (
 	"testing"
@@ -15,8 +15,8 @@ var (
 	operatorReleaseName = "k8ssandra"
 	namespace           = "k8ssandra"
 	clusterReleaseName  = "cassdc"
-	operatorChart       = "../../charts/k8ssandra"
-	clusterChart        = "../../charts/k8ssandra-cluster"
+	operatorChart       = "../../../charts/k8ssandra"
+	clusterChart        = "../../../charts/k8ssandra-cluster"
 )
 
 func Test(t *testing.T) {
