@@ -118,11 +118,25 @@ func IsPodRunning(ctx OptionsContext, prefix string) bool {
 	return false
 }
 
+// IsLabeledPodExisting
+func IsLabeledPodExisting(ctx OptionsContext, label string) bool {
+	pods := LookupPodsByLabel(ctx, label)
+	return pods != nil && len(pods) > 0
+}
+
+// LookupPodsByLabel lookup pods by label
+func LookupPodsByLabel(ctx OptionsContext, label string) []string {
+	result, err := k8s.RunKubectlAndGetOutputE(GinkgoT(), ctx.kubeOptions, "get", "pods", "-n",
+		ctx.namespace, "--show-labels", "-l", "name="+label, "--no-headers=true")
+	Ω(err).Should(BeNil())
+	return strings.Split(result, "\n")
+}
+
 // LookupRunningPods provides current state of pods scoped by namespace.
 func LookupRunningPods(ctx OptionsContext) []string {
 
 	result, err := k8s.RunKubectlAndGetOutputE(GinkgoT(), ctx.kubeOptions, "get", "pods", "-n",
-		ctx.namespace, "--field-selector=status.phase=Running", "-o", "name")
+		ctx.namespace, "--field-selector=status.phase=Running", "-o", "name", "--no-headers=true")
 	Ω(err).Should(BeNil())
 
 	return strings.Split(result, "\n")

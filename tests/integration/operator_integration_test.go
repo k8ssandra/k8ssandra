@@ -14,9 +14,9 @@ var (
 	suiteName           = "k8ssandra-integration-suite"
 	operatorReleaseName = "k8ssandra"
 	namespace           = "k8ssandra"
+	clusterReleaseName  = "cassdc"
 	operatorChart       = "../../charts/k8ssandra"
 	clusterChart        = "../../charts/k8ssandra-cluster"
-	clusterReleaseName  = "cassdc"
 )
 
 func Test(t *testing.T) {
@@ -46,6 +46,7 @@ var _ = Describe(suiteName, func() {
 		It("should perform setup followed by operator install", func() {
 
 			options = setup()
+
 			By("Expecting operator and cluster options to be setup")
 			Ω(options).ShouldNot(BeNil())
 			Ω(options.Cluster).ShouldNot(BeNil())
@@ -76,6 +77,8 @@ var _ = Describe(suiteName, func() {
 			By("Expecting to have running cass-operator pod")
 			Ω(IsPodRunning(options.Operator, "cass-operator")).Should(BeTrue())
 
+			By("Expecting to have labeled cass-operator pod existing")
+			Ω(IsLabeledPodExisting(options.Operator, "cass-operator")).Should(BeTrue())
 		})
 	})
 })
