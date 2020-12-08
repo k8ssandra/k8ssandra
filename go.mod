@@ -8,11 +8,6 @@ require (
 	github.com/k8ssandra/reaper-operator v0.0.0-20201204054951-d4834fcfac4d
 	github.com/onsi/ginkgo v1.14.2
 	github.com/onsi/gomega v1.10.3
-	gopkg.in/yaml.v3 v3.0.0-20200313102051-9f266ea9e77c
-	k8s.io/api v0.18.6
-	k8s.io/apimachinery v0.18.6
-	k8s.io/client-go v12.0.0+incompatible
-	sigs.k8s.io/controller-runtime v0.6.2
 )
 
 replace (

@@ -59,12 +59,12 @@ var _ = Describe("Verify Reaper template", func() {
 
 		It("modifying autoscheduling option", func() {
 			options := &helm.Options{
-				SetStrValues:   map[string]string{"autoscheduling": "true"},
+				SetStrValues:   map[string]string{"repair.reaper.autoschedule": "true"},
 				KubectlOptions: k8s.NewKubectlOptions("", "", "k8ssandra"),
 			}
 
 			renderTemplate(options)
-			//Expect(reaper.Spec.ServerConfig.Autoscheduler).ToNot(BeNil())
+			Expect(reaper.Spec.ServerConfig.AutoScheduling).ToNot(BeNil())
 		})
 	})
 })
