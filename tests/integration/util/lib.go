@@ -63,14 +63,22 @@ func CreateK8ssandraOptionsContext(
 }
 
 // InstallChart chart with specific release.
-func InstallChart(ctx OptionsContext, chartName string, releaseName string) {
+func InstallChart(ctx OptionsContext, chartName string, releaseName string, additionalArgs string) {
 
-	result, err := helm.RunHelmCommandAndGetOutputE(GinkgoT(), ctx.helmOptions, "install", "-n",
-		ctx.namespace, releaseName, chartName)
-	Log(ctx, "Helm", "Install", result, err)
+	var result string
+	var err error
+
+	if additionalArgs != "" {
+		result, err = helm.RunHelmCommandAndGetOutputE(GinkgoT(), ctx.helmOptions, "install", "-n",
+			ctx.namespace, releaseName, chartName, additionalArgs)
+	} else {
+		result, err = helm.RunHelmCommandAndGetOutputE(GinkgoT(), ctx.helmOptions, "install", "-n",
+			ctx.namespace, releaseName, chartName)
+	}
+	Log("Helm", "Install", result, err)
 
 	Ω(err).Should(BeNil())
-	k8s.WaitUntilAllNodesReadyE(GinkgoT(), ctx.kubeOptions, 15, 3*time.Second)
+	k8s.WaitUntilAllNodesReady(GinkgoT(), ctx.kubeOptions, 15, 3*time.Second)
 }
 
 // UninstallRelease release target to be uninstalled.
@@ -78,9 +86,9 @@ func UninstallRelease(ctx OptionsContext, releaseName string) {
 
 	result, err := helm.RunHelmCommandAndGetOutputE(GinkgoT(), ctx.helmOptions, "uninstall", "-n",
 		ctx.namespace, releaseName, "--no-hooks")
-	Log(ctx, "Helm", "Uninstall", result, err)
+	Log("Helm", "Uninstall", result, err)
 
-	Pause(ctx, "Pause for Uninstall completion", 1, 6*time.Second)
+	Pause("Pause for Uninstall completion", 1, 4*time.Second)
 }
 
 // LookupReleases constructs results of current release details.  nil returned upon error condition.
@@ -92,7 +100,9 @@ func LookupReleases(ctx OptionsContext) []ReleaseDetail {
 	if err != nil {
 		return nil
 	}
-	json.Unmarshal([]byte(result), &releaseDetail)
+	unmarshalErr := json.Unmarshal([]byte(result), &releaseDetail)
+	Ω(unmarshalErr).Should(BeNil())
+
 	return releaseDetail
 }
 
@@ -140,11 +150,10 @@ func LookupRunningPods(ctx OptionsContext) []string {
 	Ω(err).Should(BeNil())
 
 	return strings.Split(result, "\n")
-
 }
 
 // Log helper for output of action details.
-func Log(ctx OptionsContext, subject string, action string, result string, errorDetail error) {
+func Log(subject string, action string, result string, errorDetail error) {
 
 	if errorDetail != nil {
 		logger.Log(GinkgoT(), fmt.Sprintf("[ %s ] [ %s] [ Error: %s]", subject, action, errorDetail.Error()))
@@ -158,20 +167,21 @@ func Log(ctx OptionsContext, subject string, action string, result string, error
 }
 
 // LogResults helper for output of map-based result details.
-func LogResults(ctx OptionsContext, message string, results map[string]string) {
+func LogResults(message string, results map[string]string) {
 	for k, v := range results {
 		logger.Log(GinkgoT(), fmt.Sprintf("%s Id: %s Result: %s", message, k, v))
 	}
 }
 
 // Pause helper responsible for pausing for a specified time duration and interval.
-func Pause(ctx OptionsContext, message string, interval, timeout time.Duration) {
+func Pause(message string, interval, timeout time.Duration) {
 
 	logger.Log(GinkgoT(), fmt.Sprintf("%s Timeout: %s", message, timeout))
-	wait.Poll(interval, timeout, func() (bool, error) {
+	err := wait.Poll(interval, timeout, func() (bool, error) {
 		if true {
 			time.Sleep(1 * time.Second)
 		}
 		return false, nil
 	})
+	Ω(err).Should(BeNil())
 }
