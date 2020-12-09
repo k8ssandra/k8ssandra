@@ -10,6 +10,8 @@ jobs:
     env:
       HELM_VERSION: 3.4.0
       YQ_VERSION: 3.4.1
+      GOPATH: /home/runner/go
+      GOROOT: /usr/local/go1.15
     outputs:
       HELM_VERSION: ${{ env.HELM_VERSION}}
       YQ_VERSION: ${{ env.YQ_VERSION }}
@@ -108,3 +110,20 @@ jobs:
             fi
           done
         working-directory: build
+
+  unit-tests:
+    needs:
+      - setup
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Go 1.x
+        uses: actions/setup-go@v2
+        with:
+          go-version: ^1.15
+        id: go
+      - name: Check out code into the Go module directory
+        uses: actions/checkout@v2
+      - name: Run unit tests
+        run: |
+          export PATH=$GOROOT/bin:$GOPATH/bin:$PATH
+          make test
