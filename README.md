@@ -33,3 +33,18 @@ K8ssandra is essentially an aggregation of several components that  together com
 * [grafana-operator](https://github.com/integr8ly/grafana-operator)
 * [reaper-operator](https://github.com/thelastpickle/reaper-operator)
 * [helm](https://helm.sh)
+
+
+## Testing
+
+### Unit Testing
+Unit tests reside in ```tests/unit```
+
+### Integration Testing
+Integration tests reside in ```tests/integration```
+
+Integration style tests include interoperability between various k8ssandra components. When running integration tests 
+locally, it may be required to expand the default test timeout depending upon the test being targeted.
+
+Example: 
+```go test -v -timeout=120s operator_integration_test.go```
