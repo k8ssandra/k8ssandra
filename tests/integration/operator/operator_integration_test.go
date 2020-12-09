@@ -52,7 +52,7 @@ var _ = Describe(suiteName, func() {
 			Ω(options.Cluster).ShouldNot(BeNil())
 			Ω(options.Operator).ShouldNot(BeNil())
 
-			InstallChart(options.Operator, operatorChart, operatorReleaseName)
+			InstallChart(options.Operator, operatorChart, operatorReleaseName, "")
 
 			By("Expecting the operator to be in a deployed status")
 			Ω(IsReleaseDeployed(options.Operator, "k8ssandra")).Should(BeTrue())
@@ -67,8 +67,8 @@ var _ = Describe(suiteName, func() {
 
 		It("should install utilizing charts; k8ssandra operator then cluster", func() {
 
-			InstallChart(options.Operator, operatorChart, operatorReleaseName)
-			InstallChart(options.Cluster, clusterChart, clusterReleaseName)
+			InstallChart(options.Operator, operatorChart, operatorReleaseName, "")
+			InstallChart(options.Cluster, clusterChart, clusterReleaseName, "")
 
 			By("Expecting to have the operator and cluster in deployed status")
 			Ω(IsReleaseDeployed(options.Operator, "k8ssandra")).Should(BeTrue())
@@ -79,6 +79,19 @@ var _ = Describe(suiteName, func() {
 
 			By("Expecting to have labeled cass-operator pod existing")
 			Ω(IsLabeledPodExisting(options.Operator, "cass-operator")).Should(BeTrue())
+
+			Pause("Waiting before fully cleaning up and verifying", 1, 5)
+
+			By("First the cluster uninstall")
+			UninstallRelease(options.Cluster, clusterReleaseName)
+
+			By("Followed by the operator uninstall")
+			UninstallRelease(options.Operator, operatorReleaseName)
+
+			Pause("Waiting to verify the uninstall", 1, 10)
+			Ω(IsLabeledPodExisting(options.Operator, "cass-operator")).Should(BeFalse())
+			Ω(IsReleaseDeployed(options.Operator, "k8ssandra")).Should(BeFalse())
+			Ω(IsReleaseDeployed(options.Cluster, "cassdc")).Should(BeFalse())
 		})
 	})
 })

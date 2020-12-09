@@ -88,7 +88,7 @@ func UninstallRelease(ctx OptionsContext, releaseName string) {
 		ctx.namespace, releaseName, "--no-hooks")
 	Log("Helm", "Uninstall", result, err)
 
-	Pause("Pause for Uninstall completion", 1, 4*time.Second)
+	Pause("Pause for Uninstall completion", 1, 6*time.Second)
 }
 
 // LookupReleases constructs results of current release details.  nil returned upon error condition.
@@ -120,7 +120,11 @@ func IsReleaseDeployed(ctx OptionsContext, name string) bool {
 // IsPodRunning indicates if a running pod exists and has the prefix supplied.
 func IsPodRunning(ctx OptionsContext, prefix string) bool {
 
-	for _, pod := range LookupRunningPods(ctx) {
+	pods := LookupRunningPods(ctx)
+	if pods == nil {
+		return false
+	}
+	for _, pod := range pods {
 		if prefix != "" && strings.Contains(pod, prefix) {
 			return true
 		}
@@ -139,6 +143,10 @@ func LookupPodsByLabel(ctx OptionsContext, label string) []string {
 	result, err := k8s.RunKubectlAndGetOutputE(GinkgoT(), ctx.kubeOptions, "get", "pods", "-n",
 		ctx.namespace, "--show-labels", "-l", "name="+label, "--no-headers=true")
 	Ω(err).Should(BeNil())
+
+	if strings.Contains(result, "No resources found") {
+		return nil
+	}
 	return strings.Split(result, "\n")
 }
 
@@ -149,6 +157,9 @@ func LookupRunningPods(ctx OptionsContext) []string {
 		ctx.namespace, "--field-selector=status.phase=Running", "-o", "name", "--no-headers=true")
 	Ω(err).Should(BeNil())
 
+	if strings.Contains(result, "No resources found") {
+		return nil
+	}
 	return strings.Split(result, "\n")
 }
 
@@ -177,11 +188,10 @@ func LogResults(message string, results map[string]string) {
 func Pause(message string, interval, timeout time.Duration) {
 
 	logger.Log(GinkgoT(), fmt.Sprintf("%s Timeout: %s", message, timeout))
-	err := wait.Poll(interval, timeout, func() (bool, error) {
+	wait.Poll(interval, timeout, func() (bool, error) {
 		if true {
 			time.Sleep(1 * time.Second)
 		}
 		return false, nil
 	})
-	Ω(err).Should(BeNil())
 }
