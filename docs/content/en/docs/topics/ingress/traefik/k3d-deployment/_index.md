@@ -2,7 +2,6 @@
 title: "K3d Deployment"
 linkTitle: "K3d Deployment"
 weight: 1
-date: 2020-11-13
 description: |
   Deploy a local K3d cluster with Traefik installed and configured.
 ---

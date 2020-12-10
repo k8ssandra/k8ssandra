@@ -2,7 +2,6 @@
 title: "K8ssandra FAQs"
 linkTitle: "K8ssandra FAQs"
 weight: 1
-date: 2020-11-18
 description: Frequently asked questions about K8ssandra.
 ---
 

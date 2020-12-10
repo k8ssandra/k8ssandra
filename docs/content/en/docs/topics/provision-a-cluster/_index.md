@@ -2,7 +2,6 @@
 title: "Provision a Cluster"
 linkTitle: "Provision a Cluster"
 weight: 1
-date: 2020-11-12
 description: Steps to provision a cluster in Kubernetes
 ---
 
