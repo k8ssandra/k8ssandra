@@ -2,7 +2,7 @@
 title: "Backup and Restore"
 linkTitle: "Backup and Restore"
 weight: 3
-date: 2020-11-16
+date: 2020-12-10
 description: K8ssandra provides backup/restore via Medusa
 ---
 
@@ -14,6 +14,7 @@ This topic walks you through the steps to backup and restore Cassandra data runn
 * K8ssandra-cluster Helm chart, which we'll extend with `backupRestore` Medusa buckets for Amazon S3 integration
 * Sample files in GitHub:
   * [medusa-bucket-key.yaml](./medusa-bucket-key.yaml) to create a secret with credentials for AWS S3 buckets
+  * [backup-restore-values.yaml](./backup-restore-values.yaml) to enable Medusa (backup/restore service) and set related minimal values
   * [test_data.cql](./test_data.cql) to populate a Cassandra keyspace and table with data
 
 ## Prerequisites
@@ -33,7 +34,24 @@ You will need storage for the backups. This topic shows the use of AWS S3 bucket
 
 * If you'll use AWS S3, before proceeding with the configuration described below, verify that you know the `aws_access_key_id` and `aws_secret_access_key` values. Or  contact your IT team if they manage those assets. You'll provide those details in an edited version of the [medusa-bucket-key.yaml](./medusa-bucket-key.yaml) file. For information about the S3 setup steps, see this helpful [readme](https://github.com/thelastpickle/cassandra-medusa/blob/master/docs/aws_s3_setup.md).  
 
-* If you haven’t already, install the k8ssandra chart.
+* If you haven't already, add and update the relevant repos:
+
+```
+helm repo add k8ssandra https://helm.k8ssandra.io/
+helm repo add backup https://helm.k8ssandra.io/
+helm repo add restore https://helm.k8ssandra.io/
+helm repo update
+```
+
+```
+Hang tight while we grab the latest from your chart repositories...
+...Successfully got an update from the "k8ssandra" chart repository
+...Successfully got an update from the "backup" chart repository
+...Successfully got an update from the "restore" chart repository
+Update Complete. ⎈Happy Helming!⎈
+```
+
+* If you haven’t already, install the k8ssandra chart in any namespace; this command will use the `default` namespace.
 
 `helm install k8ssandra-tools k8ssandra/k8ssandra`
 
@@ -50,7 +68,7 @@ The first `kubectl` command above installed the cass-operator and the Prometheus
 
 ### Create secret for read/write access to an S3 bucket
 
-Before creating the k8ssandra-cluster, we need to supply credentials so that Medusa has read/write to an S3 bucket, which is where the backup will be stored.  Currently, Medusa supports local, Amazon S3, GKE, and other bucket types. In this example, we’re using S3.
+Before creating the k8ssandra-cluster, we need to supply credentials so that Medusa has read/write to an AWS S3 bucket, which is where the backup will be stored.  Currently, Medusa supports local, Amazon S3, GKE, and other bucket types. In this example, we’re using S3.
 
 **Note:** See [AWS S3 setup](https://github.com/thelastpickle/cassandra-medusa/blob/master/docs/aws_s3_setup.md) on the Medusa wiki for more details for configuring S3.
 
@@ -88,6 +106,24 @@ secret/medusa-bucket-key configured
 Install the k8ssandra-cluster chart with the following properties. Backup and restore operations are enabled by default. In the following example, `bucketName` corresponds to the name of the S3 bucket: `K8ssanda-bucket-dev`.  The `bucketSecret` corresponds to the secret credentials.
 
 `helm install k8ssandra-cluster-1 k8ssandra/k8ssandra-cluster --set backupRestore.medusa.bucketName=k8ssanda-bucket-dev --set backupRestore.medusa.bucketSecret=medusa-bucket-secret`
+
+As an alternative to specifying those --set parameters, you can use the provided [backup-restore-values.yaml](./backup-restore-values.yaml) file. It contains:
+
+```
+size: 3
+backupRestore: 
+  medusa:
+    enabled: true
+    bucketName: kssandra-bucket-dev
+    bucketSecret: medusa-bucket-key
+    multiTenant: true
+    storage: s3
+```
+
+You must enable Medusa to use the backup and restore service. You can specify the values file on the command. Example:
+
+`helm install demo k8ssandra/k8ssandra-cluster -f backup-restore-values.yaml`
+
 
 The `k8ssandra-cluster` Helm chart includes cluster services and the Grafana Operator. Notice that `k8ssandra-cluster` add a number of properties in the `cassdc` datacenter.  
 
