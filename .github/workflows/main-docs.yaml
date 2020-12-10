@@ -75,3 +75,6 @@ jobs:
             -H "Authorization: Bearer ${BEARER_TOKEN}" \
             -H "Content-Type: application/json" \
             --data '{"purge_everything":true}'
+      - name: Ping Google with Sitemap
+        run: |
+          curl -X GET -L "http://www.google.com/ping?sitemap=https://k8ssandra.io/sitemap.xml"

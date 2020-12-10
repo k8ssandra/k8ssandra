@@ -2,7 +2,6 @@
 title: "Backup and Restore"
 linkTitle: "Backup and Restore"
 weight: 3
-date: 2020-11-16
 description: K8ssandra provides backup/restore via Medusa
 ---
 

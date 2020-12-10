@@ -2,7 +2,6 @@
 title: "Kind Deployment"
 linkTitle: "Kind Deployment"
 weight: 1
-date: 2020-11-12
 description: |
   Deploy a local Kind cluster with Traefik installed and configured.
 ---
