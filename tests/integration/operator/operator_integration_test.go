@@ -28,10 +28,12 @@ func Test(t *testing.T) {
 func setup() K8ssandraOptionsContext {
 
 	kubeOptions := k8s.NewKubectlOptions("", "", namespace)
+
 	operatorOptions := &helm.Options{KubectlOptions: kubeOptions}
 	clusterOptions := &helm.Options{KubectlOptions: kubeOptions}
+	networkOptions := &helm.Options{KubectlOptions: kubeOptions}
 
-	ctx := CreateK8ssandraOptionsContext(operatorOptions, clusterOptions)
+	ctx := CreateK8ssandraOptionsContext(operatorOptions, clusterOptions, networkOptions)
 	UninstallRelease(ctx.Cluster, clusterReleaseName)
 	UninstallRelease(ctx.Operator, operatorReleaseName)
 	return ctx
@@ -51,11 +53,6 @@ var _ = Describe(suiteName, func() {
 			Ω(options).ShouldNot(BeNil())
 			Ω(options.Cluster).ShouldNot(BeNil())
 			Ω(options.Operator).ShouldNot(BeNil())
-
-			InstallChart(options.Operator, operatorChart, operatorReleaseName, "")
-
-			By("Expecting the operator to be in a deployed status")
-			Ω(IsReleaseDeployed(options.Operator, "k8ssandra")).Should(BeTrue())
 		})
 	})
 
@@ -67,8 +64,8 @@ var _ = Describe(suiteName, func() {
 
 		It("should install utilizing charts; k8ssandra operator then cluster", func() {
 
-			InstallChart(options.Operator, operatorChart, operatorReleaseName, "")
-			InstallChart(options.Cluster, clusterChart, clusterReleaseName, "")
+			InstallChart(options.Operator, operatorChart, operatorReleaseName)
+			InstallChart(options.Cluster, clusterChart, clusterReleaseName)
 
 			By("Expecting to have the operator and cluster in deployed status")
 			Ω(IsReleaseDeployed(options.Operator, "k8ssandra")).Should(BeTrue())

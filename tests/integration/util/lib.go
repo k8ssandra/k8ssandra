@@ -36,6 +36,7 @@ type PodDetail struct {
 type K8ssandraOptionsContext struct {
 	Cluster  OptionsContext
 	Operator OptionsContext
+	Network  OptionsContext
 }
 
 // OptionsContext model for testing options context.
@@ -43,11 +44,14 @@ type OptionsContext struct {
 	helmOptions *helm.Options
 	kubeOptions *k8s.KubectlOptions
 	namespace   string
+	Args        []string
 }
 
 // CreateK8ssandraOptionsContext creates an options context model for k8ssandra test usage.
 func CreateK8ssandraOptionsContext(
-	operatorOptions *helm.Options, clusterOptions *helm.Options) K8ssandraOptionsContext {
+	operatorOptions *helm.Options,
+	clusterOptions *helm.Options,
+	networkOptions *helm.Options) K8ssandraOptionsContext {
 
 	operatorCtx := OptionsContext{
 		helmOptions: operatorOptions,
@@ -59,22 +63,20 @@ func CreateK8ssandraOptionsContext(
 		kubeOptions: clusterOptions.KubectlOptions,
 		namespace:   clusterOptions.KubectlOptions.Namespace}
 
-	return K8ssandraOptionsContext{Operator: operatorCtx, Cluster: clusterCtx}
+	networkCtx := OptionsContext{
+		helmOptions: networkOptions,
+		kubeOptions: networkOptions.KubectlOptions,
+		namespace:   networkOptions.KubectlOptions.Namespace}
+
+	return K8ssandraOptionsContext{Operator: operatorCtx, Cluster: clusterCtx, Network: networkCtx}
 }
 
 // InstallChart chart with specific release.
-func InstallChart(ctx OptionsContext, chartName string, releaseName string, additionalArgs string) {
+func InstallChart(ctx OptionsContext, chartName string, releaseName string) {
 
-	var result string
-	var err error
+	cmdArgs := append(ctx.Args, "-n", ctx.namespace, releaseName, chartName)
 
-	if additionalArgs != "" {
-		result, err = helm.RunHelmCommandAndGetOutputE(GinkgoT(), ctx.helmOptions, "install", "-n",
-			ctx.namespace, releaseName, chartName, additionalArgs)
-	} else {
-		result, err = helm.RunHelmCommandAndGetOutputE(GinkgoT(), ctx.helmOptions, "install", "-n",
-			ctx.namespace, releaseName, chartName)
-	}
+	result, err := helm.RunHelmCommandAndGetOutputE(GinkgoT(), ctx.helmOptions, "install", cmdArgs...)
 	Log("Helm", "Install", result, err)
 
 	Ω(err).Should(BeNil())
@@ -88,10 +90,10 @@ func UninstallRelease(ctx OptionsContext, releaseName string) {
 		ctx.namespace, releaseName, "--no-hooks")
 	Log("Helm", "Uninstall", result, err)
 
-	Pause("Pause for Uninstall completion", 1, 6*time.Second)
+	Pause("Pause for Uninstall completion", 1, 10*time.Second)
 }
 
-// LookupReleases constructs results of current release details.  nil returned upon error condition.
+// LookupReleases constructs results of current release details.  nil sreturned upon error condition.
 func LookupReleases(ctx OptionsContext) []ReleaseDetail {
 
 	var releaseDetail []ReleaseDetail
