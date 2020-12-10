@@ -2,7 +2,7 @@ size: 3
 backupRestore: 
   medusa:
     enabled: true
-    bucketName: kssandra-bucket-dev
+    bucketName: k8ssandra-bucket-dev
     bucketSecret: medusa-bucket-key
     multiTenant: true
     storage: s3
