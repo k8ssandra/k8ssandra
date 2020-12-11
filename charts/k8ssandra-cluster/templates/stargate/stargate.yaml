@@ -1,10 +1,12 @@
 ---
+{{- if .Values.stargate.enabled }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ .Release.Name }}-k8ssandra-stargate
   labels:
     app: {{ .Release.Name }}-k8ssandra-stargate
+{{ include "k8ssandra-cluster.labels" . | indent 4 }}
 spec:
   replicas: 2
   selector:
@@ -17,26 +19,39 @@ spec:
     spec:
       containers:
         - name: {{ .Release.Name }}-k8ssandra-stargate
-          image: stargateio/stargate-3_11:v0.0.9
+  {{- if eq .Values.stargate.containerImage "auto" }}
+    {{- if eq .Values.stargate.clusterVersion "3.11" }}
+          image: "stargateio/stargate-3_11:v0.0.9"
+    {{- else if eq .Values.stargate.clusterVersion "4.0" }}
+          image: "stargateio/stargate-4_0:v0.0.9"
+    {{- else }}
+          image: "containerImage-auto-did-not-recognize-clusterVersion-{{ .Values.stargate.clusterVersion }}"
+    {{- end }}
+  {{- else }}
+          image: {{ .Values.stargate.containerImage | quote }}
+  {{- end }}
           ports:
             - containerPort: 8080
             - containerPort: 8081
             - containerPort: 8082
+            - containerPort: 8085
           resources:
             limits:
-              memory: "2G"
+              memory: {{ .Values.stargate.resourceLimits.memory | quote }}
           env:
             - name: JAVA_OPTS
-              value: "-Xmx2G"
+              value: {{ .Values.stargate.javaOpts | quote }}
             - name: CLUSTER_NAME
-              value: "{{ .Values.clusterName }}"
+              value: {{ .Values.clusterName | quote }}
             - name: CLUSTER_VERSION
-              value: "3.11"
+              value: {{ .Values.stargate.clusterVersion | quote }}
             - name: SEED
-              value: "{{ .Values.clusterName }}-seed-service"
+              value: {{ .Values.clusterName + "-seed-service" | quote }}
             - name: DATACENTER_NAME
-              value: "{{ .Values.datacenterName }}"
+              value: {{ .Values.datacenterName | quote }}
             - name: RACK_NAME
-              value: "default"
+              value: {{ .Values.rackName | quote }}
             - name: ENABLE_AUTH
-              value: "true"
+              value: "false"
+  {{- end }}
+{{- end }}
