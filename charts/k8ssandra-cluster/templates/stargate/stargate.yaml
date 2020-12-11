@@ -31,10 +31,16 @@ spec:
           image: {{ .Values.stargate.containerImage | quote }}
   {{- end }}
           ports:
-            - containerPort: 8080
-            - containerPort: 8081
-            - containerPort: 8082
-            - containerPort: 8085
+            - name: graphql
+              containerPort: 8080
+            - name: authorization
+              containerPort: 8081
+            - name: rest
+              containerPort: 8082
+            - name: admin
+              containerPort: 8084
+            - name: metrics
+              containerPort: 8085
           resources:
             limits:
               memory: {{ .Values.stargate.resourceLimits.memory | quote }}
@@ -53,4 +59,18 @@ spec:
               value: {{ .Values.rackName | quote }}
             - name: ENABLE_AUTH
               value: "false"
+          startupProbe:
+            httpGet:
+              path: /checker/liveness
+              port: admin
+            failureThreshold: 10
+          livenessProbe:
+            httpGet:
+              path: /checker/liveness
+              port: admin
+            failureThreshold: 1
+          readinessProbe:
+            httpGet:
+              path: /checker/readiness
+              port: admin
 {{- end }}
