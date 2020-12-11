@@ -1,4 +1,3 @@
----
 {{- if .Values.stargate.enabled }}
 apiVersion: v1
 kind: Service

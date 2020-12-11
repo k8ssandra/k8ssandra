@@ -1,4 +1,3 @@
----
 {{- if .Values.stargate.enabled }}
 apiVersion: apps/v1
 kind: Deployment
