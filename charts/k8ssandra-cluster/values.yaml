@@ -20,7 +20,8 @@ k8ssandra:
 
 stargate:
   # configuration regarding the Stargate API
-  enabled: true
+  enabled: false
+  default: 1
   clusterVersion: "3.11" # this is the only supported value for now
   containerImage: "auto" # chooses image based on clusterVersion
   resourceLimits:

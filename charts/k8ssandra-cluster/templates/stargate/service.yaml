@@ -9,13 +9,13 @@ metadata:
 spec:
   type: ClusterIP
   ports:
-    - name: crud-graphql
+    - name: graphql
       port: 8080
       protocol: TCP
-    - name: authz-rest
+    - name: authorization
       port: 8081
       protocol: TCP
-    - name: crud-rest
+    - name: rest
       port: 8082
       protocol: TCP
     - name: metrics

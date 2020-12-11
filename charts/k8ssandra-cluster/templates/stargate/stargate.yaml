@@ -8,7 +8,7 @@ metadata:
     app: {{ .Release.Name }}-k8ssandra-stargate
 {{ include "k8ssandra-cluster.labels" . | indent 4 }}
 spec:
-  replicas: 2
+  replicas: {{ .Values.stargate.replicas }}
   selector:
     matchLabels:
       app: {{ .Release.Name }}-k8ssandra-stargate
@@ -46,12 +46,11 @@ spec:
             - name: CLUSTER_VERSION
               value: {{ .Values.stargate.clusterVersion | quote }}
             - name: SEED
-              value: {{ .Values.clusterName + "-seed-service" | quote }}
+              value: "{{ .Values.clusterName }}-seed-service"
             - name: DATACENTER_NAME
               value: {{ .Values.datacenterName | quote }}
             - name: RACK_NAME
               value: {{ .Values.rackName | quote }}
             - name: ENABLE_AUTH
               value: "false"
-  {{- end }}
 {{- end }}
