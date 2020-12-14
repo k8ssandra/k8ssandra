@@ -2,7 +2,6 @@
 title: "Ingress"
 linkTitle: "Ingress"
 weight: 1
-date: 2020-11-14
 description: |
   Routing from the outside in.
 ---
