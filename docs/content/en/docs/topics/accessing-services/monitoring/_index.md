@@ -2,7 +2,6 @@
 title: "Monitoring UI"
 linkTitle: "Monitoring UI"
 weight: 1
-date: 2020-11-19
 description: |
   Follow these simple steps to access the Prometheus and Grafana monitoring interfaces.
 ---
@@ -120,7 +119,7 @@ For example:
 
 ### What can I do in Prometheus?
 
-* Validate serves being scraped
+* Validate servers being scraped
 * Confirm metrics collection
 
 ## Next

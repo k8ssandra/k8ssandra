@@ -2,7 +2,6 @@
 title: "Accessing Services"
 linkTitle: "Accessing Services"
 weight: 1
-date: 2020-11-07
 description: |
   Connecting to K8ssandra and accessing services.
 ---

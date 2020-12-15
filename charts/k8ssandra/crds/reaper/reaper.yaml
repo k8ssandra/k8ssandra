@@ -34,6 +34,12 @@ spec:
               type: string
             serverConfig:
               properties:
+                autoScheduling:
+                  description: Configure reaper autoscheduling
+                  properties:
+                    enabled:
+                      type: boolean
+                  type: object
                 cassandraBackend:
                   properties:
                     authProvider:
@@ -45,11 +51,14 @@ spec:
                         username:
                           type: string
                       type: object
-                    cassandraService:
-                      description: The headless service that provides endpoints for the StorageTypeCassandra pods
-                      type: string
-                    clusterName:
-                      type: string
+                    cassandraDatacenter:
+                      properties:
+                        name:
+                          description: The name of the datacenter this Reaper instance will deploy to
+                          type: string
+                        namespace:
+                          description: Defaults to same namespace as reaper installation
+                          type: string
                     keyspace:
                       description: Defaults to reaper
                       type: string
@@ -70,8 +79,7 @@ spec:
                           type: integer
                       type: object
                   required:
-                  - cassandraService
-                  - clusterName
+                  - cassandraDatacenter
                   - replication
                   type: object
                 jmxUserSecretName:

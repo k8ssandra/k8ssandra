@@ -2,7 +2,6 @@
 title: "K3d Deployment"
 linkTitle: "K3d Deployment"
 weight: 1
-date: 2020-11-13
 description: |
   Deploy a local K3d cluster with Traefik installed and configured.
 ---
@@ -61,7 +60,7 @@ Docker container running Kind_ which is forwarded to our local machine.
 
 The `traefik.values.yaml` file referenced here is located in:
 
-https://github.com/k8ssandra/k8ssandra/tree/main/docs/content/en/docs/topics/accessing-services/traefik/kind-deployment/traefik.values.yaml
+https://github.com/k8ssandra/k8ssandra/blob/main/docs/content/en/docs/topics/ingress/traefik/k3d-deployment/traefik.values.yaml
 
 ### [`traefik.values.yaml`](traefik.values.yaml)
 {{< readfilerel file="traefik.values.yaml"  highlight="yaml" >}}

@@ -2,7 +2,6 @@
 title: "K8ssandra FAQs"
 linkTitle: "K8ssandra FAQs"
 weight: 1
-date: 2020-11-18
 description: Frequently asked questions about K8ssandra.
 ---
 
@@ -123,9 +122,9 @@ Among the tasks are dynamically scaling up or down the size of your cluster. See
 
 ### Can you illustrate the steps and sample commands I'll use with K8ssandra?
 
-Yes - here they are in a single graphic:
+Yes - here are the steps and commands in a single graphic:
 
-![Commands used with K8ssandra](k8ssandra-steps-commands.png)
+<p><img style="height: 100%; width: 100%; object-fit: contain" src="https://k8ssandra.io/docs/faqs/k8ssandra-steps.png"></p>
 
 ### How can I contribute to the K8ssandra docs?
 

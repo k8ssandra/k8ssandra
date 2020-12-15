@@ -2,7 +2,6 @@
 title: "Traefik"
 linkTitle: "Traefik"
 weight: 1
-date: 2020-11-07
 description: |
   Traefik is a modern reverse proxy and load balancer that makes deploying microservices easy.
 ---

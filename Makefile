@@ -1,0 +1,9 @@
+
+test: fmt vet
+	go test -v ./tests/...
+
+fmt:
+	go fmt ./tests/...
+
+vet:
+	go vet ./tests/...

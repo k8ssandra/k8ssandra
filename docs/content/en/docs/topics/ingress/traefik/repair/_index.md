@@ -2,7 +2,6 @@
 title: "Repair"
 linkTitle: "Repair"
 weight: 2
-date: 2020-11-13
 description: |
   Configuring Traefik to expose the K8ssandra repair interface
 ---
