@@ -116,12 +116,6 @@ jobs:
       - setup
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/cache@v2
-        with:
-          path: ~/go/pkg/mod
-          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
-          restore-keys: |
-            ${{ runner.os }}-go
       - name: Set up Go 1.x
         uses: actions/setup-go@v2
         with:
@@ -129,6 +123,12 @@ jobs:
         id: go
       - name: Check out code into the Go module directory
         uses: actions/checkout@v2
+      - uses: actions/cache@v2
+        with:
+          path: ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go
       - name: Run unit tests
         run: |
           export PATH=$GOROOT/bin:$GOPATH/bin:$PATH
