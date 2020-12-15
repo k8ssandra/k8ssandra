@@ -13,7 +13,7 @@ k8ssandra:
   # to configure some resources like the Grafana data source.
   namespace: default
   name: k8ssandra
-  persistentVolume:
+  cassandraLibDirVolume:
     storageClass: standard
     size: 5Gi
 
