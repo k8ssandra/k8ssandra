@@ -23,7 +23,7 @@ spec:
 {{- end }}
 {{- if not (empty .Values.monitoring.prometheus.routePrefix) }}
   routePrefix: {{ .Values.monitoring.prometheus.routePrefix }}
-{{- end}}
+{{- end }}
   ruleSelector: {}
   alerting:
     alertmanagers: []
