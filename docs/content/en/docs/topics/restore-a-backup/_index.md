@@ -13,6 +13,7 @@ This topic walks you through the steps to backup and restore Cassandra data runn
 * K8ssandra-cluster Helm chart, which we'll extend with `backupRestore` Medusa buckets for Amazon S3 integration
 * Sample files in GitHub:
   * [medusa-bucket-key.yaml](./medusa-bucket-key.yaml) to create a secret with credentials for AWS S3 buckets
+  * [backup-restore-values.yaml](./backup-restore-values.yaml) to enable Medusa (backup/restore service) and set related minimal values
   * [test_data.cql](./test_data.cql) to populate a Cassandra keyspace and table with data
 
 ## Prerequisites
@@ -32,7 +33,7 @@ You will need storage for the backups. This topic shows the use of AWS S3 bucket
 
 * If you'll use AWS S3, before proceeding with the configuration described below, verify that you know the `aws_access_key_id` and `aws_secret_access_key` values. Or  contact your IT team if they manage those assets. You'll provide those details in an edited version of the [medusa-bucket-key.yaml](./medusa-bucket-key.yaml) file. For information about the S3 setup steps, see this helpful [readme](https://github.com/thelastpickle/cassandra-medusa/blob/master/docs/aws_s3_setup.md).  
 
-* If you haven't already, add and update the following repo, which includes in one chart all the settings for K8ssandra plus Backup and Restore settings:
+* If you haven't already, add and update the following repo, which has in one chart all the settings for K8ssandra plus the backup/restore settings:
 
 ```
 helm repo add k8ssandra https://helm.k8ssandra.io/
@@ -97,20 +98,27 @@ secret/medusa-bucket-key configured
 
 ### Create or update the k8ssandra-cluster
 
-The `k8ssandra` chart includes the following backupRestore properties. Backup and restore operations are enabled by default. In the following example, `bucketName` corresponds to the name of the S3 bucket: `K8ssanda-bucket-dev`.  The `bucketSecret` corresponds to the secret credentials.
+Install the `k8ssandra-cluster` chart with the following properties. You can reference the provided [backup-restore-values.yaml](./backup-restore-values.yaml) file. It contains:
 
 ```
 size: 3
 backupRestore: 
   medusa:
     enabled: true
-    bucketName: kssandra-bucket-dev
+    bucketName: k8ssandra-bucket-dev
     bucketSecret: medusa-bucket-key
     multiTenant: true
     storage: s3
 ```
 
-The `k8ssandra` Helm chart also includes cluster services and the Grafana Operator. Notice that `k8ssandra` adds a number of properties in the `cassdc` datacenter.  
+Example:
+
+`helm install k8ssandra-cluster-1 k8ssandra/k8ssandra-cluster -f backup-restore-values.yaml`
+
+Backup and restore operations are enabled by default. In the example YAML, `bucketName` corresponds to the name of the S3 bucket: `K8ssanda-bucket-dev`.  The `bucketSecret` corresponds to the secret credentials.
+
+
+The `k8ssandra-cluster` Helm chart also includes cluster services and the Grafana Operator. Notice that `k8ssandra-cluster` adds a number of properties in the `cassdc` datacenter.  
 
 `kubectl get cassdc dc1 -o yaml`
 
