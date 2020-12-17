@@ -21,12 +21,9 @@ k8ssandra:
 stargate:
   # configuration regarding the Stargate API
   enabled: false
-  default: 1
+  replicas: 1
   clusterVersion: "3.11" # this is the only supported value for now
   containerImage: "auto" # chooses image based on clusterVersion
-  resourceLimits:
-    memory: "2G"
-  javaOpts: "-Xmx1g"
 
 # Configuration regarding configuration of repair services
 repair:

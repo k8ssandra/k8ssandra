@@ -7,7 +7,7 @@ metadata:
     app: {{ .Release.Name }}-k8ssandra-stargate
 {{ include "k8ssandra-cluster.labels" . | indent 4 }}
 spec:
-  replicas: {{ .Values.stargate.replicas }}
+  replicas: {{ default 1 .Values.stargate.replicas }}
   selector:
     matchLabels:
       app: {{ .Release.Name }}-k8ssandra-stargate
@@ -16,18 +16,32 @@ spec:
       labels:
         app: {{ .Release.Name }}-k8ssandra-stargate
     spec:
+      initContainers:
+          - name: wait-for-cassandra
+            image: alpine:3.12.2
+            imagePullPolicy: IfNotPresent
+            command:
+              - sh
+            args:
+              - -c
+              - |
+                echo "Waiting for at least one cassandra node to finish bootstrapping..."
+                while ! nslookup {{ .Values.clusterName }}-seed-service.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain | default "cluster.local" }}; do
+                    sleep 5
+                done
+                echo "Cassandra is ready. Starting Stargate..."
       containers:
         - name: {{ .Release.Name }}-k8ssandra-stargate
   {{- if eq .Values.stargate.containerImage "auto" }}
     {{- if eq .Values.stargate.clusterVersion "3.11" }}
-          image: "stargateio/stargate-3_11:v0.0.9"
+          image: "stargateio/stargate-3_11:v1.0.0"
     {{- else if eq .Values.stargate.clusterVersion "4.0" }}
-          image: "stargateio/stargate-4_0:v0.0.9"
+          image: "stargateio/stargate-4_0:v1.0.0"
     {{- else }}
-          image: "containerImage-auto-did-not-recognize-clusterVersion-{{ .Values.stargate.clusterVersion }}"
+      {{- fail tpl "clusterVersion {{ .Values.stargate.clusterVersion }} is not supported." }}
     {{- end }}
   {{- else }}
-          image: {{ .Values.stargate.containerImage | quote }}
+          image: {{ required .Values.stargate.containerImage | quote }}
   {{- end }}
           ports:
             - name: graphql
@@ -40,36 +54,56 @@ spec:
               containerPort: 8084
             - name: metrics
               containerPort: 8085
+            - name: http-schemaless
+              containerPort: 8090
+              protocol: TCP
+            - name: native
+              containerPort: 9042
+              protocol: TCP
+            - name: inter-node-msg
+              containerPort: 8609
+              protocol: TCP
+            - name: intra-node
+              containerPort: 7000
+              protocol: TCP
+            - name: tls-intra-node
+              containerPort: 7001
+              protocol: TCP
           resources:
             limits:
-              memory: {{ .Values.stargate.resourceLimits.memory | quote }}
+              cpu: {{ .Values.stargate.cpuLimMillicores | default 1000 }}m
+              memory: {{ mul 1.5 (.Values.stargate.heapMB | default 1024) }}Mi
+            requests:
+              cpu: {{ .Values.stargate.cpuReqMillicores | default 200 }}m
+              memory: {{ mul 1.5 (.Values.stargate.heapMB | default 1024) }}Mi
           env:
             - name: JAVA_OPTS
-              value: {{ .Values.stargate.javaOpts | quote }}
+              value: >-
+                -XX:+CrashOnOutOfMemoryError
+                -Xms{{ .Values.stargate.heapMB | default 1024 }}M
+                -Xmx{{ .Values.stargate.heapMB | default 1024 }}M
             - name: CLUSTER_NAME
               value: {{ .Values.clusterName | quote }}
             - name: CLUSTER_VERSION
               value: {{ .Values.stargate.clusterVersion | quote }}
             - name: SEED
-              value: "{{ .Values.clusterName }}-seed-service"
+              value: "{{ .Values.clusterName }}-seed-service.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain | default "cluster.local" }}"
             - name: DATACENTER_NAME
               value: {{ .Values.datacenterName | quote }}
             - name: RACK_NAME
               value: {{ .Values.rackName | quote }}
             - name: ENABLE_AUTH
-              value: "false"
-          startupProbe:
-            httpGet:
-              path: /checker/liveness
-              port: admin
-            failureThreshold: 10
+              value: "true"
           livenessProbe:
             httpGet:
               path: /checker/liveness
               port: admin
-            failureThreshold: 1
+            timeoutSeconds: 3
+            initialDelaySeconds: 60
           readinessProbe:
             httpGet:
               path: /checker/readiness
               port: admin
+            timeoutSeconds: 3
+            initialDelaySeconds: 60
 {{- end }}
