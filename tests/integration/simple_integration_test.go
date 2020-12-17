@@ -18,8 +18,8 @@ import (
 )
 
 var (
-	namespace = "k8ssandra"
-	releaseName string
+	namespace          = "k8ssandra"
+	releaseName        string
 	releaseNameCluster string
 )
 
@@ -77,7 +77,7 @@ var _ = Describe("Install the cluster", func() {
 			pods, _ := clientset.CoreV1().Pods(namespace).List(context.Background(), metav1.ListOptions{LabelSelector: "name=cass-operator"})
 
 			Expect(len(pods.Items)).To(Equal(1))
-			k8s.WaitUntilPodAvailable(GinkgoT(), kubectlOptions, pods.Items[0].Name, 50, 500 * time.Millisecond)
+			k8s.WaitUntilPodAvailable(GinkgoT(), kubectlOptions, pods.Items[0].Name, 50, 500*time.Millisecond)
 
 			// We could use also kubectl wait --for=condition=Ready pod -l name=cass-operator
 
@@ -94,10 +94,10 @@ var _ = Describe("Install the cluster", func() {
 			options = &helm.Options{
 				// Enable traefik to allow redirections for testing
 				SetValues: map[string]string{
-					"ingress.traefik.enabled": "true",
-					"ingress.traefik.monitoring.grafana.host": "grafana.localhost",
+					"ingress.traefik.enabled":                    "true",
+					"ingress.traefik.monitoring.grafana.host":    "grafana.localhost",
 					"ingress.traefik.monitoring.prometheus.host": "prometheus.localhost",
-					"ingress.traefik.repair.host": "repair.localhost",
+					"ingress.traefik.repair.host":                "repair.localhost",
 				},
 				KubectlOptions: k8s.NewKubectlOptions("", "", namespace),
 			}
