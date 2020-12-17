@@ -38,8 +38,8 @@ var _ = Describe("Verify Prometheus template", func() {
 			[]string{"templates/prometheus/prometheus.yaml"},
 		)
 		jsonOutput, err := yaml.YAMLToJSON([]byte(renderedOutput))
-		Ω(err).To(BeNil(), "Must convert to json.")
-		Ω(json.Unmarshal(jsonOutput, &prom)).To(BeNil(), "Must unmarshal cleanly.")
+		Expect(err).To(BeNil(), "Must convert to json.")
+		Expect(json.Unmarshal(jsonOutput, &prom)).To(BeNil(), "Must unmarshal cleanly.")
 	}
 
 	Context("by rendering it with options", func() {
@@ -51,8 +51,8 @@ var _ = Describe("Verify Prometheus template", func() {
 			}
 			renderTemplate(options)
 			spec := prom["spec"]
-			Ω(spec.(map[string]interface{})["routePrefix"]).To(BeNil())
-			Ω(spec.(map[string]interface{})["externalUrl"]).To(BeNil())
+			Expect(spec.(map[string]interface{})["routePrefix"]).To(BeNil())
+			Expect(spec.(map[string]interface{})["externalUrl"]).To(BeNil())
 		})
 
 		It("using specific externaUrl and routePrefix", func() {
@@ -67,8 +67,8 @@ var _ = Describe("Verify Prometheus template", func() {
 
 			renderTemplate(options)
 			spec := prom["spec"]
-			Ω(spec.(map[string]interface{})["routePrefix"]).To(BeIdenticalTo(testRoutePrefix))
-			Ω(spec.(map[string]interface{})["externalUrl"]).To(BeIdenticalTo(testExternalUrl))
+			Expect(spec.(map[string]interface{})["routePrefix"]).To(BeIdenticalTo(testRoutePrefix))
+			Expect(spec.(map[string]interface{})["externalUrl"]).To(BeIdenticalTo(testExternalUrl))
 		})
 	})
 })

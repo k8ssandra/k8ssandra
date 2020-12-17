@@ -39,8 +39,8 @@ var _ = Describe("Verify Datasource template", func() {
 		)
 		jsonOutput, err := yaml.YAMLToJSON([]byte(renderedOutput))
 
-		Ω(err).To(BeNil(), "Must convert to json.")
-		Ω(json.Unmarshal(jsonOutput, &ds)).To(BeNil(), "Must unmarshal cleanly.")
+		Expect(err).To(BeNil(), "Must convert to json.")
+		Expect(json.Unmarshal(jsonOutput, &ds)).To(BeNil(), "Must unmarshal cleanly.")
 	}
 
 	Context("by rendering it with options", func() {
@@ -56,10 +56,10 @@ var _ = Describe("Verify Datasource template", func() {
 			renderTemplate(options)
 
 			spec := ds["spec"].(map[string]interface{})
-			Ω(spec).ToNot(BeNil())
+			Expect(spec).ToNot(BeNil())
 			dataSources := spec["datasources"].([]interface{})
-			Ω(dataSources).ToNot(BeEmpty())
-			Ω(dataSources[0].(map[string]interface{})["url"]).To(BeIdenticalTo(expectedUrlNoRoutePrefix))
+			Expect(dataSources).ToNot(BeEmpty())
+			Expect(dataSources[0].(map[string]interface{})["url"]).To(BeIdenticalTo(expectedUrlNoRoutePrefix))
 		})
 
 		It("using specified routePrefix", func() {
@@ -74,10 +74,10 @@ var _ = Describe("Verify Datasource template", func() {
 			renderTemplate(options)
 
 			spec := ds["spec"].(map[string]interface{})
-			Ω(spec).ToNot(BeNil())
+			Expect(spec).ToNot(BeNil())
 			dataSources := spec["datasources"].([]interface{})
-			Ω(dataSources).ToNot(BeEmpty())
-			Ω(dataSources[0].(map[string]interface{})["url"]).To(BeIdenticalTo(expectedUrlWithRoutePrefix))
+			Expect(dataSources).ToNot(BeEmpty())
+			Expect(dataSources[0].(map[string]interface{})["url"]).To(BeIdenticalTo(expectedUrlWithRoutePrefix))
 		})
 	})
 })
