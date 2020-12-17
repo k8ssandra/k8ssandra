@@ -1,11 +1,14 @@
-package tests_test
+package unit_test
 
 import (
-	"path/filepath"
 	"testing"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+)
+
+const (
+	chartsPath = ("../../charts/k8ssandra-cluster")
 )
 
 func TestTests(t *testing.T) {
@@ -14,8 +17,5 @@ func TestTests(t *testing.T) {
 }
 
 var _ = BeforeSuite(func(done Done) {
-	helmChartPath, err := filepath.Abs("../../charts/k8ssandra-cluster")
-	Expect(err).To(BeNil())
-	Expect(helmChartPath).NotTo(BeNil())
 	close(done)
 })

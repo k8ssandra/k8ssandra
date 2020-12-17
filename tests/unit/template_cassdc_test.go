@@ -1,13 +1,14 @@
-package tests
+package unit_test
 
 import (
 	"fmt"
+	"path/filepath"
+
 	cassdcv1beta1 "github.com/datastax/cass-operator/operator/pkg/apis/cassandra/v1beta1"
 	"github.com/gruntwork-io/terratest/modules/helm"
 	"github.com/gruntwork-io/terratest/modules/k8s"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"path/filepath"
 )
 
 var (
@@ -27,7 +28,7 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 	)
 
 	BeforeEach(func() {
-		helmChartPath, err = filepath.Abs("../charts/k8ssandra-cluster")
+		helmChartPath, err = filepath.Abs(chartsPath)
 		Expect(err).To(BeNil())
 		cassdc = &cassdcv1beta1.CassandraDatacenter{}
 	})

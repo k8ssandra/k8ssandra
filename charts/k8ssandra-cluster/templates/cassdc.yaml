@@ -22,12 +22,12 @@ spec:
   size: {{ .Values.size }}
   storageConfig:
     cassandraDataVolumeClaimSpec:
-      storageClassName: standard
+      storageClassName: {{ .Values.k8ssandra.cassandraLibDirVolume.storageClass | default "standard" }}
       accessModes:
         - ReadWriteOnce
       resources:
         requests:
-          storage: 5Gi
+          storage: {{ .Values.k8ssandra.cassandraLibDirVolume.size | default "5Gi" }}
   config:    
     jvm-options:
       initial_heap_size: "800M"
