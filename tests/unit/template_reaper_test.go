@@ -1,23 +1,24 @@
-package tests
+package unit_test
 
 import (
+	"path/filepath"
+
 	"github.com/gruntwork-io/terratest/modules/helm"
 	"github.com/gruntwork-io/terratest/modules/k8s"
 	api "github.com/k8ssandra/reaper-operator/api/v1alpha1"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"path/filepath"
 )
 
 var _ = Describe("Verify Reaper template", func() {
 	var (
 		helmChartPath string
-		err error
-		reaper *api.Reaper
+		err           error
+		reaper        *api.Reaper
 	)
 
 	BeforeEach(func() {
-		helmChartPath, err = filepath.Abs("../charts/k8ssandra-cluster")
+		helmChartPath, err = filepath.Abs(chartsPath)
 		Expect(err).To(BeNil())
 		reaper = &api.Reaper{}
 	})
