@@ -9,6 +9,7 @@ require (
 	github.com/onsi/ginkgo v1.14.2
 	github.com/onsi/gomega v1.10.3
 	k8s.io/apimachinery v0.18.6
+	sigs.k8s.io/yaml v1.2.0
 )
 
 replace (

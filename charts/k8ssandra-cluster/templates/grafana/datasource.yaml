@@ -12,6 +12,10 @@ spec:
         timeInterval: 5s
       name: Prometheus
       type: prometheus
+      {{- if not (empty .Values.monitoring.prometheus.routePrefix) }}
+      url: http://{{ .Release.Name }}-prometheus-k8ssandra.{{ .Release.Namespace }}:9090/{{ .Values.monitoring.prometheus.routePrefix }}
+      {{- else }}
       url: http://{{ .Release.Name }}-prometheus-k8ssandra.{{ .Release.Namespace }}:9090
+      {{- end }}
       version: 1
   name: prometheus-datasources.yaml
