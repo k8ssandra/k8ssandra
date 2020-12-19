@@ -5,6 +5,7 @@
 name: k8ssandra
 clusterName: k8ssandra
 datacenterName: dc1
+rackName: default # this is the only supported value for now
 size: 1
 
 k8ssandra:
@@ -16,6 +17,13 @@ k8ssandra:
   cassandraLibDirVolume:
     storageClass: standard
     size: 5Gi
+
+stargate:
+  # configuration regarding the Stargate API
+  enabled: false
+  replicas: 1
+  clusterVersion: "3.11" # this is the only supported value for now
+  containerImage: "auto" # chooses image based on clusterVersion
 
 # Configuration regarding configuration of repair services
 repair:
@@ -56,12 +64,12 @@ ingress:
     enabled: false
 
     # Repair service
-    repair: 
+    repair:
       # Note this will **only** work if `ingress.traefik.enabled` is also `true`
       enabled: true
 
       # Name of the Traefik entrypoints where we want to source traffic.
-      entrypoints: 
+      entrypoints:
         - web
 
       # Hostname Traefik should use for matching requests.
@@ -73,7 +81,7 @@ ingress:
       enabled: false
 
       # Name of the Traefik entrypoints for source traffic
-      entrypoints: 
+      entrypoints:
         - cassandra
 
     # Monitoring web interfaces for Promtheus and Grafana
