@@ -85,7 +85,7 @@ spec:
             - name: CLUSTER_NAME
               value: {{ .Values.clusterName | quote }}
             - name: CLUSTER_VERSION
-              value: {{ .Values.stargate.clusterVersion }}
+              value: "{{ .Values.stargate.clusterVersion }}"
             - name: SEED
               value: "{{ .Values.clusterName }}-seed-service.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain | default "cluster.local" }}"
             - name: DATACENTER_NAME
