@@ -49,7 +49,7 @@ func (a *Agent) RemoveResources(releaseName string) error {
 }
 
 func (a *Agent) removeCassandraDatacenter(releaseName string) error {
-	log.Printf("RemoveCassandraDatacenter")
+	log.Printf("Removing CassandraDatacenter(s) managed in release %s from namespace %s\n", releaseName, a.Namespace)
 	list := &cassdcapi.CassandraDatacenterList{}
 	err := a.Client.List(context.Background(), list, client.InNamespace(a.Namespace), client.MatchingLabels(map[string]string{managedLabel: managedLabelValue}))
 	if err != nil {

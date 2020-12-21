@@ -26,5 +26,6 @@ spec:
                 fieldRef:
                   fieldPath: metadata.namespace
           args:
-            - cleaner
+            - k8ssandra-client
+            - -clean
             - --release {{ .Release.Name }}

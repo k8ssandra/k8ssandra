@@ -21,16 +21,21 @@ func main() {
 
 	var releaseName string
 	flag.StringVar(&releaseName, "release", "", "Defines the releaseName to be cleaned")
+	cleanResources := flag.Bool("clean", false, "Clean resources with finalizers")
 	flag.Parse()
 
 	// Add flags for parsing stuff
-	ca, err := cleaner.New(namespace)
-	if err != nil {
-		log.Fatalf("Failed to create new cleaner: %v", err)
-	}
+	if *cleanResources {
+		log.Printf("Cleaning resources for uninstall")
 
-	err = ca.RemoveResources(releaseName)
-	if err != nil {
-		log.Fatalf("Failed to remove resources: %v", err)
+		ca, err := cleaner.New(namespace)
+		if err != nil {
+			log.Fatalf("Failed to create new cleaner: %v", err)
+		}
+
+		err = ca.RemoveResources(releaseName)
+		if err != nil {
+			log.Fatalf("Failed to remove resources: %v", err)
+		}
 	}
 }

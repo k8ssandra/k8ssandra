@@ -144,4 +144,4 @@ monitoring:
     routePrefix: ""
 
 cleaner:
-  image: burmanm/cleaner-k8ssandra:latest
+  image: burmanm/k8ssandra-client:latest
