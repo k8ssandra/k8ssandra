@@ -34,6 +34,7 @@ spec:
       max_heap_size: "800M"
   podTemplateSpec:
     spec:
+{{- if or .Values.repair.reaper.enabled .Values.backupRestore.medusa.enabled }}
       initContainers:
 {{- if .Values.repair.reaper.enabled }}
       - name: jmx-credentials
@@ -91,8 +92,10 @@ spec:
             mountPath: /etc/medusa-secrets
 {{- end}}
 {{- end}}
+{{- end}}
       containers:
       - name: cassandra
+{{- if or .Values.repair.reaper.enabled .Values.backupRestore.medusa.enabled }}
         env:
 {{- if .Values.repair.reaper.enabled }}
           - name: LOCAL_JMX
@@ -143,4 +146,5 @@ spec:
       - name:  {{ .Values.backupRestore.medusa.bucketSecret }}
         secret:
           secretName: {{ .Values.backupRestore.medusa.bucketSecret }}
+{{- end }}
 {{- end }}
