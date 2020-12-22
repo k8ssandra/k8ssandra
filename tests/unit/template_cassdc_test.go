@@ -80,8 +80,10 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			Expect(cassdc.Annotations).ShouldNot(HaveKeyWithValue(reaperInstanceAnnotation, reaperInstanceValue))
 
 			Expect(len(cassdc.Spec.PodTemplateSpec.Spec.Containers)).To(Equal(1))
-			// No reaper or medusa env variables should be present
-			Expect(len(cassdc.Spec.PodTemplateSpec.Spec.Containers[0].Env)).To(Equal(0))
+			// No env slice should be present
+			Expect(cassdc.Spec.PodTemplateSpec.Spec.Containers[0].Env).To(BeNil())
+			// No initcontainers slice should be present
+			Expect(cassdc.Spec.PodTemplateSpec.Spec.InitContainers).To(BeNil())
 		})
 
 		It("enabling only medusa", func() {
