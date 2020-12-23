@@ -38,14 +38,12 @@ def update_charts(update_func):
     yaml = YAML()
     yaml.indent(mapping = 2, sequence=4, offset=2)
     main_dir = subprocess.run(["git", "rev-parse", "--show-toplevel"], check=True, stdout=subprocess.PIPE).stdout.strip().decode('utf-8')
-    # TODO Exclude cass-operator, we're only interested in our own chart files
     search_path = F'{main_dir}/charts/**/Chart.yaml'
     for path in glob.glob(search_path, recursive=True):
 
         if re.match('^.*cass-operator.*', path):
             continue
 
-        print(F'Opened {path}')
         with open(path) as f:
             chart = yaml.load(f)
 
@@ -55,6 +53,8 @@ def update_charts(update_func):
 
         with open(path, 'w') as f:
             yaml.dump(chart, f)
+
+        print(F'Updated {path} to {semver.to_string()}')
 
 def main():
     parser = argparse.ArgumentParser(description='Update Helm chart versions in k8ssandra project')
