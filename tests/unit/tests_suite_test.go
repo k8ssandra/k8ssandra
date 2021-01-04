@@ -16,9 +16,9 @@ const (
 	helmReleaseName             = "k8ssandra-test"
 )
 
-func TestTests(t *testing.T) {
+func TestTemplateUnitTests(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "Tests Suite")
+	RunSpecs(t, "Unit tests suite")
 }
 
 var _ = BeforeSuite(func(done Done) {
