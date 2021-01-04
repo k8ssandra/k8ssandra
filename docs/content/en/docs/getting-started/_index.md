@@ -44,8 +44,8 @@ Alternatively, you may download the individual charts directly from the project'
 
 ## Enabling Stargate
 
-Stargate deployment is *disabled* by default, to enable it, the values provided to the helm install/upgrade of the
-`k8ssandra-cluster` chart can be modified.
+Stargate deployment is *disabled* by default. To enable it, modify the values provided to the helm install/upgrade of the
+`k8ssandra-cluster` chart.
 
 This can be done by adding to the values.yaml file provided to helm:
 
@@ -74,4 +74,3 @@ helm install k8ssandra-cluster-a k8ssandra/k8ssandra-cluster
 ```
 
 In later steps, you can upgrade your k8ssandra-cluster via `helm upgrade` commands, for example to access services from outside Kubernetes via a Traefik Ingress controller.
-

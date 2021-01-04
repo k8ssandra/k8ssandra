@@ -8,7 +8,7 @@ description: |
 
 [Stargate](https://stargate.io/) is an open source data gateway providing common
 API interfaces for backend databases. With K8ssandra, Stargate may be deployed
-in front of the Apache Cassandra cluster providing CQL, REST, GraphQL, and document based API
+in front of the Apache Cassandra cluster providing CQL, REST, GraphQL, and document-based API
 endpoints. These endpoints may be scaled independently of the data
 layer as necessary. This guide covers accessing the various API endpoints
 provided by Stargate.
@@ -31,7 +31,7 @@ information about using Stargate can be found in the Stargate
 ## Access Auth API
 
 Before accessing any of the provided Stargate data APIs, an auth token must be generated and provided
-to subsequent data API requests.  This token generation process is done via the auth API.
+to subsequent data API requests.  Use the auth API to generate a token.
 
 The default port exposed by Stargate for the auth API is `8081`, these examples will assume that is the
 port exposed by the cluster ingress configuration for access.
@@ -60,14 +60,13 @@ kubectl get secret k8ssandra-cluster-superuser -o jsonpath="{.data.password}" | 
 
 ### Generating Auth Tokens
 
-With the secrets extract and decoded, a request to generate a token can now be sent to the Stargate auth API.
+Next, use the extracted and decoded secrets to request a token from the Stargate auth API.
 
 ```
 curl -L -X POST 'http://_STARGATE_DOMAIN_/v1/auth' -H 'Content-Type: application/json' --data-raw '{"username": "k8ssandra-cluster-superuser", "password": "1LI8TebjjHYrqUk9xYbJnbYJheX3Ckq250byd2ePDPXNtweaYgznmg"}'
 ```
 
-This request will return a response similar to below providing the token that will be required when making 
-requests to the Stargate data APIs.
+This request will return a response similar to the following. The value given for `authToken` will be required when making requests to the Stargate data APIs.
 
 ```
 {"authToken":"e4b34bbc-0ebc-4e2a-86ca-04793ca658a7"}
@@ -75,13 +74,12 @@ requests to the Stargate data APIs.
 
 ### Using Auth Tokens
 
-Stargate supports authorization within the data APIs through a custom header `x-cassandra-token` which must 
-be populated with the token produced through the use of the auth API previously described.
+Stargate supports authorization within the data APIs through a custom HTTP header `x-cassandra-token`, which must be populated with the token given by the auth API.
 
 ## Access Document Data API
 
 The Stargate document APIs provide a way schemaless way to store and interact with data inside of Cassandra.
-The first step to using the document API is to [create a namespace](https://stargate.io/docs/stargate/1.0/quickstart/quick_start-document.html#_creating_schema). 
+The first step is to [create a namespace](https://stargate.io/docs/stargate/1.0/quickstart/quick_start-document.html#_creating_schema). 
 That can be done with a request to the `/v2/schemas/namespaces` API:
 
 ```
@@ -105,8 +103,7 @@ Additional information related to using the Document APIs can be found in the St
 ## Access REST Data API
 
 The Stargate REST APIs provide a RESTful way to store and interact with data inside of Cassandra that should feel
-familiar to developers, but unlike the document APIs, does require some additional Cassandra data modeling 
-understanding. The first step to using the REST APIs is to [create a keyspace](https://stargate.io/docs/stargate/1.0/quickstart/quick_start-rest.html#_creating_schema). 
+familiar to developers. Unlike the document APIs, some understanding of Cassandra data modeling will be required. The first step is to [create a keyspace](https://stargate.io/docs/stargate/1.0/quickstart/quick_start-rest.html#_creating_schema). 
 That can be done with a request to the `/v2/schemas/keyspaces` API:
 
 ```
@@ -133,7 +130,7 @@ The Stargate GraphQL APIs provide a way to store and interact with data inside o
 query language and tooling ecosystem. Like the REST APIs, this does require some additional Cassandra data modeling
 understanding. Like the REST APIs, The first step to using the GraphQL APIs is to [create a keyspace](https://stargate.io/docs/stargate/1.0/quickstart/quick_start-graphql.html#_creating_schema).
 
-The easiest way to get started with the GraphQL APIs is to use the built-in GraphQL playground, described below.
+The easiest way to get started with the GraphQL APIs is to use the built-in GraphQL playground described in the next section.
 
 Additional information related to using the Document APIs can be found in the Stargate [docs](https://stargate.io/docs/stargate/1.0/quickstart/quick_start-graphql.html).
 
