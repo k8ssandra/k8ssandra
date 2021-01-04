@@ -14,3 +14,6 @@ fmt:
 vet:
 	go vet ./pkg/...
 	go vet ./tests/...
+
+docker-build:
+	docker build -f cmd/k8ssandra-client/Dockerfile .
