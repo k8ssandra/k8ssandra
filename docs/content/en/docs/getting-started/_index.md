@@ -52,13 +52,12 @@ This can be done by adding to the values.yaml file provided to helm:
 ```
 stargate:
   enabled: true
-  replicas: 1
 ```
 
 or set via the command line when installing via helm:
 
 ```
---set stargate.enabled=true --set stargate.replicas=1
+--set stargate.enabled=true
 ```
 
 ## Install K8ssandra
