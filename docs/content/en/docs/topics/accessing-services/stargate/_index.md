@@ -133,7 +133,7 @@ The Stargate GraphQL APIs provide a way to store and interact with data inside o
 query language and tooling ecosystem. Like the REST APIs, this does require some additional Cassandra data modeling
 understanding. Like the REST APIs, The first step to using the GraphQL APIs is to [create a keyspace](https://stargate.io/docs/stargate/1.0/quickstart/quick_start-graphql.html#_creating_schema).
 
-The easiest way to get started with the GraphQL APIs is to use the build-in GraphQL playground, described below.
+The easiest way to get started with the GraphQL APIs is to use the built-in GraphQL playground, described below.
 
 Additional information related to using the Document APIs can be found in the Stargate [docs](https://stargate.io/docs/stargate/1.0/quickstart/quick_start-graphql.html).
 
