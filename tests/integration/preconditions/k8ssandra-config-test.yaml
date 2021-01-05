@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Config
+preferences: {}
+current-context: "kind-k8ssandra-cluster"
+clusters:
+  - cluster:
+    name: "k8ssandra-cluster"
+contexts:
+  - context:
+      cluster: "k8ssandra-cluster"
+      namespace: "k8ssandra"
+      user: "k8ssandra-dev"
+    name: "kind-k8ssandra-cluster"
+users:
+  - name: "k8ssandra-dev"
