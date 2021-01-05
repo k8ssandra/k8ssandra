@@ -13,9 +13,12 @@ class Semver:
 
     def incr_major(self):
         self.major = self.major + 1
+        self.patch = 0
+        self.minor = 0
 
     def incr_minor(self):
         self.minor = self.minor + 1
+        self.patch = 0
 
     def incr_patch(self):
         self.patch = self.patch + 1
