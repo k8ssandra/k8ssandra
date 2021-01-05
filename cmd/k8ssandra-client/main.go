@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/k8ssandra/k8ssandra/pkg/cleaner"
+	"github.com/k8ssandra/k8ssandra/pkg/upgrade"
 )
 
 var (
@@ -20,8 +21,11 @@ func main() {
 	}
 
 	var releaseName string
+	var releaseVersion string
 	flag.StringVar(&releaseName, "release", "", "Defines the releaseName to be cleaned")
 	cleanResources := flag.Bool("clean", false, "Clean resources with finalizers")
+	upgradeCRDs := flag.Bool("update-crds", false, "Upgrade CRDs during helm upgrade")
+	flag.StringVar(&releaseVersion, "version", "", "target version to upgrade to")
 	flag.Parse()
 
 	// Add flags for parsing stuff
@@ -36,6 +40,18 @@ func main() {
 		err = ca.RemoveResources(releaseName)
 		if err != nil {
 			log.Fatalf("Failed to remove resources: %v", err)
+		}
+	}
+
+	if *upgradeCRDs {
+		u, err := upgrade.New()
+		if err != nil {
+			log.Fatalf("Failed to create new CRD upgrader: %v", err)
+		}
+
+		err = u.Upgrade(releaseVersion)
+		if err != nil {
+			log.Fatalf("Failed to upgrade CRDs: %v", err)
 		}
 	}
 }

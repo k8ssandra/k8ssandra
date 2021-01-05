@@ -1,0 +1,16 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: {{ .Release.Name }}-upgrade-k8ssandra
+  labels:
+{{ include "k8ssandra-cluster.labels" . | indent 4 }}
+rules:
+  - apiGroups:
+      - reaper.cassandra-reaper.io
+    resources:
+      - reapers
+    verbs:
+      - get
+      - update
+      - list
+      - delete

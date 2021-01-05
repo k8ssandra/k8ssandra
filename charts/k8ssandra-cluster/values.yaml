@@ -143,5 +143,5 @@ monitoring:
     # under a different route prefix. For example for use with `kubectl proxy`.
     routePrefix: ""
 
-cleaner:
+util:
   image: burmanm/k8ssandra-client:latest

@@ -1,7 +1,6 @@
-package cleaner
+package upgrade
 
 import (
-	"path/filepath"
 	"testing"
 	"time"
 
@@ -15,8 +14,6 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/envtest/printer"
 	logf "sigs.k8s.io/controller-runtime/pkg/log"
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
-
-	cassdcapi "github.com/datastax/cass-operator/operator/pkg/apis/cassandra/v1beta1"
 	// +kubebuilder:scaffold:imports
 )
 
@@ -29,7 +26,7 @@ var cfg *rest.Config
 var k8sClient client.Client
 var testEnv *envtest.Environment
 
-func TestCleanerFunctionality(t *testing.T) {
+func TestAPIs(t *testing.T) {
 	RegisterFailHandler(Fail)
 
 	RunSpecsWithDefaultAndCustomReporters(t,
@@ -42,7 +39,8 @@ var _ = BeforeSuite(func(done Done) {
 
 	By("bootstrapping test environment")
 	testEnv = &envtest.Environment{
-		CRDDirectoryPaths: []string{filepath.Join("..", "..", "charts", "k8ssandra", "charts", "cass-operator", "crds")},
+		CRDDirectoryPaths: []string{},
+		// CRDDirectoryPaths: []string{filepath.Join("..", "..", "charts", "k8ssandra", "crds", "reaper")},
 	}
 
 	var err error
@@ -50,7 +48,6 @@ var _ = BeforeSuite(func(done Done) {
 	Expect(err).ToNot(HaveOccurred())
 	Expect(cfg).ToNot(BeNil())
 
-	err = cassdcapi.AddToScheme(scheme.Scheme)
 	Expect(err).NotTo(HaveOccurred())
 
 	// +kubebuilder:scaffold:scheme
