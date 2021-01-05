@@ -1,13 +1,12 @@
-package tests
+package unit_test
 
 import (
+	"path/filepath"
+
 	"github.com/gruntwork-io/terratest/modules/helm"
 	"github.com/gruntwork-io/terratest/modules/k8s"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"k8s.io/apimachinery/pkg/util/json"
-	"path/filepath"
-	"sigs.k8s.io/yaml"
 )
 
 var _ = Describe("Verify Datasource template", func() {
@@ -23,7 +22,7 @@ var _ = Describe("Verify Datasource template", func() {
 	)
 
 	BeforeEach(func() {
-		helmChartPath, err = filepath.Abs("../charts/k8ssandra-cluster")
+		helmChartPath, err = filepath.Abs(chartsPath)
 		Expect(err).To(BeNil())
 	})
 
@@ -37,10 +36,8 @@ var _ = Describe("Verify Datasource template", func() {
 			GinkgoT(), options, helmChartPath, helmReleaseName,
 			[]string{"templates/grafana/datasource.yaml"},
 		)
-		jsonOutput, err := yaml.YAMLToJSON([]byte(renderedOutput))
 
-		Expect(err).To(BeNil(), "Must convert to json.")
-		Expect(json.Unmarshal(jsonOutput, &ds)).To(BeNil(), "Must unmarshal cleanly.")
+		helm.UnmarshalK8SYaml(GinkgoT(), renderedOutput, &ds)
 	}
 
 	Context("by rendering it with options", func() {

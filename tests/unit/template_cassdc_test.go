@@ -12,12 +12,9 @@ import (
 )
 
 var (
-	reaperInstanceAnnotation = "reaper.cassandra-reaper.io/instance"
-	helmReleaseName          = "k8ssandra-test"
-	reaperInstanceValue      = fmt.Sprintf("%s-reaper-k8ssandra", helmReleaseName)
-	medusaConfigVolumeName   = fmt.Sprintf("%s-medusa-config-k8ssandra", helmReleaseName)
-	defaultTestNamespace     = "k8ssandra"
-	defaultKubeCtlOptions    = k8s.NewKubectlOptions("", "", defaultTestNamespace)
+	reaperInstanceValue    = fmt.Sprintf("%s-reaper-k8ssandra", helmReleaseName)
+	medusaConfigVolumeName = fmt.Sprintf("%s-medusa-config-k8ssandra", helmReleaseName)
+	defaultKubeCtlOptions  = k8s.NewKubectlOptions("", "", defaultTestNamespace)
 )
 
 var _ = Describe("Verify CassandraDatacenter template", func() {
