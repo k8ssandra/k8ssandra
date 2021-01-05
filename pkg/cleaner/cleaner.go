@@ -13,7 +13,7 @@ import (
 
 const (
 	managedLabel      = "app.kubernetes.io/managed-by"
-	managedLabelValue = "cass-operator"
+	managedLabelValue = "Helm"
 	releaseAnnotation = "meta.helm.sh/release-name"
 )
 
