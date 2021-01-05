@@ -78,7 +78,7 @@ ingress:
     # Cassandra native transport ingress support
     cassandra:
       # Note this will **only** work if `ingress.traefik.enabled` is also `true`
-      enabled: false
+      enabled: true
 
       # Name of the Traefik entrypoints for source traffic
       entrypoints:
