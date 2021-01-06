@@ -3,6 +3,7 @@ on:
   pull_request:
     branches:
       - main
+      - build-cleaner-image
 
 jobs:
   setup:
@@ -98,3 +99,16 @@ jobs:
         run: |
           export PATH=$GOROOT/bin:$GOPATH/bin:$PATH
           make test
+
+  build-image:
+    needs:
+      - setup
+    runs-on: ubuntu-latest
+    steps:
+    - name: Login to Docker Hub
+      if: github.ref == 'refs/heads/master'
+      run: echo "${{ secrets.DOCKER_HUB_PASSWORD }}" | docker login docker.io --username "${{ secrets.DOCKER_HUB_USERNAME }}" --password-stdin
+
+    - name: Build and push image
+      if: github.ref == 'refs/heads/master'
+      run: make cleaner-docker-build cleaner-docker-push
