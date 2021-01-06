@@ -24,6 +24,7 @@ At a pure component level, K8ssandra integrates and packages together:
 * Reaper, also known as the Repair Web Interface
 * Medusa for backup and restore
 * Metrics Collector, with Prometheus integration, and visualization via preconfigured Grafana dashboards
+* Stargate, the open source data gateway
 * Templates for connections into your Kubernetes environment via Ingress solutions such as Traefik
 
 An illustration always helps:
@@ -51,7 +52,7 @@ For more, see [Getting Started]({{< ref "/docs/getting-started/" >}}).
 Referring to the helm commands from the prior FAQ:
 
 * `k8ssandra` installs Kubernetes Operator for Apache Cassandra (cass-operator) and the Prometheus Operator.
-* `k8ssandra-cluster` installs an instance of the stack: reaper (repairs), medusa (backup/restores), the Grafana Operator, and instances.
+* `k8ssandra-cluster` installs an instance of the stack: reaper (repairs), medusa (backup/restores), the Grafana Operator, (optional) Stargate, and instances.
 
 After those installs, and all the pods are in a Ready state, from `kubectl get pods` you'll see output similar to:
 
@@ -103,6 +104,10 @@ Reaper is a tool that helps manage the critical maintenance task of anti-entropy
 ### What is Medusa?
 
 Medusa provides backup/restore functionality for Cassandra data; this project also originated at Spotify. Medusa not only helps coordinate backup &amp; restore tasks, it manages the placement of the data at rest. The initial implementation allows backup sets to be stored and retrieved on cloud object storage (such as AWS S3 buckets) with more options on the way. K8ssandra offers this [backup and restore]({{< ref "/docs/topics/restore-a-backup/" >}}) feature to help you recover Cassandra data when inevitable real-world issues occur.
+
+### What is Stargate?
+
+[Stargate](https://stargate.io/) is an open source data gateway that abstracts away many Apache Cassandra specific concepts, providing access to the database through various API options.  It helps to remove barriers of entry for developers new to Apache Cassandra by providing REST, GraphQL, and schemaless JSON document based APIs in addition to traditional CQL access.
 
 ### How can I access Kubernetes resources from outside the environment?
 
