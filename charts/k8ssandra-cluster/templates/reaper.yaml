@@ -19,5 +19,5 @@ spec:
         name: {{ .Values.k8ssandra.datacenterName }}
       replication:
         networkTopologyStrategy:
-          {{ .Values.k8ssandra.datacenterName }}: {{ min .Values.size 3}}
+          {{ .Values.k8ssandra.datacenterName }}: {{ min .Values.k8ssandra.size 3}}
 {{- end }}

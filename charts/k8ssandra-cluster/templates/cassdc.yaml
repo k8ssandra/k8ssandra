@@ -19,7 +19,7 @@ spec:
   serverImage: jsanda/mgmtapi-3_11:v0.1.13-k8c-88
   managementApiAuth:
     insecure: {}
-  size: {{ .Values.size }}
+  size: {{ .Values.k8ssandra.size }}
   allowMultipleNodesPerWorker: true
   storageConfig:
     cassandraDataVolumeClaimSpec:

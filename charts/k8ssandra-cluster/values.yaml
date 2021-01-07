@@ -3,11 +3,11 @@
 # Declare variables to be passed into your templates.
 
 rackName: default # this is the only supported value for now
-size: 1
 
 k8ssandra:
   clusterName: k8ssandra
   datacenterName: dc1
+  size: 1
   cassandraLibDirVolume:
     storageClass: standard
     size: 5Gi
