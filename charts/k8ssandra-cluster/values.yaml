@@ -6,8 +6,6 @@ name: k8ssandra
 clusterName: k8ssandra
 datacenterName: dc1
 size: 1
-allowMultipleNodesPerWorker: false
-resources: {}
 
 k8ssandra:
   # The k8ssandra chart installs operators with cluster scope. It can be installed in a
@@ -18,6 +16,8 @@ k8ssandra:
   cassandraLibDirVolume:
     storageClass: standard
     size: 5Gi
+  allowMultipleNodesPerWorker: false
+  resources: {}
 
 # Configuration regarding configuration of repair services
 repair:

@@ -28,10 +28,10 @@ spec:
       resources:
         requests:
           storage: {{ .Values.k8ssandra.cassandraLibDirVolume.size | default "5Gi" }}
-  allowMultipleNodesPerWorker: {{ .Values.allowMultipleNodesPerWorker | default false}}
-{{- if .Values.resources }}
+  allowMultipleNodesPerWorker: {{ .Values.k8ssandra.allowMultipleNodesPerWorker | default false}}
+{{- if .Values.k8ssandra.resources }}
   resources:
-{{ toYaml .Values.resources | indent 6 }}
+{{ toYaml .Values.k8ssandra.resources | indent 6 }}
 {{- end}}
   config:    
     jvm-options:
