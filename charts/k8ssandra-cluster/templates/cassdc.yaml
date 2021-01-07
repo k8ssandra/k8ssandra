@@ -3,7 +3,7 @@
 apiVersion: cassandra.datastax.com/v1beta1
 kind: CassandraDatacenter
 metadata:
-  name: {{ .Values.datacenterName }}
+  name: {{ .Values.k8ssandra.datacenterName }}
   labels:
 {{ include "k8ssandra-cluster.labels" . | indent 4 }}
   annotations:
@@ -11,7 +11,7 @@ metadata:
     reaper.cassandra-reaper.io/instance: {{ .Release.Name }}-reaper-k8ssandra
 {{- end }}
 spec:
-  clusterName: {{ .Values.clusterName }}
+  clusterName: {{ .Values.k8ssandra.clusterName }}
   serverType: cassandra
   serverVersion: "3.11.7"
   # We need to use a patched version of the management api image.
@@ -19,7 +19,8 @@ spec:
   serverImage: jsanda/mgmtapi-3_11:v0.1.13-k8c-88
   managementApiAuth:
     insecure: {}
-  size: {{ .Values.size }}
+  size: {{ .Values.k8ssandra.size }}
+  allowMultipleNodesPerWorker: true
   storageConfig:
     cassandraDataVolumeClaimSpec:
       storageClassName: {{ .Values.k8ssandra.cassandraLibDirVolume.storageClass | default "standard" }}

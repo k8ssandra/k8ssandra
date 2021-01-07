@@ -49,7 +49,7 @@ var _ = Describe("Verify Reaper template", func() {
 		It("changing datacenter name", func() {
 			targetDcName := "reaper-dc"
 			options := &helm.Options{
-				SetStrValues:   map[string]string{"datacenterName": targetDcName},
+				SetStrValues:   map[string]string{"k8ssandra.datacenterName": targetDcName},
 				KubectlOptions: defaultKubeCtlOptions,
 			}
 
