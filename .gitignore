@@ -260,3 +260,5 @@ docs/bin/
 
 # testenv
 testbin/
+
+.vagrant/
