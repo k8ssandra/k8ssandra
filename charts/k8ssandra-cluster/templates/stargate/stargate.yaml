@@ -91,7 +91,7 @@ spec:
             - name: DATACENTER_NAME
               value: {{ .Values.k8ssandra.datacenterName }}
             - name: RACK_NAME
-              value: {{ .Values.rackName }}
+              value: {{ .Values.k8ssandra.rackName }}
             - name: ENABLE_AUTH
               value: "true"
           livenessProbe:
