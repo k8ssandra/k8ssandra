@@ -9,6 +9,7 @@ import (
 	"github.com/gruntwork-io/terratest/modules/k8s"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"k8s.io/apimachinery/pkg/api/resource"
 )
 
 var (
@@ -68,6 +69,8 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			Expect(len(cassdc.Spec.PodTemplateSpec.Spec.Containers[0].Env)).To(Equal(1))
 			Expect(cassdc.Spec.PodTemplateSpec.Spec.Containers[0].Env[0].Name).To(Equal("LOCAL_JMX"))
 			Expect(cassdc.Spec.PodTemplateSpec.Spec.Containers[0].Env[0].Value).To(Equal("no"))
+			Expect(cassdc.Spec.AllowMultipleNodesPerWorker).To(Equal(false))
+
 		})
 
 		It("disabling reaper", func() {
@@ -130,5 +133,35 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			// Two containers, medusa and cassandra
 			Expect(len(cassdc.Spec.PodTemplateSpec.Spec.Containers)).To(Equal(2))
 		})
+
+		It("setting allowMultipleNodesPerWorker to true", func() {
+			options := &helm.Options{
+				SetValues:      map[string]string{"k8ssandra.allowMultipleNodesPerWorker": "true"},
+				KubectlOptions: defaultKubeCtlOptions,
+			}
+
+			renderTemplate(options)
+
+			Expect(cassdc.Spec.AllowMultipleNodesPerWorker).To(Equal(true))
+		})
+
+		It("setting resources for the cassandra containers", func() {
+			options := &helm.Options{
+				SetValues: map[string]string{
+					"k8ssandra.resources.limits.memory":   "2Gi",
+					"k8ssandra.resources.limits.cpu":      "1",
+					"k8ssandra.resources.requests.memory": "2Gi",
+					"k8ssandra.resources.requests.cpu":    "1",
+				},
+				KubectlOptions: defaultKubeCtlOptions,
+			}
+
+			renderTemplate(options)
+			Expect(*cassdc.Spec.Resources.Limits.Memory()).To(Equal(resource.MustParse("2Gi")))
+			Expect(*cassdc.Spec.Resources.Limits.Cpu()).To(Equal(resource.MustParse("1")))
+			Expect(*cassdc.Spec.Resources.Requests.Memory()).To(Equal(resource.MustParse("2Gi")))
+			Expect(*cassdc.Spec.Resources.Requests.Cpu()).To(Equal(resource.MustParse("1")))
+		})
+
 	})
 })
