@@ -89,7 +89,7 @@ spec:
             - name: SEED
               value: "{{ .Values.k8ssandra.clusterName }}-seed-service.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain | default "cluster.local" }}"
             - name: DATACENTER_NAME
-              value: {{ .Values.datacenterName }}
+              value: {{ .Values.k8ssandra.datacenterName }}
             - name: RACK_NAME
               value: {{ .Values.rackName }}
             - name: ENABLE_AUTH

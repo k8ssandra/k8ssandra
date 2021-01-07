@@ -3,7 +3,7 @@
 apiVersion: cassandra.datastax.com/v1beta1
 kind: CassandraDatacenter
 metadata:
-  name: {{ .Values.datacenterName }}
+  name: {{ .Values.k8ssandra.datacenterName }}
   labels:
 {{ include "k8ssandra-cluster.labels" . | indent 4 }}
   annotations:
@@ -20,6 +20,7 @@ spec:
   managementApiAuth:
     insecure: {}
   size: {{ .Values.size }}
+  allowMultipleNodesPerWorker: true
   storageConfig:
     cassandraDataVolumeClaimSpec:
       storageClassName: {{ .Values.k8ssandra.cassandraLibDirVolume.storageClass | default "standard" }}

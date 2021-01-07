@@ -1,6 +1,6 @@
 {{- $releaseName := .Release.Name -}}
 {{- $clusterName := .Values.k8ssandra.clusterName -}}
-{{- $datacenterName := .Values.datacenterName -}}
+{{- $datacenterName := .Values.k8ssandra.datacenterName -}}
 {{- $traefik := .Values.ingress.traefik -}}
 
 {{- if and $traefik.enabled $traefik.repair.enabled }}
