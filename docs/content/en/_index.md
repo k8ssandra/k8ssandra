@@ -53,7 +53,7 @@ linkTitle: K8ssandra
 	<main role="main" class="td-main">
 		<div class="row">
 			<section class="col">
-				<div class="card text-center" style="display: block;">
+				<div class="card text-center">
 					<img src="/images/icons/helm.svg" />
 					<h2>Helm</h2>
 					<div class="description">
@@ -65,7 +65,7 @@ linkTitle: K8ssandra
 				</div>
 			</section>
 			<section class="col">
-				<div class="card text-center" style="display: block;">
+				<div class="card text-center">
 					<img src="/images/icons/github.svg" />
 					<h2>Contributions Welcome</h2>
 					<div class="description">
@@ -77,7 +77,7 @@ linkTitle: K8ssandra
 				</div>
 			</section>
 			<section class="col">
-				<div class="card text-center" style="display: block;">
+				<div class="card text-center">
 					<img src="/images/icons/twitter.svg" />
 					<h2>Follow Us on Twitter</h2>
 					<div class="description">
