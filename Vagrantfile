@@ -23,6 +23,8 @@ Vagrant.configure("2") do |config|
 
   config.vm.provision :shell, path: "vagrant/bootstrap-common.sh"
 
+  config.vm.provision :shell, path: "vagrant/bootstrap-go.sh"
+
   config.vm.provision :shell, path: "vagrant/bootstrap-docker.sh"
 
   config.vm.provision :shell, path: "vagrant/bootstrap-kubectl.sh"
@@ -32,8 +34,6 @@ Vagrant.configure("2") do |config|
   config.vm.provision :shell, path: "vagrant/bootstrap-helm.sh"
 
   config.vm.provision :shell, path: "vagrant/bootstrap-hugo.sh"
-
-  config.vm.provision :shell, path: "vagrant/bootstrap-go.sh"
 
   config.vm.provision :shell, path: "vagrant/bootstrap-final.sh"
   
