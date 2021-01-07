@@ -138,6 +138,7 @@ func WaitFor(condition waitCondition, message string, intervalSecs int, timeoutS
 	if err != nil {
 		Log("WaitFor", "Timeout", "Error", err)
 	}
+	Expect(err).To(BeNil())
 }
 
 // IsReleaseDeployed indicates status of a named release
