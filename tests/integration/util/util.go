@@ -86,8 +86,8 @@ func IsDeploymentReady(ctx OptionsContext, name string) bool {
 		"--field-selector", fmt.Sprintf("metadata.name=%s", name),
 		"-o", "name")
 
-	Log("Cluster Deployment", "Verify", result, err)
-	return err == nil && strings.TrimPrefix(result, "deployment.apps/") == ctx.Namespace
+	Log("Deployment", "Verify", result, err)
+	return err == nil && strings.TrimPrefix(result, "deployment.apps/") == name
 }
 
 func IsPodWithLabel(ctx OptionsContext, podLabels []PodLabel) bool {
