@@ -67,6 +67,20 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			Expect(cassdc.Spec.PodTemplateSpec.Spec.Containers[0].Env[0].Value).To(Equal("no"))
 		})
 
+		It("override clusterName", func() {
+			clusterName := "test"
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+				SetValues: map[string]string{
+					"k8ssandra.clusterName": clusterName,
+				},
+			}
+
+			renderTemplate(options)
+
+			Expect(cassdc.Spec.ClusterName).To(Equal(clusterName))
+		})
+
 		It("disabling reaper", func() {
 			options := &helm.Options{
 				SetValues:      map[string]string{"repair.reaper.enabled": "false"},

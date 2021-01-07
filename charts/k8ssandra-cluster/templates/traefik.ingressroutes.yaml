@@ -1,5 +1,5 @@
 {{- $releaseName := .Release.Name -}}
-{{- $clusterName := .Values.clusterName -}}
+{{- $clusterName := .Values.k8ssandra.clusterName -}}
 {{- $datacenterName := .Values.datacenterName -}}
 {{- $traefik := .Values.ingress.traefik -}}
 

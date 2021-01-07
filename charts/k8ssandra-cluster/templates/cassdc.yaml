@@ -11,7 +11,7 @@ metadata:
     reaper.cassandra-reaper.io/instance: {{ .Release.Name }}-reaper-k8ssandra
 {{- end }}
 spec:
-  clusterName: {{ .Values.clusterName }}
+  clusterName: {{ .Values.k8ssandra.clusterName }}
   serverType: cassandra
   serverVersion: "3.11.7"
   # We need to use a patched version of the management api image.

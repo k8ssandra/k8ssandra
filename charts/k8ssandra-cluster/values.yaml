@@ -2,12 +2,12 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
-clusterName: k8ssandra
 datacenterName: dc1
 rackName: default # this is the only supported value for now
 size: 1
 
 k8ssandra:
+  clusterName: k8ssandra
   cassandraLibDirVolume:
     storageClass: standard
     size: 5Gi
