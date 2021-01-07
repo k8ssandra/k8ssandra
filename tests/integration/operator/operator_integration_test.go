@@ -109,7 +109,7 @@ var _ = Describe(suiteName, func() {
 			var labels = []PodLabel{{Key: "cassandra.datastax.com/datacenter", Value: "dc1"},
 				{Key: "cassandra.datastax.com/node-state", Value: "Started"}}
 			WaitFor(func() bool { return IsPodWithLabel(ko.GetClusterCtx(), labels) },
-				"Cassdc dc1 Running", 20, 120)
+				"Cassdc dc1 Running", 20, 260)
 
 		})
 	})
