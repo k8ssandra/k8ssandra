@@ -28,6 +28,11 @@ spec:
       resources:
         requests:
           storage: {{ .Values.k8ssandra.cassandraLibDirVolume.size | default "5Gi" }}
+  allowMultipleNodesPerWorker: {{ .Values.allowMultipleNodesPerWorker | default false}}
+{{- if .Values.resources }}
+  resources:
+{{ toYaml .Values.resources | indent 6 }}
+{{- end}}
   config:    
     jvm-options:
       initial_heap_size: "800M"
