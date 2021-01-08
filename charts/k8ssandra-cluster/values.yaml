@@ -1,4 +1,5 @@
 k8ssandra:
+  cassandraVersion: "3.11.9"
   clusterName: k8ssandra
   datacenterName: dc1
   rackName: default # this is the only supported value for now
