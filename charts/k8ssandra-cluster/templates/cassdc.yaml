@@ -29,7 +29,13 @@ spec:
         requests:
           storage: {{ .Values.k8ssandra.cassandraLibDirVolume.size | default "5Gi" }}
   allowMultipleNodesPerWorker: {{ .Values.k8ssandra.allowMultipleNodesPerWorker | default false}}
-{{- if .Values.k8ssandra.resources }}
+{{- if .Values.k8ssandra.allowMultipleNodesPerWorker}}
+  resources:
+    limits: 
+{{ toYaml (required "set resource limits/requets when enabling allowMultipleNodesPerWorker" .Values.k8ssandra.resources.limits) | indent 6}}
+    requests:      
+{{ toYaml (required "set resource limits/requets when enabling allowMultipleNodesPerWorker" .Values.k8ssandra.resources.requests) | indent 6}}
+{{- else if .Values.k8ssandra.resources }}
   resources:
 {{ toYaml .Values.k8ssandra.resources | indent 6 }}
 {{- end}}
