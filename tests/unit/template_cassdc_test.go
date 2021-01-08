@@ -2,13 +2,12 @@ package unit_test
 
 import (
 	"fmt"
-	"path/filepath"
-
 	cassdcv1beta1 "github.com/datastax/cass-operator/operator/pkg/apis/cassandra/v1beta1"
 	"github.com/gruntwork-io/terratest/modules/helm"
 	"github.com/gruntwork-io/terratest/modules/k8s"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"path/filepath"
 )
 
 var (
@@ -65,6 +64,52 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			Expect(len(cassdc.Spec.PodTemplateSpec.Spec.Containers[0].Env)).To(Equal(1))
 			Expect(cassdc.Spec.PodTemplateSpec.Spec.Containers[0].Env[0].Name).To(Equal("LOCAL_JMX"))
 			Expect(cassdc.Spec.PodTemplateSpec.Spec.Containers[0].Env[0].Value).To(Equal("no"))
+
+			// Server version and mgmt-api image specified
+			Expect(cassdc.Spec.ServerVersion).ToNot(BeEmpty())
+			Expect(cassdc.Spec.ServerImage).ToNot(BeEmpty())
+		})
+
+		It("override clusterName", func() {
+			clusterName := "test"
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+				SetValues: map[string]string{
+					"k8ssandra.clusterName": clusterName,
+				},
+			}
+
+			renderTemplate(options)
+
+			Expect(cassdc.Spec.ClusterName).To(Equal(clusterName))
+		})
+
+		It("override datacenterName", func() {
+			dcName := "test"
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+				SetValues: map[string]string{
+					"k8ssandra.datacenterName": dcName,
+				},
+			}
+
+			renderTemplate(options)
+
+			Expect(cassdc.Name).To(Equal(dcName))
+		})
+
+		It("override size", func() {
+			size := "3"
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+				SetValues: map[string]string{
+					"k8ssandra.size": size,
+				},
+			}
+
+			renderTemplate(options)
+
+			Expect(cassdc.Spec.Size, 3)
 		})
 
 		It("disabling reaper", func() {
@@ -129,5 +174,6 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			// Two containers, medusa and cassandra
 			Expect(len(cassdc.Spec.PodTemplateSpec.Spec.Containers)).To(Equal(2))
 		})
+
 	})
 })
