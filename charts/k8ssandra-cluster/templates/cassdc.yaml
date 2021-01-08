@@ -14,9 +14,7 @@ spec:
   clusterName: {{ .Values.k8ssandra.clusterName }}
   serverType: cassandra
   serverVersion: "3.11.7"
-  # We need to use a patched version of the management api image.
-  # See https://k8ssandra.atlassian.net/browse/K8C-88 for details.
-  serverImage: jsanda/mgmtapi-3_11:v0.1.13-k8c-88
+  serverImage: datastax/cassandra-mgmtapi-3_11_7:v0.1.17
   managementApiAuth:
     insecure: {}
   size: {{ .Values.k8ssandra.size }}
