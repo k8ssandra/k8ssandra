@@ -61,7 +61,6 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 
 			renderTemplate(options)
 
-			Expect(err).To(BeNil())
 			Expect(cassdc.Kind).To(Equal("CassandraDatacenter"))
 
 			// Reaper should be enabled in default - verify
@@ -132,7 +131,6 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			}
 
 			renderTemplate(options)
-
 			Expect(cassdc.Annotations).ShouldNot(HaveKeyWithValue(reaperInstanceAnnotation, reaperInstanceValue))
 
 			Expect(len(cassdc.Spec.PodTemplateSpec.Spec.Containers)).To(Equal(1))
@@ -182,7 +180,6 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 
 			renderTemplate(options)
 
-			Expect(err).To(BeNil())
 			// Verify both are present
 			// Initcontainer should only have jmx and jolokia
 			Expect(len(cassdc.Spec.PodTemplateSpec.Spec.InitContainers)).To(Equal(3))
