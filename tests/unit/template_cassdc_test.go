@@ -2,23 +2,19 @@ package unit_test
 
 import (
 	"fmt"
-	"path/filepath"
-
 	cassdcv1beta1 "github.com/datastax/cass-operator/operator/pkg/apis/cassandra/v1beta1"
 	"github.com/gruntwork-io/terratest/modules/helm"
 	"github.com/gruntwork-io/terratest/modules/k8s"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"k8s.io/apimachinery/pkg/api/resource"
+	"path/filepath"
 )
 
 var (
-	reaperInstanceAnnotation = "reaper.cassandra-reaper.io/instance"
-	helmReleaseName          = "k8ssandra-test"
-	reaperInstanceValue      = fmt.Sprintf("%s-reaper-k8ssandra", helmReleaseName)
-	medusaConfigVolumeName   = fmt.Sprintf("%s-medusa-config-k8ssandra", helmReleaseName)
-	defaultTestNamespace     = "k8ssandra"
-	defaultKubeCtlOptions    = k8s.NewKubectlOptions("", "", defaultTestNamespace)
+	reaperInstanceValue    = fmt.Sprintf("%s-reaper-k8ssandra", helmReleaseName)
+	medusaConfigVolumeName = fmt.Sprintf("%s-medusa-config-k8ssandra", helmReleaseName)
+	defaultKubeCtlOptions  = k8s.NewKubectlOptions("", "", defaultTestNamespace)
 )
 
 var _ = Describe("Verify CassandraDatacenter template", func() {
@@ -82,6 +78,51 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			Expect(cassdc.Spec.PodTemplateSpec.Spec.Containers[0].Env[0].Value).To(Equal("no"))
 			Expect(cassdc.Spec.AllowMultipleNodesPerWorker).To(Equal(false))
 
+			// Server version and mgmt-api image specified
+			Expect(cassdc.Spec.ServerVersion).ToNot(BeEmpty())
+			Expect(cassdc.Spec.ServerImage).ToNot(BeEmpty())
+		})
+
+		It("override clusterName", func() {
+			clusterName := "test"
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+				SetValues: map[string]string{
+					"k8ssandra.clusterName": clusterName,
+				},
+			}
+
+			renderTemplate(options)
+
+			Expect(cassdc.Spec.ClusterName).To(Equal(clusterName))
+		})
+
+		It("override datacenterName", func() {
+			dcName := "test"
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+				SetValues: map[string]string{
+					"k8ssandra.datacenterName": dcName,
+				},
+			}
+
+			renderTemplate(options)
+
+			Expect(cassdc.Name).To(Equal(dcName))
+		})
+
+		It("override size", func() {
+			size := "3"
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+				SetValues: map[string]string{
+					"k8ssandra.size": size,
+				},
+			}
+
+			renderTemplate(options)
+
+			Expect(cassdc.Spec.Size, 3)
 		})
 
 		It("disabling reaper", func() {
@@ -95,8 +136,10 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			Expect(cassdc.Annotations).ShouldNot(HaveKeyWithValue(reaperInstanceAnnotation, reaperInstanceValue))
 
 			Expect(len(cassdc.Spec.PodTemplateSpec.Spec.Containers)).To(Equal(1))
-			// No reaper or medusa env variables should be present
-			Expect(len(cassdc.Spec.PodTemplateSpec.Spec.Containers[0].Env)).To(Equal(0))
+			// No env slice should be present
+			Expect(cassdc.Spec.PodTemplateSpec.Spec.Containers[0].Env).To(BeNil())
+			// No initcontainers slice should be present
+			Expect(cassdc.Spec.PodTemplateSpec.Spec.InitContainers).To(BeNil())
 		})
 
 		It("enabling only medusa", func() {
@@ -210,6 +253,5 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			Expect(error.Error()).To(ContainSubstring("set resource limits/requests when enabling allowMultipleNodesPerWorker"))
 
 		})
-
 	})
 })

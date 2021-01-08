@@ -6,7 +6,7 @@ metadata:
   labels:
 {{ include "k8ssandra-cluster.labels" . | indent 4 }}
 spec:
-  image: thelastpickle/cassandra-reaper:2.0.5
+  image: thelastpickle/cassandra-reaper:2.1.3
   serverConfig:
     {{- if .Values.repair.reaper.autoschedule }}
     autoScheduling:
@@ -16,8 +16,8 @@ spec:
     jmxUserSecretName: {{ .Release.Name }}-reaper-secret-k8ssandra
     cassandraBackend:
       cassandraDatacenter:
-        name: {{ .Values.datacenterName }}
+        name: {{ .Values.k8ssandra.datacenterName }}
       replication:
         networkTopologyStrategy:
-          {{ .Values.datacenterName }}: {{ min .Values.size 3}}
+          {{ .Values.k8ssandra.datacenterName }}: {{ min .Values.k8ssandra.size 3}}
 {{- end }}

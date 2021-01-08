@@ -8,12 +8,17 @@ import (
 )
 
 const (
-	chartsPath = ("../../charts/k8ssandra-cluster")
+	chartsPath                  = ("../../charts/k8ssandra-cluster")
+	reaperInstanceAnnotation    = "reaper.cassandra-reaper.io/instance"
+	helmHookAnnotation          = "helm.sh/hook"
+	helmHookPreDeleteAnnotation = "helm.sh/hook-delete-policy"
+	defaultTestNamespace        = "k8ssandra"
+	helmReleaseName             = "k8ssandra-test"
 )
 
-func TestTests(t *testing.T) {
+func TestTemplateUnitTests(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "Tests Suite")
+	RunSpecs(t, "Unit tests suite")
 }
 
 var _ = BeforeSuite(func(done Done) {

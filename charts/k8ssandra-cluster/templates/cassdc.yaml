@@ -3,7 +3,7 @@
 apiVersion: cassandra.datastax.com/v1beta1
 kind: CassandraDatacenter
 metadata:
-  name: {{ .Values.datacenterName }}
+  name: {{ .Values.k8ssandra.datacenterName }}
   labels:
 {{ include "k8ssandra-cluster.labels" . | indent 4 }}
   annotations:
@@ -11,15 +11,14 @@ metadata:
     reaper.cassandra-reaper.io/instance: {{ .Release.Name }}-reaper-k8ssandra
 {{- end }}
 spec:
-  clusterName: {{ .Values.clusterName }}
+  clusterName: {{ .Values.k8ssandra.clusterName }}
   serverType: cassandra
   serverVersion: "3.11.7"
-  # We need to use a patched version of the management api image.
-  # See https://k8ssandra.atlassian.net/browse/K8C-88 for details.
-  serverImage: jsanda/mgmtapi-3_11:v0.1.13-k8c-88
+  serverImage: datastax/cassandra-mgmtapi-3_11_7:v0.1.17
   managementApiAuth:
     insecure: {}
-  size: {{ .Values.size }}
+  size: {{ .Values.k8ssandra.size }}
+  allowMultipleNodesPerWorker: true
   storageConfig:
     cassandraDataVolumeClaimSpec:
       storageClassName: {{ .Values.k8ssandra.cassandraLibDirVolume.storageClass | default "standard" }}
@@ -45,6 +44,7 @@ spec:
       max_heap_size: "800M"
   podTemplateSpec:
     spec:
+{{- if or .Values.repair.reaper.enabled .Values.backupRestore.medusa.enabled }}
       initContainers:
 {{- if .Values.repair.reaper.enabled }}
       - name: jmx-credentials
@@ -102,8 +102,10 @@ spec:
             mountPath: /etc/medusa-secrets
 {{- end}}
 {{- end}}
+{{- end}}
       containers:
       - name: cassandra
+{{- if or .Values.repair.reaper.enabled .Values.backupRestore.medusa.enabled }}
         env:
 {{- if .Values.repair.reaper.enabled }}
           - name: LOCAL_JMX
@@ -154,4 +156,5 @@ spec:
       - name:  {{ .Values.backupRestore.medusa.bucketSecret }}
         secret:
           secretName: {{ .Values.backupRestore.medusa.bucketSecret }}
+{{- end }}
 {{- end }}

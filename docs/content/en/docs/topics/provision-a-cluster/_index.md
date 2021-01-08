@@ -374,7 +374,10 @@ Notice the value of `size: 1` in cassdc.yaml. This is the Cassandra DataCenter d
 
 To scale up, you could change the `size` to 3. Example with helm:
 
-`helm upgrade k8ssandra-cluster-a k8ssandra/k8ssandra-cluster --set size=3`
+`helm upgrade k8ssandra-cluster-a k8ssandra/k8ssandra-cluster --set size=3 --reuse-values`
+
+Note: using `--reuse-values` to ensure keeping settings from previous `helm upgrade`.
+
 ```
 Release "k8ssandra-cluster-a" has been upgraded. Happy Helming!
 NAME: k8ssandra-cluster-a
@@ -399,7 +402,7 @@ size: 3
 
 Similarly, to scale down, lower the current `size` to conserve cloud resource costs, if the new value can support your computing reqiuirements in Kubernetes.  Example:
 
-`helm upgrade k8ssandra-cluster-a k8ssandra/k8ssandra-cluster --set size=1`
+`helm upgrade k8ssandra-cluster-a k8ssandra/k8ssandra-cluster --set size=1 --reuse-values`
 ```
 Release "k8ssandra-cluster-a" has been upgraded. Happy Helming!
 NAME: k8ssandra-cluster-a

@@ -1,23 +1,20 @@
-# Default values for k8ssandra-cluster.
-# This is a YAML-formatted file.
-# Declare variables to be passed into your templates.
-
-name: k8ssandra
-clusterName: k8ssandra
-datacenterName: dc1
-size: 1
-
 k8ssandra:
-  # The k8ssandra chart installs operators with cluster scope. It can be installed in a
-  # different namespace. The namespace and name of the k8ssandra chart release are needed
-  # to configure some resources like the Grafana data source.
-  namespace: default
-  name: k8ssandra
+  clusterName: k8ssandra
+  datacenterName: dc1
+  rackName: default # this is the only supported value for now
+  size: 1
   cassandraLibDirVolume:
     storageClass: standard
     size: 5Gi
   allowMultipleNodesPerWorker: false
   resources: {}
+
+stargate:
+  # configuration regarding the Stargate API
+  enabled: false
+  replicas: 1
+  clusterVersion: "3.11" # this is the only supported value for now
+  containerImage: "auto" # chooses image based on clusterVersion
 
 # Configuration regarding configuration of repair services
 repair:
@@ -58,12 +55,12 @@ ingress:
     enabled: false
 
     # Repair service
-    repair: 
+    repair:
       # Note this will **only** work if `ingress.traefik.enabled` is also `true`
       enabled: true
 
       # Name of the Traefik entrypoints where we want to source traffic.
-      entrypoints: 
+      entrypoints:
         - web
 
       # Hostname Traefik should use for matching requests.
@@ -72,10 +69,10 @@ ingress:
     # Cassandra native transport ingress support
     cassandra:
       # Note this will **only** work if `ingress.traefik.enabled` is also `true`
-      enabled: false
+      enabled: true
 
       # Name of the Traefik entrypoints for source traffic
-      entrypoints: 
+      entrypoints:
         - cassandra
 
     # Monitoring web interfaces for Promtheus and Grafana
@@ -136,3 +133,6 @@ monitoring:
     # and the actual ExternalURL is still true, but the server serves requests
     # under a different route prefix. For example for use with `kubectl proxy`.
     routePrefix: ""
+
+cleaner:
+  image: burmanm/k8ssandra-client:latest

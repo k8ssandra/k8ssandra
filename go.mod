@@ -8,7 +8,10 @@ require (
 	github.com/k8ssandra/reaper-operator v0.0.0-20201124165544-2b87dd8e68b5
 	github.com/onsi/ginkgo v1.14.2
 	github.com/onsi/gomega v1.10.3
+	k8s.io/api v0.18.6
 	k8s.io/apimachinery v0.18.6
+	k8s.io/client-go v12.0.0+incompatible
+	sigs.k8s.io/controller-runtime v0.6.4
 )
 
 replace (
