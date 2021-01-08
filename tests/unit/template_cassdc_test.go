@@ -39,12 +39,16 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 	})
 
 	renderTemplate := func(options *helm.Options) {
-		renderedOutput := helm.RenderTemplate(
+		renderedOutput, renderError := helm.RenderTemplateE(
 			GinkgoT(), options, helmChartPath, helmReleaseName,
 			[]string{"templates/cassdc.yaml"},
 		)
+		if renderError == nil {
+			helm.UnmarshalK8SYaml(GinkgoT(), renderedOutput, cassdc)
+		} else {
+			err = renderError
+		}
 
-		helm.UnmarshalK8SYaml(GinkgoT(), renderedOutput, cassdc)
 	}
 
 	Context("by rendering it with options", func() {
@@ -55,6 +59,7 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 
 			renderTemplate(options)
 
+			Expect(err).To(BeNil())
 			Expect(cassdc.Kind).To(Equal("CassandraDatacenter"))
 
 			// Reaper should be enabled in default - verify
@@ -80,6 +85,8 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			}
 
 			renderTemplate(options)
+
+			Expect(err).To(BeNil())
 			Expect(cassdc.Annotations).ShouldNot(HaveKeyWithValue(reaperInstanceAnnotation, reaperInstanceValue))
 
 			Expect(len(cassdc.Spec.PodTemplateSpec.Spec.Containers)).To(Equal(1))
@@ -95,6 +102,7 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 
 			renderTemplate(options)
 
+			Expect(err).To(BeNil())
 			// Verify medusa is present
 			// Initcontainer should only have one (medusa)
 			Expect(len(cassdc.Spec.PodTemplateSpec.Spec.InitContainers)).To(Equal(2))
@@ -127,6 +135,7 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 
 			renderTemplate(options)
 
+			Expect(err).To(BeNil())
 			// Verify both are present
 			// Initcontainer should only have jmx and jolokia
 			Expect(len(cassdc.Spec.PodTemplateSpec.Spec.InitContainers)).To(Equal(3))
@@ -147,27 +156,79 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 
 			renderTemplate(options)
 
+			Expect(err).To(BeNil())
 			Expect(cassdc.Spec.AllowMultipleNodesPerWorker).To(Equal(true))
 		})
 
-
-		It("setting resources for the cassandra containers", func() {
+		It("setting allowMultipleNodesPerWorker to false", func() {
 			options := &helm.Options{
 				SetValues: map[string]string{
-					"k8ssandra.resources.limits.memory":   "2Gi",
-					"k8ssandra.resources.limits.cpu":      "1",
-					"k8ssandra.resources.requests.memory": "2Gi",
-					"k8ssandra.resources.requests.cpu":    "1",
+					"k8ssandra.allowMultipleNodesPerWorker": "false",
+					"k8ssandra.resources.limits.memory":     "2Gi",
+					"k8ssandra.resources.limits.cpu":        "1",
+					"k8ssandra.resources.requests.memory":   "2Gi",
+					"k8ssandra.resources.requests.cpu":      "1",
 				},
 				KubectlOptions: defaultKubeCtlOptions,
 			}
 
 			renderTemplate(options)
 
+			Expect(err).To(BeNil())
+			Expect(cassdc.Spec.AllowMultipleNodesPerWorker).To(Equal(false))
 			Expect(*cassdc.Spec.Resources.Limits.Memory()).To(Equal(resource.MustParse("2Gi")))
 			Expect(*cassdc.Spec.Resources.Limits.Cpu()).To(Equal(resource.MustParse("1")))
 			Expect(*cassdc.Spec.Resources.Requests.Memory()).To(Equal(resource.MustParse("2Gi")))
 			Expect(*cassdc.Spec.Resources.Requests.Cpu()).To(Equal(resource.MustParse("1")))
+		})
+		It("setting allowMultipleNodesPerWorker to true", func() {
+			options := &helm.Options{
+				SetValues: map[string]string{
+					"k8ssandra.allowMultipleNodesPerWorker": "true",
+					"k8ssandra.resources.limits.memory":     "2Gi",
+					"k8ssandra.resources.limits.cpu":        "1",
+					"k8ssandra.resources.requests.memory":   "2Gi",
+					"k8ssandra.resources.requests.cpu":      "1"},
+				KubectlOptions: defaultKubeCtlOptions,
+			}
+
+			renderTemplate(options)
+
+			Expect(err).To(BeNil())
+			Expect(*cassdc.Spec.Resources.Limits.Memory()).To(Equal(resource.MustParse("2Gi")))
+			Expect(*cassdc.Spec.Resources.Limits.Cpu()).To(Equal(resource.MustParse("1")))
+			Expect(*cassdc.Spec.Resources.Requests.Memory()).To(Equal(resource.MustParse("2Gi")))
+			Expect(*cassdc.Spec.Resources.Requests.Cpu()).To(Equal(resource.MustParse("1")))
+			Expect(cassdc.Spec.AllowMultipleNodesPerWorker).To(Equal(true))
+		})
+
+		It("setting allowMultipleNodesPerWorker to false without resources", func() {
+			options := &helm.Options{
+				SetValues: map[string]string{
+					"k8ssandra.allowMultipleNodesPerWorker": "false",
+				},
+				KubectlOptions: defaultKubeCtlOptions,
+			}
+
+			renderTemplate(options)
+
+			Expect(err).To(BeNil())
+			Expect(cassdc.Spec.AllowMultipleNodesPerWorker).To(Equal(false))
+		})
+
+		It("setting allowMultipleNodesPerWorker to true without resources", func() {
+			options := &helm.Options{
+				SetValues: map[string]string{
+					"k8ssandra.allowMultipleNodesPerWorker": "true",
+				},
+				KubectlOptions: defaultKubeCtlOptions,
+			}
+
+			renderTemplate(options)
+
+			Expect(err).To(HaveOccurred())
+			Expect(err.Error()).To(ContainSubstring("set resource limits/requests when enabling allowMultipleNodesPerWorker"))
+
 		})
 
 	})
