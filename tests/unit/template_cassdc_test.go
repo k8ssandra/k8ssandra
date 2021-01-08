@@ -48,7 +48,7 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 				KubectlOptions: defaultKubeCtlOptions,
 			}
 
-			renderTemplate(options)
+			Expect(renderTemplate(options)).To(Succeed())
 
 			Expect(cassdc.Kind).To(Equal("CassandraDatacenter"))
 
