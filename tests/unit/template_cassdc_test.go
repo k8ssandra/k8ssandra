@@ -136,7 +136,12 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 
 		It("setting allowMultipleNodesPerWorker to true", func() {
 			options := &helm.Options{
-				SetValues:      map[string]string{"k8ssandra.allowMultipleNodesPerWorker": "true"},
+				SetValues: map[string]string{
+					"k8ssandra.allowMultipleNodesPerWorker": "true",
+					"k8ssandra.resources.limits.memory":     "2Gi",
+					"k8ssandra.resources.limits.cpu":        "1",
+					"k8ssandra.resources.requests.memory":   "2Gi",
+					"k8ssandra.resources.requests.cpu":      "1"},
 				KubectlOptions: defaultKubeCtlOptions,
 			}
 
@@ -144,6 +149,7 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 
 			Expect(cassdc.Spec.AllowMultipleNodesPerWorker).To(Equal(true))
 		})
+
 
 		It("setting resources for the cassandra containers", func() {
 			options := &helm.Options{
@@ -157,6 +163,7 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			}
 
 			renderTemplate(options)
+
 			Expect(*cassdc.Spec.Resources.Limits.Memory()).To(Equal(resource.MustParse("2Gi")))
 			Expect(*cassdc.Spec.Resources.Limits.Cpu()).To(Equal(resource.MustParse("1")))
 			Expect(*cassdc.Spec.Resources.Requests.Memory()).To(Equal(resource.MustParse("2Gi")))
