@@ -38,17 +38,23 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 		err = nil
 	})
 
-	renderTemplate := func(options *helm.Options) {
+	renderTemplateE := func(options *helm.Options) error {
 		renderedOutput, renderError := helm.RenderTemplateE(
 			GinkgoT(), options, helmChartPath, helmReleaseName,
 			[]string{"templates/cassdc.yaml"},
 		)
 		if renderError == nil {
-			helm.UnmarshalK8SYaml(GinkgoT(), renderedOutput, cassdc)
+			unmarshalError := helm.UnmarshalK8SYamlE(GinkgoT(), renderedOutput, cassdc)
+			return unmarshalError
 		} else {
-			err = renderError
+			return renderError
 		}
 
+	}
+	renderTemplate := func(options *helm.Options) {
+		error := renderTemplateE(options)
+		err = error
+		Expect(error).To(BeNil())
 	}
 
 	Context("by rendering it with options", func() {
@@ -86,7 +92,6 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 
 			renderTemplate(options)
 
-			Expect(err).To(BeNil())
 			Expect(cassdc.Annotations).ShouldNot(HaveKeyWithValue(reaperInstanceAnnotation, reaperInstanceValue))
 
 			Expect(len(cassdc.Spec.PodTemplateSpec.Spec.Containers)).To(Equal(1))
@@ -102,7 +107,6 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 
 			renderTemplate(options)
 
-			Expect(err).To(BeNil())
 			// Verify medusa is present
 			// Initcontainer should only have one (medusa)
 			Expect(len(cassdc.Spec.PodTemplateSpec.Spec.InitContainers)).To(Equal(2))
@@ -156,7 +160,6 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 
 			renderTemplate(options)
 
-			Expect(err).To(BeNil())
 			Expect(cassdc.Spec.AllowMultipleNodesPerWorker).To(Equal(true))
 		})
 
@@ -174,7 +177,6 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 
 			renderTemplate(options)
 
-			Expect(err).To(BeNil())
 			Expect(cassdc.Spec.AllowMultipleNodesPerWorker).To(Equal(false))
 			Expect(*cassdc.Spec.Resources.Limits.Memory()).To(Equal(resource.MustParse("2Gi")))
 			Expect(*cassdc.Spec.Resources.Limits.Cpu()).To(Equal(resource.MustParse("1")))
@@ -192,7 +194,6 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 
 			renderTemplate(options)
 
-			Expect(err).To(BeNil())
 			Expect(cassdc.Spec.AllowMultipleNodesPerWorker).To(Equal(false))
 		})
 
@@ -204,10 +205,9 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 				KubectlOptions: defaultKubeCtlOptions,
 			}
 
-			renderTemplate(options)
+			error := renderTemplateE(options)
 
-			Expect(err).To(HaveOccurred())
-			Expect(err.Error()).To(ContainSubstring("set resource limits/requests when enabling allowMultipleNodesPerWorker"))
+			Expect(error.Error()).To(ContainSubstring("set resource limits/requests when enabling allowMultipleNodesPerWorker"))
 
 		})
 
