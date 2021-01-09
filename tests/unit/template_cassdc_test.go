@@ -2,13 +2,14 @@ package unit_test
 
 import (
 	"fmt"
+	"path/filepath"
+
 	cassdcv1beta1 "github.com/datastax/cass-operator/operator/pkg/apis/cassandra/v1beta1"
 	"github.com/gruntwork-io/terratest/modules/helm"
 	"github.com/gruntwork-io/terratest/modules/k8s"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"k8s.io/apimachinery/pkg/api/resource"
-	"path/filepath"
 )
 
 var (
@@ -34,23 +35,17 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 		err = nil
 	})
 
-	renderTemplateE := func(options *helm.Options) error {
-		renderedOutput, renderError := helm.RenderTemplateE(
+	renderTemplate := func(options *helm.Options) error {
+		renderedOutput, err := helm.RenderTemplateE(
 			GinkgoT(), options, helmChartPath, helmReleaseName,
 			[]string{"templates/cassdc.yaml"},
 		)
-		if renderError == nil {
-			unmarshalError := helm.UnmarshalK8SYamlE(GinkgoT(), renderedOutput, cassdc)
-			return unmarshalError
-		} else {
-			return renderError
+
+		if err == nil {
+			err = helm.UnmarshalK8SYamlE(GinkgoT(), renderedOutput, cassdc)
 		}
 
-	}
-	renderTemplate := func(options *helm.Options) {
-		error := renderTemplateE(options)
-		err = error
-		Expect(error).To(BeNil())
+		return err
 	}
 
 	Context("by rendering it with options", func() {
@@ -59,7 +54,7 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 				KubectlOptions: defaultKubeCtlOptions,
 			}
 
-			renderTemplate(options)
+			Expect(renderTemplate(options)).To(Succeed())
 
 			Expect(cassdc.Kind).To(Equal("CassandraDatacenter"))
 
@@ -91,7 +86,7 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 				},
 			}
 
-			renderTemplate(options)
+			Expect(renderTemplate(options)).To(Succeed())
 
 			Expect(cassdc.Spec.ClusterName).To(Equal(clusterName))
 		})
@@ -105,7 +100,7 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 				},
 			}
 
-			renderTemplate(options)
+			Expect(renderTemplate(options)).To(Succeed())
 
 			Expect(cassdc.Name).To(Equal(dcName))
 		})
@@ -119,7 +114,7 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 				},
 			}
 
-			renderTemplate(options)
+			Expect(renderTemplate(options)).To(Succeed())
 
 			Expect(cassdc.Spec.Size, 3)
 		})
@@ -130,7 +125,7 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 				KubectlOptions: defaultKubeCtlOptions,
 			}
 
-			renderTemplate(options)
+			Expect(renderTemplate(options)).To(Succeed())
 			Expect(cassdc.Annotations).ShouldNot(HaveKeyWithValue(reaperInstanceAnnotation, reaperInstanceValue))
 
 			Expect(len(cassdc.Spec.PodTemplateSpec.Spec.Containers)).To(Equal(1))
@@ -146,7 +141,7 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 				KubectlOptions: defaultKubeCtlOptions,
 			}
 
-			renderTemplate(options)
+			Expect(renderTemplate(options)).To(Succeed())
 
 			// Verify medusa is present
 			// Initcontainer should only have one (medusa)
@@ -178,7 +173,7 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 				KubectlOptions: defaultKubeCtlOptions,
 			}
 
-			renderTemplate(options)
+			Expect(renderTemplate(options)).To(Succeed())
 
 			// Verify both are present
 			// Initcontainer should only have jmx and jolokia
@@ -198,7 +193,7 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 				KubectlOptions: defaultKubeCtlOptions,
 			}
 
-			renderTemplate(options)
+			Expect(renderTemplate(options)).To(Succeed())
 
 			Expect(cassdc.Spec.AllowMultipleNodesPerWorker).To(Equal(true))
 		})
@@ -215,7 +210,7 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 				KubectlOptions: defaultKubeCtlOptions,
 			}
 
-			renderTemplate(options)
+			Expect(renderTemplate(options)).To(Succeed())
 
 			Expect(cassdc.Spec.AllowMultipleNodesPerWorker).To(Equal(false))
 			Expect(*cassdc.Spec.Resources.Limits.Memory()).To(Equal(resource.MustParse("2Gi")))
@@ -232,7 +227,7 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 				KubectlOptions: defaultKubeCtlOptions,
 			}
 
-			renderTemplate(options)
+			Expect(renderTemplate(options)).To(Succeed())
 
 			Expect(cassdc.Spec.AllowMultipleNodesPerWorker).To(Equal(false))
 		})
@@ -244,8 +239,7 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 				},
 				KubectlOptions: defaultKubeCtlOptions,
 			}
-
-			error := renderTemplateE(options)
+			error := renderTemplate(options)
 
 			Expect(error.Error()).To(ContainSubstring("set resource limits/requests when enabling allowMultipleNodesPerWorker"))
 
