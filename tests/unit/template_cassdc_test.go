@@ -11,6 +11,7 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"k8s.io/apimachinery/pkg/api/resource"
+	"strconv"
 )
 
 var (
@@ -180,9 +181,13 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 		})
 
 		It("enable Cassandra auth", func() {
+			dcName := "test"
+			clusterSize := 3
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
 				SetValues: map[string]string{
+					"k8ssandra.datacenterName":             dcName,
+					"k8ssandra.size":                       strconv.Itoa(clusterSize),
 					"k8ssandra.configuration.auth.enabled": "true",
 				},
 			}
@@ -192,16 +197,28 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 				Authorizer    string
 			}
 
+			type JvmOptions struct {
+				AdditionalJvmOptions []string `json:"additional-jvm-opts"`
+			}
+
 			type Config struct {
 				CassandraConfig CassandraConfig `json:"cassandra-yaml"`
+				JvmOptions      JvmOptions      `json:"jvm-options"`
 			}
 
 			Expect(renderTemplate(options)).To(Succeed())
+
+			Expect(cassdc.Name).To(Equal(dcName))
 
 			var config Config
 			Expect(json.Unmarshal(cassdc.Spec.Config, &config)).To(Succeed())
 			Expect(config.CassandraConfig.Authenticator).To(Equal("PasswordAuthenticator"))
 			Expect(config.CassandraConfig.Authorizer).To(Equal("CassandraAuthorizer"))
+			Expect(config.JvmOptions.AdditionalJvmOptions).To(ConsistOf(
+				"-Ddse.system_distributed_replication_dc_names="+dcName,
+				"-Ddse.system_distributed_replication_per_dc="+strconv.Itoa(clusterSize),
+			))
+
 		})
 
 		It("disabling reaper", func() {
