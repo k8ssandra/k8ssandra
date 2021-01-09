@@ -4,6 +4,9 @@ k8ssandra:
   datacenterName: dc1
   rackName: default # this is the only supported value for now
   size: 1
+  configuration:
+    auth:
+      enabled: true
   cassandraLibDirVolume:
     storageClass: standard
     size: 5Gi

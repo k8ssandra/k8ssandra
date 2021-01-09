@@ -46,9 +46,25 @@ spec:
 {{ toYaml .Values.k8ssandra.resources | indent 6 }}
 {{- end}}
   config:    
+    cassandra-yaml:
+{{- if .Values.k8ssandra.configuration.auth }}
+      authenticator: PasswordAuthenticator
+      authorizer: CassandraAuthorizer
+{{- else }}
+      authenticator: AllowAuthenticator
+      authorizer: AllowAuthorizer
+{{- end }}
+      role_manager: CassandraRoleManager
+
     jvm-options:
       initial_heap_size: "800M"
       max_heap_size: "800M"
+
+      additional-jvm-opts:
+{{- if .Values.k8ssandra.configuration.auth }}
+        - "-Ddse.system_distributed_replication_dc_names={{ .Values.k8ssandra.datacenterName }}"
+        - "-Ddse.system_distributed_replication_per_dc={{ min 5 .Values.k8ssandra.size }}"
+{{- end }}
   podTemplateSpec:
     spec:
 {{- if or .Values.repair.reaper.enabled .Values.backupRestore.medusa.enabled }}
