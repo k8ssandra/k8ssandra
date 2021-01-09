@@ -21,18 +21,14 @@ var (
 var _ = Describe("Verify CassandraDatacenter template", func() {
 	var (
 		helmChartPath string
-		err           error
 		cassdc        *cassdcv1beta1.CassandraDatacenter
 	)
 
 	BeforeEach(func() {
-		helmChartPath, err = filepath.Abs(chartsPath)
+		path, err := filepath.Abs(chartsPath)
 		Expect(err).To(BeNil())
+		helmChartPath = path
 		cassdc = &cassdcv1beta1.CassandraDatacenter{}
-	})
-
-	AfterEach(func() {
-		err = nil
 	})
 
 	renderTemplate := func(options *helm.Options) error {
@@ -117,6 +113,65 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			Expect(renderTemplate(options)).To(Succeed())
 
 			Expect(cassdc.Spec.Size, 3)
+		})
+
+		It("use cassandraVersion 3.11.7", func() {
+			cassandraVersion := "3.11.7"
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+				SetValues: map[string]string{
+					"k8ssandra.cassandraVersion": cassandraVersion,
+				},
+			}
+
+			Expect(renderTemplate(options)).To(Succeed())
+
+			Expect(cassdc.Spec.ServerVersion).To(Equal(cassandraVersion))
+			Expect(cassdc.Spec.ServerImage).To(Equal("datastax/cassandra-mgmtapi-3_11_7:v0.1.17"))
+		})
+
+		It("use cassandraVersion 3.11.8", func() {
+			cassandraVersion := "3.11.8"
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+				SetValues: map[string]string{
+					"k8ssandra.cassandraVersion": cassandraVersion,
+				},
+			}
+
+			Expect(renderTemplate(options)).To(Succeed())
+
+			Expect(cassdc.Spec.ServerVersion).To(Equal(cassandraVersion))
+			Expect(cassdc.Spec.ServerImage).To(Equal("datastax/cassandra-mgmtapi-3_11_8:v0.1.17"))
+		})
+
+		It("use cassandraVersion 3.11.9", func() {
+			cassandraVersion := "3.11.9"
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+				SetValues: map[string]string{
+					"k8ssandra.cassandraVersion": cassandraVersion,
+				},
+			}
+
+			Expect(renderTemplate(options)).To(Succeed())
+
+			Expect(cassdc.Spec.ServerVersion).To(Equal(cassandraVersion))
+			Expect(cassdc.Spec.ServerImage).To(Equal("datastax/cassandra-mgmtapi-3_11_9:v0.1.17"))
+		})
+
+		It("use cassandraVersion with unsupported value", func() {
+			cassandraVersion := "3.12.225"
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+				SetValues: map[string]string{
+					"k8ssandra.cassandraVersion": cassandraVersion,
+				},
+			}
+
+			err := renderTemplate(options)
+
+			Expect(err).To(HaveOccurred())
 		})
 
 		It("disabling reaper", func() {
