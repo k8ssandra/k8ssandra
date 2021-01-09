@@ -1,6 +1,7 @@
 package unit_test
 
 import (
+	"encoding/json"
 	"fmt"
 	"path/filepath"
 
@@ -172,6 +173,31 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			err := renderTemplate(options)
 
 			Expect(err).To(HaveOccurred())
+		})
+
+		It("enable Cassandra auth", func() {
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+				SetValues: map[string]string{
+					"k8ssandra.configuration.auth.enabled": "true",
+				},
+			}
+
+			type CassandraConfig struct {
+				Authenticator string
+				Authorizer    string
+			}
+
+			type Config struct {
+				CassandraConfig CassandraConfig `json:"cassandra-yaml"`
+			}
+
+			Expect(renderTemplate(options)).To(Succeed())
+
+			var config Config
+			Expect(json.Unmarshal(cassdc.Spec.Config, &config)).To(Succeed())
+			Expect(config.CassandraConfig.Authenticator).To(Equal("PasswordAuthenticator"))
+			Expect(config.CassandraConfig.Authorizer).To(Equal("CassandraAuthorizer"))
 		})
 
 		It("disabling reaper", func() {
