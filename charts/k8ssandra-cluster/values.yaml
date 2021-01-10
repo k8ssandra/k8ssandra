@@ -7,6 +7,9 @@ k8ssandra:
   configuration:
     auth:
       enabled: true
+      superuser:
+        secret: ""
+        username: ""
       caches:
         rolesValidityMillis: 3600000
         rolesUpdateMillis: 3600000

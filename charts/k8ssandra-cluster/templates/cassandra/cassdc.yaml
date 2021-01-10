@@ -12,8 +12,6 @@ spec:
   clusterName: {{ .Values.k8ssandra.clusterName }}
   serverType: cassandra
   serverVersion: {{ .Values.k8ssandra.cassandraVersion | quote }}
-{{/*  serverVersion: "3.11.7"*/}}
-{{/*  serverImage: jsanda/mgmtapi-3_11:v0.1.13-k8c-88*/}}
 {{- if eq "3.11.7" .Values.k8ssandra.cassandraVersion }}
   serverImage: datastax/cassandra-mgmtapi-3_11_7:v0.1.17
 {{- else if eq "3.11.8" .Values.k8ssandra.cassandraVersion }}
@@ -45,6 +43,11 @@ spec:
   resources:
 {{ toYaml .Values.k8ssandra.resources | indent 6 }}
 {{- end}}
+{{- if .Values.k8ssandra.configuration.auth.superuser.secret }}
+  superuserSecretName: {{ .Values.k8ssandra.configuration.auth.superuser.secret }}
+{{- else if .Values.k8ssandra.configuration.auth.superuser.username }}
+  superuserSecretName: {{ .Values.k8ssandra.clusterName }}-superuser-secret
+{{- end }}
   config:    
     cassandra-yaml:
 {{- if .Values.k8ssandra.configuration.auth.enabled }}
