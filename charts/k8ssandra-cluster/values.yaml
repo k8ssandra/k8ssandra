@@ -7,6 +7,13 @@ k8ssandra:
   configuration:
     auth:
       enabled: true
+      caches:
+        rolesValidityMillis: 3600000
+        rolesUpdateMillis: 3600000
+        permissionsValidityMillis: 3600000
+        permissionsUpdateMillis: 3600000
+        credentialsValidityMillis: 3600000
+        credentialsUpdateMillis: 3600000
   cassandraLibDirVolume:
     storageClass: standard
     size: 5Gi

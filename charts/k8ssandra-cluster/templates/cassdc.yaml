@@ -12,6 +12,8 @@ spec:
   clusterName: {{ .Values.k8ssandra.clusterName }}
   serverType: cassandra
   serverVersion: {{ .Values.k8ssandra.cassandraVersion | quote }}
+{{/*  serverVersion: "3.11.7"*/}}
+{{/*  serverImage: jsanda/mgmtapi-3_11:v0.1.13-k8c-88*/}}
 {{- if eq "3.11.7" .Values.k8ssandra.cassandraVersion }}
   serverImage: datastax/cassandra-mgmtapi-3_11_7:v0.1.17
 {{- else if eq "3.11.8" .Values.k8ssandra.cassandraVersion }}
@@ -24,7 +26,6 @@ spec:
   managementApiAuth:
     insecure: {}
   size: {{ .Values.k8ssandra.size }}
-  allowMultipleNodesPerWorker: true
   storageConfig:
     cassandraDataVolumeClaimSpec:
       storageClassName: {{ .Values.k8ssandra.cassandraLibDirVolume.storageClass | default "standard" }}
@@ -54,7 +55,12 @@ spec:
       authorizer: AllowAuthorizer
 {{- end }}
       role_manager: CassandraRoleManager
-
+      roles_validity_in_ms: {{ .Values.k8ssandra.configuration.auth.caches.rolesValidityMillis }}
+      roles_update_interval_in_ms: {{ .Values.k8ssandra.configuration.auth.caches.rolesUpdateMillis }}
+      permissions_validity_in_ms: {{ .Values.k8ssandra.configuration.auth.caches.permissionsValidityMillis }}
+      permissions_update_interval_in_ms: {{ .Values.k8ssandra.configuration.auth.caches.permissionsUpdateMillis }}
+      credentials_validity_in_ms: {{ .Values.k8ssandra.configuration.auth.caches.credentialsValidityMillis }}
+      credentials_update_interval_in_ms: {{ .Values.k8ssandra.configuration.auth.caches.credentialsUpdateMillis }}
     jvm-options:
       initial_heap_size: "800M"
       max_heap_size: "800M"
