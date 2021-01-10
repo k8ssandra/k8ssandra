@@ -14,6 +14,26 @@ import (
 	"strconv"
 )
 
+type CassandraConfig struct {
+	Authenticator             string
+	Authorizer                string
+	RolesValidityMillis       int64 `json:"roles_validity_in_ms"`
+	RolesUpdateMillis         int64 `json:"roles_update_interval_in_ms"`
+	PermissionsValidityMillis int64 `json:"permissions_validity_in_ms"`
+	PermissionsUpdateMillis   int64 `json:"permissions_update_interval_in_ms"`
+	CredentialsValidityMillis int64 `json:"credentials_validity_in_ms"`
+	CredentialsUpdateMillis   int64 `json:"credentials_update_interval_in_ms"`
+}
+
+type JvmOptions struct {
+	AdditionalJvmOptions []string `json:"additional-jvm-opts"`
+}
+
+type Config struct {
+	CassandraConfig CassandraConfig `json:"cassandra-yaml"`
+	JvmOptions      JvmOptions      `json:"jvm-options"`
+}
+
 var (
 	reaperInstanceValue    = fmt.Sprintf("%s-reaper-k8ssandra", helmReleaseName)
 	medusaConfigVolumeName = fmt.Sprintf("%s-medusa-config-k8ssandra", helmReleaseName)
@@ -180,43 +200,47 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			Expect(err).To(HaveOccurred())
 		})
 
-		It("enable Cassandra auth", func() {
+		It("disabling Cassandra auth", func() {
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+				SetValues: map[string]string{
+					"k8ssandra.configuration.auth.enabled": "false",
+				},
+			}
+
+			Expect(renderTemplate(options)).To(Succeed())
+
+			var config Config
+			Expect(json.Unmarshal(cassdc.Spec.Config, &config)).To(Succeed())
+			Expect(config.CassandraConfig.Authenticator).To(Equal("AllowAuthenticator"))
+			Expect(config.CassandraConfig.Authorizer).To(Equal("AllowAuthorizer"))
+		})
+
+		It("enabling Cassandra auth", func() {
 			dcName := "test"
 			clusterSize := 3
+
 			authCachePeriod := int64(7200000)
+			rolesValidityPeriod := authCachePeriod + 1
+			rolesUpdatePeriod := authCachePeriod + 2
+			permissionsValidityPeriod := authCachePeriod + 3
+			permissionsUpdatedPeriod := authCachePeriod + 4
+			credentialsValidityPeriod := authCachePeriod + 5
+			credentialsUpdatePeriod := authCachePeriod + 6
+
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
 				SetValues: map[string]string{
 					"k8ssandra.datacenterName":                                      dcName,
 					"k8ssandra.size":                                                strconv.Itoa(clusterSize),
 					"k8ssandra.configuration.auth.enabled":                          "true",
-					"k8ssandra.configuration.auth.caches.rolesValidityMillis":       strconv.FormatInt(authCachePeriod, 10),
-					"k8ssandra.configuration.auth.caches.rolesUpdateMillis":         strconv.FormatInt(authCachePeriod, 10),
-					"k8ssandra.configuration.auth.caches.permissionsValidityMillis": strconv.FormatInt(authCachePeriod, 10),
-					"k8ssandra.configuration.auth.caches.permissionsUpdateMillis":   strconv.FormatInt(authCachePeriod, 10),
-					"k8ssandra.configuration.auth.caches.credentialsValidityMillis": strconv.FormatInt(authCachePeriod, 10),
-					"k8ssandra.configuration.auth.caches.credentialsUpdateMillis":   strconv.FormatInt(authCachePeriod, 10),
+					"k8ssandra.configuration.auth.caches.rolesValidityMillis":       strconv.FormatInt(rolesValidityPeriod, 10),
+					"k8ssandra.configuration.auth.caches.rolesUpdateMillis":         strconv.FormatInt(rolesUpdatePeriod, 10),
+					"k8ssandra.configuration.auth.caches.permissionsValidityMillis": strconv.FormatInt(permissionsValidityPeriod, 10),
+					"k8ssandra.configuration.auth.caches.permissionsUpdateMillis":   strconv.FormatInt(permissionsUpdatedPeriod, 10),
+					"k8ssandra.configuration.auth.caches.credentialsValidityMillis": strconv.FormatInt(credentialsValidityPeriod, 10),
+					"k8ssandra.configuration.auth.caches.credentialsUpdateMillis":   strconv.FormatInt(credentialsUpdatePeriod, 10),
 				},
-			}
-
-			type CassandraConfig struct {
-				Authenticator             string
-				Authorizer                string
-				RolesValidityMillis       int64 `json:"roles_validity_in_ms"`
-				RolesUpdateMillis         int64 `json:"roles_update_interval_in_ms"`
-				PermissionsValidityMillis int64 `json:"permissions_validity_in_ms"`
-				PermissionsUpdateMillis   int64 `json:"permissions_update_interval_in_ms"`
-				CredentialsValidityMillis int64 `json:"credentials_validity_in_ms"`
-				CredentialsUpdateMillis   int64 `json:"credentials_update_interval_in_ms"`
-			}
-
-			type JvmOptions struct {
-				AdditionalJvmOptions []string `json:"additional-jvm-opts"`
-			}
-
-			type Config struct {
-				CassandraConfig CassandraConfig `json:"cassandra-yaml"`
-				JvmOptions      JvmOptions      `json:"jvm-options"`
 			}
 
 			Expect(renderTemplate(options)).To(Succeed())
@@ -227,12 +251,12 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			Expect(json.Unmarshal(cassdc.Spec.Config, &config)).To(Succeed())
 			Expect(config.CassandraConfig.Authenticator).To(Equal("PasswordAuthenticator"))
 			Expect(config.CassandraConfig.Authorizer).To(Equal("CassandraAuthorizer"))
-			Expect(config.CassandraConfig.RolesValidityMillis).To(Equal(authCachePeriod))
-			Expect(config.CassandraConfig.RolesUpdateMillis).To(Equal(authCachePeriod))
-			Expect(config.CassandraConfig.PermissionsValidityMillis).To(Equal(authCachePeriod))
-			Expect(config.CassandraConfig.PermissionsUpdateMillis).To(Equal(authCachePeriod))
-			Expect(config.CassandraConfig.CredentialsValidityMillis).To(Equal(authCachePeriod))
-			Expect(config.CassandraConfig.CredentialsUpdateMillis).To(Equal(authCachePeriod))
+			Expect(config.CassandraConfig.RolesValidityMillis).To(Equal(rolesValidityPeriod))
+			Expect(config.CassandraConfig.RolesUpdateMillis).To(Equal(rolesUpdatePeriod))
+			Expect(config.CassandraConfig.PermissionsValidityMillis).To(Equal(permissionsValidityPeriod))
+			Expect(config.CassandraConfig.PermissionsUpdateMillis).To(Equal(permissionsUpdatedPeriod))
+			Expect(config.CassandraConfig.CredentialsValidityMillis).To(Equal(credentialsValidityPeriod))
+			Expect(config.CassandraConfig.CredentialsUpdateMillis).To(Equal(credentialsUpdatePeriod))
 			Expect(config.JvmOptions.AdditionalJvmOptions).To(ConsistOf(
 				"-Ddse.system_distributed_replication_dc_names="+dcName,
 				"-Ddse.system_distributed_replication_per_dc="+strconv.Itoa(clusterSize),

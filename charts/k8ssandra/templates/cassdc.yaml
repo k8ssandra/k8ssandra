@@ -46,7 +46,7 @@ spec:
 {{- end}}
   config:    
     cassandra-yaml:
-{{- if .Values.k8ssandra.configuration.auth }}
+{{- if .Values.k8ssandra.configuration.auth.enabled }}
       authenticator: PasswordAuthenticator
       authorizer: CassandraAuthorizer
 {{- else }}
