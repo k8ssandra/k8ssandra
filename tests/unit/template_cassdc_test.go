@@ -290,7 +290,7 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 
 			Expect(renderTemplate(options)).To(Succeed())
 
-			Expect(cassdc.Spec.SuperuserSecretName).To(Equal(clusterName + "-superuser-secret"))
+			Expect(cassdc.Spec.SuperuserSecretName).To(Equal(clusterName + "-superuser"))
 		})
 
 		It("disabling reaper", func() {
