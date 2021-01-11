@@ -2,12 +2,14 @@ package unit_test
 
 import (
 	"fmt"
+	"path/filepath"
+
 	cassdcv1beta1 "github.com/datastax/cass-operator/operator/pkg/apis/cassandra/v1beta1"
 	"github.com/gruntwork-io/terratest/modules/helm"
 	"github.com/gruntwork-io/terratest/modules/k8s"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"path/filepath"
+	"k8s.io/apimachinery/pkg/api/resource"
 )
 
 var (
@@ -19,27 +21,27 @@ var (
 var _ = Describe("Verify CassandraDatacenter template", func() {
 	var (
 		helmChartPath string
-		err           error
 		cassdc        *cassdcv1beta1.CassandraDatacenter
 	)
 
 	BeforeEach(func() {
-		helmChartPath, err = filepath.Abs(chartsPath)
+		path, err := filepath.Abs(chartsPath)
 		Expect(err).To(BeNil())
+		helmChartPath = path
 		cassdc = &cassdcv1beta1.CassandraDatacenter{}
 	})
 
-	AfterEach(func() {
-		err = nil
-	})
-
-	renderTemplate := func(options *helm.Options) {
-		renderedOutput := helm.RenderTemplate(
+	renderTemplate := func(options *helm.Options) error {
+		renderedOutput, err := helm.RenderTemplateE(
 			GinkgoT(), options, helmChartPath, helmReleaseName,
 			[]string{"templates/cassdc.yaml"},
 		)
 
-		helm.UnmarshalK8SYaml(GinkgoT(), renderedOutput, cassdc)
+		if err == nil {
+			err = helm.UnmarshalK8SYamlE(GinkgoT(), renderedOutput, cassdc)
+		}
+
+		return err
 	}
 
 	Context("by rendering it with options", func() {
@@ -48,7 +50,7 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 				KubectlOptions: defaultKubeCtlOptions,
 			}
 
-			renderTemplate(options)
+			Expect(renderTemplate(options)).To(Succeed())
 
 			Expect(cassdc.Kind).To(Equal("CassandraDatacenter"))
 
@@ -64,6 +66,7 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			Expect(len(cassdc.Spec.PodTemplateSpec.Spec.Containers[0].Env)).To(Equal(1))
 			Expect(cassdc.Spec.PodTemplateSpec.Spec.Containers[0].Env[0].Name).To(Equal("LOCAL_JMX"))
 			Expect(cassdc.Spec.PodTemplateSpec.Spec.Containers[0].Env[0].Value).To(Equal("no"))
+			Expect(cassdc.Spec.AllowMultipleNodesPerWorker).To(Equal(false))
 
 			// Server version and mgmt-api image specified
 			Expect(cassdc.Spec.ServerVersion).ToNot(BeEmpty())
@@ -79,7 +82,7 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 				},
 			}
 
-			renderTemplate(options)
+			Expect(renderTemplate(options)).To(Succeed())
 
 			Expect(cassdc.Spec.ClusterName).To(Equal(clusterName))
 		})
@@ -93,7 +96,7 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 				},
 			}
 
-			renderTemplate(options)
+			Expect(renderTemplate(options)).To(Succeed())
 
 			Expect(cassdc.Name).To(Equal(dcName))
 		})
@@ -107,9 +110,68 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 				},
 			}
 
-			renderTemplate(options)
+			Expect(renderTemplate(options)).To(Succeed())
 
 			Expect(cassdc.Spec.Size, 3)
+		})
+
+		It("use cassandraVersion 3.11.7", func() {
+			cassandraVersion := "3.11.7"
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+				SetValues: map[string]string{
+					"k8ssandra.cassandraVersion": cassandraVersion,
+				},
+			}
+
+			Expect(renderTemplate(options)).To(Succeed())
+
+			Expect(cassdc.Spec.ServerVersion).To(Equal(cassandraVersion))
+			Expect(cassdc.Spec.ServerImage).To(Equal("datastax/cassandra-mgmtapi-3_11_7:v0.1.17"))
+		})
+
+		It("use cassandraVersion 3.11.8", func() {
+			cassandraVersion := "3.11.8"
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+				SetValues: map[string]string{
+					"k8ssandra.cassandraVersion": cassandraVersion,
+				},
+			}
+
+			Expect(renderTemplate(options)).To(Succeed())
+
+			Expect(cassdc.Spec.ServerVersion).To(Equal(cassandraVersion))
+			Expect(cassdc.Spec.ServerImage).To(Equal("datastax/cassandra-mgmtapi-3_11_8:v0.1.17"))
+		})
+
+		It("use cassandraVersion 3.11.9", func() {
+			cassandraVersion := "3.11.9"
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+				SetValues: map[string]string{
+					"k8ssandra.cassandraVersion": cassandraVersion,
+				},
+			}
+
+			Expect(renderTemplate(options)).To(Succeed())
+
+			Expect(cassdc.Spec.ServerVersion).To(Equal(cassandraVersion))
+			Expect(cassdc.Spec.ServerImage).To(Equal("datastax/cassandra-mgmtapi-3_11_9:v0.1.17"))
+		})
+
+		It("use cassandraVersion with unsupported value", func() {
+			cassandraVersion := "3.12.225"
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+				SetValues: map[string]string{
+					"k8ssandra.cassandraVersion": cassandraVersion,
+				},
+			}
+
+			err := renderTemplate(options)
+
+			Expect(err).To(HaveOccurred())
 		})
 
 		It("disabling reaper", func() {
@@ -118,7 +180,7 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 				KubectlOptions: defaultKubeCtlOptions,
 			}
 
-			renderTemplate(options)
+			Expect(renderTemplate(options)).To(Succeed())
 			Expect(cassdc.Annotations).ShouldNot(HaveKeyWithValue(reaperInstanceAnnotation, reaperInstanceValue))
 
 			Expect(len(cassdc.Spec.PodTemplateSpec.Spec.Containers)).To(Equal(1))
@@ -134,7 +196,7 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 				KubectlOptions: defaultKubeCtlOptions,
 			}
 
-			renderTemplate(options)
+			Expect(renderTemplate(options)).To(Succeed())
 
 			// Verify medusa is present
 			// Initcontainer should only have one (medusa)
@@ -166,7 +228,7 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 				KubectlOptions: defaultKubeCtlOptions,
 			}
 
-			renderTemplate(options)
+			Expect(renderTemplate(options)).To(Succeed())
 
 			// Verify both are present
 			// Initcontainer should only have jmx and jolokia
@@ -175,5 +237,67 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			Expect(len(cassdc.Spec.PodTemplateSpec.Spec.Containers)).To(Equal(2))
 		})
 
+		It("setting allowMultipleNodesPerWorker to true", func() {
+			options := &helm.Options{
+				SetValues: map[string]string{
+					"k8ssandra.allowMultipleNodesPerWorker": "true",
+					"k8ssandra.resources.limits.memory":     "2Gi",
+					"k8ssandra.resources.limits.cpu":        "1",
+					"k8ssandra.resources.requests.memory":   "2Gi",
+					"k8ssandra.resources.requests.cpu":      "1"},
+				KubectlOptions: defaultKubeCtlOptions,
+			}
+
+			Expect(renderTemplate(options)).To(Succeed())
+
+			Expect(cassdc.Spec.AllowMultipleNodesPerWorker).To(Equal(true))
+		})
+
+		It("setting allowMultipleNodesPerWorker to false", func() {
+			options := &helm.Options{
+				SetValues: map[string]string{
+					"k8ssandra.allowMultipleNodesPerWorker": "false",
+					"k8ssandra.resources.limits.memory":     "2Gi",
+					"k8ssandra.resources.limits.cpu":        "1",
+					"k8ssandra.resources.requests.memory":   "2Gi",
+					"k8ssandra.resources.requests.cpu":      "1",
+				},
+				KubectlOptions: defaultKubeCtlOptions,
+			}
+
+			Expect(renderTemplate(options)).To(Succeed())
+
+			Expect(cassdc.Spec.AllowMultipleNodesPerWorker).To(Equal(false))
+			Expect(*cassdc.Spec.Resources.Limits.Memory()).To(Equal(resource.MustParse("2Gi")))
+			Expect(*cassdc.Spec.Resources.Limits.Cpu()).To(Equal(resource.MustParse("1")))
+			Expect(*cassdc.Spec.Resources.Requests.Memory()).To(Equal(resource.MustParse("2Gi")))
+			Expect(*cassdc.Spec.Resources.Requests.Cpu()).To(Equal(resource.MustParse("1")))
+		})
+
+		It("setting allowMultipleNodesPerWorker to false without resources", func() {
+			options := &helm.Options{
+				SetValues: map[string]string{
+					"k8ssandra.allowMultipleNodesPerWorker": "false",
+				},
+				KubectlOptions: defaultKubeCtlOptions,
+			}
+
+			Expect(renderTemplate(options)).To(Succeed())
+
+			Expect(cassdc.Spec.AllowMultipleNodesPerWorker).To(Equal(false))
+		})
+
+		It("setting allowMultipleNodesPerWorker to true without resources", func() {
+			options := &helm.Options{
+				SetValues: map[string]string{
+					"k8ssandra.allowMultipleNodesPerWorker": "true",
+				},
+				KubectlOptions: defaultKubeCtlOptions,
+			}
+			error := renderTemplate(options)
+
+			Expect(error.Error()).To(ContainSubstring("set resource limits/requests when enabling allowMultipleNodesPerWorker"))
+
+		})
 	})
 })
