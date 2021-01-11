@@ -70,8 +70,8 @@ spec:
 
       additional-jvm-opts:
 {{- if .Values.k8ssandra.configuration.auth }}
-        - "-cassandra.system_distributed_replication_dc_names={{ .Values.k8ssandra.datacenterName }}"
-        - "-cassandra.system_distributed_replication_per_dc={{ min 5 .Values.k8ssandra.size }}"
+        - "-Dcassandra.system_distributed_replication_dc_names={{ .Values.k8ssandra.datacenterName }}"
+        - "-Dcassandra.system_distributed_replication_per_dc={{ min 5 .Values.k8ssandra.size }}"
 {{- end }}
   podTemplateSpec:
     spec:
