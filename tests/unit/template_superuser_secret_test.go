@@ -48,7 +48,7 @@ var _ = Describe("Verify superuser secret template", func() {
 			}
 
 			Expect(renderTemplate(options)).To(Succeed())
-			Expect(secret.Name).To(Equal(clusterName + "-superuser-secret"))
+			Expect(secret.Name).To(Equal(clusterName + "-superuser"))
 			Expect(string(secret.Data["username"])).To(Equal(username))
 			Expect(len(secret.Data["password"])).To(Equal(20))
 		})
