@@ -13,6 +13,15 @@ cass-operator:
   image: jsanda/cass-operator:91205f4d8f1e
 
 kube-prometheus-stack:
+  # Disable cluster wide settings
+  global:
+    rbac:
+      create: false
+
+  prometheusOperator:
+    admissionWebhooks:
+      enabled: false
+
   alertmanager:
     enabled: false
 
