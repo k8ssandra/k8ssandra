@@ -7,6 +7,14 @@ k8ssandra:
   configuration:
     auth:
       enabled: true
+      # If neither superuser.secret nor superuser.username are set, then
+      # k8ssandra falls back to cass-operator's default behavior. cass-operator
+      # will create a default superuser and generate a secret whose name is of
+      # the form {clusterName}-superuser. If superuser.secret is set, k8ssandra
+      # will configure the CassandraDatacenter to use that secret. If
+      # superuser.secret is not set and if superuser.username is set, k8ssandra
+      # will generate a secret with the username and a random 20 character
+      # password.
       superuser:
         secret: ""
         username: ""

@@ -413,9 +413,9 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 				},
 				KubectlOptions: defaultKubeCtlOptions,
 			}
-			error := renderTemplate(options)
+			err := renderTemplate(options)
 
-			Expect(error.Error()).To(ContainSubstring("set resource limits/requests when enabling allowMultipleNodesPerWorker"))
+			Expect(err.Error()).To(ContainSubstring("set resource limits/requests when enabling allowMultipleNodesPerWorker"))
 
 		})
 	})
