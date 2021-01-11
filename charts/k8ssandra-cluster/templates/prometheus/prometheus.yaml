@@ -7,7 +7,7 @@ metadata:
 spec:
   replicas: 1
   baseImage: quay.io/prometheus/prometheus
-  version: v2.21.0
+  version: v2.24.0
   serviceAccountName: {{ .Release.Name }}-prometheus-k8ssandra
   securityContext:
     runAsGroup: 2000

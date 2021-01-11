@@ -32,5 +32,5 @@ dependencies:
     #repository: https://github.com/datastax/cass-operator/tree/master/charts
 
   - name: kube-prometheus-stack
-    version: 11.1.6
+    version: 12.11.3
     repository: https://prometheus-community.github.io/helm-charts
