@@ -55,6 +55,12 @@ ingress:
     # Set to `true` to enable the templating of Traefik ingress custom resources
     enabled: false
 
+    # Specify custom TLSOptions to use for IngressRoutes
+    tls:
+      options:
+        name: ""
+        namespace: ""
+
     # Repair service
     repair:
       # Note this will **only** work if `ingress.traefik.enabled` is also `true`

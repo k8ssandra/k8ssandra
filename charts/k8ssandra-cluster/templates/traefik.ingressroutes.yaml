@@ -23,6 +23,7 @@ spec:
     - name: {{ $releaseName }}-reaper-k8ssandra-reaper-service
       kind: Service
       port: 8080
+{{- include "k8ssandra-cluster.traefikTls" . }}
 {{- end }}
 {{- if and $traefik.enabled $traefik.cassandra.enabled }}
 ---
@@ -42,6 +43,7 @@ spec:
       services:
         - name: {{ $clusterName }}-{{ $datacenterName }}-service
           port: 9042
+{{- include "k8ssandra-cluster.traefikTls" . }}
 {{- end }}
 {{- if and $traefik.enabled $traefik.monitoring.grafana.enabled }}
 ---
@@ -65,6 +67,7 @@ spec:
     - name: grafana-service
       kind: Service
       port: 3000
+{{- include "k8ssandra-cluster.traefikTls" . }}
 {{- end }}
 {{- if and $traefik.enabled $traefik.monitoring.prometheus.enabled }}
 ---
@@ -86,4 +89,5 @@ spec:
     - name: {{ .Release.Name }}-prometheus-k8ssandra
       kind: Service
       port: 9090
+{{- include "k8ssandra-cluster.traefikTls" . }}
 {{- end }}

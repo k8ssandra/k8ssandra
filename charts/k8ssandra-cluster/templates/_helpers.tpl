@@ -61,3 +61,17 @@ Create the name of the service account to use
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
 {{- end }}
+
+{{/*
+Include Traefik TLSOptions reference to Ingress
+*/}}
+{{- define "k8ssandra-cluster.traefikTls" -}}
+{{- if .Values.ingress.traefik.tls.options.name }}
+  tls:
+    options:
+    {{- with .Values.ingress.traefik.tls.options }}
+      name: {{ .name }}
+      namespace: {{ .namespace }}
+    {{- end }}
+{{- end }}
+{{- end }}
