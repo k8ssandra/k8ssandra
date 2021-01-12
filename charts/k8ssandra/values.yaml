@@ -144,10 +144,10 @@ cass-operator:
   # See K8C-19 for details.
   clusterWideInstall: true
 
-  # We need to use a patched version of cass-operator for now that has changes needed in
-  # for Reaper and Medusa integration. Images will be built from
-  # https://github.com/jsanda/cass-operator/tree/k8ssandra.
-  image: jsanda/cass-operator:91205f4d8f1e
+  # This is a build from https://github.com/datastax/cass-operator/commit/56d6ea60589a32e89495e7961dce1b835751a5ed.
+  # We will switch over to a datastax/cass-operator image as new as a new image
+  # build is available.
+  image: jsanda/cass-operator:56d6ea60589a32e89495e7961dce1b835751a5ed
 
 kube-prometheus-stack:
   alertmanager:
