@@ -14,7 +14,7 @@ kubectl delete crd ingressroutes.traefik.containo.us
 kubectl delete crd ingressroutetcps.traefik.containo.us
 kubectl delete crd ingressrouteudps.traefik.containo.us
 kubectl delete crd middlewares.traefik.containo.us
-kubectl delete podmonitors.monitoring.coreos.com
+kubectl delete crd podmonitors.monitoring.coreos.com
 kubectl delete crd probes.monitoring.coreos.com
 kubectl delete crd prometheuses.monitoring.coreos.com
 kubectl delete crd prometheusrules.monitoring.coreos.com
