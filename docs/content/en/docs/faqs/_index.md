@@ -76,8 +76,8 @@ $ helm install k8ssandra k8ssandra/k8ssandra -n k8ssandra --create-namespace
 
 ### Can I install multiple releases of k8ssandra?
 
-Some of the objects installed by the k8ssandra chart are currently configured to be cluster-scoped; consequently, you should only install it once. This should be
-fixed before version 1.0 to allow multiple installations.
+Some of the objects installed by the k8ssandra chart are currently configured to be cluster-scoped; consequently, you should only install those components once. This should be
+fixed before version 1.0 to allow multiple installations. Other parts can be installed multiple times to allow creating multiple Cassandra clusters in a single k8s cluster.
 
 ### What is cass-operator?
 

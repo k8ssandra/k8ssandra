@@ -33,7 +33,7 @@ You will need storage for the backups. This topic shows the use of AWS S3 bucket
 
 ### Create secret for read/write access to an S3 bucket
 
-Before creating the k8ssandra, we need to supply credentials so that Medusa has read/write to an S3 bucket, which is where the backup will be stored.  Currently, Medusa supports local, Amazon S3, GKE, and other bucket types. In this example, we’re using S3.
+Before creating the k8ssandra cluster, we need to supply credentials so that Medusa has read/write to an S3 bucket, which is where the backup will be stored.  Currently, Medusa supports local, Amazon S3, GKE, and other bucket types. In this example, we’re using S3.
 
 **Note:** See [AWS S3 setup](https://github.com/thelastpickle/cassandra-medusa/blob/master/docs/aws_s3_setup.md) on the Medusa wiki for more details for configuring S3.
 
