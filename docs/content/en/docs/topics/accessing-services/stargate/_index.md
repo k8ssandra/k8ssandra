@@ -45,19 +45,19 @@ Detailed information about the Stargate auth API can be found in the Stargate [d
 ### Extracting Cassandra username/password Secrets
 
 The auth API requires the Cassandra username and password to be provided to it.  Those values can be 
-extracted from the K8ssandra cluster through the following commands (replace `k8ssandra-cluster` with the
+extracted from the K8ssandra cluster through the following commands (replace `k8ssandra` with the
 name configured for your running cluster).
 
 Extract and decode the username secret:
 
 ```
-kubectl get secret k8ssandra-cluster-superuser -o jsonpath="{.data.username}" | base64 --decode
+kubectl get secret k8ssandra-superuser -o jsonpath="{.data.username}" | base64 --decode
 ```
 
 Extract and decode the password secret:
 
 ```
-kubectl get secret k8ssandra-cluster-superuser -o jsonpath="{.data.password}" | base64 --decode
+kubectl get secret k8ssandra-superuser -o jsonpath="{.data.password}" | base64 --decode
 ```
 
 ### Generating Auth Tokens
@@ -65,7 +65,7 @@ kubectl get secret k8ssandra-cluster-superuser -o jsonpath="{.data.password}" | 
 Next, use the extracted and decoded secrets to request a token from the Stargate auth API.
 
 ```
-curl -L -X POST 'http://_STARGATE_DOMAIN_/v1/auth' -H 'Content-Type: application/json' --data-raw '{"username": "k8ssandra-cluster-superuser", "password": "1LI8TebjjHYrqUk9xYbJnbYJheX3Ckq250byd2ePDPXNtweaYgznmg"}'
+curl -L -X POST 'http://_STARGATE_DOMAIN_/v1/auth' -H 'Content-Type: application/json' --data-raw '{"username": "k8ssandra-superuser", "password": "1LI8TebjjHYrqUk9xYbJnbYJheX3Ckq250byd2ePDPXNtweaYgznmg"}'
 ```
 
 This request will return a response similar to the following. The value given for `authToken` will be required when making requests to the Stargate data APIs.

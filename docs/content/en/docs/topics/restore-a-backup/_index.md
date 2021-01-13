@@ -9,8 +9,7 @@ This topic walks you through the steps to backup and restore Cassandra data runn
 
 ## Tools
 
-* K8ssandra-tools Helm chart
-* K8ssandra-cluster Helm chart, which we'll extend with `backupRestore` Medusa buckets for Amazon S3 integration
+* K8ssandra Helm chart, which we'll extend with `backupRestore` Medusa buckets for Amazon S3 integration
 * Sample files in GitHub:
   * [medusa-bucket-key.yaml](./medusa-bucket-key.yaml) to create a secret with credentials for AWS S3 buckets
   * [test_data.cql](./test_data.cql) to populate a Cassandra keyspace and table with data
@@ -32,24 +31,9 @@ You will need storage for the backups. This topic shows the use of AWS S3 bucket
 
 * If you'll use AWS S3, before proceeding with the configuration described below, verify that you know the `aws_access_key_id` and `aws_secret_access_key` values. Or  contact your IT team if they manage those assets. You'll provide those details in an edited version of the [medusa-bucket-key.yaml](./medusa-bucket-key.yaml) file. For information about the S3 setup steps, see this helpful [readme](https://github.com/thelastpickle/cassandra-medusa/blob/master/docs/aws_s3_setup.md).  
 
-* If you haven’t already, install the k8ssandra chart.
-
-`helm install k8ssandra-tools k8ssandra/k8ssandra`
-
-Allowing a few minutes for the pods to start and proceed to a Ready state, check the pod status:
-
-```
-kubectl get pods                              
-NAME                                                         READY   STATUS    RESTARTS   AGE
-cass-operator-86d4dc45cd-8p7cq                               1/1     Running   0          98s
-k8ssandra-tools-kube-prome-operator-6bcdf668d4-b2r6v         1/1     Running   0          98s
-```
-
-The first `kubectl` command above installed the cass-operator and the Prometheus operator.
-
 ### Create secret for read/write access to an S3 bucket
 
-Before creating the k8ssandra-cluster, we need to supply credentials so that Medusa has read/write to an S3 bucket, which is where the backup will be stored.  Currently, Medusa supports local, Amazon S3, GKE, and other bucket types. In this example, we’re using S3.
+Before creating the k8ssandra, we need to supply credentials so that Medusa has read/write to an S3 bucket, which is where the backup will be stored.  Currently, Medusa supports local, Amazon S3, GKE, and other bucket types. In this example, we’re using S3.
 
 **Note:** See [AWS S3 setup](https://github.com/thelastpickle/cassandra-medusa/blob/master/docs/aws_s3_setup.md) on the Medusa wiki for more details for configuring S3.
 
@@ -82,13 +66,13 @@ kubectl apply -f my-medusa-bucket-key.yaml
 secret/medusa-bucket-key configured
 ```
 
-### Create or update the k8ssandra-cluster
+### Create or update the k8ssandra
 
-Install the k8ssandra-cluster chart with the following properties. Backup and restore operations are enabled by default. In the following example, `bucketName` corresponds to the name of the S3 bucket: `K8ssanda-bucket-dev`.  The `bucketSecret` corresponds to the secret credentials.
+Install the k8ssandra chart with the following properties. Backup and restore operations are enabled by default. In the following example, `bucketName` corresponds to the name of the S3 bucket: `K8ssanda-bucket-dev`.  The `bucketSecret` corresponds to the secret credentials.
 
-`helm install k8ssandra-cluster-1 k8ssandra/k8ssandra-cluster --set backupRestore.medusa.bucketName=k8ssanda-bucket-dev --set backupRestore.medusa.bucketSecret=medusa-bucket-secret`
+`helm install k8ssandra-1 k8ssandra/k8ssandra --set backupRestore.medusa.bucketName=k8ssanda-bucket-dev --set backupRestore.medusa.bucketSecret=medusa-bucket-secret`
 
-The `k8ssandra-cluster` Helm chart includes cluster services and the Grafana Operator. Notice that `k8ssandra-cluster` add a number of properties in the `cassdc` datacenter.  
+The `k8ssandra` Helm chart includes cluster services and the Grafana Operator. Notice that `k8ssandra` add a number of properties in the `cassdc` datacenter.  
 
 `kubectl get cassdc dc1 -o yaml`
 
@@ -164,21 +148,20 @@ Review the current charts that are in use, so far:
 
 ```
 NAME               	NAMESPACE	REVISION	UPDATED                             	STATUS  	CHART                  	APP VERSION
-k8ssandra-cluster-1	default  	1       	2020-11-16 20:29:55.58913 -0700 MST 	deployed	k8ssandra-cluster-0.8.0	3.11.7     
-k8ssandra-tools    	default  	1       	2020-11-16 20:17:23.107265 -0700 MST	deployed	k8ssandra-0.8.0        	3.11.7  
+k8ssandra         	default  	1       	2020-11-16 20:17:23.107265 -0700 MST	deployed	k8ssandra-0.23.0        3.11.7  
 ```
 
 Also get the deployment status, so far:
 
 `kubectl get deployment`
 ```
-NAME                                             READY   UP-TO-DATE   AVAILABLE   AGE
-cass-operator                                    1/1     1            1           39m
-grafana-deployment                               1/1     1            1           26m
-k8ssandra-cluster-1-grafana-operator-k8ssandra   1/1     1            1           26m
-k8ssandra-cluster-1-reaper-k8ssandra             1/1     1            1           24m
-k8ssandra-cluster-1-reaper-operator-k8ssandra    1/1     1            1           26m
-k8ssandra-tools-kube-prome-operator              1/1     1            1           39m
+NAME                                       READY   UP-TO-DATE   AVAILABLE   AGE
+cass-operator                              1/1     1            1           159m
+k8ssandra-grafana-operator-k8ssandra       1/1     1            1           159m
+k8ssandra-kube-prometheus-stack-operator   1/1     1            1           159m
+k8ssandra-reaper-k8ssandra                 1/1     1            1           156m
+k8ssandra-reaper-operator-k8ssandra        1/1     1            1           159m
+grafana-deployment                         1/1     1            1           158m
 ```
 
 <!--- Ask JS about medusa pods not being listed 
