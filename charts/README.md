@@ -6,14 +6,8 @@ K8ssandra is installed and configured through Helm charts.
 The charts are not yet deployed to a Helm repo. For now you need use the charts directly from this Git repo.
 
 # Getting Started
-First you need to deploy the k8ssandra stack:
+To create a cluster, deploy the k8ssandra stack:
 
 ```
 $ helm install k8ssandra ./k8ssandra
-```
-
-Next, create a cluster:
-
-```
-$ helm install k8ssandra-cluster ./k8ssandra-cluster
 ```

@@ -35,9 +35,9 @@ following address:
 
 http://REPAIR_DOMAIN/webui
 
-For example, to upgrade a previously installed `k8ssandra-cluster` that's running locally:
+For example, to upgrade a previously installed `k8ssandra` that's running locally:
 
-`helm upgrade k8ssandra-cluster-a k8ssandra/k8ssandra-cluster --set ingress.traefik.enabled=true --set ingress.traefik.repair.host=repair.localhost`
+`helm upgrade k8ssandra k8ssandra/k8ssandra --set ingress.traefik.enabled=true --set ingress.traefik.repair.host=repair.localhost`
 
 Notice how in this example, the DNS host name is specified on the command line as `repair.localhost`.
 
@@ -51,8 +51,8 @@ grafana-deployment-6bb9bc6d89-ghc4s                             1/1     Running 
 k8ssandra-dc1-default-sts-0                                     2/2     Running     0          4m48s
 k8ssandra-tools-grafana-operator-k8ssandra-54fbbc799c-68htn     1/1     Running     0          12m
 k8ssandra-tools-kube-prome-operator-f87955c85-t2s9k             2/2     Running     0          12m
-k8ssandra-cluster-a-reaper-k8ssandra-64b6b4c58-mkfxw            1/1     Running     0          2m52s
-k8ssandra-cluster-a-reaper-operator-k8ssandra-799bd4568f-lk4hv  1/1     Running     0          4m49s
+k8ssandra-reaper-k8ssandra-64b6b4c58-mkfxw                      1/1     Running     0          2m52s
+k8ssandra-reaper-operator-k8ssandra-799bd4568f-lk4hv            1/1     Running     0          4m49s
 prometheus-mycluster-prometheus-k8ssandra-0                     3/3     Running     1          4m48s
 ```
 

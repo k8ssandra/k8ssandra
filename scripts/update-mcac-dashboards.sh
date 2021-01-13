@@ -5,7 +5,7 @@
 #  1. grabs the latest copies of each dashboard from MCAC (optionally from a specified tag or branch)
 #  2. updates the "Overview" dashboard to include a plugin specifier for grafana-polystat-panel v1.2.2
 #  3. passes each dashboard through another script which adds the necessary escaping
-#  4. copies the results into the k8ssandra-cluster chart's templates directory.
+#  4. copies the results into the k8ssandra chart's templates directory.
 #  5. cleans up after itself
 #
 # This script depends on the presence of both `jq` and `yq`. If they're missing, you'll get helpful output.
@@ -60,7 +60,7 @@ echo -e "${BOLDCYAN}Templatizing...${NOCOLOR}"
 ../templatize-dashboard.sh *.dashboard.yaml
 
 echo -e "${BOLDCYAN}Copying templatized dashboards to chart...${NOCOLOR}"
-cp -v *.dashboard-helm-template.yaml ../../../k8ssandra/charts/k8ssandra-cluster/templates/grafana/dashboards/
+cp -v *.dashboard-helm-template.yaml ../../../k8ssandra/charts/k8ssandra/templates/grafana/dashboards/
 
 echo -e "${BOLDCYAN}Cleaning up...${NOCOLOR}"
 cd ..
