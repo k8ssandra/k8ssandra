@@ -38,6 +38,6 @@ else
 fi
 
 set -x
-helm install ${CLUSTERNAME} ../charts/k8ssandra-cluster --set size=${SIZE} --set clusterName=${CLUSTERNAME} --set k8ssandra.namespace=${NAMESPACE} -n ${CLUSTERNAME} --create-namespace
+helm install ${CLUSTERNAME} ../charts/k8ssandra --set size=${SIZE} --set clusterName=${CLUSTERNAME} --set k8ssandra.namespace=${NAMESPACE} -n ${CLUSTERNAME} --create-namespace
 
 

@@ -4,17 +4,18 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
+	"net/http"
+	"path/filepath"
+	"strings"
+	"time"
+
 	"github.com/gruntwork-io/terratest/modules/helm"
 	"github.com/gruntwork-io/terratest/modules/k8s"
 	"github.com/gruntwork-io/terratest/modules/random"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"io/ioutil"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"net/http"
-	"path/filepath"
-	"strings"
-	"time"
 )
 
 var (
@@ -87,7 +88,7 @@ var _ = Describe("Install the cluster", func() {
 			//helm.RunHelmCommandAndGetOutputE(GinkgoT(), options, "install", "traefik", "traefik/traefik", "-n", "traefik", "--create-namespace", "-f", valuesPath)
 
 			// Deploy the cluster
-			clusterChartPath, err := filepath.Abs("../../charts/k8ssandra-cluster")
+			clusterChartPath, err := filepath.Abs("../../charts/k8ssandra")
 			Expect(err).To(BeNil())
 
 			releaseNameCluster = releaseName + "-cluster"

@@ -142,7 +142,6 @@ jobs:
       matrix:
         chart:
           - k8ssandra
-          - k8ssandra-cluster
     steps:
       - name: Download charts artifact
         uses: actions/download-artifact@v2
