@@ -19,9 +19,8 @@ import (
 )
 
 var (
-	namespace          = "k8ssandra"
-	releaseName        string
-	releaseNameCluster string
+	namespace   = "k8ssandra"
+	releaseName string
 )
 
 var _ = Describe("Install the cluster", func() {
@@ -51,7 +50,6 @@ var _ = Describe("Install the cluster", func() {
 		options := &helm.Options{KubectlOptions: kubectlOptions}
 
 		// Verify everything was actually deleted.. I don't think Service is
-		helm.Delete(GinkgoT(), options, releaseNameCluster, true)
 		helm.Delete(GinkgoT(), options, releaseName, true)
 
 		// Delete all the resources from namespace
@@ -61,38 +59,13 @@ var _ = Describe("Install the cluster", func() {
 
 	Context("deploying", func() {
 		It("with default options", func() {
-			crdChartPath, err := filepath.Abs("../../charts/k8ssandra")
+			clusterChartPath, err := filepath.Abs("../../charts/k8ssandra")
 			Expect(err).To(BeNil())
 
 			//kubectlOptions := k8s.NewKubectlOptions("", "", "default")
 			//k8s.CreateNamespace(GinkgoT(), kubectlOptions, namespace)
 			kubectlOptions := k8s.NewKubectlOptions("", "", namespace)
-			options := &helm.Options{KubectlOptions: kubectlOptions}
-
-			releaseName = fmt.Sprintf(
-				"demo-%s", strings.ToLower(random.UniqueId()))
-			helm.Install(GinkgoT(), options, crdChartPath, releaseName)
-
-			// k8s module has no select by label
-			clientset, err := k8s.GetKubernetesClientFromOptionsE(GinkgoT(), kubectlOptions)
-			pods, _ := clientset.CoreV1().Pods(namespace).List(context.Background(), metav1.ListOptions{LabelSelector: "name=cass-operator"})
-
-			Expect(len(pods.Items)).To(Equal(1))
-			k8s.WaitUntilPodAvailable(GinkgoT(), kubectlOptions, pods.Items[0].Name, 50, 500*time.Millisecond)
-
-			// We could use also kubectl wait --for=condition=Ready pod -l name=cass-operator
-
-			// Deploy traefik
-			// helm install traefik traefik/traefik -n traefik --create-namespace -f docs/content/en/docs/topics/ingress/traefik/kind-deployment/traefik.values.yaml
-			//valuesPath, _ := filepath.Abs("../../docs/content/en/docs/topics/ingress/traefik/kind-deployment/traefik.values.yaml")
-			//helm.RunHelmCommandAndGetOutputE(GinkgoT(), options, "install", "traefik", "traefik/traefik", "-n", "traefik", "--create-namespace", "-f", valuesPath)
-
-			// Deploy the cluster
-			clusterChartPath, err := filepath.Abs("../../charts/k8ssandra")
-			Expect(err).To(BeNil())
-
-			releaseNameCluster = releaseName + "-cluster"
-			options = &helm.Options{
+			options := &helm.Options{
 				// Enable traefik to allow redirections for testing
 				SetValues: map[string]string{
 					"ingress.traefik.enabled":                    "true",
@@ -102,7 +75,18 @@ var _ = Describe("Install the cluster", func() {
 				},
 				KubectlOptions: k8s.NewKubectlOptions("", "", namespace),
 			}
-			helm.Install(GinkgoT(), options, clusterChartPath, releaseNameCluster)
+
+			releaseName = fmt.Sprintf(
+				"demo-%s", strings.ToLower(random.UniqueId()))
+			helm.Install(GinkgoT(), options, clusterChartPath, releaseName)
+
+			// k8s module has no select by label
+			// We could also use kubectl wait --for=condition=Ready pod -l name=cass-operator
+			clientset, err := k8s.GetKubernetesClientFromOptionsE(GinkgoT(), kubectlOptions)
+			pods, _ := clientset.CoreV1().Pods(namespace).List(context.Background(), metav1.ListOptions{LabelSelector: "name=cass-operator"})
+
+			Expect(len(pods.Items)).To(Equal(1))
+			k8s.WaitUntilPodAvailable(GinkgoT(), kubectlOptions, pods.Items[0].Name, 50, 500*time.Millisecond)
 
 			// Wait for CassandraDatacenter to be ready..
 			k8s.RunKubectl(GinkgoT(), kubectlOptions, "wait", "--for=condition=Ready", "cassandradatacenter/dc1", "--timeout=300s")
@@ -157,9 +141,7 @@ var _ = Describe("Install the cluster", func() {
 			Expect(cluster).To(Equal("k8ssandra"))
 			Expect(health).To(Equal("up"))
 
-			// etc
-
-			// More advanced, ensure repair is scheduled, take backup.. restore backup..
+			// TODO More advanced, ensure repair is scheduled, take backup.. restore backup..
 		})
 	})
 })
