@@ -1,8 +1,13 @@
+{{- $prometheus := .Values.monitoring.prometheus -}}
+
+{{- if and $prometheus.provision_service_monitors }}
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
   name: {{ .Release.Name }}-prometheus-k8ssandra
   labels:
+    heritage: Helm
+    release: k8ssandra
 {{ include "k8ssandra.labels" . | indent 4 }}
 spec:
   selector:
@@ -18,6 +23,10 @@ spec:
   endpoints:
   - port: prometheus
     interval: 15s
+    path: /metrics
+    scheme: http
+    scrapeTimeout: 15s
+    targetPort: 9103
     metricRelabelings:
     - action: drop
       regex: .*rate_(mean|1m|5m|15m)
@@ -291,7 +300,4 @@ spec:
       targetLabel: __name__
     - action: labeldrop
       regex: prom_name
-    path: /metrics
-    scheme: http
-    scrapeTimeout: 15s
-    targetPort: 9103
+{{- end }}
