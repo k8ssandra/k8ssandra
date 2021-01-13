@@ -5,7 +5,7 @@ metadata:
   name: {{ .Release.Name }}-k8ssandra-stargate
   labels:
     app: {{ .Release.Name }}-k8ssandra-stargate
-{{ include "k8ssandra-cluster.labels" . | indent 4 }}
+{{ include "k8ssandra.labels" . | indent 4 }}
 spec:
   replicas: {{ default 1 .Values.stargate.replicas }}
   selector:

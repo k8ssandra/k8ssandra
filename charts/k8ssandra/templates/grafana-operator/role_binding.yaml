@@ -3,7 +3,7 @@ kind: RoleBinding
 metadata:
   name: {{ .Release.Name }}-grafana-k8ssandra
   labels:
-{{ include "k8ssandra-cluster.labels" . | indent 4 }}
+{{ include "k8ssandra.labels" . | indent 4 }}
 roleRef:
   name: {{ .Release.Name }}-grafana-k8ssandra
   kind: Role

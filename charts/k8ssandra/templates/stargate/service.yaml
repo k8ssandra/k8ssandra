@@ -4,7 +4,7 @@ kind: Service
 metadata:
   name: {{ .Release.Name }}-k8ssandra-stargate-service
   labels:
-{{ include "k8ssandra-cluster.labels" . | indent 4 }}
+{{ include "k8ssandra.labels" . | indent 4 }}
 spec:
   type: ClusterIP
   ports:

@@ -10,7 +10,7 @@ kind: IngressRoute
 metadata:
   name: {{ $releaseName }}-k8ssandra-repair
   labels:
-{{ include "k8ssandra-cluster.labels" . | indent 4 }}
+{{ include "k8ssandra.labels" . | indent 4 }}
 spec:
   entryPoints:
   {{- range $traefik.repair.entrypoints }}
@@ -31,7 +31,7 @@ kind: IngressRouteTCP
 metadata:
   name: {{ $releaseName }}-k8ssandra-cassandra
   labels:
-{{ include "k8ssandra-cluster.labels" . | indent 4 }}
+{{ include "k8ssandra.labels" . | indent 4 }}
 spec:
   entryPoints:
   {{- range $traefik.cassandra.entrypoints }}
@@ -50,7 +50,7 @@ kind: IngressRoute
 metadata:
   name: {{ $releaseName }}-k8ssandra-monitoring-grafana
   labels:
-{{ include "k8ssandra-cluster.labels" . | indent 4 }}
+{{ include "k8ssandra.labels" . | indent 4 }}
 spec:
   entryPoints:
   {{- range $traefik.monitoring.grafana.entrypoints }}
@@ -73,7 +73,7 @@ kind: IngressRoute
 metadata:
   name: {{ $releaseName }}-k8ssandra-monitoring-prometheus
   labels:
-{{ include "k8ssandra-cluster.labels" . | indent 4 }}
+{{ include "k8ssandra.labels" . | indent 4 }}
 spec:
   entryPoints:
   {{- range $traefik.monitoring.prometheus.entrypoints }}

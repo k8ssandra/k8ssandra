@@ -3,7 +3,7 @@ kind: CassandraDatacenter
 metadata:
   name: {{ .Values.k8ssandra.datacenterName }}
   labels:
-{{ include "k8ssandra-cluster.labels" . | indent 4 }}
+{{ include "k8ssandra.labels" . | indent 4 }}
   annotations:
 {{- if .Values.repair.reaper.enabled }}
     reaper.cassandra-reaper.io/instance: {{ .Release.Name }}-reaper-k8ssandra

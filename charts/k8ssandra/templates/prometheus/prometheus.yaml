@@ -3,7 +3,7 @@ kind: Prometheus
 metadata:
   name: {{ .Release.Name }}-prometheus-k8ssandra
   labels:
-{{ include "k8ssandra-cluster.labels" . | indent 4 }}
+{{ include "k8ssandra.labels" . | indent 4 }}
 spec:
   replicas: 1
   baseImage: quay.io/prometheus/prometheus
@@ -17,7 +17,7 @@ spec:
   serviceMonitorSelector:
     matchLabels:
       app.kubernetes.io/instance: {{ .Release.Name }}
-      app.kubernetes.io/name: {{ template "k8ssandra-cluster.name" . }}
+      app.kubernetes.io/name: {{ template "k8ssandra.name" . }}
 {{- if not (empty .Values.monitoring.prometheus.externalUrl) }}
   externalUrl: {{ .Values.monitoring.prometheus.externalUrl }}
 {{- end }}

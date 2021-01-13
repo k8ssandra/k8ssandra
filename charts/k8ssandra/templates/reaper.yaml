@@ -4,7 +4,7 @@ kind: Reaper
 metadata:
   name: {{ .Release.Name }}-reaper-k8ssandra
   labels:
-{{ include "k8ssandra-cluster.labels" . | indent 4 }}
+{{ include "k8ssandra.labels" . | indent 4 }}
 spec:
   image: thelastpickle/cassandra-reaper:2.1.3
   serverConfig:
