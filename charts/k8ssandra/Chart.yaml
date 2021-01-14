@@ -35,5 +35,5 @@ dependencies:
     repository: file://../k8ssandra-common
 
   - name: kube-prometheus-stack
-    version: 11.1.6
+    version: 12.11.3
     repository: https://prometheus-community.github.io/helm-charts

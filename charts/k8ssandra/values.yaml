@@ -123,6 +123,13 @@ cass-operator:
   enabled: true
 
 kube-prometheus-stack:
+  # Locks Prometheus operator to this namespace and kube-system
+  prometheusOperator:
+    namespaces:
+      releaseNamespace: true
+      additional:
+        - kube-system
+
   prometheus:
     prometheusSpec:
       # Uncomment to listen for Prometheus traffic under a route prefix
