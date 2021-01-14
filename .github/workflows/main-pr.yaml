@@ -129,6 +129,11 @@ jobs:
           key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
           restore-keys: |
             ${{ runner.os }}-go
+      - name: Lint the go files
+        run: |
+          go vet -v ./...
+          go mod tidy
+          git diff --exit-code
       - name: Run unit tests
         run: |
           export PATH=$GOROOT/bin:$GOPATH/bin:$PATH
@@ -167,7 +172,7 @@ jobs:
             echo "::set-output name=changed::true"
           fi
       - name: Run chart-testing (lint)
-        run: ct lint --chart-dirs charts
+        run: ct lint
       - name: Create Kind Cluster
         uses: helm/kind-action@v1.1.0
         with:
@@ -177,4 +182,4 @@ jobs:
           export PATH=$GOROOT/bin:$GOPATH/bin:$PATH
           make integ-test
       - name: Run chart-testing (install)
-        run: ct install --chart-dirs charts
+        run: ct install
