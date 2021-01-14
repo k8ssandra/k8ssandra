@@ -42,6 +42,9 @@ var _ = Describe("Verify Reaper template", func() {
 			}
 
 			renderTemplate(options)
+
+			validateRequiredLabels(reaper.Labels)
+
 			Expect(string(reaper.Spec.ServerConfig.StorageType)).To(Equal("cassandra"))
 			Expect(reaper.Kind).To(Equal("Reaper"))
 		})

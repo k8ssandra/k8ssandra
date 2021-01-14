@@ -52,6 +52,8 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 
 			Expect(renderTemplate(options)).To(Succeed())
 
+			validateRequiredLabels(cassdc.Labels)
+
 			Expect(cassdc.Kind).To(Equal("CassandraDatacenter"))
 
 			// Reaper should be enabled in default - verify

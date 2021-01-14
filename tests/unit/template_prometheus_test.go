@@ -46,10 +46,15 @@ var _ = Describe("Verify Prometheus template", func() {
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
 			}
+
 			renderTemplate(options)
 			spec := prom["spec"]
+
 			Expect(spec.(map[string]interface{})["routePrefix"]).To(BeNil())
 			Expect(spec.(map[string]interface{})["externalUrl"]).To(BeNil())
+
+			Expect(prom["metadata"]).ToNot(BeNil())
+			validateRequiredLabels(prom["metadata"].(map[string]interface{})["labels"])
 		})
 
 		It("using specific externaUrl and routePrefix", func() {

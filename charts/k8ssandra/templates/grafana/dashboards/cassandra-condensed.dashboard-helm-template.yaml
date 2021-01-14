@@ -2,6 +2,7 @@ apiVersion: integreatly.org/v1alpha1
 kind: GrafanaDashboard
 metadata:
   labels:
+{{ include "k8ssandra.labels" . | indent 4 }}
     app: grafana
   name: cassandra-condensed
 spec:

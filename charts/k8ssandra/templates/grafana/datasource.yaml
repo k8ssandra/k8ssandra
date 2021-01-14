@@ -3,6 +3,8 @@ apiVersion: integreatly.org/v1alpha1
 kind: GrafanaDataSource
 metadata:
   name: prometheus-grafanadatasource
+  labels:
+{{ include "k8ssandra.labels" . | indent 4 }}
 spec:
   datasources:
     - access: proxy
