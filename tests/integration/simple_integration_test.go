@@ -89,7 +89,7 @@ var _ = Describe("Install the cluster", func() {
 			k8s.WaitUntilPodAvailable(GinkgoT(), kubectlOptions, pods.Items[0].Name, 50, 500*time.Millisecond)
 
 			// Wait for CassandraDatacenter to be ready..
-			k8s.RunKubectl(GinkgoT(), kubectlOptions, "wait", "--for=condition=Ready", "cassandradatacenter/dc1", "--timeout=300s")
+			k8s.RunKubectl(GinkgoT(), kubectlOptions, "wait", "--for=condition=Ready", "cassandradatacenter/dc1", "--timeout=600s")
 
 			// Verify all the correct services are there
 			// Grafana

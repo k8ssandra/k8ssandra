@@ -181,8 +181,8 @@ jobs:
         run: |
           export PATH=$GOROOT/bin:$GOPATH/bin:$PATH
           make integ-test
-      - name: Run helm install
-        run: |
-          helm install charts/k8ssandra
+      # - name: Run helm install
+      #   run: |
+      #     helm install charts/k8ssandra
       # - name: Run chart-testing (install)
       #   run: ct install
