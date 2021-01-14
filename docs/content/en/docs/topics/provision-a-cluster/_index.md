@@ -12,7 +12,7 @@ description: Steps to provision a cluster in Kubernetes
 ## Prerequisites
 
 * A Kubernetes environment
-* k8ssandra-tool and k8ssandra-cluster installed and running in Kubernetes - see [Getting Started]({{< ref "getting-started" >}})
+* k8ssandra installed and running in Kubernetes - see [Getting Started]({{< ref "getting-started" >}})
 
 ## Steps
 
@@ -25,37 +25,36 @@ Let's check the currently running values. First let's get the list of installed 
 `helm list`
 ```
 NAME               	NAMESPACE	REVISION	UPDATED                             	STATUS  	CHART                  	APP VERSION
-k8ssandra-cluster-a	default  	1       	2020-11-11 17:05:48.181857 -0700 MST	deployed	k8ssandra-cluster-0.2.0	3.11.7     
-k8ssandra-tools    	default  	1       	2020-11-11 17:05:20.010071 -0700 MST	deployed	k8ssandra-0.2.0        	3.11.7     
+k8ssandra         	default  	1       	2020-11-11 17:05:20.010071 -0700 MST	deployed	k8ssandra-0.2.0        	3.11.7     
 ```
 
 Now specify the name of the installed cluster to get the full manifest. Notice how helm displays the properties defined in each deployed YAML file. Example:
 
-`helm get manifest k8ssandra-cluster-a`
+`helm get manifest k8ssandra`
 
 ```
 ---
-# Source: k8ssandra-cluster/templates/reaper-operator/service_account.yaml
+# Source: k8ssandra/templates/reaper-operator/service_account.yaml
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: k8ssandra-cluster-a-reaper-operator-k8ssandra
+  name: k8ssandra-a-reaper-operator-k8ssandra
   labels:
-    helm.sh/chart: k8ssandra-cluster-0.2.0
-    app.kubernetes.io/name: k8ssandra-cluster
-    app.kubernetes.io/instance: k8ssandra-cluster-a
+    helm.sh/chart: k8ssandra-0.2.0
+    app.kubernetes.io/name: k8ssandra
+    app.kubernetes.io/instance: k8ssandra-a
     app.kubernetes.io/version: "3.11.7"
     app.kubernetes.io/managed-by: Helm
 ---
-# Source: k8ssandra-cluster/templates/reaper-jmx-secret.yaml
+# Source: k8ssandra/templates/reaper-jmx-secret.yaml
 apiVersion: v1
 kind: Secret
 metadata:
-  name: k8ssandra-cluster-a-reaper-secret-k8ssandra
+  name: k8ssandra-a-reaper-secret-k8ssandra
   labels:
-    helm.sh/chart: k8ssandra-cluster-0.2.0
-    app.kubernetes.io/name: k8ssandra-cluster
-    app.kubernetes.io/instance: k8ssandra-cluster-a
+    helm.sh/chart: k8ssandra-0.2.0
+    app.kubernetes.io/name: k8ssandra
+    app.kubernetes.io/instance: k8ssandra-a
     app.kubernetes.io/version: "3.11.7"
     app.kubernetes.io/managed-by: Helm
 type: Opaque
@@ -63,15 +62,15 @@ data:
   username: "WlZralBpaTY5dQ=="
   password: "Y0FFM3FWZmt1UQ=="
 ---
-# Source: k8ssandra-cluster/templates/reaper-operator/leader_election_role.yaml
+# Source: k8ssandra/templates/reaper-operator/leader_election_role.yaml
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
-  name: k8ssandra-cluster-a-reaper-operator-leader-election-k8ssandra
+  name: k8ssandra-a-reaper-operator-leader-election-k8ssandra
   labels:
-    helm.sh/chart: k8ssandra-cluster-0.2.0
-    app.kubernetes.io/name: k8ssandra-cluster
-    app.kubernetes.io/instance: k8ssandra-cluster-a
+    helm.sh/chart: k8ssandra-0.2.0
+    app.kubernetes.io/name: k8ssandra
+    app.kubernetes.io/instance: k8ssandra-a
     app.kubernetes.io/version: "3.11.7"
     app.kubernetes.io/managed-by: Helm
 rules:
@@ -103,15 +102,15 @@ rules:
   - create
   - patch
 ---
-# Source: k8ssandra-cluster/templates/reaper-operator/role.yaml
+# Source: k8ssandra/templates/reaper-operator/role.yaml
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
-  name: k8ssandra-cluster-a-reaper-operator-k8ssandra
+  name: k8ssandra-a-reaper-operator-k8ssandra
   labels:
-    helm.sh/chart: k8ssandra-cluster-0.2.0
-    app.kubernetes.io/name: k8ssandra-cluster
-    app.kubernetes.io/instance: k8ssandra-cluster-a
+    helm.sh/chart: k8ssandra-0.2.0
+    app.kubernetes.io/name: k8ssandra
+    app.kubernetes.io/instance: k8ssandra-a
     app.kubernetes.io/version: "3.11.7"
     app.kubernetes.io/managed-by: Helm
 rules:
@@ -183,66 +182,66 @@ rules:
   - patch
   - update
 ---
-# Source: k8ssandra-cluster/templates/reaper-operator/leader_election_role_binding.yaml
+# Source: k8ssandra/templates/reaper-operator/leader_election_role_binding.yaml
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
-  name: k8ssandra-cluster-a-reaper-operator-lead-election-k8ssandra
+  name: k8ssandra-a-reaper-operator-lead-election-k8ssandra
   labels:
-    helm.sh/chart: k8ssandra-cluster-0.2.0
-    app.kubernetes.io/name: k8ssandra-cluster
-    app.kubernetes.io/instance: k8ssandra-cluster-a
+    helm.sh/chart: k8ssandra-0.2.0
+    app.kubernetes.io/name: k8ssandra
+    app.kubernetes.io/instance: k8ssandra-a
     app.kubernetes.io/version: "3.11.7"
     app.kubernetes.io/managed-by: Helm
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role
-  name: k8ssandra-cluster-a-reaper-operator-leader-election-k8ssandra
+  name: k8ssandra-a-reaper-operator-leader-election-k8ssandra
 subjects:
 - kind: ServiceAccount
-  name: k8ssandra-cluster-a-reaper-operator-k8ssandra
+  name: k8ssandra-a-reaper-operator-k8ssandra
 ---
-# Source: k8ssandra-cluster/templates/reaper-operator/role_binding.yaml
+# Source: k8ssandra/templates/reaper-operator/role_binding.yaml
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
-  name: k8ssandra-cluster-a-reaper-operator-k8ssandra
+  name: k8ssandra-a-reaper-operator-k8ssandra
   labels:
-    helm.sh/chart: k8ssandra-cluster-0.2.0
-    app.kubernetes.io/name: k8ssandra-cluster
-    app.kubernetes.io/instance: k8ssandra-cluster-a
+    helm.sh/chart: k8ssandra-0.2.0
+    app.kubernetes.io/name: k8ssandra
+    app.kubernetes.io/instance: k8ssandra-a
     app.kubernetes.io/version: "3.11.7"
     app.kubernetes.io/managed-by: Helm
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role
-  name: k8ssandra-cluster-a-reaper-operator-k8ssandra
+  name: k8ssandra-a-reaper-operator-k8ssandra
 subjects:
   - kind: ServiceAccount
-    name: k8ssandra-cluster-a-reaper-operator-k8ssandra
+    name: k8ssandra-a-reaper-operator-k8ssandra
 ---
-# Source: k8ssandra-cluster/templates/reaper-operator/deployment.yaml
+# Source: k8ssandra/templates/reaper-operator/deployment.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: k8ssandra-cluster-a-reaper-operator-k8ssandra
+  name: k8ssandra-a-reaper-operator-k8ssandra
   labels:
-    helm.sh/chart: k8ssandra-cluster-0.2.0
-    app.kubernetes.io/name: k8ssandra-cluster
-    app.kubernetes.io/instance: k8ssandra-cluster-a
+    helm.sh/chart: k8ssandra-0.2.0
+    app.kubernetes.io/name: k8ssandra
+    app.kubernetes.io/instance: k8ssandra-a
     app.kubernetes.io/version: "3.11.7"
     app.kubernetes.io/managed-by: Helm
 spec:
   replicas: 1
   selector:
     matchLabels:
-      name: k8ssandra-cluster-a-reaper-operator-k8ssandra
+      name: k8ssandra-a-reaper-operator-k8ssandra
   template:
     metadata:
       labels:
-        name: k8ssandra-cluster-a-reaper-operator-k8ssandra
+        name: k8ssandra-a-reaper-operator-k8ssandra
     spec:
-      serviceAccountName: k8ssandra-cluster-a-reaper-operator-k8ssandra
+      serviceAccountName: k8ssandra-a-reaper-operator-k8ssandra
       containers:
         - args:
           - --enable-leader-election
@@ -264,7 +263,7 @@ spec:
               memory: 20Mi
       terminationGracePeriodSeconds: 10
 ---
-# Source: k8ssandra-cluster/templates/cassdc.yaml
+# Source: k8ssandra/templates/cassdc.yaml
 # Sized to work on 3 k8s workers nodes with 1 core / 4 GB RAM
 # See neighboring example-cassdc-full.yaml for docs for each parameter
 apiVersion: cassandra.datastax.com/v1beta1
@@ -272,13 +271,13 @@ kind: CassandraDatacenter
 metadata:
   name: dc1
   labels:
-    helm.sh/chart: k8ssandra-cluster-0.2.0
-    app.kubernetes.io/name: k8ssandra-cluster
-    app.kubernetes.io/instance: k8ssandra-cluster-a
+    helm.sh/chart: k8ssandra-0.2.0
+    app.kubernetes.io/name: k8ssandra
+    app.kubernetes.io/instance: k8ssandra-a
     app.kubernetes.io/version: "3.11.7"
     app.kubernetes.io/managed-by: Helm
   annotations:
-    reaper.cassandra-reaper.io/instance: k8ssandra-cluster-a-reaper-k8ssandra
+    reaper.cassandra-reaper.io/instance: k8ssandra-a-reaper-k8ssandra
 spec:
   clusterName: k8ssandra
   serverType: cassandra
@@ -308,12 +307,12 @@ spec:
             - name: JMX_USERNAME
               valueFrom:
                 secretKeyRef:
-                  name: k8ssandra-cluster-a-reaper-secret-k8ssandra
+                  name: k8ssandra-a-reaper-secret-k8ssandra
                   key: username
             - name: JMX_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: k8ssandra-cluster-a-reaper-secret-k8ssandra
+                  name: k8ssandra-a-reaper-secret-k8ssandra
                   key: password
           args:
             - /bin/sh
@@ -328,22 +327,22 @@ spec:
             - name: LOCAL_JMX
               value: "no"
 ---
-# Source: k8ssandra-cluster/templates/reaper.yaml
+# Source: k8ssandra/templates/reaper.yaml
 apiVersion: reaper.cassandra-reaper.io/v1alpha1
 kind: Reaper
 metadata:
-  name: k8ssandra-cluster-a-reaper-k8ssandra
+  name: k8ssandra-a-reaper-k8ssandra
   labels:
-    helm.sh/chart: k8ssandra-cluster-0.2.0
-    app.kubernetes.io/name: k8ssandra-cluster
-    app.kubernetes.io/instance: k8ssandra-cluster-a
+    helm.sh/chart: k8ssandra-0.2.0
+    app.kubernetes.io/name: k8ssandra
+    app.kubernetes.io/instance: k8ssandra-a
     app.kubernetes.io/version: "3.11.7"
     app.kubernetes.io/managed-by: Helm
 spec:
   image: thelastpickle/cassandra-reaper:2.0.5
   serverConfig:
     storageType: cassandra
-    jmxUserSecretName: k8ssandra-cluster-a-reaper-secret-k8ssandra
+    jmxUserSecretName: k8ssandra-a-reaper-secret-k8ssandra
     cassandraBackend:
       clusterName: k8ssandra
       replication:
@@ -360,7 +359,7 @@ spec:
 
 Use the following command to find the `size` property:
 
-`helm get manifest k8ssandra-cluster-a | grep size`
+`helm get manifest k8ssandra-a | grep size`
 
 In this example, it returns:
 
@@ -374,13 +373,13 @@ Notice the value of `size: 1` in cassdc.yaml. This is the Cassandra DataCenter d
 
 To scale up, you could change the `size` to 3. Example with helm:
 
-`helm upgrade k8ssandra-cluster-a k8ssandra/k8ssandra-cluster --set size=3 --reuse-values`
+`helm upgrade k8ssandra-a k8ssandra/k8ssandra --set size=3 --reuse-values`
 
 Note: using `--reuse-values` to ensure keeping settings from previous `helm upgrade`.
 
 ```
-Release "k8ssandra-cluster-a" has been upgraded. Happy Helming!
-NAME: k8ssandra-cluster-a
+Release "k8ssandra-a" has been upgraded. Happy Helming!
+NAME: k8ssandra-a
 LAST DEPLOYED: Thu Nov 12 07:13:33 2020
 NAMESPACE: default
 STATUS: deployed
@@ -390,7 +389,7 @@ TEST SUITE: None
 
 Verify the upgrade:
 
-`helm get manifest k8ssandra-cluster-a | grep size`           
+`helm get manifest k8ssandra-a | grep size`           
 
 ```
 size: 3
@@ -402,10 +401,10 @@ size: 3
 
 Similarly, to scale down, lower the current `size` to conserve cloud resource costs, if the new value can support your computing reqiuirements in Kubernetes.  Example:
 
-`helm upgrade k8ssandra-cluster-a k8ssandra/k8ssandra-cluster --set size=1 --reuse-values`
+`helm upgrade k8ssandra-a k8ssandra/k8ssandra --set size=1 --reuse-values`
 ```
-Release "k8ssandra-cluster-a" has been upgraded. Happy Helming!
-NAME: k8ssandra-cluster-a
+Release "k8ssandra-a" has been upgraded. Happy Helming!
+NAME: k8ssandra-a
 LAST DEPLOYED: Thu Nov 12 07:18:15 2020
 NAMESPACE: default
 STATUS: deployed
@@ -415,7 +414,7 @@ TEST SUITE: None
 
 Again, verify the upgrade:
 
-`helm get manifest k8ssandra-cluster-a | grep size`
+`helm get manifest k8ssandra-a | grep size`
 ```
   size: 1
       initial_heap_size: "800M"

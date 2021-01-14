@@ -41,18 +41,14 @@ It's easy! There are several options, but we recommend using [Helm](https://helm
 helm repo add k8ssandra https://helm.k8ssandra.io/
 helm repo add traefik https://helm.traefik.io/traefik
 helm repo update
-helm install k8ssandra-tools k8ssandra/k8ssandra
-helm install k8ssandra-cluster-a k8ssandra/k8ssandra-cluster  
+helm install k8ssandra k8ssandra/k8ssandra
 ```
 
 For more, see [Getting Started]({{< ref "/docs/getting-started/" >}}).
 
-### What exactly do k8ssandra and k8ssandra-cluster install?
+### What exactly does k8ssandra install?
 
-Referring to the helm commands from the prior FAQ:
-
-* `k8ssandra` installs Kubernetes Operator for Apache Cassandra (cass-operator) and the Prometheus Operator.
-* `k8ssandra-cluster` installs an instance of the stack: reaper (repairs), medusa (backup/restores), the Grafana Operator, (optional) Stargate, and instances.
+The chart installs Kubernetes Operator for Apache Cassandra (cass-operator), Prometheus Operator, reaper (repairs), medusa (backup/restores), the Grafana Operator, (optional) Stargate, and launches instances.
 
 After those installs, and all the pods are in a Ready state, from `kubectl get pods` you'll see output similar to:
 
@@ -60,34 +56,28 @@ After those installs, and all the pods are in a Ready state, from `kubectl get p
 NAME                                                              READY   STATUS      RESTARTS   AGE
 cass-operator-65956c4f6d-f25nl                                    1/1     Running     0          10m
 grafana-deployment-8467d8bc9d-czsg5                               1/1     Running     0          6m23s
-k8ssandra-cluster-a-grafana-operator-k8ssandra-5bcb746b8d-4nlhz   1/1     Running     0          6m20s
-k8ssandra-cluster-a-reaper-k8ssandra-6cf5b87b8f-vxrwj             1/1     Running     6          6m20s
-k8ssandra-cluster-a-reaper-k8ssandra-schema-pjmv8                 0/1     Completed   5          6m20s
-k8ssandra-cluster-a-reaper-operator-k8ssandra-55dc486998-f4r46    1/1     Running     2          6m20s
+k8ssandra-grafana-operator-k8ssandra-5bcb746b8d-4nlhz             1/1     Running     0          6m20s
+k8ssandra-a-reaper-k8ssandra-6cf5b87b8f-vxrwj                     1/1     Running     6          6m20s
+k8ssandra-a-reaper-k8ssandra-schema-pjmv8                         0/1     Completed   5          6m20s
+k8ssandra-a-reaper-operator-k8ssandra-55dc486998-f4r46            1/1     Running     2          6m20s
 k8ssandra-dc1-default-sts-0                                       2/2     Running     0          10m
 k8ssandra-tools-kube-prome-operator-6d57f758dd-7zd92              1/1     Running     0          10m
-prometheus-k8ssandra-cluster-a-prometheus-k8ssandra-0             2/2     Running     1          10m
+prometheus-k8ssandra-a-prometheus-k8ssandra-0                     2/2     Running     1          10m
 ```
 
-### Do k8ssandra and k8ssandra-cluster have to be installed in a particular namespace?
+### Does k8ssandra have to be installed in a particular namespace?
 
-Both charts can be installed in any namespace. Furthermore, you can install them in separate namespaces. The following example demonstrates this:
+The chart can be installed to any namespace. The following example demonstrates this:
 
 ```
 # Install k8ssandra-tool in the k8ssandra namespace
-$ helm install k8ssandra-tools k8ssandra/k8ssandra -n k8ssandra --create-namespace
-
-# Install k8ssandra in the k8ssandra-dev namespace
-$ helm install dev-cluster k8ssandra/k8ssandra-cluster -n k8ssandra-dev --create-namespace
+$ helm install k8ssandra k8ssandra/k8ssandra -n k8ssandra --create-namespace
 ```
 
 ### Can I install multiple releases of k8ssandra?
 
-The objects installed by the k8ssandra chart are all currently configured to be cluster-scoped; consequently, you should only install it once.
-
-### Can I install multiple releases of k8ssandra-cluster?
-
-Yes, you can install multiple releases of k8ssandra-cluster. Do to this [issue](https://github.com/integr8ly/grafana-operator/issues/306) with grafana-operator, each release should be installed in a separate namespace.
+Some of the objects installed by the k8ssandra chart are currently configured to be cluster-scoped; consequently, you should only install those components once. This should be
+fixed before version 1.0 to allow multiple installations. Other parts can be installed multiple times to allow creating multiple Cassandra clusters in a single k8s cluster.
 
 ### What is cass-operator?
 

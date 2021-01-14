@@ -1,0 +1,18 @@
+{{- if .Values.stargate.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ .Release.Name }}-prometheus-k8ssandra-stargate
+  labels:
+{{ include "k8ssandra.labels" . | indent 4 }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-k8ssandra-stargate
+  endpoints:
+  - port: metrics
+    interval: 15s
+    path: /metrics
+    scheme: http
+    scrapeTimeout: 15s
+{{- end }}

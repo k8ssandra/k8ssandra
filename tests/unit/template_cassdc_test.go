@@ -67,6 +67,7 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			Expect(cassdc.Spec.PodTemplateSpec.Spec.Containers[0].Env[0].Name).To(Equal("LOCAL_JMX"))
 			Expect(cassdc.Spec.PodTemplateSpec.Spec.Containers[0].Env[0].Value).To(Equal("no"))
 			Expect(cassdc.Spec.AllowMultipleNodesPerWorker).To(Equal(false))
+			Expect(*cassdc.Spec.DockerImageRunsAsCassandra).To(BeFalse())
 
 			// Server version and mgmt-api image specified
 			Expect(cassdc.Spec.ServerVersion).ToNot(BeEmpty())
@@ -294,9 +295,11 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 				},
 				KubectlOptions: defaultKubeCtlOptions,
 			}
-			error := renderTemplate(options)
 
-			Expect(error.Error()).To(ContainSubstring("set resource limits/requests when enabling allowMultipleNodesPerWorker"))
+			err := renderTemplate(options)
+
+			Expect(err).ToNot(BeNil())
+			Expect(err.Error()).To(ContainSubstring("set resource limits/requests when enabling allowMultipleNodesPerWorker"))
 
 		})
 	})
