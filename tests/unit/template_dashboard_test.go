@@ -30,17 +30,35 @@ var _ = Describe("Verify dashboard Config Map template", func() {
 		err = nil
 	})
 
-	renderTemplate := func(options *helm.Options) {
+	renderTemplate := func(options *helm.Options) error {
 
-		renderedOutput := helm.RenderTemplate(
+		renderedOutput, err := helm.RenderTemplateE(
 			GinkgoT(), options, helmChartPath, helmReleaseName,
 			[]string{"templates/grafana/configmap.yaml"},
 		)
 
-		helm.UnmarshalK8SYaml(GinkgoT(), renderedOutput, &cm)
+		if err == nil {
+			helm.UnmarshalK8SYaml(GinkgoT(), renderedOutput, &cm)
+		}
+
+		return err
 	}
 
 	Context("by rendering it with options", func() {
+
+		It("using provision_dashboards false", func() {
+
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+				SetValues:      map[string]string{"monitoring.grafana.provision_dashboards": "false"},
+			}
+
+			err = renderTemplate(options)
+
+			Expect(err).ToNot(BeNil())
+			Expect(err.Error()).To(ContainSubstring("could not find template"))
+		})
+
 		It("using provision_dashboards true", func() {
 
 			options := &helm.Options{
@@ -48,7 +66,7 @@ var _ = Describe("Verify dashboard Config Map template", func() {
 				SetValues:      map[string]string{"monitoring.grafana.provision_dashboards": "true"},
 			}
 
-			renderTemplate(options)
+			Expect(renderTemplate(options)).To(Succeed())
 
 			data := cm["data"].(map[string]interface{})
 			Expect(data).ToNot(BeNil())
