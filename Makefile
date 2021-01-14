@@ -8,7 +8,7 @@ test: fmt vet
 	source ${ENVTEST_ASSETS_DIR}/setup-envtest.sh && fetch_envtest_tools $(ENVTEST_ASSETS_DIR) && setup_envtest_env $(ENVTEST_ASSETS_DIR) && go test -v -test.timeout=3m ./pkg/... -coverprofile cover.out
 
 integ-test:
-	go test -v -test.timeout=5m ./tests/integration/... -coverprofile cover.out
+	go test -v -test.timeout=10m ./tests/integration/... -coverprofile cover.out
 
 fmt:
 	go fmt ./pkg/...
