@@ -1,0 +1,44 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+
+  # This base box supports the following virtualization providers:
+  # - virtualbox
+  # - vmware_desktop
+  # - hyperv
+  config.vm.box = "hashicorp/bionic64"
+
+  # Resource configuration for vitualbox deployment
+#   config.vm.provider "virtualbox" do |v|
+#     v.memory = 8192
+#     v.cpus = 4
+#   end
+  config.vm.provider "virtualbox" do |v|
+    v.memory = 16384
+    v.cpus = 8
+  end
+
+  config.vm.network "forwarded_port", guest: 8080, host: 8080
+
+  config.vm.network "forwarded_port", guest: 8443, host: 8443
+
+  config.vm.network "forwarded_port", guest: 9000, host: 9000
+
+  config.vm.network "forwarded_port", guest: 9042, host: 9042
+
+  config.vm.network "forwarded_port", guest: 9142, host: 9142
+
+  config.vm.provision :shell, path: "../bootstrap-common.sh"
+
+  config.vm.provision :shell, path: "../bootstrap-docker.sh"
+
+  config.vm.provision :shell, path: "../bootstrap-kubectl.sh"
+
+  config.vm.provision :shell, path: "../bootstrap-kind.sh"
+
+  config.vm.provision :shell, path: "../bootstrap-helm.sh"
+
+  config.vm.provision :shell, path: "../bootstrap-system-final.sh"
+  
+end

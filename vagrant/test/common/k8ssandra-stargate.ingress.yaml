@@ -1,0 +1,28 @@
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: k8ssandra-stargate
+  namespace: default
+spec:
+  rules:
+    - host: graphql.127.0.0.1.nip.io
+      http:
+        paths:
+          - backend:
+              serviceName: k8ssandra-cluster-k8ssandra-stargate-service
+              servicePort: 8080
+            path: /
+    - host: auth.127.0.0.1.nip.io
+      http:
+        paths:
+          - backend:
+              serviceName: k8ssandra-cluster-k8ssandra-stargate-service
+              servicePort: 8081
+            path: /
+    - host: rest.127.0.0.1.nip.io
+      http:
+        paths:
+          - backend:
+              serviceName: k8ssandra-cluster-k8ssandra-stargate-service
+              servicePort: 8082
+            path: /

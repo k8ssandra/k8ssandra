@@ -1,0 +1,192 @@
+apiVersion: cassandra.datastax.com/v1beta1
+kind: CassandraDatacenter
+metadata:
+  annotations:
+    meta.helm.sh/release-name: k8ssandra-cluster
+    meta.helm.sh/release-namespace: default
+    reaper.cassandra-reaper.io/instance: k8ssandra-cluster-reaper-k8ssandra
+  creationTimestamp: "2021-01-12T15:47:14Z"
+  finalizers:
+  - finalizer.cassandra.datastax.com
+  generation: 2
+  labels:
+    app.kubernetes.io/instance: k8ssandra-cluster
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: k8ssandra-cluster
+    app.kubernetes.io/version: 3.11.7
+    helm.sh/chart: k8ssandra-cluster-0.23.0
+  managedFields:
+  - apiVersion: cassandra.datastax.com/v1beta1
+    fieldsType: FieldsV1
+    fieldsV1:
+      f:metadata:
+        f:annotations:
+          .: {}
+          f:meta.helm.sh/release-name: {}
+          f:meta.helm.sh/release-namespace: {}
+          f:reaper.cassandra-reaper.io/instance: {}
+        f:labels:
+          .: {}
+          f:app.kubernetes.io/instance: {}
+          f:app.kubernetes.io/managed-by: {}
+          f:app.kubernetes.io/name: {}
+          f:app.kubernetes.io/version: {}
+          f:helm.sh/chart: {}
+      f:spec:
+        .: {}
+        f:clusterName: {}
+        f:config:
+          .: {}
+          f:jvm-options:
+            .: {}
+            f:initial_heap_size: {}
+            f:max_heap_size: {}
+        f:dockerImageRunsAsCassandra: {}
+        f:managementApiAuth:
+          .: {}
+          f:insecure: {}
+        f:podTemplateSpec:
+          .: {}
+          f:spec: {}
+        f:serverImage: {}
+        f:serverType: {}
+        f:serverVersion: {}
+        f:size: {}
+        f:storageConfig:
+          .: {}
+          f:cassandraDataVolumeClaimSpec:
+            .: {}
+            f:accessModes: {}
+            f:resources:
+              .: {}
+              f:requests:
+                .: {}
+                f:storage: {}
+            f:storageClassName: {}
+    manager: Go-http-client
+    operation: Update
+    time: "2021-01-12T15:47:14Z"
+  - apiVersion: cassandra.datastax.com/v1beta1
+    fieldsType: FieldsV1
+    fieldsV1:
+      f:metadata:
+        f:finalizers: {}
+      f:spec:
+        f:configBuilderResources: {}
+        f:podTemplateSpec:
+          f:metadata:
+            .: {}
+            f:creationTimestamp: {}
+          f:spec:
+            f:containers: {}
+            f:initContainers: {}
+        f:resources: {}
+        f:systemLoggerResources: {}
+      f:status:
+        .: {}
+        f:cassandraOperatorProgress: {}
+        f:conditions: {}
+        f:lastRollingRestart: {}
+        f:lastServerNodeStarted: {}
+        f:nodeReplacements: {}
+        f:nodeStatuses:
+          .: {}
+          f:k8ssandra-cluster-dc1-default-sts-0:
+            .: {}
+            f:hostID: {}
+          f:k8ssandra-cluster-dc1-default-sts-1:
+            .: {}
+            f:hostID: {}
+          f:k8ssandra-cluster-dc1-default-sts-2:
+            .: {}
+            f:hostID: {}
+        f:quietPeriod: {}
+        f:superUserUpserted: {}
+        f:usersUpserted: {}
+    manager: operator
+    operation: Update
+    time: "2021-01-12T15:56:32Z"
+  name: dc1
+  namespace: default
+  resourceVersion: "3725"
+  selfLink: /apis/cassandra.datastax.com/v1beta1/namespaces/default/cassandradatacenters/dc1
+  uid: c116dd1b-611b-4d62-895a-830c0dab76ef
+spec:
+  clusterName: k8ssandra-cluster
+  config:
+    jvm-options:
+      initial_heap_size: 800M
+      max_heap_size: 800M
+  configBuilderResources: {}
+  dockerImageRunsAsCassandra: false
+  managementApiAuth:
+    insecure: {}
+  podTemplateSpec:
+    metadata:
+      creationTimestamp: null
+    spec:
+      containers:
+      - env:
+        - name: LOCAL_JMX
+          value: "no"
+        name: cassandra
+        resources: {}
+      initContainers:
+      - args:
+        - /bin/sh
+        - -c
+        - echo -n "$JMX_USERNAME $JMX_PASSWORD" > /config/jmxremote.password
+        env:
+        - name: JMX_USERNAME
+          valueFrom:
+            secretKeyRef:
+              key: username
+              name: k8ssandra-cluster-reaper-secret-k8ssandra
+        - name: JMX_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: password
+              name: k8ssandra-cluster-reaper-secret-k8ssandra
+        image: busybox
+        imagePullPolicy: IfNotPresent
+        name: jmx-credentials
+        resources: {}
+        volumeMounts:
+        - mountPath: /config
+          name: server-config
+  resources: {}
+  serverImage: datastax/cassandra-mgmtapi-3_11_7:v0.1.17
+  serverType: cassandra
+  serverVersion: 3.11.7
+  size: 3
+  storageConfig:
+    cassandraDataVolumeClaimSpec:
+      accessModes:
+      - ReadWriteOnce
+      resources:
+        requests:
+          storage: 5Gi
+      storageClassName: standard
+  systemLoggerResources: {}
+status:
+  cassandraOperatorProgress: Updating
+  conditions:
+  - lastTransitionTime: "2021-01-12T15:47:29Z"
+    message: ""
+    reason: ""
+    status: "True"
+    type: ScalingUp
+  - lastTransitionTime: "2021-01-12T15:56:32Z"
+    message: ""
+    reason: ""
+    status: "True"
+    type: Updating
+  lastServerNodeStarted: "2021-01-12T15:53:34Z"
+  nodeStatuses:
+    k8ssandra-cluster-dc1-default-sts-0:
+      hostID: 6acef94e-65eb-4a0c-b5f5-112b242619cc
+    k8ssandra-cluster-dc1-default-sts-1:
+      hostID: 29928d35-697b-4d4b-b321-a0021d9c286f
+    k8ssandra-cluster-dc1-default-sts-2:
+      hostID: 51ad0687-2640-4221-bdad-92fb246fcbc4
+  quietPeriod: "2021-01-12T15:56:52Z"

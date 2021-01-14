@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-echo "Bootstraping kubectl..."
+echo "Bootstrapping kubectl..."
 
 ## Install kubectl
 echo "apt-get update && apt-get install -y apt-transport-https gnupg2 curl"
@@ -18,4 +18,4 @@ apt-get update
 echo "apt-get install -y kubectl"
 apt-get install -y kubectl
 
-echo "Completed bootstraping kubectl"
+echo "Completed bootstrapping kubectl"

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-echo "Bootstraping golang..."
+echo "Bootstrapping golang..."
 
 echo "add-apt-repository -y ppa:longsleep/golang-backports"
 add-apt-repository -y ppa:longsleep/golang-backports 
@@ -14,4 +14,4 @@ apt-get install -y golang-go
 echo "export PATH=$PATH:/usr/local/go/bin"
 export PATH=$PATH:/usr/local/go/bin
 
-echo "Completed bootstraping golang"
+echo "Completed bootstrapping golang"

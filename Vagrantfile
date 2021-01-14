@@ -35,6 +35,6 @@ Vagrant.configure("2") do |config|
 
   config.vm.provision :shell, path: "vagrant/bootstrap-hugo.sh"
 
-  config.vm.provision :shell, path: "vagrant/bootstrap-final.sh"
+  config.vm.provision :shell, path: "vagrant/bootstrap-system-final.sh"
   
 end

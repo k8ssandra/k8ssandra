@@ -2,7 +2,7 @@
 
 ## Install Docker CE
 
-echo "Bootstraping Docker CE..."
+echo "Bootstrapping Docker CE..."
 
 apt-get install -y apt-transport-https ca-certificates curl software-properties-common gnupg2
 
@@ -31,6 +31,10 @@ cat <<EOF | sudo tee /etc/docker/daemon.json
 }
 EOF
 
+groupadd docker
+
+usermod -aG docker $USER
+
 mkdir -p /etc/systemd/system/docker.service.d
 
 systemctl daemon-reload
@@ -45,4 +49,4 @@ swapoff -a
 
 sed -i '/ swap / s/^/#/' /etc/fstab
 
-echo "Completed bootstraping Docker CE"
+echo "Completed bootstrapping Docker CE"

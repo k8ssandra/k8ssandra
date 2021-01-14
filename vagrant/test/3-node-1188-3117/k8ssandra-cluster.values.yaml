@@ -1,0 +1,28 @@
+name: k8ssandra-cluster
+k8ssandra:
+  clusterName: k8ssandra-cluster
+  cassandraVersion: "3.11.7"
+  size: 3
+ingress:
+  traefik:
+    enabled: true
+    repair:
+      host: repair.127.0.0.1.nip.io
+    monitoring:
+      grafana:
+        host: grafana.127.0.0.1.nip.io
+      prometheus:
+        host: prometheus.127.0.0.1.nip.io
+repair:
+  reaper:
+    enabled: true
+backupRestore:
+  medusa:
+    enabled: false
+    bucketName: k8ssandra-medusa-dev
+    bucketSecret: medusa-bucket-key
+    multiTenant: false
+    storage: s3
+stargate:
+  enabled: true
+  replicas: 3

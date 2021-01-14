@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-echo "Bootstraping hugo..."
+echo "Bootstrapping hugo..."
 
 ## For Ubuntu 18.04 (bionic) apt-get will install the non-extended version of hugu
 ## we require the extended version, so it must be built from source here
@@ -23,4 +23,4 @@ mv hugo /usr/local/bin/hugo
 echo "rm -rf ~/tmp/hugo/"
 rm -rf ~/tmp/hugo/
 
-echo "Completed bootstraping hugo"
+echo "Completed bootstrapping hugo"

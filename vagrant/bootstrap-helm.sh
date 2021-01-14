@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-echo "Bootstraping helm..."
+echo "Bootstrapping helm..."
 
 echo "curl https://baltocdn.com/helm/signing.asc | apt-key add -"
 curl https://baltocdn.com/helm/signing.asc | apt-key add -
@@ -17,4 +17,4 @@ apt-get update
 echo "apt-get install helm"
 apt-get install -y helm
 
-echo "Completed bootstraping helm"
+echo "Completed bootstrapping helm"

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-echo "Bootstraping kind..."
+echo "Bootstrapping kind..."
 
 ## Install kind
 
@@ -13,4 +13,4 @@ chmod +x ./kind
 echo "mv ./kind /usr/local/bin/kind"
 mv ./kind /usr/local/bin/kind
 
-echo "Completed bootstraping kind"
+echo "Completed bootstrapping kind"
