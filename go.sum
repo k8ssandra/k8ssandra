@@ -564,6 +564,7 @@ github.com/gruntwork-io/gruntwork-cli v0.7.0/go.mod h1:jp6Z7NcLF2avpY8v71fBx6hds
 github.com/gruntwork-io/terratest v0.30.15 h1:/OAnHKEERSsy03wYi8dyEwnpYy2XV8wpzwq0c4BHvoc=
 github.com/gruntwork-io/terratest v0.30.15/go.mod h1:vl/YEB2AEqVZOv9zg0nlBX+fgfqcqNcpqNfjvhRFLXo=
 github.com/gruntwork-io/terratest v0.31.2 h1:xvYHA80MUq5kx670dM18HInewOrrQrAN+XbVVtytUHg=
+github.com/gruntwork-io/terratest v0.31.3 h1:iyTRcIaB3rPHwKNLPBpoRHfo18H79dLt71jFhif/K0o=
 github.com/hailocab/go-hostpool v0.0.0-20160125115350-e80d13ce29ed/go.mod h1:tMWxXQ9wFIaZeTI9F+hmhFiGpFmhOHzyShyFUhRm0H4=
 github.com/hashicorp/consul/api v1.1.0/go.mod h1:VmuI/Lkw1nC05EYQWNKwWGbkg+FbDBtguAZLlVdkD9Q=
 github.com/hashicorp/consul/api v1.3.0/go.mod h1:MmDNSzIMUjNpY/mQ398R4bk2FnqQLoPndWW5VkKPlCE=

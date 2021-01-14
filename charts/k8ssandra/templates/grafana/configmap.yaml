@@ -1,6 +1,4 @@
-{{- $grafana := .Values.monitoring.grafana -}}
-
-{{- if and $grafana.provision_dashboards }}
+{{- if .Values.monitoring.grafana.provision_dashboards }}
 apiVersion: v1
 kind: ConfigMap
 metadata:

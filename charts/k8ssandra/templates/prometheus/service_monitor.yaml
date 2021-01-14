@@ -1,13 +1,10 @@
-{{- $prometheus := .Values.monitoring.prometheus -}}
-
-{{- if and $prometheus.provision_service_monitors }}
+{{- if .Values.monitoring.prometheus.provision_service_monitors }}
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
   name: {{ .Release.Name }}-prometheus-k8ssandra
   labels:
-    heritage: Helm
-    release: k8ssandra
+    release: {{ .Release.Name }}
 {{ include "k8ssandra.labels" . | indent 4 }}
 spec:
   selector:
