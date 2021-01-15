@@ -123,12 +123,42 @@ cass-operator:
   enabled: true
 
 kube-prometheus-stack:
+  # Disable default service monitors
+  coreDns:
+    enabled: false
+  kubeApiServer:
+    enabled: false
+  kubeControllerManager:
+    enabled: false
+  kubeDns:
+    enabled: false
+  kubeEtcd:
+    enabled: false
+  kubeProxy:
+    enabled: false
+  kubeScheduler:
+    enabled: false
+  kubeStateMetrics:
+    enabled: false
+  kubelet:
+    enabled: false
+  nodeExporter:
+    enabled: false
+
+  alertmanager:
+    enabled: false
+    serviceMonitor:
+      selfMonitor: false
+
   # Locks Prometheus operator to this namespace and kube-system
   prometheusOperator:
     namespaces:
       releaseNamespace: true
-      additional:
-        - kube-system
+      additional: []
+
+    # Disable monitoring of operator
+    serviceMonitor:
+      selfMonitor: false
 
   prometheus:
     prometheusSpec:
@@ -143,6 +173,13 @@ kube-prometheus-stack:
         # Uncomment to listen for Prometheus traffic under a route prefix
         # - /prometheus
 
+    # Disable monitoring the Prometheus instance
+    serviceMonitor:
+      selfMonitor: false
+
+    # Disable default service monitors
+    # additionalServiceMonitors: []
+
   grafana:
     ingress:
       enabled: false
@@ -153,11 +190,20 @@ kube-prometheus-stack:
     adminUser: admin
     adminPassword: admin
 
+    # Disable monitoring Grafana
+    serviceMonitor:
+      selfMonitor: false
+
+    # Disable default dashboards
+    defaultDashboardsEnabled: false
+
+    # Additional plugins to be installed during Grafana startup
     plugins:
+      # Used by the cassandra-overview dashboard
       - grafana-polystat-panel
 
-    grafana.ini:
-      server:
-        # Uncomment to listen for Grafana traffic under a route prefix
-        # root_url: http://localhost:3000/grafana
-        # serve_from_sub_path: true
+    # Uncomment to listen for Grafana traffic under a route prefix
+    # grafana.ini:
+    #   server:
+    #     root_url: http://localhost:3000/grafana
+    #     serve_from_sub_path: true
