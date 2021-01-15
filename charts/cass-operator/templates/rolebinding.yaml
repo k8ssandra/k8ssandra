@@ -1,27 +1,26 @@
-{{- if .Values.clusterScoped }}
+{{- if .Values.clusterWideInstall }}
 kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: {{ template "k8ssandra-common.fullname" . }}
+  name: {{ template "cass-operator.fullname" . }}
 subjects:
   - kind: ServiceAccount
-    name: {{ template "k8ssandra-common.serviceAccountName" . }}
+    name: {{ template "cass-operator.serviceAccountName" . }}
     namespace: {{ .Release.Namespace }}
 roleRef:
   kind: ClusterRole
-  name: {{ template "k8ssandra-common.fullname" . }}
+  name: {{ template "cass-operator.fullname" . }}
   apiGroup: rbac.authorization.k8s.io
   {{- else }}
 kind: RoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: {{ template "k8ssandra-common.fullname" . }}
-  labels: {{ include "k8ssandra-common.labels" . | indent 4 }}
+  name: {{ template "cass-operator.fullname" . }}
 subjects:
   - kind: ServiceAccount
-    name: {{ template "k8ssandra-common.serviceAccountName" . }}
+    name: {{ template "cass-operator.serviceAccountName" . }}
 roleRef:
   kind: Role
-  name: {{ template "k8ssandra-common.fullname" . }}
+  name: {{ template "cass-operator.fullname" . }}
   apiGroup: rbac.authorization.k8s.io
   {{- end }}
