@@ -5,30 +5,42 @@
 # NOTE I have some TODO questions for reviewers, some of which are about
 # auto generated properties.
 
+# nameOverride provides a name in place of the chart name which is used in the metadata.name of
+# objects created by this chart.
+nameOverride: ""
+
+# fullnameOverride provides a name in place of the value used for metadata.name in objects
+# created by this chart. The default value has the form releaseName-chartName.
+fullnameOverride: ""
+
+# replicaCount sets the number of cass-operator pods.
 replicaCount: 1
 
+# clusterScoped determines whether cass-operator only watch and manages
+# CassandraDatacenters in the same namespace in which the operator is deployed or if
+# watches and manages CassandraDatacenters across all namespaces.
+clusterScoped: false
+
+# admissionWebhooks configures admission webhooks deployed with cass-operator.
+admissionWebhooks:
+  # enabled Turns the admission webhooks on or off
+  enabled: false
+
+# image sets properties for the cass-operator image to use.
 image:
+  # repository is where to pull cass-operator.
   repository: docker.io/datastax/cass-operator
   pullPolicy: IfNotPresent
-  # Overrides the image tag whose default is the chart appVersion.
+  # tag is the cass-operator image tag to pull.
   tag: master-a45fd80b40e0129e8883a953d595ca85e4b7ce79
   # TODO It better to keep this commented out or set it to empty string?
   # registryOverride:
 
 imagePullSecrets: []
-nameOverride: ""
-fullnameOverride: ""
-
 
 serviceAccount:
-  # TODO Should we have a create property? Don't we always want to create a service account?
-  # Specifies whether a service account should be created
-  create: true
-  # Annotations to add to the service account
+  # annotations to add to the service account
   annotations: {}
-  # The name of the service account to use.
-  # If not set and create is true, a name is generated using the fullname template
-  name: ""
 
 # TODO Do we need this for an operator deployment?
 podAnnotations: {}
@@ -37,6 +49,7 @@ podAnnotations: {}
 podSecurityContext: {}
   # fsGroup: 2000
 
+# securityContext is applied to the cass-operator container.
 securityContext:
   # capabilities:
   #   drop:
@@ -45,9 +58,6 @@ securityContext:
   runAsNonRoot: true
   runAsGroup: 65534
   runAsUser: 65534
-
-admissionWebhooks:
-  enabled: false
 
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious
@@ -61,6 +71,5 @@ resources: {}
   #   cpu: 100m
   #   memory: 128Mi
 
+# vmwarePSPEnabled enabled vmware-specific functionality
 vmwarePSPEnabled: false
-
-clusterWideInstall: false

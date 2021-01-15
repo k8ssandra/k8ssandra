@@ -71,7 +71,7 @@ spec:
             - name: DEFAULT_CONTAINER_REGISTRY_OVERRIDE_PULL_SECRETS
               value: cass-operator-registry-override-regcred
             {{- end }}
-            {{- if .Values.clusterWideInstall }}
+            {{- if .Values.clusterScoped }}
             - name: WATCH_NAMESPACE
               value: ""
             {{- else }}
