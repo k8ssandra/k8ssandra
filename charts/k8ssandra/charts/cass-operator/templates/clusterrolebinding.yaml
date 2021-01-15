@@ -1,12 +1,12 @@
 kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: {{ .Values.webhookClusterRoleBindingName }}
+  name: {{ .Values.clusterRoleBindingName }}
 subjects:
   - kind: ServiceAccount
     name: {{ .Values.serviceAccountName }}
     namespace: {{ .Release.Namespace }}
 roleRef:
   kind: ClusterRole
-  name: {{ .Values.webhookClusterRoleName }}
+  name: {{ .Values.clusterRoleName }}
   apiGroup: rbac.authorization.k8s.io
