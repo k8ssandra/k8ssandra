@@ -1,0 +1,66 @@
+# Default values for cass-operator.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+# NOTE I have some TODO questions for reviewers, some of which are about
+# auto generated properties.
+
+replicaCount: 1
+
+image:
+  repository: docker.io/datastax/cass-operator
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: master-a45fd80b40e0129e8883a953d595ca85e4b7ce79
+  # TODO It better to keep this commented out or set it to empty string?
+  # registryOverride:
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+
+serviceAccount:
+  # TODO Should we have a create property? Don't we always want to create a service account?
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+# TODO Do we need this for an operator deployment?
+podAnnotations: {}
+
+# TODO Do we need this for an operator deployment?
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext:
+  # capabilities:
+  #   drop:
+  #   - ALL
+  readOnlyRootFilesystem: true
+  runAsNonRoot: true
+  runAsGroup: 65534
+  runAsUser: 65534
+
+admissionWebhooks:
+  enabled: false
+
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+vmwarePSPEnabled: false
+
+clusterWideInstall: false

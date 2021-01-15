@@ -1,6 +1,6 @@
 apiVersion: v2
-name: k8ssandra
-description: Configures and provisions the full k8ssandra stack
+name: cass-operator
+description: A Helm chart for Kubernetes
 
 # A chart can be either an 'application' or a 'library' chart.
 #
@@ -20,15 +20,4 @@ version: 0.25.0
 # This is the version number of the application being deployed. This version number should be
 # incremented each time you make changes to the application. Versions are not expected to
 # follow Semantic Versioning. They should reflect the version the application is using.
-#
-# This is set to the C* version that is currently hard coded in the cassdc.yaml template.
-appVersion: 3.11.7
-dependencies:
-  - name: cass-operator
-    version: 0.25.0
-    repository: file://../cass-operator
-    condition: cass-operator.enabled
-
-  - name: kube-prometheus-stack
-    version: 11.1.6
-    repository: https://prometheus-community.github.io/helm-charts
+appVersion: 1.5.0
