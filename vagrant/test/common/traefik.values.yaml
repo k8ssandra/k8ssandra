@@ -12,10 +12,15 @@ providers:
 ports:
   traefik:
     expose: true
+    port: 9000
     nodePort: 32090
   web:
+    expose: true
+    port: 8080
     nodePort: 32080
   websecure:
+    expose: true
+    port: 8443
     nodePort: 32443
   cassandra:
     expose: true
