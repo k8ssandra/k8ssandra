@@ -51,11 +51,10 @@ var _ = Describe("Verify Datasource template", func() {
 			}
 
 			renderTemplate(options)
-			Expect(ds["metadata"]).ToNot(BeNil())
-			validateRequiredLabels(ds["metadata"].(map[string]interface{})["labels"])
 
 			spec := ds["spec"].(map[string]interface{})
 			Expect(spec).ToNot(BeNil())
+
 			dataSources := spec["datasources"].([]interface{})
 			Expect(dataSources).ToNot(BeEmpty())
 			Expect(dataSources[0].(map[string]interface{})["url"]).To(BeIdenticalTo(expectedUrlNoRoutePrefix))

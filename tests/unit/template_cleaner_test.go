@@ -42,7 +42,6 @@ var _ = Describe("Verify Cleaner job template", func() {
 			}
 
 			renderTemplate(options)
-			validateRequiredLabels(cleanerJob.Labels)
 
 			By("checking that correct hook annotations are present")
 			Expect(cleanerJob.Annotations).Should(HaveKeyWithValue(helmHookAnnotation, "pre-delete"))

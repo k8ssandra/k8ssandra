@@ -53,8 +53,6 @@ var _ = Describe("Verify Prometheus template", func() {
 			Expect(spec.(map[string]interface{})["routePrefix"]).To(BeNil())
 			Expect(spec.(map[string]interface{})["externalUrl"]).To(BeNil())
 
-			Expect(prom["metadata"]).ToNot(BeNil())
-			validateRequiredLabels(prom["metadata"].(map[string]interface{})["labels"])
 		})
 
 		It("using specific externaUrl and routePrefix", func() {
