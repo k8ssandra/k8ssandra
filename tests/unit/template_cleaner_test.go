@@ -39,11 +39,6 @@ var _ = Describe("Verify Cleaner job template", func() {
 		It("using only default options", func() {
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
-				SetValues: map[string]string{
-					// Note that the test fails without this. I am not sure why because
-					// this is the default in k8ssandra/values.yaml.
-					"cass-operator.enabled": "true",
-				},
 			}
 
 			renderTemplate(options)
