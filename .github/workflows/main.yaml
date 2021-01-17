@@ -40,41 +40,6 @@ jobs:
           helm version
           yq -V
   
-  versions-match-check:
-    needs:
-      - setup
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-      - name: Cache bin path
-        id: cache
-        uses: actions/cache@v2
-        with:
-          path: |
-            ~/bin
-          key: ${{ runner.os }}-${{ needs.setup.outputs.HELM_VERSION }}-${{ needs.setup.outputs.YQ_VERSION }}
-      - name: Update PATH
-        run: |
-          echo "$HOME/bin" >> $GITHUB_PATH
-      - name: Setup working directory
-        run: |
-          mkdir build
-          cp -rv charts/* build/
-      - name: Validate version numbers match on all charts
-        run: |
-          VERSION_COUNT=`ls | while read c; do
-            if [[ -d $c ]]; then
-              yq read $c/Chart.yaml version
-            fi
-          done | sort | uniq | wc -l`
-
-          if [[ $VERSION_COUNT -ne 1 ]]; then
-            echo "::error ::Version numbers do not match across charts"
-            exit 1
-          fi
-        working-directory: build
-
   lint-check:
     needs:
       - setup
