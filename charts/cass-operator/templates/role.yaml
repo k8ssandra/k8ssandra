@@ -2,7 +2,8 @@
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  name: {{ template "cass-operator.fullname" . }}
+  name: {{ template "k8ssandra-common.fullname" . }}
+  labels: {{ include "k8ssandra-common.labels" . | indent 4 }}
 rules:
   - apiGroups:
       - ""
@@ -87,7 +88,8 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
-  name: {{ template "cass-operator.fullname" . }}
+  name: {{ template "k8ssandra-common.fullname" . }}
+  labels: {{ include "k8ssandra-common.labels" . | indent 4 }}
 rules:
   - apiGroups:
       - ""

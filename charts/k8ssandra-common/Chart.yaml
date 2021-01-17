@@ -1,6 +1,6 @@
 apiVersion: v2
-name: k8ssandra
-description: Configures and provisions the full k8ssandra stack
+name: k8ssandra-common
+description: A Helm chart for Kubernetes
 
 # A chart can be either an 'application' or a 'library' chart.
 #
@@ -10,26 +10,19 @@ description: Configures and provisions the full k8ssandra stack
 # Library charts provide useful utilities or functions for the chart developer. They're included as
 # a dependency of application charts to inject those utilities and functions into the rendering
 # pipeline. Library charts do not define any templates and therefore cannot be deployed.
-type: application
+type: library
 
 # This is the chart version. This version number should be incremented each time you make changes
 # to the chart and its templates, including the app version.
 # Versions are expected to follow Semantic Versioning (https://semver.org/)
-version: 0.25.0
+version: 0.1.0
 
 # This is the version number of the application being deployed. This version number should be
 # incremented each time you make changes to the application. Versions are not expected to
 # follow Semantic Versioning. They should reflect the version the application is using.
-#
-# This is set to the C* version that is currently hard coded in the cassdc.yaml template.
-appVersion: 3.11.7
+appVersion: 1.16.0
 
 dependencies:
-  - name: cass-operator
-    version: 0.25.0
-    repository: file://../cass-operator
-    condition: cass-operator.enabled
-
-  - name: kube-prometheus-stack
-    version: 11.1.6
-    repository: https://prometheus-community.github.io/helm-charts
+  - name: common
+    version: 1.3.4
+    repository: https://charts.bitnami.com/bitnami

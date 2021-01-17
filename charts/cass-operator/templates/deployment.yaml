@@ -1,28 +1,26 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "cass-operator.fullname" . }}
-  labels:
-    {{- include "cass-operator.labels" . | nindent 4 }}
+  name: {{ include "k8ssandra-common.fullname" . }}
+  labels: {{ include "k8ssandra-common.labels" . | indent 4 }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      {{- include "cass-operator.selectorLabels" . | nindent 6 }}
+      {{- include "k8ssandra-common.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       {{- with .Values.podAnnotations }}
       annotations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      labels:
-        {{- include "cass-operator.selectorLabels" . | nindent 8 }}
+      labels: {{- include "k8ssandra-common.labels" . | indent 8 }}
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      serviceAccountName: {{ include "cass-operator.serviceAccountName" . }}
+      serviceAccountName: {{ include "k8ssandra-common.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:

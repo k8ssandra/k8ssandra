@@ -13,6 +13,9 @@ nameOverride: ""
 # created by this chart. The default value has the form releaseName-chartName.
 fullnameOverride: ""
 
+# commonLabels are labels to be added to all deployed resources
+commonLabels: {}
+
 # replicaCount sets the number of cass-operator pods.
 replicaCount: 1
 
