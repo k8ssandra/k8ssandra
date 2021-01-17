@@ -2,9 +2,6 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
-# NOTE I have some TODO questions for reviewers, some of which are about
-# auto generated properties.
-
 # nameOverride provides a name in place of the chart name which is used in the metadata.name of
 # objects created by this chart.
 nameOverride: ""
@@ -39,16 +36,19 @@ image:
   # TODO It better to keep this commented out or set it to empty string?
   # registryOverride:
 
+# imagePullSecrets are references to secrets to use when pulling images.
+# ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
 imagePullSecrets: []
 
+# serviceAccount is the service account used by the cass-operator deployment.
 serviceAccount:
-  # annotations to add to the service account
+  # annotations to add to the service account.
   annotations: {}
 
-# TODO Do we need this for an operator deployment?
+# podAnnotations are annotations that can be added to the cass-operator pod.
 podAnnotations: {}
 
-# TODO Do we need this for an operator deployment?
+# podSecurityContext is applied to the cass-operator pod.
 podSecurityContext: {}
   # fsGroup: 2000
 
