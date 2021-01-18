@@ -47,9 +47,9 @@ var _ = Describe("Verify k8ssandra template labels", func() {
 				var k8ssandraTemplates map[string]interface{}
 				idx := strings.Index(template, "templates")
 
-				targetTemplate := []string{template[idx:]}
+				targetTemplate := template[idx:]
 				templateOutput, err := helm.RenderTemplateE(GinkgoT(), options,
-					k8ssandraChartPath, helmReleaseName, targetTemplate)
+					k8ssandraChartPath, helmReleaseName, []string{targetTemplate})
 
 				Expect(err).To(BeNil())
 				Expect(templateOutput).ToNot(BeEmpty())
