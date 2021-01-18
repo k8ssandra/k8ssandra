@@ -45,3 +45,7 @@ TEST SUITE: None
 Assuming you have used the above configuration, Traefik will have been installed into a new namespace called `traefik`. The Traefik dashboard can now be accessed using `kubectl port-forward --namespace traefik services/traefik 9000:9000`
 
 Minikube offers several options to access a service from the host machine (including via a NodePort on the Minikube host). Additional information can be found in the Minikube [documentation](https://minikube.sigs.k8s.io/docs/handbook/accessing/). Note that it is sometimes preferable to access services via `port-forward` as this is closer to the way that services are accessed on a remote cluster.
+
+### Note - these settings are not suitable for production.
+
+The steps above will create a NodePort service which will serve the Traefik dashboard to clients outside the k8s cluster. This is not suitable for deployment to cloud platforms (EKS, AKS, GKE etc.) as it will make the dashboard publicly available. For a cloud-ready configuration, we should ensure that the Traefik dashboard and other internal services are not visible from outside the cluster (except via `port-forward` as above).
