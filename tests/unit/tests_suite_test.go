@@ -43,15 +43,16 @@ func GetK8ssandraRequiredLabels() map[string]string {
 func GetK8ssandraTemplates(k8ssandraChartPath string) []string {
 
 	var templates []string
-	templatesPath := k8ssandraChartPath + string(os.PathSeparator) + "templates"
 
-	err := filepath.Walk(templatesPath, func(path string, info os.FileInfo, err error) error {
-		if !info.IsDir() && strings.HasSuffix(info.Name(), ".yaml") {
-			absPath, _ := filepath.Abs(path)
-			templates = append(templates, absPath)
-		}
-		return nil
-	})
+	err := filepath.Walk(filepath.Join(k8ssandraChartPath, "templates"),
+		func(path string, info os.FileInfo, err error) error {
+			if !info.IsDir() && strings.HasSuffix(info.Name(), ".yaml") {
+				absPath, _ := filepath.Abs(path)
+				templates = append(templates, absPath)
+			}
+			return nil
+		})
+
 	Expect(err).To(BeNil())
 	return templates
 }
