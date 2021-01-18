@@ -10,6 +10,8 @@ jobs:
     env:
       HELM_VERSION: 3.4.0
       YQ_VERSION: 3.4.1
+      GOPATH: /home/runner/go
+      GOROOT: /usr/local/go1.15
     outputs:
       HELM_VERSION: ${{ env.HELM_VERSION}}
       YQ_VERSION: ${{ env.YQ_VERSION }}
@@ -38,41 +40,6 @@ jobs:
           helm version
           yq -V
   
-  versions-match-check:
-    needs:
-      - setup
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-      - name: Cache bin path
-        id: cache
-        uses: actions/cache@v2
-        with:
-          path: |
-            ~/bin
-          key: ${{ runner.os }}-${{ needs.setup.outputs.HELM_VERSION }}-${{ needs.setup.outputs.YQ_VERSION }}
-      - name: Update PATH
-        run: |
-          echo "$HOME/bin" >> $GITHUB_PATH
-      - name: Setup working directory
-        run: |
-          mkdir build
-          cp -rv charts/* build/
-      - name: Validate version numbers match on all charts
-        run: |
-          VERSION_COUNT=`ls | while read c; do
-            if [[ -d $c ]]; then
-              yq read $c/Chart.yaml version
-            fi
-          done | sort | uniq | wc -l`
-
-          if [[ $VERSION_COUNT -ne 1 ]]; then
-            echo "::error ::Version numbers do not match across charts"
-            exit 1
-          fi
-        working-directory: build
-
   lint-check:
     needs:
       - setup
@@ -108,3 +75,26 @@ jobs:
             fi
           done
         working-directory: build
+
+  unit-tests:
+    needs:
+      - setup
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Go 1.x
+        uses: actions/setup-go@v2
+        with:
+          go-version: ^1.15
+        id: go
+      - name: Check out code into the Go module directory
+        uses: actions/checkout@v2
+      - uses: actions/cache@v2
+        with:
+          path: ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go
+      - name: Run unit tests
+        run: |
+          export PATH=$GOROOT/bin:$GOPATH/bin:$PATH
+          make test

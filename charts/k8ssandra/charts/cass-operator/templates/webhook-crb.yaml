@@ -3,9 +3,9 @@ apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   name: {{ .Values.webhookClusterRoleBindingName }}
 subjects:
-- kind: ServiceAccount
-  name: {{ .Values.serviceAccountName }}
-  namespace: {{ .Release.Namespace }}
+  - kind: ServiceAccount
+    name: {{ .Values.serviceAccountName }}
+    namespace: {{ .Release.Namespace }}
 roleRef:
   kind: ClusterRole
   name: {{ .Values.webhookClusterRoleName }}

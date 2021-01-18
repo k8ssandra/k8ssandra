@@ -4,13 +4,13 @@ metadata:
   creationTimestamp: null
   name: {{ .Values.webhookClusterRoleName }}
 rules:
-- apiGroups:
-  - admissionregistration.k8s.io
-  resources:
-  - validatingwebhookconfigurations
-  verbs:
-  - create
-  - get
-  - update
-  resourceNames:
-  - "cassandradatacenter-webhook-registration"
+  - apiGroups:
+      - admissionregistration.k8s.io
+    resources:
+      - validatingwebhookconfigurations
+    verbs:
+      - create
+      - get
+      - update
+    resourceNames:
+      - "cassandradatacenter-webhook-registration"

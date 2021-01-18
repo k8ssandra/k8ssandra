@@ -18,8 +18,7 @@ for accessing your K8ssandra cluster's monitoring interface (provided by Grafana
 
 1. Kubernetes cluster with the following elements deployed:
    * [Traefik]({{< ref "docs/topics/ingress/traefik" >}})
-   * [K8ssandra Operators]({{< ref "getting-started#install-k8ssandra" >}})
-   * [K8ssandra Cluster]({{< ref "getting-started#install-k8ssandra" >}})
+   * [K8ssandra]({{< ref "getting-started#install-k8ssandra" >}})
 
    See [Configuring Kind]({{< ref "kind-deployment" >}}) for an example of
    how to set up a local installation.
@@ -34,7 +33,7 @@ DNS lookup.
 
 ## Helm Parameters
 
-The `k8ssandra-cluster` Helm chart contains templates for Traefik `IngressRoute`
+The `k8ssandra` Helm chart contains templates for Traefik `IngressRoute`
 and `IngressRouteTCP` Custom Resources. These may be enabled at any time either
 through a `values.yaml` file of command-line flags.
 
@@ -83,22 +82,22 @@ of both approaches are provided below as reference.
 
 ```bash
 # New Install
-helm install cluster-name k8ssandra/k8ssandra-cluster -f traefik.values.yaml
+helm install cluster-name k8ssandra/k8ssandra -f traefik.values.yaml
 
 # Existing Cluster
-helm upgrade cluster-name k8ssandra/k8ssandra-cluster -f traefik.values.yaml
+helm upgrade cluster-name k8ssandra/k8ssandra -f traefik.values.yaml
 ```
 
 ### Command-line
 ```bash
 # New Install
-helm install cluster-name k8ssandra/k8ssandra-cluster \
+helm install cluster-name k8ssandra/k8ssandra \
   --set ingress.traefik.enabled=true \
   --set ingress.traefik.monitoring.grafana.host=grafana.cluster-name.k8ssandra.cluster.local \
   --set ingress.traefik.monitoring.prometheus.host=prometheus.cluster-name.k8ssandra.cluster.local
 
 # Existing Cluster
-helm upgrade cluster-name k8ssandra/k8ssandra-cluster \
+helm upgrade cluster-name k8ssandra/k8ssandra \
   --set ingress.traefik.enabled=true \
   --set ingress.traefik.monitoring.grafana.host=grafana.cluster-name.k8ssandra.cluster.local \
   --set ingress.traefik.monitoring.prometheus.host=prometheus.cluster-name.k8ssandra.cluster.local
