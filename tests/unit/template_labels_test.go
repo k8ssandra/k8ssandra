@@ -14,7 +14,6 @@ var _ = Describe("Verify k8ssandra template labels", func() {
 	var (
 		defaultKubeCtlOptions = k8s.NewKubectlOptions("", "",
 			defaultTestNamespace)
-		k8ssandraTemplates map[string]interface{}
 		k8ssandraChartPath string
 	)
 
@@ -28,7 +27,6 @@ var _ = Describe("Verify k8ssandra template labels", func() {
 
 		It("using only default options", func() {
 
-			// Verify CassandraDatacenter template by rendering it with options override
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
 				SetValues: map[string]string{
@@ -45,6 +43,8 @@ var _ = Describe("Verify k8ssandra template labels", func() {
 			requiredLabels := GetK8ssandraRequiredLabels()
 			templates := GetK8ssandraTemplates(k8ssandraChartPath)
 			for _, template := range templates {
+
+				var k8ssandraTemplates map[string]interface{}
 				idx := strings.Index(template, "templates")
 
 				targetTemplate := []string{template[idx:]}
