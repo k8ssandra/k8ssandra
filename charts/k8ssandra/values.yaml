@@ -56,8 +56,6 @@ repair:
     jmx:
       username: ""
       password: ""
-    operator:
-      enabled: true
 
 backupRestore:
   medusa:
