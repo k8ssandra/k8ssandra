@@ -57,10 +57,13 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			// Reaper should be enabled in default - verify
 			// Verify reaper annotation is set
 			Expect(cassdc.Annotations).Should(HaveKeyWithValue(reaperInstanceAnnotation, reaperInstanceValue))
-			// Initcontainer should only have one (reaper, not medusa)
-			Expect(len(cassdc.Spec.PodTemplateSpec.Spec.InitContainers)).To(Equal(1))
+
+			initContainers := cassdc.Spec.PodTemplateSpec.Spec.InitContainers
+			Expect(len(initContainers)).To(Equal(2))
+			Expect(initContainers[0].Name).To(Equal("server-config-init"))
+
 			// Verify initContainers includes JMX credentials
-			Expect(cassdc.Spec.PodTemplateSpec.Spec.InitContainers[0].Name).To(Equal("jmx-credentials"))
+			Expect(initContainers[1].Name).To(Equal("jmx-credentials"))
 			// Verify LOCAL_JMX value
 			Expect(len(cassdc.Spec.PodTemplateSpec.Spec.Containers)).To(Equal(1))
 			Expect(len(cassdc.Spec.PodTemplateSpec.Spec.Containers[0].Env)).To(Equal(1))
@@ -199,13 +202,14 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 
 			Expect(renderTemplate(options)).To(Succeed())
 
-			// Verify medusa is present
-			// Initcontainer should only have one (medusa)
-			Expect(len(cassdc.Spec.PodTemplateSpec.Spec.InitContainers)).To(Equal(2))
+			// InitContainers should only server-config-init and medusa-restore
+			initContainers := cassdc.Spec.PodTemplateSpec.Spec.InitContainers
+			Expect(len(initContainers)).To(Equal(3))
+			Expect(initContainers[0].Name).To(Equal("server-config-init"))
 			// Verify initContainers includes jolokia which medusa needs
-			Expect(cassdc.Spec.PodTemplateSpec.Spec.InitContainers[0].Name).To(Equal("get-jolokia"))
+			Expect(cassdc.Spec.PodTemplateSpec.Spec.InitContainers[1].Name).To(Equal("get-jolokia"))
 			// Verify initContainers includes medusa-restore
-			Expect(cassdc.Spec.PodTemplateSpec.Spec.InitContainers[1].Name).To(Equal("medusa-restore"))
+			Expect(cassdc.Spec.PodTemplateSpec.Spec.InitContainers[2].Name).To(Equal("medusa-restore"))
 			// Two containers, medusa and cassandra
 			Expect(len(cassdc.Spec.PodTemplateSpec.Spec.Containers)).To(Equal(2))
 			// Cassandra container should have JVM_EXTRA_OPTS for jolokia
@@ -231,11 +235,19 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 
 			Expect(renderTemplate(options)).To(Succeed())
 
-			// Verify both are present
-			// Initcontainer should only have jmx and jolokia
-			Expect(len(cassdc.Spec.PodTemplateSpec.Spec.InitContainers)).To(Equal(3))
-			// Two containers, medusa and cassandra
-			Expect(len(cassdc.Spec.PodTemplateSpec.Spec.Containers)).To(Equal(2))
+			// Verify initContainers
+			initContainers := cassdc.Spec.PodTemplateSpec.Spec.InitContainers
+			Expect(len(initContainers)).To(Equal(4))
+			Expect(initContainers[0].Name).To(Equal("server-config-init"))
+			Expect(initContainers[1].Name).To(Equal("jmx-credentials"))
+			Expect(initContainers[2].Name).To(Equal("get-jolokia"))
+			Expect(initContainers[3].Name).To(Equal("medusa-restore"))
+
+			// Verify containers
+			containers := cassdc.Spec.PodTemplateSpec.Spec.Containers
+			Expect(len(containers)).To(Equal(2))
+			Expect(containers[0].Name).To(Equal("cassandra"))
+			Expect(containers[1].Name).To(Equal("medusa"))
 		})
 
 		It("setting allowMultipleNodesPerWorker to true", func() {

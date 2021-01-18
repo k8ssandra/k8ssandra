@@ -53,6 +53,12 @@ spec:
     spec:
 {{- if or .Values.repair.reaper.enabled .Values.backupRestore.medusa.enabled }}
       initContainers:
+      {{/* The server-config-init container is "built-in" in that it is provided by
+           cass-operator. We specify it here in order to make it run first. It needs
+           to run first when backup/restore is enabled. The configs need to be generated
+           and present for the medusa-restore initContainer.
+        */}}
+      - name: server-config-init
 {{- if .Values.repair.reaper.enabled }}
       - name: jmx-credentials
         image: busybox
