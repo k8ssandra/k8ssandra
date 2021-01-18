@@ -34,6 +34,8 @@ func GetK8ssandraRequiredLabels() map[string]string {
 		"app.kubernetes.io/instance":   helmReleaseName,
 		"app.kubernetes.io/version":    meta.AppVersion,
 		"app.kubernetes.io/managed-by": "Helm",
+		// TODO - once we merge with changes in #197, add this one as expected
+		// "app.kubernetes.io/part-of: ": helmReleaseName+"/"+defaultTestNamespace,
 	}
 	return requiredLabels
 }

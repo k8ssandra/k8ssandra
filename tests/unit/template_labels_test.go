@@ -54,6 +54,7 @@ var _ = Describe("Verify k8ssandra template labels", func() {
 				Expect(err).To(BeNil())
 				Expect(templateOutput).ToNot(BeEmpty())
 				Expect(helm.UnmarshalK8SYamlE(GinkgoT(), templateOutput, &k8ssandraTemplates)).To(BeNil())
+
 				Expect(k8ssandraTemplates["metadata"]).ToNot(BeNil())
 				for k, v := range requiredLabels {
 					Expect(k8ssandraTemplates["metadata"].(map[string]interface{})["labels"]).To(HaveKeyWithValue(k, v))
