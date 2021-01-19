@@ -13,14 +13,18 @@ spec:
   serverType: cassandra
   serverVersion: {{ .Values.k8ssandra.cassandraVersion | quote }}
   dockerImageRunsAsCassandra: false
-{{- if eq "3.11.7" .Values.k8ssandra.cassandraVersion }}
-  serverImage: datastax/cassandra-mgmtapi-3_11_7:v0.1.17
-{{- else if eq "3.11.8" .Values.k8ssandra.cassandraVersion }}
-  serverImage: datastax/cassandra-mgmtapi-3_11_8:v0.1.17
-{{- else if eq "3.11.9" .Values.k8ssandra.cassandraVersion }}
-  serverImage: datastax/cassandra-mgmtapi-3_11_9:v0.1.17
+{{- if eq "4.0.0" .Values.k8ssandra.cassandraVersion }}
+  serverImage: datastax/cassandra-mgmtapi-4_0_0:v0.1.17
 {{- else }}
-  {{- fail (print .Values.k8ssandra.cassandraVersion " is not a supported Cassandra version") }}
+  {{- if eq "3.11.7" .Values.k8ssandra.cassandraVersion }}
+    serverImage: datastax/cassandra-mgmtapi-3_11_7:v0.1.17
+  {{- else if eq "3.11.8" .Values.k8ssandra.cassandraVersion }}
+    serverImage: datastax/cassandra-mgmtapi-3_11_8:v0.1.17
+  {{- else if eq "3.11.9" .Values.k8ssandra.cassandraVersion }}
+    serverImage: datastax/cassandra-mgmtapi-3_11_9:v0.1.17
+  {{- else }}
+    {{- fail (print .Values.k8ssandra.cassandraVersion " is not a supported Cassandra version") }}
+  {{- end }}
 {{- end }}
   managementApiAuth:
     insecure: {}
