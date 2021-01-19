@@ -65,7 +65,7 @@ spec:
       max_heap_size: "800M"
 
       additional-jvm-opts:
-{{- if .Values.k8ssandra.configuration.auth }}
+{{- if .Values.k8ssandra.configuration.auth.enabled }}
         - "-Ddse.system_distributed_replication_dc_names={{ .Values.k8ssandra.datacenterName }}"
         - "-Ddse.system_distributed_replication_per_dc={{ min 5 .Values.k8ssandra.size }}"
 {{- end }}
