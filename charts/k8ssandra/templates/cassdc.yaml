@@ -54,12 +54,12 @@ spec:
       authorizer: AllowAuthorizer
 {{- end }}
       role_manager: CassandraRoleManager
-      roles_validity_in_ms: {{ .Values.k8ssandra.configuration.auth.caches.rolesValidityMillis }}
-      roles_update_interval_in_ms: {{ .Values.k8ssandra.configuration.auth.caches.rolesUpdateMillis }}
-      permissions_validity_in_ms: {{ .Values.k8ssandra.configuration.auth.caches.permissionsValidityMillis }}
-      permissions_update_interval_in_ms: {{ .Values.k8ssandra.configuration.auth.caches.permissionsUpdateMillis }}
-      credentials_validity_in_ms: {{ .Values.k8ssandra.configuration.auth.caches.credentialsValidityMillis }}
-      credentials_update_interval_in_ms: {{ .Values.k8ssandra.configuration.auth.caches.credentialsUpdateMillis }}
+      roles_validity_in_ms: {{ .Values.k8ssandra.configuration.auth.cacheValidityPeriodMillis }}
+      roles_update_interval_in_ms: {{ .Values.k8ssandra.configuration.auth.cacheUpdateIntervalMillis }}
+      permissions_validity_in_ms: {{ .Values.k8ssandra.configuration.auth.cacheValidityPeriodMillis }}
+      permissions_update_interval_in_ms: {{ .Values.k8ssandra.configuration.auth.cacheUpdateIntervalMillis }}
+      credentials_validity_in_ms: {{ .Values.k8ssandra.configuration.auth.cacheValidityPeriodMillis }}
+      credentials_update_interval_in_ms: {{ .Values.k8ssandra.configuration.auth.cacheUpdateIntervalMillis }}
     jvm-options:
       initial_heap_size: "800M"
       max_heap_size: "800M"

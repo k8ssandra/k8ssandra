@@ -221,25 +221,17 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			clusterSize := 3
 
 			authCachePeriod := int64(7200000)
-			rolesValidityPeriod := authCachePeriod + 1
-			rolesUpdatePeriod := authCachePeriod + 2
-			permissionsValidityPeriod := authCachePeriod + 3
-			permissionsUpdatedPeriod := authCachePeriod + 4
-			credentialsValidityPeriod := authCachePeriod + 5
-			credentialsUpdatePeriod := authCachePeriod + 6
+			cacheValidityPeriod := authCachePeriod + 1
+			cacheUpdateInterval := authCachePeriod + 2
 
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
 				SetValues: map[string]string{
-					"k8ssandra.datacenterName":                                      dcName,
-					"k8ssandra.size":                                                strconv.Itoa(clusterSize),
-					"k8ssandra.configuration.auth.enabled":                          "true",
-					"k8ssandra.configuration.auth.caches.rolesValidityMillis":       strconv.FormatInt(rolesValidityPeriod, 10),
-					"k8ssandra.configuration.auth.caches.rolesUpdateMillis":         strconv.FormatInt(rolesUpdatePeriod, 10),
-					"k8ssandra.configuration.auth.caches.permissionsValidityMillis": strconv.FormatInt(permissionsValidityPeriod, 10),
-					"k8ssandra.configuration.auth.caches.permissionsUpdateMillis":   strconv.FormatInt(permissionsUpdatedPeriod, 10),
-					"k8ssandra.configuration.auth.caches.credentialsValidityMillis": strconv.FormatInt(credentialsValidityPeriod, 10),
-					"k8ssandra.configuration.auth.caches.credentialsUpdateMillis":   strconv.FormatInt(credentialsUpdatePeriod, 10),
+					"k8ssandra.datacenterName":                               dcName,
+					"k8ssandra.size":                                         strconv.Itoa(clusterSize),
+					"k8ssandra.configuration.auth.enabled":                   "true",
+					"k8ssandra.configuration.auth.cacheValidityPeriodMillis": strconv.FormatInt(cacheValidityPeriod, 10),
+					"k8ssandra.configuration.auth.cacheUpdateIntervalMillis": strconv.FormatInt(cacheUpdateInterval, 10),
 				},
 			}
 
@@ -251,12 +243,12 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			Expect(json.Unmarshal(cassdc.Spec.Config, &config)).To(Succeed())
 			Expect(config.CassandraConfig.Authenticator).To(Equal("PasswordAuthenticator"))
 			Expect(config.CassandraConfig.Authorizer).To(Equal("CassandraAuthorizer"))
-			Expect(config.CassandraConfig.RolesValidityMillis).To(Equal(rolesValidityPeriod))
-			Expect(config.CassandraConfig.RolesUpdateMillis).To(Equal(rolesUpdatePeriod))
-			Expect(config.CassandraConfig.PermissionsValidityMillis).To(Equal(permissionsValidityPeriod))
-			Expect(config.CassandraConfig.PermissionsUpdateMillis).To(Equal(permissionsUpdatedPeriod))
-			Expect(config.CassandraConfig.CredentialsValidityMillis).To(Equal(credentialsValidityPeriod))
-			Expect(config.CassandraConfig.CredentialsUpdateMillis).To(Equal(credentialsUpdatePeriod))
+			Expect(config.CassandraConfig.RolesValidityMillis).To(Equal(cacheValidityPeriod))
+			Expect(config.CassandraConfig.RolesUpdateMillis).To(Equal(cacheUpdateInterval))
+			Expect(config.CassandraConfig.PermissionsValidityMillis).To(Equal(cacheValidityPeriod))
+			Expect(config.CassandraConfig.PermissionsUpdateMillis).To(Equal(cacheUpdateInterval))
+			Expect(config.CassandraConfig.CredentialsValidityMillis).To(Equal(cacheValidityPeriod))
+			Expect(config.CassandraConfig.CredentialsUpdateMillis).To(Equal(cacheUpdateInterval))
 			Expect(config.JvmOptions.AdditionalJvmOptions).To(ConsistOf(
 				"-Dcassandra.system_distributed_replication_dc_names="+dcName,
 				"-Dcassandra.system_distributed_replication_per_dc="+strconv.Itoa(clusterSize),
