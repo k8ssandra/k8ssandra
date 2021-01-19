@@ -1,3 +1,7 @@
+# cass-operator needs this ClusterRole whether it is a cluster-scoped or namespace-scoped
+# deployment. Decommission support requires cluster-scoped permissions for
+# PersistentVolumes. The vmware integration requires cluster-scoped permissions for k8s
+# Nodes.
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
