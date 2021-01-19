@@ -34,7 +34,6 @@ type PodLabel struct {
 
 type K8ssandraOptions struct {
 	Operator OperatorOptions
-	Cluster  ClusterOptions
 	Network  NetworkOptions
 }
 
@@ -47,10 +46,6 @@ type OptionsContext struct {
 }
 
 type OperatorOptions struct {
-	Ctx OptionsContext
-}
-
-type ClusterOptions struct {
 	Ctx OptionsContext
 }
 
@@ -69,16 +64,8 @@ func (ko *K8ssandraOptions) SetOperator(options *helm.Options, releaseName strin
 	ko.Operator = createOperatorOptions(options, releaseName)
 }
 
-func (ko *K8ssandraOptions) SetCluster(options *helm.Options, releaseName string) {
-	ko.Cluster = createClusterOptions(options, releaseName)
-}
-
 func (ko *K8ssandraOptions) SetNetwork(options *helm.Options, releaseName string) {
 	ko.Network = createNetworkOptions(options, releaseName)
-}
-
-func (ko *K8ssandraOptions) GetClusterCtx() OptionsContext {
-	return ko.Cluster.Ctx
 }
 
 func (ko *K8ssandraOptions) GetOperatorCtx() OptionsContext {
@@ -93,7 +80,6 @@ func (ko *K8ssandraOptions) GetK8ssandraOptions() K8ssandraOptions {
 
 	return K8ssandraOptions{
 		Operator: ko.Operator,
-		Cluster:  ko.Cluster,
 		Network:  ko.Network,
 	}
 }
@@ -106,16 +92,6 @@ func createOperatorOptions(helmOptions *helm.Options, releaseName string) Operat
 		Namespace:   helmOptions.KubectlOptions.Namespace,
 		ReleaseName: releaseName}
 	return OperatorOptions{Ctx: oc}
-}
-
-func createClusterOptions(helmOptions *helm.Options, releaseName string) ClusterOptions {
-
-	oc := OptionsContext{
-		HelmOptions: helmOptions,
-		KubeOptions: helmOptions.KubectlOptions,
-		Namespace:   helmOptions.KubectlOptions.Namespace,
-		ReleaseName: releaseName}
-	return ClusterOptions{Ctx: oc}
 }
 
 func createNetworkOptions(helmOptions *helm.Options, releaseName string) NetworkOptions {
