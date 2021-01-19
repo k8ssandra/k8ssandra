@@ -22,31 +22,27 @@ var (
 	deployedStatus   = "deployed"
 )
 
-func CreateK8ssandraOptions(kubeOptions *k8s.KubectlOptions, clusterReleaseName string,
-	operatorReleaseName string, networkReleaseName string) K8ssandraOptions {
+func CreateK8ssandraOptions(kubeOptions *k8s.KubectlOptions, k8ssandraReleaseName string,
+	networkReleaseName string) K8ssandraOptions {
 
 	k8ssandraOptions := NewK8ssandraOptions()
-	k8ssandraOptions.SetCluster(&helm.Options{KubectlOptions: kubeOptions},
-		clusterReleaseName)
 	k8ssandraOptions.SetOperator(&helm.Options{KubectlOptions: kubeOptions},
-		operatorReleaseName)
+		k8ssandraReleaseName)
 	k8ssandraOptions.SetNetwork(&helm.Options{KubectlOptions: kubeOptions},
 		networkReleaseName)
 	options := k8ssandraOptions.GetK8ssandraOptions()
 
 	Expect(options).NotTo(BeNil())
 	Expect(options.Operator).NotTo(BeNil())
-	Expect(options.Cluster).NotTo(BeNil())
 	Expect(options.Network).NotTo(BeNil())
 
-	Expect(options.GetClusterCtx()).NotTo(BeNil())
 	Expect(options.GetNetworkCtx()).NotTo(BeNil())
 	Expect(options.GetOperatorCtx()).NotTo(BeNil())
 
 	return options
 }
 
-// InstallChart chart with specific release.
+// InstallChart install chart w/out specified target file for values.
 func InstallChart(ctx OptionsContext, chartName string) {
 
 	cmdArgs := append(ctx.Args, "-n", ctx.Namespace, ctx.ReleaseName, chartName, "--create-namespace")
@@ -55,7 +51,7 @@ func InstallChart(ctx OptionsContext, chartName string) {
 	Expect(err).Should(BeNil())
 }
 
-// InstallChartFromFile
+// InstallChartWithValues install chart using values from specified target file.
 func InstallChartWithValues(ctx OptionsContext, chartName string, valuesTarget string) {
 
 	cmdArgs := append(ctx.Args, "-n", ctx.Namespace, ctx.ReleaseName, chartName, "-f", valuesTarget, "--create-namespace")
@@ -78,6 +74,7 @@ func LookupReleases(ctx OptionsContext) []ReleaseDetail {
 	return releaseDetail
 }
 
+// IsDeploymentReady identify status of deployment using specific context and metadata name.
 func IsDeploymentReady(ctx OptionsContext, name string) bool {
 
 	result, err := k8s.RunKubectlAndGetOutputE(GinkgoT(), ctx.KubeOptions,
@@ -90,6 +87,7 @@ func IsDeploymentReady(ctx OptionsContext, name string) bool {
 	return err == nil && strings.TrimPrefix(result, "deployment.apps/") == name
 }
 
+// IsPodWithLabel identifies pod having specific labels.
 func IsPodWithLabel(ctx OptionsContext, podLabels []PodLabel) bool {
 
 	var cmd = []string{"get"}
@@ -102,7 +100,8 @@ func IsPodWithLabel(ctx OptionsContext, podLabels []PodLabel) bool {
 	return err == nil && strings.HasPrefix(result, "pod/")
 }
 
-func IsClusterExisting(clusterName string) bool {
+// IsKindClusterExisting indicates status of kind cluster's existence.
+func IsKindClusterExisting(clusterName string) bool {
 
 	var command = shell.Command{Command: "kind", Args: []string{"get", "clusters"}}
 	result, err := shell.RunCommandAndGetOutputE(GinkgoT(), command)
@@ -189,6 +188,7 @@ func RepoUpdate(ctx OptionsContext) bool {
 	return updateErr == nil
 }
 
+// ConfigureContext submit identity of context.
 func ConfigureContext(ctx OptionsContext, configFile string) {
 	err := k8s.RunKubectlE(GinkgoT(), ctx.KubeOptions,
 		"config", "--kubeconfig="+configFile, "use-context", ctx.KubeOptions.ContextName)
@@ -196,6 +196,7 @@ func ConfigureContext(ctx OptionsContext, configFile string) {
 	Expect(err).To(BeNil())
 }
 
+// IsExisting check for specific resource having specified name.
 func IsExisting(ctx OptionsContext, kind string, expectedName string) bool {
 
 	result, err := k8s.RunKubectlAndGetOutputE(GinkgoT(), ctx.KubeOptions,
@@ -210,22 +211,24 @@ func IsExisting(ctx OptionsContext, kind string, expectedName string) bool {
 	return false
 }
 
+// CreateKindCluster kind specific create.
 func CreateKindCluster(detail KindClusterDetail) {
 
 	var command = shell.Command{Command: "kind", Args: []string{"create", "cluster",
 		"--name", detail.Name, "--config", detail.ConfigFile, "--image", detail.Image}}
 	result, err := shell.RunCommandAndGetOutputE(GinkgoT(), command)
 	Log("Cluster", "create", result, err)
-	WaitFor(func() bool { return IsClusterExisting(detail.Name) },
+	WaitFor(func() bool { return IsKindClusterExisting(detail.Name) },
 		"Wait for cluster create", 3, 120)
 }
 
+// DeleteKindCluster kind specific delete.
 func DeleteKindCluster(name string) {
 
 	var command = shell.Command{Command: "kind", Args: []string{"delete", "cluster", "--name", name}}
 	result, err := shell.RunCommandAndGetOutputE(GinkgoT(), command)
 	Log("delete", "cluster", result, err)
-	WaitFor(func() bool { return !IsClusterExisting(name) },
+	WaitFor(func() bool { return !IsKindClusterExisting(name) },
 		"Wait for cluster cleanup", 3, 30)
 }
 
