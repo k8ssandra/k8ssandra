@@ -258,8 +258,8 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			Expect(config.CassandraConfig.CredentialsValidityMillis).To(Equal(credentialsValidityPeriod))
 			Expect(config.CassandraConfig.CredentialsUpdateMillis).To(Equal(credentialsUpdatePeriod))
 			Expect(config.JvmOptions.AdditionalJvmOptions).To(ConsistOf(
-				"-Ddse.system_distributed_replication_dc_names="+dcName,
-				"-Ddse.system_distributed_replication_per_dc="+strconv.Itoa(clusterSize),
+				"-Dcassandra.system_distributed_replication_dc_names="+dcName,
+				"-Dcassandra.system_distributed_replication_per_dc="+strconv.Itoa(clusterSize),
 			))
 
 		})
