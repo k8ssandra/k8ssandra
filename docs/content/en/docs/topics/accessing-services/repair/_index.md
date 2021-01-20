@@ -96,6 +96,9 @@ On the repair job you just configured, click **Run now**.
 
 Notice the repair job kicking off.
 
-See [Run a cluster repair](http://cassandra-reaper.io/docs/usage/single/).
+## Recommended reading
 
-For more reading on Reaper, visit [this article](https://medium.com/rahasak/orchestrate-repairs-with-cassandra-reaper-26094bdb59f6) on medium.com.
+* [Running a cluster repair](http://cassandra-reaper.io/docs/usage/single/)
+* [Reaper details](http://cassandra-reaper.io/)
+* [Blog articles](https://thelastpickle.com/blog/)
+
