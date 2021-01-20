@@ -212,8 +212,8 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 
 			var config Config
 			Expect(json.Unmarshal(cassdc.Spec.Config, &config)).To(Succeed())
-			Expect(config.CassandraConfig.Authenticator).To(Equal("AllowAuthenticator"))
-			Expect(config.CassandraConfig.Authorizer).To(Equal("AllowAuthorizer"))
+			Expect(config.CassandraConfig.Authenticator).To(Equal("AllowAllAuthenticator"))
+			Expect(config.CassandraConfig.Authorizer).To(Equal("AllowAllAuthorizer"))
 		})
 
 		It("enabling Cassandra auth", func() {
