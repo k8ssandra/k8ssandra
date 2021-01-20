@@ -1,0 +1,51 @@
+---
+providers:
+  kubernetesCRD:
+    namespaces:
+      - default
+      - traefik
+  kubernetesIngress:
+    namespaces:
+      - default
+      - traefik
+
+ports:
+  traefik:
+    expose: true
+    port: 9000
+    nodePort: 32090
+  web:
+    expose: true
+    port: 8080
+    nodePort: 32080
+  websecure:
+    expose: true
+    port: 8443
+    nodePort: 32443
+  cassandra:
+    expose: true
+    port: 9042
+    nodePort: 32091
+  cassandrasecure:
+    expose: true
+    port: 9142
+    nodePort: 32092
+  stargategraphql:
+    expose: true
+    port: 10090
+    nodePort: 30590
+  stargateauth:
+    expose: true
+    port: 10091
+    nodePort: 30591
+  stargaterest:
+    expose: true
+    port: 10082
+    nodePort: 30592
+  stargatecql:
+    expose: true
+    port: 10042
+    nodePort: 30593
+
+service:
+  type: NodePort

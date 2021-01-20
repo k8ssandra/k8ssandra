@@ -1,0 +1,27 @@
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+name: k8ssandra
+nodes:
+  - role: control-plane
+    kubeadmConfigPatches:
+      - |
+        kind: InitConfiguration
+        nodeRegistration:
+          kubeletExtraArgs:
+            node-labels: "ingress-ready=true"
+    extraPortMappings:
+      - containerPort: 32080
+        hostPort: 8080
+        protocol: TCP
+      - containerPort: 32443
+        hostPort: 8443
+        protocol: TCP
+      - containerPort: 32090
+        hostPort: 9000
+        protocol: TCP
+      - containerPort: 32091
+        hostPort: 9042
+        protocol: TCP
+      - containerPort: 32092
+        hostPort: 9142
+        protocol: TCP
