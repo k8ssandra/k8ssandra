@@ -50,8 +50,8 @@ spec:
       authenticator: PasswordAuthenticator
       authorizer: CassandraAuthorizer
 {{- else }}
-      authenticator: AllowAuthenticator
-      authorizer: AllowAuthorizer
+      authenticator: AllowAllAuthenticator
+      authorizer: AllowAllAuthorizer
 {{- end }}
       role_manager: CassandraRoleManager
       roles_validity_in_ms: {{ .Values.k8ssandra.configuration.auth.cacheValidityPeriodMillis }}
