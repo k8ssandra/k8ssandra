@@ -26,9 +26,13 @@ appVersion: 3.11.7
 
 dependencies:
   - name: cass-operator
-    version: 0.26.0
+    version: 0.27.0
     repository: file://../cass-operator
     condition: cass-operator.enabled
+
+  - name: k8ssandra-common
+    version: 0.27.0
+    repository: file://../k8ssandra-common
 
   - name: kube-prometheus-stack
     version: 11.1.6
