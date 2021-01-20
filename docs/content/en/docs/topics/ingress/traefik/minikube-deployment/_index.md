@@ -16,7 +16,7 @@ Once installed, running `minikube start` will bring up a local cluster.
 
 ### 2. Install Traefik via Helm
 
-Traefik can be installed via in conjunction with the below Traefik values file - 
+Traefik can be installed via Helm in conjunction with the below Traefik values file - 
 
 ### [`Traefik Values`](traefik-values.yaml)
 
