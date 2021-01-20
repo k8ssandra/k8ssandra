@@ -42,7 +42,7 @@ var _ = BeforeSuite(func(done Done) {
 
 	By("bootstrapping test environment")
 	testEnv = &envtest.Environment{
-		CRDDirectoryPaths: []string{filepath.Join("..", "..", "charts", "k8ssandra", "charts", "cass-operator", "crds")},
+		CRDDirectoryPaths: []string{filepath.Join("..", "..", "charts", "cass-operator", "crds")},
 	}
 
 	var err error

@@ -1,6 +1,6 @@
 apiVersion: v2
-name: backup
-description: Creates a CassandraBackup
+name: k8ssandra-common
+description: A Helm chart for Kubernetes
 
 # A chart can be either an 'application' or a 'library' chart.
 #
@@ -10,14 +10,19 @@ description: Creates a CassandraBackup
 # Library charts provide useful utilities or functions for the chart developer. They're included as
 # a dependency of application charts to inject those utilities and functions into the rendering
 # pipeline. Library charts do not define any templates and therefore cannot be deployed.
-type: application
+type: library
 
 # This is the chart version. This version number should be incremented each time you make changes
 # to the chart and its templates, including the app version.
-# Versions are expected to follow Semantic Versioning (https://semver.org/).
+# Versions are expected to follow Semantic Versioning (https://semver.org/)
 version: 0.26.0
 
 # This is the version number of the application being deployed. This version number should be
 # incremented each time you make changes to the application. Versions are not expected to
 # follow Semantic Versioning. They should reflect the version the application is using.
-appVersion: 0.1.0
+appVersion: 1.16.0
+
+dependencies:
+  - name: common
+    version: 1.3.4
+    repository: https://charts.bitnami.com/bitnami
