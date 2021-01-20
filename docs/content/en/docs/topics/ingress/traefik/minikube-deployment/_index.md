@@ -48,4 +48,4 @@ Minikube offers several options to access a service from the host machine (inclu
 
 ### Note - these settings are not suitable for production.
 
-The steps above will create a NodePort service which will serve the Traefik dashboard to clients outside the k8s cluster. This is not suitable for deployment to cloud platforms (EKS, AKS, GKE etc.) as it will make the dashboard publicly available. For a cloud-ready configuration, we should ensure that the Traefik dashboard and other internal services are not visible from outside the cluster (except via `port-forward` as above).
+The steps above will create a NodePort service which will serve the Traefik dashboard to clients outside the k8s cluster. This is not suitable for deployment to cloud platforms (EKS, AKS, GKE etc.) as it will make the dashboard publicly available on any external IPs attached to the node. (Albeit only if access is provided by any security group or firewall on the cluster.) For a cloud-ready configuration, we should ensure that the Traefik dashboard and other internal services are not visible from outside the cluster (except via `port-forward` as above).
