@@ -1,6 +1,7 @@
 package unit_test
 
 import (
+	"encoding/json"
 	"fmt"
 	"path/filepath"
 
@@ -10,7 +11,28 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"k8s.io/apimachinery/pkg/api/resource"
+	"strconv"
 )
+
+type CassandraConfig struct {
+	Authenticator             string
+	Authorizer                string
+	RolesValidityMillis       int64 `json:"roles_validity_in_ms"`
+	RolesUpdateMillis         int64 `json:"roles_update_interval_in_ms"`
+	PermissionsValidityMillis int64 `json:"permissions_validity_in_ms"`
+	PermissionsUpdateMillis   int64 `json:"permissions_update_interval_in_ms"`
+	CredentialsValidityMillis int64 `json:"credentials_validity_in_ms"`
+	CredentialsUpdateMillis   int64 `json:"credentials_update_interval_in_ms"`
+}
+
+type JvmOptions struct {
+	AdditionalJvmOptions []string `json:"additional-jvm-opts"`
+}
+
+type Config struct {
+	CassandraConfig CassandraConfig `json:"cassandra-yaml"`
+	JvmOptions      JvmOptions      `json:"jvm-options"`
+}
 
 var (
 	reaperInstanceValue    = fmt.Sprintf("%s-reaper-k8ssandra", helmReleaseName)
@@ -176,6 +198,62 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			err := renderTemplate(options)
 
 			Expect(err).To(HaveOccurred())
+		})
+
+		It("disabling Cassandra auth", func() {
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+				SetValues: map[string]string{
+					"k8ssandra.configuration.auth.enabled": "false",
+				},
+			}
+
+			Expect(renderTemplate(options)).To(Succeed())
+
+			var config Config
+			Expect(json.Unmarshal(cassdc.Spec.Config, &config)).To(Succeed())
+			Expect(config.CassandraConfig.Authenticator).To(Equal("AllowAuthenticator"))
+			Expect(config.CassandraConfig.Authorizer).To(Equal("AllowAuthorizer"))
+		})
+
+		It("enabling Cassandra auth", func() {
+			dcName := "test"
+			clusterSize := 3
+
+			authCachePeriod := int64(7200000)
+			cacheValidityPeriod := authCachePeriod + 1
+			cacheUpdateInterval := authCachePeriod + 2
+
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+				SetValues: map[string]string{
+					"k8ssandra.datacenterName":                               dcName,
+					"k8ssandra.size":                                         strconv.Itoa(clusterSize),
+					"k8ssandra.configuration.auth.enabled":                   "true",
+					"k8ssandra.configuration.auth.cacheValidityPeriodMillis": strconv.FormatInt(cacheValidityPeriod, 10),
+					"k8ssandra.configuration.auth.cacheUpdateIntervalMillis": strconv.FormatInt(cacheUpdateInterval, 10),
+				},
+			}
+
+			Expect(renderTemplate(options)).To(Succeed())
+
+			Expect(cassdc.Name).To(Equal(dcName))
+
+			var config Config
+			Expect(json.Unmarshal(cassdc.Spec.Config, &config)).To(Succeed())
+			Expect(config.CassandraConfig.Authenticator).To(Equal("PasswordAuthenticator"))
+			Expect(config.CassandraConfig.Authorizer).To(Equal("CassandraAuthorizer"))
+			Expect(config.CassandraConfig.RolesValidityMillis).To(Equal(cacheValidityPeriod))
+			Expect(config.CassandraConfig.RolesUpdateMillis).To(Equal(cacheUpdateInterval))
+			Expect(config.CassandraConfig.PermissionsValidityMillis).To(Equal(cacheValidityPeriod))
+			Expect(config.CassandraConfig.PermissionsUpdateMillis).To(Equal(cacheUpdateInterval))
+			Expect(config.CassandraConfig.CredentialsValidityMillis).To(Equal(cacheValidityPeriod))
+			Expect(config.CassandraConfig.CredentialsUpdateMillis).To(Equal(cacheUpdateInterval))
+			Expect(config.JvmOptions.AdditionalJvmOptions).To(ConsistOf(
+				"-Dcassandra.system_distributed_replication_dc_names="+dcName,
+				"-Dcassandra.system_distributed_replication_per_dc="+strconv.Itoa(clusterSize),
+			))
+
 		})
 
 		It("disabling reaper", func() {
