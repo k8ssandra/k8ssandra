@@ -4,6 +4,19 @@ k8ssandra:
   datacenterName: dc1
   rackName: default # this is the only supported value for now
   size: 1
+  configuration:
+    # auth is authentication and authorization related settings.
+    auth:
+      # enabled enables or disables authentication and authorization
+      enabled: true
+      # cacheValidityPeriodMillis specifies in milliseconds how long cache entries are
+      # valid. cassandra.yaml has settings for roles, permissions, and credentials caches.
+      # This property will configure the validity period for all three.
+      cacheValidityPeriodMillis: 3600000
+      # cacheUpdateIntervalMillis specifies in milliseconds the interval or frequency that
+      # cache entries are updated. cassandra.yaml has settings for roles, permissions, and
+      # credentials caches. This property will configure the update interval for all three.
+      cacheUpdateIntervalMillis: 3600000
   cassandraLibDirVolume:
     storageClass: standard
     size: 5Gi
@@ -140,11 +153,7 @@ cleaner:
   image: burmanm/k8ssandra-client:latest
 
 cass-operator:
-  # Namespace-scoped installs are currently not (well) supported.
-  # See K8C-19 for details.
-  clusterWideInstall: true
-
-  image: datastax/cass-operator:master-a45fd80b40e0129e8883a953d595ca85e4b7ce79
+  enabled: true
 
 kube-prometheus-stack:
   alertmanager:
