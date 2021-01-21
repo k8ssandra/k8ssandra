@@ -49,6 +49,11 @@ spec:
 {{- else if .Values.cassandra.auth.superuser.username }}
   superuserSecretName: {{ .Values.cassandra.clusterName }}-superuser
 {{- end }}
+{{- if .Values.k8ssandra.configuration.auth.enabled }}
+  users:
+    - secretName: {{ .Values.k8ssandra.clusterName }}-reaper
+      superuser: true
+{{- end }}
   config:    
     cassandra-yaml:
 {{- if .Values.cassandra.auth.enabled }}
