@@ -51,7 +51,7 @@ spec:
 {{- end }}
 {{- if .Values.k8ssandra.configuration.auth.enabled }}
   users:
-    - secretName: {{ .Values.k8ssandra.clusterName }}-reaper
+    - secretName: {{ default (printf "%s-%s" .Values.k8ssandra.clusterName "reaper") .Values.repair.reaper.cassandraUser.secret }}
       superuser: true
 {{- end }}
   config:    

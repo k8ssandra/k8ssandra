@@ -53,6 +53,7 @@ repair:
   reaper:
     autoschedule: false
     enabled: true
+
     cassandraUser:
       secret: ""
       username: ""
