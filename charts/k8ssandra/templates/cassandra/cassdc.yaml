@@ -1,7 +1,7 @@
 apiVersion: cassandra.datastax.com/v1beta1
 kind: CassandraDatacenter
 metadata:
-  name: {{ .Values.k8ssandra.datacenterName }}
+  name: {{ (index .Values.cassandra.datacenters 0).name }}
   labels:
 {{ include "k8ssandra.labels" . | indent 4 }}
   annotations:
@@ -9,49 +9,49 @@ metadata:
     reaper.cassandra-reaper.io/instance: {{ .Release.Name }}-reaper-k8ssandra
 {{- end }}
 spec:
-  clusterName: {{ .Values.k8ssandra.clusterName }}
+  clusterName: {{ .Values.cassandra.clusterName }}
   serverType: cassandra
-  serverVersion: {{ .Values.k8ssandra.cassandraVersion | quote }}
+  serverVersion: {{ .Values.cassandra.version | quote }}
   dockerImageRunsAsCassandra: false
-{{- if eq "3.11.7" .Values.k8ssandra.cassandraVersion }}
+{{- if eq "3.11.7" .Values.cassandra.version }}
   serverImage: datastax/cassandra-mgmtapi-3_11_7:v0.1.17
-{{- else if eq "3.11.8" .Values.k8ssandra.cassandraVersion }}
+{{- else if eq "3.11.8" .Values.cassandra.version }}
   serverImage: datastax/cassandra-mgmtapi-3_11_8:v0.1.17
-{{- else if eq "3.11.9" .Values.k8ssandra.cassandraVersion }}
+{{- else if eq "3.11.9" .Values.cassandra.version }}
   serverImage: datastax/cassandra-mgmtapi-3_11_9:v0.1.17
 {{- else }}
-  {{- fail (print .Values.k8ssandra.cassandraVersion " is not a supported Cassandra version") }}
+  {{- fail (print .Values.cassandra.version " is not a supported Cassandra version") }}
 {{- end }}
   managementApiAuth:
     insecure: {}
-  size: {{ .Values.k8ssandra.size }}
+  size: {{ (index .Values.cassandra.datacenters 0).size }}
   storageConfig:
     cassandraDataVolumeClaimSpec:
-      storageClassName: {{ .Values.k8ssandra.cassandraLibDirVolume.storageClass | default "standard" }}
+      storageClassName: {{ .Values.cassandra.cassandraLibDirVolume.storageClass | default "standard" }}
       accessModes:
         - ReadWriteOnce
       resources:
         requests:
-          storage: {{ .Values.k8ssandra.cassandraLibDirVolume.size | default "5Gi" }}
-  allowMultipleNodesPerWorker: {{ .Values.k8ssandra.allowMultipleNodesPerWorker | default false}}
-{{- if .Values.k8ssandra.allowMultipleNodesPerWorker}}
+          storage: {{ .Values.cassandra.cassandraLibDirVolume.size | default "5Gi" }}
+  allowMultipleNodesPerWorker: {{ .Values.cassandra.allowMultipleNodesPerWorker | default false}}
+{{- if .Values.cassandra.allowMultipleNodesPerWorker}}
   resources:
     limits: 
-{{ toYaml (required "set resource limits/requests when enabling allowMultipleNodesPerWorker" .Values.k8ssandra.resources.limits) | indent 6}}
+{{ toYaml (required "set resource limits/requests when enabling allowMultipleNodesPerWorker" .Values.cassandra.resources.limits) | indent 6}}
     requests:      
-{{ toYaml (required "set resource limits/requests when enabling allowMultipleNodesPerWorker" .Values.k8ssandra.resources.requests) | indent 6}}
-{{- else if .Values.k8ssandra.resources }}
+{{ toYaml (required "set resource limits/requests when enabling allowMultipleNodesPerWorker" .Values.cassandra.resources.requests) | indent 6}}
+{{- else if .Values.cassandra.resources }}
   resources:
-{{ toYaml .Values.k8ssandra.resources | indent 6 }}
+{{ toYaml .Values.cassandra.resources | indent 6 }}
 {{- end}}
-{{- if .Values.k8ssandra.configuration.auth.superuser.secret }}
-  superuserSecretName: {{ .Values.k8ssandra.configuration.auth.superuser.secret }}
-{{- else if .Values.k8ssandra.configuration.auth.superuser.username }}
-  superuserSecretName: {{ .Values.k8ssandra.clusterName }}-superuser
+{{- if .Values.cassandra.auth.superuser.secret }}
+  superuserSecretName: {{ .Values.cassandra.auth.superuser.secret }}
+{{- else if .Values.cassandra.auth.superuser.username }}
+  superuserSecretName: {{ .Values.cassandra.clusterName }}-superuser
 {{- end }}
   config:    
     cassandra-yaml:
-{{- if .Values.k8ssandra.configuration.auth.enabled }}
+{{- if .Values.cassandra.auth.enabled }}
       authenticator: PasswordAuthenticator
       authorizer: CassandraAuthorizer
 {{- else }}
@@ -59,20 +59,20 @@ spec:
       authorizer: AllowAllAuthorizer
 {{- end }}
       role_manager: CassandraRoleManager
-      roles_validity_in_ms: {{ .Values.k8ssandra.configuration.auth.cacheValidityPeriodMillis }}
-      roles_update_interval_in_ms: {{ .Values.k8ssandra.configuration.auth.cacheUpdateIntervalMillis }}
-      permissions_validity_in_ms: {{ .Values.k8ssandra.configuration.auth.cacheValidityPeriodMillis }}
-      permissions_update_interval_in_ms: {{ .Values.k8ssandra.configuration.auth.cacheUpdateIntervalMillis }}
-      credentials_validity_in_ms: {{ .Values.k8ssandra.configuration.auth.cacheValidityPeriodMillis }}
-      credentials_update_interval_in_ms: {{ .Values.k8ssandra.configuration.auth.cacheUpdateIntervalMillis }}
+      roles_validity_in_ms: {{ .Values.cassandra.auth.cacheValidityPeriodMillis }}
+      roles_update_interval_in_ms: {{ .Values.cassandra.auth.cacheUpdateIntervalMillis }}
+      permissions_validity_in_ms: {{ .Values.cassandra.auth.cacheValidityPeriodMillis }}
+      permissions_update_interval_in_ms: {{ .Values.cassandra.auth.cacheUpdateIntervalMillis }}
+      credentials_validity_in_ms: {{ .Values.cassandra.auth.cacheValidityPeriodMillis }}
+      credentials_update_interval_in_ms: {{ .Values.cassandra.auth.cacheUpdateIntervalMillis }}
     jvm-options:
       initial_heap_size: "800M"
       max_heap_size: "800M"
 
       additional-jvm-opts:
-{{- if .Values.k8ssandra.configuration.auth.enabled }}
-        - "-Dcassandra.system_distributed_replication_dc_names={{ .Values.k8ssandra.datacenterName }}"
-        - "-Dcassandra.system_distributed_replication_per_dc={{ min 5 .Values.k8ssandra.size }}"
+{{- if .Values.cassandra.auth.enabled }}
+        - "-Dcassandra.system_distributed_replication_dc_names={{ (index .Values.cassandra.datacenters 0).name }}"
+        - "-Dcassandra.system_distributed_replication_per_dc={{ min 5 (index .Values.cassandra.datacenters 0).size }}"
 {{- end }}
   podTemplateSpec:
     spec:

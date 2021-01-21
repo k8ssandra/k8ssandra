@@ -26,7 +26,7 @@ spec:
               - -c
               - |
                 echo "Waiting for at least one cassandra node to finish bootstrapping..."
-                while ! nslookup {{ .Values.k8ssandra.clusterName }}-seed-service.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain | default "cluster.local" }}; do
+                while ! nslookup {{ .Values.cassandra.clusterName }}-seed-service.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain | default "cluster.local" }}; do
                     sleep 5
                 done
                 echo "Cassandra is ready. Starting Stargate..."
@@ -83,15 +83,17 @@ spec:
                 -Xms{{ .Values.stargate.heapMB | default 1024 }}M
                 -Xmx{{ .Values.stargate.heapMB | default 1024 }}M
             - name: CLUSTER_NAME
-              value: {{ .Values.k8ssandra.clusterName | quote }}
+              value: {{ .Values.cassandra.clusterName | quote }}
             - name: CLUSTER_VERSION
               value: "{{ .Values.stargate.clusterVersion }}"
             - name: SEED
-              value: "{{ .Values.k8ssandra.clusterName }}-seed-service.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain | default "cluster.local" }}"
+              value: "{{ .Values.cassandra.clusterName }}-seed-service.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain | default "cluster.local" }}"
             - name: DATACENTER_NAME
-              value: {{ .Values.k8ssandra.datacenterName }}
+              value: {{ (index .Values.cassandra.datacenters 0).name }}
             - name: RACK_NAME
-              value: {{ .Values.k8ssandra.rackName }}
+              # The rack name is temporarily hard coded until we get multi-rack support implemented.
+              # See https://github.com/k8ssandra/k8ssandra/issues/54.
+              value: default
             - name: ENABLE_AUTH
               value: "true"
           livenessProbe:
