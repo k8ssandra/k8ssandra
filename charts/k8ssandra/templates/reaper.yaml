@@ -16,8 +16,8 @@ spec:
     jmxUserSecretName: {{ .Release.Name }}-reaper-secret-k8ssandra
     cassandraBackend:
       cassandraDatacenter:
-        name: {{ .Values.k8ssandra.datacenterName }}
+        name: {{ (index .Values.cassandra.datacenters 0).name }}
       replication:
         networkTopologyStrategy:
-          {{ .Values.k8ssandra.datacenterName }}: {{ min .Values.k8ssandra.size 3}}
+          {{ (index .Values.cassandra.datacenters 0).name }}: {{ min (index .Values.cassandra.datacenters 0).size 3}}
 {{- end }}

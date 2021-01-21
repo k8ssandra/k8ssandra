@@ -1,5 +1,5 @@
-k8ssandra:
-  cassandraVersion: "3.11.9"
+cassandra:
+  version: "3.11.9"
   clusterName: k8ssandra
   datacenterName: dc1
   rackName: default # this is the only supported value for now
@@ -38,6 +38,9 @@ k8ssandra:
   # If enabled, resources.limits and resources.requests must be defined
   allowMultipleNodesPerWorker: false
   resources: {}
+  datacenters:
+  - name: dc1
+    size: 1
 
 stargate:
   # configuration regarding the Stargate API

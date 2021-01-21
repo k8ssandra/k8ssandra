@@ -1,3 +1,5 @@
+
+---
 apiVersion: apiextensions.k8s.io/v1beta1
 kind: CustomResourceDefinition
 metadata:
@@ -20,10 +22,14 @@ spec:
       description: Reaper is the Schema for the reapers API
       properties:
         apiVersion:
-          description: 'APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+          description: 'APIVersion defines the versioned schema of this representation
+            of an object. Servers should convert recognized schemas to the latest
+            internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
           type: string
         kind:
-          description: 'Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+          description: 'Kind is a string value representing the REST resource this
+            object represents. Servers may infer this from the endpoint the client
+            submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
           type: string
         metadata:
           type: object
@@ -35,34 +41,27 @@ spec:
             serverConfig:
               properties:
                 autoScheduling:
-                  description: Configure reaper autoscheduling
+                  description: If the autoscheduling should be enabled
                   properties:
                     enabled:
                       type: boolean
                   type: object
                 cassandraBackend:
                   properties:
-                    authProvider:
-                      properties:
-                        password:
-                          type: string
-                        type:
-                          type: string
-                        username:
-                          type: string
-                      type: object
                     cassandraDatacenter:
                       properties:
                         name:
-                          description: The name of the datacenter this Reaper instance will deploy to
                           type: string
                         namespace:
-                          description: Defaults to same namespace as reaper installation
+                          description: If empty we could default the Reaper namespace.
                           type: string
+                      required:
+                        - name
+                      type: object
+                    cassandraUserSecretName:
+                      type: string
                     keyspace:
                       description: Defaults to reaper
-                      type: string
-                    namespace:
                       type: string
                     replication:
                       description: Specifies the replication strategy for a keyspace
@@ -71,19 +70,23 @@ spec:
                           additionalProperties:
                             format: int32
                             type: integer
-                          description: Specifies the replication_factor when NetworkTopologyStrategy is used. The mapping is data center name to RF.
+                          description: Specifies the replication_factor when NetworkTopologyStrategy
+                            is used. The mapping is data center name to RF.
                           type: object
                         simpleStrategy:
-                          description: Specifies the replication_factor when SimpleStrategy is used
+                          description: Specifies the replication_factor when SimpleStrategy
+                            is used
                           format: int32
                           type: integer
                       type: object
                   required:
-                  - cassandraDatacenter
-                  - replication
+                    - cassandraDatacenter
+                    - replication
                   type: object
                 jmxUserSecretName:
-                  description: Defines the username and password that Reaper will use to authenticate JMX connections to Cassandra clusters. These credentials need to be stored on each Cassandra node.
+                  description: Defines the username and password that Reaper will
+                    use to authenticate JMX connections to Cassandra clusters. These
+                    credentials need to be stored on each Cassandra node.
                   type: string
                 storageType:
                   type: string
@@ -102,9 +105,9 @@ spec:
       type: object
   version: v1alpha1
   versions:
-  - name: v1alpha1
-    served: true
-    storage: true
+    - name: v1alpha1
+      served: true
+      storage: true
 status:
   acceptedNames:
     kind: ""

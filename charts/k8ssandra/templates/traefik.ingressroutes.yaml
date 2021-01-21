@@ -1,6 +1,6 @@
 {{- $releaseName := .Release.Name -}}
-{{- $clusterName := .Values.k8ssandra.clusterName -}}
-{{- $datacenterName := .Values.k8ssandra.datacenterName -}}
+{{- $clusterName := .Values.cassandra.clusterName -}}
+{{- $datacenterName := (index .Values.cassandra.datacenters 0).name -}}
 {{- $traefik := .Values.ingress.traefik -}}
 
 {{- if and $traefik.enabled $traefik.repair.enabled }}
