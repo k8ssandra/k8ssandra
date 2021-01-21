@@ -42,8 +42,8 @@ var _ = Describe("Verify superuser secret template", func() {
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
 				SetValues: map[string]string{
-					"k8ssandra.clusterName":                           clusterName,
-					"k8ssandra.configuration.auth.superuser.username": username,
+					"cassandra.clusterName":             clusterName,
+					"cassandra.auth.superuser.username": username,
 				},
 			}
 
@@ -60,7 +60,7 @@ var _ = Describe("Verify superuser secret template", func() {
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
 				SetValues: map[string]string{
-					"k8ssandra.configuration.auth.superuser.secret": secretName,
+					"cassandra.auth.superuser.secret": secretName,
 				},
 			}
 

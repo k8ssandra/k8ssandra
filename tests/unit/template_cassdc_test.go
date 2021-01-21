@@ -266,9 +266,9 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
 				SetValues: map[string]string{
-					"k8ssandra.clusterName":                         clusterName,
-					"k8ssandra.configuration.auth.enabled":          "true",
-					"k8ssandra.configuration.auth.superuser.secret": secretName,
+					"cassandra.clusterName":           clusterName,
+					"cassandra.auth.enabled":          "true",
+					"cassandra.auth.superuser.secret": secretName,
 				},
 			}
 
@@ -282,9 +282,9 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
 				SetValues: map[string]string{
-					"k8ssandra.clusterName":                           clusterName,
-					"k8ssandra.configuration.auth.enabled":            "true",
-					"k8ssandra.configuration.auth.superuser.username": "admin",
+					"cassandra.clusterName":             clusterName,
+					"cassandra.auth.enabled":            "true",
+					"cassandra.auth.superuser.username": "admin",
 				},
 			}
 

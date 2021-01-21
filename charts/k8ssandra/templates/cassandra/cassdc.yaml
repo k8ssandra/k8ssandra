@@ -44,10 +44,10 @@ spec:
   resources:
 {{ toYaml .Values.cassandra.resources | indent 6 }}
 {{- end}}
-{{- if .Values.k8ssandra.configuration.auth.superuser.secret }}
-  superuserSecretName: {{ .Values.k8ssandra.configuration.auth.superuser.secret }}
-{{- else if .Values.k8ssandra.configuration.auth.superuser.username }}
-  superuserSecretName: {{ .Values.k8ssandra.clusterName }}-superuser
+{{- if .Values.cassandra.auth.superuser.secret }}
+  superuserSecretName: {{ .Values.cassandra.auth.superuser.secret }}
+{{- else if .Values.cassandra.auth.superuser.username }}
+  superuserSecretName: {{ .Values.cassandra.clusterName }}-superuser
 {{- end }}
   config:    
     cassandra-yaml:
