@@ -56,7 +56,7 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 	renderTemplate := func(options *helm.Options) error {
 		renderedOutput, err := helm.RenderTemplateE(
 			GinkgoT(), options, helmChartPath, helmReleaseName,
-			[]string{"templates/cassdc.yaml"},
+			[]string{"templates/cassandra/cassdc.yaml"},
 		)
 
 		if err == nil {
@@ -254,6 +254,39 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 				"-Dcassandra.system_distributed_replication_per_dc="+strconv.Itoa(clusterSize),
 			))
 
+		})
+
+		It("providing superuser secret", func() {
+			clusterName := "superuser-test"
+			secretName := "test-secret"
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+				SetValues: map[string]string{
+					"k8ssandra.clusterName":                         clusterName,
+					"k8ssandra.configuration.auth.enabled":          "true",
+					"k8ssandra.configuration.auth.superuser.secret": secretName,
+				},
+			}
+
+			Expect(renderTemplate(options)).To(Succeed())
+
+			Expect(cassdc.Spec.SuperuserSecretName).To(Equal(secretName))
+		})
+
+		It("providing superuser username", func() {
+			clusterName := "superuser-test"
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+				SetValues: map[string]string{
+					"k8ssandra.clusterName":                           clusterName,
+					"k8ssandra.configuration.auth.enabled":            "true",
+					"k8ssandra.configuration.auth.superuser.username": "admin",
+				},
+			}
+
+			Expect(renderTemplate(options)).To(Succeed())
+
+			Expect(cassdc.Spec.SuperuserSecretName).To(Equal(clusterName + "-superuser"))
 		})
 
 		It("disabling reaper", func() {

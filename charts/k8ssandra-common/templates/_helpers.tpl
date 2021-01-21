@@ -67,3 +67,11 @@ Create the name of the service account to use
 {{- define "k8ssandra-common.serviceAccountName" -}}
 {{- default (include "k8ssandra-common.fullname" .) .Values.serviceAccount.name }}
 {{- end }}
+
+{{/*
+Generate a password for use in a secret. The password is a random alphanumeric 20 character
+string that is base 64 encoded.
+*/}}
+{{- define "k8ssandra-common.password" -}}
+{{ randAlphaNum 20 | b64enc | quote }}
+{{- end }}
