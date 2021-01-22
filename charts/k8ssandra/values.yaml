@@ -1,8 +1,6 @@
 cassandra:
   version: "3.11.9"
   clusterName: k8ssandra
-  datacenterName: dc1
-  rackName: default # this is the only supported value for now
   size: 1
   # auth is authentication and authorization related settings.
   auth:
