@@ -122,7 +122,13 @@ cleaner:
 cass-operator:
   enabled: true
 
+# Configuration values for the kube-prometheus-stack chart. Not all values are
+# provided here for an exhaustive list see:
+# https://github.com/prometheus-community/helm-charts/blob/main/charts/kube-prometheus-stack/values.yaml
 kube-prometheus-stack:
+  # Controls whether this chart is installed at all.
+  enabled: true
+
   # Disable default service monitors
   coreDns:
     enabled: false
@@ -146,12 +152,16 @@ kube-prometheus-stack:
     enabled: false
 
   alertmanager:
+    # Disabled for now while we build out a set of default alert
     enabled: false
     serviceMonitor:
       selfMonitor: false
 
-  # Locks Prometheus operator to this namespace and kube-system
   prometheusOperator:
+    # Installs the Prometheus Operator
+    enabled: true
+
+    # Locks Prometheus operator to this namespace
     namespaces:
       releaseNamespace: true
       additional: []
@@ -161,6 +171,8 @@ kube-prometheus-stack:
       selfMonitor: false
 
   prometheus:
+    # Provisions an instance of Prometheus as part of this release
+    enabled: true
     prometheusSpec:
       # Uncomment to listen for Prometheus traffic under a route prefix
       # externalUrl: http://localhost:9090/prometheus
@@ -181,6 +193,9 @@ kube-prometheus-stack:
     # additionalServiceMonitors: []
 
   grafana:
+    # Provisions an instance of Grafana and wires it up with a DataSource
+    # referencing this Prometheus installation
+    enabled: true
     ingress:
       enabled: false
       # Uncomment to listen for Grafana traffic under a route prefix
