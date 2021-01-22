@@ -232,6 +232,7 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
 				SetValues: map[string]string{
+					"cassandra.clusterName":                    clusterName,
 					"cassandra.datacenters[0].name":            dcName,
 					"cassandra.datacenters[0].size":            strconv.Itoa(clusterSize),
 					"cassandra.auth.enabled":                   "true",

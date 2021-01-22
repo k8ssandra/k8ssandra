@@ -17,8 +17,8 @@ spec:
     cassandraBackend:
     {{- if .Values.repair.reaper.cassandraUser.secret }}
       cassandraUserSecretName: {{ .Values.repair.reaper.cassandraUser.secret }}
-    {{- else if or .Values.repair.reaper.cassandraUser.username .Values.k8ssandra.configuration.auth.enabled }}
-      cassandraUserSecretName: {{ .Values.k8ssandra.clusterName }}-reaper
+    {{- else if or .Values.repair.reaper.cassandraUser.username .Values.cassandra.auth.enabled }}
+      cassandraUserSecretName: {{ .Values.cassandra.clusterName }}-reaper
     {{- end }}
       cassandraDatacenter:
         name: {{ (index .Values.cassandra.datacenters 0).name }}

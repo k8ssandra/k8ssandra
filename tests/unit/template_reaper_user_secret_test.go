@@ -42,8 +42,8 @@ var _ = Describe("Verify reaper user secret template", func() {
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
 				SetValues: map[string]string{
-					"k8ssandra.clusterName":                clusterName,
-					"k8ssandra.configuration.auth.enabled": "true",
+					"cassandra.clusterName":                clusterName,
+					"cassandra.auth.enabled":               "true",
 					"repair.reaper.cassandraUser.username": username,
 				},
 			}
@@ -59,8 +59,8 @@ var _ = Describe("Verify reaper user secret template", func() {
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
 				SetValues: map[string]string{
-					"k8ssandra.clusterName":                clusterName,
-					"k8ssandra.configuration.auth.enabled": "true",
+					"cassandra.clusterName":  clusterName,
+					"cassandra.auth.enabled": "true",
 				},
 			}
 
@@ -75,9 +75,9 @@ var _ = Describe("Verify reaper user secret template", func() {
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
 				SetValues: map[string]string{
-					"k8ssandra.clusterName":                clusterName,
-					"k8ssandra.configuration.auth.enabled": "true",
-					"repair.reaper.cassandraUser.secret":   "reaper-secret",
+					"cassandra.clusterName":              clusterName,
+					"cassandra.auth.enabled":             "true",
+					"repair.reaper.cassandraUser.secret": "reaper-secret",
 				},
 			}
 
