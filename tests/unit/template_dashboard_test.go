@@ -9,7 +9,7 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-var _ = Describe("Verify Service Monitor template", func() {
+var _ = Describe("Verify dashboard Config Map template", func() {
 
 	var (
 		helmReleaseName       = "k8ssandra-test"
@@ -18,7 +18,7 @@ var _ = Describe("Verify Service Monitor template", func() {
 
 		helmChartPath string
 		err           error
-		sm            map[string]interface{}
+		cm            map[string]interface{}
 	)
 
 	BeforeEach(func() {
@@ -34,11 +34,11 @@ var _ = Describe("Verify Service Monitor template", func() {
 
 		renderedOutput, err := helm.RenderTemplateE(
 			GinkgoT(), options, helmChartPath, helmReleaseName,
-			[]string{"templates/prometheus/service_monitor.yaml"},
+			[]string{"templates/grafana/configmap.yaml"},
 		)
 
 		if err == nil {
-			helm.UnmarshalK8SYaml(GinkgoT(), renderedOutput, &sm)
+			helm.UnmarshalK8SYaml(GinkgoT(), renderedOutput, &cm)
 		}
 
 		return err
@@ -46,11 +46,11 @@ var _ = Describe("Verify Service Monitor template", func() {
 
 	Context("by rendering it with options", func() {
 
-		It("using provision_service_monitors false", func() {
+		It("using provision_dashboards false", func() {
 
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
-				SetValues:      map[string]string{"monitoring.prometheus.provision_service_monitors": "false"},
+				SetValues:      map[string]string{"monitoring.grafana.provision_dashboards": "false"},
 			}
 
 			err = renderTemplate(options)
@@ -59,20 +59,21 @@ var _ = Describe("Verify Service Monitor template", func() {
 			Expect(err.Error()).To(ContainSubstring("could not find template"))
 		})
 
-		It("using provision_service_monitors true", func() {
+		It("using provision_dashboards true", func() {
 
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
-				SetValues:      map[string]string{"monitoring.prometheus.provision_service_monitors": "true"},
+				SetValues:      map[string]string{"monitoring.grafana.provision_dashboards": "true"},
 			}
 
 			Expect(renderTemplate(options)).To(Succeed())
 
-			meta := sm["metadata"]
-			Expect(meta.(map[string]interface{})["labels"].(map[string]interface{})["release"]).To(BeIdenticalTo(helmReleaseName))
-
-			spec := sm["spec"]
-			Expect(spec).ToNot(BeEmpty())
+			data := cm["data"].(map[string]interface{})
+			Expect(data).ToNot(BeNil())
+			Expect(data).ToNot(BeEmpty())
+			Expect(data["cassandra-condensed.json"]).ToNot(BeEmpty())
+			Expect(data["cassandra-overview.json"]).ToNot(BeEmpty())
+			Expect(data["system-metrics.json"]).ToNot(BeEmpty())
 		})
 	})
 })

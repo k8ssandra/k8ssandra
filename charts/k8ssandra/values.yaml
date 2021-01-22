@@ -109,64 +109,12 @@ ingress:
       entrypoints:
         - cassandra
 
-    # Monitoring web interfaces for Promtheus and Grafana
-    monitoring:
-      grafana:
-        # Note this will **only** work if `ingress.traefik.enabled` is also `true`
-        enabled: true
-
-        # Name of the Traefik entrypoints where we want to source traffic.
-        entrypoints:
-          - web
-
-        # Hostname Traefik should use for matching requests.
-        host: grafana.k8ssandra.cluster.local
-
-      prometheus:
-        # Note this will **only** work if `ingress.traefik.enabled` is also `true`
-        enabled: true
-
-        # Name of the Traefik entrypoints where we want to source traffic.
-        entrypoints:
-          - web
-
-        # Hostname Traefik should use for matching requests.
-        host: prometheus.k8ssandra.cluster.local
-
 monitoring:
-  grafana:
-    security:
-      # TODO Add support for configuring credentials via a secret
-
-      # The admin username
-      adminUser: admin
-
-      # The admin password
-      adminPassword: secret
-
-    # Grafana server configuration settings. Corresponds to settings in /etc/grafana/grafana.ini.
-    config:
-      # Corresponds to properties in the server section of grafana.ini.
-      server:
-        # This is the full URL used to access Grafana from a web browser. This setting
-        # is also important if you have a reverse proxy in front of Grafana that
-        # exposes it through a subpath. In that case add the subpath to the end of this
-        # URL setting.
-        rootUrl: ""
-
-        # Set to to true to serve Grafana from subpath specified in rootUrl. If set to
-        # true, rootUrl should be set as well.
-        serveFromSubPath: false
+  grafana: 
+    provision_dashboards: true
 
   prometheus:
-    # The external URL the Prometheus instances will be available under.
-    externalUrl: ""
-
-    # The route prefix Prometheus registers HTTP handlers for. This is useful,
-    # if using ExternalURL and a proxy is rewriting HTTP routes of a request,
-    # and the actual ExternalURL is still true, but the server serves requests
-    # under a different route prefix. For example for use with `kubectl proxy`.
-    routePrefix: ""
+    provision_service_monitors: true
 
 cleaner:
   image: burmanm/k8ssandra-client:latest
@@ -174,31 +122,103 @@ cleaner:
 cass-operator:
   enabled: true
 
+# Configuration values for the kube-prometheus-stack chart. Not all values are
+# provided here for an exhaustive list see:
+# https://github.com/prometheus-community/helm-charts/blob/main/charts/kube-prometheus-stack/values.yaml
 kube-prometheus-stack:
-  alertmanager:
-    enabled: false
+  # Controls whether this chart is installed at all.
+  enabled: true
 
+  # Disable default service monitors
+  coreDns:
+    enabled: false
+  kubeApiServer:
+    enabled: false
+  kubeControllerManager:
+    enabled: false
+  kubeDns:
+    enabled: false
+  kubeEtcd:
+    enabled: false
+  kubeProxy:
+    enabled: false
+  kubeScheduler:
+    enabled: false
   kubeStateMetrics:
     enabled: false
-
-  grafana:
+  kubelet:
     enabled: false
-
   nodeExporter:
     enabled: false
 
-  kubeletService:
+  alertmanager:
+    # Disabled for now while we build out a set of default alert
     enabled: false
+    serviceMonitor:
+      selfMonitor: false
 
-  kubeControllerManager:
-    enabled: false
+  prometheusOperator:
+    # Installs the Prometheus Operator
+    enabled: true
 
-  kubelet:
-    enabled: false
+    # Locks Prometheus operator to this namespace
+    namespaces:
+      releaseNamespace: true
+      additional: []
 
-  kubeApiServer:
-    enabled: false
+    # Disable monitoring of operator
+    serviceMonitor:
+      selfMonitor: false
 
   prometheus:
-    enabled: false
+    # Provisions an instance of Prometheus as part of this release
+    enabled: true
+    prometheusSpec:
+      # Uncomment to listen for Prometheus traffic under a route prefix
+      # externalUrl: http://localhost:9090/prometheus
+      # routePrefix: /prometheus
+    
+    # Enable templating of ingress resources for external prometheus traffic
+    ingress:
+      enabled: false
+      paths: []
+        # Uncomment to listen for Prometheus traffic under a route prefix
+        # - /prometheus
 
+    # Disable monitoring the Prometheus instance
+    serviceMonitor:
+      selfMonitor: false
+
+    # Disable default service monitors
+    # additionalServiceMonitors: []
+
+  grafana:
+    # Provisions an instance of Grafana and wires it up with a DataSource
+    # referencing this Prometheus installation
+    enabled: true
+    ingress:
+      enabled: false
+      # Uncomment to listen for Grafana traffic under a route prefix
+      # path: /grafana
+    
+    # Credentials for accessing the provisioned Grafana
+    adminUser: admin
+    adminPassword: admin
+
+    # Disable monitoring Grafana
+    serviceMonitor:
+      selfMonitor: false
+
+    # Disable default dashboards
+    defaultDashboardsEnabled: false
+
+    # Additional plugins to be installed during Grafana startup
+    plugins:
+      # Used by the cassandra-overview dashboard
+      - grafana-polystat-panel
+
+    # Uncomment to listen for Grafana traffic under a route prefix
+    # grafana.ini:
+    #   server:
+    #     root_url: http://localhost:3000/grafana
+    #     serve_from_sub_path: true
