@@ -1,14 +1,15 @@
 {{- if .Values.stargate.enabled }}
+{{- $datacenterName := (index .Values.cassandra.datacenters 0).name -}}
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
-  name: {{ .Release.Name }}-prometheus-k8ssandra-stargate
+  name: {{ .Release.Name }}-prometheus-{{ $datacenterName }}-stargate
   labels:
 {{ include "k8ssandra.labels" . | indent 4 }}
 spec:
   selector:
     matchLabels:
-      app: {{ .Release.Name }}-k8ssandra-stargate
+      app: {{ .Release.Name }}-{{ $datacenterName }}-stargate
   endpoints:
   - port: metrics
     interval: 15s

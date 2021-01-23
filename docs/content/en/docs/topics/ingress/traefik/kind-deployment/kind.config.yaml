@@ -1,6 +1,9 @@
 kind: Cluster
 apiVersion: kind.x-k8s.io/v1alpha4
 nodes:
+- role: worker
+- role: worker
+- role: worker
 - role: control-plane
   kubeadmConfigPatches:
   - |
@@ -17,4 +20,16 @@ nodes:
     protocol: TCP
   - containerPort: 32090
     hostPort: 9000
+    protocol: TCP
+  - containerPort: 30081
+    hostPort: 8081
+    protocol: TCP
+  - containerPort: 30082
+    hostPort: 8082
+    protocol: TCP
+  - containerPort: 30084
+    hostPort: 8084
+    protocol: TCP
+  - containerPort: 30085
+    hostPort: 8085
     protocol: TCP

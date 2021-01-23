@@ -103,14 +103,46 @@ ingress:
     # Cassandra native transport ingress support
     cassandra:
       # Note this will **only** work if `ingress.traefik.enabled` is also `true`
+      # Note this is mutually exclusive with ingress.traefik.stargate.cassandra.enabled
       enabled: true
 
       # Name of the Traefik entrypoints for source traffic
       entrypoints:
         - cassandra
 
+    # Stargate ingress support
+    stargate:
+      # Note this will **only** work if `ingress.traefik.enabled` is also `true`
+      # Note when enabled, the authentication API (port 8081) is enabled automatically.
+      enabled: false
+
+      # Hostname Traefik should use for matching Stargate requests.
+      host: stargate.k8ssandra.cluster.local
+
+      # ingress for each Stargate API can be enabled/disabled independently
+      graphql:
+        # Note this will **only** work if `stargate.enabled`, `ingress.traefik.enabled`, and `ingress.traefik.stargate.enabled` are also `true`
+        enabled: true
+        playground:
+          enabled: false
+      rest:
+        # Note this will **only** work if `stargate.enabled`, `ingress.traefik.enabled`, and `ingress.traefik.stargate.enabled` are also `true`
+        enabled: true
+      cassandra:
+        # Note this will **only** work if `stargate.enabled`, `ingress.traefik.enabled`, and `ingress.traefik.stargate.enabled` are also `true`
+        # Note this is mutually exclusive with ingress.traefik.cassandra.enabled
+        enabled: false
+        entrypoints:
+          - cassandra
+      health:
+        # Note this will **only** work if `stargate.enabled`, `ingress.traefik.enabled`, and `ingress.traefik.stargate.enabled` are also `true`
+        enabled: false
+      metrics:
+        # Note this will **only** work if `stargate.enabled`, `ingress.traefik.enabled`, and `ingress.traefik.stargate.enabled` are also `true`
+        enabled: false
+
 monitoring:
-  grafana: 
+  grafana:
     provision_dashboards: true
 
   prometheus:
@@ -177,7 +209,7 @@ kube-prometheus-stack:
       # Uncomment to listen for Prometheus traffic under a route prefix
       # externalUrl: http://localhost:9090/prometheus
       # routePrefix: /prometheus
-    
+
     # Enable templating of ingress resources for external prometheus traffic
     ingress:
       enabled: false
@@ -200,7 +232,7 @@ kube-prometheus-stack:
       enabled: false
       # Uncomment to listen for Grafana traffic under a route prefix
       # path: /grafana
-    
+
     # Credentials for accessing the provisioned Grafana
     adminUser: admin
     adminPassword: admin
