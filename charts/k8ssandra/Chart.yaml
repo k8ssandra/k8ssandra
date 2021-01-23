@@ -30,6 +30,11 @@ dependencies:
     repository: file://../cass-operator
     condition: cass-operator.enabled
 
+  - name: reaper-operator
+    version: 0.26.0
+    repository: file://../reaper-operator
+    condition: reaper-operator.enabled
+
   - name: k8ssandra-common
     version: 0.27.0
     repository: file://../k8ssandra-common

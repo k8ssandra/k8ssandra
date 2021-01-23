@@ -117,6 +117,9 @@ cleaner:
 cass-operator:
   enabled: true
 
+reaper-operator:
+  enabled: true
+
 # Configuration values for the kube-prometheus-stack chart. Not all values are
 # provided here for an exhaustive list see:
 # https://github.com/prometheus-community/helm-charts/blob/main/charts/kube-prometheus-stack/values.yaml
