@@ -25,6 +25,15 @@ spec:
   managementApiAuth:
     insecure: {}
   size: {{ (index .Values.cassandra.datacenters 0).size }}
+  {{- if (index .Values.cassandra.datacenters 0).racks }}
+  racks:
+  {{- range (index .Values.cassandra.datacenters 0).racks  }}
+  - name: {{ .name }}
+    {{- if .affinityLabels }}
+    nodeAffinityLabels: {{ toYaml .affinityLabels | nindent 6 }}
+    {{- end}}
+  {{- end }}
+  {{- end }}
   storageConfig:
     cassandraDataVolumeClaimSpec:
       storageClassName: {{ .Values.cassandra.cassandraLibDirVolume.storageClass | default "standard" }}

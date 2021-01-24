@@ -1,0 +1,8 @@
+cassandra:
+  datacenters:
+    - name: dc1
+      size: 3
+      racks:
+      - name: r1
+      - name: r2
+      - name: r3

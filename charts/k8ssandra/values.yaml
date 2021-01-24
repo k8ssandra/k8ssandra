@@ -44,10 +44,9 @@ cassandra:
   datacenters:
   - name: dc1
     size: 1
-    # -- Optional dc-level heap setting, overrides cluster-level
-    #heap:
-      #size: 800M
-      #newGenSize: 400M
+    # racks:
+    # - name: default
+    #  affinityLabels: {}
 
 stargate:
   # configuration regarding the Stargate API
