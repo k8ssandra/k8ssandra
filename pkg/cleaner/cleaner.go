@@ -44,6 +44,7 @@ func (a *Agent) RemoveResources(releaseName string) error {
 	// Remove CassandraDatacenter (cass-operator should delete all the finalizers and associated resources)
 	if err := a.removeCassandraDatacenter(releaseName); err != nil {
 		log.Fatalf("Failed to remove Cassandra cluster(s): %v", err)
+		return err
 	}
 	return nil
 }
