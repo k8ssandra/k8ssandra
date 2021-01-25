@@ -115,5 +115,22 @@ var _ = Describe("Cleaning CassandraDatacenters", func() {
 			return result.Spec.ClusterName == notManagedName
 		}, 1*time.Second, interval).Should(BeTrue())
 
+		By("checking runs without removable CassandraDatacenters does not cause an error")
+		err = cleaner.RemoveResources(cleanerTestRelease)
+		Expect(err).To(BeNil())
+	})
+
+	Specify("even in empty namespaces", func() {
+		cleaner := &Agent{
+			Client:    k8sClient,
+			Namespace: CleanerTestNamespace + "notReal",
+		}
+
+		Consistently(func() error {
+			return cleaner.RemoveResources(cleanerTestRelease + "notReal")
+		}, 1*time.Second, interval).Should(Succeed())
+
+		result := &cassdcapi.CassandraDatacenterList{}
+		Expect(k8sClient.List(context.Background(), result, client.InNamespace(CleanerTestNamespace+"notReal"))).Should(Succeed())
 	})
 })
