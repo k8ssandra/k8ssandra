@@ -21,15 +21,3 @@ description: |
 1. _Optional_ DNS name for the TLS Cassandra service
 1. _Optional_ CA certificate
 1. _Optional_ TLS client certificate and key
-
-## Access Cassandra without TLS
-
-### TODO
-
-## Access Cassandra with TLS
-
-### TODO
-
-## Access Cassandra with mTLS
-
-### TODO

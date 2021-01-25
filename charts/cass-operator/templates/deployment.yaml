@@ -1,0 +1,99 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "k8ssandra-common.fullname" . }}
+  labels: {{ include "k8ssandra-common.labels" . | indent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "k8ssandra-common.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels: {{- include "k8ssandra-common.labels" . | indent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "k8ssandra-common.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          volumeMounts:
+            {{- if .Values.admissionWebhooks.enabled }}
+            - mountPath: /tmp/k8s-webhook-server/serving-certs
+              name: cass-operator-certs-volume
+              readOnly: false
+            {{- end }}
+            - mountPath: /tmp/
+              name: tmpconfig-volume
+              readOnly: false
+          livenessProbe:
+            exec:
+              command:
+                - pgrep
+                - ".*operator"
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            exec:
+              command:
+                - stat
+                - "/tmp/operator-sdk-ready"
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 5
+            failureThreshold: 1
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          env:
+            {{- if .Values.vmwarePSPEnabled }}
+            - name: ENABLE_VMWARE_PSP
+              value: "true"
+            {{- end }}
+            {{- if .Values.image.registryOverride }}
+            - name: DEFAULT_CONTAINER_REGISTRY_OVERRIDE
+              value: {{ .Values.image.registryOverride }}
+            - name: DEFAULT_CONTAINER_REGISTRY_OVERRIDE_PULL_SECRETS
+              value: cass-operator-registry-override-regcred
+            {{- end }}
+            {{- if .Values.clusterScoped }}
+            - name: WATCH_NAMESPACE
+              value: ""
+            {{- else }}
+            - name: WATCH_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            {{- end }}
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: OPERATOR_NAME
+              value: "cass-operator"
+            - name: SKIP_VALIDATING_WEBHOOK
+            {{- if .Values.admissionWebhooks.enabled }}
+              value: "FALSE"
+            {{- else }}
+              value: "TRUE"
+            {{- end }}
+      volumes:
+        - name: tmpconfig-volume
+          emptyDir:
+            medium: "Memory"
+        - name: cass-operator-certs-volume
+          secret:
+            secretName: cass-operator-webhook-config

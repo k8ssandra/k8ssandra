@@ -62,11 +62,11 @@ or set via the command line when installing via helm:
 
 ## Install K8ssandra
 
-From a packaging perspective, K8ssandra is composed of a number of helm charts. There's separate charts handling the installation of operators, custom resources as well as
+From a packaging perspective, K8ssandra is composed of a number of helm charts. It handles the installation of operators and custom resources as well as
 provisioning the cluster instances.
 
 ```console
-helm install k8ssandra-tools k8ssandra/k8ssandra
+helm install k8ssandra k8ssandra/k8ssandra
 ```
 
 In later steps, you can upgrade your k8ssandra via `helm upgrade` commands, for example to access services from outside Kubernetes via a Traefik Ingress controller.

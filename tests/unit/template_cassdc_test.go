@@ -1,6 +1,7 @@
 package unit_test
 
 import (
+	"encoding/json"
 	"fmt"
 	"path/filepath"
 
@@ -10,7 +11,28 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"k8s.io/apimachinery/pkg/api/resource"
+	"strconv"
 )
+
+type CassandraConfig struct {
+	Authenticator             string
+	Authorizer                string
+	RolesValidityMillis       int64 `json:"roles_validity_in_ms"`
+	RolesUpdateMillis         int64 `json:"roles_update_interval_in_ms"`
+	PermissionsValidityMillis int64 `json:"permissions_validity_in_ms"`
+	PermissionsUpdateMillis   int64 `json:"permissions_update_interval_in_ms"`
+	CredentialsValidityMillis int64 `json:"credentials_validity_in_ms"`
+	CredentialsUpdateMillis   int64 `json:"credentials_update_interval_in_ms"`
+}
+
+type JvmOptions struct {
+	AdditionalJvmOptions []string `json:"additional-jvm-opts"`
+}
+
+type Config struct {
+	CassandraConfig CassandraConfig `json:"cassandra-yaml"`
+	JvmOptions      JvmOptions      `json:"jvm-options"`
+}
 
 var (
 	reaperInstanceValue    = fmt.Sprintf("%s-reaper-k8ssandra", helmReleaseName)
@@ -34,7 +56,7 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 	renderTemplate := func(options *helm.Options) error {
 		renderedOutput, err := helm.RenderTemplateE(
 			GinkgoT(), options, helmChartPath, helmReleaseName,
-			[]string{"templates/cassdc.yaml"},
+			[]string{"templates/cassandra/cassdc.yaml"},
 		)
 
 		if err == nil {
@@ -82,7 +104,7 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
 				SetValues: map[string]string{
-					"k8ssandra.clusterName": clusterName,
+					"cassandra.clusterName": clusterName,
 				},
 			}
 
@@ -91,12 +113,12 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			Expect(cassdc.Spec.ClusterName).To(Equal(clusterName))
 		})
 
-		It("override datacenterName", func() {
+		It("override datacenter name", func() {
 			dcName := "test"
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
 				SetValues: map[string]string{
-					"k8ssandra.datacenterName": dcName,
+					"cassandra.datacenters[0].name": dcName,
 				},
 			}
 
@@ -105,12 +127,16 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			Expect(cassdc.Name).To(Equal(dcName))
 		})
 
-		It("override size", func() {
+		It("override datacenter size and name", func() {
+			dcName := "dc1"
 			size := "3"
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
 				SetValues: map[string]string{
-					"k8ssandra.size": size,
+					"cassandra.datacenters[0].size": size,
+					// Not sure why, but if we do not specify the name here we get a
+					// template rendering error in reaper.yaml.
+					"cassandra.datacenters[0].name": dcName,
 				},
 			}
 
@@ -119,12 +145,12 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			Expect(cassdc.Spec.Size, 3)
 		})
 
-		It("use cassandraVersion 3.11.7", func() {
+		It("using cassandra 3.11.7", func() {
 			cassandraVersion := "3.11.7"
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
 				SetValues: map[string]string{
-					"k8ssandra.cassandraVersion": cassandraVersion,
+					"cassandra.version": cassandraVersion,
 				},
 			}
 
@@ -134,12 +160,12 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			Expect(cassdc.Spec.ServerImage).To(Equal("datastax/cassandra-mgmtapi-3_11_7:v0.1.17"))
 		})
 
-		It("use cassandraVersion 3.11.8", func() {
+		It("using cassandra 3.11.8", func() {
 			cassandraVersion := "3.11.8"
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
 				SetValues: map[string]string{
-					"k8ssandra.cassandraVersion": cassandraVersion,
+					"cassandra.version": cassandraVersion,
 				},
 			}
 
@@ -149,12 +175,12 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			Expect(cassdc.Spec.ServerImage).To(Equal("datastax/cassandra-mgmtapi-3_11_8:v0.1.17"))
 		})
 
-		It("use cassandraVersion 3.11.9", func() {
+		It("using cassandra 3.11.9", func() {
 			cassandraVersion := "3.11.9"
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
 				SetValues: map[string]string{
-					"k8ssandra.cassandraVersion": cassandraVersion,
+					"cassandra.version": cassandraVersion,
 				},
 			}
 
@@ -164,18 +190,107 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			Expect(cassdc.Spec.ServerImage).To(Equal("datastax/cassandra-mgmtapi-3_11_9:v0.1.17"))
 		})
 
-		It("use cassandraVersion with unsupported value", func() {
+		It("using cassandra with unsupported version", func() {
 			cassandraVersion := "3.12.225"
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
 				SetValues: map[string]string{
-					"k8ssandra.cassandraVersion": cassandraVersion,
+					"cassandra.version": cassandraVersion,
 				},
 			}
 
 			err := renderTemplate(options)
 
 			Expect(err).To(HaveOccurred())
+		})
+
+		It("disabling Cassandra auth", func() {
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+				SetValues: map[string]string{
+					"cassandra.auth.enabled": "false",
+				},
+			}
+
+			Expect(renderTemplate(options)).To(Succeed())
+
+			var config Config
+			Expect(json.Unmarshal(cassdc.Spec.Config, &config)).To(Succeed())
+			Expect(config.CassandraConfig.Authenticator).To(Equal("AllowAllAuthenticator"))
+			Expect(config.CassandraConfig.Authorizer).To(Equal("AllowAllAuthorizer"))
+		})
+
+		It("enabling Cassandra auth", func() {
+			dcName := "test"
+			clusterSize := 3
+
+			authCachePeriod := int64(7200000)
+			cacheValidityPeriod := authCachePeriod + 1
+			cacheUpdateInterval := authCachePeriod + 2
+
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+				SetValues: map[string]string{
+					"cassandra.datacenters[0].name":            dcName,
+					"cassandra.datacenters[0].size":            strconv.Itoa(clusterSize),
+					"cassandra.auth.enabled":                   "true",
+					"cassandra.auth.cacheValidityPeriodMillis": strconv.FormatInt(cacheValidityPeriod, 10),
+					"cassandra.auth.cacheUpdateIntervalMillis": strconv.FormatInt(cacheUpdateInterval, 10),
+				},
+			}
+
+			Expect(renderTemplate(options)).To(Succeed())
+
+			Expect(cassdc.Name).To(Equal(dcName))
+
+			var config Config
+			Expect(json.Unmarshal(cassdc.Spec.Config, &config)).To(Succeed())
+			Expect(config.CassandraConfig.Authenticator).To(Equal("PasswordAuthenticator"))
+			Expect(config.CassandraConfig.Authorizer).To(Equal("CassandraAuthorizer"))
+			Expect(config.CassandraConfig.RolesValidityMillis).To(Equal(cacheValidityPeriod))
+			Expect(config.CassandraConfig.RolesUpdateMillis).To(Equal(cacheUpdateInterval))
+			Expect(config.CassandraConfig.PermissionsValidityMillis).To(Equal(cacheValidityPeriod))
+			Expect(config.CassandraConfig.PermissionsUpdateMillis).To(Equal(cacheUpdateInterval))
+			Expect(config.CassandraConfig.CredentialsValidityMillis).To(Equal(cacheValidityPeriod))
+			Expect(config.CassandraConfig.CredentialsUpdateMillis).To(Equal(cacheUpdateInterval))
+			Expect(config.JvmOptions.AdditionalJvmOptions).To(ConsistOf(
+				"-Dcassandra.system_distributed_replication_dc_names="+dcName,
+				"-Dcassandra.system_distributed_replication_per_dc="+strconv.Itoa(clusterSize),
+			))
+
+		})
+
+		It("providing superuser secret", func() {
+			clusterName := "superuser-test"
+			secretName := "test-secret"
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+				SetValues: map[string]string{
+					"cassandra.clusterName":           clusterName,
+					"cassandra.auth.enabled":          "true",
+					"cassandra.auth.superuser.secret": secretName,
+				},
+			}
+
+			Expect(renderTemplate(options)).To(Succeed())
+
+			Expect(cassdc.Spec.SuperuserSecretName).To(Equal(secretName))
+		})
+
+		It("providing superuser username", func() {
+			clusterName := "superuser-test"
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+				SetValues: map[string]string{
+					"cassandra.clusterName":             clusterName,
+					"cassandra.auth.enabled":            "true",
+					"cassandra.auth.superuser.username": "admin",
+				},
+			}
+
+			Expect(renderTemplate(options)).To(Succeed())
+
+			Expect(cassdc.Spec.SuperuserSecretName).To(Equal(clusterName + "-superuser"))
 		})
 
 		It("disabling reaper", func() {
@@ -253,11 +368,11 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 		It("setting allowMultipleNodesPerWorker to true", func() {
 			options := &helm.Options{
 				SetValues: map[string]string{
-					"k8ssandra.allowMultipleNodesPerWorker": "true",
-					"k8ssandra.resources.limits.memory":     "2Gi",
-					"k8ssandra.resources.limits.cpu":        "1",
-					"k8ssandra.resources.requests.memory":   "2Gi",
-					"k8ssandra.resources.requests.cpu":      "1"},
+					"cassandra.allowMultipleNodesPerWorker": "true",
+					"cassandra.resources.limits.memory":     "2Gi",
+					"cassandra.resources.limits.cpu":        "1",
+					"cassandra.resources.requests.memory":   "2Gi",
+					"cassandra.resources.requests.cpu":      "1"},
 				KubectlOptions: defaultKubeCtlOptions,
 			}
 
@@ -269,11 +384,11 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 		It("setting allowMultipleNodesPerWorker to false", func() {
 			options := &helm.Options{
 				SetValues: map[string]string{
-					"k8ssandra.allowMultipleNodesPerWorker": "false",
-					"k8ssandra.resources.limits.memory":     "2Gi",
-					"k8ssandra.resources.limits.cpu":        "1",
-					"k8ssandra.resources.requests.memory":   "2Gi",
-					"k8ssandra.resources.requests.cpu":      "1",
+					"cassandra.allowMultipleNodesPerWorker": "false",
+					"cassandra.resources.limits.memory":     "2Gi",
+					"cassandra.resources.limits.cpu":        "1",
+					"cassandra.resources.requests.memory":   "2Gi",
+					"cassandra.resources.requests.cpu":      "1",
 				},
 				KubectlOptions: defaultKubeCtlOptions,
 			}
@@ -290,7 +405,7 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 		It("setting allowMultipleNodesPerWorker to false without resources", func() {
 			options := &helm.Options{
 				SetValues: map[string]string{
-					"k8ssandra.allowMultipleNodesPerWorker": "false",
+					"cassandra.allowMultipleNodesPerWorker": "false",
 				},
 				KubectlOptions: defaultKubeCtlOptions,
 			}
@@ -303,7 +418,7 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 		It("setting allowMultipleNodesPerWorker to true without resources", func() {
 			options := &helm.Options{
 				SetValues: map[string]string{
-					"k8ssandra.allowMultipleNodesPerWorker": "true",
+					"cassandra.allowMultipleNodesPerWorker": "true",
 				},
 				KubectlOptions: defaultKubeCtlOptions,
 			}
