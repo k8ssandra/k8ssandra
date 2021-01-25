@@ -75,7 +75,7 @@ var _ = Describe("Cleaning CassandraDatacenters", func() {
 			Spec: cassdcapi.CassandraDatacenterSpec{
 				ClusterName:   managedName,
 				ServerType:    "cassandra",
-				ServerVersion: "3.11.7",
+				ServerVersion: "3.11.9",
 				Size:          3,
 			},
 		}
