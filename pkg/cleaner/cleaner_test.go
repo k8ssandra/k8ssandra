@@ -126,6 +126,7 @@ var _ = Describe("Cleaning CassandraDatacenters", func() {
 			Namespace: CleanerTestNamespace + "notReal",
 		}
 
+		By("running removeResources multiple times")
 		Consistently(func() error {
 			return cleaner.RemoveResources(cleanerTestRelease + "notReal")
 		}, 1*time.Second, interval).Should(Succeed())
