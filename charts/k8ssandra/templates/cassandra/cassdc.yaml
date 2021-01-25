@@ -118,7 +118,7 @@ spec:
           - mountPath: /config
             name: server-config
       - name: medusa-restore
-        image: k8ssandra/medusa:c5fefc4a3b4c
+        image: {{ .Values.backupRestore.medusa.image }}
         imagePullPolicy: IfNotPresent
         env:
           - name: MEDUSA_MODE
@@ -155,7 +155,7 @@ spec:
           - name: cassandra-config
             mountPath: /etc/cassandra
       - name: medusa
-        image: k8ssandra/medusa:c5fefc4a3b4c
+        image: {{ .Values.backupRestore.medusa.image }}
         imagePullPolicy: IfNotPresent
         ports:
           - containerPort: 50051

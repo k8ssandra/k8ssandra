@@ -64,6 +64,8 @@ backupRestore:
   medusa:
     # If enabled, bucketName and bucketSecret must be defined.
     enabled: false
+    # image The Medusa image which is built from https://github.com/thelastpickle/cassandra-medusa/tree/master/k8s.
+    image: k8ssandra/medusa:c5fefc4a3b4c
 
     # Set to true to use the same bucket across multiple clusters.
     multiTenant: false
