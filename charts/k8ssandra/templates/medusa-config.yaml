@@ -32,6 +32,8 @@ data:
 
     [grpc]
     enabled = 1
+
+    [kubernetes]
     cassandra_url = http://localhost:7373/jolokia/
 
     [logging]

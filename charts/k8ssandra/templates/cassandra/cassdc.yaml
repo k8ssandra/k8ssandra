@@ -118,8 +118,7 @@ spec:
           - mountPath: /config
             name: server-config
       - name: medusa-restore
-        # Images are currently built from https://github.com/thelastpickle/cassandra-medusa/tree/grpc/k8s
-        image: jsanda/medusa:35d609cd0711
+        image: k8ssandra/medusa:c5fefc4a3b4c
         imagePullPolicy: IfNotPresent
         env:
           - name: MEDUSA_MODE
@@ -156,8 +155,7 @@ spec:
           - name: cassandra-config
             mountPath: /etc/cassandra
       - name: medusa
-        # Images are currently built from https://github.com/thelastpickle/cassandra-medusa/tree/grpc/k8s
-        image: jsanda/medusa:35d609cd0711
+        image: k8ssandra/medusa:c5fefc4a3b4c
         imagePullPolicy: IfNotPresent
         ports:
           - containerPort: 50051
