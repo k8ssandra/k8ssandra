@@ -114,7 +114,7 @@ monitoring:
     provision_service_monitors: true
 
 cleaner:
-  image: burmanm/k8ssandra-client:latest
+  image: k8ssandra/k8ssandra-cleaner:618b8ff9d368
 
 cass-operator:
   enabled: true
