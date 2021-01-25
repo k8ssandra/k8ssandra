@@ -9,7 +9,7 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-var _ = Describe("Verify Prometheus template", func() {
+var _ = Describe("Verify Service Monitor template", func() {
 
 	var (
 		helmReleaseName       = "k8ssandra-test"
@@ -18,7 +18,7 @@ var _ = Describe("Verify Prometheus template", func() {
 
 		helmChartPath string
 		err           error
-		prom          map[string]interface{}
+		sm            map[string]interface{}
 	)
 
 	BeforeEach(func() {
@@ -30,45 +30,49 @@ var _ = Describe("Verify Prometheus template", func() {
 		err = nil
 	})
 
-	renderTemplate := func(options *helm.Options) {
+	renderTemplate := func(options *helm.Options) error {
 
-		renderedOutput := helm.RenderTemplate(
+		renderedOutput, err := helm.RenderTemplateE(
 			GinkgoT(), options, helmChartPath, helmReleaseName,
-			[]string{"templates/prometheus/prometheus.yaml"},
+			[]string{"templates/prometheus/service_monitor.yaml"},
 		)
-		helm.UnmarshalK8SYaml(GinkgoT(), renderedOutput, &prom)
+
+		if err == nil {
+			helm.UnmarshalK8SYaml(GinkgoT(), renderedOutput, &sm)
+		}
+
+		return err
 	}
 
 	Context("by rendering it with options", func() {
 
-		It("using defaults (empty values) for externalUrl and routePrefix", func() {
+		It("using provision_service_monitors false", func() {
 
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
+				SetValues:      map[string]string{"monitoring.prometheus.provision_service_monitors": "false"},
 			}
 
-			renderTemplate(options)
-			spec := prom["spec"]
+			err = renderTemplate(options)
 
-			Expect(spec.(map[string]interface{})["routePrefix"]).To(BeNil())
-			Expect(spec.(map[string]interface{})["externalUrl"]).To(BeNil())
-
+			Expect(err).ToNot(BeNil())
+			Expect(err.Error()).To(ContainSubstring("could not find template"))
 		})
 
-		It("using specific externaUrl and routePrefix", func() {
+		It("using provision_service_monitors true", func() {
 
-			testExternalUrl := "http://foobar.com:8675"
-			testRoutePrefix := "prommy"
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
-				SetStrValues: map[string]string{"monitoring.prometheus.externalUrl": testExternalUrl,
-					"monitoring.prometheus.routePrefix": testRoutePrefix},
+				SetValues:      map[string]string{"monitoring.prometheus.provision_service_monitors": "true"},
 			}
 
-			renderTemplate(options)
-			spec := prom["spec"]
-			Expect(spec.(map[string]interface{})["routePrefix"]).To(BeIdenticalTo(testRoutePrefix))
-			Expect(spec.(map[string]interface{})["externalUrl"]).To(BeIdenticalTo(testExternalUrl))
+			Expect(renderTemplate(options)).To(Succeed())
+
+			meta := sm["metadata"]
+			Expect(meta.(map[string]interface{})["labels"].(map[string]interface{})["release"]).To(BeIdenticalTo(helmReleaseName))
+
+			spec := sm["spec"]
+			Expect(spec).ToNot(BeEmpty())
 		})
 	})
 })

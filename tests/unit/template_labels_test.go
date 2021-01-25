@@ -26,7 +26,7 @@ var _ = Describe("Verify k8ssandra template labels", func() {
 	Context("by rendering it with options", func() {
 
 		It("using only default options", func() {
-
+			username := "testuser"
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
 				SetValues: map[string]string{
@@ -36,6 +36,7 @@ var _ = Describe("Verify k8ssandra template labels", func() {
 					"ingress.traefik.enabled":                       "true",
 					"ingress.traefik.monitoring.grafana.enabled":    "true",
 					"ingress.traefik.monitoring.prometheus.enabled": "true",
+					"cassandra.auth.superuser.username":             username,
 				},
 			}
 
@@ -48,8 +49,9 @@ var _ = Describe("Verify k8ssandra template labels", func() {
 				idx := strings.Index(template, "templates")
 
 				targetTemplate := template[idx:]
+				templatePath := filepath.Join(".", targetTemplate)
 				templateOutput, err := helm.RenderTemplateE(GinkgoT(), options,
-					k8ssandraChartPath, helmReleaseName, []string{targetTemplate})
+					k8ssandraChartPath, helmReleaseName, []string{templatePath})
 
 				Expect(err).To(BeNil())
 				Expect(templateOutput).ToNot(BeEmpty())
@@ -60,7 +62,6 @@ var _ = Describe("Verify k8ssandra template labels", func() {
 					Expect(k8ssandraTemplates["metadata"].(map[string]interface{})["labels"]).To(HaveKeyWithValue(k, v))
 				}
 			}
-
 		})
 	})
 })
