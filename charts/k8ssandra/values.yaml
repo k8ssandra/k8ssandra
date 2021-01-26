@@ -117,7 +117,7 @@ ingress:
       enabled: false
 
       # Hostname Traefik should use for matching Stargate requests.
-      host: stargate.k8ssandra.cluster.local
+      host: localhost
 
       # ingress for each Stargate API can be enabled/disabled independently
       graphql:
