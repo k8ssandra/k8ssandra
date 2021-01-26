@@ -2,7 +2,6 @@
 # traefik: {{ $traefik }}
 {{- if $traefik.enabled }}
 {{- $releaseName := .Release.Name -}}
-{{- $clusterName := .Values.cassandra.clusterName -}}
 {{- $datacenterName := (index .Values.cassandra.datacenters 0).name -}}
 
 {{- if $traefik.repair.enabled }}
