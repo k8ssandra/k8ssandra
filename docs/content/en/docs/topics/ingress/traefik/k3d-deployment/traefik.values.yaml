@@ -37,14 +37,6 @@ ports:
     expose: true
     port: 8082
     nodePort: 30082
-  sg-health:
-    expose: true
-    port: 8084
-    nodePort: 30084
-  sg-metrics:
-    expose: true
-    port: 8085
-    nodePort: 30085
 
 service:
   type: NodePort
