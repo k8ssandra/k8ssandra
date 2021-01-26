@@ -1,20 +1,21 @@
 {{- if .Values.stargate.enabled }}
+{{- $datacenterName := (index .Values.cassandra.datacenters 0).name -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Release.Name }}-k8ssandra-stargate
+  name: {{ .Release.Name }}-{{ $datacenterName }}-stargate
   labels:
-    app: {{ .Release.Name }}-k8ssandra-stargate
+    app: {{ .Release.Name }}-{{ $datacenterName }}-stargate
 {{ include "k8ssandra.labels" . | indent 4 }}
 spec:
   replicas: {{ default 1 .Values.stargate.replicas }}
   selector:
     matchLabels:
-      app: {{ .Release.Name }}-k8ssandra-stargate
+      app: {{ .Release.Name }}-{{ $datacenterName }}-stargate
   template:
     metadata:
       labels:
-        app: {{ .Release.Name }}-k8ssandra-stargate
+        app: {{ .Release.Name }}-{{ $datacenterName }}-stargate
     spec:
       initContainers:
           - name: wait-for-cassandra
@@ -31,7 +32,7 @@ spec:
                 done
                 echo "Cassandra is ready. Starting Stargate..."
       containers:
-        - name: {{ .Release.Name }}-k8ssandra-stargate
+        - name: {{ .Release.Name }}-{{ $datacenterName }}-stargate
   {{- if eq .Values.stargate.containerImage "auto" }}
     {{- if eq .Values.stargate.clusterVersion "3.11" }}
           image: "stargateio/stargate-3_11:v1.0.0"
@@ -46,14 +47,19 @@ spec:
           ports:
             - name: graphql
               containerPort: 8080
+              protocol: TCP
             - name: authorization
               containerPort: 8081
+              protocol: TCP
             - name: rest
               containerPort: 8082
-            - name: admin
+              protocol: TCP
+            - name: health
               containerPort: 8084
+              protocol: TCP
             - name: metrics
               containerPort: 8085
+              protocol: TCP
             - name: http-schemaless
               containerPort: 8090
               protocol: TCP
@@ -99,13 +105,13 @@ spec:
           livenessProbe:
             httpGet:
               path: /checker/liveness
-              port: admin
+              port: health
             timeoutSeconds: 3
             initialDelaySeconds: 60
           readinessProbe:
             httpGet:
               path: /checker/readiness
-              port: admin
+              port: health
             timeoutSeconds: 3
             initialDelaySeconds: 60
 {{- end }}
