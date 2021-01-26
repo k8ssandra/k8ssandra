@@ -92,24 +92,6 @@ spec:
               serviceName: {{ $releaseName }}-{{ $datacenterName }}-stargate-service
               servicePort: 8082
 {{- end }}
-{{- if $traefik.stargate.health.enabled }}
-    - host: {{ $stargateHost }}
-      http:
-        paths:
-          - path: /checker
-            backend:
-              serviceName: {{ $releaseName }}-{{ $datacenterName }}-stargate-service
-              servicePort: 8084
-{{- end }}
-{{- if $traefik.stargate.metrics.enabled }}
-    - host: {{ $stargateHost }}
-      http:
-        paths:
-          - path: /metrics
-            backend:
-              serviceName: {{ $releaseName }}-{{ $datacenterName }}-stargate-service
-              servicePort: 8085
-{{- end }}
 {{- if $traefik.stargate.cassandra.enabled }}
 ---
 apiVersion: traefik.containo.us/v1alpha1

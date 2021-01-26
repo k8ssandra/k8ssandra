@@ -134,12 +134,6 @@ ingress:
         enabled: false
         entrypoints:
           - cassandra
-      health:
-        # Note this will **only** work if `stargate.enabled`, `ingress.traefik.enabled`, and `ingress.traefik.stargate.enabled` are also `true`
-        enabled: false
-      metrics:
-        # Note this will **only** work if `stargate.enabled`, `ingress.traefik.enabled`, and `ingress.traefik.stargate.enabled` are also `true`
-        enabled: false
 
 monitoring:
   grafana:
