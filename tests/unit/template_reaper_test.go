@@ -29,7 +29,7 @@ var _ = Describe("Verify Reaper template", func() {
 	renderTemplate := func(options *helm.Options) {
 		renderedOutput := helm.RenderTemplate(
 			GinkgoT(), options, helmChartPath, helmReleaseName,
-			[]string{"templates/reaper.yaml"},
+			[]string{"templates/reaper/reaper.yaml"},
 		)
 
 		helm.UnmarshalK8SYaml(GinkgoT(), renderedOutput, reaper)

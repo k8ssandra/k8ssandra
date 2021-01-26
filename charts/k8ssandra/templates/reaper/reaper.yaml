@@ -15,6 +15,11 @@ spec:
     storageType: cassandra
     jmxUserSecretName: {{ .Release.Name }}-reaper-secret-k8ssandra
     cassandraBackend:
+    {{- if .Values.repair.reaper.cassandraUser.secret }}
+      cassandraUserSecretName: {{ .Values.repair.reaper.cassandraUser.secret }}
+    {{- else if or .Values.repair.reaper.cassandraUser.username .Values.cassandra.auth.enabled }}
+      cassandraUserSecretName: {{ .Values.cassandra.clusterName }}-reaper
+    {{- end }}
       cassandraDatacenter:
         name: {{ (index .Values.cassandra.datacenters 0).name }}
       replication:

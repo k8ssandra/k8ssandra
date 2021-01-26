@@ -53,6 +53,19 @@ repair:
   reaper:
     autoschedule: false
     enabled: true
+
+    # cassandraUser configures the Cassandra user used by Reaper when authentication is
+    # enabled. If neither cassandraUser.secret nor casandraUser.username are set, then a
+    # Cassandra user and a secret with the user's credentials will be created. The username
+    # will be reaper. The secret name will be of the form {cluserName}-reaper. The password
+    # will be a random 20 character password. If cassandraUser.secret is set, then the
+    # Cassandra user will be created from the contents of the secret. If
+    # cassandraUser.secret is not set and if cassandraUser.username is set, a secret will
+    # be generated using the specified username. The password will be generated as
+    # previously described.
+    cassandraUser:
+      secret: ""
+      username: ""
     jmx:
       username: ""
       password: ""

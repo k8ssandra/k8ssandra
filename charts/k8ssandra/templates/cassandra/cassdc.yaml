@@ -49,6 +49,11 @@ spec:
 {{- else if .Values.cassandra.auth.superuser.username }}
   superuserSecretName: {{ .Values.cassandra.clusterName }}-superuser
 {{- end }}
+{{- if .Values.cassandra.auth.enabled }}
+  users:
+    - secretName: {{ default (printf "%s-%s" .Values.cassandra.clusterName "reaper") .Values.repair.reaper.cassandraUser.secret }}
+      superuser: true
+{{- end }}
   config:    
     cassandra-yaml:
 {{- if .Values.cassandra.auth.enabled }}

@@ -223,6 +223,7 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 		It("enabling Cassandra auth", func() {
 			dcName := "test"
 			clusterSize := 3
+			clusterName := "auth-test"
 
 			authCachePeriod := int64(7200000)
 			cacheValidityPeriod := authCachePeriod + 1
@@ -231,6 +232,7 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
 				SetValues: map[string]string{
+					"cassandra.clusterName":                    clusterName,
 					"cassandra.datacenters[0].name":            dcName,
 					"cassandra.datacenters[0].size":            strconv.Itoa(clusterSize),
 					"cassandra.auth.enabled":                   "true",
@@ -258,6 +260,7 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 				"-Dcassandra.system_distributed_replication_per_dc="+strconv.Itoa(clusterSize),
 			))
 
+			Expect(cassdc.Spec.Users).To(ConsistOf(cassdcv1beta1.CassandraUser{Superuser: true, SecretName: clusterName + "-reaper"}))
 		})
 
 		It("providing superuser secret", func() {
