@@ -75,7 +75,7 @@ var _ = Describe("Cleaning CassandraDatacenters", func() {
 			Spec: cassdcapi.CassandraDatacenterSpec{
 				ClusterName:   managedName,
 				ServerType:    "cassandra",
-				ServerVersion: "3.11.7",
+				ServerVersion: "3.11.9",
 				Size:          3,
 			},
 		}
@@ -115,5 +115,23 @@ var _ = Describe("Cleaning CassandraDatacenters", func() {
 			return result.Spec.ClusterName == notManagedName
 		}, 1*time.Second, interval).Should(BeTrue())
 
+		By("checking runs without removable CassandraDatacenters does not cause an error")
+		err = cleaner.RemoveResources(cleanerTestRelease)
+		Expect(err).To(BeNil())
+	})
+
+	Specify("even in empty namespaces", func() {
+		cleaner := &Agent{
+			Client:    k8sClient,
+			Namespace: CleanerTestNamespace + "notReal",
+		}
+
+		By("running removeResources multiple times")
+		Consistently(func() error {
+			return cleaner.RemoveResources(cleanerTestRelease + "notReal")
+		}, 1*time.Second, interval).Should(Succeed())
+
+		result := &cassdcapi.CassandraDatacenterList{}
+		Expect(k8sClient.List(context.Background(), result, client.InNamespace(CleanerTestNamespace+"notReal"))).Should(Succeed())
 	})
 })

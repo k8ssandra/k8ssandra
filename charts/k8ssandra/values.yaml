@@ -1,9 +1,6 @@
 cassandra:
   version: "3.11.9"
   clusterName: k8ssandra
-  datacenterName: dc1
-  rackName: default # this is the only supported value for now
-  size: 1
   # auth is authentication and authorization related settings.
   auth:
     # enabled enables or disables authentication and authorization
@@ -59,13 +56,13 @@ repair:
     jmx:
       username: ""
       password: ""
-    operator:
-      enabled: true
 
 backupRestore:
   medusa:
     # If enabled, bucketName and bucketSecret must be defined.
     enabled: false
+    # image The Medusa image which is built from https://github.com/thelastpickle/cassandra-medusa/tree/master/k8s.
+    image: k8ssandra/medusa:c5fefc4a3b4c
 
     # Set to true to use the same bucket across multiple clusters.
     multiTenant: false
@@ -143,9 +140,12 @@ monitoring:
     provision_service_monitors: true
 
 cleaner:
-  image: burmanm/k8ssandra-client:latest
+  image: k8ssandra/k8ssandra-cleaner:618b8ff9d368
 
 cass-operator:
+  enabled: true
+
+reaper-operator:
   enabled: true
 
 # Configuration values for the kube-prometheus-stack chart. Not all values are
