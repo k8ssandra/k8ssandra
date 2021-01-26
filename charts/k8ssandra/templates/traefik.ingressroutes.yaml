@@ -1,5 +1,4 @@
 {{- $traefik := .Values.ingress.traefik -}}
-# traefik: {{ $traefik }}
 {{- if $traefik.enabled }}
 {{- $releaseName := .Release.Name -}}
 {{- $datacenterName := (index .Values.cassandra.datacenters 0).name -}}
