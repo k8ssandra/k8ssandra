@@ -42,7 +42,7 @@ spec:
   routes:
     - match: HostSNI(`*`)
       services:
-        - name: {{ $clusterName }}-{{ $datacenterName }}-service
+        - name: {{ $releaseName }}-{{ $datacenterName }}-service
           port: 9042
 {{- end }}
 {{- if $traefik.stargate.enabled }}
@@ -64,7 +64,7 @@ spec:
         paths:
           - path: /v1/auth
             backend:
-              serviceName: {{ $clusterName }}-{{ $datacenterName }}-stargate-service
+              serviceName: {{ $releaseName }}-{{ $datacenterName }}-stargate-service
               servicePort: 8081
 {{- if $traefik.stargate.graphql.enabled }}
     - host: {{ $stargateHost }}
@@ -72,16 +72,16 @@ spec:
         paths:
           - path: /graphql-schema
             backend:
-              serviceName: {{ $clusterName }}-{{ $datacenterName }}-stargate-service
+              serviceName: {{ $releaseName }}-{{ $datacenterName }}-stargate-service
               servicePort: 8080
           - path: /graphql/
             backend:
-              serviceName: {{ $clusterName }}-{{ $datacenterName }}-stargate-service
+              serviceName: {{ $releaseName }}-{{ $datacenterName }}-stargate-service
               servicePort: 8080
   {{- if $traefik.stargate.graphql.playground.enabled }}
           - path: /playground
             backend:
-              serviceName: {{ $clusterName }}-{{ $datacenterName }}-stargate-service
+              serviceName: {{ $releaseName }}-{{ $datacenterName }}-stargate-service
               servicePort: 8080
   {{- end }}
 {{- end }}
@@ -91,7 +91,7 @@ spec:
         paths:
           - path: /v2/
             backend:
-              serviceName: {{ $clusterName }}-{{ $datacenterName }}-stargate-service
+              serviceName: {{ $releaseName }}-{{ $datacenterName }}-stargate-service
               servicePort: 8082
 {{- end }}
 {{- if $traefik.stargate.health.enabled }}
@@ -100,7 +100,7 @@ spec:
         paths:
           - path: /checker
             backend:
-              serviceName: {{ $clusterName }}-{{ $datacenterName }}-stargate-service
+              serviceName: {{ $releaseName }}-{{ $datacenterName }}-stargate-service
               servicePort: 8084
 {{- end }}
 {{- if $traefik.stargate.metrics.enabled }}
@@ -109,7 +109,7 @@ spec:
         paths:
           - path: /metrics
             backend:
-              serviceName: {{ $clusterName }}-{{ $datacenterName }}-stargate-service
+              serviceName: {{ $releaseName }}-{{ $datacenterName }}-stargate-service
               servicePort: 8085
 {{- end }}
 {{- if $traefik.stargate.cassandra.enabled }}
@@ -128,7 +128,7 @@ spec:
   routes:
     - match: Host(`{{ $stargateHost }}`)
       services:
-        - name: {{ $clusterName }}-{{ $datacenterName }}-stargate-service
+        - name: {{ $releaseName }}-{{ $datacenterName }}-stargate-service
           kind: Service
           port: 9042
 {{- end }}
