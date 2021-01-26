@@ -48,7 +48,7 @@ spec:
 {{- if and $traefik.stargate.cassandra.enabled $traefik.cassandra.enabled }}
   {{- fail "ingress.traefik.stargate.cassandra.enabled and ingress.traefik.cassandra.enabled cannot both be enabled." }}
 {{- end }}
-{{- $stargateHost := default "localhost" $traefik.stargate.host }}
+{{- $stargateHost := required $traefik.stargate.host }}
 apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
