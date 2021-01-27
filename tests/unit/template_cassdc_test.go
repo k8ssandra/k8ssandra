@@ -486,5 +486,95 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			Expect(config.JvmOptions.MaxHeapSize).To(Equal("300M"))
 			Expect(config.JvmOptions.YoungGenSize).To(Equal("150M"))
 		})
+
+		It("setting JVM heap settings at dc-level without newGenSize", func() {
+
+			dcName := "dc1"
+			options := &helm.Options{
+				SetValues: map[string]string{
+					"cassandra.datacenters[0].heap.size": "300M",
+					"cassandra.datacenters[0].name":      dcName,
+					// Note: not setting - "cassandra.datacenters[0].heap.newGenSize": "150M",
+				},
+				KubectlOptions: defaultKubeCtlOptions,
+			}
+
+			Expect(renderTemplate(options)).To(Succeed())
+
+			var config Config
+			Expect(json.Unmarshal(cassdc.Spec.Config, &config)).To(Succeed())
+			Expect(config.JvmOptions).ToNot(BeNil())
+			Expect(config.JvmOptions.InitialHeapSize).To(Equal("300M"))
+			Expect(config.JvmOptions.MaxHeapSize).To(Equal("300M"))
+			Expect(config.JvmOptions.YoungGenSize).To(Equal(""))
+		})
+
+		It("setting JVM heap settings at dc-level without size", func() {
+
+			dcName := "dc1"
+			options := &helm.Options{
+				SetValues: map[string]string{
+					// Note: not setting "cassandra.datacenters[0].heap.size":       "300M",
+					"cassandra.datacenters[0].name":            dcName,
+					"cassandra.datacenters[0].heap.newGenSize": "150M",
+				},
+				KubectlOptions: defaultKubeCtlOptions,
+			}
+
+			Expect(renderTemplate(options)).To(Succeed())
+
+			var config Config
+			Expect(json.Unmarshal(cassdc.Spec.Config, &config)).To(Succeed())
+			Expect(config.JvmOptions).ToNot(BeNil())
+			Expect(config.JvmOptions.InitialHeapSize).To(Equal(""))
+			Expect(config.JvmOptions.MaxHeapSize).To(Equal(""))
+			Expect(config.JvmOptions.YoungGenSize).To(Equal("150M"))
+		})
+
+		It("setting JVM heap settings at cluster-level without newGenSize", func() {
+
+			dcName := "dc1"
+			options := &helm.Options{
+				SetValues: map[string]string{
+					"cassandra.heap.size":           "300M",
+					"cassandra.datacenters[0].name": dcName,
+					// Note: not setting - "cassandra.heap.newGenSize": "150M",
+				},
+				KubectlOptions: defaultKubeCtlOptions,
+			}
+
+			Expect(renderTemplate(options)).To(Succeed())
+
+			var config Config
+			Expect(json.Unmarshal(cassdc.Spec.Config, &config)).To(Succeed())
+
+			Expect(config.JvmOptions).ToNot(BeNil())
+			Expect(config.JvmOptions.InitialHeapSize).To(Equal("300M"))
+			Expect(config.JvmOptions.MaxHeapSize).To(Equal("300M"))
+			Expect(config.JvmOptions.YoungGenSize).To(Equal(""))
+		})
+
+		It("setting JVM heap settings at cluster-level without size", func() {
+
+			dcName := "dc1"
+			options := &helm.Options{
+				SetValues: map[string]string{
+					// Note: not setting - "cassandra.heap.size": "300M",
+					"cassandra.heap.newGenSize":     "150M",
+					"cassandra.datacenters[0].name": dcName,
+				},
+				KubectlOptions: defaultKubeCtlOptions,
+			}
+
+			Expect(renderTemplate(options)).To(Succeed())
+
+			var config Config
+			Expect(json.Unmarshal(cassdc.Spec.Config, &config)).To(Succeed())
+
+			Expect(config.JvmOptions).ToNot(BeNil())
+			Expect(config.JvmOptions.InitialHeapSize).To(Equal(""))
+			Expect(config.JvmOptions.MaxHeapSize).To(Equal(""))
+			Expect(config.JvmOptions.YoungGenSize).To(Equal("150M"))
+		})
 	})
 })

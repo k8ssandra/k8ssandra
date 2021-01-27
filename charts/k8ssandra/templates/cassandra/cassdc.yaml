@@ -67,13 +67,21 @@ spec:
       credentials_update_interval_in_ms: {{ .Values.cassandra.auth.cacheUpdateIntervalMillis }}
     jvm-options:
 {{- if (index .Values.cassandra.datacenters 0).heap }}
-      initial_heap_size: {{  (index .Values.cassandra.datacenters 0).heap.size }}
-      max_heap_size: {{  (index .Values.cassandra.datacenters 0).heap.size }}
-      heap_size_young_generation: {{  (index .Values.cassandra.datacenters 0).heap.newGenSize }}
-{{- else if .Values.cassandra.heap }}
-      initial_heap_size: {{  .Values.cassandra.heap.size }}
+  {{- if (index .Values.cassandra.datacenters 0).heap.size }}
+      initial_heap_size: {{ (index .Values.cassandra.datacenters 0).heap.size }}
+      max_heap_size: {{ (index .Values.cassandra.datacenters 0).heap.size}}
+  {{- end }}
+  {{- if (index .Values.cassandra.datacenters 0).heap.newGenSize }}
+      heap_size_young_generation: {{ (index .Values.cassandra.datacenters 0).heap.newGenSize }}
+  {{- end }}
+  {{- else if .Values.cassandra.heap }}
+  {{- if .Values.cassandra.heap.size  }}
+      initial_heap_size: {{ .Values.cassandra.heap.size }}
       max_heap_size: {{ .Values.cassandra.heap.size }}
-      heap_size_young_generation: {{  .Values.cassandra.heap.newGenSize}}
+  {{- end }}
+  {{- if  .Values.cassandra.heap.newGenSize }}
+      heap_size_young_generation: {{ .Values.cassandra.heap.newGenSize }}
+  {{- end }}
 {{- end}}
       additional-jvm-opts:
 {{- if .Values.cassandra.auth.enabled }}
