@@ -35,6 +35,7 @@ data:
 
     [kubernetes]
     cassandra_url = http://localhost:7373/jolokia/
+    enabled = 1
 
     [logging]
     level = DEBUG
