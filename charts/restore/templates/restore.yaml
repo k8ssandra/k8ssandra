@@ -5,6 +5,7 @@ metadata:
 spec:
   backup: {{ .Values.backup.name }}
   inPlace: {{ .Values.inPlace }}
+  shutdown: {{ .Values.shutdown }}
   cassandraDatacenter:
     name: {{ .Values.cassandraDatacenter.name }}
     # The CRD currently requires clusterName but the operator uses reuses the cluster name

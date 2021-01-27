@@ -27,7 +27,7 @@ spec:
             fieldRef:
               fieldPath: metadata.namespace
         #
-        image: docker.io/k8ssandra/medusa-operator:1aa019ee841e
+        image: docker.io/k8ssandra/medusa-operator:0296cd5088aa
         imagePullPolicy: IfNotPresent
         name: manager
         resources:
