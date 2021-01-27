@@ -34,11 +34,20 @@ cassandra:
   # If enabled, resources.limits and resources.requests must be defined
   allowMultipleNodesPerWorker: false
 
+  # -- Optional cluster-level heap setting
+  #heap:
+  #  size: 800M
+  #  newGenSize: 400M
+
   resources: {}
 
   datacenters:
   - name: dc1
     size: 1
+    # -- Optional dc-level heap setting, overrides cluster-level
+    #heap:
+      #size: 800M
+      #newGenSize: 400M
 
 stargate:
   # configuration regarding the Stargate API

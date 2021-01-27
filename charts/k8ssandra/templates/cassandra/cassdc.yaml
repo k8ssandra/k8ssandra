@@ -43,7 +43,7 @@ spec:
 {{- else if .Values.cassandra.resources }}
   resources:
 {{ toYaml .Values.cassandra.resources | indent 6 }}
-{{- end}}
+{{- end }}
 {{- if .Values.cassandra.auth.superuser.secret }}
   superuserSecretName: {{ .Values.cassandra.auth.superuser.secret }}
 {{- else if .Values.cassandra.auth.superuser.username }}
@@ -71,9 +71,23 @@ spec:
       credentials_validity_in_ms: {{ .Values.cassandra.auth.cacheValidityPeriodMillis }}
       credentials_update_interval_in_ms: {{ .Values.cassandra.auth.cacheUpdateIntervalMillis }}
     jvm-options:
-      initial_heap_size: "800M"
-      max_heap_size: "800M"
-
+{{- if (index .Values.cassandra.datacenters 0).heap }}
+  {{- if (index .Values.cassandra.datacenters 0).heap.size }}
+      initial_heap_size: {{ (index .Values.cassandra.datacenters 0).heap.size }}
+      max_heap_size: {{ (index .Values.cassandra.datacenters 0).heap.size}}
+  {{- end }}
+  {{- if (index .Values.cassandra.datacenters 0).heap.newGenSize }}
+      heap_size_young_generation: {{ (index .Values.cassandra.datacenters 0).heap.newGenSize }}
+  {{- end }}
+  {{- else if .Values.cassandra.heap }}
+  {{- if .Values.cassandra.heap.size  }}
+      initial_heap_size: {{ .Values.cassandra.heap.size }}
+      max_heap_size: {{ .Values.cassandra.heap.size }}
+  {{- end }}
+  {{- if  .Values.cassandra.heap.newGenSize }}
+      heap_size_young_generation: {{ .Values.cassandra.heap.newGenSize }}
+  {{- end }}
+{{- end}}
       additional-jvm-opts:
 {{- if .Values.cassandra.auth.enabled }}
         - "-Dcassandra.system_distributed_replication_dc_names={{ (index .Values.cassandra.datacenters 0).name }}"
