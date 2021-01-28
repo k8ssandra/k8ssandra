@@ -62,6 +62,10 @@ spec:
   users:
     - secretName: {{ default (printf "%s-%s" .Values.cassandra.clusterName "reaper") .Values.repair.reaper.cassandraUser.secret }}
       superuser: true
+  {{- if .Values.backupRestore.medusa.enabled }}
+    - secretName: {{ default (printf "%s-%s" .Values.cassandra.clusterName "medusa") .Values.backupRestore.medusa.cassandraUser.secret }}
+      superuser: true
+  {{- end}}
 {{- end }}
   config:    
     cassandra-yaml:
@@ -151,6 +155,31 @@ spec:
         env:
           - name: MEDUSA_MODE
             value: RESTORE
+        {{- if .Values.cassandra.auth.enabled }}
+        {{- if .Values.backupRestore.medusa.cassandraUser.secret }}
+          - name: CQL_USERNAME
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.backupRestore.medusa.cassandraUser.secret }}
+                key: username
+          - name: CQL_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.backupRestore.medusa.cassandraUser.secret }}
+                key: password
+        {{- else }}
+          - name: CQL_USERNAME
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.cassandra.clusterName }}-medusa
+                key: username
+          - name: CQL_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.cassandra.clusterName }}-medusa
+                key: password
+        {{- end}}
+        {{- end}}
         volumeMounts:
           - name: {{ .Release.Name }}-medusa-config-k8ssandra
             mountPath: /etc/medusa/medusa.ini
@@ -190,6 +219,31 @@ spec:
         env:
           - name: MEDUSA_MODE
             value: GRPC
+        {{- if .Values.cassandra.auth.enabled }}
+        {{- if .Values.backupRestore.medusa.cassandraUser.secret }}
+          - name: CQL_USERNAME
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.backupRestore.medusa.cassandraUser.secret }}
+                key: username
+          - name: CQL_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.backupRestore.medusa.cassandraUser.secret }}
+                key: password
+        {{- else }}
+          - name: CQL_USERNAME
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.cassandra.clusterName }}-medusa
+                key: username
+          - name: CQL_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.cassandra.clusterName }}-medusa
+                key: password
+        {{- end}}
+        {{- end}}
         readinessProbe:
           exec:
             command: [ "/bin/grpc_health_probe", "-addr=:50051" ]

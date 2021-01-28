@@ -13,8 +13,10 @@ data:
     # The start and stop commands are not applicable in k8s.
     stop_cmd = /etc/init.d/cassandra stop
     start_cmd = /etc/init.d/cassandra start
+  {{- if not .Values.cassandra.auth.enabled }}
     cql_username = cassandra
     cql_password = cassandra
+  {{- end}}
     check_running = nodetool version
 
     [storage]
