@@ -10,6 +10,7 @@ import (
 	"github.com/gruntwork-io/terratest/modules/k8s"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/resource"
 	"strconv"
 )
@@ -43,11 +44,32 @@ var (
 	defaultKubeCtlOptions  = k8s.NewKubectlOptions("", "", defaultTestNamespace)
 )
 
+const (
+	ConfigInitContainer         = "server-config-init"
+	MedusaInitContainer         = "medusa-restore"
+	JmxCredentialsInitContainer = "jmx-credentials"
+	GetJolokiaInitContainer     = "get-jolokia"
+
+	CassandraContainer = "cassandra"
+	MedusaContainer    = "medusa"
+)
+
 var _ = Describe("Verify CassandraDatacenter template", func() {
 	var (
 		helmChartPath string
 		cassdc        *cassdcv1beta1.CassandraDatacenter
 	)
+
+	//assertInitContainerNamesMatch := func(cassdc *cassdcv1beta1.CassandraDatacenter, names ...string) {
+	//	initContainers := cassdc.Spec.PodTemplateSpec.Spec.InitContainers
+	//	actualNames := make([]string, 0)
+	//
+	//	for _, container := range initContainers {
+	//		actualNames = append(actualNames, container.Name)
+	//	}
+	//
+	//	ExpectWithOffset(1, actualNames).To(Equal(names))
+	//}
 
 	BeforeEach(func() {
 		path, err := filepath.Abs(chartsPath)
@@ -83,10 +105,10 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 
 			initContainers := cassdc.Spec.PodTemplateSpec.Spec.InitContainers
 			Expect(len(initContainers)).To(Equal(2))
-			Expect(initContainers[0].Name).To(Equal("server-config-init"))
+			Expect(initContainers[0].Name).To(Equal(ConfigInitContainer))
 
 			// Verify initContainers includes JMX credentials
-			Expect(initContainers[1].Name).To(Equal("jmx-credentials"))
+			Expect(initContainers[1].Name).To(Equal(JmxCredentialsInitContainer))
 			// Verify LOCAL_JMX value
 			Expect(len(cassdc.Spec.PodTemplateSpec.Spec.Containers)).To(Equal(1))
 			Expect(len(cassdc.Spec.PodTemplateSpec.Spec.Containers[0].Env)).To(Equal(1))
@@ -377,25 +399,181 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 
 			Expect(renderTemplate(options)).To(Succeed())
 
-			// InitContainers should only server-config-init and medusa-restore
-			initContainers := cassdc.Spec.PodTemplateSpec.Spec.InitContainers
-			Expect(len(initContainers)).To(Equal(3))
-			Expect(initContainers[0].Name).To(Equal("server-config-init"))
-			// Verify initContainers includes jolokia which medusa needs
-			Expect(cassdc.Spec.PodTemplateSpec.Spec.InitContainers[1].Name).To(Equal("get-jolokia"))
-			// Verify initContainers includes medusa-restore
-			Expect(cassdc.Spec.PodTemplateSpec.Spec.InitContainers[2].Name).To(Equal("medusa-restore"))
+			assertInitContainerNamesMatch(cassdc, ConfigInitContainer, GetJolokiaInitContainer, MedusaInitContainer)
+
 			// Two containers, medusa and cassandra
 			Expect(len(cassdc.Spec.PodTemplateSpec.Spec.Containers)).To(Equal(2))
 			// Cassandra container should have JVM_EXTRA_OPTS for jolokia
 			Expect(len(cassdc.Spec.PodTemplateSpec.Spec.Containers[0].Env)).To(Equal(1))
 			Expect(cassdc.Spec.PodTemplateSpec.Spec.Containers[0].Env[0].Name).To(Equal("JVM_EXTRA_OPTS"))
 			// Second container should be medusa
-			Expect(cassdc.Spec.PodTemplateSpec.Spec.Containers[1].Name).To(Equal("medusa"))
+			Expect(cassdc.Spec.PodTemplateSpec.Spec.Containers[1].Name).To(Equal(MedusaContainer))
 
 			// Verify volumeMounts and volumes
 			Expect(len(cassdc.Spec.PodTemplateSpec.Spec.Containers[1].VolumeMounts)).To(Equal(4))
 			Expect(cassdc.Spec.PodTemplateSpec.Spec.Containers[1].VolumeMounts[0].Name).To(Equal(medusaConfigVolumeName))
+
+			Expect(len(cassdc.Spec.PodTemplateSpec.Spec.Volumes)).To(Equal(3))
+			Expect(cassdc.Spec.PodTemplateSpec.Spec.Volumes[0].Name).To(Equal(medusaConfigVolumeName))
+		})
+
+		It("enabling auth and medusa with default secret", func() {
+			clusterName := "medusa-user-test"
+			options := &helm.Options{
+				SetValues: map[string]string{
+					"cassandra.clusterName":        clusterName,
+					"cassandra.auth.enabled":       "true",
+					"backupRestore.medusa.enabled": "true",
+					"repair.reaper.enabled":        "false",
+				},
+			}
+
+			Expect(renderTemplate(options)).To(Succeed())
+
+			Expect(cassdc.Spec.Users).To(ContainElement(cassdcv1beta1.CassandraUser{Superuser: true, SecretName: clusterName + "-medusa"}))
+
+			assertInitContainerNamesMatch(cassdc, ConfigInitContainer, GetJolokiaInitContainer, MedusaInitContainer)
+
+			initContainer := getInitContainer(cassdc, "medusa-restore")
+			Expect(initContainer).To(Not(BeNil()))
+
+			cqlUsernameEnvVar := corev1.EnvVar{
+				Name: "CQL_USERNAME",
+				ValueFrom: &corev1.EnvVarSource{
+					SecretKeyRef: &corev1.SecretKeySelector{
+						LocalObjectReference: corev1.LocalObjectReference{
+							Name: clusterName + "-medusa",
+						},
+						Key: "username",
+					},
+				},
+			}
+			cqlPasswordEnvVar := corev1.EnvVar{
+				Name: "CQL_PASSWORD",
+				ValueFrom: &corev1.EnvVarSource{
+					SecretKeyRef: &corev1.SecretKeySelector{
+						LocalObjectReference: corev1.LocalObjectReference{
+							Name: clusterName + "-medusa",
+						},
+						Key: "password",
+					},
+				},
+			}
+
+			Expect(initContainer.Env).To(ConsistOf([]corev1.EnvVar{
+				{
+					Name:  "MEDUSA_MODE",
+					Value: "RESTORE",
+				},
+				cqlUsernameEnvVar,
+				cqlPasswordEnvVar,
+			}))
+
+			assertContainerNamesMatch(cassdc, CassandraContainer, MedusaContainer)
+
+			cassandraContainer := getContainer(cassdc, CassandraContainer)
+			Expect(cassandraContainer).To(Not(BeNil()))
+			// Cassandra container should have JVM_EXTRA_OPTS for jolokia
+			Expect(len(cassandraContainer.Env)).To(Equal(1))
+			Expect(cassandraContainer.Env[0].Name).To(Equal("JVM_EXTRA_OPTS"))
+
+			medusaContainer := getContainer(cassdc, MedusaContainer)
+			Expect(medusaContainer).To(Not(BeNil()))
+
+			Expect(medusaContainer.Env).To(ConsistOf([]corev1.EnvVar{
+				{
+					Name:  "MEDUSA_MODE",
+					Value: "GRPC",
+				},
+				cqlUsernameEnvVar,
+				cqlPasswordEnvVar,
+			}))
+
+			// Verify volumeMounts and volumes
+			Expect(len(medusaContainer.VolumeMounts)).To(Equal(4))
+			Expect(medusaContainer.VolumeMounts[0].Name).To(Equal(medusaConfigVolumeName))
+
+			Expect(len(cassdc.Spec.PodTemplateSpec.Spec.Volumes)).To(Equal(3))
+			Expect(cassdc.Spec.PodTemplateSpec.Spec.Volumes[0].Name).To(Equal(medusaConfigVolumeName))
+		})
+
+		It("enabling auth and medusa with user-defined secret", func() {
+			clusterName := "medusa-user-test"
+			secretName := "medusa-user"
+			options := &helm.Options{
+				SetValues: map[string]string{
+					"cassandra.clusterName":                     clusterName,
+					"cassandra.auth.enabled":                    "true",
+					"backupRestore.medusa.enabled":              "true",
+					"backupRestore.medusa.cassandraUser.secret": secretName,
+					"repair.reaper.enabled":                     "false",
+				},
+			}
+
+			Expect(renderTemplate(options)).To(Succeed())
+
+			Expect(cassdc.Spec.Users).To(ContainElement(cassdcv1beta1.CassandraUser{Superuser: true, SecretName: secretName}))
+
+			assertInitContainerNamesMatch(cassdc, ConfigInitContainer, GetJolokiaInitContainer, MedusaInitContainer)
+
+			initContainer := getInitContainer(cassdc, MedusaInitContainer)
+			Expect(initContainer).To(Not(BeNil()))
+
+			cqlUsernameEnvVar := corev1.EnvVar{
+				Name: "CQL_USERNAME",
+				ValueFrom: &corev1.EnvVarSource{
+					SecretKeyRef: &corev1.SecretKeySelector{
+						LocalObjectReference: corev1.LocalObjectReference{
+							Name: secretName,
+						},
+						Key: "username",
+					},
+				},
+			}
+			cqlPasswordEnvVar := corev1.EnvVar{
+				Name: "CQL_PASSWORD",
+				ValueFrom: &corev1.EnvVarSource{
+					SecretKeyRef: &corev1.SecretKeySelector{
+						LocalObjectReference: corev1.LocalObjectReference{
+							Name: secretName,
+						},
+						Key: "password",
+					},
+				},
+			}
+
+			Expect(initContainer.Env).To(ConsistOf([]corev1.EnvVar{
+				{
+					Name:  "MEDUSA_MODE",
+					Value: "RESTORE",
+				},
+				cqlUsernameEnvVar,
+				cqlPasswordEnvVar,
+			}))
+
+			assertContainerNamesMatch(cassdc, CassandraContainer, MedusaContainer)
+
+			cassandraContainer := getContainer(cassdc, CassandraContainer)
+			Expect(cassandraContainer).To(Not(BeNil()))
+			// Cassandra container should have JVM_EXTRA_OPTS for jolokia
+			Expect(len(cassandraContainer.Env)).To(Equal(1))
+			Expect(cassandraContainer.Env[0].Name).To(Equal("JVM_EXTRA_OPTS"))
+
+			medusaContainer := getContainer(cassdc, MedusaContainer)
+			Expect(medusaContainer).To(Not(BeNil()))
+
+			Expect(medusaContainer.Env).To(ConsistOf([]corev1.EnvVar{
+				{
+					Name:  "MEDUSA_MODE",
+					Value: "GRPC",
+				},
+				cqlUsernameEnvVar,
+				cqlPasswordEnvVar,
+			}))
+
+			// Verify volumeMounts and volumes
+			Expect(len(medusaContainer.VolumeMounts)).To(Equal(4))
+			Expect(medusaContainer.VolumeMounts[0].Name).To(Equal(medusaConfigVolumeName))
 
 			Expect(len(cassdc.Spec.PodTemplateSpec.Spec.Volumes)).To(Equal(3))
 			Expect(cassdc.Spec.PodTemplateSpec.Spec.Volumes[0].Name).To(Equal(medusaConfigVolumeName))
@@ -630,3 +808,44 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 		})
 	})
 })
+
+func getInitContainer(cassdc *cassdcv1beta1.CassandraDatacenter, name string) *corev1.Container {
+	return getContainerByName(cassdc.Spec.PodTemplateSpec.Spec.InitContainers, name)
+
+}
+
+func getContainer(cassdc *cassdcv1beta1.CassandraDatacenter, name string) *corev1.Container {
+	return getContainerByName(cassdc.Spec.PodTemplateSpec.Spec.Containers, name)
+
+}
+
+func assertInitContainerNamesMatch(cassdc *cassdcv1beta1.CassandraDatacenter, names ...string) {
+	initContainers := cassdc.Spec.PodTemplateSpec.Spec.InitContainers
+	actualNames := getContainerNames(initContainers)
+
+	ExpectWithOffset(1, actualNames).To(Equal(names))
+}
+
+func assertContainerNamesMatch(cassdc *cassdcv1beta1.CassandraDatacenter, names ...string) {
+	containers := cassdc.Spec.PodTemplateSpec.Spec.Containers
+	actualNames := getContainerNames(containers)
+
+	ExpectWithOffset(1, actualNames).To(Equal(names))
+}
+
+func getContainerByName(containers []corev1.Container, name string) *corev1.Container {
+	for _, container := range containers {
+		if container.Name == name {
+			return &container
+		}
+	}
+	return nil
+}
+
+func getContainerNames(containers []corev1.Container) []string {
+	names := make([]string, 0)
+	for _, container := range containers {
+		names = append(names, container.Name)
+	}
+	return names
+}
