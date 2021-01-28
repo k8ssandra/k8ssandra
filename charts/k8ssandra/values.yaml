@@ -118,6 +118,15 @@ backupRestore:
     # image The Medusa image which is built from https://github.com/thelastpickle/cassandra-medusa/tree/master/k8s.
     image: k8ssandra/medusa:c5fefc4a3b4c
 
+    # cassandraUser configures the Cassandra user used by Medusa when authentication is
+    # enabled. If neither cassandraUser.secret nor casandraUser.username are set, then a
+    # Cassandra user and a secret with the user's credentials will be created. The username
+    # will be medusa. The secret name will be of the form {cluserName}-medusa. The password
+    # will be a random 20 character password. If cassandraUser.secret is set, then the
+    # Cassandra user will be created from the contents of the secret. If
+    # cassandraUser.secret is not set and if cassandraUser.username is set, a secret will
+    # be generated using the specified username. The password will be generated as 
+    # previously described.
     cassandraUser:
       secret: ""
       username: ""
