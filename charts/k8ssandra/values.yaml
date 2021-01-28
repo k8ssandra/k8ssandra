@@ -75,6 +75,12 @@ cassandra:
     #   affinityLabels:
     #     topology.kubernetes.io/zone: us-east1-c
 
+    # -- Optional dc-level heap setting, overrides cluster-level
+    #heap:
+    #size: 800M
+    #newGenSize: 400M
+
+
 stargate:
   # configuration regarding the Stargate API
   enabled: false
