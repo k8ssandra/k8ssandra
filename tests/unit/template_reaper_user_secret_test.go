@@ -25,7 +25,7 @@ var _ = Describe("Verify reaper user secret template", func() {
 	renderTemplate := func(options *helm.Options) error {
 		renderedOutput, err := helm.RenderTemplateE(
 			GinkgoT(), options, helmChartPath, helmReleaseName,
-			[]string{"templates/reaper/cassandra-user-secret.yaml"},
+			[]string{"templates/reaper/reaper-user-secret.yaml"},
 		)
 
 		if err == nil {

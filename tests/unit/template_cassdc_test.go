@@ -419,6 +419,7 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 
 		It("enabling auth and medusa with default secret", func() {
 			clusterName := "medusa-user-test"
+			secretName := clusterName + "-medusa"
 			options := &helm.Options{
 				SetValues: map[string]string{
 					"cassandra.clusterName":        clusterName,
@@ -442,7 +443,7 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 				ValueFrom: &corev1.EnvVarSource{
 					SecretKeyRef: &corev1.SecretKeySelector{
 						LocalObjectReference: corev1.LocalObjectReference{
-							Name: clusterName + "-medusa",
+							Name: secretName,
 						},
 						Key: "username",
 					},
@@ -453,7 +454,7 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 				ValueFrom: &corev1.EnvVarSource{
 					SecretKeyRef: &corev1.SecretKeySelector{
 						LocalObjectReference: corev1.LocalObjectReference{
-							Name: clusterName + "-medusa",
+							Name: secretName,
 						},
 						Key: "password",
 					},
@@ -495,6 +496,8 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 
 			Expect(len(cassdc.Spec.PodTemplateSpec.Spec.Volumes)).To(Equal(3))
 			Expect(cassdc.Spec.PodTemplateSpec.Spec.Volumes[0].Name).To(Equal(medusaConfigVolumeName))
+
+			Expect(cassdc.Spec.Users).To(ContainElement(cassdcv1beta1.CassandraUser{SecretName: secretName, Superuser: true}))
 		})
 
 		It("enabling auth and medusa with user-defined secret", func() {
@@ -577,6 +580,8 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 
 			Expect(len(cassdc.Spec.PodTemplateSpec.Spec.Volumes)).To(Equal(3))
 			Expect(cassdc.Spec.PodTemplateSpec.Spec.Volumes[0].Name).To(Equal(medusaConfigVolumeName))
+
+			Expect(cassdc.Spec.Users).To(ContainElement(cassdcv1beta1.CassandraUser{SecretName: secretName, Superuser: true}))
 		})
 
 		It("enabling reaper and medusa", func() {
@@ -588,19 +593,8 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 
 			Expect(renderTemplate(options)).To(Succeed())
 
-			// Verify initContainers
-			initContainers := cassdc.Spec.PodTemplateSpec.Spec.InitContainers
-			Expect(len(initContainers)).To(Equal(4))
-			Expect(initContainers[0].Name).To(Equal("server-config-init"))
-			Expect(initContainers[1].Name).To(Equal("jmx-credentials"))
-			Expect(initContainers[2].Name).To(Equal("get-jolokia"))
-			Expect(initContainers[3].Name).To(Equal("medusa-restore"))
-
-			// Verify containers
-			containers := cassdc.Spec.PodTemplateSpec.Spec.Containers
-			Expect(len(containers)).To(Equal(2))
-			Expect(containers[0].Name).To(Equal("cassandra"))
-			Expect(containers[1].Name).To(Equal("medusa"))
+			assertInitContainerNamesMatch(cassdc, ConfigInitContainer, JmxCredentialsInitContainer, GetJolokiaInitContainer, MedusaInitContainer)
+			assertContainerNamesMatch(cassdc, CassandraContainer, MedusaContainer)
 		})
 
 		It("setting allowMultipleNodesPerWorker to true", func() {
