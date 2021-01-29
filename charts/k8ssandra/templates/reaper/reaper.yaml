@@ -19,8 +19,8 @@ spec:
       cassandraUserSecretName: {{ .Values.cassandra.clusterName }}-reaper
     {{- end }}
       cassandraDatacenter:
-        name: {{ (index .Values.cassandra.datacenters 0).name }}
+        name: {{ include "k8ssandra.datacenterName" . }}
       replication:
         networkTopologyStrategy:
-          {{ (index .Values.cassandra.datacenters 0).name }}: {{ min (index .Values.cassandra.datacenters 0).size 3}}
+          {{ include "k8ssandra.datacenterName" . }}: {{ min (index .Values.cassandra.datacenters 0).size 3}}
 {{- end }}

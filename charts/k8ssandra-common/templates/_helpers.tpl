@@ -60,3 +60,4 @@ string that is base 64 encoded.
 {{- define "k8ssandra-common.password" -}}
 {{ randAlphaNum 20 | b64enc | quote }}
 {{- end }}
+
