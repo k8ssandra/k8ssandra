@@ -69,4 +69,11 @@ provisioning the cluster instances.
 helm install k8ssandra k8ssandra/k8ssandra
 ```
 
+> When installing K8ssandra on newer versions of Kubernetes (v1.19+), some warnings may be visible on the command line 
+> related to deprecated API usage.  This is currently a known issue and will not impact the provisioning of the cluster.
+> 
+> ```
+> W0128 11:24:54.792095  27657 warnings.go:70] apiextensions.k8s.io/v1beta1 CustomResourceDefinition is deprecated in v1.16+, unavailable in v1.22+; use apiextensions.k8s.io/v1 CustomResourceDefinition
+> ```
+
 In later steps, you can upgrade your k8ssandra via `helm upgrade` commands, for example to access services from outside Kubernetes via a Traefik Ingress controller.
