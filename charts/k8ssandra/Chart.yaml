@@ -40,6 +40,11 @@ dependencies:
     repository: file://../medusa-operator
     condition: backupRestore.medusa.enabled
 
+  - name: stargate
+    version: 0.1.0
+    repository: file://../stargate
+    condition: stargate.enabled
+
   - name: k8ssandra-common
     version: 0.27.0
     repository: file://../k8ssandra-common

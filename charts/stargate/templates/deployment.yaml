@@ -73,10 +73,10 @@ spec:
         resources:
           limits:
             cpu: {{ .Values.stargate.cpuLimMillicores | default 1000 }}m
-            memory: {{ mul 1.5 (.Values.stargate.heapMB | default 1024) }}Mi
+            memory: {{ mul 2 (.Values.stargate.heapMB | default 1024) }}Mi
           requests:
             cpu: {{ .Values.stargate.cpuReqMillicores | default 200 }}m
-            memory: {{ mul 1.5 (.Values.stargate.heapMB | default 1024) }}Mi
+            memory: {{ mul 2 (.Values.stargate.heapMB | default 1024) }}Mi
         env:
         - name: JAVA_OPTS
           value: >-
