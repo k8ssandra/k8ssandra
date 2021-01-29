@@ -55,6 +55,8 @@ related to deprecated API usage.  This is currently a known issue and will not i
 W0128 11:24:54.792095  27657 warnings.go:70] apiextensions.k8s.io/v1beta1 CustomResourceDefinition is deprecated in v1.16+, unavailable in v1.22+; use apiextensions.k8s.io/v1 CustomResourceDefinition
 ```
 
+For more information, check out issue [#267](https://github.com/k8ssandra/k8ssandra/issues/267).
+
 ### What exactly does k8ssandra install?
 
 The chart installs Kubernetes Operator for Apache Cassandra (cass-operator), Prometheus Operator, reaper (repairs), medusa (backup/restores), the Grafana Operator, (optional) Stargate, and launches instances.
