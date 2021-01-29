@@ -60,17 +60,6 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 		cassdc        *cassdcv1beta1.CassandraDatacenter
 	)
 
-	//assertInitContainerNamesMatch := func(cassdc *cassdcv1beta1.CassandraDatacenter, names ...string) {
-	//	initContainers := cassdc.Spec.PodTemplateSpec.Spec.InitContainers
-	//	actualNames := make([]string, 0)
-	//
-	//	for _, container := range initContainers {
-	//		actualNames = append(actualNames, container.Name)
-	//	}
-	//
-	//	ExpectWithOffset(1, actualNames).To(Equal(names))
-	//}
-
 	BeforeEach(func() {
 		path, err := filepath.Abs(chartsPath)
 		Expect(err).To(BeNil())
