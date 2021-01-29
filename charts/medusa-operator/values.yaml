@@ -22,7 +22,7 @@ image:
   repository: docker.io/k8ssandra/medusa-operator
   pullPolicy: IfNotPresent
   # tag is the medusa-operator image tag to pull.
-  tag: 1aa019ee841e
+  tag: 0296cd5088aa
 
 # imagePullSecrets are references to secrets to use when pulling images.
 # ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
