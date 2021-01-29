@@ -10,5 +10,8 @@
 Fixes #<issue number>
 
 **Checklist**
-- [ ] Tests updated
-- [ ] Documentation added
+- [ ] Changes manually tested
+- [ ] Chart versions updated (if necessary)
+- [ ] Automated Tests added/updated
+- [ ] Documentation added/updated
+- [ ] CLA Signed:  [DataStax CLA](https://cla.datastax.com/)
