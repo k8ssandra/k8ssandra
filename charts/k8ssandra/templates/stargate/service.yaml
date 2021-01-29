@@ -1,9 +1,8 @@
 {{- if .Values.stargate.enabled }}
-{{- $datacenterName := (index .Values.cassandra.datacenters 0).name -}}
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ .Release.Name }}-{{ $datacenterName }}-stargate-service
+  name: {{ .Release.Name }}-{{ include "k8ssandra.datacenterName" . }}-stargate-service
   labels:
 {{ include "k8ssandra.labels" . | indent 4 }}
 spec:
@@ -28,5 +27,5 @@ spec:
       protocol: TCP
       port: 9042
   selector:
-    app: {{ .Release.Name }}-{{ $datacenterName }}-stargate
+    app: {{ .Release.Name }}-{{ include "k8ssandra.datacenterName" . }}-stargate
 {{- end }}

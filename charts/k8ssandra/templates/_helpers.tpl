@@ -61,3 +61,11 @@ Create the name of the service account to use
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
 {{- end }}
+
+{{- define "k8ssandra.datacenterName" -}}
+{{ (index .Values.cassandra.datacenters 0).name }}
+{{- end }}
+
+{{- define "k8ssandra.datacenterSize" -}}
+{{ (index .Values.cassandra.datacenters 0).size }}
+{{- end }}

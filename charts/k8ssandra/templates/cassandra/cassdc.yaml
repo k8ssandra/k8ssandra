@@ -1,7 +1,8 @@
+{{- $datacenter := (index .Values.cassandra.datacenters 0) -}}
 apiVersion: cassandra.datastax.com/v1beta1
 kind: CassandraDatacenter
 metadata:
-  name: {{ (index .Values.cassandra.datacenters 0).name }}
+  name: {{ $datacenter.name }}
   labels:
 {{ include "k8ssandra.labels" . | indent 4 }}
   annotations:
@@ -24,10 +25,10 @@ spec:
 {{- end }}
   managementApiAuth:
     insecure: {}
-  size: {{ (index .Values.cassandra.datacenters 0).size }}
-  {{- if (index .Values.cassandra.datacenters 0).racks }}
+  size: {{ $datacenter.size }}
+  {{- if $datacenter.racks }}
   racks:
-  {{- range (index .Values.cassandra.datacenters 0).racks  }}
+  {{- range $datacenter.racks  }}
   - name: {{ .name }}
     {{- if .affinityLabels }}
     nodeAffinityLabels: {{ toYaml .affinityLabels | nindent 6 }}
@@ -84,13 +85,13 @@ spec:
       credentials_validity_in_ms: {{ .Values.cassandra.auth.cacheValidityPeriodMillis }}
       credentials_update_interval_in_ms: {{ .Values.cassandra.auth.cacheUpdateIntervalMillis }}
     jvm-options:
-{{- if (index .Values.cassandra.datacenters 0).heap }}
-  {{- if (index .Values.cassandra.datacenters 0).heap.size }}
-      initial_heap_size: {{ (index .Values.cassandra.datacenters 0).heap.size }}
-      max_heap_size: {{ (index .Values.cassandra.datacenters 0).heap.size}}
+{{- if $datacenter.heap }}
+  {{- if $datacenter.heap.size }}
+      initial_heap_size: {{ $datacenter.heap.size }}
+      max_heap_size: {{ $datacenter.heap.size}}
   {{- end }}
-  {{- if (index .Values.cassandra.datacenters 0).heap.newGenSize }}
-      heap_size_young_generation: {{ (index .Values.cassandra.datacenters 0).heap.newGenSize }}
+  {{- if $datacenter.heap.newGenSize }}
+      heap_size_young_generation: {{ $datacenter.heap.newGenSize }}
   {{- end }}
   {{- else if .Values.cassandra.heap }}
   {{- if .Values.cassandra.heap.size  }}
@@ -103,8 +104,8 @@ spec:
 {{- end}}
       additional-jvm-opts:
 {{- if .Values.cassandra.auth.enabled }}
-        - "-Dcassandra.system_distributed_replication_dc_names={{ (index .Values.cassandra.datacenters 0).name }}"
-        - "-Dcassandra.system_distributed_replication_per_dc={{ min 5 (index .Values.cassandra.datacenters 0).size }}"
+        - "-Dcassandra.system_distributed_replication_dc_names={{ $datacenter.name }}"
+        - "-Dcassandra.system_distributed_replication_per_dc={{ min 5 $datacenter.size }}"
 {{- end }}
   podTemplateSpec:
     spec:

@@ -8,10 +8,8 @@ metadata:
 spec:
   image: thelastpickle/cassandra-reaper:2.1.3
   serverConfig:
-    {{- if .Values.repair.reaper.autoschedule }}
     autoScheduling:
       enabled: {{ .Values.repair.reaper.autoschedule }}
-    {{- end}}
     storageType: cassandra
     jmxUserSecretName: {{ .Release.Name }}-reaper-secret-k8ssandra
     cassandraBackend:
@@ -21,8 +19,8 @@ spec:
       cassandraUserSecretName: {{ .Values.cassandra.clusterName }}-reaper
     {{- end }}
       cassandraDatacenter:
-        name: {{ (index .Values.cassandra.datacenters 0).name }}
+        name: {{ include "k8ssandra.datacenterName" . }}
       replication:
         networkTopologyStrategy:
-          {{ (index .Values.cassandra.datacenters 0).name }}: {{ min (index .Values.cassandra.datacenters 0).size 3}}
+          {{ include "k8ssandra.datacenterName" . }}: {{ min (index .Values.cassandra.datacenters 0).size 3}}
 {{- end }}
