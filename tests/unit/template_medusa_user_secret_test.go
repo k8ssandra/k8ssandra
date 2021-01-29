@@ -9,7 +9,7 @@ import (
 	corev1 "k8s.io/api/core/v1"
 )
 
-var _ = Describe("Verify reaper user secret template", func() {
+var _ = Describe("Verify medusa user secret template", func() {
 	var (
 		helmChartPath string
 		secret        *corev1.Secret
@@ -25,7 +25,7 @@ var _ = Describe("Verify reaper user secret template", func() {
 	renderTemplate := func(options *helm.Options) error {
 		renderedOutput, err := helm.RenderTemplateE(
 			GinkgoT(), options, helmChartPath, helmReleaseName,
-			[]string{"templates/reaper/reaper-user-secret.yaml"},
+			[]string{"templates/medusa/medusa-user-secret.yaml"},
 		)
 
 		if err == nil {
@@ -35,49 +35,51 @@ var _ = Describe("Verify reaper user secret template", func() {
 		return err
 	}
 
-	Context("generating reaper user secret", func() {
-		It("specifying reaper user username", func() {
-			username := "reaper_admin"
+	Context("generating medusa user secret", func() {
+		It("specifying medusa user username", func() {
+			username := "medusa_admin"
 			clusterName := "secret-test"
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
 				SetValues: map[string]string{
-					"cassandra.clusterName":                clusterName,
-					"cassandra.auth.enabled":               "true",
-					"repair.reaper.cassandraUser.username": username,
+					"cassandra.clusterName":                       clusterName,
+					"cassandra.auth.enabled":                      "true",
+					"backupRestore.medusa.enabled":                "true",
+					"backupRestore.medusa.cassandraUser.username": username,
 				},
 			}
 
 			Expect(renderTemplate(options)).To(Succeed())
-			Expect(secret.Name).To(Equal(clusterName + "-reaper"))
+			Expect(secret.Name).To(Equal(clusterName + "-medusa"))
 			Expect(string(secret.Data["username"])).To(Equal(username))
 			Expect(len(secret.Data["password"])).To(Equal(20))
 		})
 
-		It("using default username for reaper user secret", func() {
+		It("using default username for medusa user secret", func() {
 			clusterName := "secret-test"
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
 				SetValues: map[string]string{
-					"cassandra.clusterName":  clusterName,
-					"cassandra.auth.enabled": "true",
+					"cassandra.clusterName":        clusterName,
+					"cassandra.auth.enabled":       "true",
+					"backupRestore.medusa.enabled": "true",
 				},
 			}
 
 			Expect(renderTemplate(options)).To(Succeed())
-			Expect(secret.Name).To(Equal(clusterName + "-reaper"))
-			Expect(string(secret.Data["username"])).To(Equal("reaper"))
+			Expect(secret.Name).To(Equal(clusterName + "-medusa"))
+			Expect(string(secret.Data["username"])).To(Equal("medusa"))
 			Expect(len(secret.Data["password"])).To(Equal(20))
 		})
 
-		It("not generating reaper user secret", func() {
+		It("not generating medusa user secret", func() {
 			clusterName := "secret-test"
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
 				SetValues: map[string]string{
-					"cassandra.clusterName":              clusterName,
-					"cassandra.auth.enabled":             "true",
-					"repair.reaper.cassandraUser.secret": "reaper-secret",
+					"cassandra.clusterName":                     clusterName,
+					"cassandra.auth.enabled":                    "true",
+					"backupRestore.medusa.cassandraUser.secret": "medusa-secret",
 				},
 			}
 
