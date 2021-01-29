@@ -1,7 +1,8 @@
 # K8ssandra
-[K8ssandra](https://k8ssandra.io/) is a simple to manage, production ready,
+[K8ssandra](https://k8ssandra.io/) is a simple to manage, production-ready,
 distribution of [Apache Cassandra](https://cassandra.apache.org/) and
-[Stargate](https://stargate.io/). It is built on a foundation of rock solid
+[Stargate](https://stargate.io/) that is ready for 
+[Kubernetes](https://kubernetes.io/). It is built on a foundation of rock-solid 
 open-source projects covering both the transactional and operational aspects of
 Cassandra deployments. This project is distributed as a collection of
 [Helm](https://helm.sh/) charts. Feel free to fork the repo and contribute. If
@@ -12,7 +13,7 @@ Started](https://k8ssandra.io/docs/getting-started/) guide.
 K8ssandra is composed of a number of sub-charts each representing a component in
 the K8ssandra stack. The default installation is focused on developer
 deployments with all of the features enabled and configured for running with a
-minimal number of resources. Many of these components may be deployed
+minimal set of resources. Many of these components may be deployed
 independently in a centralized fashion. Below is a list of the components in the
 K8ssandra stack with links to the appropriate projects.
 
@@ -30,11 +31,11 @@ pre-installed and configured to come up automatically.
 API endpoints for interacting with Cassandra databases. Developers may leverage
 REST and GraphQL alongside the traditional CQL interfaces. With Stargate
 operations teams gain the ability to independently scale coordination (Stargate)
-and data (Cassandra) layers. In some use-cases this has resulted a lower TCO and
+and data (Cassandra) layers. In some use-cases, this has resulted in a lower TCO and
 smaller infrastructure footprint.
 
 ### Monitoring
-Monitoring includes the collection, the storage, and the visualization of
+Monitoring includes the collection, storage, and visualization of
 metrics. Along with the previously mentioned MCAC, K8ssandra utilizes
 [Prometheus](https://prometheus.io/) and [Grafana](https://grafana.com/) for the
 storage and visualization of metrics. Installation and management of these
@@ -55,7 +56,8 @@ and restore of K8ssandra clusters.
 
 ## Next Steps
 
-If you are looking to run K8ssandra in your Kubernetes environment check out the
+If you are looking to run K8ssandra in your [Kubernetes](https://kubernetes.io/) 
+environment check out the
 [getting started](https://k8ssandra.io/docs/getting-started/) guide. We are
 always looking for contributions to the docs, helm charts, and underlying
 components.
