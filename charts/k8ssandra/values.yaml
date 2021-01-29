@@ -44,10 +44,42 @@ cassandra:
   datacenters:
   - name: dc1
     size: 1
+    # racks is an array that specifies the racks for the data center. If not set the data
+    # center will be configured with a single rack named default.
+    # racks:
+    #
+    # The number of racks should equal the replication factor of your application
+    # keyspaces. Cassandra will ensure that replicas are spread across racks versus having
+    # multiple replicas within the same rack. For example, let's say we are using RF = 3
+    # with a 9 node cluster and 3 racks (and 3 nodes per rack). There will be one replica
+    # per rack.
+    #
+    # Each element in the racks array consists of two properties - name and affinityLabels.
+    # name specifies the rack name and is required. affinityLabels are an optional set of
+    # labels that are used to pin Cassandra pods to specific k8s worker nodes via affinity
+    # rules. See https://kubernetes.io/docs/tasks/configure-pod-container/assign-pods-nodes-using-node-affinity/
+    # for background on using affinity rules.
+    #
+    # topology.kubernetes.io/zone is a well-known k8s label used by cloud providers to
+    # indicate the failure zone in which a k8s worker node is running. The following
+    # example illustrates how you can pin racks to specific failure zones.
+    #
+    # racks:
+    # - name: r1
+    #   affinityLabels:
+    #     topology.kubernetes.io/zone: us-east1-b
+    # - name: r2
+    #   affinityLabels:
+    #     topology.kubernetes.io/zone: us-east1-a
+    # - name: r3
+    #   affinityLabels:
+    #     topology.kubernetes.io/zone: us-east1-c
+
     # -- Optional dc-level heap setting, overrides cluster-level
     #heap:
-      #size: 800M
-      #newGenSize: 400M
+    #size: 800M
+    #newGenSize: 400M
+
 
 stargate:
   # configuration regarding the Stargate API

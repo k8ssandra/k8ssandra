@@ -212,6 +212,55 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			Expect(renderedErr).To(HaveOccurred())
 		})
 
+		It("using multiple racks with no affinity labels", func() {
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+				ValuesFiles:    []string{"./testdata/racks-no-affinity-values.yaml"},
+			}
+
+			Expect(renderTemplate(options)).To(Succeed())
+			Expect(cassdc.Spec.Racks).To(ConsistOf([]cassdcv1beta1.Rack{
+				{
+					Name: "r1",
+				},
+				{
+					Name: "r2",
+				},
+				{
+					Name: "r3",
+				},
+			}))
+		})
+
+		It("using multiple racks with affinity labels", func() {
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+				ValuesFiles:    []string{"./testdata/racks-affinity-values.yaml"},
+			}
+
+			Expect(renderTemplate(options)).To(Succeed())
+			Expect(cassdc.Spec.Racks).To(ConsistOf([]cassdcv1beta1.Rack{
+				{
+					Name: "r1",
+					NodeAffinityLabels: map[string]string{
+						"topology.kubernetes.io/zone": "us-east1-b",
+					},
+				},
+				{
+					Name: "r2",
+					NodeAffinityLabels: map[string]string{
+						"topology.kubernetes.io/zone": "us-east1-a",
+					},
+				},
+				{
+					Name: "r3",
+					NodeAffinityLabels: map[string]string{
+						"topology.kubernetes.io/zone": "us-east1-c",
+					},
+				},
+			}))
+		})
+
 		It("disabling Cassandra auth", func() {
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
