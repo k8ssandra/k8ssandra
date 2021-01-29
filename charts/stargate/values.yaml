@@ -1,0 +1,8 @@
+cassandra:
+  datacenterName: dc1
+  clusterName: k8ssandra
+
+stargate:
+  replicas: 1
+  clusterVersion: "3.11" # this is the only supported value for now
+  containerImage: "auto" # chooses image based on clusterVersion

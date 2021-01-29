@@ -1,0 +1,15 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ include "k8ssandra-common.fullname" . }}
+  labels: {{ include "k8ssandra-common.labels" . | indent 4 }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "k8ssandra-common.selectorLabels" . | nindent 6 }}
+  endpoints:
+    - port: metrics
+      interval: 15s
+      path: /metrics
+      scheme: http
+      scrapeTimeout: 15s
