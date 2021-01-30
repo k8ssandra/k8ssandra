@@ -87,7 +87,7 @@ stargate:
   replicas: 1
   clusterVersion: "3.11" # this is the only supported value for now
   containerImage: "auto" # chooses image based on clusterVersion
-  # heapMB sets the heap size Stargate will use in megabytes. Default 1024. Memory request and limit for the pod will be set to this value plus 500MB.
+  # heapMB sets the heap size Stargate will use in megabytes. Default 256. Memory request and limit for the pod will be set to this value x2 and x4, respectively.
   # cpuReqMillicores sets the CPU request for the Stargate pod in millicores. default 200.
   # cpuLimMillicores sets the CPU limit for the Stargate pod in millicores. default 1000.
 
