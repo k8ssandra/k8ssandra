@@ -13,7 +13,7 @@ spec:
       cassandra.datastax.com/prom-metrics: "true"
     matchExpressions:
       - {key: cassandra.datastax.com/cluster, operator: In, values: [{{ .Values.cassandra.clusterName }}]}
-      - {key: cassandra.datastax.com/datacenter, operator: In, values: [{{ (index .Values.cassandra.datacenters 0).name }}]}
+      - {key: cassandra.datastax.com/datacenter, operator: In, values: [{{ include "k8ssandra.datacenterName" . }}]}
   targetLabels:
   - cassandra.datastax.com/cluster
   - cassandra.datastax.com/datacenter

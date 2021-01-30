@@ -2,13 +2,12 @@
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
-  name: {{ .Release.Name }}-prometheus-k8ssandra-stargate
-  labels:
-{{ include "k8ssandra.labels" . | indent 4 }}
+  name: {{ .Release.Name }}-prometheus-{{ include "k8ssandra.datacenterName" . }}-stargate
+  labels: {{ include "k8ssandra.labels" . | indent 4 }}
 spec:
   selector:
     matchLabels:
-      app: {{ .Release.Name }}-k8ssandra-stargate
+      app: {{ .Release.Name }}-{{ include "k8ssandra.datacenterName" . }}-stargate
   endpoints:
   - port: metrics
     interval: 15s

@@ -5,16 +5,17 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: {{ .Release.Name }}-medusa-config-k8ssandra
-  labels:
-{{ include "k8ssandra.labels" . | indent 4 }}
+  labels: {{ include "k8ssandra.labels" . | indent 4 }}
 data:
   medusa.ini: |-
     [cassandra]
     # The start and stop commands are not applicable in k8s.
     stop_cmd = /etc/init.d/cassandra stop
     start_cmd = /etc/init.d/cassandra start
+  {{- if not .Values.cassandra.auth.enabled }}
     cql_username = cassandra
     cql_password = cassandra
+  {{- end}}
     check_running = nodetool version
 
     [storage]
@@ -32,7 +33,10 @@ data:
 
     [grpc]
     enabled = 1
+
+    [kubernetes]
     cassandra_url = http://localhost:7373/jolokia/
+    enabled = 1
 
     [logging]
     level = DEBUG

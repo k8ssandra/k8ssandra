@@ -8,11 +8,9 @@ require (
 	github.com/k8ssandra/reaper-operator v0.0.0-20210122200305-0d6525659e9d
 	github.com/onsi/ginkgo v1.14.2
 	github.com/onsi/gomega v1.10.3
-	github.com/spf13/cobra v0.0.5
 	k8s.io/api v0.18.6
 	k8s.io/apimachinery v0.18.6
 	k8s.io/client-go v12.0.0+incompatible
-	k8s.io/helm v2.16.3+incompatible
 	sigs.k8s.io/controller-runtime v0.6.4
 )
 

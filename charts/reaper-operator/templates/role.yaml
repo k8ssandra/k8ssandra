@@ -1,17 +1,45 @@
-{{- if .Values.backupRestore.medusa.enabled }}
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
-  name: {{ .Release.Name }}-medusa-operator-k8ssandra
-  labels:
-{{ include "k8ssandra.labels" . | indent 4 }}
+  name: {{ template "k8ssandra-common.fullname" . }}
+  labels: {{ include "k8ssandra-common.labels" . | indent 4 }}
 rules:
   - apiGroups:
       - ""
     resources:
-      - pods
+      - secrets
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - ""
+    resources:
       - services
     verbs:
+      - create
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - apps
+    resources:
+      - deployments
+    verbs:
+      - create
+      - delete
+      - get
+      - list
+      - patch
+      - update
+      - watch
+  - apiGroups:
+      - batch
+    resources:
+      - jobs
+    verbs:
+      - create
+      - delete
       - get
       - list
       - watch
@@ -23,12 +51,11 @@ rules:
       - create
       - get
       - list
-      - update
       - watch
   - apiGroups:
-      - cassandra.k8ssandra.io
+      - reaper.cassandra-reaper.io
     resources:
-      - cassandrabackups
+      - reapers
     verbs:
       - create
       - delete
@@ -38,39 +65,10 @@ rules:
       - update
       - watch
   - apiGroups:
-      - cassandra.k8ssandra.io
+      - reaper.cassandra-reaper.io
     resources:
-      - cassandrabackups/status
+      - reapers/status
     verbs:
       - get
       - patch
       - update
-  - apiGroups:
-      - cassandra.k8ssandra.io
-    resources:
-      - cassandrarebackups
-    verbs:
-      - get
-      - list
-      - watch
-  - apiGroups:
-      - cassandra.k8ssandra.io
-    resources:
-      - cassandrarestores
-    verbs:
-      - create
-      - delete
-      - get
-      - list
-      - patch
-      - update
-      - watch
-  - apiGroups:
-      - cassandra.k8ssandra.io
-    resources:
-      - cassandrarestores/status
-    verbs:
-      - get
-      - patch
-      - update
-{{- end }}

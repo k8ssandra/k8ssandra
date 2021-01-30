@@ -15,7 +15,7 @@ type: application
 # This is the chart version. This version number should be incremented each time you make changes
 # to the chart and its templates, including the app version.
 # Versions are expected to follow Semantic Versioning (https://semver.org/)
-version: 0.31.0
+version: 0.38.0
 
 # This is the version number of the application being deployed. This version number should be
 # incremented each time you make changes to the application. Versions are not expected to
@@ -26,12 +26,22 @@ appVersion: 3.11.7
 
 dependencies:
   - name: cass-operator
-    version: 0.27.0
+    version: 0.28.0
     repository: file://../cass-operator
     condition: cass-operator.enabled
 
-  - name: k8ssandra-common
+  - name: reaper-operator
+    version: 0.28.0
+    repository: file://../reaper-operator
+    condition: reaper-operator.enabled
+
+  - name: medusa-operator
     version: 0.27.0
+    repository: file://../medusa-operator
+    condition: backupRestore.medusa.enabled
+
+  - name: k8ssandra-common
+    version: 0.28.0
     repository: file://../k8ssandra-common
 
   - name: kube-prometheus-stack

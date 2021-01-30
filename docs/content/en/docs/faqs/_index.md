@@ -46,6 +46,17 @@ helm install k8ssandra k8ssandra/k8ssandra
 
 For more, see [Getting Started]({{< ref "/docs/getting-started/" >}}).
 
+### When I install K8ssandra, I see a some warning messages, is that a problem?
+
+When installing K8ssandra on newer versions of Kubernetes (v1.19+), some warnings may be visible on the command line
+related to deprecated API usage.  This is currently a known issue and will not impact the provisioning of the cluster.
+
+```
+W0128 11:24:54.792095  27657 warnings.go:70] apiextensions.k8s.io/v1beta1 CustomResourceDefinition is deprecated in v1.16+, unavailable in v1.22+; use apiextensions.k8s.io/v1 CustomResourceDefinition
+```
+
+For more information, check out issue [#267](https://github.com/k8ssandra/k8ssandra/issues/267).
+
 ### What exactly does k8ssandra install?
 
 The chart installs Kubernetes Operator for Apache Cassandra (cass-operator), Prometheus Operator, reaper (repairs), medusa (backup/restores), the Grafana Operator, (optional) Stargate, and launches instances.

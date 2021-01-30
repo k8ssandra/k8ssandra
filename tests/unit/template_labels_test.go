@@ -13,30 +13,34 @@ var _ = Describe("Verify k8ssandra template labels", func() {
 
 	var (
 		defaultKubeCtlOptions = k8s.NewKubectlOptions("", "",
-			defaultTestNamespace)
+			DefaultTestNamespace)
 		k8ssandraChartPath string
 	)
 
 	BeforeEach(func() {
-		path, err := filepath.Abs(chartsPath)
+		path, err := filepath.Abs(ChartsPath)
 		Expect(err).To(BeNil())
 		k8ssandraChartPath = path
 	})
 
 	Context("by rendering it with options", func() {
+		It("using enabled options", func() {
 
-		It("using only default options", func() {
-			username := "testuser"
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
 				SetValues: map[string]string{
 					"stargate.enabled":                              "true",
+					"stargate.cassandra.enabled":                    "true",
 					"repair.reaper.enabled":                         "true",
 					"backupRestore.medusa.enabled":                  "true",
 					"ingress.traefik.enabled":                       "true",
 					"ingress.traefik.monitoring.grafana.enabled":    "true",
 					"ingress.traefik.monitoring.prometheus.enabled": "true",
-					"cassandra.auth.superuser.username":             username,
+					"ingress.traefik.stargate.enabled":              "true",
+					"ingress.traefik.cassandra.enabled":             "true",
+					"cassandra.auth.enabled":                        "true",
+					"cassandra.auth.superuser.username":             "admin",
+					"cassandra.clusterName":                         "test-cluster",
 				},
 			}
 
@@ -48,10 +52,8 @@ var _ = Describe("Verify k8ssandra template labels", func() {
 				var k8ssandraTemplates map[string]interface{}
 				idx := strings.Index(template, "templates")
 
-				targetTemplate := template[idx:]
-				templatePath := filepath.Join(".", targetTemplate)
 				templateOutput, err := helm.RenderTemplateE(GinkgoT(), options,
-					k8ssandraChartPath, helmReleaseName, []string{templatePath})
+					k8ssandraChartPath, HelmReleaseName, []string{filepath.Join(".", template[idx:])})
 
 				Expect(err).To(BeNil())
 				Expect(templateOutput).ToNot(BeEmpty())

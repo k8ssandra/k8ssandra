@@ -17,7 +17,7 @@ var _ = Describe("Verify Reaper template", func() {
 	)
 
 	BeforeEach(func() {
-		helmChartPath, err = filepath.Abs(chartsPath)
+		helmChartPath, err = filepath.Abs(ChartsPath)
 		Expect(err).To(BeNil())
 		reaper = &api.Reaper{}
 	})
@@ -28,8 +28,8 @@ var _ = Describe("Verify Reaper template", func() {
 
 	renderTemplate := func(options *helm.Options) {
 		renderedOutput := helm.RenderTemplate(
-			GinkgoT(), options, helmChartPath, helmReleaseName,
-			[]string{"templates/reaper.yaml"},
+			GinkgoT(), options, helmChartPath, HelmReleaseName,
+			[]string{"templates/reaper/reaper.yaml"},
 		)
 
 		helm.UnmarshalK8SYaml(GinkgoT(), renderedOutput, reaper)
