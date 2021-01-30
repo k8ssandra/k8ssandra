@@ -14,26 +14,26 @@ A Helm chart for Kubernetes
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
+| nameOverride | string | `""` | A name in place of the chart name which is used in the metadata.name of objects created by this chart. |
+| fullnameOverride | string | `""` | A name in place of the value used for metadata.name in objects created by this chart. The default value has the form releaseName-chartName. |
+| commonLabels | object | `{}` | Labels to be added to all deployed resources. |
+| replicaCount | int | `1` | Sets the number of cass-operator pods. |
+| clusterScoped | bool | `false` | Determines whether cass-operator only watch and manages CassandraDatacenters in the same namespace in which the operator is deployed or if watches and manages CassandraDatacenters across all namespaces. |
 | admissionWebhooks | object | `{"enabled":false}` | Configures admission webhooks deployed with cass-operator. |
 | admissionWebhooks.enabled | bool | `false` | Turns the admission webhooks on or off |
-| clusterScoped | bool | `false` | Determines whether cass-operator only watch and manages CassandraDatacenters in the same namespace in which the operator is deployed or if watches and manages CassandraDatacenters across all namespaces. |
-| commonLabels | object | `{}` | Labels to be added to all deployed resources. |
-| fullnameOverride | string | `""` | A name in place of the value used for metadata.name in objects created by this chart. The default value has the form releaseName-chartName. |
-| image.pullPolicy | string | `"IfNotPresent"` | Pull policy for the operator container |
-| image.registryOverride | string | `nil` | Docker registry containing all cass-operator related images. Setting this allows for usage of an internal registry without specifying serverImage, configBuilderImage, and busyboxImage on all CassandraDatacenter objects. |
 | image.repository | string | `"docker.io/datastax/cass-operator"` | Docker repository for cass-operator |
+| image.pullPolicy | string | `"IfNotPresent"` | Pull policy for the operator container |
 | image.tag | string | `"master-a45fd80b40e0129e8883a953d595ca85e4b7ce79"` | Tag of the cass-operator image to pull from image.repository |
+| image.registryOverride | string | `nil` | Docker registry containing all cass-operator related images. Setting this allows for usage of an internal registry without specifying serverImage, configBuilderImage, and busyboxImage on all CassandraDatacenter objects. |
 | imagePullSecrets | list | `[]` | References to secrets to use when pulling images. ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/ |
-| nameOverride | string | `""` | A name in place of the chart name which is used in the metadata.name of objects created by this chart. |
+| serviceAccount.annotations | object | `{}` | Annotations to add to the service account. |
 | podAnnotations | object | `{}` | Annotations for the cass-operator pod. |
 | podSecurityContext | object | `{}` | PodSecurityContext for the cass-operator pod. See: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/ |
-| replicaCount | int | `1` | Sets the number of cass-operator pods. |
-| resources | object | `{}` | Resources requests and limits for the cass-operator pod. We usually recommend not to specify default resources and to leave this as a conscious choice for the user. This also increases chances charts run on environments with little resources, such as Minikube. If you do want to specify resources, uncomment the following lines, adjust them as necessary, and remove the curly braces after 'resources:'. limits: cpu: 100m memory: 128Mi requests: cpu: 100m memory: 128Mi |
 | securityContext.readOnlyRootFilesystem | bool | `true` | Mark root filesystem as read only |
-| securityContext.runAsGroup | int | `65534` | Group for the user running the cass-operator container / process |
 | securityContext.runAsNonRoot | bool | `true` | Run cass-operator container as non-root user |
+| securityContext.runAsGroup | int | `65534` | Group for the user running the cass-operator container / process |
 | securityContext.runAsUser | int | `65534` | User for running the cass-operator container / process |
-| serviceAccount.annotations | object | `{}` | Annotations to add to the service account. |
+| resources | object | `{}` | Resources requests and limits for the cass-operator pod. We usually recommend not to specify default resources and to leave this as a conscious choice for the user. This also increases chances charts run on environments with little resources, such as Minikube. If you do want to specify resources, uncomment the following lines, adjust them as necessary, and remove the curly braces after 'resources:'. limits: cpu: 100m memory: 128Mi requests: cpu: 100m memory: 128Mi |
 | vmwarePSPEnabled | bool | `false` | Enables specific VMware functionality. If you need this functionality it will automatically be enabled for you. |
 
 ----------------------------------------------
