@@ -1,8 +1,21 @@
 # backup
 
-![Version: 0.26.0](https://img.shields.io/badge/Version-0.26.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.1.0](https://img.shields.io/badge/AppVersion-0.1.0-informational?style=flat-square)
+![Version: 0.26.0](https://img.shields.io/badge/Version-0.26.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)
 
-Creates a CassandraBackup
+Creates a CassandraBackup custom resource instance. This chart should be used in conjunction with the Medusa Operator chart.
+
+**Homepage:** <https://k8ssandra.io/>
+
+## Maintainers
+
+| Name | Email | Url |
+| ---- | ------ | --- |
+| K8ssandra Team | k8ssandra-developers@googlegroups.com | https://github.com/k8ssandra |
+
+## Source Code
+
+* <https://github.com/k8ssandra/medusa-operator>
+* <https://github.com/k8ssandra/k8ssandra/tree/main/charts/backup>
 
 ## Values
 

@@ -2,7 +2,21 @@
 
 ![Version: 0.28.0](https://img.shields.io/badge/Version-0.28.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.1.0](https://img.shields.io/badge/AppVersion-0.1.0-informational?style=flat-square)
 
-A Helm chart for Kubernetes
+Configures and installs the Reaper Operator for Apache Cassandra. This tool
+manages an external repair process for Apache Cassandra clusters.
+
+**Homepage:** <https://k8ssandra.io/>
+
+## Maintainers
+
+| Name | Email | Url |
+| ---- | ------ | --- |
+| K8ssandra Team | k8ssandra-developers@googlegroups.com | https://github.com/k8ssandra |
+
+## Source Code
+
+* <https://github.com/k8ssandra/reaper-operator>
+* <https://github.com/k8ssandra/k8ssandra/tree/main/charts/reaper-operator>
 
 ## Requirements
 

@@ -1,8 +1,21 @@
 # k8ssandra-common
 
-![Version: 0.28.0](https://img.shields.io/badge/Version-0.28.0-informational?style=flat-square) ![Type: library](https://img.shields.io/badge/Type-library-informational?style=flat-square) ![AppVersion: 1.16.0](https://img.shields.io/badge/AppVersion-1.16.0-informational?style=flat-square)
+![Version: 0.28.0](https://img.shields.io/badge/Version-0.28.0-informational?style=flat-square) ![Type: library](https://img.shields.io/badge/Type-library-informational?style=flat-square)
 
-A Helm chart for Kubernetes
+Helper library containing functions used by many of the K8ssandra stack Helm charts.
+
+**Homepage:** <https://k8ssandra.io/>
+
+## Maintainers
+
+| Name | Email | Url |
+| ---- | ------ | --- |
+| K8ssandra Team | k8ssandra-developers@googlegroups.com | https://github.com/k8ssandra |
+
+## Source Code
+
+* <https://github.com/k8ssandra/k8ssandra>
+* <https://github.com/k8ssandra/k8ssandra/tree/main/charts/k8ssandra-common>
 
 ## Requirements
 
