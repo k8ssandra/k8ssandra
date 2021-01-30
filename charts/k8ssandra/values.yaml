@@ -52,8 +52,8 @@ cassandra:
 
   # -- Cluster-level heap configuration
   heap:
-   size: 800M
-   newGenSize: 400M
+   size:
+   newGenSize:
 
   # -- Resource requests for each Cassandra pod.
   resources: {}
@@ -100,8 +100,8 @@ cassandra:
     # -- Optional datacenter-level heap setting, overrides cluster-level setting
     # `cassandra.heap`
     heap:
-      size: 800M
-      newGenSize: 400M
+      size:
+      newGenSize:
 
 stargate:
   # -- Enable Stargate resources as part of this release
