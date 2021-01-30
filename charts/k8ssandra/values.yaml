@@ -66,7 +66,7 @@ cassandra:
     # to keep the total amount of data per node to approximately 1 TB. With room
     # for compactions this value should max out at ~2 TB. This recommendation is
     # highly dependent on data model and compaction strategies in use. Consider
-    # testing with your data model to find an optimal value for your usecase. 
+    # testing with your data model to find an optimal value for your usecase.
     size: 5Gi
 
   # -- Permits running multiple Cassandra pods per Kubernetes worker. If enabled
@@ -83,9 +83,9 @@ cassandra:
 
 
   datacenters:
-  
+
   # Note the odd spacing below is to assist with docs generation
-  - 
+  -
     # -- Name of the datacenter
     name: dc1
 
@@ -102,7 +102,7 @@ cassandra:
     # with a 9 node cluster and 3 racks (and 3 nodes per rack). There will be
     # one replica of the dataset spread across each rack.
     racks:
-    - 
+    -
       # -- Identifier for the rack, this may align with the labels used to
       # control where resources are deployed for this rack. For example, if a
       # rack is limited to a single availability zone the identifier may be the
@@ -129,12 +129,12 @@ cassandra:
 stargate:
   # -- Enable Stargate resources as part of this release
   enabled: false
-  
+
   # -- Number of instances to deploy. This value may be scaled independently of
   # Cassandra cluster nodes. Each instance handles API and coordination tasks
   # for inbound queries.
   replicas: 1
-  
+
   # -- Version of the target Cassandra cluster. `3.11` is the only supported
   # value for now.
   clusterVersion: "3.11"
@@ -142,6 +142,9 @@ stargate:
   # -- Image coordinate for Stargate containers, `auto` will determine the
   # appropriate value based on other configuration parameters.
   containerImage: "auto" # chooses image based on clusterVersion
+  # heapMB sets the heap size Stargate will use in megabytes. Default 1024. Memory request and limit for the pod will be set to this value plus 500MB.
+  # cpuReqMillicores sets the CPU request for the Stargate pod in millicores. default 200.
+  # cpuLimMillicores sets the CPU limit for the Stargate pod in millicores. default 1000.
 
   # -- Configures the Cassandra user used by Stargate when authentication is
   # enabled. If neither `cassandraUser.secret` nor `casandraUser.username` are
@@ -210,7 +213,7 @@ backupRestore:
     # -- Enable Medusa resources as part of this release. If enabled,
     # `bucketName` and `bucketSecret` **must** be defined.
     enabled: false
-    
+
     # Configures the Medusa image which is built from
     # https://github.com/thelastpickle/cassandra-medusa/tree/master/k8s.
     image:
@@ -304,11 +307,11 @@ ingress:
         # **only** work if `stargate.enabled`, `ingress.traefik.enabled`, and
         # `ingress.traefik.stargate.enabled` are also `true`
         enabled: true
-        
+
         playground:
           # -- Enables GraphQL playground interface ingress.
           enabled: false
-      
+
       rest:
         # -- Enables ingress resources for Stargate REST API. Note this will
         # **only** work if `stargate.enabled`, `ingress.traefik.enabled`, and
