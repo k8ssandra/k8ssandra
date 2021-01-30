@@ -87,6 +87,9 @@ stargate:
   replicas: 1
   clusterVersion: "3.11" # this is the only supported value for now
   containerImage: "auto" # chooses image based on clusterVersion
+  # heapMB sets the heap size Stargate will use in megabytes. Default 1024. Memory request and limit for the pod will be set to this value plus 500MB.
+  # cpuReqMillicores sets the CPU request for the Stargate pod in millicores. default 200.
+  # cpuLimMillicores sets the CPU limit for the Stargate pod in millicores. default 1000.
 
 # Configuration regarding configuration of repair services
 repair:
@@ -125,7 +128,7 @@ backupRestore:
     # will be a random 20 character password. If cassandraUser.secret is set, then the
     # Cassandra user will be created from the contents of the secret. If
     # cassandraUser.secret is not set and if cassandraUser.username is set, a secret will
-    # be generated using the specified username. The password will be generated as 
+    # be generated using the specified username. The password will be generated as
     # previously described.
     cassandraUser:
       secret: ""
