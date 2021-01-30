@@ -6,5 +6,4 @@ description: >
   Handles the scheduling an execution of an ad-hoc restore.
 ---
 
-{{< readfilerel file="values.yaml"  highlight="yaml" >}}
-
+{{< readfilerel file="_generated.md" markdown="true" >}}
