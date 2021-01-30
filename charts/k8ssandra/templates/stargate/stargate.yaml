@@ -78,16 +78,16 @@ spec:
           resources:
             limits:
               cpu: {{ .Values.stargate.cpuLimMillicores | default 1000 }}m
-              memory: {{ mul 1.5 (.Values.stargate.heapMB | default 1024) }}Mi
+              memory: {{ mul 4 (.Values.stargate.heapMB | default 256) }}Mi
             requests:
               cpu: {{ .Values.stargate.cpuReqMillicores | default 200 }}m
-              memory: {{ mul 1.5 (.Values.stargate.heapMB | default 1024) }}Mi
+              memory: {{ mul 2 (.Values.stargate.heapMB | default 256) }}Mi
           env:
             - name: JAVA_OPTS
               value: >-
                 -XX:+CrashOnOutOfMemoryError
-                -Xms{{ .Values.stargate.heapMB | default 1024 }}M
-                -Xmx{{ .Values.stargate.heapMB | default 1024 }}M
+                -Xms{{ .Values.stargate.heapMB | default 256 }}m
+                -Xmx{{ .Values.stargate.heapMB | default 256 }}m
             - name: CLUSTER_NAME
               value: {{ .Values.cassandra.clusterName | quote }}
             - name: CLUSTER_VERSION
@@ -106,12 +106,12 @@ spec:
             httpGet:
               path: /checker/liveness
               port: health
-            timeoutSeconds: 3
-            initialDelaySeconds: 60
+            timeoutSeconds: 10
+            initialDelaySeconds: 240
           readinessProbe:
             httpGet:
               path: /checker/readiness
               port: health
             timeoutSeconds: 3
-            initialDelaySeconds: 60
+            initialDelaySeconds: 240
 {{- end }}
