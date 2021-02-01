@@ -22,7 +22,7 @@ image:
   repository: docker.io/k8ssandra/reaper-operator
   pullPolicy: IfNotPresent
   # tag is the reaper-operator image tag to pull.
-  tag: 73199f440649
+  tag: 0d6525659e9d
 
 # imagePullSecrets are references to secrets to use when pulling images.
 # ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
