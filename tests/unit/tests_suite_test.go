@@ -13,12 +13,16 @@ import (
 
 const (
 	ChartsPath                  = "../../charts/k8ssandra"
+	CassOperatorChartsPath      = "../../charts/cass-operator"
+	MedusaOperatorChartsPath    = "../../charts/medusa-operator"
+	ReaperOperatorChartsPath    = "../../charts/reaper-operator"
 	DefaultTestNamespace        = "k8ssandra"
 	HelmHookAnnotation          = "helm.sh/hook"
 	HelmHookPreDeleteAnnotation = "helm.sh/hook-delete-policy"
 	HelmReleaseName             = "k8ssandra-test"
 	ReaperInstanceAnnotation    = "reaper.cassandra-reaper.io/instance"
 	CommonsTemplate             = "commons.yaml"
+	CommonLabelKey              = "common_labels"
 )
 
 var (
@@ -26,33 +30,36 @@ var (
 )
 
 // Uses commons template to obtain list of required labels for verification.
-func GetK8ssandraRequiredLabels() map[string]interface{} {
+func GetRequiredLabels(targetChartsPath string) map[string]interface{} {
 
-	var cm map[string]interface{}
+	Expect(targetChartsPath).ToNot(BeNil())
+	var configMap map[string]interface{}
 	options := &helm.Options{
 		KubectlOptions: defaultKubeCtlOptions,
 	}
 
-	commonsTemplate, commonsTemplateErr := helm.RenderTemplateE(GinkgoT(), options, ChartsPath,
+	renderedTemplate, renderedTemplateErr := helm.RenderTemplateE(GinkgoT(), options,
+		targetChartsPath,
 		HelmReleaseName,
 		[]string{"templates/" + CommonsTemplate})
+	Expect(renderedTemplateErr).To(BeNil())
+	Expect(renderedTemplate).ToNot(BeNil())
 
-	Expect(commonsTemplateErr).To(BeNil())
+	Expect(helm.UnmarshalK8SYamlE(GinkgoT(), renderedTemplate, &configMap)).To(BeNil())
 
-	unmarshalErr := helm.UnmarshalK8SYamlE(GinkgoT(), commonsTemplate, &cm)
-	Expect(unmarshalErr).To(BeNil())
-
-	requiredLabels := cm["data"].(map[string]interface{})["k8ssandra_labels"].(map[string]interface{})
+	requiredLabels := configMap["data"].(map[string]interface{})[CommonLabelKey].(map[string]interface{})
 	Expect(requiredLabels).ToNot(BeEmpty())
 
 	return requiredLabels
 }
 
-// Returns k8ssandra templates ignoring helpers and commons.yaml used as expected results.
-func GetK8ssandraTemplates(k8ssandraChartPath string) []string {
+// Returns templates ignoring helpers and commons.yaml used as expected results.
+func GetTemplates(targetChartsPath string) []string {
 
+	Expect(targetChartsPath).ToNot(BeNil())
 	var templates []string
-	err := filepath.Walk(filepath.Join(k8ssandraChartPath, "templates"),
+
+	err := filepath.Walk(filepath.Join(targetChartsPath, "templates"),
 		func(path string, info os.FileInfo, err error) error {
 			if !info.IsDir() && strings.HasSuffix(info.Name(), ".yaml") && CommonsTemplate != info.Name() {
 				absPath, err := filepath.Abs(path)

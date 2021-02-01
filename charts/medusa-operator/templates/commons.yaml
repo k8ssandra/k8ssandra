@@ -3,4 +3,4 @@ kind: ConfigMap
 metadata:
   name: {{ .Release.Name }}-commons
 data:
-  common_labels: {{ include "k8ssandra.labels" . | indent 4 }}
+  common_labels: {{ include "k8ssandra-common.labels" . | indent 4 }}

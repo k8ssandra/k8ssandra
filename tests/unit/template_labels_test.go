@@ -9,22 +9,24 @@ import (
 	"strings"
 )
 
-var _ = Describe("Verify k8ssandra template labels", func() {
+var _ = Describe("Verify k8ssandra and dependent template labels", func() {
 
 	var (
 		defaultKubeCtlOptions = k8s.NewKubectlOptions("", "",
 			DefaultTestNamespace)
-		k8ssandraChartPath string
+		localChartsPath string
 	)
 
 	BeforeEach(func() {
-		path, err := filepath.Abs(ChartsPath)
-		Expect(err).To(BeNil())
-		k8ssandraChartPath = path
+		localChartsPath = ""
 	})
 
-	Context("by rendering it with options", func() {
-		It("using enabled options", func() {
+	Context("by rendering k8ssandra templates having common labels", func() {
+		It("using all enabled options", func() {
+
+			path, err := filepath.Abs(ChartsPath)
+			Expect(err).To(BeNil())
+			localChartsPath = path
 
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
@@ -44,22 +46,127 @@ var _ = Describe("Verify k8ssandra template labels", func() {
 				},
 			}
 
-			// Verify required labels for ea. k8ssandra template
-			requiredLabels := GetK8ssandraRequiredLabels()
-			templates := GetK8ssandraTemplates(k8ssandraChartPath)
+			// Verify required labels for ea. template
+			requiredLabels := GetRequiredLabels(localChartsPath)
+			templates := GetTemplates(localChartsPath)
 			for _, template := range templates {
 
 				var k8ssandraTemplates map[string]interface{}
 				idx := strings.Index(template, "templates")
 
 				templateOutput, err := helm.RenderTemplateE(GinkgoT(), options,
-					k8ssandraChartPath, HelmReleaseName, []string{filepath.Join(".", template[idx:])})
+					localChartsPath, HelmReleaseName, []string{filepath.Join(".", template[idx:])})
 
 				Expect(err).To(BeNil())
 				Expect(templateOutput).ToNot(BeEmpty())
 				Expect(helm.UnmarshalK8SYamlE(GinkgoT(), templateOutput, &k8ssandraTemplates)).To(BeNil())
 
 				Expect(k8ssandraTemplates["metadata"]).ToNot(BeNil())
+				for k, v := range requiredLabels {
+					Expect(k8ssandraTemplates["metadata"].(map[string]interface{})["labels"]).To(HaveKeyWithValue(k, v))
+				}
+			}
+		})
+	})
+
+	Context("by rendering cass-operator templates having k8ssandra common labels", func() {
+		It("using default options", func() {
+
+			path, err := filepath.Abs(CassOperatorChartsPath)
+			Expect(err).To(BeNil())
+			localChartsPath = path
+
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+			}
+
+			// Verify required labels for ea. template
+			requiredLabels := GetRequiredLabels(localChartsPath)
+			templates := GetTemplates(localChartsPath)
+			for _, template := range templates {
+
+				var k8ssandraTemplates map[string]interface{}
+				idx := strings.Index(template, "templates")
+
+				templateOutput, err := helm.RenderTemplateE(GinkgoT(), options,
+					localChartsPath, HelmReleaseName, []string{filepath.Join(".", template[idx:])})
+
+				Expect(err).To(BeNil())
+				Expect(templateOutput).ToNot(BeEmpty())
+
+				Expect(helm.UnmarshalK8SYamlE(GinkgoT(), templateOutput, &k8ssandraTemplates)).To(BeNil())
+				Expect(k8ssandraTemplates["metadata"]).ToNot(BeNil())
+
+				for k, v := range requiredLabels {
+					Expect(k8ssandraTemplates["metadata"].(map[string]interface{})["labels"]).To(HaveKeyWithValue(k, v))
+				}
+			}
+		})
+	})
+
+	Context("by rendering medusa-operator templates having k8ssandra common labels", func() {
+		It("using default options", func() {
+
+			path, err := filepath.Abs(MedusaOperatorChartsPath)
+			Expect(err).To(BeNil())
+			localChartsPath = path
+
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+			}
+
+			// Verify required labels for ea. template
+			requiredLabels := GetRequiredLabels(localChartsPath)
+			templates := GetTemplates(localChartsPath)
+			for _, template := range templates {
+
+				var k8ssandraTemplates map[string]interface{}
+				idx := strings.Index(template, "templates")
+
+				templateOutput, err := helm.RenderTemplateE(GinkgoT(), options,
+					localChartsPath, HelmReleaseName, []string{filepath.Join(".", template[idx:])})
+
+				Expect(err).To(BeNil())
+				Expect(templateOutput).ToNot(BeEmpty())
+
+				Expect(helm.UnmarshalK8SYamlE(GinkgoT(), templateOutput, &k8ssandraTemplates)).To(BeNil())
+				Expect(k8ssandraTemplates["metadata"]).ToNot(BeNil())
+
+				for k, v := range requiredLabels {
+					Expect(k8ssandraTemplates["metadata"].(map[string]interface{})["labels"]).To(HaveKeyWithValue(k, v))
+				}
+			}
+		})
+	})
+
+	Context("by rendering reaper-operator templates having k8ssandra common labels", func() {
+		It("using default options", func() {
+
+			path, err := filepath.Abs(ReaperOperatorChartsPath)
+			Expect(err).To(BeNil())
+			localChartsPath = path
+
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+			}
+
+			// Verify required labels for ea. template
+			requiredLabels := GetRequiredLabels(localChartsPath)
+			templates := GetTemplates(localChartsPath)
+			for _, template := range templates {
+
+				var k8ssandraTemplates map[string]interface{}
+				idx := strings.Index(template, "templates")
+
+				templateOutput, err := helm.RenderTemplateE(GinkgoT(), options,
+					localChartsPath, HelmReleaseName, []string{filepath.Join(".", template[idx:])})
+
+				Expect(err).To(BeNil())
+				Expect(templateOutput).ToNot(BeEmpty())
+
+				Expect(helm.UnmarshalK8SYamlE(GinkgoT(), templateOutput, &k8ssandraTemplates)).To(BeNil())
+				Expect(k8ssandraTemplates["metadata"]).ToNot(BeNil())
+
 				for k, v := range requiredLabels {
 					Expect(k8ssandraTemplates["metadata"].(map[string]interface{})["labels"]).To(HaveKeyWithValue(k, v))
 				}
