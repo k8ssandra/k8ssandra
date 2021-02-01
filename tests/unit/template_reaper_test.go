@@ -29,7 +29,7 @@ var _ = Describe("Verify Reaper template", func() {
 	renderTemplate := func(options *helm.Options) {
 		renderedOutput := helm.RenderTemplate(
 			GinkgoT(), options, helmChartPath, helmReleaseName,
-			[]string{"templates/reaper.yaml"},
+			[]string{"templates/reaper/reaper.yaml"},
 		)
 
 		helm.UnmarshalK8SYaml(GinkgoT(), renderedOutput, reaper)
@@ -49,7 +49,10 @@ var _ = Describe("Verify Reaper template", func() {
 		It("changing datacenter name", func() {
 			targetDcName := "reaper-dc"
 			options := &helm.Options{
-				SetStrValues:   map[string]string{"k8ssandra.datacenterName": targetDcName},
+				SetStrValues: map[string]string{
+					"cassandra.datacenters[0].name": targetDcName,
+					"cassandra.datacenters[0].size": "1",
+				},
 				KubectlOptions: defaultKubeCtlOptions,
 			}
 
