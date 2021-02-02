@@ -12,8 +12,8 @@ const (
 	reaperInstanceAnnotation    = "reaper.cassandra-reaper.io/instance"
 	helmHookAnnotation          = "helm.sh/hook"
 	helmHookPreDeleteAnnotation = "helm.sh/hook-delete-policy"
-	defaultTestNamespace        = "k8ssandra"
-	helmReleaseName             = "k8ssandra-test"
+	defaultTestNamespace        = "k8ssandra-namespace"
+	helmReleaseName             = "k8ssandra-testrelease"
 )
 
 func TestTemplateUnitTests(t *testing.T) {
