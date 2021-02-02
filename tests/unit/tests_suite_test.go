@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	chartsPath                  = ("../../charts/k8ssandra")
+	chartsPath                  = "../../charts/k8ssandra"
 	reaperInstanceAnnotation    = "reaper.cassandra-reaper.io/instance"
 	helmHookAnnotation          = "helm.sh/hook"
 	helmHookPreDeleteAnnotation = "helm.sh/hook-delete-policy"

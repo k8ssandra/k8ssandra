@@ -61,12 +61,18 @@ spec:
 {{- end }}
 {{- if .Values.cassandra.auth.enabled }}
   users:
+  {{- if .Values.repair.reaper.enabled }}
     - secretName: {{ default (printf "%s-%s" .Values.cassandra.clusterName "reaper") .Values.repair.reaper.cassandraUser.secret }}
       superuser: true
+  {{- end }}
   {{- if .Values.backupRestore.medusa.enabled }}
     - secretName: {{ default (printf "%s-%s" .Values.cassandra.clusterName "medusa") .Values.backupRestore.medusa.cassandraUser.secret }}
       superuser: true
-  {{- end}}
+  {{- end }}
+  {{- if .Values.stargate.enabled }}
+    - secretName: {{ default (printf "%s-%s" .Values.cassandra.clusterName "stargate") .Values.stargate.cassandraUser.secret }}
+      superuser: true
+  {{- end }}
 {{- end }}
   config:    
     cassandra-yaml:
