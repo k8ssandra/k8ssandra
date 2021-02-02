@@ -135,16 +135,22 @@ stargate:
   # for inbound queries.
   replicas: 1
 
-  # -- Version of the target Cassandra cluster. `3.11` is the only supported
-  # value for now.
-  clusterVersion: "3.11"
+  # -- Sets the Stargate container image. If left blank (recommended), k8ssandra
+  # will derive an appropriate image based on your cluster version.
+  image:
 
-  # -- Image coordinate for Stargate containers, `auto` will determine the
-  # appropriate value based on other configuration parameters.
-  containerImage: "auto" # chooses image based on clusterVersion
-  # heapMB sets the heap size Stargate will use in megabytes. Default 256. Memory request and limit for the pod will be set to this value x2 and x4, respectively.
-  # cpuReqMillicores sets the CPU request for the Stargate pod in millicores. default 200.
-  # cpuLimMillicores sets the CPU limit for the Stargate pod in millicores. default 1000.
+  # -- Sets the imagePullPolicy used by the Stargate pods
+  imagePullPolicy: IfNotPresent
+
+  # -- Sets the heap size Stargate will use in megabytes. Memory request and
+  # limit for the pod will be set to this value x2 and x4, respectively.
+  heapMB: 256
+
+  # -- Sets the CPU request for the Stargate pod in millicores.
+  cpuReqMillicores: 200
+
+  # -- Sets the CPU limit for the Stargate pod in millicores.
+  cpuLimMillicores: 1000
 
   # -- Configures the Cassandra user used by Stargate when authentication is
   # enabled. If neither `cassandraUser.secret` nor `casandraUser.username` are
