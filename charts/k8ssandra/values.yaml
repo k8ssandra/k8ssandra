@@ -82,14 +82,26 @@ cassandra:
 
 
 stargate:
-  # configuration regarding the Stargate API
+  # enabled determines whether Stargate will be installed
   enabled: false
+
+  # replicas sets the number of Stargate pods to be deployed
   replicas: 1
-  clusterVersion: "3.11" # this is the only supported value for now
-  containerImage: "auto" # chooses image based on clusterVersion
-  # heapMB sets the heap size Stargate will use in megabytes. Default 256. Memory request and limit for the pod will be set to this value x2 and x4, respectively.
-  # cpuReqMillicores sets the CPU request for the Stargate pod in millicores. default 200.
-  # cpuLimMillicores sets the CPU limit for the Stargate pod in millicores. default 1000.
+
+  # image sets the Stargate container image. If left blank (recommended), k8ssandra will derive an appropriate image based on your cluster version.
+  # image:
+
+  # imagePullPolicy sets the imagePullPolicy used by the Stargate pods
+  imagePullPolicy: IfNotPresent
+
+  # heapMB sets the heap size Stargate will use in megabytes. Memory request and limit for the pod will be set to this value x2 and x4, respectively.
+  heapMB: 256
+
+  # cpuReqMillicores sets the CPU request for the Stargate pod in millicores.
+  cpuReqMillicores: 200
+
+  # cpuLimMillicores sets the CPU limit for the Stargate pod in millicores.
+  cpuLimMillicores: 1000
 
 # Configuration regarding configuration of repair services
 repair:
