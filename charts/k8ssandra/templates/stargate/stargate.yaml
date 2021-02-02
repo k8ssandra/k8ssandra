@@ -4,6 +4,7 @@ kind: Deployment
 metadata:
   name: {{ .Release.Name }}-{{ include "k8ssandra.datacenterName" . }}-stargate
   labels:
+    release: {{ .Release.Name }}
     app: {{ .Release.Name }}-{{ include "k8ssandra.datacenterName" . }}-stargate
 {{ include "k8ssandra.labels" . | indent 4 }}
 spec:
