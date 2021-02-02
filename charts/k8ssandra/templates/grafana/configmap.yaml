@@ -13,4 +13,8 @@ data:
 {{ .Files.Get "dashboards/overview.json" | indent 4 }}
   system-metrics.json: |
 {{ .Files.Get "dashboards/system-metrics.json" | indent 4 }}
+{{- if .Values.stargate.enabled }}
+  stargate.json: |
+{{ .Files.Get "dashboards/stargate.json" | indent 4 }}
+{{- end }}
 {{- end }}
