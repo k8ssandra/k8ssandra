@@ -16,10 +16,10 @@ const (
 	CassOperatorChartsPath      = "../../charts/cass-operator"
 	MedusaOperatorChartsPath    = "../../charts/medusa-operator"
 	ReaperOperatorChartsPath    = "../../charts/reaper-operator"
-	DefaultTestNamespace        = "k8ssandra"
+	DefaultTestNamespace        = "k8ssandra-namespace"
 	HelmHookAnnotation          = "helm.sh/hook"
 	HelmHookPreDeleteAnnotation = "helm.sh/hook-delete-policy"
-	HelmReleaseName             = "k8ssandra-test"
+	HelmReleaseName             = "k8ssandra-testrelease"
 	ReaperInstanceAnnotation    = "reaper.cassandra-reaper.io/instance"
 )
 
