@@ -10,8 +10,7 @@ apiVersion: traefik.containo.us/v1alpha1
 kind: IngressRoute
 metadata:
   name: {{ $releaseName }}-k8ssandra-repair
-  labels:
-{{ include "k8ssandra.labels" . | indent 4 }}
+  labels: {{ include "k8ssandra.labels" . | indent 4 }}
 spec:
   entryPoints:
   {{- range $traefik.repair.entrypoints }}

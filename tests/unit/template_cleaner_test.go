@@ -17,7 +17,7 @@ var _ = Describe("Verify Cleaner job template", func() {
 	)
 
 	BeforeEach(func() {
-		helmChartPath, err = filepath.Abs(chartsPath)
+		helmChartPath, err = filepath.Abs(ChartsPath)
 		Expect(err).To(BeNil())
 		cleanerJob = &v1batch.Job{}
 	})
@@ -28,7 +28,7 @@ var _ = Describe("Verify Cleaner job template", func() {
 
 	renderTemplate := func(options *helm.Options) {
 		renderedOutput := helm.RenderTemplate(
-			GinkgoT(), options, helmChartPath, helmReleaseName,
+			GinkgoT(), options, helmChartPath, HelmReleaseName,
 			[]string{"templates/cleaner/batch_job.yaml"},
 		)
 
@@ -44,8 +44,8 @@ var _ = Describe("Verify Cleaner job template", func() {
 			renderTemplate(options)
 
 			By("checking that correct hook annotations are present")
-			Expect(cleanerJob.Annotations).Should(HaveKeyWithValue(helmHookAnnotation, "pre-delete"))
-			Expect(cleanerJob.Annotations).Should(HaveKeyWithValue(helmHookPreDeleteAnnotation, "hook-succeeded,before-hook-creation"))
+			Expect(cleanerJob.Annotations).Should(HaveKeyWithValue(HelmHookAnnotation, "pre-delete"))
+			Expect(cleanerJob.Annotations).Should(HaveKeyWithValue(HelmHookPreDeleteAnnotation, "hook-succeeded,before-hook-creation"))
 
 			Expect(len(cleanerJob.Spec.Template.Spec.Containers)).To(Equal(1))
 			Expect(len(cleanerJob.Spec.Template.Spec.Containers[0].Env)).To(Equal(1))

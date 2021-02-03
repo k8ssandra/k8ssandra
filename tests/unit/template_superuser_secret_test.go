@@ -10,13 +10,14 @@ import (
 )
 
 var _ = Describe("Verify superuser secret template", func() {
+
 	var (
 		helmChartPath string
 		secret        *corev1.Secret
 	)
 
 	BeforeEach(func() {
-		path, err := filepath.Abs(chartsPath)
+		path, err := filepath.Abs(ChartsPath)
 		Expect(err).To(BeNil())
 		helmChartPath = path
 		secret = &corev1.Secret{}
@@ -24,7 +25,7 @@ var _ = Describe("Verify superuser secret template", func() {
 
 	renderTemplate := func(options *helm.Options) error {
 		renderedOutput, err := helm.RenderTemplateE(
-			GinkgoT(), options, helmChartPath, helmReleaseName,
+			GinkgoT(), options, helmChartPath, HelmReleaseName,
 			[]string{"templates/cassandra/superuser-secret.yaml"},
 		)
 
