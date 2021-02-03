@@ -96,9 +96,13 @@ backupRestore:
 
 The chart's entries relate to a Kubernetes Secret, which contains the object store credentials. Specifically, the `bucketSecret` property specifies the name of a secret that should contain an AWS access key. As described in the [Medusa documentation](https://github.com/thelastpickle/cassandra-medusa/blob/master/docs/aws_s3_setup.md), the AWS account with which the key is associated should have the permissions that are required for Medusa to access the S3 bucket.
 
-Example:
+Example for a new k8ssandra installation:
 
 `helm install k8ssandra k8ssandra/k8ssandra -f backup-restore-values.yaml`
+
+Example for an existing k8ssandra installation:
+
+`helm upgrade k8ssandra k8ssandra/k8ssandra -f backup-restore-values.yaml`
 
 Allow a few minutes for the pods to start and proceed to a Ready state; check the pod status periodically:
 
