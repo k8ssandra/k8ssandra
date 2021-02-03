@@ -357,7 +357,7 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			Expect(len(cassdc.Spec.PodTemplateSpec.Spec.Containers[1].VolumeMounts)).To(Equal(4))
 			Expect(cassdc.Spec.PodTemplateSpec.Spec.Containers[1].VolumeMounts[0].Name).To(Equal(medusaConfigVolumeName))
 
-			Expect(len(cassdc.Spec.PodTemplateSpec.Spec.Volumes)).To(Equal(3))
+			Expect(len(cassdc.Spec.PodTemplateSpec.Spec.Volumes)).To(Equal(4))
 			Expect(cassdc.Spec.PodTemplateSpec.Spec.Volumes[0].Name).To(Equal(medusaConfigVolumeName))
 		})
 
@@ -436,7 +436,7 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 
 			verifyMedusaVolumeMounts(medusaContainer)
 
-			Expect(len(cassdc.Spec.PodTemplateSpec.Spec.Volumes)).To(Equal(3))
+			Expect(len(cassdc.Spec.PodTemplateSpec.Spec.Volumes)).To(Equal(4))
 			Expect(cassdc.Spec.PodTemplateSpec.Spec.Volumes[0].Name).To(Equal(medusaConfigVolumeName))
 
 			Expect(cassdc.Spec.Users).To(ContainElement(cassdcv1beta1.CassandraUser{SecretName: secretName, Superuser: true}))
@@ -518,7 +518,7 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 
 			verifyMedusaVolumeMounts(medusaContainer)
 
-			Expect(len(cassdc.Spec.PodTemplateSpec.Spec.Volumes)).To(Equal(3))
+			Expect(len(cassdc.Spec.PodTemplateSpec.Spec.Volumes)).To(Equal(4))
 			Expect(cassdc.Spec.PodTemplateSpec.Spec.Volumes[0].Name).To(Equal(medusaConfigVolumeName))
 
 			Expect(cassdc.Spec.Users).To(ContainElement(cassdcv1beta1.CassandraUser{SecretName: secretName, Superuser: true}))

@@ -281,10 +281,6 @@ spec:
 {{- end }}
 {{- end }}
       volumes:
-        - name: cassandra-config
-          emptyDir: {}
-        - name: mcac-agent-config
-          emptyDir: {}
         {{- if .Values.backupRestore.medusa.enabled }}
         - name: {{ .Release.Name }}-medusa-config-k8ssandra
           configMap:
@@ -296,3 +292,7 @@ spec:
           secret:
             secretName: {{ .Values.backupRestore.medusa.bucketSecret }}
         {{- end }}
+        - name: cassandra-config
+          emptyDir: {}
+        - name: mcac-agent-config
+          emptyDir: {}
