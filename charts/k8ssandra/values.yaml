@@ -115,8 +115,14 @@ backupRestore:
   medusa:
     # If enabled, bucketName and bucketSecret must be defined.
     enabled: false
-    # image The Medusa image which is built from https://github.com/thelastpickle/cassandra-medusa/tree/master/k8s.
-    image: k8ssandra/medusa:c5fefc4a3b4c
+    # image configures the Medusa image which is built from https://github.com/thelastpickle/cassandra-medusa/tree/master/k8s.
+    image:
+      # repository specifies from where to pull the image
+      repository: docker.io/k8ssandra/medusa
+      # tag the image tag to pull
+      tag: 6ab6a55541e9
+      # pullPolicy
+      pullPolicy: IfNotPresent
 
     # cassandraUser configures the Cassandra user used by Medusa when authentication is
     # enabled. If neither cassandraUser.secret nor casandraUser.username are set, then a
