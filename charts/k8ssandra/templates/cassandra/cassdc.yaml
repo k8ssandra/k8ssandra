@@ -4,8 +4,7 @@ apiVersion: cassandra.datastax.com/v1beta1
 kind: CassandraDatacenter
 metadata:
   name: {{ $datacenter.name }}
-  labels:
-{{ include "k8ssandra.labels" . | indent 4 }}
+  labels: {{ include "k8ssandra.labels" . | indent 4 }}
   annotations:
 {{- if .Values.repair.reaper.enabled }}
     reaper.cassandra-reaper.io/instance: {{ .Release.Name }}-reaper-k8ssandra

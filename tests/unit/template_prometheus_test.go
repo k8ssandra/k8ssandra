@@ -12,9 +12,9 @@ import (
 var _ = Describe("Verify Service Monitor template", func() {
 
 	var (
-		helmReleaseName       = "k8ssandra-test"
-		defaultTestNamespace  = "k8ssandra"
-		defaultKubeCtlOptions = k8s.NewKubectlOptions("", "", defaultTestNamespace)
+		HelmReleaseName       = "k8ssandra-test"
+		DefaultTestNamespace  = "k8ssandra"
+		defaultKubeCtlOptions = k8s.NewKubectlOptions("", "", DefaultTestNamespace)
 
 		helmChartPath string
 		err           error
@@ -22,7 +22,7 @@ var _ = Describe("Verify Service Monitor template", func() {
 	)
 
 	BeforeEach(func() {
-		helmChartPath, err = filepath.Abs(chartsPath)
+		helmChartPath, err = filepath.Abs(ChartsPath)
 		Expect(err).To(BeNil())
 	})
 
@@ -33,7 +33,7 @@ var _ = Describe("Verify Service Monitor template", func() {
 	renderTemplate := func(options *helm.Options) error {
 
 		renderedOutput, err := helm.RenderTemplateE(
-			GinkgoT(), options, helmChartPath, helmReleaseName,
+			GinkgoT(), options, helmChartPath, HelmReleaseName,
 			[]string{"templates/prometheus/service_monitor.yaml"},
 		)
 
@@ -69,7 +69,7 @@ var _ = Describe("Verify Service Monitor template", func() {
 			Expect(renderTemplate(options)).To(Succeed())
 
 			meta := sm["metadata"]
-			Expect(meta.(map[string]interface{})["labels"].(map[string]interface{})["release"]).To(BeIdenticalTo(helmReleaseName))
+			Expect(meta.(map[string]interface{})["labels"].(map[string]interface{})["release"]).To(BeIdenticalTo(HelmReleaseName))
 
 			spec := sm["spec"]
 			Expect(spec).ToNot(BeEmpty())
