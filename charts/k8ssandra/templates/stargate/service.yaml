@@ -3,7 +3,10 @@ apiVersion: v1
 kind: Service
 metadata:
   name: {{ .Release.Name }}-{{ include "k8ssandra.datacenterName" . }}-stargate-service
-  labels: {{ include "k8ssandra.labels" . | indent 4 }}
+  labels:
+    release: {{ .Release.Name }}
+    app: {{ .Release.Name }}-{{ include "k8ssandra.datacenterName" . }}-stargate
+{{ include "k8ssandra.labels" . | indent 4 }}
 spec:
   type: ClusterIP
   ports:

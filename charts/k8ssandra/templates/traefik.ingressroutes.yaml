@@ -1,6 +1,7 @@
 {{- $traefik := .Values.ingress.traefik -}}
 {{- if $traefik.enabled }}
 {{- $releaseName := .Release.Name -}}
+{{- $clusterName := .Values.cassandra.clusterName -}}
 {{- $datacenterName := (index .Values.cassandra.datacenters 0).name -}}
 
 {{- if $traefik.repair.enabled }}
@@ -39,7 +40,7 @@ spec:
   routes:
     - match: HostSNI(`*`)
       services:
-        - name: {{ $releaseName }}-{{ $datacenterName }}-service
+        - name: {{ $clusterName }}-{{ $datacenterName }}-service
           port: 9042
 {{- end }}
 {{- if $traefik.stargate.enabled }}

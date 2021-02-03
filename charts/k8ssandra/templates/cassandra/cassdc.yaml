@@ -1,4 +1,5 @@
 {{- $datacenter := (index .Values.cassandra.datacenters 0) -}}
+{{- $medusaImage := (printf "%s:%s" .Values.backupRestore.medusa.image.repository .Values.backupRestore.medusa.image.tag) -}}
 apiVersion: cassandra.datastax.com/v1beta1
 kind: CassandraDatacenter
 metadata:
@@ -150,8 +151,8 @@ spec:
           - mountPath: /config
             name: server-config
       - name: medusa-restore
-        image: {{ .Values.backupRestore.medusa.image }}
-        imagePullPolicy: IfNotPresent
+        image: {{ $medusaImage }}
+        imagePullPolicy: {{ .Values.backupRestore.medusa.image.pullPolicy }}
         env:
           - name: MEDUSA_MODE
             value: RESTORE
@@ -212,8 +213,8 @@ spec:
           - name: cassandra-config
             mountPath: /etc/cassandra
       - name: medusa
-        image: {{ .Values.backupRestore.medusa.image }}
-        imagePullPolicy: IfNotPresent
+        image: {{ $medusaImage }}
+        imagePullPolicy: {{ .Values.backupRestore.medusa.image.pullPolicy }}
         ports:
           - containerPort: 50051
         env:
