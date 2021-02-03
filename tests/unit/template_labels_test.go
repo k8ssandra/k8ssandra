@@ -26,6 +26,7 @@ var _ = Describe("Verify k8ssandra and dependent template labels", func() {
 
 			path, err := filepath.Abs(ChartsPath)
 			Expect(err).To(BeNil())
+
 			localChartsPath = path
 
 			options := &helm.Options{

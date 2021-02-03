@@ -1,6 +1,0 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: {{ .Release.Name }}-commons
-data:
-  common_labels: {{ include "k8ssandra.labels" . | indent 4 }}
