@@ -82,7 +82,7 @@ secret/medusa-bucket-key configured
 
 ### Create or update the k8ssandra cluster
 
-Install the `k8ssandra` chart with the following properties. You can reference the provided [backup-restore-values.yaml](./backup-restore-values.yaml) file. It contains:
+Install the `k8ssandra` chart with the following properties. You can reference the provided [backup-restore-values.yaml](backup-restore-values.yaml) file. It contains:
 
 ```
 size: 3
@@ -91,11 +91,10 @@ backupRestore:
     enabled: true
     bucketName: k8ssandra-bucket-dev
     bucketSecret: medusa-bucket-key
-    multiTenant: true
     storage: s3
 ```
 
-The chart's entries relate to a Kubernetes Secret, which contains the object store credentials. 
+The chart's entries relate to a Kubernetes Secret, which contains the object store credentials. Specifically, the `bucketSecret` property specifies the name of a secret that should contain an AWS access key. As described in the [Medusa documentation](https://github.com/thelastpickle/cassandra-medusa/blob/master/docs/aws_s3_setup.md), the AWS account with which the key is associated should have the permissions that are required for Medusa to access the S3 bucket.
 
 Example:
 
@@ -135,7 +134,15 @@ kubectl get cassdc dc1 -o yaml`
 .
 .
 status:
-  cassandrOperatorProgress: Ready
+  cassandraOperatorProgress: Ready
+  conditions:
+  ...
+  - lastTransitionTime: "2021-02-03T17:04:52Z"
+    message: ""
+    reason: ""
+    status: "True"
+    type: Ready
+  ...
 ```
 
 ### Add test data
@@ -191,7 +198,7 @@ Review the current charts that are in use, so far:
 
 ```
 NAME               	NAMESPACE	REVISION	UPDATED                             	STATUS  	CHART                  	APP VERSION
-k8ssandra.         	default  	1       	2021-01-16 20:17:23.107265 -0700 MST	deployed	k8ssandra-0.9.0        	3.11.7  
+k8ssandra          	default  	1       	2021-02-03 04:17:23.107265 -0700 MST	deployed	k8ssandra-0.38.0        3.11.7  
 ```
 
 Also get the deployment status, so far:
