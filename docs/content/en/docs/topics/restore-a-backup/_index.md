@@ -48,7 +48,7 @@ Update Complete. ⎈Happy Helming!⎈
 
 ### Create secret for read/write access to an S3 bucket
 
-Before installing the k8ssandra cluster, we need to supply credentials so that Medusa has read/write to an AWS S3 bucket, which is where the backup will be stored.  Currently, Medusa supports local, Amazon S3, GKE, and Azure buckets. Currently, K8ssandra supports S3. 
+Before installing the k8ssandra cluster, we need to supply credentials so that Medusa has read/write to an AWS S3 bucket, which is where the backup will be stored.  Currently, Medusa supports local, Amazon S3, Google Cloud Storage, and Azure buckets. Currently, K8ssandra supports S3. 
 
 **Note:** See [AWS S3 setup](https://github.com/thelastpickle/cassandra-medusa/blob/master/docs/aws_s3_setup.md) on the Medusa wiki for more details for configuring S3.
 
