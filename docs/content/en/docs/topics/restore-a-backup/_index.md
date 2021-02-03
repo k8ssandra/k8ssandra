@@ -122,8 +122,6 @@ prometheus-pulsar-kube-prometheus-sta-prometheus-0    2/2     Running           
 
 Backup and restore operations are enabled by default. In the example YAML, `bucketName` corresponds to the name of the S3 bucket: `K8ssanda-bucket-dev`.  The `bucketSecret` corresponds to the secret credentials.
 
-The `k8ssandra` Helm chart includes the Grafana Operator. Notice that `k8ssandra` adds a number of properties in the `cassdc` datacenter.  
-
 `kubectl get cassdc dc1 -o yaml`
 
 In the output, see the `podTemplateSpec` property; two containers were added for Medusa.  Here’s the entry for the GRPC backup service:
