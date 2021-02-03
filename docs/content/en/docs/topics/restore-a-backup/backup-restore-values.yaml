@@ -4,5 +4,4 @@ backupRestore:
     enabled: true
     bucketName: k8ssandra-bucket-dev
     bucketSecret: medusa-bucket-key
-    multiTenant: true
     storage: s3
