@@ -286,9 +286,12 @@ kube-prometheus-stack:
     # Provisions an instance of Prometheus as part of this release
     enabled: true
     prometheusSpec:
-      # Uncomment to listen for Prometheus traffic under a route prefix
-      # externalUrl: http://localhost:9090/prometheus
-      # routePrefix: /prometheus
+      # routePrefix is used to register routes, overriding externalUrl route. It is useful
+      # for proxies that rewrite URLs.
+      routePrefix: /
+
+      # externalUrl is an external URL at which Prometheus will be reachable.
+      externalUrl: ""
 
     # Enable templating of ingress resources for external prometheus traffic
     ingress:
