@@ -886,4 +886,34 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 
 		Expect(cassdc.Spec.Users).To(ConsistOf(cassdcv1beta1.CassandraUser{Superuser: true, SecretName: clusterName + "-stargate"}))
 	})
+
+	It("enabling Cassandra auth with Stargate", func() {
+		dcName := "test"
+		clusterSize := 3
+		clusterName := "auth-test"
+
+		options := &helm.Options{
+			KubectlOptions: defaultKubeCtlOptions,
+			SetValues: map[string]string{
+				"stargate.enabled":              "true",
+				"cassandra.clusterName":         clusterName,
+				"backupRestore.medusa.enabled":  "false",
+				"repair.reaper.enabled":         "false",
+				"cassandra.auth.enabled":        "true",
+				"cassandra.datacenters[0].name": dcName,
+				"cassandra.datacenters[0].size": strconv.Itoa(clusterSize),
+			},
+		}
+
+		Expect(renderTemplate(options)).To(Succeed())
+
+		Expect(cassdc.Name).To(Equal(dcName))
+
+		var config Config
+		Expect(json.Unmarshal(cassdc.Spec.Config, &config)).To(Succeed())
+		Expect(config.CassandraConfig.Authenticator).To(Equal("PasswordAuthenticator"))
+		Expect(config.CassandraConfig.Authorizer).To(Equal("CassandraAuthorizer"))
+
+		Expect(cassdc.Spec.Users).To(ConsistOf(cassdcv1beta1.CassandraUser{Superuser: true, SecretName: clusterName + "-stargate"}))
+	})
 })

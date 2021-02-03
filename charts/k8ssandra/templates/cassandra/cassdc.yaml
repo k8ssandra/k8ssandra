@@ -43,9 +43,9 @@ spec:
   allowMultipleNodesPerWorker: {{ .Values.cassandra.allowMultipleNodesPerWorker | default false}}
 {{- if .Values.cassandra.allowMultipleNodesPerWorker}}
   resources:
-    limits: 
+    limits:
 {{ toYaml (required "set resource limits/requests when enabling allowMultipleNodesPerWorker" .Values.cassandra.resources.limits) | indent 6}}
-    requests:      
+    requests:
 {{ toYaml (required "set resource limits/requests when enabling allowMultipleNodesPerWorker" .Values.cassandra.resources.requests) | indent 6}}
 {{- else if .Values.cassandra.resources }}
   resources:
@@ -71,7 +71,7 @@ spec:
       superuser: true
   {{- end }}
 {{- end }}
-  config:    
+  config:
     cassandra-yaml:
 {{- if .Values.cassandra.auth.enabled }}
       authenticator: PasswordAuthenticator
