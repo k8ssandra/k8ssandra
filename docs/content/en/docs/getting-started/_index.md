@@ -42,16 +42,40 @@ helm repo update
 
 Alternatively, you may download the individual charts directly from the project's [releases](https://github.com/k8ssandra/k8ssandra/releases) page.
 
-## Install K8ssandra
+## Enabling Stargate
 
-From a packaging perspective, K8ssandra is composed of a number of helm charts. The `k8ssandra-tools` chart handles the installation of operators and custom resources. The `k8ssandra-cluster` chart (which you can uniquely name) is focused on provisioning cluster instances. This loose coupling allows for separate lifecycles of components with an easy procedure - submitting just two `helm install` commands.
+Stargate deployment is *disabled* by default. To enable it, modify the values provided to the helm install/upgrade of the
+`k8ssandra` chart.
 
-```console
-# Install shared dependencies / tooling
-helm install k8ssandra-tools k8ssandra/k8ssandra
+This can be done by adding to the values.yaml file provided to helm:
 
-# Provision a K8ssandra cluster named "k8ssandra-cluster-a" 
-helm install k8ssandra-cluster-a k8ssandra/k8ssandra-cluster  
+```
+stargate:
+  enabled: true
 ```
 
-In later steps, you can upgrade your k8ssandra-cluster via `helm upgrade` commands, for example to access services from outside Kubernetes via a Traefik Ingress controller.
+or set via the command line when installing via helm:
+
+```
+--set stargate.enabled=true
+```
+
+## Install K8ssandra
+
+From a packaging perspective, K8ssandra is composed of a number of helm charts. It handles the installation of operators and custom resources as well as
+provisioning the cluster instances.
+
+```console
+helm install k8ssandra k8ssandra/k8ssandra
+```
+
+> When installing K8ssandra on newer versions of Kubernetes (v1.19+), some warnings may be visible on the command line 
+> related to deprecated API usage.  This is currently a known issue and will not impact the provisioning of the cluster.
+> 
+> ```
+> W0128 11:24:54.792095  27657 warnings.go:70] apiextensions.k8s.io/v1beta1 CustomResourceDefinition is deprecated in v1.16+, unavailable in v1.22+; use apiextensions.k8s.io/v1 CustomResourceDefinition
+> ```
+> 
+> For more information, check out issue [#267](https://github.com/k8ssandra/k8ssandra/issues/267).
+
+In later steps, you can upgrade your k8ssandra via `helm upgrade` commands, for example to access services from outside Kubernetes via a Traefik Ingress controller.

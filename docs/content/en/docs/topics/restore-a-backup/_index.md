@@ -9,8 +9,7 @@ This topic walks you through the steps to backup and restore Cassandra data runn
 
 ## Tools
 
-* K8ssandra-tools Helm chart
-* K8ssandra-cluster Helm chart, which we'll extend with `backupRestore` Medusa buckets for Amazon S3 integration
+* K8ssandra Helm chart, which we'll extend with `backupRestore` Medusa buckets for Amazon S3 integration
 * Sample files in GitHub:
   * [medusa-bucket-key.yaml](medusa-bucket-key.yaml) to create a secret with credentials for AWS S3 buckets
   * [backup-restore-values.yaml](backup-restore-values.yaml) to enable Medusa (backup/restore service) and set related minimal values
@@ -199,13 +198,13 @@ Also get the deployment status, so far:
 
 `kubectl get deployment`
 ```
-NAME                                             READY   UP-TO-DATE   AVAILABLE   AGE
-cass-operator                                    1/1     1            1           39m
-grafana-deployment                               1/1     1            1           26m
-k8ssandra-cluster-1-grafana-operator-k8ssandra   1/1     1            1           26m
-k8ssandra-cluster-1-reaper-k8ssandra             1/1     1            1           24m
-k8ssandra-cluster-1-reaper-operator-k8ssandra    1/1     1            1           26m
-k8ssandra-tools-kube-prome-operator              1/1     1            1           39m
+NAME                                       READY   UP-TO-DATE   AVAILABLE   AGE
+cass-operator                              1/1     1            1           159m
+k8ssandra-grafana-operator-k8ssandra       1/1     1            1           159m
+k8ssandra-kube-prometheus-stack-operator   1/1     1            1           159m
+k8ssandra-reaper-k8ssandra                 1/1     1            1           156m
+k8ssandra-reaper-operator-k8ssandra        1/1     1            1           159m
+grafana-deployment                         1/1     1            1           158m
 ```
 
 The output above shows the addition of medusa-test-medusa-operator-k8ssandra pod. 

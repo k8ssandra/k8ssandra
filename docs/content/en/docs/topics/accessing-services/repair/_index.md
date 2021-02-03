@@ -6,7 +6,7 @@ description: |
   Follow these steps to access the Repair Web Interface (Reaper).
 ---
 
-Repairs are a critical anti-entropy operation in Apache Cassandra&reg;. In the past, there have been many custom solutions to manage them outside of your main Cassandra Installation. K8ssandra provides the Repair Web Interface (also known as Cassandra Reaper) that eliminates the need for a custom solution. Just like K8ssandra makes Cassandra setup easy, Reaper makes configuration of repairs even easier.
+Repairs are a critical anti-entropy operation in Apache Cassandra&reg;. In the past, there have been many custom solutions to manage them outside of your main Cassandra Installation. K8ssandra provides the Repair Web Interface (also known as Reaper) that eliminates the need for a custom solution. Just like K8ssandra makes Cassandra setup easy, Reaper makes configuration of repairs even easier.
 
 **Note:** The requirement for your environment may vary considerably, however the general recommendation is to run a repair operation on your Cassandra clusters about once a week. 
 
@@ -35,9 +35,9 @@ following address:
 
 http://REPAIR_DOMAIN/webui
 
-For example, to upgrade a previously installed `k8ssandra-cluster` that's running locally:
+For example, to upgrade a previously installed `k8ssandra` that's running locally:
 
-`helm upgrade k8ssandra-cluster-a k8ssandra/k8ssandra-cluster --set ingress.traefik.enabled=true --set ingress.traefik.repair.host=repair.localhost`
+`helm upgrade k8ssandra k8ssandra/k8ssandra --set ingress.traefik.enabled=true --set ingress.traefik.repair.host=repair.localhost`
 
 Notice how in this example, the DNS host name is specified on the command line as `repair.localhost`.
 
@@ -51,8 +51,8 @@ grafana-deployment-6bb9bc6d89-ghc4s                             1/1     Running 
 k8ssandra-dc1-default-sts-0                                     2/2     Running     0          4m48s
 k8ssandra-tools-grafana-operator-k8ssandra-54fbbc799c-68htn     1/1     Running     0          12m
 k8ssandra-tools-kube-prome-operator-f87955c85-t2s9k             2/2     Running     0          12m
-k8ssandra-cluster-a-reaper-k8ssandra-64b6b4c58-mkfxw            1/1     Running     0          2m52s
-k8ssandra-cluster-a-reaper-operator-k8ssandra-799bd4568f-lk4hv  1/1     Running     0          4m49s
+k8ssandra-reaper-k8ssandra-64b6b4c58-mkfxw                      1/1     Running     0          2m52s
+k8ssandra-reaper-operator-k8ssandra-799bd4568f-lk4hv            1/1     Running     0          4m49s
 prometheus-mycluster-prometheus-k8ssandra-0                     3/3     Running     1          4m48s
 ```
 
@@ -96,6 +96,9 @@ On the repair job you just configured, click **Run now**.
 
 Notice the repair job kicking off.
 
-See [Run a cluster repair](http://cassandra-reaper.io/docs/usage/single/).
+## Recommended reading
 
-For more reading on Reaper, visit [this article](https://medium.com/rahasak/orchestrate-repairs-with-cassandra-reaper-26094bdb59f6) on medium.com.
+* [Running a cluster repair](http://cassandra-reaper.io/docs/usage/single/)
+* [Reaper details](http://cassandra-reaper.io/)
+* [Blog articles](https://thelastpickle.com/blog/)
+

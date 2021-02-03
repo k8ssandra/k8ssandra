@@ -4,7 +4,6 @@ import (
 	"path/filepath"
 
 	"github.com/gruntwork-io/terratest/modules/helm"
-	"github.com/gruntwork-io/terratest/modules/k8s"
 	api "github.com/k8ssandra/reaper-operator/api/v1alpha1"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -29,8 +28,8 @@ var _ = Describe("Verify Reaper template", func() {
 
 	renderTemplate := func(options *helm.Options) {
 		renderedOutput := helm.RenderTemplate(
-			GinkgoT(), options, helmChartPath, "k8ssandra-test",
-			[]string{"templates/reaper.yaml"},
+			GinkgoT(), options, helmChartPath, helmReleaseName,
+			[]string{"templates/reaper/reaper.yaml"},
 		)
 
 		helm.UnmarshalK8SYaml(GinkgoT(), renderedOutput, reaper)
@@ -39,7 +38,7 @@ var _ = Describe("Verify Reaper template", func() {
 	Context("by rendering it with options", func() {
 		It("using only default options", func() {
 			options := &helm.Options{
-				KubectlOptions: k8s.NewKubectlOptions("", "", "k8ssandra"),
+				KubectlOptions: defaultKubeCtlOptions,
 			}
 
 			renderTemplate(options)
@@ -50,8 +49,11 @@ var _ = Describe("Verify Reaper template", func() {
 		It("changing datacenter name", func() {
 			targetDcName := "reaper-dc"
 			options := &helm.Options{
-				SetStrValues:   map[string]string{"datacenterName": targetDcName},
-				KubectlOptions: k8s.NewKubectlOptions("", "", "k8ssandra"),
+				SetStrValues: map[string]string{
+					"cassandra.datacenters[0].name": targetDcName,
+					"cassandra.datacenters[0].size": "1",
+				},
+				KubectlOptions: defaultKubeCtlOptions,
 			}
 
 			renderTemplate(options)
@@ -61,7 +63,7 @@ var _ = Describe("Verify Reaper template", func() {
 		It("modifying autoscheduling option", func() {
 			options := &helm.Options{
 				SetStrValues:   map[string]string{"repair.reaper.autoschedule": "true"},
-				KubectlOptions: k8s.NewKubectlOptions("", "", "k8ssandra"),
+				KubectlOptions: defaultKubeCtlOptions,
 			}
 
 			renderTemplate(options)

@@ -1,0 +1,280 @@
+{{- $datacenter := (index .Values.cassandra.datacenters 0) -}}
+{{- $medusaImage := (printf "%s:%s" .Values.backupRestore.medusa.image.repository .Values.backupRestore.medusa.image.tag) -}}
+apiVersion: cassandra.datastax.com/v1beta1
+kind: CassandraDatacenter
+metadata:
+  name: {{ $datacenter.name }}
+  labels:
+{{ include "k8ssandra.labels" . | indent 4 }}
+  annotations:
+{{- if .Values.repair.reaper.enabled }}
+    reaper.cassandra-reaper.io/instance: {{ .Release.Name }}-reaper-k8ssandra
+{{- end }}
+spec:
+  clusterName: {{ .Values.cassandra.clusterName }}
+  serverType: cassandra
+  serverVersion: {{ .Values.cassandra.version | quote }}
+  dockerImageRunsAsCassandra: false
+{{- if eq "3.11.7" .Values.cassandra.version }}
+  serverImage: datastax/cassandra-mgmtapi-3_11_7:v0.1.17
+{{- else if eq "3.11.8" .Values.cassandra.version }}
+  serverImage: datastax/cassandra-mgmtapi-3_11_8:v0.1.17
+{{- else if eq "3.11.9" .Values.cassandra.version }}
+  serverImage: datastax/cassandra-mgmtapi-3_11_9:v0.1.17
+{{- else }}
+  {{- fail (print .Values.cassandra.version " is not a supported Cassandra version") }}
+{{- end }}
+  managementApiAuth:
+    insecure: {}
+  size: {{ $datacenter.size }}
+  {{- if $datacenter.racks }}
+  racks:
+  {{- range $datacenter.racks  }}
+  - name: {{ .name }}
+    {{- if .affinityLabels }}
+    nodeAffinityLabels: {{ toYaml .affinityLabels | nindent 6 }}
+    {{- end}}
+  {{- end }}
+  {{- end }}
+  storageConfig:
+    cassandraDataVolumeClaimSpec:
+      storageClassName: {{ .Values.cassandra.cassandraLibDirVolume.storageClass | default "standard" }}
+      accessModes:
+        - ReadWriteOnce
+      resources:
+        requests:
+          storage: {{ .Values.cassandra.cassandraLibDirVolume.size | default "5Gi" }}
+  allowMultipleNodesPerWorker: {{ .Values.cassandra.allowMultipleNodesPerWorker | default false}}
+{{- if .Values.cassandra.allowMultipleNodesPerWorker}}
+  resources:
+    limits: 
+{{ toYaml (required "set resource limits/requests when enabling allowMultipleNodesPerWorker" .Values.cassandra.resources.limits) | indent 6}}
+    requests:      
+{{ toYaml (required "set resource limits/requests when enabling allowMultipleNodesPerWorker" .Values.cassandra.resources.requests) | indent 6}}
+{{- else if .Values.cassandra.resources }}
+  resources:
+{{ toYaml .Values.cassandra.resources | indent 6 }}
+{{- end }}
+{{- if .Values.cassandra.auth.superuser.secret }}
+  superuserSecretName: {{ .Values.cassandra.auth.superuser.secret }}
+{{- else if .Values.cassandra.auth.superuser.username }}
+  superuserSecretName: {{ .Values.cassandra.clusterName }}-superuser
+{{- end }}
+{{- if .Values.cassandra.auth.enabled }}
+  users:
+    - secretName: {{ default (printf "%s-%s" .Values.cassandra.clusterName "reaper") .Values.repair.reaper.cassandraUser.secret }}
+      superuser: true
+  {{- if .Values.backupRestore.medusa.enabled }}
+    - secretName: {{ default (printf "%s-%s" .Values.cassandra.clusterName "medusa") .Values.backupRestore.medusa.cassandraUser.secret }}
+      superuser: true
+  {{- end}}
+{{- end }}
+  config:    
+    cassandra-yaml:
+{{- if .Values.cassandra.auth.enabled }}
+      authenticator: PasswordAuthenticator
+      authorizer: CassandraAuthorizer
+{{- else }}
+      authenticator: AllowAllAuthenticator
+      authorizer: AllowAllAuthorizer
+{{- end }}
+      role_manager: CassandraRoleManager
+      roles_validity_in_ms: {{ .Values.cassandra.auth.cacheValidityPeriodMillis }}
+      roles_update_interval_in_ms: {{ .Values.cassandra.auth.cacheUpdateIntervalMillis }}
+      permissions_validity_in_ms: {{ .Values.cassandra.auth.cacheValidityPeriodMillis }}
+      permissions_update_interval_in_ms: {{ .Values.cassandra.auth.cacheUpdateIntervalMillis }}
+      credentials_validity_in_ms: {{ .Values.cassandra.auth.cacheValidityPeriodMillis }}
+      credentials_update_interval_in_ms: {{ .Values.cassandra.auth.cacheUpdateIntervalMillis }}
+    jvm-options:
+{{- if $datacenter.heap }}
+  {{- if $datacenter.heap.size }}
+      initial_heap_size: {{ $datacenter.heap.size }}
+      max_heap_size: {{ $datacenter.heap.size}}
+  {{- end }}
+  {{- if $datacenter.heap.newGenSize }}
+      heap_size_young_generation: {{ $datacenter.heap.newGenSize }}
+  {{- end }}
+  {{- else if .Values.cassandra.heap }}
+  {{- if .Values.cassandra.heap.size  }}
+      initial_heap_size: {{ .Values.cassandra.heap.size }}
+      max_heap_size: {{ .Values.cassandra.heap.size }}
+  {{- end }}
+  {{- if  .Values.cassandra.heap.newGenSize }}
+      heap_size_young_generation: {{ .Values.cassandra.heap.newGenSize }}
+  {{- end }}
+{{- end}}
+      additional-jvm-opts:
+{{- if .Values.cassandra.auth.enabled }}
+        - "-Dcassandra.system_distributed_replication_dc_names={{ $datacenter.name }}"
+        - "-Dcassandra.system_distributed_replication_per_dc={{ min 5 $datacenter.size }}"
+{{- end }}
+  podTemplateSpec:
+    spec:
+{{- if or .Values.repair.reaper.enabled .Values.backupRestore.medusa.enabled }}
+      initContainers:
+      {{/* The server-config-init container is "built-in" in that it is provided by
+           cass-operator. We specify it here in order to make it run first. It needs
+           to run first when backup/restore is enabled. The configs need to be generated
+           and present for the medusa-restore initContainer.
+        */}}
+      - name: server-config-init
+{{- if .Values.repair.reaper.enabled }}
+      - name: jmx-credentials
+        image: busybox
+        imagePullPolicy: IfNotPresent
+        env:
+          - name: JMX_USERNAME
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Release.Name }}-reaper-secret-k8ssandra
+                key: username
+          - name: JMX_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Release.Name }}-reaper-secret-k8ssandra
+                key: password
+        args:
+          - /bin/sh
+          - -c
+          - echo -n "$JMX_USERNAME $JMX_PASSWORD" > /config/jmxremote.password
+        volumeMounts:
+          - mountPath: /config
+            name: server-config
+{{- end}}
+{{- if .Values.backupRestore.medusa.enabled }}
+      - name: get-jolokia
+        image: busybox
+        args:
+          - /bin/sh
+          - -c
+          - wget https://search.maven.org/remotecontent?filepath=org/jolokia/jolokia-jvm/1.6.2/jolokia-jvm-1.6.2-agent.jar && mv jolokia-jvm-1.6.2-agent.jar /config
+        volumeMounts:
+          - mountPath: /config
+            name: server-config
+      - name: medusa-restore
+        image: {{ $medusaImage }}
+        imagePullPolicy: {{ .Values.backupRestore.medusa.image.pullPolicy }}
+        env:
+          - name: MEDUSA_MODE
+            value: RESTORE
+        {{- if .Values.cassandra.auth.enabled }}
+        {{- if .Values.backupRestore.medusa.cassandraUser.secret }}
+          - name: CQL_USERNAME
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.backupRestore.medusa.cassandraUser.secret }}
+                key: username
+          - name: CQL_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.backupRestore.medusa.cassandraUser.secret }}
+                key: password
+        {{- else }}
+          - name: CQL_USERNAME
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.cassandra.clusterName }}-medusa
+                key: username
+          - name: CQL_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.cassandra.clusterName }}-medusa
+                key: password
+        {{- end}}
+        {{- end}}
+        volumeMounts:
+          - name: {{ .Release.Name }}-medusa-config-k8ssandra
+            mountPath: /etc/medusa/medusa.ini
+            subPath: medusa.ini
+          - name: server-config
+            mountPath: /etc/cassandra
+          - mountPath: /var/lib/cassandra
+            name: server-data
+{{- if eq .Values.backupRestore.medusa.storage "s3"}}
+          - name: medusa-bucket-key
+            mountPath: /etc/medusa-secrets
+{{- else if eq .Values.backupRestore.medusa.storage "gcs"}}
+          - name:  {{ .Values.backupRestore.medusa.bucketSecret }}
+            mountPath: /etc/medusa-secrets
+{{- end}}
+{{- end}}
+{{- end}}
+      containers:
+      - name: cassandra
+{{- if or .Values.repair.reaper.enabled .Values.backupRestore.medusa.enabled }}
+        env:
+{{- if .Values.repair.reaper.enabled }}
+          - name: LOCAL_JMX
+            value: "no"
+{{- end}}
+{{- if .Values.backupRestore.medusa.enabled }}
+          - name: JVM_EXTRA_OPTS
+            value: -javaagent:/etc/cassandra/jolokia-jvm-1.6.2-agent.jar=port=7373,host=localhost
+        volumeMounts:
+          - name: cassandra-config
+            mountPath: /etc/cassandra
+      - name: medusa
+        image: {{ $medusaImage }}
+        imagePullPolicy: {{ .Values.backupRestore.medusa.image.pullPolicy }}
+        ports:
+          - containerPort: 50051
+        env:
+          - name: MEDUSA_MODE
+            value: GRPC
+        {{- if .Values.cassandra.auth.enabled }}
+        {{- if .Values.backupRestore.medusa.cassandraUser.secret }}
+          - name: CQL_USERNAME
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.backupRestore.medusa.cassandraUser.secret }}
+                key: username
+          - name: CQL_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.backupRestore.medusa.cassandraUser.secret }}
+                key: password
+        {{- else }}
+          - name: CQL_USERNAME
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.cassandra.clusterName }}-medusa
+                key: username
+          - name: CQL_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.cassandra.clusterName }}-medusa
+                key: password
+        {{- end}}
+        {{- end}}
+        readinessProbe:
+          exec:
+            command: [ "/bin/grpc_health_probe", "-addr=:50051" ]
+          initialDelaySeconds: 5
+        livenessProbe:
+          exec:
+            command: [ "/bin/grpc_health_probe", "-addr=:50051" ]
+          initialDelaySeconds: 10
+        volumeMounts:
+          - name: {{ .Release.Name }}-medusa-config-k8ssandra
+            mountPath: /etc/medusa/medusa.ini
+            subPath: medusa.ini
+          - name: cassandra-config
+            mountPath: /etc/cassandra
+          - mountPath: /var/lib/cassandra
+            name: server-data
+          - mountPath: /etc/medusa-secrets
+            name: {{ .Values.backupRestore.medusa.bucketSecret }}
+      volumes:
+      - name: {{ .Release.Name }}-medusa-config-k8ssandra
+        configMap:
+          name: {{ .Release.Name }}-medusa-config-k8ssandra
+          items:
+            - key: medusa.ini
+              path: medusa.ini
+      - name: cassandra-config
+        emptyDir: {}
+      - name:  {{ .Values.backupRestore.medusa.bucketSecret }}
+        secret:
+          secretName: {{ .Values.backupRestore.medusa.bucketSecret }}
+{{- end }}
+{{- end }}

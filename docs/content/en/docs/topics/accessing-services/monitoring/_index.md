@@ -6,7 +6,7 @@ description: |
   Follow these simple steps to access the Prometheus and Grafana monitoring interfaces.
 ---
 
-When you used Helm to install a `k8ssandra-cluster` instance in Kubernetes, one of the key features provided was a set of preconfigured Grafana dashboards. They visualize data collected about your environment by the Prometheus Operator, which is also packaged with K8ssandra. Use the Grafana dashboards to monitor your K8ssandra cluster's health and traffic metrics.  
+When you used Helm to install a `k8ssandra` instance in Kubernetes, one of the key features provided was a set of preconfigured Grafana dashboards. They visualize data collected about your environment by the Prometheus Operator, which is also packaged with K8ssandra. Use the Grafana dashboards to monitor your K8ssandra cluster's health and traffic metrics.  
 
 After you've met the prerequisites identified below, access the preconfigured Grafana dashboards. For example:
 
@@ -19,8 +19,7 @@ After you've met the prerequisites identified below, access the preconfigured Gr
 ## Prerequisites
 
 1. Kubernetes cluster with the following elements deployed:
-   * [K8ssandra Operators]({{< ref "getting-started#install-k8ssandra" >}})
-   * [K8ssandra Cluster]({{< ref "getting-started#install-k8ssandra" >}})
+   * [K8ssandra]({{< ref "getting-started#install-k8ssandra" >}})
    * [Ingress Controller]({{< ref "ingress" >}})
 1. DNS name for the Grafana service, referred to as _GRAFANA DOMAIN_ below.
 1. DNS name for the Prometheus service, referred to as _PROMETHEUS DOMAIN_
@@ -28,9 +27,9 @@ After you've met the prerequisites identified below, access the preconfigured Gr
 
 ## Access Grafana Interface
 
-If you haven't already, upgrade an existing `k8ssandra-cluster` by enabling the Traefik Ingress and passing in Prometheus and Grafana host flags. A command-line example when the host is local:
+If you haven't already, upgrade an existing `k8ssandra` by enabling the Traefik Ingress and passing in Prometheus and Grafana host flags. A command-line example when the host is local:
 
-`helm upgrade k8ssandra-cluster-a k8ssandra/k8ssandra-cluster --set ingress.traefik.enabled=true --set ingress.traefik.monitoring.grafana.host=grafana.localhost --set ingress.traefik.monitoring.prometheus.host=prometheus.localhost`
+`helm upgrade k8ssandra k8ssandra/k8ssandra --set ingress.traefik.enabled=true --set ingress.traefik.monitoring.grafana.host=grafana.localhost --set ingress.traefik.monitoring.prometheus.host=prometheus.localhost`
 
 After a few minutes, check that the pods configured by K8ssandra are running:
 
@@ -39,13 +38,13 @@ After a few minutes, check that the pods configured by K8ssandra are running:
 NAME                                                              READY   STATUS      RESTARTS   AGE
 cass-operator-65956c4f6d-f25nl                                    1/1     Running     0          4h26m
 grafana-deployment-8467d8bc9d-czsg5                               1/1     Running     0          4h13m
-k8ssandra-cluster-a-grafana-operator-k8ssandra-5bcb746b8d-4nlhz   1/1     Running     0          4h22m
-k8ssandra-cluster-a-reaper-k8ssandra-6cf5b87b8f-vxrwj             1/1     Running     0          4h5m
-k8ssandra-cluster-a-reaper-k8ssandra-schema-pjmv8                 0/1     Completed   5          4h8m
-k8ssandra-cluster-a-reaper-operator-k8ssandra-55dc486998-f4r46    1/1     Running     0          4h22m
+k8ssandra-grafana-operator-k8ssandra-5bcb746b8d-4nlhz             1/1     Running     0          4h22m
+k8ssandra-reaper-k8ssandra-6cf5b87b8f-vxrwj                       1/1     Running     0          4h5m
+k8ssandra-reaper-k8ssandra-schema-pjmv8                           0/1     Completed   5          4h8m
+k8ssandra-reaper-operator-k8ssandra-55dc486998-f4r46              1/1     Running     0          4h22m
 k8ssandra-dc1-default-sts-0                                       2/2     Running     0          4h22m
 k8ssandra-tools-kube-prome-operator-6d57f758dd-7zd92              1/1     Running     0          4h26m
-prometheus-k8ssandra-cluster-a-prometheus-k8ssandra-0             2/2     Running     1          4h22m
+prometheus-k8ssandra-prometheus-k8ssandra-0                       2/2     Running     1          4h22m
 ```
 
 Notice that the Grafana Operator is running, as well as other services such as Prometheus.
@@ -66,7 +65,7 @@ grafana:
 
 Refer to:
 
-https://github.com/k8ssandra/k8ssandra/blob/main/charts/k8ssandra-cluster/values.yaml
+https://github.com/k8ssandra/k8ssandra/blob/main/charts/k8ssandra/values.yaml
 
 You can change the credentials in several ways:
 
@@ -74,13 +73,13 @@ You can change the credentials in several ways:
 
     [http://grafana.localhost:8080/profile/password](http://grafana.localhost:8080/profile/password)
 
-* Or edit a **copy** of [values.yaml](https://github.com/k8ssandra/k8ssandra/blob/main/charts/k8ssandra-cluster/values.yaml); update the credentials; submit a `helm upgrade` command to the cluster. Example: 
+* Or edit a **copy** of [values.yaml](https://github.com/k8ssandra/k8ssandra/blob/main/charts/k8ssandra/values.yaml); update the credentials; submit a `helm upgrade` command to the cluster. Example: 
 
-    `helm upgrade cluster-name k8ssandra/k8ssandra-cluster -f my-values.yaml`
+    `helm upgrade cluster-name k8ssandra/k8ssandra -f my-values.yaml`
  
 * Or pass in a `--set grafana.adminPassword` flag. Example:
 
-    `helm upgrade cluster-name k8ssandra/k8ssandra-cluster --set  grafana.adminPassword=NewpAssw0rd!`
+    `helm upgrade cluster-name k8ssandra/k8ssandra --set  grafana.adminPassword=NewpAssw0rd!`
 
 ### Navigating in Grafana
 
@@ -91,7 +90,7 @@ From the Grafana start page, [http://grafana.localhost:8080/](http://grafana.loc
 Grafana loads its dashboard options:
 
 1. Enable the **Default** checkbox.
-1. Click the checkbox for one of the dashboards that K8ssandra created when you installed the `k8ssandra-cluster` instance
+1. Click the checkbox for one of the dashboards that K8ssandra created when you installed the `k8ssandra` instance
 1. To open the selected dashboard, click on its text link. In this example, you'd click on Cassandra Cluster Condensed:
 
 ![OK](grafana-dashboards-default-selected1.png)
