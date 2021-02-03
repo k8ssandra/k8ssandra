@@ -80,13 +80,26 @@ cassandra:
     #size: 800M
     #newGenSize: 400M
 
-
 stargate:
   # configuration regarding the Stargate API
   enabled: false
   replicas: 1
   clusterVersion: "3.11" # this is the only supported value for now
   containerImage: "auto" # chooses image based on clusterVersion
+
+  # cassandraUser configures the Cassandra user used by Stargate when authentication is
+  # enabled. If neither cassandraUser.secret nor casandraUser.username are set, then a
+  # Cassandra user and a secret with the user's credentials will be created. The username
+  # will be stargate. The secret name will be of the form {clusterName}-stargate. The password
+  # will be a random 20 character password. If cassandraUser.secret is set, then the
+  # Cassandra user will be created from the contents of the secret. If
+  # cassandraUser.secret is not set and if cassandraUser.username is set, a secret will
+  # be generated using the specified username. The password will be generated as
+  # previously described.
+  cassandraUser:
+    secret: ""
+    username: ""
+
 
 # Configuration regarding configuration of repair services
 repair:
@@ -98,7 +111,7 @@ repair:
     # cassandraUser configures the Cassandra user used by Reaper when authentication is
     # enabled. If neither cassandraUser.secret nor casandraUser.username are set, then a
     # Cassandra user and a secret with the user's credentials will be created. The username
-    # will be reaper. The secret name will be of the form {cluserName}-reaper. The password
+    # will be reaper. The secret name will be of the form {clusterName}-reaper. The password
     # will be a random 20 character password. If cassandraUser.secret is set, then the
     # Cassandra user will be created from the contents of the secret. If
     # cassandraUser.secret is not set and if cassandraUser.username is set, a secret will
@@ -127,7 +140,7 @@ backupRestore:
     # cassandraUser configures the Cassandra user used by Medusa when authentication is
     # enabled. If neither cassandraUser.secret nor casandraUser.username are set, then a
     # Cassandra user and a secret with the user's credentials will be created. The username
-    # will be medusa. The secret name will be of the form {cluserName}-medusa. The password
+    # will be medusa. The secret name will be of the form {clusterName}-medusa. The password
     # will be a random 20 character password. If cassandraUser.secret is set, then the
     # Cassandra user will be created from the contents of the secret. If
     # cassandraUser.secret is not set and if cassandraUser.username is set, a secret will
