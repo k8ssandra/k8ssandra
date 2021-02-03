@@ -106,14 +106,18 @@ Example for an existing k8ssandra installation:
 
 Allow a few minutes for the pods to start and proceed to a Ready state; check the pod status periodically:
 
+`kubectl get pods`                           
+
 ```
-kubectl get pods                              
-NAME                                                         READY   STATUS    RESTARTS   AGE
-cass-operator-86d4dc45cd-8p7cq                               1/1     Running   0          98s
-k8ssandra-tools-kube-prome-operator-6bcdf668d4-b2r6v         1/1     Running   0          98s
-.
-.
-.
+NAME                                                  READY   STATUS             RESTARTS   AGE
+k8ssandra-cass-operator-66dc79dd97-kvzdq              1/1     Running            44         18h
+k8ssandra-dc1-default-sts-0                           1/2     Running            0          16m
+k8ssandra-grafana-7cb58d4f6b-5dn6g                    2/2     Running            1          18h
+k8ssandra-kube-prometheus-operator-85695ffb-xdq8c     1/1     Running            0          18h
+k8ssandra-medusa-operator-58586cb9c4-qctvb            1/1     Running            5          16m
+k8ssandra-reaper-operator-97754757-p7rz8              1/1     Running            11         18h
+prometheus-k8ssandra-kube-prometheus-prometheus-0     2/2     Running            1          18h
+prometheus-pulsar-kube-prometheus-sta-prometheus-0    2/2     Running            1          18h
 ```
 
 Backup and restore operations are enabled by default. In the example YAML, `bucketName` corresponds to the name of the S3 bucket: `K8ssanda-bucket-dev`.  The `bucketSecret` corresponds to the secret credentials.
@@ -133,7 +137,7 @@ Here’s the entry for the restore’s init container. K8ssandra looks for an en
 After a few minutes, once the pods have started, check the status:
 
 ```
-kubectl get cassdc dc1 -o yaml`
+kubectl get cassdc dc1 -o yaml
 .
 .
 .
