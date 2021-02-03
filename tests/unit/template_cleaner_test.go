@@ -29,7 +29,7 @@ var _ = Describe("Verify Cleaner job template", func() {
 
 	renderTemplate := func(options *helm.Options) error {
 		return helmUtils.RenderAndUnmarshall("templates/cleaner/batch_job.yaml",
-			options, helmChartPath, helmReleaseName,
+			options, helmChartPath, HelmReleaseName,
 			func(renderedYaml string) error {
 				return helm.UnmarshalK8SYamlE(GinkgoT(), renderedYaml, cleanerJob)
 			})

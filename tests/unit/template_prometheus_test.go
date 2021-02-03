@@ -34,7 +34,7 @@ var _ = Describe("Verify Service Monitor template", func() {
 
 	renderTemplate := func(options *helm.Options) error {
 		return helmUtils.RenderAndUnmarshall("templates/prometheus/service_monitor.yaml",
-			options, helmChartPath, helmReleaseName,
+			options, helmChartPath, HelmReleaseName,
 			func(renderedYaml string) error {
 				return helm.UnmarshalK8SYamlE(GinkgoT(), renderedYaml, &sm)
 			})

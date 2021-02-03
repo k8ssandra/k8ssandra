@@ -8,7 +8,6 @@ import (
 
 	cassdcv1beta1 "github.com/datastax/cass-operator/operator/pkg/apis/cassandra/v1beta1"
 	"github.com/gruntwork-io/terratest/modules/helm"
-	"github.com/gruntwork-io/terratest/modules/k8s"
 	. "github.com/k8ssandra/k8ssandra/tests/unit/utils/cassdc"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -43,7 +42,6 @@ type Config struct {
 var (
 	reaperInstanceValue    = fmt.Sprintf("%s-reaper-k8ssandra", HelmReleaseName)
 	medusaConfigVolumeName = fmt.Sprintf("%s-medusa-config-k8ssandra", HelmReleaseName)
-	defaultKubeCtlOptions  = k8s.NewKubectlOptions("", "", DefaultTestNamespace)
 )
 
 const (
@@ -71,7 +69,7 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 
 	renderTemplate := func(options *helm.Options) error {
 		return helmUtils.RenderAndUnmarshall("templates/cassandra/cassdc.yaml",
-			options, helmChartPath, helmReleaseName,
+			options, helmChartPath, HelmReleaseName,
 			func(renderedYaml string) error {
 				return helm.UnmarshalK8SYamlE(GinkgoT(), renderedYaml, cassdc)
 			})
