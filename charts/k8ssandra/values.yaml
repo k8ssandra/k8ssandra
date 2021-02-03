@@ -13,10 +13,10 @@ cassandra:
   # management-api images. If you do want to change one of these mappings, the new value
   # should be a management-api image.
   versionImageMap:
-    3.11.7: datastax/cassandra-mgmtapi-3_11_7:v0.1.19
-    3.11.8: datastax/cassandra-mgmtapi-3_11_8:v0.1.19
-    3.11.9: datastax/cassandra-mgmtapi-3_11_9:v0.1.19
-    3.11.10: datastax/cassandra-mgmtapi-3_11_10:v0.1.19
+    3.11.7: datastax/cassandra-mgmtapi-3_11_7:v0.1.20
+    3.11.8: datastax/cassandra-mgmtapi-3_11_8:v0.1.20
+    3.11.9: datastax/cassandra-mgmtapi-3_11_9:v0.1.20
+    3.11.10: datastax/cassandra-mgmtapi-3_11_10:v0.1.20
 
   # -- Overrides the default image mappings. This is intended for advanced use cases
   # like development or testing. By default the Cassandra version has to be one that is in
@@ -56,6 +56,9 @@ cassandra:
     # settings for roles, permissions, and credentials caches. This property
     # will configure the update interval for all three.
     cacheUpdateIntervalMillis: 3600000
+
+  # serviceAccountName is the name of the serviceAccount used to run the cassandra pods.
+  serviceAccountName: default
 
   cassandraLibDirVolume:
     # -- Storage class for persistent volume claims (PVCs) used by the

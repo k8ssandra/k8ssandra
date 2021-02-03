@@ -202,6 +202,11 @@ spec:
 {{- end}}
       containers:
       - name: cassandra
+        volumeMounts:
+          - name: cassandra-config
+            mountPath: /etc/cassandra
+          - name: mcac-agent-config
+            mountPath: /opt/mcac-agent/config
 {{- if or .Values.repair.reaper.enabled .Values.backupRestore.medusa.enabled }}
         env:
 {{- if .Values.repair.reaper.enabled }}
@@ -211,9 +216,6 @@ spec:
 {{- if .Values.backupRestore.medusa.enabled }}
           - name: JVM_EXTRA_OPTS
             value: -javaagent:/etc/cassandra/jolokia-jvm-1.6.2-agent.jar=port=7373,host=localhost
-        volumeMounts:
-          - name: cassandra-config
-            mountPath: /etc/cassandra
       - name: medusa
         image: {{ $medusaImage }}
         imagePullPolicy: {{ .Values.backupRestore.medusa.image.pullPolicy }}
@@ -278,3 +280,19 @@ spec:
           secretName: {{ .Values.backupRestore.medusa.bucketSecret }}
 {{- end }}
 {{- end }}
+      volumes:
+        - name: cassandra-config
+          emptyDir: {}
+        - name: mcac-agent-config
+          emptyDir: {}
+        {{- if .Values.backupRestore.medusa.enabled }}
+        - name: {{ .Release.Name }}-medusa-config-k8ssandra
+          configMap:
+            name: {{ .Release.Name }}-medusa-config-k8ssandra
+            items:
+              - key: medusa.ini
+                path: medusa.ini
+        - name:  {{ .Values.backupRestore.medusa.bucketSecret }}
+          secret:
+            secretName: {{ .Values.backupRestore.medusa.bucketSecret }}
+        {{- end }}
