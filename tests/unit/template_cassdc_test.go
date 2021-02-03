@@ -114,6 +114,13 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			Expect(config.JvmOptions.InitialHeapSize).To(BeEmpty())
 			Expect(config.JvmOptions.MaxHeapSize).To(BeEmpty())
 			Expect(config.JvmOptions.YoungGenSize).To(BeEmpty())
+
+			// Verify (writeable) volumes
+			Expect(cassdc.Spec.PodTemplateSpec.Spec.Containers[0].VolumeMounts[0].Name).To(Equal("cassandra-config"))
+			Expect(cassdc.Spec.PodTemplateSpec.Spec.Containers[0].VolumeMounts[0].MountPath).To(Equal("/etc/cassandra"))
+
+			Expect(cassdc.Spec.PodTemplateSpec.Spec.Containers[0].VolumeMounts[1].Name).To(Equal("mcac-agent-config"))
+			Expect(cassdc.Spec.PodTemplateSpec.Spec.Containers[0].VolumeMounts[1].MountPath).To(Equal("/opt/mcac-agent/config"))
 		})
 
 		It("override clusterName", func() {
