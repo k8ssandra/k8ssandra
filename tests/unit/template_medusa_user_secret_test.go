@@ -16,7 +16,7 @@ var _ = Describe("Verify medusa user secret template", func() {
 	)
 
 	BeforeEach(func() {
-		path, err := filepath.Abs(chartsPath)
+		path, err := filepath.Abs(ChartsPath)
 		Expect(err).To(BeNil())
 		helmChartPath = path
 		secret = &corev1.Secret{}
@@ -24,7 +24,7 @@ var _ = Describe("Verify medusa user secret template", func() {
 
 	renderTemplate := func(options *helm.Options) error {
 		renderedOutput, err := helm.RenderTemplateE(
-			GinkgoT(), options, helmChartPath, helmReleaseName,
+			GinkgoT(), options, helmChartPath, HelmReleaseName,
 			[]string{"templates/medusa/medusa-user-secret.yaml"},
 		)
 
