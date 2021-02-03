@@ -12,9 +12,9 @@ This topic walks you through the steps to backup and restore Cassandra data runn
 * K8ssandra-tools Helm chart
 * K8ssandra-cluster Helm chart, which we'll extend with `backupRestore` Medusa buckets for Amazon S3 integration
 * Sample files in GitHub:
-  * [medusa-bucket-key.yaml](./medusa-bucket-key.yaml) to create a secret with credentials for AWS S3 buckets
-  * [backup-restore-values.yaml](./backup-restore-values.yaml) to enable Medusa (backup/restore service) and set related minimal values
-  * [test_data.cql](./test_data.cql) to populate a Cassandra keyspace and table with data
+  * [medusa-bucket-key.yaml](medusa-bucket-key.yaml) to create a secret with credentials for AWS S3 buckets
+  * [backup-restore-values.yaml](backup-restore-values.yaml) to enable Medusa (backup/restore service) and set related minimal values
+  * [test_data.cql](test_data.cql) to populate a Cassandra keyspace and table with data
 
 ## Prerequisites
 
@@ -31,9 +31,9 @@ All other prerequisites are handled by the installed tools listed above. The sam
 
 You will need storage for the backups. This topic shows the use of AWS S3 buckets.
 
-* If you'll use AWS S3, before proceeding with the configuration described below, verify that you know the `aws_access_key_id` and `aws_secret_access_key` values. Or  contact your IT team if they manage those assets. You'll provide those details in an edited version of the [medusa-bucket-key.yaml](./medusa-bucket-key.yaml) file. For information about the S3 setup steps, see this helpful [readme](https://github.com/thelastpickle/cassandra-medusa/blob/master/docs/aws_s3_setup.md).  
+* If you'll use AWS S3, before proceeding with the configuration described below, verify that you know the `aws_access_key_id` and `aws_secret_access_key` values. Or  contact your IT team if they manage those assets. You'll provide those details in an edited version of the [medusa-bucket-key.yaml](medusa-bucket-key.yaml) file. For information about the S3 setup steps, see this helpful [readme](https://github.com/thelastpickle/cassandra-medusa/blob/master/docs/aws_s3_setup.md).  
 
-* If you haven't already, add and update the following repo, which has in one chart all the settings for K8ssandra plus the backup/restore settings:
+* Add and update the following repo, which has in one chart all the settings for K8ssandra plus the backup/restore settings:
 
 ```
 helm repo add k8ssandra https://helm.k8ssandra.io/
@@ -46,30 +46,15 @@ Hang tight while we grab the latest from your chart repositories...
 Update Complete. ⎈Happy Helming!⎈
 ```
 
-* If you haven’t already, install the k8ssandra chart in any namespace; this command will use the `default` namespace.
-
-`helm install k8ssandra-tools k8ssandra/k8ssandra`
-
-Allowing a few minutes for the pods to start and proceed to a Ready state, check the pod status:
-
-```
-kubectl get pods                              
-NAME                                                         READY   STATUS    RESTARTS   AGE
-cass-operator-86d4dc45cd-8p7cq                               1/1     Running   0          98s
-k8ssandra-tools-kube-prome-operator-6bcdf668d4-b2r6v         1/1     Running   0          98s
-```
-
-The first `kubectl` command above installed the cass-operator and the Prometheus operator.
-
 ### Create secret for read/write access to an S3 bucket
 
-Before creating the k8ssandra-cluster, we need to supply credentials so that Medusa has read/write to an AWS S3 bucket, which is where the backup will be stored.  Currently, Medusa supports local, Amazon S3, GKE, and Azure buckets. Currently, K8ssandra supports S3. 
+Before installing the k8ssandra cluster, we need to supply credentials so that Medusa has read/write to an AWS S3 bucket, which is where the backup will be stored.  Currently, Medusa supports local, Amazon S3, GKE, and Azure buckets. Currently, K8ssandra supports S3. 
 
 **Note:** See [AWS S3 setup](https://github.com/thelastpickle/cassandra-medusa/blob/master/docs/aws_s3_setup.md) on the Medusa wiki for more details for configuring S3.
 
 To do this, start by creating a secret with the credentials for the S3 bucket.
 
-The [medusa-bucket-key.yaml](./medusa-bucket-key.yaml) sample in GitHub contains:
+The [medusa-bucket-key.yaml](medusa-bucket-key.yaml) sample in GitHub contains:
 
 ```
 apiVersion: v1
@@ -85,7 +70,7 @@ stringData:
    aws_secret_access_key = my_secret_key
 ```
    
-**Make a copy** of [medusa-bucket-key.yaml](./medusa-bucket-key.yaml), and then replace `my_access_key` and `my_secret_key` with your S3 values. 
+**Make a copy** of [medusa-bucket-key.yaml](medusa-bucket-key.yaml), and then replace `my_access_key` and `my_secret_key` with your S3 values. 
 
 In the YAML, notice the `stringData` property value: `medusa_s3_credentials`. The secret gets mounted to this location; this is where Medusa expects to get the AWS credentials.
 
@@ -96,9 +81,9 @@ kubectl apply -f my-medusa-bucket-key.yaml
 secret/medusa-bucket-key configured
 ```
 
-### Create or update the k8ssandra-cluster
+### Create or update the k8ssandra cluster
 
-Install the `k8ssandra-cluster` chart with the following properties. You can reference the provided [backup-restore-values.yaml](./backup-restore-values.yaml) file. It contains:
+Install the `k8ssandra` chart with the following properties. You can reference the provided [backup-restore-values.yaml](./backup-restore-values.yaml) file. It contains:
 
 ```
 size: 3
@@ -111,14 +96,27 @@ backupRestore:
     storage: s3
 ```
 
+The chart's entries relate to a Kubernetes Secret, which contains the object store credentials. 
+
 Example:
 
-`helm install k8ssandra-cluster-1 k8ssandra/k8ssandra-cluster -f backup-restore-values.yaml`
+`helm install k8ssandra k8ssandra/k8ssandra -f backup-restore-values.yaml`
+
+Allow a few minutes for the pods to start and proceed to a Ready state; check the pod status periodically:
+
+```
+kubectl get pods                              
+NAME                                                         READY   STATUS    RESTARTS   AGE
+cass-operator-86d4dc45cd-8p7cq                               1/1     Running   0          98s
+k8ssandra-tools-kube-prome-operator-6bcdf668d4-b2r6v         1/1     Running   0          98s
+.
+.
+.
+```
 
 Backup and restore operations are enabled by default. In the example YAML, `bucketName` corresponds to the name of the S3 bucket: `K8ssanda-bucket-dev`.  The `bucketSecret` corresponds to the secret credentials.
 
-
-The `k8ssandra-cluster` Helm chart also includes cluster services and the Grafana Operator. Notice that `k8ssandra-cluster` adds a number of properties in the `cassdc` datacenter.  
+The `k8ssandra` Helm chart includes the Grafana Operator. Notice that `k8ssandra` adds a number of properties in the `cassdc` datacenter.  
 
 `kubectl get cassdc dc1 -o yaml`
 
@@ -143,7 +141,7 @@ status:
 
 ### Add test data
 
-Now let’s create some test data.  The [test_data.cql](./test_data.cql) sample file in GitHub contains:
+Now let’s create some test data.  The [test_data.cql](test_data.cql) sample file in GitHub contains:
 
 ```
 CREATE KEYSPACE medusa_test WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 1};
@@ -194,8 +192,7 @@ Review the current charts that are in use, so far:
 
 ```
 NAME               	NAMESPACE	REVISION	UPDATED                             	STATUS  	CHART                  	APP VERSION
-k8ssandra-cluster-1	default  	1       	2020-11-16 20:29:55.58913 -0700 MST 	deployed	k8ssandra-cluster-0.8.0	3.11.7     
-k8ssandra-tools    	default  	1       	2020-11-16 20:17:23.107265 -0700 MST	deployed	k8ssandra-0.8.0        	3.11.7  
+k8ssandra.         	default  	1       	2021-01-16 20:17:23.107265 -0700 MST	deployed	k8ssandra-0.9.0        	3.11.7  
 ```
 
 Also get the deployment status, so far:
@@ -210,9 +207,6 @@ k8ssandra-cluster-1-reaper-k8ssandra             1/1     1            1         
 k8ssandra-cluster-1-reaper-operator-k8ssandra    1/1     1            1           26m
 k8ssandra-tools-kube-prome-operator              1/1     1            1           39m
 ```
-
-<!--- Ask JS about medusa pods not being listed 
-![Get deployment output](k8ssandra-medusa-pods.png) --> 
 
 The output above shows the addition of medusa-test-medusa-operator-k8ssandra pod. 
 
@@ -243,8 +237,6 @@ S3 maintains the `backup_index` bucket so it only has to store a single copy of 
 ![Amazon S3 with Medusa buckets](s3K8ssandraMedusaBuckets.png)
 
 ### Restore data from the backup
-
-<!--- this restore in place assumes the Nov 15 implementation --> 
 
 Consider the case where an unexpected event occurred, such as an authorized user accidentally entering cqlsh `TRUNCATE` commands that wiped out data in Cassandra. You can restore data from the backup. For example:
 
