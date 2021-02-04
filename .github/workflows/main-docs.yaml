@@ -3,7 +3,6 @@ on:
   push:
     branches:
       - main
-      - bug/helm-docs
 jobs:
   build:
     runs-on: ubuntu-latest
