@@ -1,6 +1,7 @@
 cassandra:
   version: "3.11.9"
-  clusterName: k8ssandra
+  # cluster name defaults to release name when not specified.
+  clusterName: ""
   # auth is authentication and authorization related settings.
   auth:
     # enabled enables or disables authentication and authorization

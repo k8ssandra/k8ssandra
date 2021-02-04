@@ -1,7 +1,7 @@
 {{- $traefik := .Values.ingress.traefik -}}
 {{- if $traefik.enabled }}
 {{- $releaseName := .Release.Name -}}
-{{- $clusterName := .Values.cassandra.clusterName -}}
+{{- $clusterName := include "k8ssandra.clusterName" . -}}
 {{- $datacenterName := (index .Values.cassandra.datacenters 0).name -}}
 
 {{- if $traefik.repair.enabled }}

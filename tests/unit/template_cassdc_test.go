@@ -131,6 +131,20 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			Expect(cassdc.Spec.ClusterName).To(Equal(clusterName))
 		})
 
+		It("default clusterName as release name", func() {
+			clusterName := ""
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+				SetValues: map[string]string{
+					"cassandra.clusterName": clusterName,
+				},
+			}
+
+			Expect(renderTemplate(options)).To(Succeed())
+
+			Expect(cassdc.Spec.ClusterName).To(Equal(HelmReleaseName))
+		})
+
 		It("override datacenter name", func() {
 			dcName := "test"
 			options := &helm.Options{
