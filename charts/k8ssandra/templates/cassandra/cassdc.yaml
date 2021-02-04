@@ -54,12 +54,12 @@ spec:
   resources:
 {{ toYaml .Values.cassandra.resources | indent 6 }}
 {{- end }}
+{{- if .Values.cassandra.auth.enabled }}
 {{- if .Values.cassandra.auth.superuser.secret }}
   superuserSecretName: {{ .Values.cassandra.auth.superuser.secret }}
 {{- else if .Values.cassandra.auth.superuser.username }}
   superuserSecretName: {{ .Values.cassandra.clusterName }}-superuser
 {{- end }}
-{{- if .Values.cassandra.auth.enabled }}
   users:
   {{- if .Values.repair.reaper.enabled }}
     - secretName: {{ default (printf "%s-%s" .Values.cassandra.clusterName "reaper") .Values.repair.reaper.cassandraUser.secret }}
