@@ -120,6 +120,20 @@ stargate:
   # appropriate value based on other configuration parameters.
   containerImage: "auto" # chooses image based on clusterVersion
 
+  # -- Configures the Cassandra user used by Stargate when authentication is
+  # enabled. If neither `cassandraUser.secret` nor `casandraUser.username` are
+  # set, then a Cassandra user and a secret will be created. The username will
+  # be stargate. The secret name will be of the form {cluserName}-stargate. The
+  # password will be a random 20 character password. If `cassandraUser.secret`
+  # is set, then the Cassandra user will be created from the contents of the
+  # secret. If `cassandraUser.secret` is not set and if
+  # `cassandraUser.username` is set, a secret will be generated using the
+  # specified username. The password will be generated as previously
+  # described.
+  cassandraUser:
+    secret: ""
+    username: ""
+
 repair:
   reaper:
     # -- When enabled, Reaper automatically sets up repair schedules for all
