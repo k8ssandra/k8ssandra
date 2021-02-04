@@ -1,5 +1,15 @@
 {{- $datacenter := (index .Values.cassandra.datacenters 0) -}}
 {{- $medusaImage := (printf "%s:%s" .Values.backupRestore.medusa.image.repository .Values.backupRestore.medusa.image.tag) -}}
+
+{{/*
+Sadly dicts cannot be multi-line :(
+*/}}
+{{- $cassandraVersions := dict "3.11.7"  "datastax/cassandra-mgmtapi-3_11_7:v0.1.19" "3.11.8"  "datastax/cassandra-mgmtapi-3_11_8:v0.1.19" "3.11.9" "datastax/cassandra-mgmtapi-3_11_9:v0.1.19" "3.11.10" "datastax/cassandra-mgmtapi-3_11_10:v0.1.19" -}}
+
+{{- if not (hasKey $cassandraVersions .Values.cassandra.version) }}
+  {{- fail (print .Values.cassandra.version " is not a supported Cassandra version") }}
+{{- end}}
+
 apiVersion: cassandra.datastax.com/v1beta1
 kind: CassandraDatacenter
 metadata:
@@ -14,15 +24,7 @@ spec:
   serverType: cassandra
   serverVersion: {{ .Values.cassandra.version | quote }}
   dockerImageRunsAsCassandra: false
-{{- if eq "3.11.7" .Values.cassandra.version }}
-  serverImage: datastax/cassandra-mgmtapi-3_11_7:v0.1.17
-{{- else if eq "3.11.8" .Values.cassandra.version }}
-  serverImage: datastax/cassandra-mgmtapi-3_11_8:v0.1.17
-{{- else if eq "3.11.9" .Values.cassandra.version }}
-  serverImage: datastax/cassandra-mgmtapi-3_11_9:v0.1.17
-{{- else }}
-  {{- fail (print .Values.cassandra.version " is not a supported Cassandra version") }}
-{{- end }}
+  serverImage: {{ get $cassandraVersions .Values.cassandra.version }}
   managementApiAuth:
     insecure: {}
   size: {{ $datacenter.size }}
