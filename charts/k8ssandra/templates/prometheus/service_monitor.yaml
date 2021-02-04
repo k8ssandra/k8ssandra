@@ -12,7 +12,7 @@ spec:
       app.kubernetes.io/managed-by: cass-operator
       cassandra.datastax.com/prom-metrics: "true"
     matchExpressions:
-      - {key: cassandra.datastax.com/cluster, operator: In, values: [{{ .Values.cassandra.clusterName }}]}
+      - {key: cassandra.datastax.com/cluster, operator: In, values: [{{ include "k8ssandra.clusterName" . }}]}
       - {key: cassandra.datastax.com/datacenter, operator: In, values: [{{ include "k8ssandra.datacenterName" . }}]}
   targetLabels:
   - cassandra.datastax.com/cluster

@@ -27,7 +27,7 @@ spec:
               - -c
               - |
                 echo "Waiting for at least one cassandra node to finish bootstrapping..."
-                while ! nslookup {{ .Values.cassandra.clusterName }}-seed-service.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain | default "cluster.local" }}; do
+                while ! nslookup {{ include "k8ssandra.clusterName" . }}-seed-service.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain | default "cluster.local" }}; do
                     sleep 5
                 done
                 echo "Cassandra is ready. Starting Stargate..."
@@ -89,11 +89,11 @@ spec:
                 -Xms{{ .Values.stargate.heapMB | default 1024 }}M
                 -Xmx{{ .Values.stargate.heapMB | default 1024 }}M
             - name: CLUSTER_NAME
-              value: {{ .Values.cassandra.clusterName | quote }}
+              value: {{ include "k8ssandra.clusterName" . | quote }}
             - name: CLUSTER_VERSION
               value: "{{ .Values.stargate.clusterVersion }}"
             - name: SEED
-              value: "{{ .Values.cassandra.clusterName }}-seed-service.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain | default "cluster.local" }}"
+              value: "{{ include "k8ssandra.clusterName" . }}-seed-service.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain | default "cluster.local" }}"
             - name: DATACENTER_NAME
               value: {{ include "k8ssandra.datacenterName" . }}
             - name: RACK_NAME
