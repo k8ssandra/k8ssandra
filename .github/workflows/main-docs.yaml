@@ -29,7 +29,7 @@ jobs:
       - run: scripts/install-npm-dependencies.sh
       - name: Update PATH
         run: |
-          echo "$HOME/bin" >> $GITHUB_PATH
+          echo "bin" >> $GITHUB_PATH
       - name: Generate reference docs
         run: scripts/generate-helm-docs.sh
       - name: Commit & Push changes
