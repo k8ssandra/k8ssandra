@@ -250,16 +250,30 @@ backupRestore:
     # -- Enables usage of a bucket across multiple clusters.
     multiTenant: false
 
-    # -- API interface used by the object store. Supported values include `s3`
-    # and `gcs`
-    storage: s3
+    # -- API interface used by the object store. Supported values include `s3`, 's3_compatible'
+    # and `gcs`. For pod mapped storage, use 'local'
+    storage: s3_compatible
+
+    # -- Optional properties for storage
+    storage_properties:
+      # Optional argument to define region for s3
+      # region: eu-west-1
+
+      # For s3_compatible option, one must define target host
+      # host: 192.168.1.201
+
+      # For s3_compatible option, port is optional
+      # port: 9000
+
+      # Is SSL used or not, for s3_compatible
+      # secure: false
 
     # -- Name of the remote storage bucket where backups will be stored.
-    bucketName: ""
+    bucketName: awstest
 
     # -- Name of the Kubernetes `Secret` that stores the key file for the
     # storage provider's API
-    bucketSecret: ""
+    bucketSecret: medusaminiotest
 
 # Support for accessing the various web-interfaces via K8s ingress controllers.
 # Depending on the ingress available in your cluster enable the appropriate

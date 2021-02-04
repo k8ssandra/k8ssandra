@@ -21,8 +21,19 @@ data:
     [storage]
 {{- if eq .Values.backupRestore.medusa.storage "s3" }}
     storage_provider = s3
+    {{- if .Values.backupRestore.medusa.storage_properties.region }}
+    region = {{ .Values.backupRestore.medusa.storage_properties.region }}
+    {{- end}}
 {{- else if eq .Values.backupRestore.medusa.storage "gcs" }}
     storage_provider = gcs
+{{- else if eq .Values.backupRestore.medusa.storage "s3_compatible" }}
+    storage_provider = s3_compatible
+    {{- if .Values.backupRestore.medusa.storage_properties.region }}
+    region = {{ .Values.backupRestore.medusa.storage_properties.region }}
+    {{- end}}
+    host = {{ .Values.backupRestore.medusa.storage_properties.host }}
+    port = {{ .Values.backupRestore.medusa.storage_properties.port }}
+    secure = {{ .Values.backupRestore.medusa.storage_properties.secure }}
 {{- end }}
     bucket_name = {{ .Values.backupRestore.medusa.bucketName }}
     # TODO The file name needs to be parameterized. In the current set up it comes from the secret.
