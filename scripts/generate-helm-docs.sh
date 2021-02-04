@@ -1,13 +1,23 @@
 #!/usr/bin/env bash
 
-set -x
+if ! command -v helm-docs &> /dev/null
+then
+    echo "helm-docs could not be found. Please ensure it is installed and on your PATH."
+    echo "https://github.com/norwoodj/helm-docs"
+    exit 1
+fi
+
+cd "$(dirname "$0")/.."
 
 # Generate docs for each chart
-ls charts | while read c; do
-  if [[ -d charts/$c ]]; then
-    helm-docs -c charts/$c -s file
-
-    mkdir -p docs/content/en/docs/reference/$c
-    helm-docs -c charts/$c -s file -t ../../docs/content/en/docs/reference/_generated.md.gotmpl -o ../../docs/content/en/docs/reference/$c/_generated.md
+for directory in charts/*; do
+  if [[ -d "$directory" ]]; then
+    chartName="$(basename ${directory})"
+    mkdir -p "docs/content/en/docs/reference/${chartName}"
+    (
+      set -x
+      helm-docs -c "${directory}" -s file
+      helm-docs -c "${directory}" -s file -t ../../docs/content/en/docs/reference/_generated.md.gotmpl -o "../../docs/content/en/docs/reference/${chartName}/_generated.md"
+    )
   fi
 done
