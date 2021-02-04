@@ -69,5 +69,23 @@ var _ = Describe("Verify superuser secret template", func() {
 			Expect(err).ToNot(BeNil())
 			Expect(err.Error()).To(ContainSubstring("could not find template"))
 		})
+
+		It("disabling auth", func() {
+			username := "admin"
+			clusterName := "secret-test"
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+				SetValues: map[string]string{
+					"cassandra.clusterName":             clusterName,
+					"cassandra.auth.superuser.username": username,
+					"cassandra.auth.enabled":            "false",
+				},
+			}
+
+			err := renderTemplate(options)
+			Expect(err).ToNot(BeNil())
+			Expect(err.Error()).To(ContainSubstring("could not find template"))
+		})
+
 	})
 })
