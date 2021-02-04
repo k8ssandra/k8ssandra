@@ -6,6 +6,9 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      HUGO_VERSION: 0.76.5
+      HELM_DOCS_VERSION: 1.5.0
     steps:
       - uses: actions/checkout@v2
         with:
@@ -17,19 +20,29 @@ jobs:
         uses: actions/cache@v2
         with:
           path: |
-            docs/bin
+            bin
             docs/node_modules
-          key: ${{ runner.os }}-${{ hashFiles('docs/package-lock.json') }}
+          key: ${{ runner.os }}-${{ hashFiles('docs/package-lock.json') }}-${{ env.HUGO_VERSION }}-${{ env.HELM_DOCS_VERSION }}
+      - run: scripts/install-helm-docs.sh
       - run: scripts/install-hugo.sh
-        working-directory: docs
       - run: scripts/install-npm-tools.sh
-        working-directory: docs
       - run: scripts/install-npm-dependencies.sh
-        working-directory: docs
+      - name: Update PATH
+        run: |
+          echo "$HOME/bin" >> $GITHUB_PATH
+      - name: Generate reference docs
+        run: scripts/generate-helm-docs.sh
+      - name: Commit & Push changes
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add -A
+          git commit -m "Regenerated reference docs"
+          git push
       - name: Build site
         env:
           HUGO_ENV: production
-        run: ./bin/hugo --environment ${HUGO_ENV}
+        run: hugo --environment ${HUGO_ENV}
         working-directory: docs
       - name: Upload artifact
         uses: actions/upload-artifact@v1
@@ -39,6 +52,9 @@ jobs:
   
   deploy:
     runs-on: ubuntu-latest
+    env:
+      HUGO_VERSION: 0.76.5
+      HELM_DOCS_VERSION: 1.5.0
     needs: build
     steps:
       - uses: actions/checkout@v2
@@ -48,9 +64,9 @@ jobs:
         uses: actions/cache@v2
         with:
           path: |
-            docs/bin
+            bin
             docs/node_modules
-          key: ${{ runner.os }}-${{ hashFiles('docs/package-lock.json') }}
+          key: ${{ runner.os }}-${{ hashFiles('docs/package-lock.json') }}-${{ env.HUGO_VERSION }}-${{ env.HELM_DOCS_VERSION }}
       - uses: actions/download-artifact@v2
         with:
           name: docs
@@ -64,7 +80,7 @@ jobs:
       - name: Deploy site
         env:
           HUGO_ENV: production
-        run: ./bin/hugo deploy --environment ${HUGO_ENV} --target production --verbose
+        run: hugo deploy --environment ${HUGO_ENV} --target production --verbose
         working-directory: docs
       - name: Purge CDN Cache
         env:
