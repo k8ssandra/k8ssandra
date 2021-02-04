@@ -1,6 +1,6 @@
 # k8ssandra
 
-![Version: 0.38.0](https://img.shields.io/badge/Version-0.38.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 3.11.7](https://img.shields.io/badge/AppVersion-3.11.7-informational?style=flat-square)
+![Version: 0.42.1](https://img.shields.io/badge/Version-0.42.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 3.11.7](https://img.shields.io/badge/AppVersion-3.11.7-informational?style=flat-square)
 
 Provisions and configures an instance of the entire K8ssandra stack. This includes Apache Cassandra, Stargate, Reaper, Medusa, Prometheus, and Grafana.
 
@@ -24,7 +24,7 @@ Provisions and configures an instance of the entire K8ssandra stack. This includ
 | file://../cass-operator | cass-operator | 0.28.0 |
 | file://../k8ssandra-common | k8ssandra-common | 0.28.0 |
 | file://../medusa-operator | medusa-operator | 0.27.0 |
-| file://../reaper-operator | reaper-operator | 0.28.0 |
+| file://../reaper-operator | reaper-operator | 0.29.0 |
 | https://prometheus-community.github.io/helm-charts | kube-prometheus-stack | 12.11.3 |
 
 ## Values
@@ -52,12 +52,18 @@ Provisions and configures an instance of the entire K8ssandra stack. This includ
 | stargate.replicas | int | `1` | Number of instances to deploy. This value may be scaled independently of Cassandra cluster nodes. Each instance handles API and coordination tasks for inbound queries. |
 | stargate.clusterVersion | string | `"3.11"` | Version of the target Cassandra cluster. `3.11` is the only supported value for now. |
 | stargate.containerImage | string | `"auto"` | Image coordinate for Stargate containers, `auto` will determine the appropriate value based on other configuration parameters. |
-| repair.reaper.autoschedule | bool | `false` |  |
-| repair.reaper.enabled | bool | `true` | Enable Reaper resources as part of this release |
+| repair.reaper.autoschedule | bool | `false` | When enabled, Reaper automatically sets up repair schedules for all non-system keypsaces. Repear monitors the cluster so that as keyspaces are added or removed repair schedules will be added or removed respectively. |
+| repair.reaper.enabled | bool | `true` | Enable Reaper resources as part of this release. Note that Reaper uses Cassandra's JMX APIs to perform repairs. When Reaper is enabled, Cassandra will also be configured to allow remote JMX access. JMX authentication will be configured in Cassandra with credentials only created for Reaper in order to limit access. |
+| repair.reaper.image.repository | string | `"docker.io/thelastpickle/cassandra-reaper"` | Specifies the container repository for cassandra-reaper |
+| repair.reaper.image.tag | string | `"2.1.3"` | Tag of an image within the specified repository |
 | repair.reaper.cassandraUser | object | `{"secret":"","username":""}` | Configures the Cassandra user used by Reaper when authentication is enabled. If neither cassandraUser.secret nor casandraUser.username are set, then a Cassandra user and a secret with the user's credentials will be created. The username will be reaper. The secret name will be of the form {cluserName}-reaper. The password will be a random 20 character password. If cassandraUser.secret is set, then the Cassandra user will be created from the contents of the secret. If cassandraUser.secret is not set and if cassandraUser.username is set, a secret will be generated using the specified username. The password will be generated as previously described. |
-| repair.reaper.jmx | object | `{"password":"","username":""}` | JMX authentication parameters for use by Reaper to trigger repair tasks |
+| repair.reaper.jmx | object | `{"password":"","username":""}` | Configures JMX access to the Cassandra cluster. Reaper requires remote JMX access to perform repairs. The Cassandra cluster will be configured with remote JMX access enabled when Reaper is deployed. The JMX access will be configured to use authentication. |
+| repair.reaper.jmx.username | string | `""` | Username that Reaper will use for JMX access. If left blank a random, alphanumeric string will be generated. |
+| repair.reaper.jmx.password | string | `""` | Password that Reaper will use for JMX access. If left blank a random, alphanumeric string will be generated. |
 | backupRestore.medusa.enabled | bool | `false` | Enable Medusa resources as part of this release. If enabled, `bucketName` and `bucketSecret` **must** be defined. |
-| backupRestore.medusa.image | string | `"k8ssandra/medusa:c5fefc4a3b4c"` |  |
+| backupRestore.medusa.image.repository | string | `"docker.io/k8ssandra/medusa"` | Specifies the container repository for Medusa |
+| backupRestore.medusa.image.tag | string | `"6ab6a55541e9"` | Tag of an image within the specified repository |
+| backupRestore.medusa.image.pullPolicy | string | `"IfNotPresent"` | The image pull policy |
 | backupRestore.medusa.cassandraUser | object | `{"secret":"","username":""}` | Configures the Cassandra user used by Medusa when authentication is enabled. If neither `cassandraUser.secret` nor `casandraUser.username` are set, then a Cassandra user and a secret will be created. The username will be medusa. The secret name will be of the form {cluserName}-medusa. The password will be a random 20 character password. If `cassandraUser.secret` is set, then the Cassandra user will be created from the contents of the secret. If `cassandraUser.secret` is not set and if `cassandraUser.username` is set, a secret will be generated using the specified username. The password will be generated as previously described. |
 | backupRestore.medusa.multiTenant | bool | `false` | Enables usage of a bucket across multiple clusters. |
 | backupRestore.medusa.storage | string | `"s3"` | API interface used by the object store. Supported values include `s3` and `gcs` |
@@ -98,7 +104,9 @@ Provisions and configures an instance of the entire K8ssandra stack. This includ
 | kube-prometheus-stack.prometheusOperator.namespaces | object | `{"additional":[],"releaseNamespace":true}` | Locks Prometheus operator to this namespace. Changing this setting may result in a non-namespace scoped deployment. |
 | kube-prometheus-stack.prometheusOperator.serviceMonitor | object | `{"selfMonitor":false}` | Monitoring of prometheus operator |
 | kube-prometheus-stack.prometheus.enabled | bool | `true` | Provisions an instance of Prometheus as part of this release |
-| kube-prometheus-stack.prometheus.prometheusSpec | object | `{}` | Allows for tweaking of the Prometheus installation's configuration. Common parameters include `externalUrl: http://localhost:9090/prometheus` and `routePrefix: /prometheus` for running Prometheus resources under a specific path (`/prometheus` in this example). |
+| kube-prometheus-stack.prometheus.prometheusSpec | object | `{"externalUrl":"","routePrefix":"/"}` | Allows for tweaking of the Prometheus installation's configuration. Common parameters include `externalUrl: http://localhost:9090/prometheus` and `routePrefix: /prometheus` for running Prometheus resources under a specific path (`/prometheus` in this example). |
+| kube-prometheus-stack.prometheus.prometheusSpec.routePrefix | string | `"/"` | Prefixes all Prometheus routes with the specified value. It is useful for ingresses which do not rewrite URLs. |
+| kube-prometheus-stack.prometheus.prometheusSpec.externalUrl | string | `""` | An external URL at which Prometheus will be reachable. |
 | kube-prometheus-stack.prometheus.ingress.enabled | bool | `false` | Enable templating of ingress resources for external prometheus traffic |
 | kube-prometheus-stack.prometheus.ingress.paths | list | `[]` | Path-based routing rules, `/prometheus` is possible if the appropriate changes are made to `prometheusSpec` |
 | kube-prometheus-stack.prometheus.serviceMonitor.selfMonitor | bool | `false` |  |

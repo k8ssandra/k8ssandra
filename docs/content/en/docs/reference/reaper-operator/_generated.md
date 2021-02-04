@@ -1,6 +1,6 @@
 
 
-![Version: 0.28.0](https://img.shields.io/badge/Version-0.28.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.1.0](https://img.shields.io/badge/AppVersion-0.1.0-informational?style=flat-square)
+![Version: 0.29.0](https://img.shields.io/badge/Version-0.29.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.1.0](https://img.shields.io/badge/AppVersion-0.1.0-informational?style=flat-square)
 
 ## Maintainers
 
@@ -29,7 +29,7 @@
 | replicaCount | int | `1` | Sets the number of reaper-operator pods. |
 | image.repository | string | `"docker.io/k8ssandra/reaper-operator"` | Container repository where the reaper-operator resides |
 | image.pullPolicy | string | `"IfNotPresent"` | Pull policy for the operator container |
-| image.tag | string | `"73199f440649"` | Tag of the reaper-operator image to pull from image.repository |
+| image.tag | string | `"0d6525659e9d"` | Tag of the reaper-operator image to pull from image.repository |
 | imagePullSecrets | list | `[]` | References to secrets to use when pulling images. ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/ |
 | serviceAccount.annotations | object | `{}` | Annotations for the reaper-operator service account. |
 | podAnnotations | object | `{}` | Annotations for the reaper-operator pod. |
