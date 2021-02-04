@@ -103,10 +103,27 @@ stargate:
 
 # Configuration regarding configuration of repair services
 repair:
-  # Reaper repair service and UI
+  # reaper Configures Reaper which schedules and orchestrates repairs. Note that in general
+  # repairs should be performed within every gc_grace_seconds time. Reaper dramatically
+  # improves and simplifies running and managing repairs over doing so with nodetool.
   reaper:
-    autoschedule: false
+    # enabled Enables or Disables the Reaper deployment. Note that Reaper uses Cassandra's
+    # JMX APIs to perform repairs. When Reaper is enabled, Cassandra will also be
+    # configured to allow remote JMX access. JMX authentication will be configured in
+    # Cassandra with credentials only created for Reaper in order to limit access.
     enabled: true
+
+    # image Configures the Reaper image to use.
+    image:
+      # repository Specifies from where to pull the image.
+      repository: docker.io/thelastpickle/cassandra-reaper
+      # tag The image tag to pull.
+      tag: 2.1.3
+
+    # autoschedule When enabled Reaper automatically sets up repair schedules for all
+    # non-system keypsaces. Repear monitors the cluster so that as keyspaces are added or
+    # removed repair schedules will be added or removed respectively.
+    autoschedule: false
 
     # cassandraUser configures the Cassandra user used by Reaper when authentication is
     # enabled. If neither cassandraUser.secret nor casandraUser.username are set, then a
@@ -120,8 +137,17 @@ repair:
     cassandraUser:
       secret: ""
       username: ""
+
+    # jmx Configures JMX access to the Cassandra cluster. Reaper requires remote JMX access
+    # to perform repairs. The Cassandra cluster will be configured with remote JMX access
+    # enabled when Reaper is deployed. The JMX access will be configured to use
+    # authentication.
     jmx:
+      # username The username that Reaper will use for JMX access. If left blank a random,
+      # alphanumeric string will be generated.
       username: ""
+      # password The password that Reaper will use for JMX access. If left blank a random,
+      # alphanumeric string will be generated.
       password: ""
 
 backupRestore:
@@ -134,7 +160,7 @@ backupRestore:
       repository: docker.io/k8ssandra/medusa
       # tag the image tag to pull
       tag: 6ab6a55541e9
-      # pullPolicy
+      # pullPolicy The image pull policy
       pullPolicy: IfNotPresent
 
     # cassandraUser configures the Cassandra user used by Medusa when authentication is
