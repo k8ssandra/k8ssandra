@@ -35,7 +35,7 @@
 | image.pullPolicy | string | `"IfNotPresent"` | Pull policy for the operator container |
 | image.tag | string | `"master-a45fd80b40e0129e8883a953d595ca85e4b7ce79"` | Tag of the cass-operator image to pull from image.repository |
 | image.registryOverride | string | `nil` | Docker registry containing all cass-operator related images. Setting this allows for usage of an internal registry without specifying serverImage, configBuilderImage, and busyboxImage on all CassandraDatacenter objects. |
-| imagePullSecrets | list | `[]` | References to secrets to use when pulling images. ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/ |
+| imagePullSecrets | list | `[]` | References to secrets to use when pulling images. See: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/ |
 | serviceAccount.annotations | object | `{}` | Annotations to add to the service account. |
 | podAnnotations | object | `{}` | Annotations for the cass-operator pod. |
 | podSecurityContext | object | `{}` | PodSecurityContext for the cass-operator pod. See: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/ |
@@ -43,5 +43,5 @@
 | securityContext.runAsNonRoot | bool | `true` | Run cass-operator container as non-root user |
 | securityContext.runAsGroup | int | `65534` | Group for the user running the cass-operator container / process |
 | securityContext.runAsUser | int | `65534` | User for running the cass-operator container / process |
-| resources | object | `{}` | Resources requests and limits for the cass-operator pod. We usually recommend not to specify default resources and to leave this as a conscious choice for the user. This also increases chances charts run on environments with little resources, such as Minikube. If you do want to specify resources, uncomment the following lines, adjust them as necessary, and remove the curly braces after 'resources:'. limits: cpu: 100m memory: 128Mi requests: cpu: 100m memory: 128Mi |
+| resources | object | `{}` | Resources requests and limits for the cass-operator pod. We usually recommend not to specify default resources and to leave this as a conscious choice for the user. This also increases chances charts run on environments with little resources, such as Minikube. If you want to specify resources, add `requests` and `limits` for `cpu` and `memory` while removing the existing `{}` |
 | vmwarePSPEnabled | bool | `false` | Enables specific VMware functionality. If you need this functionality it will automatically be enabled for you. |
