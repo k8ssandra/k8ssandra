@@ -132,7 +132,7 @@ stargate:
   # -- Enable Stargate resources as part of this release
   enabled: false
 
-  # -- Number of instances to deploy. This value may be scaled independently of
+  # -- Number of Stargate instances to deploy. This value may be scaled independently of
   # Cassandra cluster nodes. Each instance handles API and coordination tasks
   # for inbound queries.
   replicas: 1
@@ -299,9 +299,9 @@ ingress:
     # Stargate ingress support
     stargate:
       # -- Enables Stargate Traefik ingress definitions. Note this will **only**
-      # work if `ingress.traefik.enabled` is also `true`. Additionally, when
+      # work if `stargate.enabled` and `ingress.traefik.enabled` are also `true`. Additionally, when
       # enabled the authentication API (port 8081) is enabled automatically.
-      enabled: false
+      enabled: true
 
       # -- Hostname Traefik should use for routing requests to Stargate. If
       # using a local deployment consider leveraging dynamic DNS services like
