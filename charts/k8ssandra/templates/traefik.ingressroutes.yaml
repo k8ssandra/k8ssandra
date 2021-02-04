@@ -1,6 +1,7 @@
 {{- $traefik := .Values.ingress.traefik -}}
 {{- if $traefik.enabled }}
 {{- $releaseName := .Release.Name -}}
+{{- $clusterName := .Values.cassandra.clusterName -}}
 {{- $datacenterName := (index .Values.cassandra.datacenters 0).name -}}
 
 {{- if $traefik.repair.enabled }}
@@ -9,8 +10,7 @@ apiVersion: traefik.containo.us/v1alpha1
 kind: IngressRoute
 metadata:
   name: {{ $releaseName }}-k8ssandra-repair
-  labels:
-{{ include "k8ssandra.labels" . | indent 4 }}
+  labels: {{ include "k8ssandra.labels" . | indent 4 }}
 spec:
   entryPoints:
   {{- range $traefik.repair.entrypoints }}
@@ -40,7 +40,7 @@ spec:
   routes:
     - match: HostSNI(`*`)
       services:
-        - name: {{ $releaseName }}-{{ $datacenterName }}-service
+        - name: {{ $clusterName }}-{{ $datacenterName }}-service
           port: 9042
 {{- end }}
 {{- if $traefik.stargate.enabled }}

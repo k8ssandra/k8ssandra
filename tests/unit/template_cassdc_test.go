@@ -7,7 +7,6 @@ import (
 
 	cassdcv1beta1 "github.com/datastax/cass-operator/operator/pkg/apis/cassandra/v1beta1"
 	"github.com/gruntwork-io/terratest/modules/helm"
-	"github.com/gruntwork-io/terratest/modules/k8s"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	corev1 "k8s.io/api/core/v1"
@@ -39,9 +38,8 @@ type Config struct {
 }
 
 var (
-	reaperInstanceValue    = fmt.Sprintf("%s-reaper-k8ssandra", helmReleaseName)
-	medusaConfigVolumeName = fmt.Sprintf("%s-medusa-config-k8ssandra", helmReleaseName)
-	defaultKubeCtlOptions  = k8s.NewKubectlOptions("", "", defaultTestNamespace)
+	reaperInstanceValue    = fmt.Sprintf("%s-reaper-k8ssandra", HelmReleaseName)
+	medusaConfigVolumeName = fmt.Sprintf("%s-medusa-config-k8ssandra", HelmReleaseName)
 )
 
 const (
@@ -61,7 +59,7 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 	)
 
 	BeforeEach(func() {
-		path, err := filepath.Abs(chartsPath)
+		path, err := filepath.Abs(ChartsPath)
 		Expect(err).To(BeNil())
 		helmChartPath = path
 		cassdc = &cassdcv1beta1.CassandraDatacenter{}
@@ -71,7 +69,7 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 
 		templatePath := filepath.Join(".", "/templates/cassandra/cassdc.yaml")
 		renderedOutput, renderErr := helm.RenderTemplateE(
-			GinkgoT(), options, helmChartPath, helmReleaseName,
+			GinkgoT(), options, helmChartPath, HelmReleaseName,
 			[]string{templatePath},
 		)
 		unmarshalErr := helm.UnmarshalK8SYamlE(GinkgoT(), renderedOutput, cassdc)
@@ -90,7 +88,7 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 
 			// Reaper should be enabled in default - verify
 			// Verify reaper annotation is set
-			Expect(cassdc.Annotations).Should(HaveKeyWithValue(reaperInstanceAnnotation, reaperInstanceValue))
+			Expect(cassdc.Annotations).Should(HaveKeyWithValue(ReaperInstanceAnnotation, reaperInstanceValue))
 
 			initContainers := cassdc.Spec.PodTemplateSpec.Spec.InitContainers
 			Expect(len(initContainers)).To(Equal(2))
@@ -359,7 +357,10 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 				},
 			}
 
-			Expect(renderTemplate(options)).To(Succeed())
+			err, err2 := renderTemplate(options)
+			fmt.Println("error: ", err)
+			fmt.Println("error2: ", err2)
+			Expect(err, err2).To(Succeed())
 
 			Expect(cassdc.Spec.SuperuserSecretName).To(Equal(clusterName + "-superuser"))
 		})
@@ -371,7 +372,7 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			}
 
 			Expect(renderTemplate(options)).To(Succeed())
-			Expect(cassdc.Annotations).ShouldNot(HaveKeyWithValue(reaperInstanceAnnotation, reaperInstanceValue))
+			Expect(cassdc.Annotations).ShouldNot(HaveKeyWithValue(ReaperInstanceAnnotation, reaperInstanceValue))
 
 			Expect(len(cassdc.Spec.PodTemplateSpec.Spec.Containers)).To(Equal(1))
 			// No env slice should be present
@@ -789,6 +790,36 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			Expect(config.JvmOptions.MaxHeapSize).To(Equal(""))
 			Expect(config.JvmOptions.YoungGenSize).To(Equal("150M"))
 		})
+	})
+
+	It("enabling Cassandra auth with Stargate", func() {
+		dcName := "test"
+		clusterSize := 3
+		clusterName := "auth-test"
+
+		options := &helm.Options{
+			KubectlOptions: defaultKubeCtlOptions,
+			SetValues: map[string]string{
+				"stargate.enabled":              "true",
+				"cassandra.clusterName":         clusterName,
+				"backupRestore.medusa.enabled":  "false",
+				"repair.reaper.enabled":         "false",
+				"cassandra.auth.enabled":        "true",
+				"cassandra.datacenters[0].name": dcName,
+				"cassandra.datacenters[0].size": strconv.Itoa(clusterSize),
+			},
+		}
+
+		Expect(renderTemplate(options)).To(Succeed())
+
+		Expect(cassdc.Name).To(Equal(dcName))
+
+		var config Config
+		Expect(json.Unmarshal(cassdc.Spec.Config, &config)).To(Succeed())
+		Expect(config.CassandraConfig.Authenticator).To(Equal("PasswordAuthenticator"))
+		Expect(config.CassandraConfig.Authorizer).To(Equal("CassandraAuthorizer"))
+
+		Expect(cassdc.Spec.Users).To(ConsistOf(cassdcv1beta1.CassandraUser{Superuser: true, SecretName: clusterName + "-stargate"}))
 	})
 })
 

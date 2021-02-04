@@ -1,10 +1,10 @@
 {{- $datacenter := (index .Values.cassandra.datacenters 0) -}}
+{{- $medusaImage := (printf "%s:%s" .Values.backupRestore.medusa.image.repository .Values.backupRestore.medusa.image.tag) -}}
 apiVersion: cassandra.datastax.com/v1beta1
 kind: CassandraDatacenter
 metadata:
   name: {{ $datacenter.name }}
-  labels:
-{{ include "k8ssandra.labels" . | indent 4 }}
+  labels: {{ include "k8ssandra.labels" . | indent 4 }}
   annotations:
 {{- if .Values.repair.reaper.enabled }}
     reaper.cassandra-reaper.io/instance: {{ .Release.Name }}-reaper-k8ssandra
@@ -54,19 +54,25 @@ spec:
   resources:
 {{ toYaml .Values.cassandra.resources | indent 6 }}
 {{- end }}
+{{- if .Values.cassandra.auth.enabled }}
 {{- if .Values.cassandra.auth.superuser.secret }}
   superuserSecretName: {{ .Values.cassandra.auth.superuser.secret }}
 {{- else if .Values.cassandra.auth.superuser.username }}
   superuserSecretName: {{ .Values.cassandra.clusterName }}-superuser
 {{- end }}
-{{- if .Values.cassandra.auth.enabled }}
   users:
+  {{- if .Values.repair.reaper.enabled }}
     - secretName: {{ default (printf "%s-%s" .Values.cassandra.clusterName "reaper") .Values.repair.reaper.cassandraUser.secret }}
       superuser: true
+  {{- end }}
   {{- if .Values.backupRestore.medusa.enabled }}
     - secretName: {{ default (printf "%s-%s" .Values.cassandra.clusterName "medusa") .Values.backupRestore.medusa.cassandraUser.secret }}
       superuser: true
-  {{- end}}
+  {{- end }}
+  {{- if .Values.stargate.enabled }}
+    - secretName: {{ default (printf "%s-%s" .Values.cassandra.clusterName "stargate") .Values.stargate.cassandraUser.secret }}
+      superuser: true
+  {{- end }}
 {{- end }}
   config:    
     cassandra-yaml:
@@ -151,8 +157,8 @@ spec:
           - mountPath: /config
             name: server-config
       - name: medusa-restore
-        image: {{ .Values.backupRestore.medusa.image }}
-        imagePullPolicy: IfNotPresent
+        image: {{ $medusaImage }}
+        imagePullPolicy: {{ .Values.backupRestore.medusa.image.pullPolicy }}
         env:
           - name: MEDUSA_MODE
             value: RESTORE
@@ -213,8 +219,8 @@ spec:
           - name: cassandra-config
             mountPath: /etc/cassandra
       - name: medusa
-        image: {{ .Values.backupRestore.medusa.image }}
-        imagePullPolicy: IfNotPresent
+        image: {{ $medusaImage }}
+        imagePullPolicy: {{ .Values.backupRestore.medusa.image.pullPolicy }}
         ports:
           - containerPort: 50051
         env:
