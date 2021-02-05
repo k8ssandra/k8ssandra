@@ -301,11 +301,11 @@ ingress:
       # enabled the authentication API (port 8081) is enabled automatically.
       enabled: false
 
-      # -- Hostname Traefik should use for routing requests to the repair UI. If
+      # -- Hostname Traefik should use for routing requests to Stargate. If
       # using a local deployment consider leveraging dynamic DNS services like
-      # xip.io. Example: `repair.127.0.0.1.xip.io` will return `127.0.0.1` for
+      # xip.io. Example: `stargate.127.0.0.1.xip.io` will return `127.0.0.1` for
       # DNS requests routing requests to your local machine.
-      host: stargate.k8ssandra.cluster.local
+      host: "*"
 
       # Ingress for each Stargate API can be enabled/disabled independently
       graphql:
