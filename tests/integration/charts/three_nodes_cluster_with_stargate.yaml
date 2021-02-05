@@ -1,0 +1,34 @@
+cassandra:
+  datacenters:
+  - name: dc1
+    size: 3
+  ingress:
+    # -- Enables Cassandra Traefik ingress definitions. Note that
+    # this is mutually exclusive with stargate.ingress.cassandra.enabled
+    enabled: false
+
+stargate:
+  # -- Enable Stargate resources as part of this release
+  enabled: true
+  replicas: 1
+  ingress:
+    # -- Optional hostname used to match requests. Warning: many native Cassandra clients, notably including cqlsh, initialize their connection by querying for
+    # the cluster's contactPoints, and thereafter communicate to the cluster using those names/IPs rather than whatever host was specified to the client. In
+    # order for clients to work correctly through ingress with a host filter, this means that the host filter must match the hostnames specified in the
+    # contactPoints. This value must be a DNS-resolvable hostname and not an IP address. To avoid this issue, leave this setting blank, or override it to ""
+    # (empty string) for stargate.ingress.cassandra.host. This note does not apply to clients of Stargate's auth, REST, or GraphQL APIs.
+    host: 
+    enabled: true
+
+    cassandra:
+      enabled: true
+
+medusa:
+  multiTenant: true
+  storage: s3
+
+  storage_properties:
+      region: us-east-1
+
+  bucketName: k8ssandra-medusa
+  storageSecret: medusa-bucket-key

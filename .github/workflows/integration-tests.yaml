@@ -1,0 +1,94 @@
+---
+on: [push, pull_request]
+
+jobs:
+  integration-tests:
+    runs-on: ubuntu-20.04
+    strategy:
+      fail-fast: false
+      matrix:
+        scenario: ["Medusa on S3", "Medusa on MinIO", "Reaper"]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Cache Docker layers
+        uses: actions/cache@v2
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-k8ssandra-buildx
+          restore-keys: |
+            ${{ runner.os }}-k8ssandra-buildx
+      - name: Install Dependencies
+        run: |
+          set -x
+          sudo apt-get update -qq
+
+          # install Go
+          wget https://dl.google.com/go/go1.15.8.linux-amd64.tar.gz
+          sudo tar -C /usr/local -xzf go1.15.8.linux-amd64.tar.gz
+          export PATH=$PATH:/usr/local/go/bin
+          go version
+
+          # install kubectl
+          curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+          sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+
+          # install kind
+          curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.10.0/kind-linux-amd64
+          chmod +x ./kind
+          sudo install -o root -g root -m 0755 ./kind /usr/local/bin/kind
+
+          # install Helm
+          curl https://baltocdn.com/helm/signing.asc | sudo apt-key add -
+          sudo apt-get install apt-transport-https --yes
+          echo "deb https://baltocdn.com/helm/stable/debian/ all main" | sudo tee /etc/apt/sources.list.d/helm-stable-debian.list
+          sudo apt-get update
+          sudo apt-get install helm -y
+
+          # install jq
+          sudo apt-get install jq -y
+
+          # install Ginkgo
+          go get -u github.com/onsi/ginkgo/ginkgo
+
+          # Update Helm dependencies
+          ./scripts/update-helm-deps.sh
+
+      - name: Update hosts file
+        run: |
+          echo "127.0.0.1 repair.localhost" | sudo tee -a /etc/hosts
+          echo "127.0.0.1 grafana.localhost" | sudo tee -a /etc/hosts
+          echo "127.0.0.1 prometheus.localhost" | sudo tee -a /etc/hosts
+
+      - name: Write Secrets
+        run: |
+          printf "%s" '${{ secrets.MEDUSA_SECRET }}' > ~/medusa_secret.yaml
+
+      - name: Run Integration Tests
+        run: |
+          cd tests/integration
+
+          # Medusa on S3 requires a secret. Skip step if the secret is absent.
+          if [[ ( -n "${{ secrets.MEDUSA_SECRET }}" && "${{ matrix.scenario }}" == "Medusa on S3" ) \
+            || "${{ matrix.scenario }}" != "Medusa on S3" ]]
+          then
+            go test . -timeout 30m -ginkgo.failFast --ginkgo.trace --ginkgo.progress --ginkgo.slowSpecThreshold=900 --ginkgo.v --ginkgo.focus="${{ matrix.scenario }}" -v -p 1
+          fi
+
+      - name: Collect artifacts
+        if: ${{ failure() }}
+        env:
+          ARTIFACTS_DIR: artifacts
+        run: tests/integration/scripts/collect_artifacts.sh
+
+      - uses: actions/upload-artifact@v2
+        if: ${{ failure() }}
+        with:
+          name: k8s-artifacts-${{ matrix.scenario }}
+          path: artifacts/
+      
+      # Uncomment to run with SSH on failure
+      #- name: Setup tmate session
+      #  if: ${{ failure() }}
+      #  uses: mxschmitt/action-tmate@v3
+      #  timeout-minutes: 10
