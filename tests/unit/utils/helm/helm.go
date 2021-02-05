@@ -6,6 +6,7 @@ import (
 	. "github.com/onsi/gomega"
 )
 
+// RenderAndUnmarshall renders a Helm template and invokes the provided function to unmarshal the result.
 func RenderAndUnmarshall(templatePath string, options *helm.Options, helmChartPath string, HelmReleaseName string, unmarshallFunction func(string) error) error {
 	renderedOutput, renderErr := helm.RenderTemplateE(
 		GinkgoT(), options, helmChartPath, HelmReleaseName,
