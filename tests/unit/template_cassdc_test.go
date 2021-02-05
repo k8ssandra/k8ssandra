@@ -436,9 +436,7 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 				cqlPasswordEnvVar,
 			}))
 
-			// Verify volumeMounts and volumes
-			Expect(len(medusaContainer.VolumeMounts)).To(Equal(4))
-			Expect(medusaContainer.VolumeMounts[0].Name).To(Equal(medusaConfigVolumeName))
+			verifyMedusaVolumeMounts(medusaContainer)
 
 			Expect(len(cassdc.Spec.PodTemplateSpec.Spec.Volumes)).To(Equal(3))
 			Expect(cassdc.Spec.PodTemplateSpec.Spec.Volumes[0].Name).To(Equal(medusaConfigVolumeName))
@@ -520,9 +518,7 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 				cqlPasswordEnvVar,
 			}))
 
-			// Verify volumeMounts and volumes
-			Expect(len(medusaContainer.VolumeMounts)).To(Equal(4))
-			Expect(medusaContainer.VolumeMounts[0].Name).To(Equal(medusaConfigVolumeName))
+			verifyMedusaVolumeMounts(medusaContainer)
 
 			Expect(len(cassdc.Spec.PodTemplateSpec.Spec.Volumes)).To(Equal(3))
 			Expect(cassdc.Spec.PodTemplateSpec.Spec.Volumes[0].Name).To(Equal(medusaConfigVolumeName))
@@ -897,6 +893,11 @@ func getInitContainer(cassdc *cassdcv1beta1.CassandraDatacenter, name string) *c
 func getContainer(cassdc *cassdcv1beta1.CassandraDatacenter, name string) *corev1.Container {
 	return getContainerByName(cassdc.Spec.PodTemplateSpec.Spec.Containers, name)
 
+}
+
+func verifyMedusaVolumeMounts(container *corev1.Container) {
+	ExpectWithOffset(1, len(container.VolumeMounts)).To(Equal(4))
+	ExpectWithOffset(1, container.VolumeMounts[0]).To(Equal(corev1.VolumeMount{Name: medusaConfigVolumeName, MountPath: "/etc/medusa"}))
 }
 
 func assertInitContainerNamesMatch(cassdc *cassdcv1beta1.CassandraDatacenter, names ...string) {
