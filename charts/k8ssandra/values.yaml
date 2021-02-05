@@ -191,12 +191,12 @@ ingress:
 
     # Stargate ingress support
     stargate:
-      # Note this will **only** work if `ingress.traefik.enabled` is also `true`
+      # Note this will **only** work if `stargate.enabled` and `ingress.traefik.enabled` is also `true`
       # Note when enabled, the authentication API (port 8081) is enabled automatically.
-      enabled: false
+      enabled: true
 
       # Hostname Traefik should use for matching Stargate requests.
-      host: localhost
+      host: "*"
 
       # ingress for each Stargate API can be enabled/disabled independently
       graphql:
