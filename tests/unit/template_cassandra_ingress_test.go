@@ -19,7 +19,7 @@ var _ = Describe("Verify Cassandra ingress template", func() {
 	)
 
 	BeforeEach(func() {
-		helmChartPath, err = filepath.Abs(chartsPath)
+		helmChartPath, err = filepath.Abs(ChartsPath)
 		Expect(err).To(BeNil())
 		ingress = traefik.IngressRouteTCP{}
 	})
@@ -30,7 +30,7 @@ var _ = Describe("Verify Cassandra ingress template", func() {
 
 	renderTemplate := func(options *helm.Options) error {
 		return helmUtils.RenderAndUnmarshall("templates/cassandra/ingress.yaml",
-			options, helmChartPath, helmReleaseName,
+			options, helmChartPath, HelmReleaseName,
 			func(renderedYaml string) error {
 				return helm.UnmarshalK8SYamlE(GinkgoT(), renderedYaml, &ingress)
 			})
@@ -89,7 +89,7 @@ var _ = Describe("Verify Cassandra ingress template", func() {
 			Expect(renderTemplate(options)).To(Succeed())
 			Expect(ingress.Kind).To(Equal("IngressRouteTCP"))
 
-			VerifyTraefikTCPIngressRoute(ingress, "cassandra", "HostSNI(`*`)", fmt.Sprintf("%s-%s-service", helmReleaseName, "dc1"), 9042)
+			VerifyTraefikTCPIngressRoute(ingress, "cassandra", "HostSNI(`*`)", fmt.Sprintf("%s-%s-service", HelmReleaseName, "dc1"), 9042)
 		})
 	})
 })

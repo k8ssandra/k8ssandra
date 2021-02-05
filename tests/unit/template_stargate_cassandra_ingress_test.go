@@ -19,7 +19,7 @@ var _ = Describe("Verify Stargate Cassandra ingress template", func() {
 	)
 
 	BeforeEach(func() {
-		helmChartPath, err = filepath.Abs(chartsPath)
+		helmChartPath, err = filepath.Abs(ChartsPath)
 		Expect(err).To(BeNil())
 		ingress = traefik.IngressRouteTCP{}
 	})
@@ -30,7 +30,7 @@ var _ = Describe("Verify Stargate Cassandra ingress template", func() {
 
 	renderTemplate := func(options *helm.Options) error {
 		return helmUtils.RenderAndUnmarshall("templates/stargate/cassandra-ingress.yaml",
-			options, helmChartPath, helmReleaseName,
+			options, helmChartPath, HelmReleaseName,
 			func(renderedYaml string) error {
 				return helm.UnmarshalK8SYamlE(GinkgoT(), renderedYaml, &ingress)
 			})
@@ -149,7 +149,7 @@ var _ = Describe("Verify Stargate Cassandra ingress template", func() {
 			VerifyTraefikTCPIngressRoute(ingress,
 				"cassandra",
 				"HostSNI(`*`)",
-				fmt.Sprintf("%s-%s-stargate-service", helmReleaseName, "dc1"),
+				fmt.Sprintf("%s-%s-stargate-service", HelmReleaseName, "dc1"),
 				9042)
 		})
 
@@ -172,7 +172,7 @@ var _ = Describe("Verify Stargate Cassandra ingress template", func() {
 			VerifyTraefikTCPIngressRoute(ingress,
 				"cassandra",
 				fmt.Sprintf("HostSNI(`%s`)", stargateHost),
-				fmt.Sprintf("%s-%s-stargate-service", helmReleaseName, "dc1"),
+				fmt.Sprintf("%s-%s-stargate-service", HelmReleaseName, "dc1"),
 				9042)
 		})
 	})

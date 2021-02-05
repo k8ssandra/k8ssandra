@@ -18,7 +18,7 @@ var _ = Describe("Verify Stargate template", func() {
 	)
 
 	BeforeEach(func() {
-		helmChartPath, err = filepath.Abs(chartsPath)
+		helmChartPath, err = filepath.Abs(ChartsPath)
 		Expect(err).To(BeNil())
 		deployment = &appsv1.Deployment{}
 	})
@@ -72,7 +72,7 @@ var _ = Describe("Verify Stargate template", func() {
 			Expect(string(initContainer.ImagePullPolicy)).To(Equal("IfNotPresent"))
 
 			Expect(initContainer.Args[0]).To(Equal("-c"))
-			Expect(initContainer.Args[1]).To(ContainSubstring("nslookup k8ssandra-cluster-seed-service.k8ssandra-namespace.svc.cluster.local;"))
+			Expect(initContainer.Args[1]).To(ContainSubstring("nslookup k8ssandra-seed-service.k8ssandra-namespace.svc.cluster.local;"))
 
 			Expect(len(templateSpec.Containers)).To(Equal(1))
 			container := templateSpec.Containers[0]
@@ -94,10 +94,10 @@ var _ = Describe("Verify Stargate template", func() {
 			Expect(javaOpts.Value).To(ContainSubstring("-Xmx256M"))
 
 			clusterName := kubeapi.FindEnvVarByName(container.Env, "CLUSTER_NAME")
-			Expect(clusterName.Value).To(Equal("k8ssandra-cluster"))
+			Expect(clusterName.Value).To(Equal("k8ssandra"))
 
 			seed := kubeapi.FindEnvVarByName(container.Env, "SEED")
-			Expect(seed.Value).To(Equal("k8ssandra-cluster-seed-service.k8ssandra-namespace.svc.cluster.local"))
+			Expect(seed.Value).To(Equal("k8ssandra-seed-service.k8ssandra-namespace.svc.cluster.local"))
 
 			datacenterName := kubeapi.FindEnvVarByName(container.Env, "DATACENTER_NAME")
 			Expect(datacenterName.Value).To(Equal("dc1"))

@@ -18,7 +18,7 @@ var _ = Describe("Verify Stargate ingress template", func() {
 	)
 
 	BeforeEach(func() {
-		helmChartPath, err = filepath.Abs(chartsPath)
+		helmChartPath, err = filepath.Abs(ChartsPath)
 		Expect(err).To(BeNil())
 		ingress = networking.Ingress{}
 	})
@@ -29,7 +29,7 @@ var _ = Describe("Verify Stargate ingress template", func() {
 
 	renderTemplate := func(options *helm.Options) error {
 		return helmUtils.RenderAndUnmarshall("templates/stargate/ingress.yaml",
-			options, helmChartPath, helmReleaseName,
+			options, helmChartPath, HelmReleaseName,
 			func(renderedYaml string) error {
 				return helm.UnmarshalK8SYamlE(GinkgoT(), renderedYaml, &ingress)
 			})
@@ -145,13 +145,13 @@ var _ = Describe("Verify Stargate ingress template", func() {
 
 func verifyIngressRules(ingress networking.Ingress, host string, graphEnabled bool, playgroundEnabled bool, restEnabled bool) {
 	rules := ingress.Spec.Rules
-	kubeapi.VerifyIngressRule(rules, helmReleaseName,"/v1/auth", nil, host, 8081)
+	kubeapi.VerifyIngressRule(rules, HelmReleaseName,"/v1/auth", nil, host, 8081)
 	if graphEnabled {
-		kubeapi.VerifyIngressRule(rules, helmReleaseName,"/graphql/", nil, host, 8080)
-		kubeapi.VerifyIngressRule(rules, helmReleaseName,"/graphql-schema", nil, host, 8080)
+		kubeapi.VerifyIngressRule(rules, HelmReleaseName,"/graphql/", nil, host, 8080)
+		kubeapi.VerifyIngressRule(rules, HelmReleaseName,"/graphql-schema", nil, host, 8080)
 		if playgroundEnabled {
 			pathType := networking.PathTypeExact
-			kubeapi.VerifyIngressRule(rules, helmReleaseName,"/playground", &pathType, host, 8080)
+			kubeapi.VerifyIngressRule(rules, HelmReleaseName,"/playground", &pathType, host, 8080)
 		} else {
 			kubeapi.VerifyNoRuleWithPath(rules, "/playground")
 		}
@@ -161,7 +161,7 @@ func verifyIngressRules(ingress networking.Ingress, host string, graphEnabled bo
 		kubeapi.VerifyNoRuleWithPath(rules, "/playground")
 	}
 	if restEnabled {
-		kubeapi.VerifyIngressRule(rules, helmReleaseName,"/v2/", nil, host, 8082)
+		kubeapi.VerifyIngressRule(rules, HelmReleaseName,"/v2/", nil, host, 8082)
 	} else {
 		kubeapi.VerifyNoRuleWithPath(rules, "/v2/")
 	}
