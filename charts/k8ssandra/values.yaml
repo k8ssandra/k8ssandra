@@ -26,7 +26,7 @@ cassandra:
   #
   # image:
 
-  # cluster name defaults to release name when not specified.
+  # -- Cluster name defaults to release name when not specified.
   clusterName: ""
 
   # -- Authentication and authorization related settings.
