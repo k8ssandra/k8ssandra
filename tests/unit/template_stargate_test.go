@@ -72,7 +72,7 @@ var _ = Describe("Verify Stargate template", func() {
 			Expect(string(initContainer.ImagePullPolicy)).To(Equal("IfNotPresent"))
 
 			Expect(initContainer.Args[0]).To(Equal("-c"))
-			Expect(initContainer.Args[1]).To(ContainSubstring("nslookup k8ssandra-seed-service.k8ssandra-namespace.svc.cluster.local;"))
+			Expect(initContainer.Args[1]).To(ContainSubstring("nslookup k8ssandra-testrelease-seed-service.k8ssandra-namespace.svc.cluster.local;"))
 
 			Expect(len(templateSpec.Containers)).To(Equal(1))
 			container := templateSpec.Containers[0]
@@ -94,13 +94,35 @@ var _ = Describe("Verify Stargate template", func() {
 			Expect(javaOpts.Value).To(ContainSubstring("-Xmx256M"))
 
 			clusterName := kubeapi.FindEnvVarByName(container.Env, "CLUSTER_NAME")
-			Expect(clusterName.Value).To(Equal("k8ssandra"))
+			Expect(clusterName.Value).To(Equal("k8ssandra-testrelease"))
 
 			seed := kubeapi.FindEnvVarByName(container.Env, "SEED")
-			Expect(seed.Value).To(Equal("k8ssandra-seed-service.k8ssandra-namespace.svc.cluster.local"))
+			Expect(seed.Value).To(Equal("k8ssandra-testrelease-seed-service.k8ssandra-namespace.svc.cluster.local"))
 
 			datacenterName := kubeapi.FindEnvVarByName(container.Env, "DATACENTER_NAME")
 			Expect(datacenterName.Value).To(Equal("dc1"))
+		})
+
+		It("changing release name", func() {
+			releaseName := "k8ssandra-release"
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+				SetValues: map[string]string{
+					"k8ssandra.releaseName": releaseName,
+					"stargate.enabled": "true",
+				},
+			}
+
+			Expect(renderTemplate(options)).To(Succeed())
+			Expect(deployment.Kind).To(Equal("Deployment"))
+
+			initContainer := deployment.Spec.Template.Spec.InitContainers[0]
+			Expect(initContainer.Args[0]).To(Equal("-c"))
+			Expect(initContainer.Args[1]).To(ContainSubstring("nslookup k8ssandra-testrelease-seed-service.k8ssandra-namespace.svc.cluster.local;"))
+
+			container := deployment.Spec.Template.Spec.Containers[0]
+			seed := kubeapi.FindEnvVarByName(container.Env, "SEED")
+			Expect(seed.Value).To(Equal("k8ssandra-testrelease-seed-service.k8ssandra-namespace.svc.cluster.local"))
 		})
 
 		It("changing datacenter name", func() {
