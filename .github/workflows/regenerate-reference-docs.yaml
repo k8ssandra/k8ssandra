@@ -1,0 +1,34 @@
+name: Regenerate Reference Docs
+on: [workflow_dispatch]
+jobs:
+  regen-docs:
+    runs-on: ubuntu-latest
+    env:
+      HELM_DOCS_VERSION: 1.5.0
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: recursive
+      - uses: actions/setup-node@v2-beta
+        with:
+          node-version: '12'
+      - name: Cache
+        uses: actions/cache@v2
+        with:
+          path: |
+            bin
+            docs/node_modules
+          key: ${{ runner.os }}-${{ env.HELM_DOCS_VERSION }}
+      - run: scripts/install-helm-docs.sh
+      - name: Update PATH
+        run: |
+          echo "$HOME/bin" >> $GITHUB_PATH
+      - name: Generate reference docs
+        run: scripts/generate-helm-docs.sh
+      - name: Commit & Push changes
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add -A
+          git commit -m "Regenerated reference docs"
+          git push
