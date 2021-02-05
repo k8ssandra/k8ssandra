@@ -1,5 +1,6 @@
 name: Regenerate Reference Docs
-on: [workflow_dispatch]
+on: 
+  - workflow_dispatch
 jobs:
   regen-docs:
     runs-on: ubuntu-latest
