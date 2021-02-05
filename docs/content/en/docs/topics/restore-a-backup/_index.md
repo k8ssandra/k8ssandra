@@ -12,17 +12,16 @@ This topic walks you through the steps to backup and restore Cassandra data runn
 * K8ssandra Helm chart, which we'll extend with `backupRestore` Medusa buckets for Amazon S3 integration
 * Sample files in GitHub:
   * [medusa-bucket-key.yaml](medusa-bucket-key.yaml) to create a secret with credentials for AWS S3 buckets
-  * [backup-restore-values.yaml](backup-restore-values.yaml) to enable Medusa (backup/restore service) and set related minimal values
+  * [backup-restore-values.yaml](backup-restore-values.yaml) to enable Medusa (backup/restore service) and set values
   * [test_data.cql](test_data.cql) to populate a Cassandra keyspace and table with data
-
+ 
 ## Prerequisites
 
 * A Kubernetes environment
 * Storage for the backups - see below
 * [Helm](https://helm.sh/), a packaging manager for Kubernetes
-* An edited version of [medusa-bucket-key.yaml](./medusa-bucket-key.yaml), as noted below
 
-All other prerequisites are handled by the installed tools listed above. The sample files are checked into GitHub.
+All other prerequisites are handled by the installed tools listed above. 
 
 ## Steps
 
@@ -30,7 +29,12 @@ All other prerequisites are handled by the installed tools listed above. The sam
 
 You will need storage for the backups. This topic shows the use of AWS S3 buckets.
 
-* If you'll use AWS S3, before proceeding with the configuration described below, verify that you know the `aws_access_key_id` and `aws_secret_access_key` values. Or  contact your IT team if they manage those assets. You'll provide those details in an edited version of the [medusa-bucket-key.yaml](medusa-bucket-key.yaml) file. For information about the S3 setup steps, see this helpful [readme](https://github.com/thelastpickle/cassandra-medusa/blob/master/docs/aws_s3_setup.md).  
+* If you'll use AWS S3, before proceeding with the configuration described below, verify that you know:
+  * The `aws_access_key_id` and `aws_secret_access_key` values
+  * The `name` of the S3 bucket
+  * The region assigned to the S3 bucket
+  
+  Or contact your IT team if they manage those assets. You'll provide those details in an edited version of the [medusa-bucket-key.yaml](medusa-bucket-key.yaml) file. For information about the S3 setup steps, see this helpful [readme](https://github.com/thelastpickle/cassandra-medusa/blob/master/docs/aws_s3_setup.md).  
 
 * Add and update the following repo, which has in one chart all the settings for K8ssandra plus the backup/restore settings:
 
@@ -47,7 +51,7 @@ Update Complete. ⎈Happy Helming!⎈
 
 ### Create secret for read/write access to an S3 bucket
 
-Before installing the k8ssandra cluster, we need to supply credentials so that Medusa has read/write access to an AWS S3 bucket, which is where the backup will be stored. Medusa supports local, Amazon S3, Google Cloud Storage, and Azure buckets. K8ssandra only exposes configuration for S3 at this time.
+Before installing the k8ssandra cluster, we need to supply credentials so that Medusa has read/write access to an AWS S3 bucket, which is where the backup will be stored. Medusa supports local, Amazon S3, Google Cloud Storage, and Azure buckets. K8ssandra only exposes a configuration for S3 at this time.
 
 **Note:** See [AWS S3 setup](https://github.com/thelastpickle/cassandra-medusa/blob/master/docs/aws_s3_setup.md) on the Medusa wiki for more details for configuring S3.
 
@@ -69,20 +73,42 @@ stringData:
    aws_secret_access_key = my_secret_key
 ```
    
-**Make a copy** of [medusa-bucket-key.yaml](medusa-bucket-key.yaml), and then replace `my_access_key` and `my_secret_key` with your S3 values. 
+**Make a copy** of [medusa-bucket-key.yaml](medusa-bucket-key.yaml), and then replace:
+
+* `my_access_key` and `my_secret_key` with your S3 values
+* The `name` of the S3 bucket 
 
 In the YAML, notice the `stringData` property value: `medusa_s3_credentials`. The secret gets mounted to this location; this is where Medusa expects to get the AWS credentials.
 
 Apply the YAML to your Kubernetes environment. In this example, assume that you had copied medusa-bucket-key.yaml to my-medusa-bucket-key.yaml:
 
+`kubectl apply -f my-medusa-bucket-key.yaml`
+ 
+`secret/medusa-bucket-key configured`
+
+**TIP:** If the values noted above in your edited **copy** of medusa-bucket-key.yaml do not match the S3 bucket's values, a subsequent attempt to install K8ssandra will begin and most pods will reach a Ready state; however, the Medusa container in the `k8ssandra-dc1-default-sts-0` pod will fail due to the misconfiguration, and you will not be able to perform backup and restore operations. 
+
+**IMPORTANT:** Also, make sure that the region used by your S3 bucket matches the region expected by K8ssandra. If there is a mismatch, you'll see an error like the following:
+
+`kubectl logs k8ssandra-dc1-default-sts-0 -c medusa`
+
 ```
-kubectl apply -f my-medusa-bucket-key.yaml
-secret/medusa-bucket-key configured
+.
+.
+.
+File "/usr/local/lib/python3.6/dist-packages/libcloud/storage/drivers/s3.py", line 143, in parse_error driver=S3StorageDriver)
+libcloud.common.types.LibcloudError: <LibcloudError in <class 'libcloud.storage.drivers.s3.S3StorageDriver'> 'This bucket is located in a different region. Please use the correct driver. Bucket region "us-east-2", used region "us-east-1".'>
 ```
+
+If your IT group manages the AWS S3 bucket settings, consult with them to get the correct values. 
+
+Here's an example from the AWS S3 dashboard showing a sample bucket name and region:
+
+![Amazon S3 bucket name and region sample](k8ssandra-aws-s3-sample-values.png)
 
 ### Create or update the k8ssandra cluster
 
-Install the `k8ssandra` chart with the following properties. You can reference the provided [backup-restore-values.yaml](backup-restore-values.yaml) file. It contains:
+Install the `k8ssandra` chart with the following properties. You can reference an edited copy of the provided [backup-restore-values.yaml](backup-restore-values.yaml) file; customize the `name` of the S3 bucket defined for your purposes. Before edits, this values file contains:
 
 ```
 size: 3
@@ -110,14 +136,13 @@ Allow a few minutes for the pods to start and proceed to a Ready state; check th
 
 ```
 NAME                                                  READY   STATUS             RESTARTS   AGE
-k8ssandra-cass-operator-66dc79dd97-kvzdq              1/1     Running            44         18h
-k8ssandra-dc1-default-sts-0                           1/2     Running            0          16m
-k8ssandra-grafana-7cb58d4f6b-5dn6g                    2/2     Running            1          18h
-k8ssandra-kube-prometheus-operator-85695ffb-xdq8c     1/1     Running            0          18h
-k8ssandra-medusa-operator-58586cb9c4-qctvb            1/1     Running            5          16m
-k8ssandra-reaper-operator-97754757-p7rz8              1/1     Running            11         18h
-prometheus-k8ssandra-kube-prometheus-prometheus-0     2/2     Running            1          18h
-prometheus-pulsar-kube-prometheus-sta-prometheus-0    2/2     Running            1          18h
+k8ssandra-cass-operator-6666588dc5-587p2              1/1     Running            0          3m50s
+k8ssandra-dc1-default-sts-0                           2/3     CrashLoopBackOff   4          3m17s
+k8ssandra-grafana-6858f6bbc-fbsjz                     2/2     Running            0          3m50s
+k8ssandra-kube-prometheus-operator-5556885bd6-6rkxh   1/1     Running            0          3m50s
+k8ssandra-medusa-operator-6848b9bf85-7pglr            1/1     Running            0          3m50s
+k8ssandra-reaper-operator-cc46fd5f4-mbl86             1/1     Running            0          3m50s
+prometheus-k8ssandra-kube-prometheus-prometheus-0     2/2     Running            1          3m37s
 ```
 
 Backup and restore operations are enabled by default. In the example YAML, `bucketName` corresponds to the name of the S3 bucket: `K8ssanda-bucket-dev`.  The `bucketSecret` corresponds to the secret credentials.
@@ -143,7 +168,7 @@ status:
   cassandraOperatorProgress: Ready
   conditions:
   ...
-  - lastTransitionTime: "2021-02-03T17:04:52Z"
+  - lastTransitionTime: "2021-02-05T20:45:46Z"
     message: ""
     reason: ""
     status: "True"
@@ -151,7 +176,7 @@ status:
   ...
 ```
 
-### Add test data
+### Add test data and get credentials for Cassandra access
 
 Now let’s create some test data.  The [test_data.cql](test_data.cql) sample file in GitHub contains:
 
@@ -165,21 +190,43 @@ insert into users (email, name, state) values ('sue@help.com', 'Sue Sas', 'CA');
 insert into users (email, name, state) values ('tom@yes.com', 'Tom and Jerry', 'NV');
 ```
 
-Copy the cql file to the k8ssandra container (pod) :
+Copy the cql file to the k8ssandra container (pod):
 
 `kubectl cp test_data.cql k8ssandra-dc1-default-sts-0:/tmp -c cassandra`
 
-Add the data to the Cassandra database:
+Before you can launch the CQLSH instance that's deployed by K8ssandra in your Kubernetes cluster, you'll need authentication credentials. By default, the username secret for K8ssandra is:
 
-`kubectl exec -it k8ssandra-dc1-default-sts-0 -c cassandra -- cqlsh -f /tmp/test_data.cql`
+`k8ssandra-superuser`
 
-Exec open cqlsh:
+To verify, you can extract and decode the username secret:
 
-`kubectl exec -it k8ssandra-dc1-default-sts-0 -c cassandra -- cqlsh`
+`kubectl get secret k8ssandra-superuser -o jsonpath="{.data.username}" | base64 --decode`
+```
+k8ssandra-superuser
+```
+
+The command output (second line above) verified that the username to use on a subsequent command is `k8ssandra-superuser`.
+
+Next, extract and decode the password secret. For example:
+
+`kubectl get secret k8ssandra-superuser -o jsonpath="{.data.password}" | base64 --decode`
+```
+7kZV7YUFSWUTksJ9nfZoWzuTL0qGSgjp54kEVAlgrbMTW_E3RXcTsg
+```
+
+### Use the credentials and add the data to the Cassandra database:
+
+For example:
+
+`kubectl exec -it k8ssandra-dc1-default-sts-0 -c cassandra -- cqlsh -u k8ssandra-superuser -p 7kZV7YUFSWUTksJ9nfZoWzuTL0qGSgjp54kEVAlgrbMTW_E3RXcTsg -f /tmp/test_data.cql`
+
+### Exec open CQLSH and enter DML and DDL statements
+
+`kubectl exec -it k8ssandra-dc1-default-sts-0 -c cassandra -- cqlsh -u k8ssandra-superuser -p 7kZV7YUFSWUTksJ9nfZoWzuTL0qGSgjp54kEVAlgrbMTW_E3RXcTsg`
 
 ```
 Connected to k8ssandra at 127.0.0.1:9042.
-[cqlsh 5.0.1 | Cassandra 3.11.7 | CQL spec 3.4.4 | Native protocol v4]
+[cqlsh 5.0.1 | Cassandra 3.11.10 | CQL spec 3.4.4 | Native protocol v4]
 Use HELP for help.
 cqlsh> use medusa_test;
 cqlsh:medusa_test> select * from medusa_test.users;
@@ -198,29 +245,7 @@ Exit out of CQLSH:
 
 `cqlsh:medusa_test> exit`
 
-Review the current charts that are in use, so far:
-
-`helm list`
-
-```
-NAME               	NAMESPACE	REVISION	UPDATED                             	STATUS  	CHART                  	APP VERSION
-k8ssandra          	default  	1       	2021-02-03 04:17:23.107265 -0700 MST	deployed	k8ssandra-0.38.0        3.11.7  
-```
-
-Also get the deployment status, so far:
-
-`kubectl get deployment`
-```
-NAME                                       READY   UP-TO-DATE   AVAILABLE   AGE
-cass-operator                              1/1     1            1           159m
-k8ssandra-grafana-operator-k8ssandra       1/1     1            1           159m
-k8ssandra-kube-prometheus-stack-operator   1/1     1            1           159m
-k8ssandra-reaper-k8ssandra                 1/1     1            1           156m
-k8ssandra-reaper-operator-k8ssandra        1/1     1            1           159m
-grafana-deployment                         1/1     1            1           158m
-```
-
-The output above shows the addition of medusa-test-medusa-operator-k8ssandra pod. 
+**TIP:** Keep the sample `medusa_test.users` table data in mind -- we will use subsequent backup and restore steps with this data.
 
 ### Create the backup
 
@@ -264,15 +289,15 @@ You can also examine the in-progress logs:
 
 `kubectl logs cassandra-dc1-default-sts-0 -c medusa-restore`
 
-### Launch cqlsh again and verify the restore
+### Launch CQLSH again and verify the restore
 
-Exec into cqlsh and select the data again, to verify the restore operation.
+Exec into CQLSH and select the data again, to verify the restore operation.
 
 ```
 kubectl exec -it k8ssandra-dc1-default-stc-0 -c cassandra -cqlsh
 
 Connected to k8ssandra at 127.0.0.1:9042.
-[cqlsh 5.0.1 | Cassandra 3.11.7 | CQL spec 3.4.4 | Native protocol v4]
+[cqlsh 5.0.1 | Cassandra 3.11.10 | CQL spec 3.4.4 | Native protocol v4]
 Use HELP for help.
 cqlsh> use medusa_test;
 cqlsh:medusa_test> select * from medusa_test.users;
@@ -291,8 +316,6 @@ You can look again at the cassandrarestore helm-test YAML for the start and endi
 
 `kubectl get cassadrarestore helm-test -o yaml`
 
-![Log output from restore operation](k8ssanda-restore-start-end-timestamps-example.png)
-
 ## Next
 
-Learn how to use the Repair Web Interface (Reaper).
+Learn how to use the [Repair Web Interface]({{< ref "/docs/topics/accessing-services/repair/" >}}).
