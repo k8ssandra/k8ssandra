@@ -6,9 +6,9 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-func RenderAndUnmarshall(templatePath string, options *helm.Options, helmChartPath string, helmReleaseName string, unmarshallFunction func(string) error) error {
+func RenderAndUnmarshall(templatePath string, options *helm.Options, helmChartPath string, HelmReleaseName string, unmarshallFunction func(string) error) error {
 	renderedOutput, renderErr := helm.RenderTemplateE(
-		GinkgoT(), options, helmChartPath, helmReleaseName,
+		GinkgoT(), options, helmChartPath, HelmReleaseName,
 		[]string{templatePath},
 	)
 	if renderErr == nil {

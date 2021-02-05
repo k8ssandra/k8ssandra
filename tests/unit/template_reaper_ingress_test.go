@@ -19,7 +19,7 @@ var _ = Describe("Verify Reaper ingress template", func() {
 	)
 
 	BeforeEach(func() {
-		helmChartPath, err = filepath.Abs(chartsPath)
+		helmChartPath, err = filepath.Abs(ChartsPath)
 		Expect(err).To(BeNil())
 		ingress = traefik.IngressRoute{}
 	})
@@ -30,7 +30,7 @@ var _ = Describe("Verify Reaper ingress template", func() {
 
 	renderTemplate := func(options *helm.Options) error {
 		return helmUtils.RenderAndUnmarshall("templates/reaper/ingress.yaml",
-			options, helmChartPath, helmReleaseName,
+			options, helmChartPath, HelmReleaseName,
 			func(renderedYaml string) error {
 				return helm.UnmarshalK8SYamlE(GinkgoT(), renderedYaml, &ingress)
 			})
@@ -66,7 +66,7 @@ var _ = Describe("Verify Reaper ingress template", func() {
 
 			Expect(renderTemplate(options)).To(Succeed())
 			Expect(ingress.Kind).To(Equal("IngressRoute"))
-			VerifyTraefikHTTPIngressRoute(ingress, "web", "Host(`repair.k8ssandra.cluster.local`)", Sprintf("%s-reaper-k8ssandra-reaper-service", helmReleaseName), 8080)
+			VerifyTraefikHTTPIngressRoute(ingress, "web", "Host(`repair.k8ssandra.cluster.local`)", Sprintf("%s-reaper-k8ssandra-reaper-service", HelmReleaseName), 8080)
 		})
 
 		It("with custom host", func() {
@@ -80,7 +80,7 @@ var _ = Describe("Verify Reaper ingress template", func() {
 
 			Expect(renderTemplate(options)).To(Succeed())
 			Expect(ingress.Kind).To(Equal("IngressRoute"))
-			VerifyTraefikHTTPIngressRoute(ingress, "web", "Host(`reaper.host`)", Sprintf("%s-reaper-k8ssandra-reaper-service", helmReleaseName), 8080)
+			VerifyTraefikHTTPIngressRoute(ingress, "web", "Host(`reaper.host`)", Sprintf("%s-reaper-k8ssandra-reaper-service", HelmReleaseName), 8080)
 		})
 	})
 })

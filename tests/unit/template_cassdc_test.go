@@ -312,10 +312,9 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 				},
 			}
 
-			err, err2 := renderTemplate(options)
+			err := renderTemplate(options)
 			fmt.Println("error: ", err)
-			fmt.Println("error2: ", err2)
-			Expect(err, err2).To(Succeed())
+			Expect(err).To(Succeed())
 
 			Expect(cassdc.Spec.SuperuserSecretName).To(Equal(clusterName + "-superuser"))
 		})
@@ -835,7 +834,7 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 				},
 			}
 
-			renderedErr, _ := renderTemplate(options)
+			renderedErr := renderTemplate(options)
 			Expect(renderedErr).To(HaveOccurred())
 		})
 
