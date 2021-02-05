@@ -6,7 +6,7 @@ import (
 	"github.com/k8ssandra/k8ssandra/tests/unit/utils/kubeapi"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	appsV1 "k8s.io/api/apps/v1"
+	appsv1 "k8s.io/api/apps/v1"
 	"path/filepath"
 )
 
@@ -14,13 +14,13 @@ var _ = Describe("Verify Stargate template", func() {
 	var (
 		helmChartPath string
 		err           error
-		deployment    *appsV1.Deployment
+		deployment    *appsv1.Deployment
 	)
 
 	BeforeEach(func() {
 		helmChartPath, err = filepath.Abs(chartsPath)
 		Expect(err).To(BeNil())
-		deployment = &appsV1.Deployment{}
+		deployment = &appsv1.Deployment{}
 	})
 
 	AfterEach(func() {

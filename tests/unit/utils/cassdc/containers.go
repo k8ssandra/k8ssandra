@@ -4,15 +4,15 @@ import (
 	cassop "github.com/datastax/cass-operator/operator/pkg/apis/cassandra/v1beta1"
 	. "github.com/k8ssandra/k8ssandra/tests/unit/utils/kubeapi"
 	. "github.com/onsi/gomega"
-	coreV1 "k8s.io/api/core/v1"
+	corev1 "k8s.io/api/core/v1"
 )
 
-func GetInitContainer(cassdc *cassop.CassandraDatacenter, name string) *coreV1.Container {
+func GetInitContainer(cassdc *cassop.CassandraDatacenter, name string) *corev1.Container {
 	return GetContainerByName(cassdc.Spec.PodTemplateSpec.Spec.InitContainers, name)
 
 }
 
-func GetContainer(cassdc *cassop.CassandraDatacenter, name string) *coreV1.Container {
+func GetContainer(cassdc *cassop.CassandraDatacenter, name string) *corev1.Container {
 	return GetContainerByName(cassdc.Spec.PodTemplateSpec.Spec.Containers, name)
 
 }
