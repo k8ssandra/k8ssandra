@@ -1,6 +1,7 @@
 package unit_test
 
 import (
+	helmUtils "github.com/k8ssandra/k8ssandra/tests/unit/utils/helm"
 	"path/filepath"
 
 	"github.com/gruntwork-io/terratest/modules/helm"
@@ -26,13 +27,12 @@ var _ = Describe("Verify Cleaner job template", func() {
 		err = nil
 	})
 
-	renderTemplate := func(options *helm.Options) {
-		renderedOutput := helm.RenderTemplate(
-			GinkgoT(), options, helmChartPath, HelmReleaseName,
-			[]string{"templates/cleaner/batch_job.yaml"},
-		)
-
-		helm.UnmarshalK8SYaml(GinkgoT(), renderedOutput, cleanerJob)
+	renderTemplate := func(options *helm.Options) error {
+		return helmUtils.RenderAndUnmarshall("templates/cleaner/batch_job.yaml",
+			options, helmChartPath, HelmReleaseName,
+			func(renderedYaml string) error {
+				return helm.UnmarshalK8SYamlE(GinkgoT(), renderedYaml, cleanerJob)
+			})
 	}
 
 	Context("by rendering it with options", func() {

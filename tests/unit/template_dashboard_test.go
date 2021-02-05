@@ -1,6 +1,7 @@
 package unit_test
 
 import (
+	helmUtils "github.com/k8ssandra/k8ssandra/tests/unit/utils/helm"
 	"path/filepath"
 
 	"github.com/gruntwork-io/terratest/modules/helm"
@@ -31,17 +32,11 @@ var _ = Describe("Verify dashboard Config Map template", func() {
 	})
 
 	renderTemplate := func(options *helm.Options) error {
-
-		renderedOutput, err := helm.RenderTemplateE(
-			GinkgoT(), options, helmChartPath, HelmReleaseName,
-			[]string{"templates/grafana/configmap.yaml"},
-		)
-
-		if err == nil {
-			helm.UnmarshalK8SYaml(GinkgoT(), renderedOutput, &cm)
-		}
-
-		return err
+		return helmUtils.RenderAndUnmarshall("templates/grafana/configmap.yaml",
+			options, helmChartPath, HelmReleaseName,
+			func(renderedYaml string) error {
+				return helm.UnmarshalK8SYamlE(GinkgoT(), renderedYaml, &cm)
+			})
 	}
 
 	Context("by rendering it with options", func() {
