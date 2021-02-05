@@ -89,17 +89,17 @@ var _ = Describe("Verify Stargate template", func() {
 			Expect(requests.Memory().Value()).To(Equal(int64(512 * oneMegabyte)))
 			Expect(requests.Cpu().MilliValue()).To(Equal(int64(200)))
 
-			javaOpts := kubeapi.FindEnvVarByName(container.Env, "JAVA_OPTS")
+			javaOpts := kubeapi.FindEnvVarByName(container, "JAVA_OPTS")
 			Expect(javaOpts.Value).To(ContainSubstring("-Xms256M"))
 			Expect(javaOpts.Value).To(ContainSubstring("-Xmx256M"))
 
-			clusterName := kubeapi.FindEnvVarByName(container.Env, "CLUSTER_NAME")
+			clusterName := kubeapi.FindEnvVarByName(container, "CLUSTER_NAME")
 			Expect(clusterName.Value).To(Equal("k8ssandra-testrelease"))
 
-			seed := kubeapi.FindEnvVarByName(container.Env, "SEED")
+			seed := kubeapi.FindEnvVarByName(container, "SEED")
 			Expect(seed.Value).To(Equal("k8ssandra-testrelease-seed-service.k8ssandra-namespace.svc.cluster.local"))
 
-			datacenterName := kubeapi.FindEnvVarByName(container.Env, "DATACENTER_NAME")
+			datacenterName := kubeapi.FindEnvVarByName(container, "DATACENTER_NAME")
 			Expect(datacenterName.Value).To(Equal("dc1"))
 		})
 
@@ -121,7 +121,7 @@ var _ = Describe("Verify Stargate template", func() {
 			Expect(initContainer.Args[1]).To(ContainSubstring("nslookup k8ssandra-testrelease-seed-service.k8ssandra-namespace.svc.cluster.local;"))
 
 			container := deployment.Spec.Template.Spec.Containers[0]
-			seed := kubeapi.FindEnvVarByName(container.Env, "SEED")
+			seed := kubeapi.FindEnvVarByName(container, "SEED")
 			Expect(seed.Value).To(Equal("k8ssandra-testrelease-seed-service.k8ssandra-namespace.svc.cluster.local"))
 		})
 
@@ -140,7 +140,7 @@ var _ = Describe("Verify Stargate template", func() {
 
 			Expect(renderTemplate(options)).To(Succeed())
 			container := deployment.Spec.Template.Spec.Containers[0]
-			datacenterName := kubeapi.FindEnvVarByName(container.Env, "DATACENTER_NAME")
+			datacenterName := kubeapi.FindEnvVarByName(container, "DATACENTER_NAME")
 			Expect(datacenterName.Value).To(Equal(targetDcName))
 		})
 
@@ -162,7 +162,7 @@ var _ = Describe("Verify Stargate template", func() {
 			requests := container.Resources.Requests
 			Expect(requests.Memory().Value()).To(Equal(int64(oneGigabyte)))
 
-			javaOpts := kubeapi.FindEnvVarByName(container.Env, "JAVA_OPTS")
+			javaOpts := kubeapi.FindEnvVarByName(container, "JAVA_OPTS")
 			Expect(javaOpts.Value).To(ContainSubstring("-Xms512M"))
 			Expect(javaOpts.Value).To(ContainSubstring("-Xmx512M"))
 		})
