@@ -1,0 +1,31 @@
+cassandra:
+  heap:
+   size: 500M
+   newGenSize: 200M
+  datacenters:
+  - name: dc1
+    size: 1
+  ingress:
+    enabled: false
+stargate:
+  enabled: false
+reaper:
+  enabled: false
+medusa:
+  enabled: true
+
+  multiTenant: true
+  storage: s3_compatible
+
+  storage_properties:
+      port: 9000
+      secure: "False"
+
+  bucketName: k8ssandra-medusa
+  storageSecret: medusa-bucket-key
+
+reaper-operator:
+  enabled: false
+
+kube-prometheus-stack:
+  enabled: false

@@ -1,0 +1,94 @@
+---
+on: 
+  pull_request:
+  push:
+    branches:
+      - 'main'
+      - '**-run-ci'
+jobs:
+  integration-tests:
+    runs-on: ubuntu-20.04
+    strategy:
+      fail-fast: false
+      matrix:
+        cassandra_version: ["3.11.10", "4.0.0"]
+        scenario: ["TestMedusaDeploymentScenario/\"S3\"", "TestMedusaDeploymentScenario/\"Minio\"", "TestReaperDeploymentScenario", "TestMonitoringDeploymentScenario", "TestStargateDeploymentScenario"]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Cache Docker layers
+        uses: actions/cache@v2
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-k8ssandra-buildx
+          restore-keys: |
+            ${{ runner.os }}-k8ssandra-buildx
+      - name: Set up Go 1.14
+        uses: actions/setup-go@v1
+        with:
+          go-version: 1.14
+      - name: Install Dependencies
+        run: |
+          set -x
+          sudo apt-get update || echo "something went slightly wrong with apt-get update"
+
+          # install kubectl
+          curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+          sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+
+          # install kind
+          curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.10.0/kind-linux-amd64
+          chmod +x ./kind
+          sudo install -o root -g root -m 0755 ./kind /usr/local/bin/kind
+
+          # install jq
+          sudo apt-get install jq -y
+          
+          # install Helm
+          ./scripts/install-helm.sh
+
+          # Update Helm dependencies
+          ./scripts/update-helm-deps.sh
+
+      - name: Write Secrets
+        run: |
+          printf "%s" '${{ secrets.MEDUSA_SECRET }}' > ~/medusa_secret.yaml
+
+      - name: Check if integration tests can run
+        env:
+          SCENARIO: ${{ matrix.scenario }}
+        run: |
+          if [[ ( -n "${{ secrets.MEDUSA_SECRET }}" && $SCENARIO == *"S3"* ) || $SCENARIO != *"S3"* ]];
+          # Medusa on S3 requires a secret. Skip integration tests if the secret is absent.
+          then
+            echo "IT_CAN_RUN=yes" >> $GITHUB_ENV
+          else
+            echo "IT_CAN_RUN=no" >> $GITHUB_ENV
+          fi
+      - name: Run Integration Tests
+        if: ${{ env.IT_CAN_RUN == 'yes' }}
+        env:
+          SCENARIO: ${{ matrix.scenario }}
+          K8SSANDRA_CASSANDRA_VERSION: ${{ matrix.cassandra_version }}
+        run: |
+          # Set a valid name for the artifacts in case of failure
+          echo "ARTIFACT_NAME=k8s-artifacts-${K8SSANDRA_CASSANDRA_VERSION}-$(echo $SCENARIO|tr '":' '__')" >> $GITHUB_ENV
+          make kind-integ-test TESTS="$SCENARIO"
+
+      - name: Collect artifacts
+        if: ${{ failure() }}
+        env:
+          ARTIFACTS_DIR: artifacts
+        run: tests/integration/scripts/collect_artifacts.sh
+
+      - uses: actions/upload-artifact@v2
+        if: ${{ failure() }}
+        with:
+          name: k8s-artifacts-${{ env.ARTIFACT_NAME }}
+          path: artifacts/
+      
+      # Uncomment to run with SSH on failure
+      - name: Setup tmate session
+        if: ${{ startsWith(github.event.head_commit.message, '[SSH]') }}
+        uses: mxschmitt/action-tmate@v3
+        timeout-minutes: 10

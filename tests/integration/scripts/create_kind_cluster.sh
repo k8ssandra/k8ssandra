@@ -27,7 +27,7 @@ nodes:
     kind: InitConfiguration
     nodeRegistration:
       kubeletExtraArgs:
-        node-labels: "ingress-ready=true"    
+        node-labels: "ingress-ready=true"
   extraPortMappings:
   - containerPort: 32080
     hostPort: 8080
@@ -38,6 +38,27 @@ nodes:
   - containerPort: 32090
     hostPort: 9000
     protocol: TCP
+  - containerPort: 80
+    hostPort: 80
+    protocol: TCP
+  - containerPort: 443
+    hostPort: 443
+    protocol: TCP
+  - containerPort: 32091
+    hostPort: 9042
+    protocol: TCP
+  - containerPort: 32092
+    hostPort: 9142
+    protocol: TCP
+  - containerPort: 30081
+    hostPort: 8081
+    protocol: TCP
+  - containerPort: 30082
+    hostPort: 8082
+    protocol: TCP
+- role: worker
+- role: worker
+- role: worker
 EOF
 
 # connect the registry to the cluster network

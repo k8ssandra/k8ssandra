@@ -125,6 +125,42 @@ Once complete, you should see something like the following:
 
 > ok      github.com/k8ssandra/k8ssandra/tests/unit       47.156s
 
+
+### Integration tests
+Different integration test scenarios are available to check that all components work as expected.
+When using kind, invoke the full stack scenario with the following command:
+
+```
+make kind-integ-test
+```
+
+This will delete any existing kind cluster and recreate it accordingly with the integration tests requirements.
+In order to run the tests on a specific (and supported) Apache Cassandra version, set the `K8SSANDRA_CASSANDRA_VERSION` environment variable:
+
+```
+K8SSANDRA_CASSANDRA_VERSION=4.0.0 make kind-integ-test
+```
+
+Supported versions are referenced in [the Helm charts](https://github.com/k8ssandra/k8ssandra/blob/main/charts/k8ssandra/values.yaml#L2-L8).
+
+If you want to run the integration tests on an running Kubernetes cluster (GKE, EKS, K3d, ...), run the following command instead:
+
+```
+make integ-test
+```
+
+Individual scenarios can be run for faster results if the change primarily impacts a specific component:
+
+```
+make kind-integ-test TESTS="TestReaperDeploymentScenario"
+```
+
+The Medusa tests are specific to a storage backend, which needs to be specified as follows:
+
+```
+make kind-integ-test TESTS="TestMedusaDeploymentScenario/\"Minio\""
+```
+
 ## Troubleshooting advice
 This section will be updated over time as K8ssandra grows.  Take a look to enhance your K8ssandra experience. 
 

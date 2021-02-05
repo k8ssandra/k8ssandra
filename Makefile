@@ -16,6 +16,7 @@ CLEANER_IMG ?= $(CLEANER_LATEST_IMAGE)
 TESTS=all
 GO_FLAGS=
 ENVTEST_ASSETS_DIR=$(shell pwd)/testbin
+
 test: fmt vet unit-test pkg-test
 
 unit-test:
@@ -31,7 +32,17 @@ pkg-test:
 	source ${ENVTEST_ASSETS_DIR}/setup-envtest.sh && fetch_envtest_tools $(ENVTEST_ASSETS_DIR) && setup_envtest_env $(ENVTEST_ASSETS_DIR) && go test $(GO_FLAGS) -test.timeout=3m ./pkg/... -coverprofile cover.out
 
 integ-test:
-	go test $(GO_FLAGS) -test.timeout=5m ./tests/integration/... -coverprofile cover.out
+ifeq ($(TESTS), all)
+	go test $(GO_FLAGS) -test.timeout=30m ./tests/integration -v
+else
+	go test $(GO_FLAGS) -test.timeout=30m ./tests/integration -v -short -run=$(TESTS)
+endif
+
+kind-integ-test: create-kind-cluster integ-test
+
+create-kind-cluster:
+	kind delete cluster
+	./tests/integration/scripts/create_kind_cluster.sh
 
 fmt:
 	go fmt ./pkg/...

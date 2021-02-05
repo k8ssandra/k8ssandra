@@ -1,0 +1,45 @@
+cassandra:
+  heap:
+   size: 500M
+   newGenSize: 200M
+  datacenters:
+  - name: dc1
+    size: 3
+  ingress:
+    enabled: false
+
+stargate:
+  # -- Enable Stargate resources as part of this release
+  enabled: true
+  heapMB: 300
+
+reaper:
+  autoschedule: false
+  enabled: false
+
+medusa:
+  enabled: false
+
+kube-prometheus-stack:
+  enabled: true
+  prometheus:
+    enabled: true
+    prometheusSpec:
+      externalUrl: http://localhost:9090/prometheus
+      routePrefix: /prometheus
+    ingress:
+      enabled: true
+      paths:
+        - /prometheus
+
+  grafana:
+    enabled: true
+    ingress:
+      enabled: true
+      path: /grafana
+    adminUser: admin
+    adminPassword: admin123
+    grafana.ini:
+      server:
+        root_url: http://localhost:8080/grafana
+        serve_from_sub_path: true
