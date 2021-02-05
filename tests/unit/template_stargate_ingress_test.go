@@ -1,6 +1,7 @@
 package unit_test
 
 import (
+	. "fmt"
 	"github.com/gruntwork-io/terratest/modules/helm"
 	helmUtils "github.com/k8ssandra/k8ssandra/tests/unit/utils/helm"
 	"github.com/k8ssandra/k8ssandra/tests/unit/utils/kubeapi"
@@ -145,13 +146,14 @@ var _ = Describe("Verify Stargate ingress template", func() {
 
 func verifyIngressRules(ingress networking.Ingress, host string, graphEnabled bool, playgroundEnabled bool, restEnabled bool) {
 	rules := ingress.Spec.Rules
-	kubeapi.VerifyIngressRule(rules, HelmReleaseName, "/v1/auth", nil, host, 8081)
+	serviceName := Sprintf("%s-%s-stargate-service", HelmReleaseName, "dc1")
+	kubeapi.VerifyIngressRule(rules, "/v1/auth", nil, host, serviceName, 8081)
 	if graphEnabled {
-		kubeapi.VerifyIngressRule(rules, HelmReleaseName, "/graphql/", nil, host, 8080)
-		kubeapi.VerifyIngressRule(rules, HelmReleaseName, "/graphql-schema", nil, host, 8080)
+		kubeapi.VerifyIngressRule(rules, "/graphql/", nil, host, serviceName, 8080)
+		kubeapi.VerifyIngressRule(rules, "/graphql-schema", nil, host, serviceName, 8080)
 		if playgroundEnabled {
 			pathType := networking.PathTypeExact
-			kubeapi.VerifyIngressRule(rules, HelmReleaseName, "/playground", &pathType, host, 8080)
+			kubeapi.VerifyIngressRule(rules, "/playground", &pathType, host, serviceName, 8080)
 		} else {
 			kubeapi.VerifyNoRuleWithPath(rules, "/playground")
 		}
@@ -161,7 +163,7 @@ func verifyIngressRules(ingress networking.Ingress, host string, graphEnabled bo
 		kubeapi.VerifyNoRuleWithPath(rules, "/playground")
 	}
 	if restEnabled {
-		kubeapi.VerifyIngressRule(rules, HelmReleaseName, "/v2/", nil, host, 8082)
+		kubeapi.VerifyIngressRule(rules, "/v2/", nil, host, serviceName, 8082)
 	} else {
 		kubeapi.VerifyNoRuleWithPath(rules, "/v2/")
 	}

@@ -2,11 +2,11 @@ package traefik
 
 import (
 	"fmt"
-	"github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	traefik "github.com/traefik/traefik/v2/pkg/provider/kubernetes/crd/traefik/v1alpha1"
 )
 
+// VerifyTraefikTCPIngressRoute asserts that the given IngressRouteTCP has the given entrypoint, match, and backend service+port.
 func VerifyTraefikTCPIngressRoute(ingress traefik.IngressRouteTCP, entrypoint string, match string, backendService string, backendPort int) {
 	ExpectWithOffset(1, ingress.Spec.EntryPoints).To(ContainElement(entrypoint))
 	route := findTraefikTCPRouteByMatch(&ingress.Spec, match)
@@ -16,19 +16,17 @@ func VerifyTraefikTCPIngressRoute(ingress traefik.IngressRouteTCP, entrypoint st
 	ExpectWithOffset(1, service.Port).To(Equal(int32(backendPort)))
 }
 
+// findTraefikTCPRouteByMatch finds a Route with the given match from among the given array of IngressRouteTCPSpecs.
 func findTraefikTCPRouteByMatch(spec *traefik.IngressRouteTCPSpec, match string) *traefik.RouteTCP {
-	fmt.Fprintf(ginkgo.GinkgoWriter, "Looking for route with match=%s\n", match)
 	for _, routeCandidate := range spec.Routes {
-		fmt.Fprintf(ginkgo.GinkgoWriter, "Checking route: %v\n", routeCandidate)
 		if routeCandidate.Match == match {
-			fmt.Fprintln(ginkgo.GinkgoWriter, "Match!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 			return &routeCandidate
 		}
 	}
-	fmt.Fprintln(ginkgo.GinkgoWriter, "NO MATCH FOUND. XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
 	return nil
 }
 
+// findTraefikTCPServiceByName finds a ServiceTCP with the given name from among the given array of RouteTCPs.
 func findTraefikTCPServiceByName(spec *traefik.RouteTCP, name string) *traefik.ServiceTCP {
 	for _, serviceCandidate := range spec.Services {
 		if serviceCandidate.Name == name {
