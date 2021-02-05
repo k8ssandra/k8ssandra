@@ -3,6 +3,7 @@ package unit_test
 import (
 	"encoding/json"
 	"fmt"
+	helmUtils "github.com/k8ssandra/k8ssandra/tests/unit/utils/helm"
 	"path/filepath"
 
 	cassdcv1beta1 "github.com/datastax/cass-operator/operator/pkg/apis/cassandra/v1beta1"
@@ -68,15 +69,12 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 		cassdc = &cassdcv1beta1.CassandraDatacenter{}
 	})
 
-	renderTemplate := func(options *helm.Options) (error, error) {
-
-		templatePath := filepath.Join(".", "/templates/cassandra/cassdc.yaml")
-		renderedOutput, renderErr := helm.RenderTemplateE(
-			GinkgoT(), options, helmChartPath, HelmReleaseName,
-			[]string{templatePath},
-		)
-		unmarshalErr := helm.UnmarshalK8SYamlE(GinkgoT(), renderedOutput, cassdc)
-		return renderErr, unmarshalErr
+	renderTemplate := func(options *helm.Options) error {
+		return helmUtils.RenderAndUnmarshall("templates/cassandra/cassdc.yaml",
+			options, helmChartPath, helmReleaseName,
+			func(renderedYaml string) error {
+				return helm.UnmarshalK8SYamlE(GinkgoT(), renderedYaml, cassdc)
+			})
 	}
 
 	Context("by rendering it with options", func() {
@@ -604,7 +602,7 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 				KubectlOptions: defaultKubeCtlOptions,
 			}
 
-			renderedErr, _ := renderTemplate(options)
+			renderedErr := renderTemplate(options)
 
 			Expect(renderedErr).ToNot(BeNil())
 			Expect(renderedErr.Error()).To(ContainSubstring("set resource limits/requests when enabling allowMultipleNodesPerWorker"))

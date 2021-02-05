@@ -1,6 +1,7 @@
 package unit_test
 
 import (
+	helmUtils "github.com/k8ssandra/k8ssandra/tests/unit/utils/helm"
 	"path/filepath"
 
 	"github.com/gruntwork-io/terratest/modules/helm"
@@ -23,16 +24,11 @@ var _ = Describe("Verify medusa user secret template", func() {
 	})
 
 	renderTemplate := func(options *helm.Options) error {
-		renderedOutput, err := helm.RenderTemplateE(
-			GinkgoT(), options, helmChartPath, HelmReleaseName,
-			[]string{"templates/medusa/medusa-user-secret.yaml"},
-		)
-
-		if err == nil {
-			err = helm.UnmarshalK8SYamlE(GinkgoT(), renderedOutput, secret)
-		}
-
-		return err
+		return helmUtils.RenderAndUnmarshall("templates/medusa/medusa-user-secret.yaml",
+			options, helmChartPath, helmReleaseName,
+			func(renderedYaml string) error {
+				return helm.UnmarshalK8SYamlE(GinkgoT(), renderedYaml, secret)
+			})
 	}
 
 	Context("generating medusa user secret", func() {
