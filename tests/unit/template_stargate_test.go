@@ -2,7 +2,8 @@ package unit_test
 
 import (
 	"github.com/gruntwork-io/terratest/modules/helm"
-	. "github.com/k8ssandra/k8ssandra/tests/unit/utils"
+	helmUtils "github.com/k8ssandra/k8ssandra/tests/unit/utils/helm"
+	"github.com/k8ssandra/k8ssandra/tests/unit/utils"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	appsV1 "k8s.io/api/apps/v1"
@@ -26,14 +27,12 @@ var _ = Describe("Verify Stargate template", func() {
 		err = nil
 	})
 
-	renderTemplate := func(options *helm.Options) (error, error) {
-		templatePath := filepath.Join(".", "/templates/stargate/stargate.yaml")
-		renderedOutput, renderErr := helm.RenderTemplateE(
-			GinkgoT(), options, helmChartPath, helmReleaseName,
-			[]string{templatePath},
-		)
-		unmarshalErr := helm.UnmarshalK8SYamlE(GinkgoT(), renderedOutput, deployment)
-		return renderErr, unmarshalErr
+	renderTemplate := func(options *helm.Options) error {
+		return helmUtils.RenderAndUnmarshall("templates/stargate/stargate.yaml",
+			options, helmChartPath, helmReleaseName,
+			func(renderedYaml string) error {
+				return helm.UnmarshalK8SYamlE(GinkgoT(), renderedYaml, deployment)
+			})
 	}
 
 	Context("by confirming it does not render when", func() {
