@@ -8,7 +8,7 @@ import (
 	cassdcv1beta1 "github.com/datastax/cass-operator/operator/pkg/apis/cassandra/v1beta1"
 	"github.com/gruntwork-io/terratest/modules/helm"
 	"github.com/gruntwork-io/terratest/modules/k8s"
-	. "github.com/k8ssandra/k8ssandra/tests/unit/utils"
+	. "github.com/k8ssandra/k8ssandra/tests/unit/utils/cassdc"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	corev1 "k8s.io/api/core/v1"
