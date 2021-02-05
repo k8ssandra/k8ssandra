@@ -1,5 +1,5 @@
 cassandra:
-  # version The Cassandra version to use. The supported versions include the following:
+  # -- The Cassandra version to use. The supported versions include the following:
   #    - 3.11.7
   #    - 3.11.8
   #    - 3.11.9
@@ -7,7 +7,7 @@ cassandra:
   #
   version: "3.11.10"
 
-  # versionImageMap Specifies the image to use for a particular Cassandra version. Exercise
+  # -- Specifies the image to use for a particular Cassandra version. Exercise
   # care and caution with changing these values! cass-operator is not designed to work with
   # arbitrary Cassandra images. It expects the cassandra container to be running
   # management-api images. If you do want to change one of these mappings, the new value
@@ -18,7 +18,7 @@ cassandra:
     3.11.9: datastax/cassandra-mgmtapi-3_11_9:v0.1.19
     3.11.10: datastax/cassandra-mgmtapi-3_11_10:v0.1.19
 
-  # image Overrides the default image mappings. This is intended for advanced use cases
+  # -- Overrides the default image mappings. This is intended for advanced use cases
   # like development or testing. By default the Cassandra version has to be one that is in
   # versionImageMap. Template rendering will fail if the version is not in the map. When
   # you set the image directly, the version mapping check is skipped. Note that you are
@@ -27,7 +27,7 @@ cassandra:
   # image:
 
   clusterName: k8ssandra
-  # auth is authentication and authorization related settings.
+  # -- Authentication and authorization related settings.
   auth:
     # -- Enables or disables authentication and authorization
     enabled: true
@@ -45,7 +45,7 @@ cassandra:
       secret: ""
       username: ""
 
-    # -- Cache entries validitity period in milliseconds. cassandra.yaml has
+    # -- Cache entries validity period in milliseconds. cassandra.yaml has
     # settings for roles, permissions, and credentials caches. This property
     # will configure the validity period for all three.
     cacheValidityPeriodMillis: 3600000
