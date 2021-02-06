@@ -1,9 +1,9 @@
 ---
+name: Release Charts
 on:
   push: 
     tags:
       - 'v*'
-
 jobs:
   setup:
     runs-on: ubuntu-latest

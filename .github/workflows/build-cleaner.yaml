@@ -1,4 +1,5 @@
 ---
+name: Builder Cleaner
 on:
   push:
     branches:
