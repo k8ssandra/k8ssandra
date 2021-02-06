@@ -2,7 +2,7 @@ name: Regenerate Reference Docs
 on: 
   - workflow_dispatch
 jobs:
-  regen-docs:
+  regenerate-docs:
     runs-on: ubuntu-latest
     env:
       HELM_DOCS_VERSION: 1.5.0
