@@ -18,16 +18,17 @@ metadata:
 {{ include "k8ssandra.labels" . | indent 4 }}
 spec:
   rules:
-    - host: "{{ $stargateHost }}"
-      http:
+    - http:
         paths:
           - path: /v1/auth
             backend:
               serviceName: {{ $releaseName }}-{{ $datacenterName }}-stargate-service
               servicePort: 8081
+  {{- if ne $stargateHost "*" }}
+      host: "{{ $stargateHost }}"
+  {{- end }}
 {{- if $traefik.stargate.graphql.enabled }}
-    - host: "{{ $stargateHost }}"
-      http:
+    - http:
         paths:
           - path: /graphql-schema
             backend:
@@ -44,15 +45,20 @@ spec:
               serviceName: {{ $releaseName }}-{{ $datacenterName }}-stargate-service
               servicePort: 8080
   {{- end }}
+  {{- if ne $stargateHost "*" }}
+      host: "{{ $stargateHost }}"
+  {{- end }}
 {{- end }}
 {{- if $traefik.stargate.rest.enabled }}
-    - host: "{{ $stargateHost }}"
-      http:
+    - http:
         paths:
           - path: /v2/
             backend:
               serviceName: {{ $releaseName }}-{{ $datacenterName }}-stargate-service
               servicePort: 8082
+  {{- if ne $stargateHost "*" }}
+      host: "{{ $stargateHost }}"
+  {{- end }}
 {{- end }}
 {{- end }}
 {{- end }}
