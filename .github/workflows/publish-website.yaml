@@ -5,6 +5,7 @@ on:
       - main
     paths:
       - 'docs/**'
+  workflow_dispatch:
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -18,6 +19,7 @@ jobs:
         with:
           node-version: '12'
       - name: Cache
+        id: cache
         uses: actions/cache@v2
         with:
           path: |
@@ -25,11 +27,14 @@ jobs:
             docs/node_modules
           key: ${{ runner.os }}-${{ hashFiles('docs/package-lock.json') }}-${{ env.HUGO_VERSION }}
       - run: scripts/install-hugo.sh
+        if: steps.cache.outputs.cache-hit != 'true'
       - run: scripts/install-npm-tools.sh
+        if: steps.cache.outputs.cache-hit != 'true'
       - run: scripts/install-npm-dependencies.sh
+        if: steps.cache.outputs.cache-hit != 'true'
       - name: Update PATH
         run: |
-          echo "bin" >> $GITHUB_PATH
+          echo "$GITHUB_WORKSPACE/bin" >> $GITHUB_PATH
       - name: Build site
         env:
           HUGO_ENV: production
@@ -58,6 +63,15 @@ jobs:
             bin
             docs/node_modules
           key: ${{ runner.os }}-${{ hashFiles('docs/package-lock.json') }}-${{ env.HUGO_VERSION }}
+      - run: scripts/install-hugo.sh
+        if: steps.cache.outputs.cache-hit != 'true'
+      - run: scripts/install-npm-tools.sh
+        if: steps.cache.outputs.cache-hit != 'true'
+      - run: scripts/install-npm-dependencies.sh
+        if: steps.cache.outputs.cache-hit != 'true'
+      - name: Update PATH
+        run: |
+          echo "$GITHUB_WORKSPACE/bin" >> $GITHUB_PATH
       - uses: actions/download-artifact@v2
         with:
           name: docs
