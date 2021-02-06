@@ -186,8 +186,7 @@ spec:
         {{- end}}
         volumeMounts:
           - name: {{ .Release.Name }}-medusa-config-k8ssandra
-            mountPath: /etc/medusa/medusa.ini
-            subPath: medusa.ini
+            mountPath: /etc/medusa
           - name: server-config
             mountPath: /etc/cassandra
           - mountPath: /var/lib/cassandra
@@ -258,8 +257,7 @@ spec:
           initialDelaySeconds: 10
         volumeMounts:
           - name: {{ .Release.Name }}-medusa-config-k8ssandra
-            mountPath: /etc/medusa/medusa.ini
-            subPath: medusa.ini
+            mountPath: /etc/medusa
           - name: cassandra-config
             mountPath: /etc/cassandra
           - mountPath: /var/lib/cassandra
