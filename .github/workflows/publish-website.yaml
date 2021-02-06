@@ -5,6 +5,7 @@ on:
       - main
     paths:
       - 'docs/**'
+  workflow_dispatch:
 jobs:
   build:
     runs-on: ubuntu-latest
