@@ -104,7 +104,7 @@ var _ = Describe("Verify Stargate ingress template", func() {
 
 			Expect(renderTemplate(options)).To(Succeed())
 			Expect(ingress.Kind).To(Equal("Ingress"))
-			verifyIngressRules(ingress, "*", true, false, true)
+			verifyIngressRules(ingress, nil, true, false, true)
 		})
 
 		It("with everything enabled and default settings", func() {
@@ -120,16 +120,17 @@ var _ = Describe("Verify Stargate ingress template", func() {
 
 			Expect(renderTemplate(options)).To(Succeed())
 			Expect(ingress.Kind).To(Equal("Ingress"))
-			verifyIngressRules(ingress, "*", true, true, true)
+			verifyIngressRules(ingress, nil, true, true, true)
 		})
 
-		It("with everything enabled and custom settings", func() {
+		It("with everything enabled and custom host", func() {
+			stargateHost := "stargate.host"
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
 				SetValues: map[string]string{
 					"ingress.traefik.enabled":                             "true",
 					"ingress.traefik.cassandra.enabled":                   "false",
-					"ingress.traefik.stargate.host":                       "stargate.host",
+					"ingress.traefik.stargate.host":                       stargateHost,
 					"ingress.traefik.stargate.graphql.playground.enabled": "true",
 					"ingress.traefik.stargate.cassandra.enabled":          "true",
 					"ingress.traefik.stargate.rest.enabled":               "true",
@@ -138,13 +139,32 @@ var _ = Describe("Verify Stargate ingress template", func() {
 
 			Expect(renderTemplate(options)).To(Succeed())
 			Expect(ingress.Kind).To(Equal("Ingress"))
-			verifyIngressRules(ingress, "stargate.host", true, true, true)
+			verifyIngressRules(ingress, &stargateHost, true, true, true)
+
+		})
+
+		It("with everything enabled and wildcard host", func() {
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+				SetValues: map[string]string{
+					"ingress.traefik.enabled":                             "true",
+					"ingress.traefik.cassandra.enabled":                   "false",
+					"ingress.traefik.stargate.host":                       "*",
+					"ingress.traefik.stargate.graphql.playground.enabled": "true",
+					"ingress.traefik.stargate.cassandra.enabled":          "true",
+					"ingress.traefik.stargate.rest.enabled":               "true",
+				},
+			}
+
+			Expect(renderTemplate(options)).To(Succeed())
+			Expect(ingress.Kind).To(Equal("Ingress"))
+			verifyIngressRules(ingress, nil, true, true, true)
 
 		})
 	})
 })
 
-func verifyIngressRules(ingress networking.Ingress, host string, graphEnabled bool, playgroundEnabled bool, restEnabled bool) {
+func verifyIngressRules(ingress networking.Ingress, host *string, graphEnabled bool, playgroundEnabled bool, restEnabled bool) {
 	rules := ingress.Spec.Rules
 	serviceName := Sprintf("%s-%s-stargate-service", HelmReleaseName, "dc1")
 	kubeapi.VerifyIngressRule(rules, "/v1/auth", nil, host, serviceName, 8081)

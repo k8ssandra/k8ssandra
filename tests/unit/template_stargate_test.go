@@ -29,7 +29,7 @@ var _ = Describe("Verify Stargate template", func() {
 
 	renderTemplate := func(options *helm.Options) error {
 		return helmUtils.RenderAndUnmarshall("templates/stargate/stargate.yaml",
-			options, helmChartPath, helmReleaseName,
+			options, helmChartPath, HelmReleaseName,
 			func(renderedYaml string) error {
 				return helm.UnmarshalK8SYamlE(GinkgoT(), renderedYaml, deployment)
 			})
@@ -103,13 +103,12 @@ var _ = Describe("Verify Stargate template", func() {
 			Expect(datacenterName.Value).To(Equal("dc1"))
 		})
 
-		It("changing release name", func() {
-			releaseName := "k8ssandra-release"
+		It("changing cluster name", func() {
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
 				SetValues: map[string]string{
-					"k8ssandra.releaseName": releaseName,
-					"stargate.enabled": "true",
+					"cassandra.clusterName": "k8ssandra-clustername",
+					"stargate.enabled":      "true",
 				},
 			}
 
@@ -118,11 +117,11 @@ var _ = Describe("Verify Stargate template", func() {
 
 			initContainer := deployment.Spec.Template.Spec.InitContainers[0]
 			Expect(initContainer.Args[0]).To(Equal("-c"))
-			Expect(initContainer.Args[1]).To(ContainSubstring("nslookup k8ssandra-testrelease-seed-service.k8ssandra-namespace.svc.cluster.local;"))
+			Expect(initContainer.Args[1]).To(ContainSubstring("nslookup k8ssandra-clustername-seed-service.k8ssandra-namespace.svc.cluster.local;"))
 
 			container := deployment.Spec.Template.Spec.Containers[0]
 			seed := kubeapi.FindEnvVarByName(container, "SEED")
-			Expect(seed.Value).To(Equal("k8ssandra-testrelease-seed-service.k8ssandra-namespace.svc.cluster.local"))
+			Expect(seed.Value).To(Equal("k8ssandra-clustername-seed-service.k8ssandra-namespace.svc.cluster.local"))
 		})
 
 		It("changing datacenter name", func() {

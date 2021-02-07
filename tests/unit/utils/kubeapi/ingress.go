@@ -22,25 +22,30 @@ func FindIngressRuleByHttpPath(rules []networkingv1.IngressRule, path string) (*
 // VerifyNoRuleWithPath asserts that none of the given IngressRules have a given HTTP path entry.
 func VerifyNoRuleWithPath(rules []networkingv1.IngressRule, path string) {
 	authRule, _ := FindIngressRuleByHttpPath(rules, path)
-	ExpectWithOffset(1, authRule).To(BeNil())
+	Expect(authRule).To(BeNil())
 }
 
 // VerifyIngressRule finds an IngresssRule from the given array with the given path and asserts that
 // it exists and has the correct pathType, host, serviceName, and port.
-func VerifyIngressRule(rules []networkingv1.IngressRule, path string, pathType *networkingv1.PathType, host, serviceName string, port int) {
+func VerifyIngressRule(rules []networkingv1.IngressRule, path string, pathType *networkingv1.PathType, host *string, serviceName string, port int) {
 	rule, httpPath := FindIngressRuleByHttpPath(rules, path)
 
 	description := Sprintf("rule not found for path %v", path)
-	ExpectWithOffset(1, rule).ToNot(BeNil(), description)
-	ExpectWithOffset(1, httpPath).ToNot(BeNil(), description)
+	Expect(rule).ToNot(BeNil(), description)
+	Expect(httpPath).ToNot(BeNil(), description)
 
 	description = Sprintf("Missed expectation for rule with path %v", path)
-	ExpectWithOffset(1, rule.Host).To(Equal(host), description)
-	if pathType == nil {
-		ExpectWithOffset(1, httpPath.PathType).To(BeNil(), description)
+
+	if host == nil {
+		Expect(rule.Host).To(Equal(""), description)
 	} else {
-		ExpectWithOffset(1, httpPath.PathType).To(Equal(pathType), description)
+		Expect(rule.Host).To(Equal(*host), description)
 	}
-	ExpectWithOffset(1, httpPath.Backend.ServiceName).To(Equal(serviceName), description)
-	ExpectWithOffset(1, httpPath.Backend.ServicePort).To(Equal(intstr.FromInt(port)), description)
+	if pathType == nil {
+		Expect(httpPath.PathType).To(BeNil(), description)
+	} else {
+		Expect(httpPath.PathType).To(Equal(pathType), description)
+	}
+	Expect(httpPath.Backend.ServiceName).To(Equal(serviceName), description)
+	Expect(httpPath.Backend.ServicePort).To(Equal(intstr.FromInt(port)), description)
 }
