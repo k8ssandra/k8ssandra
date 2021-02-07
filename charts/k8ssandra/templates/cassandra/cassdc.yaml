@@ -1,5 +1,7 @@
 {{- $datacenter := (index .Values.cassandra.datacenters 0) -}}
 {{- $medusaImage := (printf "%s:%s" .Values.backupRestore.medusa.image.repository .Values.backupRestore.medusa.image.tag) -}}
+{{- $cassandrUid := 999 -}}
+{{- $medusaUid := 0 -}}
 
 {{- if and (not .Values.cassandra.image)  (not (hasKey .Values.cassandra.versionImageMap .Values.cassandra.version)) }}
   {{- fail (print .Values.cassandra.version " is not a supported Cassandra version") }}
@@ -18,7 +20,7 @@ spec:
   clusterName: {{ include "k8ssandra.clusterName" . }}
   serverType: cassandra
   serverVersion: {{ .Values.cassandra.version | quote }}
-  dockerImageRunsAsCassandra: false
+  dockerImageRunsAsCassandra: true
   serverImage: {{ default (get .Values.cassandra.versionImageMap .Values.cassandra.version) .Values.cassandra.image }}
   managementApiAuth:
     insecure: {}
@@ -136,13 +138,18 @@ spec:
         args:
           - /bin/sh
           - -c
-          - wget https://search.maven.org/remotecontent?filepath=org/jolokia/jolokia-jvm/1.6.2/jolokia-jvm-1.6.2-agent.jar && mv jolokia-jvm-1.6.2-agent.jar /config
+          - wget -o /tmp/jolokia-jvm-1.6.2-agent.jar https://search.maven.org/remotecontent?filepath=org/jolokia/jolokia-jvm/1.6.2/jolokia-jvm-1.6.2-agent.jar; mv /tmp/jolokia-jvm-1.6.2-agent.jar /config/jolokia-jvm-1.6.2-agent.jar
         volumeMounts:
           - mountPath: /config
             name: server-config
       - name: medusa-restore
         image: {{ $medusaImage }}
         imagePullPolicy: {{ .Values.backupRestore.medusa.image.pullPolicy }}
+        securityContext:
+          privileged: true
+          runAsUser: {{ $medusaUid }}
+          fsGroup: {{ $cassandrUid }}
+          runAsNonRoot: false
         env:
           - name: MEDUSA_MODE
             value: RESTORE
@@ -199,6 +206,11 @@ spec:
       - name: medusa
         image: {{ $medusaImage }}
         imagePullPolicy: {{ .Values.backupRestore.medusa.image.pullPolicy }}
+        securityContext:
+          privileged: true
+          runAsUser: {{ $medusaUid }}
+          fsGroup: {{ $cassandrUid }}
+          runAsNonRoot: false
         ports:
           - containerPort: 50051
         env:
