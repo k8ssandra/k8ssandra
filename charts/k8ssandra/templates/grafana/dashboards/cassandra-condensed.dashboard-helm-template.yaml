@@ -3,7 +3,7 @@ kind: GrafanaDashboard
 metadata:
   labels: {{ include "k8ssandra.labels" . | indent 4 }}
     app: grafana
-  name: cassandra-condensed
+  name: {{ .Release.Name }}-cassandra-condensed
 spec:
   json: "{\"__inputs\":[],\"__requires\":[],\"annotations\":{\"list\":[]},\"description\"\
     :\"Single pane of glass for most important Cassandra metrics\",\"editable\":false,\"\

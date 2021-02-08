@@ -15,7 +15,7 @@ spec:
     {{- if .Values.repair.reaper.cassandraUser.secret }}
       cassandraUserSecretName: {{ .Values.repair.reaper.cassandraUser.secret }}
     {{- else if or .Values.repair.reaper.cassandraUser.username .Values.cassandra.auth.enabled }}
-      cassandraUserSecretName: {{ include "k8ssandra.clusterName" . }}-reaper
+      cassandraUserSecretName: {{ .Release.Name }}-{{ include "k8ssandra.clusterName" . }}-reaper
     {{- end }}
       cassandraDatacenter:
         name: {{ include "k8ssandra.datacenterName" . }}

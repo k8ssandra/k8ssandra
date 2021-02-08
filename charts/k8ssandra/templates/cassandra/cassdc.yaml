@@ -8,7 +8,7 @@
 apiVersion: cassandra.datastax.com/v1beta1
 kind: CassandraDatacenter
 metadata:
-  name: {{ $datacenter.name }}
+  name: {{ .Release.Name }}-{{ $datacenter.name }}
   labels: {{ include "k8ssandra.labels" . | indent 4 }}
   annotations:
 {{- if .Values.repair.reaper.enabled }}
@@ -55,19 +55,19 @@ spec:
 {{- if .Values.cassandra.auth.superuser.secret }}
   superuserSecretName: {{ .Values.cassandra.auth.superuser.secret }}
 {{- else if .Values.cassandra.auth.superuser.username }}
-  superuserSecretName: {{ include "k8ssandra.clusterName" . }}-superuser
+  superuserSecretName: {{ .Release.Name }}-{{ include "k8ssandra.clusterName" . }}-superuser
 {{- end }}
   users:
   {{- if .Values.repair.reaper.enabled }}
-    - secretName: {{ default (printf "%s-%s" (include "k8ssandra.clusterName" .) "reaper") .Values.repair.reaper.cassandraUser.secret }}
+    - secretName: {{ default (printf "%s-%s-%s" .Release.Name (include "k8ssandra.clusterName" .) "reaper") .Values.repair.reaper.cassandraUser.secret }}
       superuser: true
   {{- end }}
   {{- if .Values.backupRestore.medusa.enabled }}
-    - secretName: {{ default (printf "%s-%s" (include "k8ssandra.clusterName" .) "medusa") .Values.backupRestore.medusa.cassandraUser.secret }}
+    - secretName: {{ default (printf "%s-%s-%s" .Release.Name (include "k8ssandra.clusterName" .) "medusa") .Values.backupRestore.medusa.cassandraUser.secret }}
       superuser: true
   {{- end }}
   {{- if .Values.stargate.enabled }}
-    - secretName: {{ default (printf "%s-%s" (include "k8ssandra.clusterName" .) "stargate") .Values.stargate.cassandraUser.secret }}
+    - secretName: {{ default (printf "%s-%s-%s" .Release.Name  (include "k8ssandra.clusterName" .) "stargate") .Values.stargate.cassandraUser.secret }}
       superuser: true
   {{- end }}
 {{- end }}
@@ -175,12 +175,12 @@ spec:
           - name: CQL_USERNAME
             valueFrom:
               secretKeyRef:
-                name: {{ include "k8ssandra.clusterName" . }}-medusa
+                name: {{ .Release.Name }}-{{ include "k8ssandra.clusterName" . }}-medusa
                 key: username
           - name: CQL_PASSWORD
             valueFrom:
               secretKeyRef:
-                name: {{ include "k8ssandra.clusterName" . }}-medusa
+                name: {{ .Release.Name }}-{{ include "k8ssandra.clusterName" . }}-medusa
                 key: password
         {{- end}}
         {{- end}}
@@ -238,12 +238,12 @@ spec:
           - name: CQL_USERNAME
             valueFrom:
               secretKeyRef:
-                name: {{ include "k8ssandra.clusterName" . }}-medusa
+                name: {{ .Release.Name }}-{{ include "k8ssandra.clusterName" . }}-medusa
                 key: username
           - name: CQL_PASSWORD
             valueFrom:
               secretKeyRef:
-                name: {{ include "k8ssandra.clusterName" . }}-medusa
+                name: {{ .Release.Name }}-{{ include "k8ssandra.clusterName" . }}-medusa
                 key: password
         {{- end}}
         {{- end}}

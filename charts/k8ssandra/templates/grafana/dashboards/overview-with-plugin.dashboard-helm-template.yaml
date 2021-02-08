@@ -3,7 +3,7 @@ kind: GrafanaDashboard
 metadata:
   labels: {{ include "k8ssandra.labels" . | indent 4 }}
     app: grafana
-  name: overview
+  name: {{ .Release.Name }}-overview
 spec:
   json: "{\"__inputs\":[],\"__requires\":[],\"annotations\":{\"list\":[]},\"editable\"\
     :true,\"gnetId\":null,\"graphTooltip\":0,\"hideControls\":false,\"id\":null,\"\
