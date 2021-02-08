@@ -105,7 +105,7 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			Expect(cassdc.Spec.PodTemplateSpec.Spec.Containers[0].Env[0].Name).To(Equal("LOCAL_JMX"))
 			Expect(cassdc.Spec.PodTemplateSpec.Spec.Containers[0].Env[0].Value).To(Equal("no"))
 			Expect(cassdc.Spec.AllowMultipleNodesPerWorker).To(Equal(false))
-			Expect(*cassdc.Spec.DockerImageRunsAsCassandra).To(BeFalse())
+			Expect(*cassdc.Spec.DockerImageRunsAsCassandra).To(BeTrue())
 
 			// Server version and mgmt-api image specified
 			Expect(cassdc.Spec.ServerVersion).ToNot(BeEmpty())
@@ -757,10 +757,11 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 
 	Context("when configuring the Cassandra version and/or image", func() {
 		cassandraVersionImageMap := map[string]string{
-			"3.11.7":  "datastax/cassandra-mgmtapi-3_11_7:v0.1.19",
-			"3.11.8":  "datastax/cassandra-mgmtapi-3_11_8:v0.1.19",
-			"3.11.9":  "datastax/cassandra-mgmtapi-3_11_9:v0.1.19",
-			"3.11.10": "datastax/cassandra-mgmtapi-3_11_10:v0.1.19",
+			"3.11.7":  "datastax/cassandra-mgmtapi-3_11_7:v0.1.20",
+			"3.11.8":  "datastax/cassandra-mgmtapi-3_11_8:v0.1.20",
+			"3.11.9":  "datastax/cassandra-mgmtapi-3_11_9:v0.1.20",
+			"3.11.10": "datastax/cassandra-mgmtapi-3_11_10:v0.1.20",
+			"4.0.0":   "datastax/cassandra-mgmtapi-4_0_0:v0.1.20",
 		}
 
 		It("using the default version", func() {
@@ -771,7 +772,7 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			Expect(renderTemplate(options)).To(Succeed())
 
 			Expect(cassdc.Spec.ServerVersion).To(Equal("3.11.10"))
-			Expect(cassdc.Spec.ServerImage).To(Equal("datastax/cassandra-mgmtapi-3_11_10:v0.1.19"))
+			Expect(cassdc.Spec.ServerImage).To(Equal("datastax/cassandra-mgmtapi-3_11_10:v0.1.20"))
 		})
 
 		It("using 3.11.7", func() {
@@ -821,6 +822,21 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 
 		It("using 3.11.10", func() {
 			version := "3.11.10"
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+				SetValues: map[string]string{
+					"cassandra.version": version,
+				},
+			}
+
+			Expect(renderTemplate(options)).To(Succeed())
+
+			Expect(cassdc.Spec.ServerVersion).To(Equal(version))
+			Expect(cassdc.Spec.ServerImage).To(Equal(cassandraVersionImageMap[version]))
+		})
+
+		It("using 4.0.0", func() {
+			version := "4.0.0"
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
 				SetValues: map[string]string{
