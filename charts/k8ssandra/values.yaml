@@ -74,9 +74,9 @@ cassandra:
   allowMultipleNodesPerWorker: false
 
   # -- Cluster-level heap configuration
-  heap:
-   size:
-   newGenSize:
+  #heap:
+  # size:
+  # newGenSize:
 
   # -- Resource requests for each Cassandra pod.
   resources: {}
@@ -122,9 +122,9 @@ cassandra:
 
     # -- Optional datacenter-level heap setting, overrides cluster-level setting
     # `cassandra.heap`
-    heap:
-      size:
-      newGenSize:
+    #heap:
+    #  size:
+    #  newGenSize:
 
 stargate:
   # -- Enable Stargate resources as part of this release
@@ -333,7 +333,7 @@ monitoring:
     provision_dashboards: true
 
   prometheus:
-    # -- Enabes the creation of Prometheus Operator ServiceMonitor custom
+    # -- Enables the creation of Prometheus Operator ServiceMonitor custom
     # resources. If you are not using the kube prometheus stack sub-chart or do
     # not have the ServiceMonitor CRD installed on your cluster, set this value
     # to `false`.
