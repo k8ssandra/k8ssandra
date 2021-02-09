@@ -1,7 +1,8 @@
 {{- $datacenter := (index .Values.cassandra.datacenters 0) -}}
 {{- $medusaImage := (printf "%s:%s" .Values.backupRestore.medusa.image.repository .Values.backupRestore.medusa.image.tag) -}}
 {{- $cassandrUid := 999 -}}
-{{- $medusaUid := 0 -}}
+{{- $cassandraGid := 999 -}}
+{{- $medusaUid := 1001 -}}
 
 {{- if and (not .Values.cassandra.image)  (not (hasKey .Values.cassandra.versionImageMap .Values.cassandra.version)) }}
   {{- fail (print .Values.cassandra.version " is not a supported Cassandra version") }}
@@ -101,7 +102,11 @@ spec:
 {{- end }}
   podTemplateSpec:
     spec:
-{{- if or .Values.reaper.enabled .Values.backupRestore.medusa.enabled }}
+      securityContext:
+        runAsUser: {{ $cassandrUid }}
+        fsGroup: {{ $cassandraGid }}
+        runAsNonRoot: true
+{{- if or .Values.repair.reaper.enabled .Values.backupRestore.medusa.enabled }}
       initContainers:
       {{/* The server-config-init container is "built-in" in that it is provided by
            cass-operator. We specify it here in order to make it run first. It needs
@@ -138,7 +143,7 @@ spec:
         args:
           - /bin/sh
           - -c
-          - wget -o /tmp/jolokia-jvm-1.6.2-agent.jar https://search.maven.org/remotecontent?filepath=org/jolokia/jolokia-jvm/1.6.2/jolokia-jvm-1.6.2-agent.jar; mv /tmp/jolokia-jvm-1.6.2-agent.jar /config/jolokia-jvm-1.6.2-agent.jar
+          - wget -O /tmp/jolokia-jvm-1.6.2-agent.jar https://search.maven.org/remotecontent?filepath=org/jolokia/jolokia-jvm/1.6.2/jolokia-jvm-1.6.2-agent.jar; mv /tmp/jolokia-jvm-1.6.2-agent.jar /config/jolokia-jvm-1.6.2-agent.jar
         volumeMounts:
           - mountPath: /config
             name: server-config
@@ -146,10 +151,9 @@ spec:
         image: {{ $medusaImage }}
         imagePullPolicy: {{ .Values.backupRestore.medusa.image.pullPolicy }}
         securityContext:
-          privileged: true
           runAsUser: {{ $medusaUid }}
-          fsGroup: {{ $cassandrUid }}
-          runAsNonRoot: false
+          fsGroup: {{ $cassandraGid }}
+          runAsNonRoot: true
         env:
           - name: MEDUSA_MODE
             value: RESTORE
@@ -207,10 +211,9 @@ spec:
         image: {{ $medusaImage }}
         imagePullPolicy: {{ .Values.backupRestore.medusa.image.pullPolicy }}
         securityContext:
-          privileged: true
           runAsUser: {{ $medusaUid }}
-          fsGroup: {{ $cassandrUid }}
-          runAsNonRoot: false
+          fsGroup: {{ $cassandraGid }}
+          runAsNonRoot: true
         ports:
           - containerPort: 50051
         env:
