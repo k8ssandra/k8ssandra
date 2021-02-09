@@ -1,10 +1,6 @@
----
-title: "Developer Tools"
-linkTitle: "dev-tools"
-weight: 1
-description: >
-K8ssandra developer tools providing support for installation, update, and removal of artifacts.
----
+
+# Developer Scripts
+The scripts described are for developers to customize and use with `k8ssandra`.
 
 ## Install/Setup
 
