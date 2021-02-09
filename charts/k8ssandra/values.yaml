@@ -57,7 +57,7 @@ cassandra:
     # will configure the update interval for all three.
     cacheUpdateIntervalMillis: 3600000
 
-  # serviceAccountName is the name of the serviceAccount used to run the cassandra pods.
+  # -- The name of the Service Account used to run the cassandra pods.
   serviceAccountName: default
 
   cassandraLibDirVolume:
