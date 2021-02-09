@@ -751,10 +751,10 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 
 	Context("when configuring the Cassandra version and/or image", func() {
 		cassandraVersionImageMap := map[string]string{
-			"3.11.7":  "datastax/cassandra-mgmtapi-3_11_7:v0.1.19",
-			"3.11.8":  "datastax/cassandra-mgmtapi-3_11_8:v0.1.19",
-			"3.11.9":  "datastax/cassandra-mgmtapi-3_11_9:v0.1.19",
-			"3.11.10": "datastax/cassandra-mgmtapi-3_11_10:v0.1.19",
+			"3.11.7":  "datastax/cassandra-mgmtapi-3_11_7:v0.1.20",
+			"3.11.8":  "datastax/cassandra-mgmtapi-3_11_8:v0.1.20",
+			"3.11.9":  "datastax/cassandra-mgmtapi-3_11_9:v0.1.20",
+			"3.11.10": "datastax/cassandra-mgmtapi-3_11_10:v0.1.20",
 		}
 
 		It("using the default version", func() {
@@ -765,7 +765,7 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			Expect(renderTemplate(options)).To(Succeed())
 
 			Expect(cassdc.Spec.ServerVersion).To(Equal("3.11.10"))
-			Expect(cassdc.Spec.ServerImage).To(Equal("datastax/cassandra-mgmtapi-3_11_10:v0.1.19"))
+			Expect(cassdc.Spec.ServerImage).To(Equal("datastax/cassandra-mgmtapi-3_11_10:v0.1.20"))
 		})
 
 		It("using 3.11.7", func() {
