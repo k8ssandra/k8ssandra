@@ -131,6 +131,20 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			Expect(cassdc.Spec.ClusterName).To(Equal(clusterName))
 		})
 
+		It("default clusterName as release name", func() {
+			clusterName := ""
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+				SetValues: map[string]string{
+					"cassandra.clusterName": clusterName,
+				},
+			}
+
+			Expect(renderTemplate(options)).To(Succeed())
+
+			Expect(cassdc.Spec.ClusterName).To(Equal(HelmReleaseName))
+		})
+
 		It("override datacenter name", func() {
 			dcName := "test"
 			options := &helm.Options{
@@ -161,64 +175,6 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			Expect(renderTemplate(options)).To(Succeed())
 
 			Expect(cassdc.Spec.Size, 3)
-		})
-
-		It("using cassandra 3.11.7", func() {
-			cassandraVersion := "3.11.7"
-			options := &helm.Options{
-				KubectlOptions: defaultKubeCtlOptions,
-				SetValues: map[string]string{
-					"cassandra.version": cassandraVersion,
-				},
-			}
-
-			Expect(renderTemplate(options)).To(Succeed())
-
-			Expect(cassdc.Spec.ServerVersion).To(Equal(cassandraVersion))
-			Expect(cassdc.Spec.ServerImage).To(Equal("datastax/cassandra-mgmtapi-3_11_7:v0.1.17"))
-		})
-
-		It("using cassandra 3.11.8", func() {
-			cassandraVersion := "3.11.8"
-			options := &helm.Options{
-				KubectlOptions: defaultKubeCtlOptions,
-				SetValues: map[string]string{
-					"cassandra.version": cassandraVersion,
-				},
-			}
-
-			Expect(renderTemplate(options)).To(Succeed())
-
-			Expect(cassdc.Spec.ServerVersion).To(Equal(cassandraVersion))
-			Expect(cassdc.Spec.ServerImage).To(Equal("datastax/cassandra-mgmtapi-3_11_8:v0.1.17"))
-		})
-
-		It("using cassandra 3.11.9", func() {
-			cassandraVersion := "3.11.9"
-			options := &helm.Options{
-				KubectlOptions: defaultKubeCtlOptions,
-				SetValues: map[string]string{
-					"cassandra.version": cassandraVersion,
-				},
-			}
-
-			Expect(renderTemplate(options)).To(Succeed())
-
-			Expect(cassdc.Spec.ServerVersion).To(Equal(cassandraVersion))
-			Expect(cassdc.Spec.ServerImage).To(Equal("datastax/cassandra-mgmtapi-3_11_9:v0.1.17"))
-		})
-
-		It("using cassandra with unsupported version", func() {
-			cassandraVersion := "3.12.225"
-			options := &helm.Options{
-				KubectlOptions: defaultKubeCtlOptions,
-				SetValues: map[string]string{
-					"cassandra.version": cassandraVersion,
-				},
-			}
-
-			renderedErr, _ := renderTemplate(options)
-			Expect(renderedErr).To(HaveOccurred())
 		})
 
 		It("using multiple racks with no affinity labels", func() {
@@ -480,9 +436,7 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 				cqlPasswordEnvVar,
 			}))
 
-			// Verify volumeMounts and volumes
-			Expect(len(medusaContainer.VolumeMounts)).To(Equal(4))
-			Expect(medusaContainer.VolumeMounts[0].Name).To(Equal(medusaConfigVolumeName))
+			verifyMedusaVolumeMounts(medusaContainer)
 
 			Expect(len(cassdc.Spec.PodTemplateSpec.Spec.Volumes)).To(Equal(3))
 			Expect(cassdc.Spec.PodTemplateSpec.Spec.Volumes[0].Name).To(Equal(medusaConfigVolumeName))
@@ -564,9 +518,7 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 				cqlPasswordEnvVar,
 			}))
 
-			// Verify volumeMounts and volumes
-			Expect(len(medusaContainer.VolumeMounts)).To(Equal(4))
-			Expect(medusaContainer.VolumeMounts[0].Name).To(Equal(medusaConfigVolumeName))
+			verifyMedusaVolumeMounts(medusaContainer)
 
 			Expect(len(cassdc.Spec.PodTemplateSpec.Spec.Volumes)).To(Equal(3))
 			Expect(cassdc.Spec.PodTemplateSpec.Spec.Volumes[0].Name).To(Equal(medusaConfigVolumeName))
@@ -792,6 +744,116 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 		})
 	})
 
+	Context("when configuring the Cassandra version and/or image", func() {
+		cassandraVersionImageMap := map[string]string{
+			"3.11.7":  "datastax/cassandra-mgmtapi-3_11_7:v0.1.19",
+			"3.11.8":  "datastax/cassandra-mgmtapi-3_11_8:v0.1.19",
+			"3.11.9":  "datastax/cassandra-mgmtapi-3_11_9:v0.1.19",
+			"3.11.10": "datastax/cassandra-mgmtapi-3_11_10:v0.1.19",
+		}
+
+		It("using the default version", func() {
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+			}
+
+			Expect(renderTemplate(options)).To(Succeed())
+
+			Expect(cassdc.Spec.ServerVersion).To(Equal("3.11.10"))
+			Expect(cassdc.Spec.ServerImage).To(Equal("datastax/cassandra-mgmtapi-3_11_10:v0.1.19"))
+		})
+
+		It("using 3.11.7", func() {
+			version := "3.11.7"
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+				SetValues: map[string]string{
+					"cassandra.version": version,
+				},
+			}
+
+			Expect(renderTemplate(options)).To(Succeed())
+
+			Expect(cassdc.Spec.ServerVersion).To(Equal(version))
+			Expect(cassdc.Spec.ServerImage).To(Equal(cassandraVersionImageMap[version]))
+		})
+
+		It("using 3.11.8", func() {
+			version := "3.11.8"
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+				SetValues: map[string]string{
+					"cassandra.version": version,
+				},
+			}
+
+			Expect(renderTemplate(options)).To(Succeed())
+
+			Expect(cassdc.Spec.ServerVersion).To(Equal(version))
+			Expect(cassdc.Spec.ServerImage).To(Equal(cassandraVersionImageMap[version]))
+		})
+
+		It("using 3.11.9", func() {
+			version := "3.11.9"
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+				SetValues: map[string]string{
+					"cassandra.version": version,
+				},
+			}
+
+			Expect(renderTemplate(options)).To(Succeed())
+
+			Expect(cassdc.Spec.ServerVersion).To(Equal(version))
+			Expect(cassdc.Spec.ServerImage).To(Equal(cassandraVersionImageMap[version]))
+		})
+
+		It("using 3.11.10", func() {
+			version := "3.11.10"
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+				SetValues: map[string]string{
+					"cassandra.version": version,
+				},
+			}
+
+			Expect(renderTemplate(options)).To(Succeed())
+
+			Expect(cassdc.Spec.ServerVersion).To(Equal(version))
+			Expect(cassdc.Spec.ServerImage).To(Equal(cassandraVersionImageMap[version]))
+		})
+
+		It("using an unsupported version", func() {
+			ver := "3.12.225"
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+				SetValues: map[string]string{
+					"cassandra.version": ver,
+				},
+			}
+
+			renderedErr, _ := renderTemplate(options)
+			Expect(renderedErr).To(HaveOccurred())
+		})
+
+		It("using 3.11.9 and a custom image", func() {
+			version := "3.11.9"
+			image := "my_cassandra:latest"
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+				SetValues: map[string]string{
+					"cassandra.version": version,
+					"cassandra.image":   image,
+				},
+			}
+
+			Expect(renderTemplate(options)).To(Succeed())
+
+			Expect(cassdc.Spec.ServerVersion).To(Equal(version))
+			Expect(cassdc.Spec.ServerImage).To(Equal(image))
+		})
+	})
+
 	It("enabling Cassandra auth with Stargate", func() {
 		dcName := "test"
 		clusterSize := 3
@@ -831,6 +893,11 @@ func getInitContainer(cassdc *cassdcv1beta1.CassandraDatacenter, name string) *c
 func getContainer(cassdc *cassdcv1beta1.CassandraDatacenter, name string) *corev1.Container {
 	return getContainerByName(cassdc.Spec.PodTemplateSpec.Spec.Containers, name)
 
+}
+
+func verifyMedusaVolumeMounts(container *corev1.Container) {
+	ExpectWithOffset(1, len(container.VolumeMounts)).To(Equal(4))
+	ExpectWithOffset(1, container.VolumeMounts[0]).To(Equal(corev1.VolumeMount{Name: medusaConfigVolumeName, MountPath: "/etc/medusa"}))
 }
 
 func assertInitContainerNamesMatch(cassdc *cassdcv1beta1.CassandraDatacenter, names ...string) {

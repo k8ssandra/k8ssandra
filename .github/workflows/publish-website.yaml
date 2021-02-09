@@ -1,11 +1,16 @@
-name: Main Branch
+name: Publish Website
 on:
   push:
     branches:
       - main
+    paths:
+      - 'docs/**'
+  workflow_dispatch:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      HUGO_VERSION: 0.76.5
     steps:
       - uses: actions/checkout@v2
         with:
@@ -14,22 +19,26 @@ jobs:
         with:
           node-version: '12'
       - name: Cache
+        id: cache
         uses: actions/cache@v2
         with:
           path: |
-            docs/bin
+            bin
             docs/node_modules
-          key: ${{ runner.os }}-${{ hashFiles('docs/package-lock.json') }}
+          key: ${{ runner.os }}-${{ hashFiles('docs/package-lock.json') }}-${{ env.HUGO_VERSION }}
       - run: scripts/install-hugo.sh
-        working-directory: docs
+        if: steps.cache.outputs.cache-hit != 'true'
       - run: scripts/install-npm-tools.sh
-        working-directory: docs
+        if: steps.cache.outputs.cache-hit != 'true'
       - run: scripts/install-npm-dependencies.sh
-        working-directory: docs
+        if: steps.cache.outputs.cache-hit != 'true'
+      - name: Update PATH
+        run: |
+          echo "$GITHUB_WORKSPACE/bin" >> $GITHUB_PATH
       - name: Build site
         env:
           HUGO_ENV: production
-        run: ./bin/hugo --environment ${HUGO_ENV}
+        run: hugo --environment ${HUGO_ENV}
         working-directory: docs
       - name: Upload artifact
         uses: actions/upload-artifact@v1
@@ -39,6 +48,9 @@ jobs:
   
   deploy:
     runs-on: ubuntu-latest
+    env:
+      HUGO_VERSION: 0.76.5
+      HELM_DOCS_VERSION: 1.5.0
     needs: build
     steps:
       - uses: actions/checkout@v2
@@ -48,9 +60,18 @@ jobs:
         uses: actions/cache@v2
         with:
           path: |
-            docs/bin
+            bin
             docs/node_modules
-          key: ${{ runner.os }}-${{ hashFiles('docs/package-lock.json') }}
+          key: ${{ runner.os }}-${{ hashFiles('docs/package-lock.json') }}-${{ env.HUGO_VERSION }}
+      - run: scripts/install-hugo.sh
+        if: steps.cache.outputs.cache-hit != 'true'
+      - run: scripts/install-npm-tools.sh
+        if: steps.cache.outputs.cache-hit != 'true'
+      - run: scripts/install-npm-dependencies.sh
+        if: steps.cache.outputs.cache-hit != 'true'
+      - name: Update PATH
+        run: |
+          echo "$GITHUB_WORKSPACE/bin" >> $GITHUB_PATH
       - uses: actions/download-artifact@v2
         with:
           name: docs
@@ -64,7 +85,7 @@ jobs:
       - name: Deploy site
         env:
           HUGO_ENV: production
-        run: ./bin/hugo deploy --environment ${HUGO_ENV} --target production --verbose
+        run: hugo deploy --environment ${HUGO_ENV} --target production --verbose
         working-directory: docs
       - name: Purge CDN Cache
         env:

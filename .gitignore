@@ -251,12 +251,14 @@ tags
 # Helm chart lock
 charts/*/Chart.lock
 
+# Local bin
+bin
+
 # Docs
 docs/public/
 docs/resources/
 docs/node_modules/
 docs/tech-doc-hugo
-docs/bin/
 
 # testenv
 testbin/

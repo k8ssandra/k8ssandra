@@ -1,78 +1,79 @@
-# Default values for cass-operator.
-# This is a YAML-formatted file.
-# Declare variables to be passed into your templates.
-
-# nameOverride provides a name in place of the chart name which is used in the metadata.name of
+# -- A name in place of the chart name which is used in the metadata.name of
 # objects created by this chart.
 nameOverride: ""
 
-# fullnameOverride provides a name in place of the value used for metadata.name in objects
-# created by this chart. The default value has the form releaseName-chartName.
+# -- A name in place of the value used for metadata.name in objects created by
+# this chart. The default value has the form releaseName-chartName.
 fullnameOverride: ""
 
-# commonLabels are labels to be added to all deployed resources
+# -- Labels to be added to all deployed resources.
 commonLabels: {}
 
-# replicaCount sets the number of cass-operator pods.
+# -- Sets the number of cass-operator pods.
 replicaCount: 1
 
-# clusterScoped determines whether cass-operator only watch and manages
-# CassandraDatacenters in the same namespace in which the operator is deployed or if
-# watches and manages CassandraDatacenters across all namespaces.
+# -- Determines whether cass-operator only watch and manages
+# CassandraDatacenters in the same namespace in which the operator is deployed
+# or if watches and manages CassandraDatacenters across all namespaces.
 clusterScoped: false
 
-# admissionWebhooks configures admission webhooks deployed with cass-operator.
+# -- Configures admission webhooks deployed with cass-operator.
 admissionWebhooks:
-  # enabled Turns the admission webhooks on or off
+  # -- Turns the admission webhooks on or off
   enabled: false
 
-# image sets properties for the cass-operator image to use.
+# Sets properties for the cass-operator container
 image:
-  # repository is where to pull cass-operator.
+  # -- Docker repository for cass-operator
   repository: docker.io/datastax/cass-operator
+  
+  # -- Pull policy for the operator container
   pullPolicy: IfNotPresent
-  # tag is the cass-operator image tag to pull.
-  tag: master-a45fd80b40e0129e8883a953d595ca85e4b7ce79
-  # TODO It better to keep this commented out or set it to empty string?
-  # registryOverride:
 
-# imagePullSecrets are references to secrets to use when pulling images.
-# ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
+  # -- Tag of the cass-operator image to pull from image.repository
+  tag: master-a45fd80b40e0129e8883a953d595ca85e4b7ce79
+  
+  # -- Docker registry containing all cass-operator related images. Setting this
+  # allows for usage of an internal registry without specifying serverImage,
+  # configBuilderImage, and busyboxImage on all CassandraDatacenter objects.
+  registryOverride:
+
+# -- References to secrets to use when pulling images. See:
+# https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
 imagePullSecrets: []
 
-# serviceAccount is the service account used by the cass-operator deployment.
 serviceAccount:
-  # annotations to add to the service account.
+  # -- Annotations to add to the service account.
   annotations: {}
 
-# podAnnotations are annotations that can be added to the cass-operator pod.
+# -- Annotations for the cass-operator pod.
 podAnnotations: {}
 
-# podSecurityContext is applied to the cass-operator pod.
+# -- PodSecurityContext for the cass-operator pod. See:
+# https://kubernetes.io/docs/tasks/configure-pod-container/security-context/
 podSecurityContext: {}
-  # fsGroup: 2000
 
-# securityContext is applied to the cass-operator container.
 securityContext:
-  # capabilities:
-  #   drop:
-  #   - ALL
+  # -- Mark root filesystem as read only
   readOnlyRootFilesystem: true
+
+  # -- Run cass-operator container as non-root user
   runAsNonRoot: true
+
+  # -- Group for the user running the cass-operator container / process
   runAsGroup: 65534
+
+  # -- User for running the cass-operator container / process
   runAsUser: 65534
 
-resources: {}
-  # We usually recommend not to specify default resources and to leave this as a conscious
-  # choice for the user. This also increases chances charts run on environments with little
-  # resources, such as Minikube. If you do want to specify resources, uncomment the following
-  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-  # limits:
-  #   cpu: 100m
-  #   memory: 128Mi
-  # requests:
-  #   cpu: 100m
-  #   memory: 128Mi
+# -- Resources requests and limits for the cass-operator pod. We usually
+# recommend not to specify default resources and to leave this as a conscious
+# choice for the user. This also increases chances charts run on environments
+# with little resources, such as Minikube. If you want to specify resources, add
+# `requests` and `limits` for `cpu` and `memory` while removing the existing
+# `{}`
+resources: {}  
 
-# vmwarePSPEnabled enabled vmware-specific functionality
+# -- Enables specific VMware functionality. If you need this functionality it
+# will automatically be enabled for you.
 vmwarePSPEnabled: false

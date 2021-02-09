@@ -6,5 +6,5 @@ description: >
   Handles installation of all required operators for K8ssandra stacks.
 ---
 
-{{< readfilerel file="values.yaml"  highlight="yaml" >}}
+{{< readfilerel file="_generated.md" markdown="true" >}}
 

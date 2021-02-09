@@ -1,5 +1,10 @@
 {{- $datacenter := (index .Values.cassandra.datacenters 0) -}}
 {{- $medusaImage := (printf "%s:%s" .Values.backupRestore.medusa.image.repository .Values.backupRestore.medusa.image.tag) -}}
+
+{{- if and (not .Values.cassandra.image)  (not (hasKey .Values.cassandra.versionImageMap .Values.cassandra.version)) }}
+  {{- fail (print .Values.cassandra.version " is not a supported Cassandra version") }}
+{{- end}}
+
 apiVersion: cassandra.datastax.com/v1beta1
 kind: CassandraDatacenter
 metadata:
@@ -10,19 +15,11 @@ metadata:
     reaper.cassandra-reaper.io/instance: {{ .Release.Name }}-reaper-k8ssandra
 {{- end }}
 spec:
-  clusterName: {{ .Values.cassandra.clusterName }}
+  clusterName: {{ include "k8ssandra.clusterName" . }}
   serverType: cassandra
   serverVersion: {{ .Values.cassandra.version | quote }}
   dockerImageRunsAsCassandra: false
-{{- if eq "3.11.7" .Values.cassandra.version }}
-  serverImage: datastax/cassandra-mgmtapi-3_11_7:v0.1.17
-{{- else if eq "3.11.8" .Values.cassandra.version }}
-  serverImage: datastax/cassandra-mgmtapi-3_11_8:v0.1.17
-{{- else if eq "3.11.9" .Values.cassandra.version }}
-  serverImage: datastax/cassandra-mgmtapi-3_11_9:v0.1.17
-{{- else }}
-  {{- fail (print .Values.cassandra.version " is not a supported Cassandra version") }}
-{{- end }}
+  serverImage: {{ default (get .Values.cassandra.versionImageMap .Values.cassandra.version) .Values.cassandra.image }}
   managementApiAuth:
     insecure: {}
   size: {{ $datacenter.size }}
@@ -58,19 +55,19 @@ spec:
 {{- if .Values.cassandra.auth.superuser.secret }}
   superuserSecretName: {{ .Values.cassandra.auth.superuser.secret }}
 {{- else if .Values.cassandra.auth.superuser.username }}
-  superuserSecretName: {{ .Values.cassandra.clusterName }}-superuser
+  superuserSecretName: {{ include "k8ssandra.clusterName" . }}-superuser
 {{- end }}
   users:
   {{- if .Values.repair.reaper.enabled }}
-    - secretName: {{ default (printf "%s-%s" .Values.cassandra.clusterName "reaper") .Values.repair.reaper.cassandraUser.secret }}
+    - secretName: {{ default (printf "%s-%s" (include "k8ssandra.clusterName" .) "reaper") .Values.repair.reaper.cassandraUser.secret }}
       superuser: true
   {{- end }}
   {{- if .Values.backupRestore.medusa.enabled }}
-    - secretName: {{ default (printf "%s-%s" .Values.cassandra.clusterName "medusa") .Values.backupRestore.medusa.cassandraUser.secret }}
+    - secretName: {{ default (printf "%s-%s" (include "k8ssandra.clusterName" .) "medusa") .Values.backupRestore.medusa.cassandraUser.secret }}
       superuser: true
   {{- end }}
   {{- if .Values.stargate.enabled }}
-    - secretName: {{ default (printf "%s-%s" .Values.cassandra.clusterName "stargate") .Values.stargate.cassandraUser.secret }}
+    - secretName: {{ default (printf "%s-%s" (include "k8ssandra.clusterName" .) "stargate") .Values.stargate.cassandraUser.secret }}
       superuser: true
   {{- end }}
 {{- end }}
@@ -178,19 +175,18 @@ spec:
           - name: CQL_USERNAME
             valueFrom:
               secretKeyRef:
-                name: {{ .Values.cassandra.clusterName }}-medusa
+                name: {{ include "k8ssandra.clusterName" . }}-medusa
                 key: username
           - name: CQL_PASSWORD
             valueFrom:
               secretKeyRef:
-                name: {{ .Values.cassandra.clusterName }}-medusa
+                name: {{ include "k8ssandra.clusterName" . }}-medusa
                 key: password
         {{- end}}
         {{- end}}
         volumeMounts:
           - name: {{ .Release.Name }}-medusa-config-k8ssandra
-            mountPath: /etc/medusa/medusa.ini
-            subPath: medusa.ini
+            mountPath: /etc/medusa
           - name: server-config
             mountPath: /etc/cassandra
           - mountPath: /var/lib/cassandra
@@ -242,12 +238,12 @@ spec:
           - name: CQL_USERNAME
             valueFrom:
               secretKeyRef:
-                name: {{ .Values.cassandra.clusterName }}-medusa
+                name: {{ include "k8ssandra.clusterName" . }}-medusa
                 key: username
           - name: CQL_PASSWORD
             valueFrom:
               secretKeyRef:
-                name: {{ .Values.cassandra.clusterName }}-medusa
+                name: {{ include "k8ssandra.clusterName" . }}-medusa
                 key: password
         {{- end}}
         {{- end}}
@@ -261,8 +257,7 @@ spec:
           initialDelaySeconds: 10
         volumeMounts:
           - name: {{ .Release.Name }}-medusa-config-k8ssandra
-            mountPath: /etc/medusa/medusa.ini
-            subPath: medusa.ini
+            mountPath: /etc/medusa
           - name: cassandra-config
             mountPath: /etc/cassandra
           - mountPath: /var/lib/cassandra

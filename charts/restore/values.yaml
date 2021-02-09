@@ -1,22 +1,23 @@
-# Default values for restore.
-# This is a YAML-formatted file.
-# Declare variables to be passed into your templates.
-
-# The name of the CassandraRestore
+# -- Name of the CassandraRestore custom resource
 name: restore
 
+
 backup:
+  # -- Name of the CassandraBackup custom resource to be restored from
   name: backup
 
 cassandraDatacenter:
+  # -- Name of the CassandraDatacenter where the CassandraBackup will be
+  # restored
   name: dc1
 
-# An in-place restore will restore the backup to the source cluster. Note that this will
-# trigger a rolling restart of the cluster.
+# -- In-place restore will restore the backup to the source cluster. Note that
+# this will trigger a rolling restart of the cluster.
 inPlace: true
 
-# shutdown When true will shutdown the entire Cassandra cluster. The underlying
-# StatefulSets are scaled down to zero. Persistent volumes remain intact. If the backup
-# includes schema changes like dropping a table, then set this to true; otherwise, the
-# changes will be lost via gossip from nodes that have not yet been restored.
+# -- When true will shutdown the entire Cassandra cluster. The underlying
+# StatefulSets are scaled down to zero. Persistent volumes remain intact. If the
+# backup includes schema changes like dropping a table, then set this to true;
+# otherwise, the changes will be lost via gossip from nodes that have not yet
+# been restored.
 shutdown: false
