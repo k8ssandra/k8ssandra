@@ -26,7 +26,9 @@ cassandra:
   #
   # image:
 
-  clusterName: k8ssandra
+  # -- Cluster name defaults to release name when not specified.
+  clusterName: ""
+
   # -- Authentication and authorization related settings.
   auth:
     # -- Enables or disables authentication and authorization
@@ -66,7 +68,7 @@ cassandra:
     # to keep the total amount of data per node to approximately 1 TB. With room
     # for compactions this value should max out at ~2 TB. This recommendation is
     # highly dependent on data model and compaction strategies in use. Consider
-    # testing with your data model to find an optimal value for your usecase. 
+    # testing with your data model to find an optimal value for your usecase.
     size: 5Gi
 
   # -- Permits running multiple Cassandra pods per Kubernetes worker. If enabled
@@ -83,9 +85,9 @@ cassandra:
 
 
   datacenters:
-  
+
   # Note the odd spacing below is to assist with docs generation
-  - 
+  -
     # -- Name of the datacenter
     name: dc1
 
@@ -102,7 +104,7 @@ cassandra:
     # with a 9 node cluster and 3 racks (and 3 nodes per rack). There will be
     # one replica of the dataset spread across each rack.
     racks:
-    - 
+    -
       # -- Identifier for the rack, this may align with the labels used to
       # control where resources are deployed for this rack. For example, if a
       # rack is limited to a single availability zone the identifier may be the
@@ -129,24 +131,33 @@ cassandra:
 stargate:
   # -- Enable Stargate resources as part of this release
   enabled: false
-  
-  # -- Number of instances to deploy. This value may be scaled independently of
+
+  # -- Number of Stargate instances to deploy. This value may be scaled independently of
   # Cassandra cluster nodes. Each instance handles API and coordination tasks
   # for inbound queries.
   replicas: 1
-  
-  # -- Version of the target Cassandra cluster. `3.11` is the only supported
-  # value for now.
-  clusterVersion: "3.11"
 
-  # -- Image coordinate for Stargate containers, `auto` will determine the
-  # appropriate value based on other configuration parameters.
-  containerImage: "auto" # chooses image based on clusterVersion
+  # -- Sets the Stargate container image. If left blank (recommended), k8ssandra
+  # will derive an appropriate image based on your cluster version.
+  image:
+
+  # -- Sets the imagePullPolicy used by the Stargate pods
+  imagePullPolicy: IfNotPresent
+
+  # -- Sets the heap size Stargate will use in megabytes. Memory request and
+  # limit for the pod will be set to this value x2 and x4, respectively.
+  heapMB: 256
+
+  # -- Sets the CPU request for the Stargate pod in millicores.
+  cpuReqMillicores: 200
+
+  # -- Sets the CPU limit for the Stargate pod in millicores.
+  cpuLimMillicores: 1000
 
   # -- Configures the Cassandra user used by Stargate when authentication is
   # enabled. If neither `cassandraUser.secret` nor `casandraUser.username` are
   # set, then a Cassandra user and a secret will be created. The username will
-  # be stargate. The secret name will be of the form {cluserName}-stargate. The
+  # be `stargate`. The secret name will be of the form `{clusterName}-stargate`. The
   # password will be a random 20 character password. If `cassandraUser.secret`
   # is set, then the Cassandra user will be created from the contents of the
   # secret. If `cassandraUser.secret` is not set and if
@@ -182,7 +193,7 @@ repair:
     # enabled. If neither cassandraUser.secret nor casandraUser.username are
     # set, then a Cassandra user and a secret with the user's credentials will
     # be created. The username will be reaper. The secret name will be of the
-    # form {cluserName}-reaper. The password will be a random 20 character
+    # form {clusterName}-reaper. The password will be a random 20 character
     # password. If cassandraUser.secret is set, then the Cassandra user will be
     # created from the contents of the secret. If cassandraUser.secret is not
     # set and if cassandraUser.username is set, a secret will be generated using
@@ -210,7 +221,7 @@ backupRestore:
     # -- Enable Medusa resources as part of this release. If enabled,
     # `bucketName` and `bucketSecret` **must** be defined.
     enabled: false
-    
+
     # Configures the Medusa image which is built from
     # https://github.com/thelastpickle/cassandra-medusa/tree/master/k8s.
     image:
@@ -224,7 +235,7 @@ backupRestore:
     # -- Configures the Cassandra user used by Medusa when authentication is
     # enabled. If neither `cassandraUser.secret` nor `casandraUser.username` are
     # set, then a Cassandra user and a secret will be created. The username will
-    # be medusa. The secret name will be of the form {cluserName}-medusa. The
+    # be medusa. The secret name will be of the form {clusterName}-medusa. The
     # password will be a random 20 character password. If `cassandraUser.secret`
     # is set, then the Cassandra user will be created from the contents of the
     # secret. If `cassandraUser.secret` is not set and if
@@ -288,15 +299,15 @@ ingress:
     # Stargate ingress support
     stargate:
       # -- Enables Stargate Traefik ingress definitions. Note this will **only**
-      # work if `ingress.traefik.enabled` is also `true`. Additionally, when
+      # work if `stargate.enabled` and `ingress.traefik.enabled` are also `true`. Additionally, when
       # enabled the authentication API (port 8081) is enabled automatically.
-      enabled: false
+      enabled: true
 
-      # -- Hostname Traefik should use for routing requests to the repair UI. If
+      # -- Hostname Traefik should use for routing requests to Stargate. If
       # using a local deployment consider leveraging dynamic DNS services like
-      # xip.io. Example: `repair.127.0.0.1.xip.io` will return `127.0.0.1` for
+      # xip.io. Example: `stargate.127.0.0.1.xip.io` will return `127.0.0.1` for
       # DNS requests routing requests to your local machine.
-      host: stargate.k8ssandra.cluster.local
+      host: "*"
 
       # Ingress for each Stargate API can be enabled/disabled independently
       graphql:
@@ -304,11 +315,11 @@ ingress:
         # **only** work if `stargate.enabled`, `ingress.traefik.enabled`, and
         # `ingress.traefik.stargate.enabled` are also `true`
         enabled: true
-        
+
         playground:
           # -- Enables GraphQL playground interface ingress.
           enabled: false
-      
+
       rest:
         # -- Enables ingress resources for Stargate REST API. Note this will
         # **only** work if `stargate.enabled`, `ingress.traefik.enabled`, and

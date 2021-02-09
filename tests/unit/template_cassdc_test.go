@@ -3,10 +3,12 @@ package unit_test
 import (
 	"encoding/json"
 	"fmt"
+	helmUtils "github.com/k8ssandra/k8ssandra/tests/unit/utils/helm"
 	"path/filepath"
 
 	cassdcv1beta1 "github.com/datastax/cass-operator/operator/pkg/apis/cassandra/v1beta1"
 	"github.com/gruntwork-io/terratest/modules/helm"
+	. "github.com/k8ssandra/k8ssandra/tests/unit/utils/cassdc"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	corev1 "k8s.io/api/core/v1"
@@ -65,15 +67,12 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 		cassdc = &cassdcv1beta1.CassandraDatacenter{}
 	})
 
-	renderTemplate := func(options *helm.Options) (error, error) {
-
-		templatePath := filepath.Join(".", "/templates/cassandra/cassdc.yaml")
-		renderedOutput, renderErr := helm.RenderTemplateE(
-			GinkgoT(), options, helmChartPath, HelmReleaseName,
-			[]string{templatePath},
-		)
-		unmarshalErr := helm.UnmarshalK8SYamlE(GinkgoT(), renderedOutput, cassdc)
-		return renderErr, unmarshalErr
+	renderTemplate := func(options *helm.Options) error {
+		return helmUtils.RenderAndUnmarshall("templates/cassandra/cassdc.yaml",
+			options, helmChartPath, HelmReleaseName,
+			func(renderedYaml string) error {
+				return helm.UnmarshalK8SYamlE(GinkgoT(), renderedYaml, cassdc)
+			})
 	}
 
 	Context("by rendering it with options", func() {
@@ -313,10 +312,9 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 				},
 			}
 
-			err, err2 := renderTemplate(options)
+			err := renderTemplate(options)
 			fmt.Println("error: ", err)
-			fmt.Println("error2: ", err2)
-			Expect(err, err2).To(Succeed())
+			Expect(err).To(Succeed())
 
 			Expect(cassdc.Spec.SuperuserSecretName).To(Equal(clusterName + "-superuser"))
 		})
@@ -345,7 +343,7 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 
 			Expect(renderTemplate(options)).To(Succeed())
 
-			assertInitContainerNamesMatch(cassdc, ConfigInitContainer, GetJolokiaInitContainer, MedusaInitContainer)
+			AssertInitContainerNamesMatch(cassdc, ConfigInitContainer, GetJolokiaInitContainer, MedusaInitContainer)
 
 			// Two containers, medusa and cassandra
 			Expect(len(cassdc.Spec.PodTemplateSpec.Spec.Containers)).To(Equal(2))
@@ -379,9 +377,9 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 
 			Expect(cassdc.Spec.Users).To(ContainElement(cassdcv1beta1.CassandraUser{Superuser: true, SecretName: clusterName + "-medusa"}))
 
-			assertInitContainerNamesMatch(cassdc, ConfigInitContainer, GetJolokiaInitContainer, MedusaInitContainer)
+			AssertInitContainerNamesMatch(cassdc, ConfigInitContainer, GetJolokiaInitContainer, MedusaInitContainer)
 
-			initContainer := getInitContainer(cassdc, "medusa-restore")
+			initContainer := GetInitContainer(cassdc, "medusa-restore")
 			Expect(initContainer).To(Not(BeNil()))
 
 			cqlUsernameEnvVar := corev1.EnvVar{
@@ -416,15 +414,15 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 				cqlPasswordEnvVar,
 			}))
 
-			assertContainerNamesMatch(cassdc, CassandraContainer, MedusaContainer)
+			AssertContainerNamesMatch(cassdc, CassandraContainer, MedusaContainer)
 
-			cassandraContainer := getContainer(cassdc, CassandraContainer)
+			cassandraContainer := GetContainer(cassdc, CassandraContainer)
 			Expect(cassandraContainer).To(Not(BeNil()))
 			// Cassandra container should have JVM_EXTRA_OPTS for jolokia
 			Expect(len(cassandraContainer.Env)).To(Equal(1))
 			Expect(cassandraContainer.Env[0].Name).To(Equal("JVM_EXTRA_OPTS"))
 
-			medusaContainer := getContainer(cassdc, MedusaContainer)
+			medusaContainer := GetContainer(cassdc, MedusaContainer)
 			Expect(medusaContainer).To(Not(BeNil()))
 
 			Expect(medusaContainer.Env).To(ConsistOf([]corev1.EnvVar{
@@ -461,9 +459,9 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 
 			Expect(cassdc.Spec.Users).To(ContainElement(cassdcv1beta1.CassandraUser{Superuser: true, SecretName: secretName}))
 
-			assertInitContainerNamesMatch(cassdc, ConfigInitContainer, GetJolokiaInitContainer, MedusaInitContainer)
+			AssertInitContainerNamesMatch(cassdc, ConfigInitContainer, GetJolokiaInitContainer, MedusaInitContainer)
 
-			initContainer := getInitContainer(cassdc, MedusaInitContainer)
+			initContainer := GetInitContainer(cassdc, MedusaInitContainer)
 			Expect(initContainer).To(Not(BeNil()))
 
 			cqlUsernameEnvVar := corev1.EnvVar{
@@ -498,15 +496,15 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 				cqlPasswordEnvVar,
 			}))
 
-			assertContainerNamesMatch(cassdc, CassandraContainer, MedusaContainer)
+			AssertContainerNamesMatch(cassdc, CassandraContainer, MedusaContainer)
 
-			cassandraContainer := getContainer(cassdc, CassandraContainer)
+			cassandraContainer := GetContainer(cassdc, CassandraContainer)
 			Expect(cassandraContainer).To(Not(BeNil()))
 			// Cassandra container should have JVM_EXTRA_OPTS for jolokia
 			Expect(len(cassandraContainer.Env)).To(Equal(1))
 			Expect(cassandraContainer.Env[0].Name).To(Equal("JVM_EXTRA_OPTS"))
 
-			medusaContainer := getContainer(cassdc, MedusaContainer)
+			medusaContainer := GetContainer(cassdc, MedusaContainer)
 			Expect(medusaContainer).To(Not(BeNil()))
 
 			Expect(medusaContainer.Env).To(ConsistOf([]corev1.EnvVar{
@@ -535,8 +533,8 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 
 			Expect(renderTemplate(options)).To(Succeed())
 
-			assertInitContainerNamesMatch(cassdc, ConfigInitContainer, JmxCredentialsInitContainer, GetJolokiaInitContainer, MedusaInitContainer)
-			assertContainerNamesMatch(cassdc, CassandraContainer, MedusaContainer)
+			AssertInitContainerNamesMatch(cassdc, ConfigInitContainer, JmxCredentialsInitContainer, GetJolokiaInitContainer, MedusaInitContainer)
+			AssertContainerNamesMatch(cassdc, CassandraContainer, MedusaContainer)
 		})
 
 		It("setting allowMultipleNodesPerWorker to true", func() {
@@ -597,7 +595,7 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 				KubectlOptions: defaultKubeCtlOptions,
 			}
 
-			renderedErr, _ := renderTemplate(options)
+			renderedErr := renderTemplate(options)
 
 			Expect(renderedErr).ToNot(BeNil())
 			Expect(renderedErr.Error()).To(ContainSubstring("set resource limits/requests when enabling allowMultipleNodesPerWorker"))
@@ -832,7 +830,7 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 				},
 			}
 
-			renderedErr, _ := renderTemplate(options)
+			renderedErr := renderTemplate(options)
 			Expect(renderedErr).To(HaveOccurred())
 		})
 
@@ -885,48 +883,7 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 	})
 })
 
-func getInitContainer(cassdc *cassdcv1beta1.CassandraDatacenter, name string) *corev1.Container {
-	return getContainerByName(cassdc.Spec.PodTemplateSpec.Spec.InitContainers, name)
-
-}
-
-func getContainer(cassdc *cassdcv1beta1.CassandraDatacenter, name string) *corev1.Container {
-	return getContainerByName(cassdc.Spec.PodTemplateSpec.Spec.Containers, name)
-
-}
-
 func verifyMedusaVolumeMounts(container *corev1.Container) {
 	ExpectWithOffset(1, len(container.VolumeMounts)).To(Equal(4))
 	ExpectWithOffset(1, container.VolumeMounts[0]).To(Equal(corev1.VolumeMount{Name: medusaConfigVolumeName, MountPath: "/etc/medusa"}))
-}
-
-func assertInitContainerNamesMatch(cassdc *cassdcv1beta1.CassandraDatacenter, names ...string) {
-	initContainers := cassdc.Spec.PodTemplateSpec.Spec.InitContainers
-	actualNames := getContainerNames(initContainers)
-
-	ExpectWithOffset(1, actualNames).To(Equal(names))
-}
-
-func assertContainerNamesMatch(cassdc *cassdcv1beta1.CassandraDatacenter, names ...string) {
-	containers := cassdc.Spec.PodTemplateSpec.Spec.Containers
-	actualNames := getContainerNames(containers)
-
-	ExpectWithOffset(1, actualNames).To(Equal(names))
-}
-
-func getContainerByName(containers []corev1.Container, name string) *corev1.Container {
-	for _, container := range containers {
-		if container.Name == name {
-			return &container
-		}
-	}
-	return nil
-}
-
-func getContainerNames(containers []corev1.Container) []string {
-	names := make([]string, 0)
-	for _, container := range containers {
-		names = append(names, container.Name)
-	}
-	return names
 }

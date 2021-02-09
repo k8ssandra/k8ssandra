@@ -1,0 +1,26 @@
+{{- $traefik := .Values.ingress.traefik -}}
+{{- if $traefik.enabled }}
+{{- $releaseName := .Release.Name -}}
+{{- $datacenterName := include "k8ssandra.datacenterName" . -}}
+
+{{- if $traefik.repair.enabled }}
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: {{ $releaseName }}-k8ssandra-repair
+  labels:
+{{ include "k8ssandra.labels" . | indent 4 }}
+spec:
+  entryPoints:
+  {{- range $traefik.repair.entrypoints }}
+    - {{ . }}
+  {{- end }}
+  routes:
+  - match: Host(`{{ $traefik.repair.host }}`)
+    kind: Rule
+    services:
+    - name: {{ $releaseName }}-reaper-k8ssandra-reaper-service
+      kind: Service
+      port: 8080
+{{- end }}
+{{- end }}

@@ -282,7 +282,7 @@
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "HTTP Requests per Minute",
+      "title": "HTTP Requests per Second",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -303,7 +303,7 @@
           "label": null,
           "logBase": 1,
           "max": null,
-          "min": null,
+          "min": "0",
           "show": true
         },
         {
