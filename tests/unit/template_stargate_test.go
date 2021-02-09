@@ -1,6 +1,7 @@
 package unit_test
 
 import (
+	. "fmt"
 	"github.com/gruntwork-io/terratest/modules/helm"
 	helmUtils "github.com/k8ssandra/k8ssandra/tests/unit/utils/helm"
 	"github.com/k8ssandra/k8ssandra/tests/unit/utils/kubeapi"
@@ -72,12 +73,12 @@ var _ = Describe("Verify Stargate template", func() {
 			Expect(string(initContainer.ImagePullPolicy)).To(Equal("IfNotPresent"))
 
 			Expect(initContainer.Args[0]).To(Equal("-c"))
-			Expect(initContainer.Args[1]).To(ContainSubstring("nslookup k8ssandra-testrelease-seed-service.k8ssandra-namespace.svc.cluster.local;"))
+			Expect(initContainer.Args[1]).To(ContainSubstring(Sprintf("nslookup %s-seed-service.%s.svc.cluster.local;", HelmReleaseName, DefaultTestNamespace)))
 
 			Expect(len(templateSpec.Containers)).To(Equal(1))
 			container := templateSpec.Containers[0]
 			Expect(container.Image).To(Equal("stargateio/stargate-3_11:v1.0.0"))
-			Expect(container.Name).To(Equal("k8ssandra-testrelease-dc1-stargate"))
+			Expect(container.Name).To(Equal(Sprintf("%s-dc1-stargate", HelmReleaseName)))
 			Expect(string(container.ImagePullPolicy)).To(Equal("IfNotPresent"))
 
 			oneMegabyte := 1024 * 1024
@@ -94,20 +95,21 @@ var _ = Describe("Verify Stargate template", func() {
 			Expect(javaOpts.Value).To(ContainSubstring("-Xmx256M"))
 
 			clusterName := kubeapi.FindEnvVarByName(container, "CLUSTER_NAME")
-			Expect(clusterName.Value).To(Equal("k8ssandra-testrelease"))
+			Expect(clusterName.Value).To(Equal(HelmReleaseName))
 
 			seed := kubeapi.FindEnvVarByName(container, "SEED")
-			Expect(seed.Value).To(Equal("k8ssandra-testrelease-seed-service.k8ssandra-namespace.svc.cluster.local"))
+			Expect(seed.Value).To(Equal(Sprintf("%s-seed-service.%s.svc.cluster.local", HelmReleaseName, DefaultTestNamespace)))
 
 			datacenterName := kubeapi.FindEnvVarByName(container, "DATACENTER_NAME")
 			Expect(datacenterName.Value).To(Equal("dc1"))
 		})
 
 		It("changing cluster name", func() {
+			clusterName := Sprintf("k8ssandra-clustername-%s", UniqueIdSuffix)
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
 				SetValues: map[string]string{
-					"cassandra.clusterName": "k8ssandra-clustername",
+					"cassandra.clusterName": clusterName,
 					"stargate.enabled":      "true",
 				},
 			}
@@ -117,11 +119,11 @@ var _ = Describe("Verify Stargate template", func() {
 
 			initContainer := deployment.Spec.Template.Spec.InitContainers[0]
 			Expect(initContainer.Args[0]).To(Equal("-c"))
-			Expect(initContainer.Args[1]).To(ContainSubstring("nslookup k8ssandra-clustername-seed-service.k8ssandra-namespace.svc.cluster.local;"))
+			Expect(initContainer.Args[1]).To(ContainSubstring(Sprintf("nslookup %s-seed-service.%s.svc.cluster.local;", clusterName, DefaultTestNamespace)))
 
 			container := deployment.Spec.Template.Spec.Containers[0]
 			seed := kubeapi.FindEnvVarByName(container, "SEED")
-			Expect(seed.Value).To(Equal("k8ssandra-clustername-seed-service.k8ssandra-namespace.svc.cluster.local"))
+			Expect(seed.Value).To(Equal(Sprintf("%s-seed-service.%s.svc.cluster.local", clusterName, DefaultTestNamespace)))
 		})
 
 		It("changing datacenter name", func() {
