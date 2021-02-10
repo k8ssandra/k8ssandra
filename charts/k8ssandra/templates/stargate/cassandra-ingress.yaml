@@ -23,7 +23,7 @@ spec:
   routes:
     - match: HostSNI(`{{ $stargateHost }}`)
       services:
-        - name: {{ $releaseName }}-{{ $datacenterName }}-stargate-service
+        - name: {{ include "k8ssandra.clusterName" . }}-{{ $datacenterName }}-stargate-service
           kind: Service
           port: 9042
 {{- end }}
