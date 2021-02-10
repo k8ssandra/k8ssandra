@@ -1,6 +1,6 @@
 
 
-![Version: 0.44.0](https://img.shields.io/badge/Version-0.44.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 3.11.7](https://img.shields.io/badge/AppVersion-3.11.7-informational?style=flat-square)
+![Version: 0.45.0](https://img.shields.io/badge/Version-0.45.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 3.11.7](https://img.shields.io/badge/AppVersion-3.11.7-informational?style=flat-square)
 
 ## Maintainers
 
@@ -38,14 +38,12 @@
 | cassandra.cassandraLibDirVolume.storageClass | string | `"standard"` | Storage class for persistent volume claims (PVCs) used by the underlying cassandra pods. Depending on your Kubernetes distribution this may be named "standard", "hostpath", or "localpath". Run `kubectl get storageclass` to identify what is available in your environment. |
 | cassandra.cassandraLibDirVolume.size | string | `"5Gi"` | Size of the provisioned persistent volume per node. It is recommended to keep the total amount of data per node to approximately 1 TB. With room for compactions this value should max out at ~2 TB. This recommendation is highly dependent on data model and compaction strategies in use. Consider testing with your data model to find an optimal value for your usecase.  |
 | cassandra.allowMultipleNodesPerWorker | bool | `false` | Permits running multiple Cassandra pods per Kubernetes worker. If enabled resources.limits and resources.requests **must** be defined. |
-| cassandra.heap | object | `{"newGenSize":null,"size":null}` | Cluster-level heap configuration |
-| cassandra.resources | object | `{}` | Resource requests for each Cassandra pod. |
+| cassandra.resources | object | `{}` | Cluster-level heap configuration size: newGenSize: -- Resource requests for each Cassandra pod. |
 | cassandra.datacenters[0].name | string | `"dc1"` | Name of the datacenter |
 | cassandra.datacenters[0].size | int | `1` | Number of nodes within the datacenter. This value should, at a minimum, match the number of racks and be no less than 3 for non-development environments. |
 | cassandra.datacenters[0].racks | list | `[{"affinityLabels":{},"name":"default"}]` | Specifies the racks for the data center, if unset the datacenter will be composed of a single rack named `default`. The number of racks should equal the replication factor of your application keyspaces. Cassandra will ensure that replicas are spread across racks versus having multiple replicas within the same rack. For example, let's say we are using RF = 3 with a 9 node cluster and 3 racks (and 3 nodes per rack). There will be one replica of the dataset spread across each rack. |
 | cassandra.datacenters[0].racks[0].name | string | `"default"` | Identifier for the rack, this may align with the labels used to control where resources are deployed for this rack. For example, if a rack is limited to a single availability zone the identifier may be the name of that AZ (eg us-east-1a). |
 | cassandra.datacenters[0].racks[0].affinityLabels | object | `{}` | an optional set of labels that are used to pin Cassandra pods to specific k8s worker nodes via affinity rules. See https://kubernetes.io/docs/tasks/configure-pod-container/assign-pods-nodes-using-node-affinity/ for background on using affinity rules. topology.kubernetes.io/zone is a well-known k8s label used by cloud providers to indicate the failure zone in which a k8s worker node is running. The following example illustrates how you can pin racks to specific failure zones. |
-| cassandra.datacenters[0].heap | object | `{"newGenSize":null,"size":null}` | Optional datacenter-level heap setting, overrides cluster-level setting `cassandra.heap` |
 | stargate.enabled | bool | `false` | Enable Stargate resources as part of this release |
 | stargate.replicas | int | `1` | Number of instances to deploy. This value may be scaled independently of Cassandra cluster nodes. Each instance handles API and coordination tasks for inbound queries. |
 | stargate.clusterVersion | string | `"3.11"` | Version of the target Cassandra cluster. `3.11` is the only supported value for now. |
@@ -82,7 +80,7 @@
 | ingress.traefik.stargate.cassandra.enabled | bool | `false` | Enables Traefik ingress resources for Stargate Cassandra API. Note this will **only** work if `stargate.enabled`, `ingress.traefik.enabled`, and `ingress.traefik.stargate.enabled` are also `true`. Additionally, this is mutually exclusive with ingress.traefik.cassandra.enabled |
 | ingress.traefik.stargate.cassandra.entrypoints[0] | string | `"cassandra"` |  |
 | monitoring.grafana.provision_dashboards | bool | `true` | Enables the creation of configmaps containing Grafana dashboards. If leveraging the kube prometheus stack sub-chart this value should be `true`. |
-| monitoring.prometheus.provision_service_monitors | bool | `true` | Enabes the creation of Prometheus Operator ServiceMonitor custom resources. If you are not using the kube prometheus stack sub-chart or do not have the ServiceMonitor CRD installed on your cluster, set this value to `false`. |
+| monitoring.prometheus.provision_service_monitors | bool | `true` | Enables the creation of Prometheus Operator ServiceMonitor custom resources. If you are not using the kube prometheus stack sub-chart or do not have the ServiceMonitor CRD installed on your cluster, set this value to `false`. |
 | cleaner.image | string | `"k8ssandra/k8ssandra-cleaner:618b8ff9d368"` |  |
 | cass-operator.enabled | bool | `true` | Enables the cass-operator as part of this release. If this setting is disabled no Cassandra resources will be deployed. |
 | reaper-operator.enabled | bool | `true` | Enables the reaper-operator as part of this release. If this setting is disabled no repair resources will be deployed. |
