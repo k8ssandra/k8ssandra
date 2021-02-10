@@ -281,7 +281,12 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 				"-Dcassandra.system_distributed_replication_per_dc="+strconv.Itoa(clusterSize),
 			))
 
-			Expect(cassdc.Spec.Users).To(ConsistOf(cassdcv1beta1.CassandraUser{Superuser: true, SecretName: clusterName + "-reaper"}))
+			Expect(cassdc.Spec.Users).To(
+				ConsistOf(
+					cassdcv1beta1.CassandraUser{Superuser: true, SecretName: clusterName + "-reaper"},
+					cassdcv1beta1.CassandraUser{Superuser: true, SecretName: clusterName + "-stargate"},
+					),
+				)
 		})
 
 		It("providing superuser secret", func() {
