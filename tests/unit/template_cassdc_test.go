@@ -285,8 +285,8 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 				ConsistOf(
 					cassdcv1beta1.CassandraUser{Superuser: true, SecretName: clusterName + "-reaper"},
 					cassdcv1beta1.CassandraUser{Superuser: true, SecretName: clusterName + "-stargate"},
-					),
-				)
+				),
+			)
 		})
 
 		It("providing superuser secret", func() {
