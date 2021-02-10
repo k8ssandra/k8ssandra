@@ -36,14 +36,19 @@ var _ = Describe("Verify Stargate Cassandra ingress template", func() {
 			})
 	}
 
-	Context("by confirming it does not render when", func() {
-		It("is implicitly disabled", func() {
+	Context("by confirming it does render when", func() {
+		It("is explicitly disabled at the Ingress level", func() {
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
+				SetValues: map[string]string{
+					"ingress.traefik.enabled": "false",
+				},
 			}
 			Expect(renderTemplate(options)).ShouldNot(Succeed())
 		})
+	})
 
+	Context("by confirming it does not render when", func() {
 		It("is explicitly disabled at the Ingress level", func() {
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
@@ -136,10 +141,7 @@ var _ = Describe("Verify Stargate Cassandra ingress template", func() {
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
 				SetValues: map[string]string{
-					"ingress.traefik.enabled":                    "true",
-					"ingress.traefik.cassandra.enabled":          "false",
-					"ingress.traefik.stargate.enabled":           "true",
-					"ingress.traefik.stargate.cassandra.enabled": "true",
+					"ingress.traefik.enabled": "true",
 				},
 			}
 
