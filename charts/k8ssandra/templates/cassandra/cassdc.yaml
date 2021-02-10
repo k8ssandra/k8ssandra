@@ -174,7 +174,7 @@ spec:
         args:
           - /bin/sh
           - -c
-          - wget -O /tmp/jolokia-jvm-1.6.2-agent.jar https://search.maven.org/remotecontent?filepath=org/jolokia/jolokia-jvm/1.6.2/jolokia-jvm-1.6.2-agent.jar; mv /tmp/jolokia-jvm-1.6.2-agent.jar /config/jolokia-jvm-1.6.2-agent.jar
+          - wget -O  /config/jolokia-jvm-1.6.2-agent.jar https://search.maven.org/remotecontent?filepath=org/jolokia/jolokia-jvm/1.6.2/jolokia-jvm-1.6.2-agent.jar
         volumeMounts:
           - mountPath: /config
             name: server-config
