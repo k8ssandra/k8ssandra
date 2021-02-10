@@ -3,8 +3,11 @@ package unit_test
 import (
 	"encoding/json"
 	"fmt"
-	helmUtils "github.com/k8ssandra/k8ssandra/tests/unit/utils/helm"
 	"path/filepath"
+
+	helmUtils "github.com/k8ssandra/k8ssandra/tests/unit/utils/helm"
+
+	"strconv"
 
 	cassdcv1beta1 "github.com/datastax/cass-operator/operator/pkg/apis/cassandra/v1beta1"
 	"github.com/gruntwork-io/terratest/modules/helm"
@@ -13,7 +16,6 @@ import (
 	. "github.com/onsi/gomega"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/resource"
-	"strconv"
 )
 
 type CassandraConfig struct {
@@ -281,7 +283,10 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 				"-Dcassandra.system_distributed_replication_per_dc="+strconv.Itoa(clusterSize),
 			))
 
-			Expect(cassdc.Spec.Users).To(ConsistOf(cassdcv1beta1.CassandraUser{Superuser: true, SecretName: clusterName + "-reaper"}))
+			Expect(cassdc.Spec.Users).To(ConsistOf(
+				cassdcv1beta1.CassandraUser{Superuser: true, SecretName: clusterName + "-reaper"},
+				cassdcv1beta1.CassandraUser{Superuser: true, SecretName: clusterName + "-stargate"},
+			))
 		})
 
 		It("providing superuser secret", func() {

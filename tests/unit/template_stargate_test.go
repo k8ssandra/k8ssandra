@@ -2,13 +2,14 @@ package unit_test
 
 import (
 	. "fmt"
+	"path/filepath"
+
 	"github.com/gruntwork-io/terratest/modules/helm"
 	helmUtils "github.com/k8ssandra/k8ssandra/tests/unit/utils/helm"
 	"github.com/k8ssandra/k8ssandra/tests/unit/utils/kubeapi"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	appsv1 "k8s.io/api/apps/v1"
-	"path/filepath"
 )
 
 var _ = Describe("Verify Stargate template", func() {
@@ -37,13 +38,6 @@ var _ = Describe("Verify Stargate template", func() {
 	}
 
 	Context("by confirming it does not render when", func() {
-		It("is implicitly disabled", func() {
-			options := &helm.Options{
-				KubectlOptions: defaultKubeCtlOptions,
-			}
-			Expect(renderTemplate(options)).ShouldNot(Succeed())
-		})
-
 		It("is explicitly disabled", func() {
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,

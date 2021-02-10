@@ -42,24 +42,6 @@ helm repo update
 
 Alternatively, you may download the individual charts directly from the project's [releases](https://github.com/k8ssandra/k8ssandra/releases) page.
 
-## Enabling Stargate
-
-Stargate deployment is *disabled* by default. To enable it, modify the values provided to the helm install/upgrade of the
-`k8ssandra` chart.
-
-This can be done by adding to the values.yaml file provided to helm:
-
-```
-stargate:
-  enabled: true
-```
-
-or set via the command line when installing via helm:
-
-```
---set stargate.enabled=true
-```
-
 ## Install K8ssandra
 
 From a packaging perspective, K8ssandra is composed of a number of helm charts. It handles the installation of operators and custom resources as well as
@@ -79,3 +61,12 @@ helm install k8ssandra k8ssandra/k8ssandra
 > For more information, check out issue [#267](https://github.com/k8ssandra/k8ssandra/issues/267).
 
 In later steps, you can upgrade your k8ssandra via `helm upgrade` commands, for example to access services from outside Kubernetes via a Traefik Ingress controller.
+
+## Defaults
+
+K8ssandra comes out of the box with a set of default values tailored to getting up and running quickly.  These defaults
+are intended to be a great starting point for smaller-scale local development and should be carefully customized for 
+production deployments.
+
+For more information on the configuration options available, and the developer focused defaults provided, take a look 
+at the [k8ssandra reference]({{< ref "/docs/reference/k8ssandra/" >}}) documentation.
