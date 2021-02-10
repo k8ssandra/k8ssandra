@@ -150,7 +150,7 @@ spec:
         args:
           - /bin/sh
           - -c
-          - wget https://search.maven.org/remotecontent?filepath=org/jolokia/jolokia-jvm/1.6.2/jolokia-jvm-1.6.2-agent.jar && mv jolokia-jvm-1.6.2-agent.jar /config
+          - wget --output-document=/config/jolokia-jvm-1.6.2-agent.jar https://search.maven.org/remotecontent?filepath=org/jolokia/jolokia-jvm/1.6.2/jolokia-jvm-1.6.2-agent.jar
         volumeMounts:
           - mountPath: /config
             name: server-config
@@ -301,7 +301,7 @@ spec:
           emptyDir: {}
         - name: mcac-agent-config
           emptyDir: {}
-        - name: metric-collector-config
+        - name: metrics-collector-config
           emptyDir: {}
         - name: cassandra-tmp
           emptyDir: {}
