@@ -112,6 +112,7 @@ spec:
 {{- end }}
   podTemplateSpec:
     spec:
+      serviceAccountName: {{ .Values.cassandra.serviceAccountName }}
 {{- if or .Values.repair.reaper.enabled .Values.backupRestore.medusa.enabled }}
       initContainers:
       {{/* The server-config-init container is "built-in" in that it is provided by
@@ -207,6 +208,10 @@ spec:
             mountPath: /etc/cassandra
           - name: mcac-agent-config
             mountPath: /opt/mcac-agent/config
+          - name: metrics-collector-config
+            mountPath: /opt/metrics-collector/config
+          - name: cassandra-tmp
+            mountPath: /tmp
 {{- if or .Values.repair.reaper.enabled .Values.backupRestore.medusa.enabled }}
         env:
 {{- if .Values.repair.reaper.enabled }}
@@ -295,4 +300,8 @@ spec:
         - name: cassandra-config
           emptyDir: {}
         - name: mcac-agent-config
+          emptyDir: {}
+        - name: metric-collector-config
+          emptyDir: {}
+        - name: cassandra-tmp
           emptyDir: {}

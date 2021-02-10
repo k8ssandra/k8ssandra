@@ -121,6 +121,12 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 
 			Expect(cassdc.Spec.PodTemplateSpec.Spec.Containers[0].VolumeMounts[1].Name).To(Equal("mcac-agent-config"))
 			Expect(cassdc.Spec.PodTemplateSpec.Spec.Containers[0].VolumeMounts[1].MountPath).To(Equal("/opt/mcac-agent/config"))
+
+			Expect(cassdc.Spec.PodTemplateSpec.Spec.Containers[0].VolumeMounts[2].Name).To(Equal("metrics-collector-config"))
+			Expect(cassdc.Spec.PodTemplateSpec.Spec.Containers[0].VolumeMounts[2].MountPath).To(Equal("/opt/metrics-collector/config"))
+
+			Expect(cassdc.Spec.PodTemplateSpec.Spec.Containers[0].VolumeMounts[3].Name).To(Equal("cassandra-tmp"))
+			Expect(cassdc.Spec.PodTemplateSpec.Spec.Containers[0].VolumeMounts[3].MountPath).To(Equal("/tmp"))
 		})
 
 		It("override clusterName", func() {
@@ -163,6 +169,20 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			Expect(renderTemplate(options)).To(Succeed())
 
 			Expect(cassdc.Name).To(Equal(dcName))
+		})
+
+		It("override serviceAccountName", func() {
+			serviceAccount := "cassandra-sac"
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+				SetValues: map[string]string{
+					"cassandra.serviceAccountName": serviceAccount,
+				},
+			}
+
+			Expect(renderTemplate(options)).To(Succeed())
+
+			Expect(cassdc.Spec.PodTemplateSpec.Spec.ServiceAccountName, serviceAccount)
 		})
 
 		It("override datacenter size and name", func() {
@@ -364,7 +384,7 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			Expect(len(cassdc.Spec.PodTemplateSpec.Spec.Containers[1].VolumeMounts)).To(Equal(4))
 			Expect(cassdc.Spec.PodTemplateSpec.Spec.Containers[1].VolumeMounts[0].Name).To(Equal(medusaConfigVolumeName))
 
-			Expect(len(cassdc.Spec.PodTemplateSpec.Spec.Volumes)).To(Equal(4))
+			Expect(len(cassdc.Spec.PodTemplateSpec.Spec.Volumes)).To(Equal(6))
 			Expect(cassdc.Spec.PodTemplateSpec.Spec.Volumes[0].Name).To(Equal(medusaConfigVolumeName))
 		})
 
@@ -443,7 +463,7 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 
 			verifyMedusaVolumeMounts(medusaContainer)
 
-			Expect(len(cassdc.Spec.PodTemplateSpec.Spec.Volumes)).To(Equal(4))
+			Expect(len(cassdc.Spec.PodTemplateSpec.Spec.Volumes)).To(Equal(6))
 			Expect(cassdc.Spec.PodTemplateSpec.Spec.Volumes[0].Name).To(Equal(medusaConfigVolumeName))
 
 			Expect(cassdc.Spec.Users).To(ContainElement(cassdcv1beta1.CassandraUser{SecretName: secretName, Superuser: true}))
@@ -525,7 +545,7 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 
 			verifyMedusaVolumeMounts(medusaContainer)
 
-			Expect(len(cassdc.Spec.PodTemplateSpec.Spec.Volumes)).To(Equal(4))
+			Expect(len(cassdc.Spec.PodTemplateSpec.Spec.Volumes)).To(Equal(6))
 			Expect(cassdc.Spec.PodTemplateSpec.Spec.Volumes[0].Name).To(Equal(medusaConfigVolumeName))
 
 			Expect(cassdc.Spec.Users).To(ContainElement(cassdcv1beta1.CassandraUser{SecretName: secretName, Superuser: true}))
