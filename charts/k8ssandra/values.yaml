@@ -73,7 +73,8 @@ cassandra:
   # resources.limits and resources.requests **must** be defined.
   allowMultipleNodesPerWorker: false
 
-  # -- Cluster-level heap configuration
+  # -- Cluster-level heap configuration (optional).
+  # See reference: https://k8ssandra.io/docs/reference/k8ssandra/#values for additional information.
   #heap:
   # size:
   # newGenSize:
@@ -120,7 +121,8 @@ cassandra:
       # specific failure zones.
       affinityLabels: {}
 
-    # -- Optional datacenter-level heap setting, overrides cluster-level setting
+    # -- Datacenter-level heap setting (optional), which overrides any existing cluster-level heap setting.
+    # See reference: https://k8ssandra.io/docs/reference/k8ssandra/#values for additional information.
     # `cassandra.heap`
     #heap:
     #  size:
