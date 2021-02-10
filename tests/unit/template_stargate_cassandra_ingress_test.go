@@ -2,13 +2,14 @@ package unit_test
 
 import (
 	fmt "fmt"
+	"path/filepath"
+
 	"github.com/gruntwork-io/terratest/modules/helm"
 	helmUtils "github.com/k8ssandra/k8ssandra/tests/unit/utils/helm"
 	. "github.com/k8ssandra/k8ssandra/tests/unit/utils/traefik"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	traefik "github.com/traefik/traefik/v2/pkg/provider/kubernetes/crd/traefik/v1alpha1"
-	"path/filepath"
 )
 
 var _ = Describe("Verify Stargate Cassandra ingress template", func() {
@@ -37,14 +38,14 @@ var _ = Describe("Verify Stargate Cassandra ingress template", func() {
 	}
 
 	Context("by confirming it does render when", func() {
-		It("is explicitly disabled at the Ingress level", func() {
+		It("is implicitly enabled at the Ingress level", func() {
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
 				SetValues: map[string]string{
-					"ingress.traefik.enabled": "false",
+					"ingress.traefik.enabled": "true",
 				},
 			}
-			Expect(renderTemplate(options)).ShouldNot(Succeed())
+			Expect(renderTemplate(options)).Should(Succeed())
 		})
 	})
 
@@ -70,7 +71,7 @@ var _ = Describe("Verify Stargate Cassandra ingress template", func() {
 			Expect(renderTemplate(options)).ShouldNot(Succeed())
 		})
 
-		It("is explicitly disabled at the Cassandra level", func() {
+		It("is explicitly disabled at the Stargate Cassandra level", func() {
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
 				SetValues: map[string]string{
@@ -86,9 +87,8 @@ var _ = Describe("Verify Stargate Cassandra ingress template", func() {
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
 				SetValues: map[string]string{
-					"ingress.traefik.enabled":                    "true",
-					"ingress.traefik.stargate.enabled":           "false",
-					"ingress.traefik.stargate.cassandra.enabled": "true",
+					"ingress.traefik.enabled":           "true",
+					"ingress.traefik.cassandra.enabled": "true",
 				},
 			}
 			Expect(renderTemplate(options)).ShouldNot(Succeed())
