@@ -136,6 +136,37 @@ spec:
         volumeMounts:
           - mountPath: /config
             name: server-config
+      - name: jvm-client-options
+        image: busybox
+        imagePullPolicy: IfNotPresent
+        command:
+          - /bin/sh
+        args:
+          - -c
+          - echo "-Djdk.attach.allowAttachSelf=true" > /config/jvm11-clients.options &&
+            echo "--add-exports java.base/jdk.internal.misc=ALL-UNNAMED" >> /config/jvm11-clients.options &&
+            echo "--add-exports java.base/jdk.internal.ref=ALL-UNNAMED" >> /config/jvm11-clients.options &&
+            echo "--add-exports java.base/sun.nio.ch=ALL-UNNAMED" >> /config/jvm11-clients.options &&
+            echo "--add-exports java.rmi/sun.rmi.registry=ALL-UNNAMED" >> /config/jvm11-clients.options &&
+            echo "--add-exports java.rmi/sun.rmi.server=ALL-UNNAMED" >> /config/jvm11-clients.options &&
+            echo "--add-exports java.sql/java.sql=ALL-UNNAMED" >> /config/jvm11-clients.options &&
+            echo "" >> /config/jvm11-clients.options &&
+            echo "--add-opens java.base/java.lang.module=ALL-UNNAMED" >> /config/jvm11-clients.options &&
+            echo "--add-opens java.base/jdk.internal.loader=ALL-UNNAMED" >> /config/jvm11-clients.options &&
+            echo "--add-opens java.base/jdk.internal.ref=ALL-UNNAMED" >> /config/jvm11-clients.options &&
+            echo "--add-opens java.base/jdk.internal.reflect=ALL-UNNAMED" >> /config/jvm11-clients.options &&
+            echo "--add-opens java.base/jdk.internal.math=ALL-UNNAMED" >> /config/jvm11-clients.options &&
+            echo "--add-opens java.base/jdk.internal.module=ALL-UNNAMED" >> /config/jvm11-clients.options &&
+            echo "--add-opens java.base/jdk.internal.util.jar=ALL-UNNAMED" >> /config/jvm11-clients.options &&
+            echo "--add-opens jdk.management/com.sun.management.internal=ALL-UNNAMED" >> /config/jvm11-clients.options &&
+            echo "" >> /config/jvm11-clients.options &&
+            echo "# The newline in the end of file is intentional" >> /config/jvm11-clients.options &&
+            echo "" >> /config/jvm11-clients.options &&
+            echo "# The newline in the end of file is intentional" > /config/jvm-clients.options &&
+            echo "" >> /config/jmv-clients.options
+        volumeMounts:
+          - mountPath: /config
+            name: server-config
 {{- end}}
 {{- if .Values.backupRestore.medusa.enabled }}
       - name: get-jolokia
