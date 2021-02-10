@@ -105,7 +105,7 @@ var _ = Describe("Verify Stargate template", func() {
 		})
 
 		It("changing cluster name", func() {
-			clusterName := Sprintf("k8ssandra-clustername-%s", UniqueIdSuffix)
+			clusterName := Sprintf("k8ssandracluster%s", UniqueIdSuffix)
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
 				SetValues: map[string]string{

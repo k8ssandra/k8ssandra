@@ -1,7 +1,7 @@
 package unit_test
 
 import (
-	fmt "fmt"
+	. "fmt"
 	"github.com/gruntwork-io/terratest/modules/helm"
 	helmUtils "github.com/k8ssandra/k8ssandra/tests/unit/utils/helm"
 	. "github.com/k8ssandra/k8ssandra/tests/unit/utils/traefik"
@@ -149,7 +149,30 @@ var _ = Describe("Verify Stargate Cassandra ingress template", func() {
 			VerifyTraefikTCPIngressRoute(ingress,
 				"cassandra",
 				"HostSNI(`*`)",
-				fmt.Sprintf("%s-%s-stargate-service", HelmReleaseName, "dc1"),
+				Sprintf("%s-%s-stargate-service", HelmReleaseName, "dc1"),
+				9042)
+		})
+
+		It("is enabled and release name != cluster name", func() {
+			clusterName := Sprintf("k8ssandraclustername%s", UniqueIdSuffix)
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+				SetValues: map[string]string{
+					"cassandra.clusterName":                      clusterName,
+					"ingress.traefik.enabled":                    "true",
+					"ingress.traefik.cassandra.enabled":          "false",
+					"ingress.traefik.stargate.enabled":           "true",
+					"ingress.traefik.stargate.cassandra.enabled": "true",
+				},
+			}
+
+			Expect(renderTemplate(options)).To(Succeed())
+			Expect(ingress.Kind).To(Equal("IngressRouteTCP"))
+
+			VerifyTraefikTCPIngressRoute(ingress,
+				"cassandra",
+				"HostSNI(`*`)",
+				Sprintf("%s-%s-stargate-service", clusterName, "dc1"),
 				9042)
 		})
 
@@ -171,8 +194,8 @@ var _ = Describe("Verify Stargate Cassandra ingress template", func() {
 
 			VerifyTraefikTCPIngressRoute(ingress,
 				"cassandra",
-				fmt.Sprintf("HostSNI(`%s`)", stargateHost),
-				fmt.Sprintf("%s-%s-stargate-service", HelmReleaseName, "dc1"),
+				Sprintf("HostSNI(`%s`)", stargateHost),
+				Sprintf("%s-%s-stargate-service", HelmReleaseName, "dc1"),
 				9042)
 		})
 	})
