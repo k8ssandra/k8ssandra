@@ -189,3 +189,50 @@ Creates Cassandra auth environment variables if authentication is enabled.
   {{- end -}}
 {{- end }}
 {{- end }}
+
+{- define "k8sandra.checkGcEnabled" -}}
+{{- if .Values.cassandra.gc }}
+  {{- if and .Values.cassandra.gc.cms.enabled .Values.cassandra.gc.g1.enabled }}
+    {{- fail "Only one of the CMS and G1 garbage collectors can be enabled" }}
+  {{- end }}
+{{- end }}
+{{- end }}
+
+{{- define "k8ssandra.configureGc" -}}
+{{- if .Values.cassandra.gc.cms.enabled -}}
+  {{- nindent 6 "garbage_collector: CMS" -}}
+  {{ with .Values.cassandra.gc.cms }}
+    {{- if .survivorRatio }}
+      survivor_ratio: {{ .survivorRatio }}
+    {{- end }}
+    {{- if .maxTenuringThreshold }}
+      max_tenuring_threshold: {{ .maxTenuringThreshold }}
+    {{- end }}
+    {{- if .initiatingOccupancyFraction }}
+      cms_initiating_occupancy_fraction: {{ .initiatingOccupancyFraction }}
+    {{- end }}
+    {{- if .waitDuration }}
+      cms_wait_duration: {{ .waitDuration }}
+    {{- end }}
+  {{- end }}
+{{- else if .Values.cassandra.gc.g1.enabled -}}
+  {{- nindent 6 "garbage_collector: G1" -}}
+  {{ with .Values.cassandra.gc.g1 }}
+    {{- if .setUpdatingPauseTimePercent }}
+      g1r_set_updating_pause_time_percent: {{ .setUpdatingPauseTimePercent }}
+    {{- end }}
+    {{- if .maxGcPauseMillis }}
+      max_gc_pause_millis: {{ .maxGcPauseMillis }}
+    {{- end }}
+    {{- if .initiatingHeapOccupancyPercent }}
+      initiating_heap_occupancy_percent: {{ .initiatingHeapOccupancyPercent }}
+    {{- end }}
+    {{- if .parallelGcThreads }}
+      parallel_gc_threads: {{ .parallelGcThreads }}
+    {{- end }}
+    {{- if .concurrentGcThreads }}
+      conc_gc_threads: {{ .concurrentGcThreads }}
+    {{- end }}
+  {{- end }}
+{{- end }}
+{{- end }}

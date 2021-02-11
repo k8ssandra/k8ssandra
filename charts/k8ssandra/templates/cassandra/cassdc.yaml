@@ -1,13 +1,11 @@
 {{- $datacenter := (index .Values.cassandra.datacenters 0) -}}
 {{- $medusaImage := (printf "%s:%s" .Values.medusa.image.repository .Values.medusa.image.tag) -}}
 
-{{- if and (not .Values.cassandra.image)  (not (hasKey .Values.cassandra.versionImageMap .Values.cassandra.version)) }}
+{{- if and (not .Values.cassandra.image)  (not (hasKey .Values.cassandra.versionImageMap .Values.cassandra.version)) -}}
   {{- fail (print .Values.cassandra.version " is not a supported Cassandra version") }}
-{{- end }}
+{{- end -}}
 
-{{- if and .Values.cassandra.gc.cms.enabled .Values.cassandra.gc.g1.enabled }}
-  {{- fail "Only one of the CMS and G1 garbage collectors can be enabled" }}
-{{- end }}
+{{- include "k8sandra.checkGcEnabled" . -}}
 
 apiVersion: cassandra.datastax.com/v1beta1
 kind: CassandraDatacenter

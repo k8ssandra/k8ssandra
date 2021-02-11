@@ -94,6 +94,8 @@ cassandra:
       setUpdatingPauseTimePercent: 5
       maxGcPauseMillis: 500
       initiatingHeapOccupancyPercent: 70
+      parallelGcThreads: 16
+      concurrentGcThreads: 16
 
   # -- Resource requests for each Cassandra pod.
   resources: {}
