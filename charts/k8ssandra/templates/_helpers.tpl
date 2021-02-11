@@ -199,9 +199,17 @@ Creates Cassandra auth environment variables if authentication is enabled.
 {{- end }}
 
 {{- define "k8ssandra.configureGc" -}}
-{{- if .Values.cassandra.gc.cms.enabled -}}
+{{- $datacenter := (index .Values.cassandra.datacenters 0) }}
+{{- $gc := "" -}}
+{{- if $datacenter.gc }}
+  {{ $gc = $datacenter.gc }}
+{{- else -}}
+  {{ $gc = .Values.cassandra.gc }}
+{{- end -}}
+
+{{- if $gc.cms.enabled -}}
   {{- nindent 6 "garbage_collector: CMS" -}}
-  {{ with .Values.cassandra.gc.cms }}
+  {{ with $gc.cms }}
     {{- if .survivorRatio }}
       survivor_ratio: {{ .survivorRatio }}
     {{- end }}
@@ -215,9 +223,9 @@ Creates Cassandra auth environment variables if authentication is enabled.
       cms_wait_duration: {{ .waitDuration }}
     {{- end }}
   {{- end }}
-{{- else if .Values.cassandra.gc.g1.enabled -}}
+{{- else if $gc.g1.enabled -}}
   {{- nindent 6 "garbage_collector: G1" -}}
-  {{ with .Values.cassandra.gc.g1 }}
+  {{ with $gc.g1 }}
     {{- if .setUpdatingPauseTimePercent }}
       g1r_set_updating_pause_time_percent: {{ .setUpdatingPauseTimePercent }}
     {{- end }}
