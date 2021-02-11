@@ -22,7 +22,7 @@ data:
 {{- if eq .Values.backupRestore.medusa.storage "s3" }}
     storage_provider = s3
 {{- else if eq .Values.backupRestore.medusa.storage "gcs" }}
-    storage_provider = gcs
+    storage_provider = google_storage
 {{- end }}
     bucket_name = {{ .Values.backupRestore.medusa.bucketName }}
     # TODO The file name needs to be parameterized. In the current set up it comes from the secret.
