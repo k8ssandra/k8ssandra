@@ -60,6 +60,10 @@ spec:
                     canaryUpgrade:
                       description: Indicates that configuration and container image changes should only be pushed to the first rack of the datacenter
                       type: boolean
+                    canaryUpgradeCount:
+                      description: The number of nodes that will be updated when CanaryUpgrade is true. Note that the value is either 0 or greater than the rack size, then all nodes in the rack will get updated.
+                      format: int32
+                      type: integer
                     clusterName:
                       description: The name by which CQL clients and instances will know the cluster. If the same cluster name is shared by multiple Datacenters in the same Kubernetes namespace, they will join together in a multi-datacenter cluster.
                       minLength: 2
@@ -89,6 +93,12 @@ spec:
                           description: 'Requests describes the minimum amount of compute resources required. If Requests is omitted for a container, it defaults to Limits if that is explicitly specified, otherwise to an implementation-defined value. More info: https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/'
                           type: object
                       type: object
+                    disableSystemLoggerSidecar:
+                      description: Configuration for disabling the simple log tailing sidecar container. Our default is to have it enabled.
+                      type: boolean
+                    dockerImageRunsAsCassandra:
+                      description: Does the Server Docker image run as the Cassandra user?
+                      type: boolean
                     dseWorkloads:
                       properties:
                         analyticsEnabled:
@@ -136,6 +146,11 @@ spec:
                             nativeSSL:
                               type: integer
                           type: object
+                      type: object
+                    nodeAffinityLabels:
+                      additionalProperties:
+                        type: string
+                      description: NodeAffinityLabels to pin the Datacenter, using node affinity
                       type: object
                     nodeSelector:
                       additionalProperties:
@@ -852,36 +867,6 @@ spec:
                                   name:
                                     description: Name of the container specified as a DNS_LABEL. Each container in a pod must have a unique name (DNS_LABEL). Cannot be updated.
                                     type: string
-                                  ports:
-                                    description: List of ports to expose from the container. Exposing a port here gives the system additional information about the network connections a container uses, but is primarily informational. Not specifying a port here DOES NOT prevent that port from being exposed. Any port which is listening on the default "0.0.0.0" address inside a container will be accessible from the network. Cannot be updated.
-                                    items:
-                                      description: ContainerPort represents a network port in a single container.
-                                      properties:
-                                        containerPort:
-                                          description: Number of port to expose on the pod's IP address. This must be a valid port number, 0 < x < 65536.
-                                          format: int32
-                                          type: integer
-                                        hostIP:
-                                          description: What host IP to bind the external port to.
-                                          type: string
-                                        hostPort:
-                                          description: Number of port to expose on the host. If specified, this must be a valid port number, 0 < x < 65536. If HostNetwork is specified, this must match ContainerPort. Most containers do not need this.
-                                          format: int32
-                                          type: integer
-                                        name:
-                                          description: If specified, this must be an IANA_SVC_NAME and unique within the pod. Each named port in a pod must have a unique name. Name for the port that can be referred to by services.
-                                          type: string
-                                        protocol:
-                                          description: Protocol for port. Must be UDP, TCP, or SCTP. Defaults to "TCP".
-                                          type: string
-                                      required:
-                                        - containerPort
-                                      type: object
-                                    type: array
-#                                    x-kubernetes-list-map-keys:
-#                                      - containerPort
-#                                      - protocol
-#                                    x-kubernetes-list-type: map
                                   readinessProbe:
                                     description: 'Periodic probe of container service readiness. Container will be removed from service endpoints if the probe fails. Cannot be updated. More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#container-probes'
                                     properties:
@@ -2346,36 +2331,6 @@ spec:
                                   name:
                                     description: Name of the container specified as a DNS_LABEL. Each container in a pod must have a unique name (DNS_LABEL). Cannot be updated.
                                     type: string
-                                  ports:
-                                    description: List of ports to expose from the container. Exposing a port here gives the system additional information about the network connections a container uses, but is primarily informational. Not specifying a port here DOES NOT prevent that port from being exposed. Any port which is listening on the default "0.0.0.0" address inside a container will be accessible from the network. Cannot be updated.
-                                    items:
-                                      description: ContainerPort represents a network port in a single container.
-                                      properties:
-                                        containerPort:
-                                          description: Number of port to expose on the pod's IP address. This must be a valid port number, 0 < x < 65536.
-                                          format: int32
-                                          type: integer
-                                        hostIP:
-                                          description: What host IP to bind the external port to.
-                                          type: string
-                                        hostPort:
-                                          description: Number of port to expose on the host. If specified, this must be a valid port number, 0 < x < 65536. If HostNetwork is specified, this must match ContainerPort. Most containers do not need this.
-                                          format: int32
-                                          type: integer
-                                        name:
-                                          description: If specified, this must be an IANA_SVC_NAME and unique within the pod. Each named port in a pod must have a unique name. Name for the port that can be referred to by services.
-                                          type: string
-                                        protocol:
-                                          description: Protocol for port. Must be UDP, TCP, or SCTP. Defaults to "TCP".
-                                          type: string
-                                      required:
-                                        - containerPort
-                                      type: object
-                                    type: array
-#                                    x-kubernetes-list-map-keys:
-#                                      - containerPort
-#                                      - protocol
-#                                    x-kubernetes-list-type: map
                                   readinessProbe:
                                     description: 'Periodic probe of container service readiness. Container will be removed from service endpoints if the probe fails. Cannot be updated. More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#container-probes'
                                     properties:
@@ -2866,61 +2821,6 @@ spec:
                                     type: string
                                 type: object
                               type: array
-                            topologySpreadConstraints:
-                              description: TopologySpreadConstraints describes how a group of pods ought to spread across topology domains. Scheduler will schedule pods in a way which abides by the constraints. This field is only honored by clusters that enable the EvenPodsSpread feature. All topologySpreadConstraints are ANDed.
-                              items:
-                                description: TopologySpreadConstraint specifies how to spread matching pods among the given topology.
-                                properties:
-                                  labelSelector:
-                                    description: LabelSelector is used to find matching pods. Pods that match this label selector are counted to determine the number of pods in their corresponding topology domain.
-                                    properties:
-                                      matchExpressions:
-                                        description: matchExpressions is a list of label selector requirements. The requirements are ANDed.
-                                        items:
-                                          description: A label selector requirement is a selector that contains values, a key, and an operator that relates the key and values.
-                                          properties:
-                                            key:
-                                              description: key is the label key that the selector applies to.
-                                              type: string
-                                            operator:
-                                              description: operator represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists and DoesNotExist.
-                                              type: string
-                                            values:
-                                              description: values is an array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. This array is replaced during a strategic merge patch.
-                                              items:
-                                                type: string
-                                              type: array
-                                          required:
-                                            - key
-                                            - operator
-                                          type: object
-                                        type: array
-                                      matchLabels:
-                                        additionalProperties:
-                                          type: string
-                                        description: matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels map is equivalent to an element of matchExpressions, whose key field is "key", the operator is "In", and the values array contains only "value". The requirements are ANDed.
-                                        type: object
-                                    type: object
-                                  maxSkew:
-                                    description: 'MaxSkew describes the degree to which pods may be unevenly distributed. It''s the maximum permitted difference between the number of matching pods in any two topology domains of a given topology type. For example, in a 3-zone cluster, MaxSkew is set to 1, and pods with the same labelSelector spread as 1/1/0: | zone1 | zone2 | zone3 | |   P   |   P   |       | - if MaxSkew is 1, incoming pod can only be scheduled to zone3 to become 1/1/1; scheduling it onto zone1(zone2) would make the ActualSkew(2-0) on zone1(zone2) violate MaxSkew(1). - if MaxSkew is 2, incoming pod can be scheduled onto any zone. It''s a required field. Default value is 1 and 0 is not allowed.'
-                                    format: int32
-                                    type: integer
-                                  topologyKey:
-                                    description: TopologyKey is the key of node labels. Nodes that have a label with this key and identical values are considered to be in the same topology. We consider each <key, value> as a "bucket", and try to put balanced number of pods into each bucket. It's a required field.
-                                    type: string
-                                  whenUnsatisfiable:
-                                    description: 'WhenUnsatisfiable indicates how to deal with a pod if it doesn''t satisfy the spread constraint. - DoNotSchedule (default) tells the scheduler not to schedule it - ScheduleAnyway tells the scheduler to still schedule it It''s considered as "Unsatisfiable" if and only if placing incoming pod on any topology violates "MaxSkew". For example, in a 3-zone cluster, MaxSkew is set to 1, and pods with the same labelSelector spread as 3/1/1: | zone1 | zone2 | zone3 | | P P P |   P   |   P   | If WhenUnsatisfiable is set to DoNotSchedule, incoming pod can only be scheduled to zone2(zone3) to become 3/2/1(3/1/2) as ActualSkew(2-1) on zone2(zone3) satisfies MaxSkew(1). In other words, the cluster can still be imbalanced, but scheduler won''t make it *more* imbalanced. It''s a required field.'
-                                    type: string
-                                required:
-                                  - maxSkew
-                                  - topologyKey
-                                  - whenUnsatisfiable
-                                type: object
-                              type: array
-                              x-kubernetes-list-map-keys:
-                                - topologyKey
-                                - whenUnsatisfiable
-                              x-kubernetes-list-type: map
                             volumes:
                               description: 'List of volumes that can be mounted by containers belonging to the pod. More info: https://kubernetes.io/docs/concepts/storage/volumes'
                               items:
@@ -3737,8 +3637,13 @@ spec:
                             description: The rack name
                             minLength: 2
                             type: string
+                          nodeAffinityLabels:
+                            additionalProperties:
+                              type: string
+                            description: NodeAffinityLabels to pin the rack, using node affinity
+                            type: object
                           zone:
-                            description: Zone name to pin the rack, using node affinity
+                            description: Deprecated. Use nodeAffinityLabels instead. Zone name to pin the rack, using node affinity
                             type: string
                         required:
                           - name
@@ -3817,14 +3722,7 @@ spec:
                       type: string
                     serverVersion:
                       description: Version string for config builder, used to generate Cassandra server configuration
-                      enum:
-                        - 6.8.0
-                        - 6.8.1
-                        - 6.8.2
-                        - 6.8.3
-                        - 3.11.6
-                        - 3.11.7
-                        - 4.0.0
+                      pattern: (6\.8\.\d+)|(3\.11\.\d+)|(4\.0\.\d+)
                       type: string
                     serviceAccount:
                       description: The k8s service account to use for the server pods
@@ -3840,6 +3738,109 @@ spec:
                     storageConfig:
                       description: Describes the persistent storage request of each server node
                       properties:
+                        additionalVolumes:
+                          items:
+                            description: StorageConfig defines additional storage configurations
+                            properties:
+                              mountPath:
+                                description: Mount path into cassandra container
+                                type: string
+                              name:
+                                description: Name of the pvc
+                                pattern: '[a-z0-9]([-a-z0-9]*[a-z0-9])?'
+                                type: string
+                              pvcSpec:
+                                description: Persistent volume claim spec
+                                properties:
+                                  accessModes:
+                                    description: 'AccessModes contains the desired access modes the volume should have. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#access-modes-1'
+                                    items:
+                                      type: string
+                                    type: array
+                                  dataSource:
+                                    description: 'This field can be used to specify either: * An existing VolumeSnapshot object (snapshot.storage.k8s.io/VolumeSnapshot - Beta) * An existing PVC (PersistentVolumeClaim) * An existing custom resource/object that implements data population (Alpha) In order to use VolumeSnapshot object types, the appropriate feature gate must be enabled (VolumeSnapshotDataSource or AnyVolumeDataSource) If the provisioner or an external controller can support the specified data source, it will create a new volume based on the contents of the specified data source. If the specified data source is not supported, the volume will not be created and the failure will be reported as an event. In the future, we plan to support more data source types and the behavior of the provisioner may change.'
+                                    properties:
+                                      apiGroup:
+                                        description: APIGroup is the group for the resource being referenced. If APIGroup is not specified, the specified Kind must be in the core API group. For any other third-party types, APIGroup is required.
+                                        type: string
+                                      kind:
+                                        description: Kind is the type of resource being referenced
+                                        type: string
+                                      name:
+                                        description: Name is the name of resource being referenced
+                                        type: string
+                                    required:
+                                      - kind
+                                      - name
+                                    type: object
+                                  resources:
+                                    description: 'Resources represents the minimum resources the volume should have. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#resources'
+                                    properties:
+                                      limits:
+                                        additionalProperties:
+                                          anyOf:
+                                            - type: integer
+                                            - type: string
+                                          pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
+                                          x-kubernetes-int-or-string: true
+                                        description: 'Limits describes the maximum amount of compute resources allowed. More info: https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/'
+                                        type: object
+                                      requests:
+                                        additionalProperties:
+                                          anyOf:
+                                            - type: integer
+                                            - type: string
+                                          pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
+                                          x-kubernetes-int-or-string: true
+                                        description: 'Requests describes the minimum amount of compute resources required. If Requests is omitted for a container, it defaults to Limits if that is explicitly specified, otherwise to an implementation-defined value. More info: https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/'
+                                        type: object
+                                    type: object
+                                  selector:
+                                    description: A label query over volumes to consider for binding.
+                                    properties:
+                                      matchExpressions:
+                                        description: matchExpressions is a list of label selector requirements. The requirements are ANDed.
+                                        items:
+                                          description: A label selector requirement is a selector that contains values, a key, and an operator that relates the key and values.
+                                          properties:
+                                            key:
+                                              description: key is the label key that the selector applies to.
+                                              type: string
+                                            operator:
+                                              description: operator represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists and DoesNotExist.
+                                              type: string
+                                            values:
+                                              description: values is an array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. This array is replaced during a strategic merge patch.
+                                              items:
+                                                type: string
+                                              type: array
+                                          required:
+                                            - key
+                                            - operator
+                                          type: object
+                                        type: array
+                                      matchLabels:
+                                        additionalProperties:
+                                          type: string
+                                        description: matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels map is equivalent to an element of matchExpressions, whose key field is "key", the operator is "In", and the values array contains only "value". The requirements are ANDed.
+                                        type: object
+                                    type: object
+                                  storageClassName:
+                                    description: 'Name of the StorageClass required by the claim. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#class-1'
+                                    type: string
+                                  volumeMode:
+                                    description: volumeMode defines what type of volume is required by the claim. Value of Filesystem is implied when not included in claim spec.
+                                    type: string
+                                  volumeName:
+                                    description: VolumeName is the binding reference to the PersistentVolume backing this claim.
+                                    type: string
+                                type: object
+                            required:
+                              - mountPath
+                              - name
+                              - pvcSpec
+                            type: object
+                          type: array
                         cassandraDataVolumeClaimSpec:
                           description: PersistentVolumeClaimSpec describes the common attributes of storage devices and allows a Source for provider-specific attributes
                           properties:
@@ -3929,6 +3930,9 @@ spec:
                       type: object
                     superuserSecretName:
                       description: This secret defines the username and password for the Cassandra server superuser. If it is omitted, we will generate a secret instead.
+                      type: string
+                    systemLoggerImage:
+                      description: Container image for the log tailing sidecar container.
                       type: string
                     systemLoggerResources:
                       description: Kubernetes resource requests and limits per system logger container.

@@ -9,14 +9,18 @@ require (
 	github.com/onsi/ginkgo v1.14.2
 	github.com/onsi/gomega v1.10.3
 	github.com/stretchr/testify v1.6.1 // indirect
+	github.com/traefik/traefik/v2 v2.3.7
 	k8s.io/api v0.18.6
 	k8s.io/apimachinery v0.18.6
 	k8s.io/client-go v12.0.0+incompatible
-	k8s.io/kubernetes v1.18.6 // indirect
+	k8s.io/helm v2.16.3+incompatible
 	sigs.k8s.io/controller-runtime v0.6.4
 )
 
 replace (
+    github.com/docker/docker => github.com/docker/engine v1.4.2-0.20200204220554-5f6d6f3f2203
+	github.com/abbot/go-http-auth => github.com/containous/go-http-auth v0.4.1-0.20200324110947-a37a7636d23e
+	github.com/go-check/check => github.com/containous/check v0.0.0-20170915194414-ca0bf163426a
 	k8s.io/api => k8s.io/api v0.18.6
 	k8s.io/apiextensions-apiserver => k8s.io/apiextensions-apiserver v0.18.6
 	k8s.io/apimachinery => k8s.io/apimachinery v0.18.6

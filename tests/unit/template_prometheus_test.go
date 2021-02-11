@@ -1,6 +1,7 @@
 package unit_test
 
 import (
+	helmUtils "github.com/k8ssandra/k8ssandra/tests/unit/utils/helm"
 	"path/filepath"
 
 	"github.com/gruntwork-io/terratest/modules/helm"
@@ -12,9 +13,9 @@ import (
 var _ = Describe("Verify Service Monitor template", func() {
 
 	var (
-		helmReleaseName       = "k8ssandra-test"
-		defaultTestNamespace  = "k8ssandra"
-		defaultKubeCtlOptions = k8s.NewKubectlOptions("", "", defaultTestNamespace)
+		HelmReleaseName       = "k8ssandra-test"
+		DefaultTestNamespace  = "k8ssandra"
+		defaultKubeCtlOptions = k8s.NewKubectlOptions("", "", DefaultTestNamespace)
 
 		helmChartPath string
 		err           error
@@ -22,8 +23,9 @@ var _ = Describe("Verify Service Monitor template", func() {
 	)
 
 	BeforeEach(func() {
-		helmChartPath, err = filepath.Abs(chartsPath)
+		helmChartPath, err = filepath.Abs(ChartsPath)
 		Expect(err).To(BeNil())
+		sm = map[string]interface{}{}
 	})
 
 	AfterEach(func() {
@@ -31,17 +33,11 @@ var _ = Describe("Verify Service Monitor template", func() {
 	})
 
 	renderTemplate := func(options *helm.Options) error {
-
-		renderedOutput, err := helm.RenderTemplateE(
-			GinkgoT(), options, helmChartPath, helmReleaseName,
-			[]string{"templates/prometheus/service_monitor.yaml"},
-		)
-
-		if err == nil {
-			helm.UnmarshalK8SYaml(GinkgoT(), renderedOutput, &sm)
-		}
-
-		return err
+		return helmUtils.RenderAndUnmarshall("templates/prometheus/service_monitor.yaml",
+			options, helmChartPath, HelmReleaseName,
+			func(renderedYaml string) error {
+				return helm.UnmarshalK8SYamlE(GinkgoT(), renderedYaml, &sm)
+			})
 	}
 
 	Context("by rendering it with options", func() {
@@ -69,7 +65,7 @@ var _ = Describe("Verify Service Monitor template", func() {
 			Expect(renderTemplate(options)).To(Succeed())
 
 			meta := sm["metadata"]
-			Expect(meta.(map[string]interface{})["labels"].(map[string]interface{})["release"]).To(BeIdenticalTo(helmReleaseName))
+			Expect(meta.(map[string]interface{})["labels"].(map[string]interface{})["release"]).To(BeIdenticalTo(HelmReleaseName))
 
 			spec := sm["spec"]
 			Expect(spec).ToNot(BeEmpty())

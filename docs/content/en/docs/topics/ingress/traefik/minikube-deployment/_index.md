@@ -22,7 +22,7 @@ Traefik can be installed via Helm in conjunction with the below Traefik values f
 
 The `traefik-values.yaml` file referenced here is located in:
 
-https://github.com/k8ssandra/k8ssandra/blob/main/docs/content/en/docs/topics/ingress/traefik/minikube-deploment/traefik-values.yaml
+https://github.com/k8ssandra/k8ssandra/blob/main/docs/content/en/docs/topics/ingress/traefik/minikube-deployment/traefik-values.yaml
  
 {{< readfilerel file="traefik-values.yaml"  highlight="yaml" >}}
 

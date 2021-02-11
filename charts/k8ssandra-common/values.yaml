@@ -1,6 +1,7 @@
-# Default values for k8ssandra-common.
-# This is a YAML-formatted file.
-# Declare variables to be passed into your templates.
-
+# -- Replaces the chart name which is used in the metadata.name of objects
+# created by this chart.
 nameOverride: ""
+
+# -- Replaces the value used for metadata.name in objects created by this chart.
+# The default value has the form releaseName-chartName.
 fullnameOverride: ""

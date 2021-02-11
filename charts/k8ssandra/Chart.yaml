@@ -1,40 +1,40 @@
 apiVersion: v2
 name: k8ssandra
-description: Configures and provisions the full k8ssandra stack
-
-# A chart can be either an 'application' or a 'library' chart.
-#
-# Application charts are a collection of templates that can be packaged into versioned archives
-# to be deployed.
-#
-# Library charts provide useful utilities or functions for the chart developer. They're included as
-# a dependency of application charts to inject those utilities and functions into the rendering
-# pipeline. Library charts do not define any templates and therefore cannot be deployed.
+description: |
+  Provisions and configures an instance of the entire K8ssandra stack. This includes Apache Cassandra, Stargate, Reaper, Medusa, Prometheus, and Grafana.
 type: application
-
-# This is the chart version. This version number should be incremented each time you make changes
-# to the chart and its templates, including the app version.
-# Versions are expected to follow Semantic Versioning (https://semver.org/)
-version: 0.30.0
-
-# This is the version number of the application being deployed. This version number should be
-# incremented each time you make changes to the application. Versions are not expected to
-# follow Semantic Versioning. They should reflect the version the application is using.
-#
-# This is set to the C* version that is currently hard coded in the cassdc.yaml template.
+version: 0.46.0
 appVersion: 3.11.7
-
 dependencies:
   - name: cass-operator
-    version: 0.27.0
+    version: 0.28.0
     repository: file://../cass-operator
     condition: cass-operator.enabled
 
-  - name: k8ssandra-common
+  - name: reaper-operator
+    version: 0.29.0
+    repository: file://../reaper-operator
+    condition: reaper-operator.enabled
+
+  - name: medusa-operator
     version: 0.27.0
+    repository: file://../medusa-operator
+    condition: backupRestore.medusa.enabled
+
+  - name: k8ssandra-common
+    version: 0.28.0
     repository: file://../k8ssandra-common
 
   - name: kube-prometheus-stack
     version: 12.11.3
     repository: https://prometheus-community.github.io/helm-charts
     condition: kube-prometheus-stack.enabled
+home: https://k8ssandra.io/
+sources:
+  - https://github.com/k8ssandra/k8ssandra
+  - https://github.com/k8ssandra/k8ssandra/tree/main/charts/k8ssandra
+maintainers:
+  - name: K8ssandra Team
+    email: k8ssandra-developers@googlegroups.com
+    url: https://github.com/k8ssandra
+deprecated: false

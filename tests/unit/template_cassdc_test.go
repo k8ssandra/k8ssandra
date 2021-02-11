@@ -3,13 +3,15 @@ package unit_test
 import (
 	"encoding/json"
 	"fmt"
+	helmUtils "github.com/k8ssandra/k8ssandra/tests/unit/utils/helm"
 	"path/filepath"
 
 	cassdcv1beta1 "github.com/datastax/cass-operator/operator/pkg/apis/cassandra/v1beta1"
 	"github.com/gruntwork-io/terratest/modules/helm"
-	"github.com/gruntwork-io/terratest/modules/k8s"
+	. "github.com/k8ssandra/k8ssandra/tests/unit/utils/cassdc"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/resource"
 	"strconv"
 )
@@ -38,9 +40,18 @@ type Config struct {
 }
 
 var (
-	reaperInstanceValue    = fmt.Sprintf("%s-reaper-k8ssandra", helmReleaseName)
-	medusaConfigVolumeName = fmt.Sprintf("%s-medusa-config-k8ssandra", helmReleaseName)
-	defaultKubeCtlOptions  = k8s.NewKubectlOptions("", "", defaultTestNamespace)
+	reaperInstanceValue    = fmt.Sprintf("%s-reaper-k8ssandra", HelmReleaseName)
+	medusaConfigVolumeName = fmt.Sprintf("%s-medusa-config-k8ssandra", HelmReleaseName)
+)
+
+const (
+	ConfigInitContainer         = "server-config-init"
+	MedusaInitContainer         = "medusa-restore"
+	JmxCredentialsInitContainer = "jmx-credentials"
+	GetJolokiaInitContainer     = "get-jolokia"
+
+	CassandraContainer = "cassandra"
+	MedusaContainer    = "medusa"
 )
 
 var _ = Describe("Verify CassandraDatacenter template", func() {
@@ -50,21 +61,18 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 	)
 
 	BeforeEach(func() {
-		path, err := filepath.Abs(chartsPath)
+		path, err := filepath.Abs(ChartsPath)
 		Expect(err).To(BeNil())
 		helmChartPath = path
 		cassdc = &cassdcv1beta1.CassandraDatacenter{}
 	})
 
-	renderTemplate := func(options *helm.Options) (error, error) {
-
-		templatePath := filepath.Join(".", "/templates/cassandra/cassdc.yaml")
-		renderedOutput, renderErr := helm.RenderTemplateE(
-			GinkgoT(), options, helmChartPath, helmReleaseName,
-			[]string{templatePath},
-		)
-		unmarshalErr := helm.UnmarshalK8SYamlE(GinkgoT(), renderedOutput, cassdc)
-		return renderErr, unmarshalErr
+	renderTemplate := func(options *helm.Options) error {
+		return helmUtils.RenderAndUnmarshall("templates/cassandra/cassdc.yaml",
+			options, helmChartPath, HelmReleaseName,
+			func(renderedYaml string) error {
+				return helm.UnmarshalK8SYamlE(GinkgoT(), renderedYaml, cassdc)
+			})
 	}
 
 	Context("by rendering it with options", func() {
@@ -79,14 +87,14 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 
 			// Reaper should be enabled in default - verify
 			// Verify reaper annotation is set
-			Expect(cassdc.Annotations).Should(HaveKeyWithValue(reaperInstanceAnnotation, reaperInstanceValue))
+			Expect(cassdc.Annotations).Should(HaveKeyWithValue(ReaperInstanceAnnotation, reaperInstanceValue))
 
 			initContainers := cassdc.Spec.PodTemplateSpec.Spec.InitContainers
 			Expect(len(initContainers)).To(Equal(2))
-			Expect(initContainers[0].Name).To(Equal("server-config-init"))
+			Expect(initContainers[0].Name).To(Equal(ConfigInitContainer))
 
 			// Verify initContainers includes JMX credentials
-			Expect(initContainers[1].Name).To(Equal("jmx-credentials"))
+			Expect(initContainers[1].Name).To(Equal(JmxCredentialsInitContainer))
 			// Verify LOCAL_JMX value
 			Expect(len(cassdc.Spec.PodTemplateSpec.Spec.Containers)).To(Equal(1))
 			Expect(len(cassdc.Spec.PodTemplateSpec.Spec.Containers[0].Env)).To(Equal(1))
@@ -122,6 +130,20 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			Expect(cassdc.Spec.ClusterName).To(Equal(clusterName))
 		})
 
+		It("default clusterName as release name", func() {
+			clusterName := ""
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+				SetValues: map[string]string{
+					"cassandra.clusterName": clusterName,
+				},
+			}
+
+			Expect(renderTemplate(options)).To(Succeed())
+
+			Expect(cassdc.Spec.ClusterName).To(Equal(HelmReleaseName))
+		})
+
 		It("override datacenter name", func() {
 			dcName := "test"
 			options := &helm.Options{
@@ -154,62 +176,53 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			Expect(cassdc.Spec.Size, 3)
 		})
 
-		It("using cassandra 3.11.7", func() {
-			cassandraVersion := "3.11.7"
+		It("using multiple racks with no affinity labels", func() {
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
-				SetValues: map[string]string{
-					"cassandra.version": cassandraVersion,
-				},
+				ValuesFiles:    []string{"./testdata/racks-no-affinity-values.yaml"},
 			}
 
 			Expect(renderTemplate(options)).To(Succeed())
-
-			Expect(cassdc.Spec.ServerVersion).To(Equal(cassandraVersion))
-			Expect(cassdc.Spec.ServerImage).To(Equal("datastax/cassandra-mgmtapi-3_11_7:v0.1.17"))
+			Expect(cassdc.Spec.Racks).To(ConsistOf([]cassdcv1beta1.Rack{
+				{
+					Name: "r1",
+				},
+				{
+					Name: "r2",
+				},
+				{
+					Name: "r3",
+				},
+			}))
 		})
 
-		It("using cassandra 3.11.8", func() {
-			cassandraVersion := "3.11.8"
+		It("using multiple racks with affinity labels", func() {
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
-				SetValues: map[string]string{
-					"cassandra.version": cassandraVersion,
-				},
+				ValuesFiles:    []string{"./testdata/racks-affinity-values.yaml"},
 			}
 
 			Expect(renderTemplate(options)).To(Succeed())
-
-			Expect(cassdc.Spec.ServerVersion).To(Equal(cassandraVersion))
-			Expect(cassdc.Spec.ServerImage).To(Equal("datastax/cassandra-mgmtapi-3_11_8:v0.1.17"))
-		})
-
-		It("using cassandra 3.11.9", func() {
-			cassandraVersion := "3.11.9"
-			options := &helm.Options{
-				KubectlOptions: defaultKubeCtlOptions,
-				SetValues: map[string]string{
-					"cassandra.version": cassandraVersion,
+			Expect(cassdc.Spec.Racks).To(ConsistOf([]cassdcv1beta1.Rack{
+				{
+					Name: "r1",
+					NodeAffinityLabels: map[string]string{
+						"topology.kubernetes.io/zone": "us-east1-b",
+					},
 				},
-			}
-
-			Expect(renderTemplate(options)).To(Succeed())
-
-			Expect(cassdc.Spec.ServerVersion).To(Equal(cassandraVersion))
-			Expect(cassdc.Spec.ServerImage).To(Equal("datastax/cassandra-mgmtapi-3_11_9:v0.1.17"))
-		})
-
-		It("using cassandra with unsupported version", func() {
-			cassandraVersion := "3.12.225"
-			options := &helm.Options{
-				KubectlOptions: defaultKubeCtlOptions,
-				SetValues: map[string]string{
-					"cassandra.version": cassandraVersion,
+				{
+					Name: "r2",
+					NodeAffinityLabels: map[string]string{
+						"topology.kubernetes.io/zone": "us-east1-a",
+					},
 				},
-			}
-
-			renderedErr, _ := renderTemplate(options)
-			Expect(renderedErr).To(HaveOccurred())
+				{
+					Name: "r3",
+					NodeAffinityLabels: map[string]string{
+						"topology.kubernetes.io/zone": "us-east1-c",
+					},
+				},
+			}))
 		})
 
 		It("disabling Cassandra auth", func() {
@@ -231,6 +244,7 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 		It("enabling Cassandra auth", func() {
 			dcName := "test"
 			clusterSize := 3
+			clusterName := "auth-test"
 
 			authCachePeriod := int64(7200000)
 			cacheValidityPeriod := authCachePeriod + 1
@@ -239,6 +253,7 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
 				SetValues: map[string]string{
+					"cassandra.clusterName":                    clusterName,
 					"cassandra.datacenters[0].name":            dcName,
 					"cassandra.datacenters[0].size":            strconv.Itoa(clusterSize),
 					"cassandra.auth.enabled":                   "true",
@@ -266,6 +281,7 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 				"-Dcassandra.system_distributed_replication_per_dc="+strconv.Itoa(clusterSize),
 			))
 
+			Expect(cassdc.Spec.Users).To(ConsistOf(cassdcv1beta1.CassandraUser{Superuser: true, SecretName: clusterName + "-reaper"}))
 		})
 
 		It("providing superuser secret", func() {
@@ -296,7 +312,9 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 				},
 			}
 
-			Expect(renderTemplate(options)).To(Succeed())
+			err := renderTemplate(options)
+			fmt.Println("error: ", err)
+			Expect(err).To(Succeed())
 
 			Expect(cassdc.Spec.SuperuserSecretName).To(Equal(clusterName + "-superuser"))
 		})
@@ -308,7 +326,7 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			}
 
 			Expect(renderTemplate(options)).To(Succeed())
-			Expect(cassdc.Annotations).ShouldNot(HaveKeyWithValue(reaperInstanceAnnotation, reaperInstanceValue))
+			Expect(cassdc.Annotations).ShouldNot(HaveKeyWithValue(ReaperInstanceAnnotation, reaperInstanceValue))
 
 			Expect(len(cassdc.Spec.PodTemplateSpec.Spec.Containers)).To(Equal(1))
 			// No env slice should be present
@@ -325,21 +343,15 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 
 			Expect(renderTemplate(options)).To(Succeed())
 
-			// InitContainers should only server-config-init and medusa-restore
-			initContainers := cassdc.Spec.PodTemplateSpec.Spec.InitContainers
-			Expect(len(initContainers)).To(Equal(3))
-			Expect(initContainers[0].Name).To(Equal("server-config-init"))
-			// Verify initContainers includes jolokia which medusa needs
-			Expect(cassdc.Spec.PodTemplateSpec.Spec.InitContainers[1].Name).To(Equal("get-jolokia"))
-			// Verify initContainers includes medusa-restore
-			Expect(cassdc.Spec.PodTemplateSpec.Spec.InitContainers[2].Name).To(Equal("medusa-restore"))
+			AssertInitContainerNamesMatch(cassdc, ConfigInitContainer, GetJolokiaInitContainer, MedusaInitContainer)
+
 			// Two containers, medusa and cassandra
 			Expect(len(cassdc.Spec.PodTemplateSpec.Spec.Containers)).To(Equal(2))
 			// Cassandra container should have JVM_EXTRA_OPTS for jolokia
 			Expect(len(cassdc.Spec.PodTemplateSpec.Spec.Containers[0].Env)).To(Equal(1))
 			Expect(cassdc.Spec.PodTemplateSpec.Spec.Containers[0].Env[0].Name).To(Equal("JVM_EXTRA_OPTS"))
 			// Second container should be medusa
-			Expect(cassdc.Spec.PodTemplateSpec.Spec.Containers[1].Name).To(Equal("medusa"))
+			Expect(cassdc.Spec.PodTemplateSpec.Spec.Containers[1].Name).To(Equal(MedusaContainer))
 
 			// Verify volumeMounts and volumes
 			Expect(len(cassdc.Spec.PodTemplateSpec.Spec.Containers[1].VolumeMounts)).To(Equal(4))
@@ -347,6 +359,169 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 
 			Expect(len(cassdc.Spec.PodTemplateSpec.Spec.Volumes)).To(Equal(3))
 			Expect(cassdc.Spec.PodTemplateSpec.Spec.Volumes[0].Name).To(Equal(medusaConfigVolumeName))
+		})
+
+		It("enabling auth and medusa with default secret", func() {
+			clusterName := "medusa-user-test"
+			secretName := clusterName + "-medusa"
+			options := &helm.Options{
+				SetValues: map[string]string{
+					"cassandra.clusterName":        clusterName,
+					"cassandra.auth.enabled":       "true",
+					"backupRestore.medusa.enabled": "true",
+					"repair.reaper.enabled":        "false",
+				},
+			}
+
+			Expect(renderTemplate(options)).To(Succeed())
+
+			Expect(cassdc.Spec.Users).To(ContainElement(cassdcv1beta1.CassandraUser{Superuser: true, SecretName: clusterName + "-medusa"}))
+
+			AssertInitContainerNamesMatch(cassdc, ConfigInitContainer, GetJolokiaInitContainer, MedusaInitContainer)
+
+			initContainer := GetInitContainer(cassdc, "medusa-restore")
+			Expect(initContainer).To(Not(BeNil()))
+
+			cqlUsernameEnvVar := corev1.EnvVar{
+				Name: "CQL_USERNAME",
+				ValueFrom: &corev1.EnvVarSource{
+					SecretKeyRef: &corev1.SecretKeySelector{
+						LocalObjectReference: corev1.LocalObjectReference{
+							Name: secretName,
+						},
+						Key: "username",
+					},
+				},
+			}
+			cqlPasswordEnvVar := corev1.EnvVar{
+				Name: "CQL_PASSWORD",
+				ValueFrom: &corev1.EnvVarSource{
+					SecretKeyRef: &corev1.SecretKeySelector{
+						LocalObjectReference: corev1.LocalObjectReference{
+							Name: secretName,
+						},
+						Key: "password",
+					},
+				},
+			}
+
+			Expect(initContainer.Env).To(ConsistOf([]corev1.EnvVar{
+				{
+					Name:  "MEDUSA_MODE",
+					Value: "RESTORE",
+				},
+				cqlUsernameEnvVar,
+				cqlPasswordEnvVar,
+			}))
+
+			AssertContainerNamesMatch(cassdc, CassandraContainer, MedusaContainer)
+
+			cassandraContainer := GetContainer(cassdc, CassandraContainer)
+			Expect(cassandraContainer).To(Not(BeNil()))
+			// Cassandra container should have JVM_EXTRA_OPTS for jolokia
+			Expect(len(cassandraContainer.Env)).To(Equal(1))
+			Expect(cassandraContainer.Env[0].Name).To(Equal("JVM_EXTRA_OPTS"))
+
+			medusaContainer := GetContainer(cassdc, MedusaContainer)
+			Expect(medusaContainer).To(Not(BeNil()))
+
+			Expect(medusaContainer.Env).To(ConsistOf([]corev1.EnvVar{
+				{
+					Name:  "MEDUSA_MODE",
+					Value: "GRPC",
+				},
+				cqlUsernameEnvVar,
+				cqlPasswordEnvVar,
+			}))
+
+			verifyMedusaVolumeMounts(medusaContainer)
+
+			Expect(len(cassdc.Spec.PodTemplateSpec.Spec.Volumes)).To(Equal(3))
+			Expect(cassdc.Spec.PodTemplateSpec.Spec.Volumes[0].Name).To(Equal(medusaConfigVolumeName))
+
+			Expect(cassdc.Spec.Users).To(ContainElement(cassdcv1beta1.CassandraUser{SecretName: secretName, Superuser: true}))
+		})
+
+		It("enabling auth and medusa with user-defined secret", func() {
+			clusterName := "medusa-user-test"
+			secretName := "medusa-user"
+			options := &helm.Options{
+				SetValues: map[string]string{
+					"cassandra.clusterName":                     clusterName,
+					"cassandra.auth.enabled":                    "true",
+					"backupRestore.medusa.enabled":              "true",
+					"backupRestore.medusa.cassandraUser.secret": secretName,
+					"repair.reaper.enabled":                     "false",
+				},
+			}
+
+			Expect(renderTemplate(options)).To(Succeed())
+
+			Expect(cassdc.Spec.Users).To(ContainElement(cassdcv1beta1.CassandraUser{Superuser: true, SecretName: secretName}))
+
+			AssertInitContainerNamesMatch(cassdc, ConfigInitContainer, GetJolokiaInitContainer, MedusaInitContainer)
+
+			initContainer := GetInitContainer(cassdc, MedusaInitContainer)
+			Expect(initContainer).To(Not(BeNil()))
+
+			cqlUsernameEnvVar := corev1.EnvVar{
+				Name: "CQL_USERNAME",
+				ValueFrom: &corev1.EnvVarSource{
+					SecretKeyRef: &corev1.SecretKeySelector{
+						LocalObjectReference: corev1.LocalObjectReference{
+							Name: secretName,
+						},
+						Key: "username",
+					},
+				},
+			}
+			cqlPasswordEnvVar := corev1.EnvVar{
+				Name: "CQL_PASSWORD",
+				ValueFrom: &corev1.EnvVarSource{
+					SecretKeyRef: &corev1.SecretKeySelector{
+						LocalObjectReference: corev1.LocalObjectReference{
+							Name: secretName,
+						},
+						Key: "password",
+					},
+				},
+			}
+
+			Expect(initContainer.Env).To(ConsistOf([]corev1.EnvVar{
+				{
+					Name:  "MEDUSA_MODE",
+					Value: "RESTORE",
+				},
+				cqlUsernameEnvVar,
+				cqlPasswordEnvVar,
+			}))
+
+			AssertContainerNamesMatch(cassdc, CassandraContainer, MedusaContainer)
+
+			cassandraContainer := GetContainer(cassdc, CassandraContainer)
+			Expect(cassandraContainer).To(Not(BeNil()))
+			// Cassandra container should have JVM_EXTRA_OPTS for jolokia
+			Expect(len(cassandraContainer.Env)).To(Equal(1))
+			Expect(cassandraContainer.Env[0].Name).To(Equal("JVM_EXTRA_OPTS"))
+
+			medusaContainer := GetContainer(cassdc, MedusaContainer)
+			Expect(medusaContainer).To(Not(BeNil()))
+
+			Expect(medusaContainer.Env).To(ConsistOf([]corev1.EnvVar{
+				{
+					Name:  "MEDUSA_MODE",
+					Value: "GRPC",
+				},
+				cqlUsernameEnvVar,
+				cqlPasswordEnvVar,
+			}))
+
+			verifyMedusaVolumeMounts(medusaContainer)
+
+			Expect(len(cassdc.Spec.PodTemplateSpec.Spec.Volumes)).To(Equal(3))
+			Expect(cassdc.Spec.PodTemplateSpec.Spec.Volumes[0].Name).To(Equal(medusaConfigVolumeName))
+
+			Expect(cassdc.Spec.Users).To(ContainElement(cassdcv1beta1.CassandraUser{SecretName: secretName, Superuser: true}))
 		})
 
 		It("enabling reaper and medusa", func() {
@@ -358,19 +533,8 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 
 			Expect(renderTemplate(options)).To(Succeed())
 
-			// Verify initContainers
-			initContainers := cassdc.Spec.PodTemplateSpec.Spec.InitContainers
-			Expect(len(initContainers)).To(Equal(4))
-			Expect(initContainers[0].Name).To(Equal("server-config-init"))
-			Expect(initContainers[1].Name).To(Equal("jmx-credentials"))
-			Expect(initContainers[2].Name).To(Equal("get-jolokia"))
-			Expect(initContainers[3].Name).To(Equal("medusa-restore"))
-
-			// Verify containers
-			containers := cassdc.Spec.PodTemplateSpec.Spec.Containers
-			Expect(len(containers)).To(Equal(2))
-			Expect(containers[0].Name).To(Equal("cassandra"))
-			Expect(containers[1].Name).To(Equal("medusa"))
+			AssertInitContainerNamesMatch(cassdc, ConfigInitContainer, JmxCredentialsInitContainer, GetJolokiaInitContainer, MedusaInitContainer)
+			AssertContainerNamesMatch(cassdc, CassandraContainer, MedusaContainer)
 		})
 
 		It("setting allowMultipleNodesPerWorker to true", func() {
@@ -431,7 +595,7 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 				KubectlOptions: defaultKubeCtlOptions,
 			}
 
-			renderedErr, _ := renderTemplate(options)
+			renderedErr := renderTemplate(options)
 
 			Expect(renderedErr).ToNot(BeNil())
 			Expect(renderedErr.Error()).To(ContainSubstring("set resource limits/requests when enabling allowMultipleNodesPerWorker"))
@@ -577,4 +741,149 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			Expect(config.JvmOptions.YoungGenSize).To(Equal("150M"))
 		})
 	})
+
+	Context("when configuring the Cassandra version and/or image", func() {
+		cassandraVersionImageMap := map[string]string{
+			"3.11.7":  "datastax/cassandra-mgmtapi-3_11_7:v0.1.19",
+			"3.11.8":  "datastax/cassandra-mgmtapi-3_11_8:v0.1.19",
+			"3.11.9":  "datastax/cassandra-mgmtapi-3_11_9:v0.1.19",
+			"3.11.10": "datastax/cassandra-mgmtapi-3_11_10:v0.1.19",
+		}
+
+		It("using the default version", func() {
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+			}
+
+			Expect(renderTemplate(options)).To(Succeed())
+
+			Expect(cassdc.Spec.ServerVersion).To(Equal("3.11.10"))
+			Expect(cassdc.Spec.ServerImage).To(Equal("datastax/cassandra-mgmtapi-3_11_10:v0.1.19"))
+		})
+
+		It("using 3.11.7", func() {
+			version := "3.11.7"
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+				SetValues: map[string]string{
+					"cassandra.version": version,
+				},
+			}
+
+			Expect(renderTemplate(options)).To(Succeed())
+
+			Expect(cassdc.Spec.ServerVersion).To(Equal(version))
+			Expect(cassdc.Spec.ServerImage).To(Equal(cassandraVersionImageMap[version]))
+		})
+
+		It("using 3.11.8", func() {
+			version := "3.11.8"
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+				SetValues: map[string]string{
+					"cassandra.version": version,
+				},
+			}
+
+			Expect(renderTemplate(options)).To(Succeed())
+
+			Expect(cassdc.Spec.ServerVersion).To(Equal(version))
+			Expect(cassdc.Spec.ServerImage).To(Equal(cassandraVersionImageMap[version]))
+		})
+
+		It("using 3.11.9", func() {
+			version := "3.11.9"
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+				SetValues: map[string]string{
+					"cassandra.version": version,
+				},
+			}
+
+			Expect(renderTemplate(options)).To(Succeed())
+
+			Expect(cassdc.Spec.ServerVersion).To(Equal(version))
+			Expect(cassdc.Spec.ServerImage).To(Equal(cassandraVersionImageMap[version]))
+		})
+
+		It("using 3.11.10", func() {
+			version := "3.11.10"
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+				SetValues: map[string]string{
+					"cassandra.version": version,
+				},
+			}
+
+			Expect(renderTemplate(options)).To(Succeed())
+
+			Expect(cassdc.Spec.ServerVersion).To(Equal(version))
+			Expect(cassdc.Spec.ServerImage).To(Equal(cassandraVersionImageMap[version]))
+		})
+
+		It("using an unsupported version", func() {
+			ver := "3.12.225"
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+				SetValues: map[string]string{
+					"cassandra.version": ver,
+				},
+			}
+
+			renderedErr := renderTemplate(options)
+			Expect(renderedErr).To(HaveOccurred())
+		})
+
+		It("using 3.11.9 and a custom image", func() {
+			version := "3.11.9"
+			image := "my_cassandra:latest"
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+				SetValues: map[string]string{
+					"cassandra.version": version,
+					"cassandra.image":   image,
+				},
+			}
+
+			Expect(renderTemplate(options)).To(Succeed())
+
+			Expect(cassdc.Spec.ServerVersion).To(Equal(version))
+			Expect(cassdc.Spec.ServerImage).To(Equal(image))
+		})
+	})
+
+	It("enabling Cassandra auth with Stargate", func() {
+		dcName := "test"
+		clusterSize := 3
+		clusterName := "auth-test"
+
+		options := &helm.Options{
+			KubectlOptions: defaultKubeCtlOptions,
+			SetValues: map[string]string{
+				"stargate.enabled":              "true",
+				"cassandra.clusterName":         clusterName,
+				"backupRestore.medusa.enabled":  "false",
+				"repair.reaper.enabled":         "false",
+				"cassandra.auth.enabled":        "true",
+				"cassandra.datacenters[0].name": dcName,
+				"cassandra.datacenters[0].size": strconv.Itoa(clusterSize),
+			},
+		}
+
+		Expect(renderTemplate(options)).To(Succeed())
+
+		Expect(cassdc.Name).To(Equal(dcName))
+
+		var config Config
+		Expect(json.Unmarshal(cassdc.Spec.Config, &config)).To(Succeed())
+		Expect(config.CassandraConfig.Authenticator).To(Equal("PasswordAuthenticator"))
+		Expect(config.CassandraConfig.Authorizer).To(Equal("CassandraAuthorizer"))
+
+		Expect(cassdc.Spec.Users).To(ConsistOf(cassdcv1beta1.CassandraUser{Superuser: true, SecretName: clusterName + "-stargate"}))
+	})
 })
+
+func verifyMedusaVolumeMounts(container *corev1.Container) {
+	ExpectWithOffset(1, len(container.VolumeMounts)).To(Equal(4))
+	ExpectWithOffset(1, container.VolumeMounts[0]).To(Equal(corev1.VolumeMount{Name: medusaConfigVolumeName, MountPath: "/etc/medusa"}))
+}

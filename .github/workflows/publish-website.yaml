@@ -1,0 +1,101 @@
+name: Publish Website
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'docs/**'
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      HUGO_VERSION: 0.76.5
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: recursive
+      - uses: actions/setup-node@v2-beta
+        with:
+          node-version: '12'
+      - name: Cache
+        id: cache
+        uses: actions/cache@v2
+        with:
+          path: |
+            bin
+            docs/node_modules
+          key: ${{ runner.os }}-${{ hashFiles('docs/package-lock.json') }}-${{ env.HUGO_VERSION }}
+      - run: scripts/install-hugo.sh
+        if: steps.cache.outputs.cache-hit != 'true'
+      - run: scripts/install-npm-tools.sh
+        if: steps.cache.outputs.cache-hit != 'true'
+      - run: scripts/install-npm-dependencies.sh
+        if: steps.cache.outputs.cache-hit != 'true'
+      - name: Update PATH
+        run: |
+          echo "$GITHUB_WORKSPACE/bin" >> $GITHUB_PATH
+      - name: Build site
+        env:
+          HUGO_ENV: production
+        run: hugo --environment ${HUGO_ENV}
+        working-directory: docs
+      - name: Upload artifact
+        uses: actions/upload-artifact@v1
+        with:
+          name: docs
+          path: docs/public
+  
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      HUGO_VERSION: 0.76.5
+      HELM_DOCS_VERSION: 1.5.0
+    needs: build
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: recursive
+      - name: Cache
+        uses: actions/cache@v2
+        with:
+          path: |
+            bin
+            docs/node_modules
+          key: ${{ runner.os }}-${{ hashFiles('docs/package-lock.json') }}-${{ env.HUGO_VERSION }}
+      - run: scripts/install-hugo.sh
+        if: steps.cache.outputs.cache-hit != 'true'
+      - run: scripts/install-npm-tools.sh
+        if: steps.cache.outputs.cache-hit != 'true'
+      - run: scripts/install-npm-dependencies.sh
+        if: steps.cache.outputs.cache-hit != 'true'
+      - name: Update PATH
+        run: |
+          echo "$GITHUB_WORKSPACE/bin" >> $GITHUB_PATH
+      - uses: actions/download-artifact@v2
+        with:
+          name: docs
+          path: docs/public/
+      - uses: google-github-actions/setup-gcloud@master
+        with:
+          version: '290.0.1'
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+          service_account_key: ${{ secrets.GCP_SA_KEY }}
+          export_default_credentials: true
+      - name: Deploy site
+        env:
+          HUGO_ENV: production
+        run: hugo deploy --environment ${HUGO_ENV} --target production --verbose
+        working-directory: docs
+      - name: Purge CDN Cache
+        env:
+          ZONE_ID: ${{ secrets.CF_ZONE_ID }}
+          BEARER_TOKEN: ${{ secrets.CF_BEARER_TOKEN }}
+        run: |
+          curl -X POST "https://api.cloudflare.com/client/v4/zones/${ZONE_ID}/purge_cache" \
+            -H "Authorization: Bearer ${BEARER_TOKEN}" \
+            -H "Content-Type: application/json" \
+            --data '{"purge_everything":true}'
+      - name: Ping Google with Sitemap
+        run: |
+          curl -X GET -L "http://www.google.com/ping?sitemap=https://k8ssandra.io/sitemap.xml"

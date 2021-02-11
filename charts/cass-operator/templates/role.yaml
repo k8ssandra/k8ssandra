@@ -2,7 +2,7 @@
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  name: {{ template "k8ssandra-common.fullname" . }}
+  name: {{ include "k8ssandra-common.fullname" . }}
   labels: {{ include "k8ssandra-common.labels" . | indent 4 }}
 rules:
   - apiGroups:

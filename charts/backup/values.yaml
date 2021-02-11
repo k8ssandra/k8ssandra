@@ -1,9 +1,7 @@
-# Default values for backup.
-# This is a YAML-formatted file.
-# Declare variables to be passed into your templates.
-
-# The name of the backup
+# -- Name of the CassandraBackup custom resource
 name: backup
 
 cassandraDatacenter:
+  # -- Name of the CassandraDatacenter custom resource where the backup is
+  # sourced.
   name: dc1

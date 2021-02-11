@@ -1,6 +1,7 @@
 package unit_test
 
 import (
+	helmUtils "github.com/k8ssandra/k8ssandra/tests/unit/utils/helm"
 	"path/filepath"
 
 	"github.com/gruntwork-io/terratest/modules/helm"
@@ -17,7 +18,7 @@ var _ = Describe("Verify Reaper template", func() {
 	)
 
 	BeforeEach(func() {
-		helmChartPath, err = filepath.Abs(chartsPath)
+		helmChartPath, err = filepath.Abs(ChartsPath)
 		Expect(err).To(BeNil())
 		reaper = &api.Reaper{}
 	})
@@ -26,13 +27,12 @@ var _ = Describe("Verify Reaper template", func() {
 		err = nil
 	})
 
-	renderTemplate := func(options *helm.Options) {
-		renderedOutput := helm.RenderTemplate(
-			GinkgoT(), options, helmChartPath, helmReleaseName,
-			[]string{"templates/reaper.yaml"},
-		)
-
-		helm.UnmarshalK8SYaml(GinkgoT(), renderedOutput, reaper)
+	renderTemplate := func(options *helm.Options) error {
+		return helmUtils.RenderAndUnmarshall("templates/reaper/reaper.yaml",
+			options, helmChartPath, HelmReleaseName,
+			func(renderedYaml string) error {
+				return helm.UnmarshalK8SYamlE(GinkgoT(), renderedYaml, reaper)
+			})
 	}
 
 	Context("by rendering it with options", func() {
@@ -42,6 +42,7 @@ var _ = Describe("Verify Reaper template", func() {
 			}
 
 			renderTemplate(options)
+
 			Expect(string(reaper.Spec.ServerConfig.StorageType)).To(Equal("cassandra"))
 			Expect(reaper.Kind).To(Equal("Reaper"))
 		})
