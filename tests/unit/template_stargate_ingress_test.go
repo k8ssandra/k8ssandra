@@ -2,13 +2,14 @@ package unit_test
 
 import (
 	. "fmt"
+	"path/filepath"
+
 	"github.com/gruntwork-io/terratest/modules/helm"
 	helmUtils "github.com/k8ssandra/k8ssandra/tests/unit/utils/helm"
 	"github.com/k8ssandra/k8ssandra/tests/unit/utils/kubeapi"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	networking "k8s.io/api/networking/v1beta1"
-	"path/filepath"
 )
 
 var _ = Describe("Verify Stargate ingress template", func() {
@@ -37,13 +38,6 @@ var _ = Describe("Verify Stargate ingress template", func() {
 	}
 
 	Context("by confirming it does not render when", func() {
-		It("is implicitly disabled", func() {
-			options := &helm.Options{
-				KubectlOptions: defaultKubeCtlOptions,
-			}
-			Expect(renderTemplate(options)).ShouldNot(Succeed())
-		})
-
 		It("is explicitly disabled at the Ingress level", func() {
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
@@ -97,14 +91,13 @@ var _ = Describe("Verify Stargate ingress template", func() {
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
 				SetValues: map[string]string{
-					"ingress.traefik.enabled":           "true",
-					"ingress.traefik.cassandra.enabled": "false",
+					"ingress.traefik.enabled": "true",
 				},
 			}
 
 			Expect(renderTemplate(options)).To(Succeed())
 			Expect(ingress.Kind).To(Equal("Ingress"))
-			verifyIngressRules(ingress, nil, true, false, true)
+			verifyIngressRules(ingress, nil, true, true, true)
 		})
 
 		It("with everything enabled and default settings", func() {

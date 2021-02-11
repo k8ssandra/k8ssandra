@@ -2,13 +2,14 @@ package unit_test
 
 import (
 	. "fmt"
+	"path/filepath"
+
 	"github.com/gruntwork-io/terratest/modules/helm"
 	helmUtils "github.com/k8ssandra/k8ssandra/tests/unit/utils/helm"
 	. "github.com/k8ssandra/k8ssandra/tests/unit/utils/traefik"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	traefik "github.com/traefik/traefik/v2/pkg/provider/kubernetes/crd/traefik/v1alpha1"
-	"path/filepath"
 )
 
 var _ = Describe("Verify Cassandra ingress template", func() {
@@ -78,11 +79,13 @@ var _ = Describe("Verify Cassandra ingress template", func() {
 	})
 
 	Context("by rendering it when", func() {
-		It("it is enabled", func() {
+		It("it is enabled and Stargate Cassandra ingress is disabled", func() {
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
 				SetValues: map[string]string{
-					"ingress.traefik.enabled": "true",
+					"ingress.traefik.enabled":                    "true",
+					"ingress.traefik.cassandra.enabled":          "true",
+					"ingress.traefik.stargate.cassandra.enabled": "false",
 				},
 			}
 
@@ -92,13 +95,15 @@ var _ = Describe("Verify Cassandra ingress template", func() {
 			VerifyTraefikTCPIngressRoute(ingress, "cassandra", "HostSNI(`*`)", Sprintf("%s-%s-service", HelmReleaseName, "dc1"), 9042)
 		})
 
-		It("it is enabled with release name != cluster name", func() {
+		It("it is enabled and Stargate Cassandra ingress is disabled with release name != cluster name", func() {
 			clusterName := Sprintf("k8ssandracluster%s", UniqueIdSuffix)
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
 				SetValues: map[string]string{
-					"cassandra.clusterName":   clusterName,
-					"ingress.traefik.enabled": "true",
+					"cassandra.clusterName":                      clusterName,
+					"ingress.traefik.enabled":                    "true",
+					"ingress.traefik.cassandra.enabled":          "true",
+					"ingress.traefik.stargate.cassandra.enabled": "false",
 				},
 			}
 
