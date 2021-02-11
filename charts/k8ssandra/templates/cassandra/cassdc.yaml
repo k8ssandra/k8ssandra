@@ -271,18 +271,6 @@ spec:
             name: server-data
           - mountPath: /etc/medusa-secrets
             name: {{ .Values.backupRestore.medusa.bucketSecret }}
-      volumes:
-      - name: {{ .Release.Name }}-medusa-config-k8ssandra
-        configMap:
-          name: {{ .Release.Name }}-medusa-config-k8ssandra
-          items:
-            - key: medusa.ini
-              path: medusa.ini
-      - name: cassandra-config
-        emptyDir: {}
-      - name:  {{ .Values.backupRestore.medusa.bucketSecret }}
-        secret:
-          secretName: {{ .Values.backupRestore.medusa.bucketSecret }}
 {{- end }}
 {{- end }}
       volumes:
