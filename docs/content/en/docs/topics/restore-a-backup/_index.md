@@ -135,14 +135,16 @@ Allow a few minutes for the pods to start and proceed to a Ready state; check th
 `kubectl get pods`                           
 
 ```
-NAME                                                  READY   STATUS             RESTARTS   AGE
-k8ssandra-cass-operator-6666588dc5-587p2              1/1     Running            0          3m50s
-k8ssandra-dc1-default-sts-0                           2/3     CrashLoopBackOff   4          3m17s
-k8ssandra-grafana-6858f6bbc-fbsjz                     2/2     Running            0          3m50s
-k8ssandra-kube-prometheus-operator-5556885bd6-6rkxh   1/1     Running            0          3m50s
-k8ssandra-medusa-operator-6848b9bf85-7pglr            1/1     Running            0          3m50s
-k8ssandra-reaper-operator-cc46fd5f4-mbl86             1/1     Running            0          3m50s
-prometheus-k8ssandra-kube-prometheus-prometheus-0     2/2     Running            1          3m37s
+NAME                                                  READY   STATUS      RESTARTS   AGE
+k8ssandra-cass-operator-6666588dc5-dzgtn              1/1     Running     0          3m50s
+k8ssandra-dc1-default-sts-0                           3/3     Running     0          3m17s
+k8ssandra-grafana-6858f6bbc-62vv6                     2/2     Running     0          3m50s
+k8ssandra-kube-prometheus-operator-5556885bd6-h8qtr   1/1     Running     0          3m50s
+k8ssandra-medusa-operator-6848b9bf85-rdmf9            1/1     Running     0          3m50s
+k8ssandra-reaper-k8ssandra-7d58bd94dc-4wz8m           1/1     Running     0          3m50s
+k8ssandra-reaper-k8ssandra-schema-74bsv               0/1     Completed   0          3m50s
+k8ssandra-reaper-operator-cc46fd5f4-9fkrm             1/1     Running     0          3m50s
+prometheus-k8ssandra-kube-prometheus-prometheus-0     2/2     Running     1          3m50s
 ```
 
 Backup and restore operations are enabled by default. In the example YAML, `bucketName` corresponds to the name of the S3 bucket: `K8ssanda-bucket-dev`.  The `bucketSecret` corresponds to the secret credentials.
@@ -194,16 +196,10 @@ Copy the cql file to the k8ssandra container (pod):
 
 `kubectl cp test_data.cql k8ssandra-dc1-default-sts-0:/tmp -c cassandra`
 
-Before you can launch the CQLSH instance that's deployed by K8ssandra in your Kubernetes cluster, you'll need authentication credentials. By default, the username secret for K8ssandra is:
-
-`k8ssandra-superuser`
-
-To verify, you can extract and decode the username secret:
+Before you can launch the CQLSH instance that's deployed by K8ssandra in your Kubernetes cluster, you'll need authentication credentials. By default, the username secret for K8ssandra is `k8ssandra-superuser`. To verify, you can extract and decode the username secret:
 
 `kubectl get secret k8ssandra-superuser -o jsonpath="{.data.username}" | base64 --decode`
-```
-k8ssandra-superuser
-```
+`k8ssandra-superuser`
 
 The command output (second line above) verified that the username to use on a subsequent command is `k8ssandra-superuser`.
 
