@@ -1,7 +1,9 @@
 package unit_test
 
 import (
+	. "fmt"
 	"github.com/gruntwork-io/terratest/modules/k8s"
+	"github.com/gruntwork-io/terratest/modules/random"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"k8s.io/helm/pkg/chartutil"
@@ -16,14 +18,15 @@ const (
 	CassOperatorChartsPath      = "../../charts/cass-operator"
 	MedusaOperatorChartsPath    = "../../charts/medusa-operator"
 	ReaperOperatorChartsPath    = "../../charts/reaper-operator"
-	DefaultTestNamespace        = "k8ssandra"
 	HelmHookAnnotation          = "helm.sh/hook"
 	HelmHookPreDeleteAnnotation = "helm.sh/hook-delete-policy"
-	HelmReleaseName             = "k8ssandra-test"
 	ReaperInstanceAnnotation    = "reaper.cassandra-reaper.io/instance"
 )
 
 var (
+	UniqueIdSuffix        = strings.ToLower(random.UniqueId())
+	DefaultTestNamespace  = Sprintf("k8ssandranamespace-%s", UniqueIdSuffix)
+	HelmReleaseName       = Sprintf("k8ssandratestrelease-%s", UniqueIdSuffix)
 	defaultKubeCtlOptions = k8s.NewKubectlOptions("", "", DefaultTestNamespace)
 )
 
