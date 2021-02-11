@@ -271,6 +271,10 @@ spec:
             name: server-data
           - mountPath: /etc/medusa-secrets
             name: {{ .Values.backupRestore.medusa.bucketSecret }}
+          - mountPath: /home/cassandra
+            name: medusa-home
+          - mountPath: /tmp
+            name: medusa-tmp
 {{- end }}
 {{- end }}
       volumes:
@@ -284,6 +288,10 @@ spec:
         - name:  {{ .Values.backupRestore.medusa.bucketSecret }}
           secret:
             secretName: {{ .Values.backupRestore.medusa.bucketSecret }}
+        - name: medusa-home
+          emptyDir: {}
+        - name: medusa-tmp
+          emptyDir: {}
         {{- end }}
         - name: cassandra-config
           emptyDir: {}

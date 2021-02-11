@@ -384,10 +384,10 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			Expect(cassdc.Spec.PodTemplateSpec.Spec.Containers[1].Name).To(Equal(MedusaContainer))
 
 			// Verify volumeMounts and volumes
-			Expect(len(cassdc.Spec.PodTemplateSpec.Spec.Containers[1].VolumeMounts)).To(Equal(4))
+			Expect(len(cassdc.Spec.PodTemplateSpec.Spec.Containers[1].VolumeMounts)).To(Equal(6))
 			Expect(cassdc.Spec.PodTemplateSpec.Spec.Containers[1].VolumeMounts[0].Name).To(Equal(medusaConfigVolumeName))
 
-			Expect(len(cassdc.Spec.PodTemplateSpec.Spec.Volumes)).To(Equal(6))
+			Expect(len(cassdc.Spec.PodTemplateSpec.Spec.Volumes)).To(Equal(8))
 			Expect(cassdc.Spec.PodTemplateSpec.Spec.Volumes[0].Name).To(Equal(medusaConfigVolumeName))
 
 			verifyVolumeMounts(&cassdc.Spec.PodTemplateSpec.Spec)
@@ -468,7 +468,7 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 
 			verifyMedusaVolumeMounts(medusaContainer)
 
-			Expect(len(cassdc.Spec.PodTemplateSpec.Spec.Volumes)).To(Equal(6))
+			Expect(len(cassdc.Spec.PodTemplateSpec.Spec.Volumes)).To(Equal(8))
 			Expect(cassdc.Spec.PodTemplateSpec.Spec.Volumes[0].Name).To(Equal(medusaConfigVolumeName))
 
 			Expect(cassdc.Spec.Users).To(ContainElement(cassdcv1beta1.CassandraUser{SecretName: secretName, Superuser: true}))
@@ -550,7 +550,7 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 
 			verifyMedusaVolumeMounts(medusaContainer)
 
-			Expect(len(cassdc.Spec.PodTemplateSpec.Spec.Volumes)).To(Equal(6))
+			Expect(len(cassdc.Spec.PodTemplateSpec.Spec.Volumes)).To(Equal(8))
 			Expect(cassdc.Spec.PodTemplateSpec.Spec.Volumes[0].Name).To(Equal(medusaConfigVolumeName))
 
 			Expect(cassdc.Spec.Users).To(ContainElement(cassdcv1beta1.CassandraUser{SecretName: secretName, Superuser: true}))
@@ -942,6 +942,6 @@ func verifyVolumeMountIsDeclared(mounts []corev1.VolumeMount, volumes []string) 
 }
 
 func verifyMedusaVolumeMounts(container *corev1.Container) {
-	ExpectWithOffset(1, len(container.VolumeMounts)).To(Equal(4))
+	ExpectWithOffset(1, len(container.VolumeMounts)).To(Equal(6))
 	ExpectWithOffset(1, container.VolumeMounts[0]).To(Equal(corev1.VolumeMount{Name: medusaConfigVolumeName, MountPath: "/etc/medusa"}))
 }
