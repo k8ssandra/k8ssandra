@@ -375,6 +375,7 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 					"cassandra.auth.enabled":       "true",
 					"backupRestore.medusa.enabled": "true",
 					"repair.reaper.enabled":        "false",
+					"stargate.enabled":             "false",
 				},
 			}
 
@@ -457,11 +458,11 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 					"backupRestore.medusa.enabled":              "true",
 					"backupRestore.medusa.cassandraUser.secret": secretName,
 					"repair.reaper.enabled":                     "false",
+					"stargate.enabled":                          "false",
 				},
 			}
 
 			Expect(renderTemplate(options)).To(Succeed())
-
 			Expect(cassdc.Spec.Users).To(ContainElement(cassdcv1beta1.CassandraUser{Superuser: true, SecretName: secretName}))
 
 			AssertInitContainerNamesMatch(cassdc, ConfigInitContainer, GetJolokiaInitContainer, MedusaInitContainer)
