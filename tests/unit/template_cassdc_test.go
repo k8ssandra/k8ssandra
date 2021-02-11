@@ -116,17 +116,14 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			Expect(config.JvmOptions.YoungGenSize).To(BeEmpty())
 
 			// Verify (writeable) volumes
-			Expect(cassdc.Spec.PodTemplateSpec.Spec.Containers[0].VolumeMounts[0].Name).To(Equal("cassandra-config"))
-			Expect(cassdc.Spec.PodTemplateSpec.Spec.Containers[0].VolumeMounts[0].MountPath).To(Equal("/etc/cassandra"))
+			Expect(cassdc.Spec.PodTemplateSpec.Spec.Containers[0].VolumeMounts).To(ContainElements([]corev1.VolumeMount{
+				corev1.VolumeMount{Name: "cassandra-config", MountPath: "/etc/cassandra"},
+				corev1.VolumeMount{Name: "mcac-agent-config", MountPath: "/opt/mcac-agent/config"},
+				corev1.VolumeMount{Name: "metrics-collector-config", MountPath: "/opt/metrics-collector/config"},
+				corev1.VolumeMount{Name: "cassandra-tmp", MountPath: "/tmp"},
+			}))
 
-			Expect(cassdc.Spec.PodTemplateSpec.Spec.Containers[0].VolumeMounts[1].Name).To(Equal("mcac-agent-config"))
-			Expect(cassdc.Spec.PodTemplateSpec.Spec.Containers[0].VolumeMounts[1].MountPath).To(Equal("/opt/mcac-agent/config"))
-
-			Expect(cassdc.Spec.PodTemplateSpec.Spec.Containers[0].VolumeMounts[2].Name).To(Equal("metrics-collector-config"))
-			Expect(cassdc.Spec.PodTemplateSpec.Spec.Containers[0].VolumeMounts[2].MountPath).To(Equal("/opt/metrics-collector/config"))
-
-			Expect(cassdc.Spec.PodTemplateSpec.Spec.Containers[0].VolumeMounts[3].Name).To(Equal("cassandra-tmp"))
-			Expect(cassdc.Spec.PodTemplateSpec.Spec.Containers[0].VolumeMounts[3].MountPath).To(Equal("/tmp"))
+			verifyVolumeMounts(&cassdc.Spec.PodTemplateSpec.Spec)
 		})
 
 		It("override clusterName", func() {
@@ -360,11 +357,17 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			Expect(cassdc.Spec.PodTemplateSpec.Spec.Containers[0].Env).To(BeNil())
 			// No initcontainers slice should be present
 			Expect(cassdc.Spec.PodTemplateSpec.Spec.InitContainers).To(BeNil())
+
+			verifyVolumeMounts(&cassdc.Spec.PodTemplateSpec.Spec)
 		})
 
 		It("enabling only medusa", func() {
 			options := &helm.Options{
-				SetValues:      map[string]string{"backupRestore.medusa.enabled": "true", "repair.reaper.enabled": "false"},
+				SetValues: map[string]string{
+					"backupRestore.medusa.enabled":      "true",
+					"backupRestore.medusa.bucketSecret": "medusa-bucket-key",
+					"repair.reaper.enabled":             "false",
+				},
 				KubectlOptions: defaultKubeCtlOptions,
 			}
 
@@ -386,6 +389,8 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 
 			Expect(len(cassdc.Spec.PodTemplateSpec.Spec.Volumes)).To(Equal(6))
 			Expect(cassdc.Spec.PodTemplateSpec.Spec.Volumes[0].Name).To(Equal(medusaConfigVolumeName))
+
+			verifyVolumeMounts(&cassdc.Spec.PodTemplateSpec.Spec)
 		})
 
 		It("enabling auth and medusa with default secret", func() {
@@ -554,7 +559,7 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 		It("enabling reaper and medusa", func() {
 			// Simple verification that both have properties correctly applied
 			options := &helm.Options{
-				SetValues:      map[string]string{"backupRestore.medusa.enabled": "true"},
+				SetValues:      map[string]string{"backupRestore.medusa.enabled": "true", "backupRestore.medusa.bucketSecret": "medusa-bucket-key"},
 				KubectlOptions: defaultKubeCtlOptions,
 			}
 
@@ -562,6 +567,8 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 
 			AssertInitContainerNamesMatch(cassdc, ConfigInitContainer, JmxCredentialsInitContainer, GetJolokiaInitContainer, MedusaInitContainer)
 			AssertContainerNamesMatch(cassdc, CassandraContainer, MedusaContainer)
+
+			verifyVolumeMounts(&cassdc.Spec.PodTemplateSpec.Spec)
 		})
 
 		It("setting allowMultipleNodesPerWorker to true", func() {
@@ -909,6 +916,30 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 		Expect(cassdc.Spec.Users).To(ConsistOf(cassdcv1beta1.CassandraUser{Superuser: true, SecretName: clusterName + "-stargate"}))
 	})
 })
+
+// Assert that volumeMount names of all containers matches a volumeName in PodSpec.Volumes.
+func verifyVolumeMounts(podSpec *corev1.PodSpec) {
+	volumes := make([]string, len(podSpec.Volumes))
+	for i := 0; i < len(podSpec.Volumes); i++ {
+		volumes[i] = podSpec.Volumes[i].Name
+	}
+	volumes = append(volumes, "server-config", "server-data")
+
+	for c := 0; c < len(podSpec.Containers); c++ {
+		verifyVolumeMountIsDeclared(podSpec.Containers[c].VolumeMounts[:], volumes)
+	}
+
+	for c := 0; c < len(podSpec.InitContainers); c++ {
+		verifyVolumeMountIsDeclared(podSpec.InitContainers[c].VolumeMounts[:], volumes)
+	}
+}
+
+// Assert that volumeMount names are in the provided volumes.
+func verifyVolumeMountIsDeclared(mounts []corev1.VolumeMount, volumes []string) {
+	for m := 0; m < len(mounts); m++ {
+		Expect(volumes).To(ContainElement(mounts[m].Name))
+	}
+}
 
 func verifyMedusaVolumeMounts(container *corev1.Container) {
 	ExpectWithOffset(1, len(container.VolumeMounts)).To(Equal(4))
