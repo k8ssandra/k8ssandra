@@ -609,7 +609,6 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 				SetValues: map[string]string{
 					"cassandra.heap.size":           "700M",
 					"cassandra.heap.newGenSize":     "350M",
-					"cassandra.datacenters[0].heap": "",
 					"cassandra.datacenters[0].name": dcName,
 				},
 				KubectlOptions: defaultKubeCtlOptions,
