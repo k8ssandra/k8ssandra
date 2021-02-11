@@ -1,6 +1,6 @@
 {{- if .Values.stargate.enabled }}
 {{- $heapMB := required "stargate.heapMB is required" .Values.stargate.heapMB -}}
-{{- $image := default "stargateio/stargate-3_11:v1.0.0" .Values.stargate.image -}}
+{{- $image := default "stargateio/stargate-3_11:v1.0.7" .Values.stargate.image -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
