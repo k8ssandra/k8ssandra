@@ -3,8 +3,11 @@ package unit_test
 import (
 	"encoding/json"
 	"fmt"
-	helmUtils "github.com/k8ssandra/k8ssandra/tests/unit/utils/helm"
 	"path/filepath"
+
+	helmUtils "github.com/k8ssandra/k8ssandra/tests/unit/utils/helm"
+
+	"strconv"
 
 	cassdcv1beta1 "github.com/datastax/cass-operator/operator/pkg/apis/cassandra/v1beta1"
 	"github.com/gruntwork-io/terratest/modules/helm"
@@ -13,7 +16,6 @@ import (
 	. "github.com/onsi/gomega"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/resource"
-	"strconv"
 )
 
 type CassandraConfig struct {
@@ -319,9 +321,12 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			Expect(cassdc.Spec.SuperuserSecretName).To(Equal(clusterName + "-superuser"))
 		})
 
-		It("disabling reaper", func() {
+		It("disabling reaper and medusa", func() {
 			options := &helm.Options{
-				SetValues:      map[string]string{"repair.reaper.enabled": "false"},
+				SetValues: map[string]string{
+					"repair.reaper.enabled":        "false",
+					"backupRestore.medusa.enabled": "false",
+				},
 				KubectlOptions: defaultKubeCtlOptions,
 			}
 
@@ -333,6 +338,8 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			Expect(cassdc.Spec.PodTemplateSpec.Spec.Containers[0].Env).To(BeNil())
 			// No initcontainers slice should be present
 			Expect(cassdc.Spec.PodTemplateSpec.Spec.InitContainers).To(BeNil())
+			// No users should exist
+			Expect(cassdc.Spec.Users).To(BeNil())
 		})
 
 		It("enabling only medusa", func() {
