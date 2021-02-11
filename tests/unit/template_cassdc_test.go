@@ -283,7 +283,10 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 				"-Dcassandra.system_distributed_replication_per_dc="+strconv.Itoa(clusterSize),
 			))
 
-			Expect(cassdc.Spec.Users).To(ConsistOf(cassdcv1beta1.CassandraUser{Superuser: true, SecretName: clusterName + "-reaper"}))
+			Expect(cassdc.Spec.Users).To(ConsistOf(
+				cassdcv1beta1.CassandraUser{Superuser: true, SecretName: clusterName + "-reaper"},
+				cassdcv1beta1.CassandraUser{Superuser: true, SecretName: clusterName + "-stargate"},
+			))
 		})
 
 		It("providing superuser secret", func() {
@@ -321,9 +324,10 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			Expect(cassdc.Spec.SuperuserSecretName).To(Equal(clusterName + "-superuser"))
 		})
 
-		It("disabling reaper and medusa", func() {
+		It("disabling reaper and medusa and stargate", func() {
 			options := &helm.Options{
 				SetValues: map[string]string{
+					"stargate.enabled":             "false",
 					"repair.reaper.enabled":        "false",
 					"backupRestore.medusa.enabled": "false",
 				},
@@ -377,6 +381,7 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 					"cassandra.auth.enabled":       "true",
 					"backupRestore.medusa.enabled": "true",
 					"repair.reaper.enabled":        "false",
+					"stargate.enabled":             "false",
 				},
 			}
 
@@ -459,11 +464,11 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 					"backupRestore.medusa.enabled":              "true",
 					"backupRestore.medusa.cassandraUser.secret": secretName,
 					"repair.reaper.enabled":                     "false",
+					"stargate.enabled":                          "false",
 				},
 			}
 
 			Expect(renderTemplate(options)).To(Succeed())
-
 			Expect(cassdc.Spec.Users).To(ContainElement(cassdcv1beta1.CassandraUser{Superuser: true, SecretName: secretName}))
 
 			AssertInitContainerNamesMatch(cassdc, ConfigInitContainer, GetJolokiaInitContainer, MedusaInitContainer)
