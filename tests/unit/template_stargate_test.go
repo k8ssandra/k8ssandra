@@ -71,7 +71,7 @@ var _ = Describe("Verify Stargate template", func() {
 
 			Expect(len(templateSpec.Containers)).To(Equal(1))
 			container := templateSpec.Containers[0]
-			Expect(container.Image).To(Equal("stargateio/stargate-3_11:v1.0.0"))
+			Expect(container.Image).To(Equal("stargateio/stargate-3_11:v1.0.7"))
 			Expect(container.Name).To(Equal(Sprintf("%s-dc1-stargate", HelmReleaseName)))
 			Expect(string(container.ImagePullPolicy)).To(Equal("IfNotPresent"))
 
