@@ -82,6 +82,19 @@ cassandra:
    #size:
    #newGenSize:
 
+  gc:
+    cms:
+      enabled: true
+      survivorRatio: 8
+      maxTenuringThreshold: 1
+      initiatingOccupancyFraction: 75
+      waitDuration: 10000
+    g1:
+      enabled: false
+      setUpdatingPauseTimePercent: 5
+      maxGcPauseMillis: 500
+      initiatingHeapOccupancyPercent: 70
+
   # -- Resource requests for each Cassandra pod.
   resources: {}
 
