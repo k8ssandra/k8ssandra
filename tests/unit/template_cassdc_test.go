@@ -324,11 +324,10 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			Expect(cassdc.Spec.SuperuserSecretName).To(Equal(clusterName + "-superuser"))
 		})
 
-		It("disabling reaper and medusa", func() {
-			clusterName := "no-reaper-no-medusa"
+		It("disabling reaper and medusa and stargate", func() {
 			options := &helm.Options{
 				SetValues: map[string]string{
-					"cassandra.clusterName":        clusterName,
+					"stargate.enabled":             "false",
 					"repair.reaper.enabled":        "false",
 					"backupRestore.medusa.enabled": "false",
 				},
@@ -343,8 +342,8 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			Expect(cassdc.Spec.PodTemplateSpec.Spec.Containers[0].Env).To(BeNil())
 			// No initcontainers slice should be present
 			Expect(cassdc.Spec.PodTemplateSpec.Spec.InitContainers).To(BeNil())
-			// With Stargate enabled by default, only the stargate user should exist
-			Expect(cassdc.Spec.Users).To(ConsistOf(cassdcv1beta1.CassandraUser{Superuser: true, SecretName: clusterName + "-stargate"}))
+			// No users should exist
+			Expect(cassdc.Spec.Users).To(BeNil())
 		})
 
 		It("enabling only medusa", func() {
