@@ -324,9 +324,12 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			Expect(cassdc.Spec.SuperuserSecretName).To(Equal(clusterName + "-superuser"))
 		})
 
-		It("disabling reaper", func() {
+		It("disabling reaper and medusa", func() {
 			options := &helm.Options{
-				SetValues:      map[string]string{"repair.reaper.enabled": "false"},
+				SetValues: map[string]string{
+					"repair.reaper.enabled":        "false",
+					"backupRestore.medusa.enabled": "false",
+				},
 				KubectlOptions: defaultKubeCtlOptions,
 			}
 
@@ -338,6 +341,8 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			Expect(cassdc.Spec.PodTemplateSpec.Spec.Containers[0].Env).To(BeNil())
 			// No initcontainers slice should be present
 			Expect(cassdc.Spec.PodTemplateSpec.Spec.InitContainers).To(BeNil())
+			// No users should exist
+			Expect(cassdc.Spec.Users).To(BeNil())
 		})
 
 		It("enabling only medusa", func() {
