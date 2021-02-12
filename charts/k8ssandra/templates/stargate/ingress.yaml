@@ -1,14 +1,15 @@
-{{- $traefik := .Values.ingress.traefik -}}
-{{- if $traefik.enabled }}
-{{- if $traefik.stargate.enabled }}
+{{- define "k8ssandra.datacenterSize" -}}
+  {{ (index .Values.cassandra.datacenters 0).size }}
+{{- end }}
+{{- $stargateIngress := .Values.stargate.ingress -}}
+{{- if $stargateIngress.enabled }}
 
-{{- if and $traefik.stargate.cassandra.enabled $traefik.cassandra.enabled }}
-  {{- fail "ingress.traefik.stargate.cassandra.enabled and ingress.traefik.cassandra.enabled cannot both be enabled." }}
+{{- if and .Values.ingress.traefik.cassandra.enabled $stargateIngress.cassandra.enabled }}
+  {{- fail "stargate.ingress.cassandra.enabled and ingress.traefik.cassandra.enabled cannot both be enabled." }}
 {{- end }}
 
 {{- $releaseName := .Release.Name -}}
 {{- $datacenterName := include "k8ssandra.datacenterName" . -}}
-{{- $stargateHost := required "Values.ingress.traefik.stargate.host is required" $traefik.stargate.host }}
 
 apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
@@ -18,16 +19,21 @@ metadata:
 {{ include "k8ssandra.labels" . | indent 4 }}
 spec:
   rules:
+{{- if $stargateIngress.auth.enabled }}
+{{- $stargateAuthHost := include "k8ssandra.stargateIngressAuthHost" . }}
     - http:
         paths:
           - path: /v1/auth
             backend:
               serviceName: {{ $releaseName }}-{{ $datacenterName }}-stargate-service
               servicePort: 8081
-  {{- if ne $stargateHost "*" }}
-      host: "{{ $stargateHost }}"
+
+  {{- if $stargateAuthHost }}
+      host: "{{ $stargateAuthHost }}"
   {{- end }}
-{{- if $traefik.stargate.graphql.enabled }}
+{{- end }}
+{{- if $stargateIngress.graphql.enabled }}
+{{- $stargateGraphqlHost := include "k8ssandra.stargateIngressGraphqlHost" . }}
     - http:
         paths:
           - path: /graphql-schema
@@ -38,27 +44,26 @@ spec:
             backend:
               serviceName: {{ $releaseName }}-{{ $datacenterName }}-stargate-service
               servicePort: 8080
-  {{- if $traefik.stargate.graphql.playground.enabled }}
+  {{- if $stargateIngress.graphql.playground.enabled }}
           - path: /playground
-            pathType: Exact
             backend:
               serviceName: {{ $releaseName }}-{{ $datacenterName }}-stargate-service
               servicePort: 8080
   {{- end }}
-  {{- if ne $stargateHost "*" }}
-      host: "{{ $stargateHost }}"
+  {{- if $stargateGraphqlHost }}
+      host: "{{ $stargateGraphqlHost }}"
   {{- end }}
 {{- end }}
-{{- if $traefik.stargate.rest.enabled }}
+{{- if $stargateIngress.rest.enabled }}
+{{- $stargateRestHost := include "k8ssandra.stargateIngressRestHost" . }}
     - http:
         paths:
           - path: /v2/
             backend:
               serviceName: {{ $releaseName }}-{{ $datacenterName }}-stargate-service
               servicePort: 8082
-  {{- if ne $stargateHost "*" }}
-      host: "{{ $stargateHost }}"
+  {{- if $stargateRestHost }}
+      host: "{{ $stargateRestHost }}"
   {{- end }}
-{{- end }}
 {{- end }}
 {{- end }}

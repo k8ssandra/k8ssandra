@@ -63,3 +63,55 @@ Create the name of the service account to use
 {{- define "k8ssandra.datacenterSize" -}}
 {{ (index .Values.cassandra.datacenters 0).size }}
 {{- end }}
+
+
+{{/*
+Given a dict with "overrideHost" and "defaultHost", return overrideHost if it is set, and otherwise return defaultHost.
+Interpret "*" and "" as meaning "match any host" and return empty string in that case.
+Intended for intermediate use from other helper functions and not directly from templates; see below.
+*/}}
+{{- define "k8ssandra.overridableHost" -}}
+  {{- if not (kindIs "invalid" .overrideHost) }}
+    {{- if ne .overrideHost "*" }}
+      {{- .overrideHost }}
+    {{- else }}
+      {{- "" }}
+    {{- end }}
+  {{- else if not (kindIs "invalid" .defaultHost) }}
+    {{- if ne .defaultHost "*" }}
+      {{- .defaultHost }}
+    {{- else }}
+      {{- "" }}
+    {{- end }}
+  {{- else }}
+    {{- "" }}
+  {{- end }}
+{{- end }}
+
+{{/*
+Return the ingress host that should be used for Stargate's auth API.
+*/}}
+{{- define "k8ssandra.stargateIngressAuthHost" -}}
+{{include "k8ssandra.overridableHost" (dict "defaultHost" .Values.stargate.ingress.host "overrideHost" .Values.stargate.ingress.auth.host)}}
+{{- end }}
+
+{{/*
+Return the ingress host that should be used for Stargate's REST API.
+*/}}
+{{- define "k8ssandra.stargateIngressRestHost" -}}
+{{include "k8ssandra.overridableHost" (dict "defaultHost" .Values.stargate.ingress.host "overrideHost" .Values.stargate.ingress.rest.host)}}
+{{- end }}
+
+{{/*
+Return the ingress host that should be used for Stargate's GraphQL API.
+*/}}
+{{- define "k8ssandra.stargateIngressGraphqlHost" -}}
+{{include "k8ssandra.overridableHost" (dict "defaultHost" .Values.stargate.ingress.host "overrideHost" .Values.stargate.ingress.graphql.host)}}
+{{- end }}
+
+{{/*
+Return the ingress host that should be used for Stargate's Cassandra/CQL interface.
+*/}}
+{{- define "k8ssandra.stargateIngressCassandraHost" -}}
+{{include "k8ssandra.overridableHost" (dict "defaultHost" .Values.stargate.ingress.host "overrideHost" .Values.stargate.ingress.cassandra.host)}}
+{{- end }}

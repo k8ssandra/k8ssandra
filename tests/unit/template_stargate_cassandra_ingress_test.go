@@ -44,22 +44,11 @@ var _ = Describe("Verify Stargate Cassandra ingress template", func() {
 			Expect(renderTemplate(options)).ShouldNot(Succeed())
 		})
 
-		It("is explicitly disabled at the Ingress level", func() {
-			options := &helm.Options{
-				KubectlOptions: defaultKubeCtlOptions,
-				SetValues: map[string]string{
-					"ingress.traefik.enabled": "false",
-				},
-			}
-			Expect(renderTemplate(options)).ShouldNot(Succeed())
-		})
-
 		It("is explicitly disabled at the Stargate level", func() {
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
 				SetValues: map[string]string{
-					"ingress.traefik.enabled":          "true",
-					"ingress.traefik.stargate.enabled": "false",
+					"stargate.ingress.enabled": "false",
 				},
 			}
 			Expect(renderTemplate(options)).ShouldNot(Succeed())
@@ -69,9 +58,8 @@ var _ = Describe("Verify Stargate Cassandra ingress template", func() {
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
 				SetValues: map[string]string{
-					"ingress.traefik.enabled":                    "true",
-					"ingress.traefik.stargate.enabled":           "true",
-					"ingress.traefik.stargate.cassandra.enabled": "false",
+					"stargate.ingress.enabled":           "true",
+					"stargate.ingress.cassandra.enabled": "false",
 				},
 			}
 			Expect(renderTemplate(options)).ShouldNot(Succeed())
@@ -81,25 +69,13 @@ var _ = Describe("Verify Stargate Cassandra ingress template", func() {
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
 				SetValues: map[string]string{
-					"ingress.traefik.enabled":                    "true",
-					"ingress.traefik.stargate.enabled":           "false",
-					"ingress.traefik.stargate.cassandra.enabled": "true",
+					"stargate.ingress.enabled":           "false",
+					"stargate.ingress.cassandra.enabled": "true",
 				},
 			}
 			Expect(renderTemplate(options)).ShouldNot(Succeed())
 		})
 
-		It("is explicitly disabled at the Ingress level even when enabled at the Cassandra level", func() {
-			options := &helm.Options{
-				KubectlOptions: defaultKubeCtlOptions,
-				SetValues: map[string]string{
-					"ingress.traefik.enabled":                    "false",
-					"ingress.traefik.stargate.enabled":           "true",
-					"ingress.traefik.stargate.cassandra.enabled": "true",
-				},
-			}
-			Expect(renderTemplate(options)).ShouldNot(Succeed())
-		})
 	})
 
 	Context("by confirming it fails when", func() {
@@ -107,15 +83,15 @@ var _ = Describe("Verify Stargate Cassandra ingress template", func() {
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
 				SetValues: map[string]string{
-					"ingress.traefik.enabled":                    "true",
-					"ingress.traefik.cassandra.enabled":          "true",
-					"ingress.traefik.stargate.enabled":           "true",
-					"ingress.traefik.stargate.cassandra.enabled": "true",
+					"ingress.traefik.enabled":            "true",
+					"ingress.traefik.cassandra.enabled":  "true",
+					"stargate.ingress.enabled":           "true",
+					"stargate.ingress.cassandra.enabled": "true",
 				},
 			}
 			renderErr := renderTemplate(options)
 			Expect(renderErr).ToNot(BeNil())
-			Expect(renderErr.Error()).To(ContainSubstring("ingress.traefik.stargate.cassandra.enabled and ingress.traefik.cassandra.enabled cannot both be enabled"))
+			Expect(renderErr.Error()).To(ContainSubstring("stargate.ingress.cassandra.enabled and ingress.traefik.cassandra.enabled cannot both be enabled"))
 		})
 		It("stargate host is not defined", func() {
 			options := &helm.Options{
@@ -123,8 +99,8 @@ var _ = Describe("Verify Stargate Cassandra ingress template", func() {
 				SetValues: map[string]string{
 					"ingress.traefik.enabled":           "true",
 					"ingress.traefik.cassandra.enabled": "true",
-					"ingress.traefik.stargate.enabled":  "true",
-					"ingress.traefik.stargate.host":     "",
+					"stargate.ingress.enabled":          "true",
+					"stargate.ingress.host":             "",
 				},
 			}
 			Expect(renderTemplate(options)).ShouldNot(Succeed())
@@ -136,10 +112,10 @@ var _ = Describe("Verify Stargate Cassandra ingress template", func() {
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
 				SetValues: map[string]string{
-					"ingress.traefik.enabled":                    "true",
-					"ingress.traefik.cassandra.enabled":          "false",
-					"ingress.traefik.stargate.enabled":           "true",
-					"ingress.traefik.stargate.cassandra.enabled": "true",
+					"ingress.traefik.enabled":            "true",
+					"ingress.traefik.cassandra.enabled":  "false",
+					"stargate.ingress.enabled":           "true",
+					"stargate.ingress.cassandra.enabled": "true",
 				},
 			}
 
@@ -158,11 +134,9 @@ var _ = Describe("Verify Stargate Cassandra ingress template", func() {
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
 				SetValues: map[string]string{
-					"cassandra.clusterName":                      clusterName,
-					"ingress.traefik.enabled":                    "true",
-					"ingress.traefik.cassandra.enabled":          "false",
-					"ingress.traefik.stargate.enabled":           "true",
-					"ingress.traefik.stargate.cassandra.enabled": "true",
+					"cassandra.clusterName":              clusterName,
+					"stargate.ingress.enabled":           "true",
+					"stargate.ingress.cassandra.enabled": "true",
 				},
 			}
 
@@ -172,7 +146,7 @@ var _ = Describe("Verify Stargate Cassandra ingress template", func() {
 			VerifyTraefikTCPIngressRoute(ingress,
 				"cassandra",
 				"HostSNI(`*`)",
-				Sprintf("%s-%s-stargate-service", clusterName, "dc1"),
+				Sprintf("%s-%s-stargate-service", HelmReleaseName, "dc1"),
 				9042)
 		})
 
@@ -181,11 +155,9 @@ var _ = Describe("Verify Stargate Cassandra ingress template", func() {
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
 				SetValues: map[string]string{
-					"ingress.traefik.enabled":                    "true",
-					"ingress.traefik.cassandra.enabled":          "false",
-					"ingress.traefik.stargate.enabled":           "true",
-					"ingress.traefik.stargate.cassandra.enabled": "true",
-					"ingress.traefik.stargate.host":              stargateHost,
+					"stargate.ingress.enabled":           "true",
+					"stargate.ingress.cassandra.enabled": "true",
+					"stargate.ingress.host":              stargateHost,
 				},
 			}
 

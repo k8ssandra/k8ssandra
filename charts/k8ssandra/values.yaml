@@ -168,6 +168,66 @@ stargate:
     secret: ""
     username: ""
 
+  ingress:
+    # -- Optional hostname used to match requests
+    host:
+    auth:
+      enabled: true
+      # -- Optional hostname used to match requests, overriding stargate.ingress.host if set
+      host:
+      # tls:
+      #   # -- Hostnames to match as part of SNI routing
+      #   hosts:
+      #     - example.com
+      #   # -- Secret containing the TLS certificate and key for encrypting requests to this endpoint
+      #   secretName: my-secret
+
+    rest:
+      # -- Enables REST
+      enabled: true
+      # -- Optional hostname used to match requests, overriding stargate.ingress.host if set
+      host:
+      # tls:
+      #   # -- Hostnames to match as part of SNI routing
+      #   hosts:
+      #     - example.com
+      #   # -- Secret containing the TLS certificate and key for encrypting requests to this endpoint
+      #   secretName: my-secret
+
+    graphql:
+      # -- Enables GraphQL API endpoint ingress
+      enabled: true
+      # -- Optional hostname used to match requests, overriding stargate.ingress.host if set
+      host:
+      # tls:
+      #   # -- Hostnames to match as part of SNI routing
+      #   hosts:
+      #     - example.com
+      #   # -- Secret containing the TLS certificate and key for encrypting requests to this endpoint
+      #   secretName: my-secret
+      playground:
+        # -- Enables GraphQL playground interface ingress.
+        enabled: true
+
+    cassandra:
+      # -- Enables C* native protocol ingress with Traefik
+      enabled: true
+      # -- Determines which TCP-based ingress custom resources to template out. Currently only `traefik` is supported
+      method: traefik
+      # -- Parameters used by the Traefik IngressRoute custom resource
+      traefik:
+        entrypoint: cassandra
+        # Future parameters
+        # tls:
+        #   client_auth:
+        #     # -- Collection of Secrets containing TLS certificates. KEYS ARE NOT REQUIRED HERE
+        #     ca_secrets:
+        #       - ca_secret_1
+        #   domains:
+        #     - example.com
+        #   # -- Secret containing the TLS certificate and key for the listener
+        #   secretName: tls-secret
+
 repair:
   reaper:
     # -- When enabled, Reaper automatically sets up repair schedules for all
@@ -288,53 +348,12 @@ ingress:
     cassandra:
       # -- Enables Cassandra Traefik ingress definitions. Note this will
       # **only** work if `ingress.traefik.enabled` is also `true`. Additionally,
-      # this is mutually exclusive with
-      # ingress.traefik.stargate.cassandra.enabled
+      # this is mutually exclusive with stargate.ingress.cassandra.enabled
       enabled: false
 
       # -- Traefik entrypoints where traffic is sourced.
       entrypoints:
         - cassandra
-
-    # Stargate ingress support
-    stargate:
-      # -- Enables Stargate Traefik ingress definitions. Note this will **only**
-      # work if `stargate.enabled` and `ingress.traefik.enabled` are also `true`. Additionally, when
-      # enabled the authentication API (port 8081) is enabled automatically.
-      enabled: true
-
-      # -- Hostname Traefik should use for routing requests to Stargate. If
-      # using a local deployment consider leveraging dynamic DNS services like
-      # xip.io. Example: `stargate.127.0.0.1.xip.io` will return `127.0.0.1` for
-      # DNS requests routing requests to your local machine.
-      host: "*"
-
-      # Ingress for each Stargate API can be enabled/disabled independently
-      graphql:
-        # -- Enables ingress resources for Stargate GraphQL API. Note this will
-        # **only** work if `stargate.enabled`, `ingress.traefik.enabled`, and
-        # `ingress.traefik.stargate.enabled` are also `true`
-        enabled: true
-
-        playground:
-          # -- Enables GraphQL playground interface ingress.
-          enabled: true
-
-      rest:
-        # -- Enables ingress resources for Stargate REST API. Note this will
-        # **only** work if `stargate.enabled`, `ingress.traefik.enabled`, and
-        # `ingress.traefik.stargate.enabled` are also `true`
-        enabled: true
-
-      cassandra:
-        # -- Enables Traefik ingress resources for Stargate Cassandra API. Note
-        # this will **only** work if `stargate.enabled`,
-        # `ingress.traefik.enabled`, and `ingress.traefik.stargate.enabled` are
-        # also `true`. Additionally, this is mutually exclusive with
-        # ingress.traefik.cassandra.enabled
-        enabled: true
-        entrypoints:
-          - cassandra
 
 monitoring:
   grafana:
