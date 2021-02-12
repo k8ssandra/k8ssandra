@@ -64,7 +64,6 @@ Create the name of the service account to use
 {{ (index .Values.cassandra.datacenters 0).size }}
 {{- end }}
 
-
 {{/*
 Given a dict with "overrideHost" and "defaultHost", return overrideHost if it is set, and otherwise return defaultHost.
 Interpret "*" and "" as meaning "match any host" and return empty string in that case.
@@ -114,4 +113,27 @@ Return the ingress host that should be used for Stargate's Cassandra/CQL interfa
 */}}
 {{- define "k8ssandra.stargateIngressCassandraHost" -}}
 {{include "k8ssandra.overridableHost" (dict "defaultHost" .Values.stargate.ingress.host "overrideHost" .Values.stargate.ingress.cassandra.host)}}
+{{- end }}
+
+{{/*
+Create the jvm options based on heap properties specified.
+*/}}
+{{- define "k8ssandra.configureJvmHeap" -}}
+{{- $datacenter := (index .Values.cassandra.datacenters 0) -}}
+{{- if $datacenter.heap }}
+  {{- if $datacenter.heap.size }}
+      initial_heap_size: {{ $datacenter.heap.size }}
+      max_heap_size: {{ $datacenter.heap.size }}
+  {{- end }}
+  {{- if $datacenter.heap.newGenSize }}
+      heap_size_young_generation: {{ $datacenter.heap.newGenSize }}
+  {{- end }}
+{{- else if .Values.cassandra.heap }}
+  {{- if .Values.cassandra.heap.size  }}
+      initial_heap_size: {{ .Values.cassandra.heap.size }}
+      max_heap_size: {{ .Values.cassandra.heap.size }}
+  {{- end }}
+  {{- if  .Values.cassandra.heap.newGenSize }}
+      heap_size_young_generation: {{ .Values.cassandra.heap.newGenSize }}
+  {{- end }}
 {{- end }}

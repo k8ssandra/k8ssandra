@@ -75,10 +75,11 @@ cassandra:
   # resources.limits and resources.requests **must** be defined.
   allowMultipleNodesPerWorker: false
 
-  # -- Cluster-level heap configuration
-  heap:
-   size:
-   newGenSize:
+  # -- Optional cluster-level heap configuration, can be overridden at `datacenters` level.
+  # Options are commented out for reference.
+  heap: {}
+   #size:
+   #newGenSize:
 
   # -- Resource requests for each Cassandra pod.
   resources: {}
@@ -123,10 +124,10 @@ cassandra:
       affinityLabels: {}
 
     # -- Optional datacenter-level heap setting, overrides cluster-level setting
-    # `cassandra.heap`
-    heap:
-      size:
-      newGenSize:
+    # `cassandra.heap`.  Options are commented out for reference.
+    heap: {}
+      #size:
+      #newGenSize:
 
 stargate:
   # -- Enable Stargate resources as part of this release
