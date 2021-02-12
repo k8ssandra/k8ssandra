@@ -88,6 +88,12 @@ Notice the new repair added to the list.
 
 See [Schedule a cluster repair](http://cassandra-reaper.io/docs/usage/schedule/).
 
+### Autoscheduling
+
+It is possible to automatically schedule repairs for all non-system keyspaces in the cluster. Cluster's keyspaces are monitored and any modification (adding or removing) are  detected. Adding new ones will get a schedule created for them and removing the keyspace will instead remove the corresponding repair schedule. 
+
+To enable autoscheduling, set property `repair.reaper.autoschedule` to `true`. 
+
 ### Run a cluster repair
 
 On the repair job you just configured, click **Run now**.  
