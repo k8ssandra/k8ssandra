@@ -40,7 +40,6 @@ spec:
               servicePort: 8080
   {{- if $traefik.stargate.graphql.playground.enabled }}
           - path: /playground
-            pathType: Exact
             backend:
               serviceName: {{ $releaseName }}-{{ $datacenterName }}-stargate-service
               servicePort: 8080

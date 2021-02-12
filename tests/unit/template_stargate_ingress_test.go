@@ -165,8 +165,7 @@ func verifyIngressRules(ingress networking.Ingress, host *string, graphEnabled b
 		kubeapi.VerifyIngressRule(rules, "/graphql/", nil, host, serviceName, 8080)
 		kubeapi.VerifyIngressRule(rules, "/graphql-schema", nil, host, serviceName, 8080)
 		if playgroundEnabled {
-			pathType := networking.PathTypeExact
-			kubeapi.VerifyIngressRule(rules, "/playground", &pathType, host, serviceName, 8080)
+			kubeapi.VerifyIngressRule(rules, "/playground", nil, host, serviceName, 8080)
 		} else {
 			kubeapi.VerifyNoRuleWithPath(rules, "/playground")
 		}
