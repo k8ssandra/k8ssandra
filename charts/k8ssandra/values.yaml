@@ -173,6 +173,7 @@ stargate:
     # -- Optional hostname used to match requests
     host:
     auth:
+      # -- Enables authentication ingress
       enabled: true
       # -- Optional hostname used to match requests, overriding stargate.ingress.host if set
       host:
