@@ -26,7 +26,7 @@ func VerifyNoRuleWithPath(rules []networkingv1.IngressRule, path string) {
 	Expect(authRule).To(BeNil(), description)
 }
 
-// VerifyIngressRule finds an IngresssRule from the given array with the given path and asserts that
+// VerifyIngressRule finds an IngressRule from the given array with the given path and asserts that
 // it exists and has the correct pathType, host, serviceName, and port.
 func VerifyIngressRule(rules []networkingv1.IngressRule, path string, host *string, serviceName string, port int) {
 	rule, httpPath := FindIngressRuleByHttpPath(rules, path)
