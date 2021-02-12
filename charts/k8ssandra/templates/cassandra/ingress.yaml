@@ -18,7 +18,7 @@ spec:
   routes:
     - match: HostSNI(`*`)
       services:
-        - name: {{ $releaseName }}-{{ $datacenterName }}-service
+        - name: {{ include "k8ssandra.clusterName" . }}-{{ $datacenterName }}-service
           port: 9042
 {{- end }}
 {{- end }}

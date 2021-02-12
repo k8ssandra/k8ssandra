@@ -3,8 +3,11 @@ package unit_test
 import (
 	"encoding/json"
 	"fmt"
-	helmUtils "github.com/k8ssandra/k8ssandra/tests/unit/utils/helm"
 	"path/filepath"
+
+	helmUtils "github.com/k8ssandra/k8ssandra/tests/unit/utils/helm"
+
+	"strconv"
 
 	cassdcv1beta1 "github.com/datastax/cass-operator/operator/pkg/apis/cassandra/v1beta1"
 	"github.com/gruntwork-io/terratest/modules/helm"
@@ -13,7 +16,6 @@ import (
 	. "github.com/onsi/gomega"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/resource"
-	"strconv"
 )
 
 type CassandraConfig struct {
@@ -281,7 +283,10 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 				"-Dcassandra.system_distributed_replication_per_dc="+strconv.Itoa(clusterSize),
 			))
 
-			Expect(cassdc.Spec.Users).To(ConsistOf(cassdcv1beta1.CassandraUser{Superuser: true, SecretName: clusterName + "-reaper"}))
+			Expect(cassdc.Spec.Users).To(ConsistOf(
+				cassdcv1beta1.CassandraUser{Superuser: true, SecretName: clusterName + "-reaper"},
+				cassdcv1beta1.CassandraUser{Superuser: true, SecretName: clusterName + "-stargate"},
+			))
 		})
 
 		It("providing superuser secret", func() {
@@ -319,9 +324,13 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			Expect(cassdc.Spec.SuperuserSecretName).To(Equal(clusterName + "-superuser"))
 		})
 
-		It("disabling reaper", func() {
+		It("disabling reaper and medusa and stargate", func() {
 			options := &helm.Options{
-				SetValues:      map[string]string{"repair.reaper.enabled": "false"},
+				SetValues: map[string]string{
+					"stargate.enabled":             "false",
+					"repair.reaper.enabled":        "false",
+					"backupRestore.medusa.enabled": "false",
+				},
 				KubectlOptions: defaultKubeCtlOptions,
 			}
 
@@ -333,6 +342,8 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			Expect(cassdc.Spec.PodTemplateSpec.Spec.Containers[0].Env).To(BeNil())
 			// No initcontainers slice should be present
 			Expect(cassdc.Spec.PodTemplateSpec.Spec.InitContainers).To(BeNil())
+			// No users should exist
+			Expect(cassdc.Spec.Users).To(BeNil())
 		})
 
 		It("enabling only medusa", func() {
@@ -370,6 +381,7 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 					"cassandra.auth.enabled":       "true",
 					"backupRestore.medusa.enabled": "true",
 					"repair.reaper.enabled":        "false",
+					"stargate.enabled":             "false",
 				},
 			}
 
@@ -452,11 +464,11 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 					"backupRestore.medusa.enabled":              "true",
 					"backupRestore.medusa.cassandraUser.secret": secretName,
 					"repair.reaper.enabled":                     "false",
+					"stargate.enabled":                          "false",
 				},
 			}
 
 			Expect(renderTemplate(options)).To(Succeed())
-
 			Expect(cassdc.Spec.Users).To(ContainElement(cassdcv1beta1.CassandraUser{Superuser: true, SecretName: secretName}))
 
 			AssertInitContainerNamesMatch(cassdc, ConfigInitContainer, GetJolokiaInitContainer, MedusaInitContainer)
@@ -609,7 +621,6 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 				SetValues: map[string]string{
 					"cassandra.heap.size":           "700M",
 					"cassandra.heap.newGenSize":     "350M",
-					"cassandra.datacenters[0].heap": "",
 					"cassandra.datacenters[0].name": dcName,
 				},
 				KubectlOptions: defaultKubeCtlOptions,

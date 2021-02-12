@@ -1,14 +1,15 @@
 package unit_test
 
 import (
-	"fmt"
+	. "fmt"
+	"path/filepath"
+
 	"github.com/gruntwork-io/terratest/modules/helm"
 	helmUtils "github.com/k8ssandra/k8ssandra/tests/unit/utils/helm"
 	. "github.com/k8ssandra/k8ssandra/tests/unit/utils/traefik"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	traefik "github.com/traefik/traefik/v2/pkg/provider/kubernetes/crd/traefik/v1alpha1"
-	"path/filepath"
 )
 
 var _ = Describe("Verify Cassandra ingress template", func() {
@@ -78,18 +79,38 @@ var _ = Describe("Verify Cassandra ingress template", func() {
 	})
 
 	Context("by rendering it when", func() {
-		It("is enabled", func() {
+		It("it is enabled and Stargate Cassandra ingress is disabled", func() {
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
 				SetValues: map[string]string{
-					"ingress.traefik.enabled": "true",
+					"ingress.traefik.enabled":                    "true",
+					"ingress.traefik.cassandra.enabled":          "true",
+					"ingress.traefik.stargate.cassandra.enabled": "false",
 				},
 			}
 
 			Expect(renderTemplate(options)).To(Succeed())
 			Expect(ingress.Kind).To(Equal("IngressRouteTCP"))
 
-			VerifyTraefikTCPIngressRoute(ingress, "cassandra", "HostSNI(`*`)", fmt.Sprintf("%s-%s-service", HelmReleaseName, "dc1"), 9042)
+			VerifyTraefikTCPIngressRoute(ingress, "cassandra", "HostSNI(`*`)", Sprintf("%s-%s-service", HelmReleaseName, "dc1"), 9042)
+		})
+
+		It("it is enabled and Stargate Cassandra ingress is disabled with release name != cluster name", func() {
+			clusterName := Sprintf("k8ssandracluster%s", UniqueIdSuffix)
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+				SetValues: map[string]string{
+					"cassandra.clusterName":                      clusterName,
+					"ingress.traefik.enabled":                    "true",
+					"ingress.traefik.cassandra.enabled":          "true",
+					"ingress.traefik.stargate.cassandra.enabled": "false",
+				},
+			}
+
+			Expect(renderTemplate(options)).To(Succeed())
+			Expect(ingress.Kind).To(Equal("IngressRouteTCP"))
+
+			VerifyTraefikTCPIngressRoute(ingress, "cassandra", "HostSNI(`*`)", Sprintf("%s-%s-service", clusterName, "dc1"), 9042)
 		})
 	})
 })
