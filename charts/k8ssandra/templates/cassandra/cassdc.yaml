@@ -5,8 +5,6 @@
   {{- fail (print .Values.cassandra.version " is not a supported Cassandra version") }}
 {{- end -}}
 
-{{- include "k8sandra.checkGcEnabled" . -}}
-
 apiVersion: cassandra.datastax.com/v1beta1
 kind: CassandraDatacenter
 metadata:
@@ -97,6 +95,7 @@ spec:
   {{- else }}
     jvm-server-options:
   {{- end }}
+  {{- include "k8ssandra.configureGc" . -}}
 {{- include "k8ssandra.configureJvmHeap" . }}
       additional-jvm-opts:
 {{- if .Values.cassandra.auth.enabled }}

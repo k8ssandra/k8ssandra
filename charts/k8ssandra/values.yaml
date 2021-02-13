@@ -149,6 +149,21 @@ cassandra:
       #size:
       #newGenSize:
 
+    gc: {}
+#      cms:
+#        enabled: true
+#        survivorRatio: 8
+#        maxTenuringThreshold: 1
+#        initiatingOccupancyFraction: 75
+#        waitDuration: 10000
+#      g1:
+#        enabled: false
+#        setUpdatingPauseTimePercent: 5
+#        maxGcPauseMillis: 500
+#        initiatingHeapOccupancyPercent: 70
+#        parallelGcThreads: 16
+#        concurrentGcThreads: 16
+
   # Cassandra native transport ingress support
   ingress:
     # -- Enables Cassandra Traefik ingress definitions. Note that

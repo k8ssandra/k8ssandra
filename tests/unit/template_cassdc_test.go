@@ -32,10 +32,20 @@ type CassandraConfig struct {
 }
 
 type JvmOptions struct {
-	AdditionalJvmOptions []string `json:"additional-jvm-opts"`
-	InitialHeapSize      string   `json:"initial_heap_size"`
-	MaxHeapSize          string   `json:"max_heap_size"`
-	YoungGenSize         string   `json:"heap_size_young_generation"`
+	AdditionalJvmOptions           []string `json:"additional-jvm-opts"`
+	InitialHeapSize                string   `json:"initial_heap_size"`
+	MaxHeapSize                    string   `json:"max_heap_size"`
+	YoungGenSize                   string   `json:"heap_size_young_generation"`
+	GarbageCollector               string   `json:"garbage_collector"`
+	SurvivorRatio                  int64    `json:"survivor_ratio"`
+	MaxTenuringThreshold           int64    `json:"max_tenuring_threshold"`
+	InitiatingOccupancyFraction    int64    `json:"cms_initiating_occupancy_fraction"`
+	CmsWaitDuration                int64    `json:"cms_wait_duration"`
+	SetUpdatingPauseTimePercent    int64    `json:"g1r_set_updating_pause_time_percent"`
+	MaxGcPauseMillis               int64    `json:"max_gc_pause_millis"`
+	InitiatingHeapOccupancyPercent int64    `json:"initiating_heap_occupancy_percent"`
+	ParallelGcThreads              int64    `json:"parallel_gc_threads"`
+	ConcurrentGcThreads            int64    `json:"conc_gc_threads"`
 }
 
 type Config struct {
@@ -915,6 +925,139 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 
 			Expect(cassdc.Spec.ServerVersion).To(Equal(version))
 			Expect(cassdc.Spec.ServerImage).To(Equal(image))
+		})
+	})
+
+	Context("when configuring garbage collection", func() {
+		It("by enabling CMS at the cluster level", func() {
+			survivorRatio := 4
+			maxTenuringThreshold := 5
+			initiatingOccupancyFraction := 65
+			waitDuration := 11000
+
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+				SetValues: map[string]string{
+					"cassandra.gc.cms.enabled":                     "true",
+					"cassandra.gc.cms.survivorRatio":               strconv.Itoa(survivorRatio),
+					"cassandra.gc.cms.maxTenuringThreshold":        strconv.Itoa(maxTenuringThreshold),
+					"cassandra.gc.cms.initiatingOccupancyFraction": strconv.Itoa(initiatingOccupancyFraction),
+					"cassandra.gc.cms.waitDuration":                strconv.Itoa(waitDuration),
+				},
+			}
+
+			Expect(renderTemplate(options)).To(Succeed())
+
+			var config Config
+			Expect(json.Unmarshal(cassdc.Spec.Config, &config)).To(Succeed())
+
+			Expect(config.JvmOptions.GarbageCollector).To(Equal("CMS"))
+			Expect(config.JvmOptions.SurvivorRatio).To(Equal(int64(survivorRatio)))
+			Expect(config.JvmOptions.MaxTenuringThreshold).To(Equal(int64(maxTenuringThreshold)))
+			Expect(config.JvmOptions.InitiatingOccupancyFraction).To(Equal(int64(initiatingOccupancyFraction)))
+			Expect(config.JvmOptions.CmsWaitDuration).To(Equal(int64(waitDuration)))
+		})
+
+		It("by disabling CMS at the cluster level", func() {
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+				SetValues: map[string]string{
+					"cassandra.gc.cms.enabled": "false",
+				},
+			}
+
+			Expect(renderTemplate(options)).To(Succeed())
+
+			var config Config
+			Expect(json.Unmarshal(cassdc.Spec.Config, &config)).To(Succeed())
+
+			Expect(config.JvmOptions.GarbageCollector).To(BeEmpty())
+			Expect(config.JvmOptions.SurvivorRatio).To(Equal(int64(0)))
+			Expect(config.JvmOptions.MaxTenuringThreshold).To(Equal(int64(0)))
+			Expect(config.JvmOptions.InitiatingOccupancyFraction).To(Equal(int64(0)))
+			Expect(config.JvmOptions.CmsWaitDuration).To(Equal(int64(0)))
+		})
+
+		It("by enabling both CMS and G1 at the cluster level", func() {
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+				SetValues: map[string]string{
+					"cassandra.gc.cms.enabled": "true",
+					"cassandra.gc.g1.enabled":  "true",
+				},
+			}
+
+			Expect(renderTemplate(options)).NotTo(Succeed())
+		})
+
+		It("by enabling CMS at the datacenter level", func() {
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+				ValuesFiles:    []string{"./testdata/dc-gc-cms-values.yaml"},
+			}
+
+			Expect(renderTemplate(options)).To(Succeed())
+
+			var config Config
+			Expect(json.Unmarshal(cassdc.Spec.Config, &config)).To(Succeed())
+
+			Expect(config.JvmOptions.GarbageCollector).To(Equal("CMS"))
+			Expect(config.JvmOptions.SurvivorRatio).To(Equal(int64(10)))
+			Expect(config.JvmOptions.MaxTenuringThreshold).To(Equal(int64(5)))
+			Expect(config.JvmOptions.InitiatingOccupancyFraction).To(Equal(int64(80)))
+			Expect(config.JvmOptions.CmsWaitDuration).To(Equal(int64(12000)))
+		})
+
+		It("by enabling G1 at the cluster level", func() {
+			setUpdatingPauseTimePercent := 10
+			maxGcPauseMillis := 750
+			initiatingHeapOccupancyPercent := 75
+			parallelGcThreads := 18
+			concurrentGcThreads := 18
+
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+				SetValues: map[string]string{
+					"cassandra.gc.cms.enabled":                       "false",
+					"cassandra.gc.g1.enabled":                        "true",
+					"cassandra.gc.g1.setUpdatingPauseTimePercent":    strconv.Itoa(setUpdatingPauseTimePercent),
+					"cassandra.gc.g1.maxGcPauseMillis":               strconv.Itoa(maxGcPauseMillis),
+					"cassandra.gc.g1.initiatingHeapOccupancyPercent": strconv.Itoa(initiatingHeapOccupancyPercent),
+					"cassandra.gc.g1.parallelGcThreads":              strconv.Itoa(parallelGcThreads),
+					"cassandra.gc.g1.concurrentGcThreads":            strconv.Itoa(concurrentGcThreads),
+				},
+			}
+
+			Expect(renderTemplate(options)).To(Succeed())
+
+			var config Config
+			Expect(json.Unmarshal(cassdc.Spec.Config, &config)).To(Succeed())
+
+			Expect(config.JvmOptions.GarbageCollector).To(Equal("G1"))
+			Expect(config.JvmOptions.SetUpdatingPauseTimePercent).To(Equal(int64(setUpdatingPauseTimePercent)))
+			Expect(config.JvmOptions.MaxGcPauseMillis).To(Equal(int64(maxGcPauseMillis)))
+			Expect(config.JvmOptions.InitiatingHeapOccupancyPercent).To(Equal(int64(initiatingHeapOccupancyPercent)))
+			Expect(config.JvmOptions.ParallelGcThreads).To(Equal(int64(parallelGcThreads)))
+			Expect(config.JvmOptions.ConcurrentGcThreads).To(Equal(int64(concurrentGcThreads)))
+		})
+
+		It("by enabling G1 at the datacenter level with CMS at the cluster level", func() {
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+				ValuesFiles:    []string{"./testdata/dc-gc-g1-values.yaml"},
+			}
+
+			Expect(renderTemplate(options)).To(Succeed())
+
+			var config Config
+			Expect(json.Unmarshal(cassdc.Spec.Config, &config)).To(Succeed())
+
+			Expect(config.JvmOptions.GarbageCollector).To(Equal("G1"))
+			Expect(config.JvmOptions.SetUpdatingPauseTimePercent).To(Equal(int64(7)))
+			Expect(config.JvmOptions.MaxGcPauseMillis).To(Equal(int64(600)))
+			Expect(config.JvmOptions.InitiatingHeapOccupancyPercent).To(Equal(int64(80)))
+			Expect(config.JvmOptions.ParallelGcThreads).To(Equal(int64(18)))
+			Expect(config.JvmOptions.ConcurrentGcThreads).To(Equal(int64(18)))
 		})
 	})
 
