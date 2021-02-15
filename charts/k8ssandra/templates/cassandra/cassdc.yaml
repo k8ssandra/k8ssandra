@@ -57,6 +57,7 @@ spec:
 {{- else if .Values.cassandra.auth.superuser.username }}
   superuserSecretName: {{ include "k8ssandra.clusterName" . }}-superuser
 {{- end }}
+  {{- if or .Values.repair.reaper.enabled .Values.backupRestore.medusa.enabled .Values.stargate.enabled }}
   users:
   {{- if .Values.repair.reaper.enabled }}
     - secretName: {{ default (printf "%s-%s" (include "k8ssandra.clusterName" .) "reaper") .Values.repair.reaper.cassandraUser.secret }}
@@ -69,6 +70,7 @@ spec:
   {{- if .Values.stargate.enabled }}
     - secretName: {{ default (printf "%s-%s" (include "k8ssandra.clusterName" .) "stargate") .Values.stargate.cassandraUser.secret }}
       superuser: true
+  {{- end }}
   {{- end }}
 {{- end }}
   config:    
@@ -88,23 +90,7 @@ spec:
       credentials_validity_in_ms: {{ .Values.cassandra.auth.cacheValidityPeriodMillis }}
       credentials_update_interval_in_ms: {{ .Values.cassandra.auth.cacheUpdateIntervalMillis }}
     jvm-options:
-{{- if $datacenter.heap }}
-  {{- if $datacenter.heap.size }}
-      initial_heap_size: {{ $datacenter.heap.size }}
-      max_heap_size: {{ $datacenter.heap.size}}
-  {{- end }}
-  {{- if $datacenter.heap.newGenSize }}
-      heap_size_young_generation: {{ $datacenter.heap.newGenSize }}
-  {{- end }}
-  {{- else if .Values.cassandra.heap }}
-  {{- if .Values.cassandra.heap.size  }}
-      initial_heap_size: {{ .Values.cassandra.heap.size }}
-      max_heap_size: {{ .Values.cassandra.heap.size }}
-  {{- end }}
-  {{- if  .Values.cassandra.heap.newGenSize }}
-      heap_size_young_generation: {{ .Values.cassandra.heap.newGenSize }}
-  {{- end }}
-{{- end}}
+{{- include "k8ssandra.configureJvmHeap" . }}
       additional-jvm-opts:
 {{- if .Values.cassandra.auth.enabled }}
         - "-Dcassandra.system_distributed_replication_dc_names={{ $datacenter.name }}"

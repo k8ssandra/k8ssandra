@@ -98,20 +98,21 @@ K8ssandra deploys the following components, some components are optional, and de
   * 3.11.7
   * 3.11.8
   * 3.11.9
+  * 3.11.10 (default)
 * [Management API for Apache Cassandra](https://github.com/datastax/management-api-for-apache-cassandra)
-  * 0.1.17
+  * 0.1.19
 * [Metric Collector for Apache Cassandra (MCAC)](https://github.com/datastax/metric-collector-for-apache-cassandra)
-  * 0.1.7
+  * 0.1.9
 * [Prometheus](https://prometheus.io/)
-  * 2.21.0
+  * 2.22.1
 * [Grafana](https://grafana.com/)
-  * 7.1.1
+  * 7.3.5
 * [Medusa](https://github.com/thelastpickle/cassandra-medusa)
-  * 0.8.0
+  * 0.9.0-dev ([unreleased](https://github.com/thelastpickle/cassandra-medusa/tree/6ab6a55541e98505e502eb698b2cb7805764a9f2))
 * [Cassandra Reaper](http://cassandra-reaper.io/)
   * 2.1.3
 * [Stargate](https://stargate.io/)
-  * 1.0.0
+  * 1.0.7
 
 *Note: Throughout these docs, examples are shown to deploy [Traefik](https://traefik.io/) as a means to provide external access to the k8ssandra cluster.  It is deployed separately from k8ssandra, and as such, the version deployed will vary.*
 

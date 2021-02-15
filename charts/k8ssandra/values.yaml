@@ -78,10 +78,11 @@ cassandra:
   # resources.limits and resources.requests **must** be defined.
   allowMultipleNodesPerWorker: false
 
-  # -- Cluster-level heap configuration
-  heap:
-   size:
-   newGenSize:
+  # -- Optional cluster-level heap configuration, can be overridden at `datacenters` level.
+  # Options are commented out for reference.
+  heap: {}
+   #size:
+   #newGenSize:
 
   # -- Resource requests for each Cassandra pod.
   resources: {}
@@ -126,14 +127,14 @@ cassandra:
       affinityLabels: {}
 
     # -- Optional datacenter-level heap setting, overrides cluster-level setting
-    # `cassandra.heap`
-    heap:
-      size:
-      newGenSize:
+    # `cassandra.heap`.  Options are commented out for reference.
+    heap: {}
+      #size:
+      #newGenSize:
 
 stargate:
   # -- Enable Stargate resources as part of this release
-  enabled: false
+  enabled: true
 
   # -- Number of Stargate instances to deploy. This value may be scaled independently of
   # Cassandra cluster nodes. Each instance handles API and coordination tasks
@@ -293,7 +294,7 @@ ingress:
       # **only** work if `ingress.traefik.enabled` is also `true`. Additionally,
       # this is mutually exclusive with
       # ingress.traefik.stargate.cassandra.enabled
-      enabled: true
+      enabled: false
 
       # -- Traefik entrypoints where traffic is sourced.
       entrypoints:
@@ -321,7 +322,7 @@ ingress:
 
         playground:
           # -- Enables GraphQL playground interface ingress.
-          enabled: false
+          enabled: true
 
       rest:
         # -- Enables ingress resources for Stargate REST API. Note this will
@@ -335,7 +336,7 @@ ingress:
         # `ingress.traefik.enabled`, and `ingress.traefik.stargate.enabled` are
         # also `true`. Additionally, this is mutually exclusive with
         # ingress.traefik.cassandra.enabled
-        enabled: false
+        enabled: true
         entrypoints:
           - cassandra
 
