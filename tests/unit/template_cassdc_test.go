@@ -37,15 +37,15 @@ type JvmOptions struct {
 	MaxHeapSize                    string   `json:"max_heap_size"`
 	YoungGenSize                   string   `json:"heap_size_young_generation"`
 	GarbageCollector               string   `json:"garbage_collector"`
-	SurvivorRatio                  int64    `json:"survivor_ratio"`
-	MaxTenuringThreshold           int64    `json:"max_tenuring_threshold"`
-	InitiatingOccupancyFraction    int64    `json:"cms_initiating_occupancy_fraction"`
-	CmsWaitDuration                int64    `json:"cms_wait_duration"`
-	SetUpdatingPauseTimePercent    int64    `json:"g1r_set_updating_pause_time_percent"`
-	MaxGcPauseMillis               int64    `json:"max_gc_pause_millis"`
-	InitiatingHeapOccupancyPercent int64    `json:"initiating_heap_occupancy_percent"`
-	ParallelGcThreads              int64    `json:"parallel_gc_threads"`
-	ConcurrentGcThreads            int64    `json:"conc_gc_threads"`
+	SurvivorRatio                  *int64   `json:"survivor_ratio"`
+	MaxTenuringThreshold           *int64   `json:"max_tenuring_threshold"`
+	InitiatingOccupancyFraction    *int64   `json:"cms_initiating_occupancy_fraction"`
+	CmsWaitDuration                *int64   `json:"cms_wait_duration"`
+	SetUpdatingPauseTimePercent    *int64   `json:"g1r_set_updating_pause_time_percent"`
+	MaxGcPauseMillis               *int64   `json:"max_gc_pause_millis"`
+	InitiatingHeapOccupancyPercent *int64   `json:"initiating_heap_occupancy_percent"`
+	ParallelGcThreads              *int64   `json:"parallel_gc_threads"`
+	ConcurrentGcThreads            *int64   `json:"conc_gc_threads"`
 }
 
 type Config struct {
@@ -952,10 +952,10 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			Expect(json.Unmarshal(cassdc.Spec.Config, &config)).To(Succeed())
 
 			Expect(config.JvmOptions.GarbageCollector).To(Equal("CMS"))
-			Expect(config.JvmOptions.SurvivorRatio).To(Equal(int64(survivorRatio)))
-			Expect(config.JvmOptions.MaxTenuringThreshold).To(Equal(int64(maxTenuringThreshold)))
-			Expect(config.JvmOptions.InitiatingOccupancyFraction).To(Equal(int64(initiatingOccupancyFraction)))
-			Expect(config.JvmOptions.CmsWaitDuration).To(Equal(int64(waitDuration)))
+			Expect(*config.JvmOptions.SurvivorRatio).To(Equal(int64(survivorRatio)))
+			Expect(*config.JvmOptions.MaxTenuringThreshold).To(Equal(int64(maxTenuringThreshold)))
+			Expect(*config.JvmOptions.InitiatingOccupancyFraction).To(Equal(int64(initiatingOccupancyFraction)))
+			Expect(*config.JvmOptions.CmsWaitDuration).To(Equal(int64(waitDuration)))
 		})
 
 		It("by disabling CMS at the cluster level", func() {
@@ -972,10 +972,10 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			Expect(json.Unmarshal(cassdc.Spec.Config, &config)).To(Succeed())
 
 			Expect(config.JvmOptions.GarbageCollector).To(BeEmpty())
-			Expect(config.JvmOptions.SurvivorRatio).To(Equal(int64(0)))
-			Expect(config.JvmOptions.MaxTenuringThreshold).To(Equal(int64(0)))
-			Expect(config.JvmOptions.InitiatingOccupancyFraction).To(Equal(int64(0)))
-			Expect(config.JvmOptions.CmsWaitDuration).To(Equal(int64(0)))
+			Expect(config.JvmOptions.SurvivorRatio).To(BeNil())
+			Expect(config.JvmOptions.MaxTenuringThreshold).To(BeNil())
+			Expect(config.JvmOptions.InitiatingOccupancyFraction).To(BeNil())
+			Expect(config.JvmOptions.CmsWaitDuration).To(BeNil())
 		})
 
 		It("by enabling both CMS and G1 at the cluster level", func() {
@@ -1002,10 +1002,10 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			Expect(json.Unmarshal(cassdc.Spec.Config, &config)).To(Succeed())
 
 			Expect(config.JvmOptions.GarbageCollector).To(Equal("CMS"))
-			Expect(config.JvmOptions.SurvivorRatio).To(Equal(int64(10)))
-			Expect(config.JvmOptions.MaxTenuringThreshold).To(Equal(int64(5)))
-			Expect(config.JvmOptions.InitiatingOccupancyFraction).To(Equal(int64(80)))
-			Expect(config.JvmOptions.CmsWaitDuration).To(Equal(int64(12000)))
+			Expect(*config.JvmOptions.SurvivorRatio).To(Equal(int64(10)))
+			Expect(*config.JvmOptions.MaxTenuringThreshold).To(Equal(int64(5)))
+			Expect(*config.JvmOptions.InitiatingOccupancyFraction).To(Equal(int64(80)))
+			Expect(*config.JvmOptions.CmsWaitDuration).To(Equal(int64(12000)))
 		})
 
 		It("by enabling G1 at the cluster level", func() {
@@ -1034,11 +1034,11 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			Expect(json.Unmarshal(cassdc.Spec.Config, &config)).To(Succeed())
 
 			Expect(config.JvmOptions.GarbageCollector).To(Equal("G1"))
-			Expect(config.JvmOptions.SetUpdatingPauseTimePercent).To(Equal(int64(setUpdatingPauseTimePercent)))
-			Expect(config.JvmOptions.MaxGcPauseMillis).To(Equal(int64(maxGcPauseMillis)))
-			Expect(config.JvmOptions.InitiatingHeapOccupancyPercent).To(Equal(int64(initiatingHeapOccupancyPercent)))
-			Expect(config.JvmOptions.ParallelGcThreads).To(Equal(int64(parallelGcThreads)))
-			Expect(config.JvmOptions.ConcurrentGcThreads).To(Equal(int64(concurrentGcThreads)))
+			Expect(*config.JvmOptions.SetUpdatingPauseTimePercent).To(Equal(int64(setUpdatingPauseTimePercent)))
+			Expect(*config.JvmOptions.MaxGcPauseMillis).To(Equal(int64(maxGcPauseMillis)))
+			Expect(*config.JvmOptions.InitiatingHeapOccupancyPercent).To(Equal(int64(initiatingHeapOccupancyPercent)))
+			Expect(*config.JvmOptions.ParallelGcThreads).To(Equal(int64(parallelGcThreads)))
+			Expect(*config.JvmOptions.ConcurrentGcThreads).To(Equal(int64(concurrentGcThreads)))
 		})
 
 		It("by enabling G1 at the datacenter level with CMS at the cluster level", func() {
@@ -1053,11 +1053,29 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			Expect(json.Unmarshal(cassdc.Spec.Config, &config)).To(Succeed())
 
 			Expect(config.JvmOptions.GarbageCollector).To(Equal("G1"))
-			Expect(config.JvmOptions.SetUpdatingPauseTimePercent).To(Equal(int64(7)))
-			Expect(config.JvmOptions.MaxGcPauseMillis).To(Equal(int64(600)))
-			Expect(config.JvmOptions.InitiatingHeapOccupancyPercent).To(Equal(int64(80)))
-			Expect(config.JvmOptions.ParallelGcThreads).To(Equal(int64(18)))
-			Expect(config.JvmOptions.ConcurrentGcThreads).To(Equal(int64(18)))
+			Expect(*config.JvmOptions.SetUpdatingPauseTimePercent).To(Equal(int64(7)))
+			Expect(*config.JvmOptions.MaxGcPauseMillis).To(Equal(int64(600)))
+			Expect(*config.JvmOptions.InitiatingHeapOccupancyPercent).To(Equal(int64(80)))
+			Expect(*config.JvmOptions.ParallelGcThreads).To(Equal(int64(18)))
+			Expect(*config.JvmOptions.ConcurrentGcThreads).To(Equal(int64(18)))
+		})
+
+		It("by enabling G1 at the cluster level with CMS at the datacenter level", func() {
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+				ValuesFiles:    []string{"./testdata/cluster-g1-dc-cms-values.yaml"},
+			}
+
+			Expect(renderTemplate(options)).To(Succeed())
+
+			var config Config
+			Expect(json.Unmarshal(cassdc.Spec.Config, &config)).To(Succeed())
+
+			Expect(config.JvmOptions.GarbageCollector).To(Equal("CMS"))
+			Expect(*config.JvmOptions.SurvivorRatio).To(Equal(int64(6)))
+			Expect(*config.JvmOptions.MaxTenuringThreshold).To(Equal(int64(1)))
+			Expect(*config.JvmOptions.InitiatingOccupancyFraction).To(Equal(int64(75)))
+			Expect(*config.JvmOptions.CmsWaitDuration).To(Equal(int64(11000)))
 		})
 	})
 
