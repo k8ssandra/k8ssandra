@@ -1018,7 +1018,6 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
 				SetValues: map[string]string{
-					"cassandra.gc.cms.enabled":                       "false",
 					"cassandra.gc.g1.enabled":                        "true",
 					"cassandra.gc.g1.setUpdatingPauseTimePercent":    strconv.Itoa(setUpdatingPauseTimePercent),
 					"cassandra.gc.g1.maxGcPauseMillis":               strconv.Itoa(maxGcPauseMillis),
@@ -1076,6 +1075,90 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			Expect(*config.JvmOptions.MaxTenuringThreshold).To(Equal(int64(1)))
 			Expect(*config.JvmOptions.InitiatingOccupancyFraction).To(Equal(int64(75)))
 			Expect(*config.JvmOptions.CmsWaitDuration).To(Equal(int64(11000)))
+		})
+
+		It("by enabling CMS at the cluster level with no properties set", func() {
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+				SetValues: map[string]string{
+					"cassandra.gc.cms.enabled": "true",
+				},
+			}
+
+			Expect(renderTemplate(options)).To(Succeed())
+
+			var config Config
+			Expect(json.Unmarshal(cassdc.Spec.Config, &config)).To(Succeed())
+
+			Expect(config.JvmOptions.GarbageCollector).To(Equal("CMS"))
+			Expect(config.JvmOptions.SurvivorRatio).To(BeNil())
+			Expect(config.JvmOptions.MaxTenuringThreshold).To(BeNil())
+			Expect(config.JvmOptions.InitiatingOccupancyFraction).To(BeNil())
+			Expect(config.JvmOptions.CmsWaitDuration).To(BeNil())
+		})
+
+		It("by enabling G1 at the cluster level with no properties set", func() {
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+				SetValues: map[string]string{
+					"cassandra.gc.g1.enabled": "true",
+				},
+			}
+
+			Expect(renderTemplate(options)).To(Succeed())
+
+			var config Config
+			Expect(json.Unmarshal(cassdc.Spec.Config, &config)).To(Succeed())
+
+			Expect(config.JvmOptions.GarbageCollector).To(Equal("G1"))
+			Expect(config.JvmOptions.SetUpdatingPauseTimePercent).To(BeNil())
+			Expect(config.JvmOptions.MaxGcPauseMillis).To(BeNil())
+			Expect(config.JvmOptions.InitiatingHeapOccupancyPercent).To(BeNil())
+			Expect(config.JvmOptions.ParallelGcThreads).To(BeNil())
+			Expect(config.JvmOptions.ConcurrentGcThreads).To(BeNil())
+		})
+
+		It("by enabling CMS and G1 at the datacenter level", func() {
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+				SetValues: map[string]string{
+					"cassandra.datacenters[0].gc.cms.enabled": "true",
+					"cassandra.datacenters[0].gc.g1.enabled":  "true",
+				},
+			}
+
+			Expect(renderTemplate(options)).NotTo(Succeed())
+		})
+
+		It("by enabling CMS at the cluster level and override at the datacenter level with no properties set", func() {
+			dcName := "test"
+			survivorRatio := 4
+			maxTenuringThreshold := 5
+			initiatingOccupancyFraction := 65
+			waitDuration := 11000
+
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+				SetValues: map[string]string{
+					"cassandra.gc.cms.enabled":                     "true",
+					"cassandra.gc.cms.survivorRatio":               strconv.Itoa(survivorRatio),
+					"cassandra.gc.cms.maxTenuringThreshold":        strconv.Itoa(maxTenuringThreshold),
+					"cassandra.gc.cms.initiatingOccupancyFraction": strconv.Itoa(initiatingOccupancyFraction),
+					"cassandra.gc.cms.waitDuration":                strconv.Itoa(waitDuration),
+					"cassandra.datacenters[0].name":                dcName,
+					"cassandra.datacenters[0].gc.cms.enabled":      "true",
+				},
+			}
+
+			Expect(renderTemplate(options)).To(Succeed())
+
+			var config Config
+			Expect(json.Unmarshal(cassdc.Spec.Config, &config)).To(Succeed())
+
+			Expect(config.JvmOptions.SurvivorRatio).To(BeNil())
+			Expect(config.JvmOptions.MaxTenuringThreshold).To(BeNil())
+			Expect(config.JvmOptions.InitiatingOccupancyFraction).To(BeNil())
+			Expect(config.JvmOptions.CmsWaitDuration).To(BeNil())
 		})
 	})
 

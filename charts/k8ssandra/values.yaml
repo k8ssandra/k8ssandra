@@ -82,20 +82,24 @@ cassandra:
    #size:
    #newGenSize:
 
+  # -- Optional cluster-level garbage collection configuration. It can be overridden at
+  # the datacenter level.
   gc:
-    cms:
-      enabled: true
-      survivorRatio: 8
-      maxTenuringThreshold: 1
-      initiatingOccupancyFraction: 75
-      waitDuration: 10000
-    g1:
-      enabled: false
-      setUpdatingPauseTimePercent: 5
-      maxGcPauseMillis: 500
-      initiatingHeapOccupancyPercent: 70
-      parallelGcThreads: 16
-      concurrentGcThreads: 16
+    # -- GC configuration for the CMS collector.
+    cms: {}
+      # enabled: true
+      # survivorRatio: 8
+      # maxTenuringThreshold: 1
+      # initiatingOccupancyFraction: 75
+      # waitDuration: 10000
+    # -- GC configuration for the G1 collector.
+    g1: {}
+      # enabled: true
+      # setUpdatingPauseTimePercent: 5
+      # maxGcPauseMillis: 500
+      # initiatingHeapOccupancyPercent: 70
+      # parallelGcThreads: 16
+      # concurrentGcThreads: 16
 
   # -- Resource requests for each Cassandra pod.
   resources: {}
@@ -149,20 +153,23 @@ cassandra:
       #size:
       #newGenSize:
 
-    gc: {}
-#      cms:
-#        enabled: true
-#        survivorRatio: 8
-#        maxTenuringThreshold: 1
-#        initiatingOccupancyFraction: 75
-#        waitDuration: 10000
-#      g1:
-#        enabled: false
-#        setUpdatingPauseTimePercent: 5
-#        maxGcPauseMillis: 500
-#        initiatingHeapOccupancyPercent: 70
-#        parallelGcThreads: 16
-#        concurrentGcThreads: 16
+    # -- Optional datacenter-level garbage collection configuration.
+    gc:
+      # -- Optional GC configuration for the CMS collector
+      cms: {}
+        # enabled: true
+        # survivorRatio: 8
+        # maxTenuringThreshold: 1
+        # initiatingOccupancyFraction: 75
+        # waitDuration: 10000
+      # -- Optional GC configuration for the G1 collector
+      g1: {}
+        # enabled: true
+        # setUpdatingPauseTimePercent: 5
+        # maxGcPauseMillis: 500
+        # initiatingHeapOccupancyPercent: 70
+        # parallelGcThreads: 16
+        # concurrentGcThreads: 16
 
   # Cassandra native transport ingress support
   ingress:
