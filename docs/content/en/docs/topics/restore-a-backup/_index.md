@@ -210,6 +210,8 @@ Next, extract and decode the password secret. For example:
 7kZV7YUFSWUTksJ9nfZoWzuTL0qGSgjp54kEVAlgrbMTW_E3RXcTsg
 ```
 
+**Note:** This sample value is for _this_ cluster. Your cluster will have a different value.
+
 ### Use the credentials and add the data to the Cassandra database:
 
 For example:
