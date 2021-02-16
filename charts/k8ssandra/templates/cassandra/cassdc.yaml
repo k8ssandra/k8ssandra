@@ -20,6 +20,7 @@ spec:
   serverVersion: {{ .Values.cassandra.version | quote }}
   dockerImageRunsAsCassandra: false
   serverImage: {{ default (get .Values.cassandra.versionImageMap .Values.cassandra.version) .Values.cassandra.image }}
+  serviceAccount: {{ .Values.cassandra.serviceAccountName }}
   managementApiAuth:
     insecure: {}
   size: {{ $datacenter.size }}
@@ -98,7 +99,6 @@ spec:
 {{- end }}
   podTemplateSpec:
     spec:
-      serviceAccountName: {{ .Values.cassandra.serviceAccountName }}
 {{- if or .Values.repair.reaper.enabled .Values.backupRestore.medusa.enabled }}
       initContainers:
       {{/* The server-config-init container is "built-in" in that it is provided by
