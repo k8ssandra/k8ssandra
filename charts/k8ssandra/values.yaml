@@ -129,6 +129,32 @@ cassandra:
       #size:
       #newGenSize:
 
+  # Cassandra native transport ingress support
+  ingress:
+    # -- Enables Cassandra Traefik ingress definitions. Note that
+    # this is mutually exclusive with stargate.ingress.cassandra.enabled
+    enabled: false
+
+    # -- Determines which TCP-based ingress custom resources to template out. Currently only `traefik` is supported
+    method: traefik
+
+    # -- Optional hostname used to match requests
+    host:
+
+    traefik:
+      # -- Traefik entrypoint where traffic is sourced.
+      entrypoint: cassandra
+      # Future parameters
+      # tls:
+      #   client_auth:
+      #     # -- Collection of Secrets containing TLS certificates. KEYS ARE NOT REQUIRED HERE
+      #     ca_secrets:
+      #       - ca_secret_1
+      #   domains:
+      #     - example.com
+      #   # -- Secret containing the TLS certificate and key for the listener
+      #   secretName: tls-secret
+
 stargate:
   # -- Enable Stargate resources as part of this release
   enabled: true
@@ -172,6 +198,7 @@ stargate:
   ingress:
     # -- Optional hostname used to match requests
     host:
+
     auth:
       # -- Enables authentication ingress
       enabled: true
@@ -212,12 +239,18 @@ stargate:
         enabled: true
 
     cassandra:
-      # -- Enables C* native protocol ingress with Traefik
+      # -- Enables C* native protocol ingress with Traefik. Note that this is mutually exclusive with cassandra.ingress.enabled
       enabled: true
       # -- Determines which TCP-based ingress custom resources to template out. Currently only `traefik` is supported
       method: traefik
+
+      # -- Optional hostname used to match requests
+      host:
+
       # -- Parameters used by the Traefik IngressRoute custom resource
       traefik:
+
+        # -- Traefik entrypoint where traffic is sourced.
         entrypoint: cassandra
         # Future parameters
         # tls:
@@ -345,17 +378,6 @@ ingress:
       # xip.io. Example: `repair.127.0.0.1.xip.io` will return `127.0.0.1` for
       # DNS requests routing requests to your local machine.
       host: repair.k8ssandra.cluster.local
-
-    # Cassandra native transport ingress support
-    cassandra:
-      # -- Enables Cassandra Traefik ingress definitions. Note this will
-      # **only** work if `ingress.traefik.enabled` is also `true`. Additionally,
-      # this is mutually exclusive with stargate.ingress.cassandra.enabled
-      enabled: false
-
-      # -- Traefik entrypoints where traffic is sourced.
-      entrypoints:
-        - cassandra
 
 monitoring:
   grafana:

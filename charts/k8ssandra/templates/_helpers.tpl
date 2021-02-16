@@ -137,3 +137,4 @@ Create the jvm options based on heap properties specified.
       heap_size_young_generation: {{ .Values.cassandra.heap.newGenSize }}
   {{- end }}
 {{- end }}
+{{- end }}

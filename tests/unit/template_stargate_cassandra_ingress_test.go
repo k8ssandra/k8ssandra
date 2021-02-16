@@ -37,45 +37,15 @@ var _ = Describe("Verify Stargate Cassandra ingress template", func() {
 	}
 
 	Context("by confirming it does not render when", func() {
-		It("is implicitly disabled", func() {
-			options := &helm.Options{
-				KubectlOptions: defaultKubeCtlOptions,
-			}
-			Expect(renderTemplate(options)).ShouldNot(Succeed())
-		})
-
-		It("is explicitly disabled at the Stargate level", func() {
+		It("is explicitly disabled", func() {
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
 				SetValues: map[string]string{
-					"stargate.ingress.enabled": "false",
-				},
-			}
-			Expect(renderTemplate(options)).ShouldNot(Succeed())
-		})
-
-		It("is explicitly disabled at the Cassandra level", func() {
-			options := &helm.Options{
-				KubectlOptions: defaultKubeCtlOptions,
-				SetValues: map[string]string{
-					"stargate.ingress.enabled":           "true",
 					"stargate.ingress.cassandra.enabled": "false",
 				},
 			}
 			Expect(renderTemplate(options)).ShouldNot(Succeed())
 		})
-
-		It("is explicitly disabled at the Stargate level even when enabled at the Cassandra level", func() {
-			options := &helm.Options{
-				KubectlOptions: defaultKubeCtlOptions,
-				SetValues: map[string]string{
-					"stargate.ingress.enabled":           "false",
-					"stargate.ingress.cassandra.enabled": "true",
-				},
-			}
-			Expect(renderTemplate(options)).ShouldNot(Succeed())
-		})
-
 	})
 
 	Context("by confirming it fails when", func() {
@@ -83,27 +53,22 @@ var _ = Describe("Verify Stargate Cassandra ingress template", func() {
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
 				SetValues: map[string]string{
-					"ingress.traefik.enabled":            "true",
-					"ingress.traefik.cassandra.enabled":  "true",
-					"stargate.ingress.enabled":           "true",
+					"cassandra.ingress.enabled":          "true",
 					"stargate.ingress.cassandra.enabled": "true",
 				},
 			}
 			renderErr := renderTemplate(options)
 			Expect(renderErr).ToNot(BeNil())
-			Expect(renderErr.Error()).To(ContainSubstring("stargate.ingress.cassandra.enabled and ingress.traefik.cassandra.enabled cannot both be enabled"))
+			Expect(renderErr.Error()).To(ContainSubstring("stargate.ingress.cassandra.enabled and cassandra.ingress.enabled cannot both be true"))
 		})
-		It("stargate host is not defined", func() {
+	})
+
+	Context("by confirming", func() {
+		It("is enabled by default", func() {
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
-				SetValues: map[string]string{
-					"ingress.traefik.enabled":           "true",
-					"ingress.traefik.cassandra.enabled": "true",
-					"stargate.ingress.enabled":          "true",
-					"stargate.ingress.host":             "",
-				},
 			}
-			Expect(renderTemplate(options)).ShouldNot(Succeed())
+			Expect(renderTemplate(options)).Should(Succeed())
 		})
 	})
 
@@ -112,9 +77,7 @@ var _ = Describe("Verify Stargate Cassandra ingress template", func() {
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
 				SetValues: map[string]string{
-					"ingress.traefik.enabled":            "true",
-					"ingress.traefik.cassandra.enabled":  "false",
-					"stargate.ingress.enabled":           "true",
+					"cassandra.ingress.enabled":          "false",
 					"stargate.ingress.cassandra.enabled": "true",
 				},
 			}
@@ -135,7 +98,6 @@ var _ = Describe("Verify Stargate Cassandra ingress template", func() {
 				KubectlOptions: defaultKubeCtlOptions,
 				SetValues: map[string]string{
 					"cassandra.clusterName":              clusterName,
-					"stargate.ingress.enabled":           "true",
 					"stargate.ingress.cassandra.enabled": "true",
 				},
 			}
@@ -155,9 +117,7 @@ var _ = Describe("Verify Stargate Cassandra ingress template", func() {
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
 				SetValues: map[string]string{
-					"stargate.ingress.enabled":           "true",
-					"stargate.ingress.cassandra.enabled": "true",
-					"stargate.ingress.host":              stargateHost,
+					"stargate.ingress.host": stargateHost,
 				},
 			}
 

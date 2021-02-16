@@ -38,21 +38,25 @@ var _ = Describe("Verify Stargate ingress template", func() {
 	}
 
 	Context("by confirming it does not render when", func() {
-		It("is implicitly disabled", func() {
-			options := &helm.Options{
-				KubectlOptions: defaultKubeCtlOptions,
-			}
-			Expect(renderTemplate(options)).ShouldNot(Succeed())
-		})
-
-		It("is explicitly disabled", func() {
+		It("is disabled", func() {
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
 				SetValues: map[string]string{
-					"stargate.ingress.enabled": "false",
+					"stargate.ingress.auth.enabled":    "false",
+					"stargate.ingress.rest.enabled":    "false",
+					"stargate.ingress.graphql.enabled": "false",
 				},
 			}
 			Expect(renderTemplate(options)).ShouldNot(Succeed())
+		})
+	})
+
+	Context("by confirming", func() {
+		It("is enabled by default", func() {
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+			}
+			Expect(renderTemplate(options)).Should(Succeed())
 		})
 	})
 
@@ -60,9 +64,6 @@ var _ = Describe("Verify Stargate ingress template", func() {
 		It("using only default options", func() {
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
-				SetValues: map[string]string{
-					"stargate.ingress.enabled": "true",
-				},
 			}
 
 			Expect(renderTemplate(options)).To(Succeed())
@@ -75,7 +76,7 @@ var _ = Describe("Verify Stargate ingress template", func() {
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
 				SetValues: map[string]string{
-					"stargate.ingress.enabled":                    "true",
+					"stargate.enabled":                            "true",
 					"stargate.ingress.cassandra.enabled":          "false",
 					"stargate.ingress.host":                       stargateHost,
 					"stargate.ingress.graphql.playground.enabled": "true",
@@ -93,7 +94,7 @@ var _ = Describe("Verify Stargate ingress template", func() {
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
 				SetValues: map[string]string{
-					"stargate.ingress.enabled":                    "true",
+					"stargate.enabled":                            "true",
 					"stargate.ingress.host":                       "*",
 					"stargate.ingress.graphql.playground.enabled": "true",
 					"stargate.ingress.rest.enabled":               "true",
@@ -110,7 +111,7 @@ var _ = Describe("Verify Stargate ingress template", func() {
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
 				SetValues: map[string]string{
-					"stargate.ingress.enabled":         "true",
+					"stargate.enabled":                 "true",
 					"stargate.ingress.auth.enabled":    "true",
 					"stargate.ingress.rest.enabled":    "false",
 					"stargate.ingress.graphql.enabled": "false",
@@ -127,7 +128,7 @@ var _ = Describe("Verify Stargate ingress template", func() {
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
 				SetValues: map[string]string{
-					"stargate.ingress.enabled":         "true",
+					"stargate.enabled":                 "true",
 					"stargate.ingress.auth.enabled":    "false",
 					"stargate.ingress.rest.enabled":    "true",
 					"stargate.ingress.graphql.enabled": "false",
@@ -144,7 +145,7 @@ var _ = Describe("Verify Stargate ingress template", func() {
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
 				SetValues: map[string]string{
-					"stargate.ingress.enabled":         "true",
+					"stargate.enabled":                 "true",
 					"stargate.ingress.auth.enabled":    "false",
 					"stargate.ingress.rest.enabled":    "false",
 					"stargate.ingress.graphql.enabled": "true",
@@ -161,7 +162,7 @@ var _ = Describe("Verify Stargate ingress template", func() {
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
 				SetValues: map[string]string{
-					"stargate.ingress.enabled":                    "true",
+					"stargate.enabled":                            "true",
 					"stargate.ingress.auth.enabled":               "false",
 					"stargate.ingress.rest.enabled":               "false",
 					"stargate.ingress.graphql.enabled":            "true",
@@ -179,7 +180,7 @@ var _ = Describe("Verify Stargate ingress template", func() {
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
 				SetValues: map[string]string{
-					"stargate.ingress.enabled":                    "true",
+					"stargate.enabled":                            "true",
 					"stargate.ingress.auth.enabled":               "false",
 					"stargate.ingress.rest.enabled":               "false",
 					"stargate.ingress.graphql.enabled":            "true",
@@ -199,7 +200,7 @@ var _ = Describe("Verify Stargate ingress template", func() {
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
 				SetValues: map[string]string{
-					"stargate.ingress.enabled":         "true",
+					"stargate.enabled":                 "true",
 					"stargate.ingress.auth.enabled":    "true",
 					"stargate.ingress.rest.enabled":    "true",
 					"stargate.ingress.graphql.enabled": "true",
@@ -221,7 +222,7 @@ var _ = Describe("Verify Stargate ingress template", func() {
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
 				SetValues: map[string]string{
-					"stargate.ingress.enabled":         "true",
+					"stargate.enabled":                 "true",
 					"stargate.ingress.auth.enabled":    "true",
 					"stargate.ingress.rest.enabled":    "true",
 					"stargate.ingress.graphql.enabled": "true",
