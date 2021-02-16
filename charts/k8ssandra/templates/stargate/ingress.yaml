@@ -8,7 +8,7 @@
 apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
-  name: k8ssandra-stargate
+  name: {{ $releaseName }}-k8ssandra-stargate
   labels:
 {{ include "k8ssandra.labels" . | indent 4 }}
 spec:
