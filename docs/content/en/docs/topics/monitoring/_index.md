@@ -1,7 +1,7 @@
 ---
-title: "Monitoring UI"
-linkTitle: "Monitoring UI"
-weight: 1
+title: "Monitor Cassandra"
+linkTitle: "Monitor Cassandra"
+weight: 2
 description: |
   Follow these simple steps to access the Prometheus and Grafana monitoring interfaces.
 ---
@@ -123,4 +123,4 @@ For example:
 
 ## Next
 
-Access the [Repair Web interface]({{< ref "/docs/topics/accessing-services/repair/" >}}).
+Access the [Repair Web interface]({{< ref "/docs/topics/repair/" >}}).

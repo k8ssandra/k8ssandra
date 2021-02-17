@@ -1,7 +1,7 @@
 ---
 title: "Architecture"
 linkTitle: "Architecture"
-weight: 3
+weight: 5
 description: >
   K8ssandra provides a collection of open-source components which handle the automated management of Apache Cassandra clusters deployed on Kubernetes.
 ---

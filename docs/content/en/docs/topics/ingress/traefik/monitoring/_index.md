@@ -134,6 +134,6 @@ detecting the appropriate services.
     Note the Kubernetes logo to the right of the table indicating that it was
     provisioned via a Kubernetes custom resource.
 
-## Next Steps
+## Next
 
-Check out how to [Access the Monitoring Interface]({{< ref "docs/topics/accessing-services/monitoring" >}})
+Check out how to [Access the Monitoring Interface]({{< ref "docs/topics/monitoring" >}})
