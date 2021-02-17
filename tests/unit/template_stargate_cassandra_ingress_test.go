@@ -41,7 +41,19 @@ var _ = Describe("Verify Stargate Cassandra ingress template", func() {
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
 				SetValues: map[string]string{
+					"stargate.enabled":                   "true",
 					"stargate.ingress.cassandra.enabled": "false",
+				},
+			}
+			Expect(renderTemplate(options)).ShouldNot(Succeed())
+		})
+		It("method is not traefik", func() {
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+				SetValues: map[string]string{
+					"stargate.enabled":                   "true",
+					"stargate.ingress.cassandra.enabled": "true",
+					"stargate.ingress.cassandra.method":  "somethingElse",
 				},
 			}
 			Expect(renderTemplate(options)).ShouldNot(Succeed())

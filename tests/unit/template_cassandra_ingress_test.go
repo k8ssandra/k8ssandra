@@ -54,6 +54,16 @@ var _ = Describe("Verify Cassandra ingress template", func() {
 			}
 			Expect(renderTemplate(options)).ShouldNot(Succeed())
 		})
+		It("method is not traefik", func() {
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+				SetValues: map[string]string{
+					"cassandra.ingress.enabled": "true",
+					"cassandra.ingress.method":  "somethingElse",
+				},
+			}
+			Expect(renderTemplate(options)).ShouldNot(Succeed())
+		})
 	})
 
 	Context("by confirming it fails when", func() {

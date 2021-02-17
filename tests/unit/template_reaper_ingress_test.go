@@ -76,6 +76,18 @@ var _ = Describe("Verify Reaper ingress template", func() {
 			}
 			Expect(renderTemplate(options)).ShouldNot(Succeed())
 		})
+
+		It("method is not traefik", func() {
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+				SetValues: map[string]string{
+					"repair.reaper.enabled":         "true",
+					"repair.reaper.ingress.enabled": "true",
+					"repair.reaper.ingress.method":  "somethingElse",
+				},
+			}
+			Expect(renderTemplate(options)).ShouldNot(Succeed())
+		})
 	})
 
 	Context("by rendering it with options", func() {
