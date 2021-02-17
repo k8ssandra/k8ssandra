@@ -2,8 +2,6 @@
 {{- if $reaper.enabled }}
   {{- $reaperIngress := $reaper.ingress -}}
   {{- if $reaperIngress.enabled }}
-  # {{ $reaperIngress }}
-  # {{ $reaperIngress.method }}
     {{- if eq $reaperIngress.method "traefik" }}
       {{- $releaseName := .Release.Name -}}
       {{- $datacenterName := include "k8ssandra.datacenterName" . -}}
