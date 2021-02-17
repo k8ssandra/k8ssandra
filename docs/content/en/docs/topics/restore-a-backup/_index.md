@@ -32,7 +32,6 @@ You will need storage for the backups. This topic shows the use of AWS S3 bucket
 * If you'll use AWS S3, before proceeding with the configuration described below, verify that you know:
   * The `aws_access_key_id` and `aws_secret_access_key` values
   * The `name` of the S3 bucket
-  * The region assigned to the S3 bucket
   
   Or contact your IT team if they manage those assets. You'll provide those details in an edited version of the [medusa-bucket-key.yaml](medusa-bucket-key.yaml) file. For information about the S3 setup steps, see this helpful [readme](https://github.com/thelastpickle/cassandra-medusa/blob/master/docs/aws_s3_setup.md).  
 
@@ -88,23 +87,7 @@ Apply the YAML to your Kubernetes environment. In this example, assume that you 
 
 **TIP:** If the values noted above in your edited **copy** of medusa-bucket-key.yaml do not match the S3 bucket's values, a subsequent attempt to install K8ssandra will begin and most pods will reach a Ready state; however, the Medusa container in the `k8ssandra-dc1-default-sts-0` pod will fail due to the misconfiguration, and you will not be able to perform backup and restore operations. 
 
-**IMPORTANT:** Also, make sure that the region used by your S3 bucket matches the region expected by K8ssandra. If there is a mismatch, you'll see an error like the following:
-
-`kubectl logs k8ssandra-dc1-default-sts-0 -c medusa`
-
-```
-.
-.
-.
-File "/usr/local/lib/python3.6/dist-packages/libcloud/storage/drivers/s3.py", line 143, in parse_error driver=S3StorageDriver)
-libcloud.common.types.LibcloudError: <LibcloudError in <class 'libcloud.storage.drivers.s3.S3StorageDriver'> 'This bucket is located in a different region. Please use the correct driver. Bucket region "us-east-2", used region "us-east-1".'>
-```
-
 If your IT group manages the AWS S3 bucket settings, consult with them to get the correct values. 
-
-Here's an example from the AWS S3 dashboard showing a sample bucket name and region:
-
-![Amazon S3 bucket name and region sample](k8ssandra-aws-s3-sample-values.png)
 
 ### Create or update the k8ssandra cluster
 
