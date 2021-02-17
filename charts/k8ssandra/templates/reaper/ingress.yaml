@@ -1,9 +1,12 @@
-{{- $traefik := .Values.ingress.traefik -}}
-{{- if $traefik.enabled }}
-{{- $releaseName := .Release.Name -}}
-{{- $datacenterName := include "k8ssandra.datacenterName" . -}}
-
-{{- if $traefik.repair.enabled }}
+{{- $reaper := .Values.repair.reaper -}}
+{{- if $reaper.enabled }}
+  {{- $reaperIngress := $reaper.ingress -}}
+  {{- if $reaperIngress.enabled }}
+  # {{ $reaperIngress }}
+  # {{ $reaperIngress.method }}
+    {{- if eq $reaperIngress.method "traefik" }}
+      {{- $releaseName := .Release.Name -}}
+      {{- $datacenterName := include "k8ssandra.datacenterName" . -}}
 apiVersion: traefik.containo.us/v1alpha1
 kind: IngressRoute
 metadata:
@@ -12,15 +15,16 @@ metadata:
 {{ include "k8ssandra.labels" . | indent 4 }}
 spec:
   entryPoints:
-  {{- range $traefik.repair.entrypoints }}
+  {{- range $reaperIngress.traefik.entrypoints }}
     - {{ . }}
   {{- end }}
   routes:
-  - match: Host(`{{ $traefik.repair.host }}`)
+  - match: Host(`{{ required "repair.reaper.ingress.host must be specified when repair.reaper.ingress.enabled is true" $reaperIngress.host }}`)
     kind: Rule
     services:
     - name: {{ $releaseName }}-reaper-k8ssandra-reaper-service
       kind: Service
       port: 8080
-{{- end }}
+    {{- end }}
+  {{- end }}
 {{- end }}

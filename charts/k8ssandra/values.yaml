@@ -311,6 +311,24 @@ repair:
       # alphanumeric string will be generated.
       password: ""
 
+    ingress:
+      # -- Enables Reaper ingress definitions.
+      enabled: false
+
+      # -- Hostname to use for routing requests to the repair UI. If
+      # using a local deployment consider leveraging dynamic DNS services like
+      # xip.io. Example: `repair.127.0.0.1.xip.io` will return `127.0.0.1` for
+      # DNS requests routing requests to your local machine.
+      host:
+
+      method: traefik
+
+      traefik:
+        # -- Traefik entrypoints where traffic is sourced.
+        entrypoints:
+          - web
+
+
 backupRestore:
   medusa:
     # -- Enable Medusa resources as part of this release. If enabled,
@@ -354,30 +372,6 @@ backupRestore:
     # -- Name of the Kubernetes `Secret` that stores the key file for the
     # storage provider's API
     bucketSecret: ""
-
-# Support for accessing the various web-interfaces via K8s ingress controllers.
-# Depending on the ingress available in your cluster enable the appropriate
-# section.
-ingress:
-  traefik:
-    # -- Enable Traefik custom resources as part of this release.
-    enabled: false
-
-    # Repair service
-    repair:
-      # -- Enables Reaper Traefik ingress definitions. Note this will **only**
-      # work if `ingress.traefik.enabled` is also `true`
-      enabled: true
-
-      # -- Traefik entrypoints where traffic is sourced.
-      entrypoints:
-        - web
-
-      # -- Hostname Traefik should use for routing requests to the repair UI. If
-      # using a local deployment consider leveraging dynamic DNS services like
-      # xip.io. Example: `repair.127.0.0.1.xip.io` will return `127.0.0.1` for
-      # DNS requests routing requests to your local machine.
-      host: repair.k8ssandra.cluster.local
 
 monitoring:
   grafana:
