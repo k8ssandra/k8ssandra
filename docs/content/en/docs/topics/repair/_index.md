@@ -1,7 +1,7 @@
 ---
 title: "Repair UI"
 linkTitle: "Repair UI"
-weight: 1
+weight: 3
 description: |
   Follow these steps to access the Repair Web Interface (Reaper).
 ---

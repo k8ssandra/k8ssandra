@@ -1,7 +1,7 @@
 ---
 title: "K8ssandra FAQs"
-linkTitle: "K8ssandra FAQs"
-weight: 1
+linkTitle: "FAQs"
+weight: 2
 description: Frequently asked questions about K8ssandra.
 ---
 
@@ -122,7 +122,7 @@ Kubernetes Operator for Apache Cassandra -- [cass-operator](https://github.com/d
 
 ### What is Reaper?
 
-Reaper is a tool that helps manage the critical maintenance task of anti-entropy **repair** in a Cassandra cluster. We also refer to Reaper as the [Repair Web Interface]({{< ref "/docs/topics/accessing-services/repair/" >}}). Originally created by Spotify, later adopted and maintained by The Last Pickle. If you were to sit a group of Cassandra DBAs down to talk about what they do, chances are they would talk a lot about running repairs. It’s an important operation because it keeps data consistent despite inevitable issues that happen like node failures and network partitions. In K8ssandra, Reaper runs it for you automatically! And because this is built for SREs, you can expect a good set of pre-built metrics to verify everything is working great. 
+Reaper is a tool that helps manage the critical maintenance task of anti-entropy **repair** in a Cassandra cluster. We also refer to Reaper as the [Repair Web Interface]({{< ref "/docs/topics/repair/" >}}). Originally created by Spotify, later adopted and maintained by The Last Pickle. If you were to sit a group of Cassandra DBAs down to talk about what they do, chances are they would talk a lot about running repairs. It’s an important operation because it keeps data consistent despite inevitable issues that happen like node failures and network partitions. In K8ssandra, Reaper runs it for you automatically! And because this is built for SREs, you can expect a good set of pre-built metrics to verify everything is working great. 
 
 ### What is Medusa?
 
@@ -138,11 +138,11 @@ K8ssandra provides [preconfigured]({{< ref "/docs/topics/ingress/traefik/" >}}) 
 
 ### How can I monitor the health of my Kubernetes + Cassandra cluster?
 
-Configure Traefik to expose the K8ssandra monitoring interfaces. See [Monitoring]({{< ref "/docs/topics/ingress/traefik/monitoring/" >}}) for the steps to enable the Traefik Ingress. Then see [Monitoring UI]({{< ref "/docs/topics/accessing-services/monitoring/" >}}) for details about how to access the preconfigured Grafana dashboards that K8ssandra provides. After completing the prerequisites, for example in your local environment, you can open http://grafana.localhost:8080/ in your browser. 
+Configure Traefik to expose the K8ssandra monitoring interfaces. See [Monitoring]({{< ref "/docs/topics/ingress/traefik/monitoring/" >}}) for the steps to enable the Traefik Ingress. Then see [Monitoring UI]({{< ref "/docs/topics/monitoring/" >}}) for details about how to access the preconfigured Grafana dashboards that K8ssandra provides. After completing the prerequisites, for example in your local environment, you can open http://grafana.localhost:8080/ in your browser. 
 
 ### What is the login for the Grafana dashboards?
 
-The default configured Grafana username is `admin`, and the password is `secret`. See the topic about managing [Grafana credentials]({{< ref "/docs/topics/accessing-services/monitoring/_index.md#grafana-credentials" >}}).
+The default configured Grafana username is `admin`, and the password is `secret`. See the topic about managing [Grafana credentials]({{< ref "/docs/topics/monitoring/_index.md#grafana-credentials" >}}).
 
 ### What kind of provisioning tasks can I perform with K8ssandra?
 

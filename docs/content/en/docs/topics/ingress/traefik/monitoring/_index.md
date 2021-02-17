@@ -136,4 +136,4 @@ detecting the appropriate services.
 
 ## Next Steps
 
-Check out how to [Access the Monitoring Interface]({{< ref "docs/topics/accessing-services/monitoring" >}})
+Check out how to [Access the Monitoring Interface]({{< ref "docs/topics/monitoring" >}})

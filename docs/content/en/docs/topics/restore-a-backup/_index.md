@@ -1,7 +1,7 @@
 ---
-title: "Backup and Restore"
-linkTitle: "Backup and Restore"
-weight: 3
+title: "Backup and restore Cassandra"
+linkTitle: "Backup and restore Cassandra"
+weight: 4
 description: K8ssandra provides backup/restore via Medusa
 ---
 

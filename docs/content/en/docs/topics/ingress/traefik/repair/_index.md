@@ -121,4 +121,4 @@ detecting the appropriate services.
 
 ## Next Steps
 
-Check out how to [Access the Repair Interface]({{< ref "docs/topics/accessing-services/repair" >}})
+Check out how to [Access the Repair Interface]({{< ref "docs/topics/repair" >}})
