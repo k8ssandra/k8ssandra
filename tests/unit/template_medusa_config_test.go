@@ -3,34 +3,29 @@ package unit_test
 import (
 	"path/filepath"
 
-	helmUtils "github.com/k8ssandra/k8ssandra/tests/unit/utils/helm"
-
 	"github.com/gruntwork-io/terratest/modules/helm"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/ginkgo/extensions/table"
 	. "github.com/onsi/gomega"
-	corev1 "k8s.io/api/core/v1"
 )
 
 var _ = Describe("Verify medusa config template", func() {
 	var (
 		helmChartPath string
-		secret        *corev1.Secret
 	)
 
 	BeforeEach(func() {
 		path, err := filepath.Abs(ChartsPath)
 		Expect(err).To(BeNil())
 		helmChartPath = path
-		secret = &corev1.Secret{}
 	})
 
-	renderTemplate := func(options *helm.Options) error {
-		return helmUtils.RenderAndUnmarshall("templates/medusa/medusa-config.yaml",
-			options, helmChartPath, HelmReleaseName,
-			func(renderedYaml string) error {
-				return helm.UnmarshalK8SYamlE(GinkgoT(), renderedYaml, secret)
-			})
+	renderTemplate := func(options *helm.Options) bool {
+		_, renderErr := helm.RenderTemplateE(
+			GinkgoT(), options, helmChartPath, HelmReleaseName,
+			[]string{"templates/medusa/medusa-config.yaml"})
+
+		return renderErr == nil
 	}
 
 	Context("generating medusa storage properties", func() {
@@ -45,7 +40,7 @@ var _ = Describe("Verify medusa config template", func() {
 						"backupRestore.medusa.bucketSecret": "secretkey",
 					},
 				}
-				Expect(renderTemplate(options)).To(Succeed())
+				Expect(renderTemplate(options)).To(Equal(expected))
 			},
 			Entry("supported s3", "s3", true),
 			Entry("supported s3 compatible", "s3_compatible", true),
