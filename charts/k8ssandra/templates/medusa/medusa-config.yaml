@@ -19,18 +19,18 @@ data:
     check_running = nodetool version
 
     [storage]
-{{- if not (or (eq .Values.backupRestore.medusa.storage "s3") (eq .Values.backupRestore.medusa.storage "gcs") (eq .Values.backupRestore.medusa.storage "s3_compatible") (eq .Values.backupRestore.medusa.storage "local")) }}
-  {{ fail "Accepted storage type values are s3, s3_compatible, local and gcs" }}
-{{- end }}
+  {{- if not (or (eq .Values.backupRestore.medusa.storage "s3") (eq .Values.backupRestore.medusa.storage "gcs") (eq .Values.backupRestore.medusa.storage "s3_compatible") (eq .Values.backupRestore.medusa.storage "local")) }}
+    {{ fail "Accepted storage type values are s3, s3_compatible, local and gcs" }}
+  {{- end }}
     storage_provider = {{ .Values.backupRestore.medusa.storage }}
-{{- range $key, $value := .Values.backupRestore.medusa.storage_properties -}}
+  {{- range $key, $value := .Values.backupRestore.medusa.storage_properties }}
     {{ $key }} = {{ $value }}
-{{- end }}
-{{- if eq "local" .Values.backupRestore.medusa.storage -}}
+  {{- end }}
+  {{- if eq "local" .Values.backupRestore.medusa.storage }}
     base_path = {{ .Values.backupRestore.medusa.bucketName }}
-{{- else }}
+  {{- else }}
     bucket_name = {{ .Values.backupRestore.medusa.bucketName }}
-{{- end }}
+  {{- end }}
     # TODO The file name needs to be parameterized. In the current set up it comes from the secret.
     key_file = /etc/medusa-secrets/medusa_s3_credentials
 {{- if and .Values.backupRestore.medusa.multiTenant (has .Values.backupRestore.medusa.storage $bucketStorageTypes)}}
