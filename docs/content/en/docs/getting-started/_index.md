@@ -1,6 +1,6 @@
 ---
-title: "Getting Started"
-linkTitle: "Getting Started"
+title: "Quick start"
+linkTitle: "Quick start"
 weight: 1
 description: |
   Kick the tires and take it for a spin!

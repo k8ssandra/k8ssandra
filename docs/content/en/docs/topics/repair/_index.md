@@ -101,4 +101,3 @@ Notice the repair job kicking off.
 * [Running a cluster repair](http://cassandra-reaper.io/docs/usage/single/)
 * [Reaper details](http://cassandra-reaper.io/)
 * [Blog articles](https://thelastpickle.com/blog/)
-

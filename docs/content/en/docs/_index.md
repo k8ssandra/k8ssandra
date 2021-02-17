@@ -1,4 +1,3 @@
-
 ---
 title: "K8ssandra documentation"
 linkTitle: "Documentation"
@@ -12,10 +11,14 @@ description: |
 ---
 
 The K8ssandra Documentation covers everything from architecture and
-configuration references to guided outcome-based topics. Check out the sections
+configuration references to guided outcome-based tasks. Check out the sections
 at left based on your needs and be sure to leave us a <a class="github-button"
 href="https://github.com/k8ssandra/k8ssandra" data-icon="octicon-star"
 aria-label="Star k8ssandra/k8ssandra on GitHub">star</a> on Github!
+
+{{% alert title="Tip" color="primary" %}}
+If you're impatient, jump right in with our **[Quick start]({{< ref "getting-started" >}})**!
+{{% /alert %}}
 
 ## What is K8ssandra?
 
@@ -42,13 +45,13 @@ K8ssandra is a great fit for operators looking for easy to install and manage Ca
 
 ## What is K8ssandra *not yet* good for?
 
-Right now K8ssandra is deployed as an entire stack. It currently assumes your deployment uses the entire stack. Trading out certain components for others is not supported. As part of the [Roadmap](/docs/roadmap/) we would like to see this change to support a la carte composition of components.
+Right now K8ssandra is deployed as an entire stack. It currently assumes your deployment uses the entire stack. Trading out certain components for others is not supported. As part of the [Roadmap]({{< ref "roadmap" >}}) we would like to see this change to support a la carte composition of components.
 
 ## Where should I go next?
 
-Give your users next steps from the Overview. For example:
+Depending on your needs, see the following:
 
-* [Getting Started](/docs/getting-started/): Get started with K8ssandra!
-* [Architecture](/docs/architecture/): Dig in to each operational component of the K8ssandra stack and see how it communicates with the others.
-* [Reference](/docs/reference/): Explore the K8ssandra configuration interface and options available.
-* [Topics](/docs/topics/): Need to get something done? Check out the Topics section for a helpful collection of outcome-based solutions.
+* [Quick start]({{< ref "getting-started" >}}): Get started with K8ssandra!
+* [Tasks]({{< ref "topics" >}}): Need to get something done? Check out the Tasks section for a helpful collection of outcome-based solutions.
+* [Reference]({{< ref "reference" >}}): Explore the K8ssandra configuration interface and options available.
+* [Architecture]({{< ref "architecture" >}}): Dig in to each operational component of the K8ssandra stack and see how it communicates with the others.
