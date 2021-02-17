@@ -75,6 +75,7 @@ spec:
 {{- end }}
   config:    
     cassandra-yaml:
+      {{- include "k8ssandra.default_num_tokens" . }}
 {{- if .Values.cassandra.auth.enabled }}
       authenticator: PasswordAuthenticator
       authorizer: CassandraAuthorizer
