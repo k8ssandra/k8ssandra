@@ -328,7 +328,7 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			options := &helm.Options{
 				SetValues: map[string]string{
 					"stargate.enabled":             "false",
-					"repair.reaper.enabled":        "false",
+					"reaper.enabled":               "false",
 					"backupRestore.medusa.enabled": "false",
 				},
 				KubectlOptions: defaultKubeCtlOptions,
@@ -348,7 +348,7 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 
 		It("enabling only medusa", func() {
 			options := &helm.Options{
-				SetValues:      map[string]string{"backupRestore.medusa.enabled": "true", "repair.reaper.enabled": "false"},
+				SetValues:      map[string]string{"backupRestore.medusa.enabled": "true", "reaper.enabled": "false"},
 				KubectlOptions: defaultKubeCtlOptions,
 			}
 
@@ -380,7 +380,7 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 					"cassandra.clusterName":        clusterName,
 					"cassandra.auth.enabled":       "true",
 					"backupRestore.medusa.enabled": "true",
-					"repair.reaper.enabled":        "false",
+					"reaper.enabled":               "false",
 					"stargate.enabled":             "false",
 				},
 			}
@@ -463,7 +463,7 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 					"cassandra.auth.enabled":                    "true",
 					"backupRestore.medusa.enabled":              "true",
 					"backupRestore.medusa.cassandraUser.secret": secretName,
-					"repair.reaper.enabled":                     "false",
+					"reaper.enabled":                            "false",
 					"stargate.enabled":                          "false",
 				},
 			}
@@ -874,7 +874,7 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 				"stargate.enabled":              "true",
 				"cassandra.clusterName":         clusterName,
 				"backupRestore.medusa.enabled":  "false",
-				"repair.reaper.enabled":         "false",
+				"reaper.enabled":                "false",
 				"cassandra.auth.enabled":        "true",
 				"cassandra.datacenters[0].name": dcName,
 				"cassandra.datacenters[0].size": strconv.Itoa(clusterSize),

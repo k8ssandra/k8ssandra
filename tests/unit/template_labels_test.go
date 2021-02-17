@@ -34,10 +34,10 @@ var _ = Describe("Verify k8ssandra and dependent template labels", func() {
 				KubectlOptions: defaultKubeCtlOptions,
 				SetValues: map[string]string{
 					"stargate.enabled":                              "true",
-					"repair.reaper.enabled":                         "true",
+					"reaper.enabled":                                "true",
 					"backupRestore.medusa.enabled":                  "true",
-					"repair.reaper.ingress.enabled":                 "true",
-					"repair.reaper.ingress.host":                    "reaper.host",
+					"reaper.ingress.enabled":                        "true",
+					"reaper.ingress.host":                           "reaper.host",
 					"cassandra.ingress.enabled":                     "false",
 					"ingress.traefik.monitoring.grafana.enabled":    "true",
 					"ingress.traefik.monitoring.prometheus.enabled": "true",

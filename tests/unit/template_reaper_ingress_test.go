@@ -48,7 +48,7 @@ var _ = Describe("Verify Reaper ingress template", func() {
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
 				SetValues: map[string]string{
-					"repair.reaper.ingress.enabled": "false",
+					"reaper.ingress.enabled": "false",
 				},
 			}
 			Expect(renderTemplate(options)).ShouldNot(Succeed())
@@ -58,9 +58,9 @@ var _ = Describe("Verify Reaper ingress template", func() {
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
 				SetValues: map[string]string{
-					"repair.reaper.enabled":         "false",
-					"repair.reaper.ingress.enabled": "true",
-					"repair.reaper.ingress.host":    "localhost",
+					"reaper.enabled":         "false",
+					"reaper.ingress.enabled": "true",
+					"reaper.ingress.host":    "localhost",
 				},
 			}
 			Expect(renderTemplate(options)).ShouldNot(Succeed())
@@ -70,8 +70,8 @@ var _ = Describe("Verify Reaper ingress template", func() {
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
 				SetValues: map[string]string{
-					"repair.reaper.enabled":         "true",
-					"repair.reaper.ingress.enabled": "true",
+					"reaper.enabled":         "true",
+					"reaper.ingress.enabled": "true",
 				},
 			}
 			Expect(renderTemplate(options)).ShouldNot(Succeed())
@@ -81,9 +81,9 @@ var _ = Describe("Verify Reaper ingress template", func() {
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
 				SetValues: map[string]string{
-					"repair.reaper.enabled":         "true",
-					"repair.reaper.ingress.enabled": "true",
-					"repair.reaper.ingress.method":  "somethingElse",
+					"reaper.enabled":         "true",
+					"reaper.ingress.enabled": "true",
+					"reaper.ingress.method":  "somethingElse",
 				},
 			}
 			Expect(renderTemplate(options)).ShouldNot(Succeed())
@@ -95,8 +95,8 @@ var _ = Describe("Verify Reaper ingress template", func() {
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
 				SetValues: map[string]string{
-					"repair.reaper.ingress.enabled": "true",
-					"repair.reaper.ingress.host":    "*",
+					"reaper.ingress.enabled": "true",
+					"reaper.ingress.host":    "*",
 				},
 			}
 
@@ -109,8 +109,8 @@ var _ = Describe("Verify Reaper ingress template", func() {
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
 				SetValues: map[string]string{
-					"repair.reaper.ingress.enabled": "true",
-					"repair.reaper.ingress.host":    "reaper.host",
+					"reaper.ingress.enabled": "true",
+					"reaper.ingress.host":    "reaper.host",
 				},
 			}
 
