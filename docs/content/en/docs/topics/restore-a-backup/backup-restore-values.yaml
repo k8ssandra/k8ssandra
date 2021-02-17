@@ -5,3 +5,5 @@ backupRestore:
     bucketName: k8ssandra-bucket-dev
     bucketSecret: medusa-bucket-key
     storage: s3
+    storage_properties:
+      region: us-east-1
