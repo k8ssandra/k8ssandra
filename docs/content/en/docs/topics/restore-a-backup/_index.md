@@ -122,13 +122,13 @@ backupRestore:
 
 The chart's entries relate to a Kubernetes Secret, which contains the object store credentials. Specifically, the `bucketSecret` property specifies the name of a secret that should contain an AWS access key. As described in the [Medusa documentation](https://github.com/thelastpickle/cassandra-medusa/blob/master/docs/aws_s3_setup.md), the AWS account with which the key is associated should have the permissions that are required for Medusa to access the S3 bucket.
 
-Example for a new k8ssandra installation:
+Example for a new K8ssandra installation, in which we use `demo` as the cluster name:
 
-`helm install k8ssandra k8ssandra/k8ssandra -f backup-restore-values.yaml`
+`helm install demo k8ssandra/k8ssandra -f backup-restore-values.yaml`
 
-Example for an existing k8ssandra installation:
+Example for an existing K8ssandra installation, in which we used `demo` as the cluster name:
 
-`helm upgrade k8ssandra k8ssandra/k8ssandra -f backup-restore-values.yaml`
+`helm upgrade demo k8ssandra/k8ssandra -f backup-restore-values.yaml`
 
 Allow a few minutes for the pods to start and proceed to a Ready state; check the pod status periodically:
 
@@ -136,15 +136,15 @@ Allow a few minutes for the pods to start and proceed to a Ready state; check th
 
 ```
 NAME                                                  READY   STATUS      RESTARTS   AGE
-k8ssandra-cass-operator-6666588dc5-dzgtn              1/1     Running     0          3m50s
-k8ssandra-dc1-default-sts-0                           3/3     Running     0          3m17s
-k8ssandra-grafana-6858f6bbc-62vv6                     2/2     Running     0          3m50s
-k8ssandra-kube-prometheus-operator-5556885bd6-h8qtr   1/1     Running     0          3m50s
-k8ssandra-medusa-operator-6848b9bf85-rdmf9            1/1     Running     0          3m50s
-k8ssandra-reaper-k8ssandra-7d58bd94dc-4wz8m           1/1     Running     0          3m50s
-k8ssandra-reaper-k8ssandra-schema-74bsv               0/1     Completed   0          3m50s
-k8ssandra-reaper-operator-cc46fd5f4-9fkrm             1/1     Running     0          3m50s
-prometheus-k8ssandra-kube-prometheus-prometheus-0     2/2     Running     1          3m50s
+demo-cass-operator-6666588dc5-dzgtn              1/1     Running     0          3m50s
+demo-dc1-default-sts-0                           3/3     Running     0          3m17s
+demo-grafana-6858f6bbc-62vv6                     2/2     Running     0          3m50s
+demo-kube-prometheus-operator-5556885bd6-h8qtr   1/1     Running     0          3m50s
+demo-medusa-operator-6848b9bf85-rdmf9            1/1     Running     0          3m50s
+demo-reaper-k8ssandra-7d58bd94dc-4wz8m           1/1     Running     0          3m50s
+demo-reaper-k8ssandra-schema-74bsv               0/1     Completed   0          3m50s
+demo-reaper-operator-cc46fd5f4-9fkrm             1/1     Running     0          3m50s
+prometheus-demo-kube-prometheus-prometheus-0     2/2     Running     1          3m50s
 ```
 
 Backup and restore operations are enabled by default. In the example YAML, `bucketName` corresponds to the name of the S3 bucket: `K8ssanda-bucket-dev`.  The `bucketSecret` corresponds to the secret credentials.
@@ -194,18 +194,18 @@ insert into users (email, name, state) values ('tom@yes.com', 'Tom and Jerry', '
 
 Copy the cql file to the k8ssandra container (pod):
 
-`kubectl cp test_data.cql k8ssandra-dc1-default-sts-0:/tmp -c cassandra`
+`kubectl cp test_data.cql demo-dc1-default-sts-0:/tmp -c cassandra`
 
-Before you can launch the CQLSH instance that's deployed by K8ssandra in your Kubernetes cluster, you'll need authentication credentials. By default, the username secret for K8ssandra is `k8ssandra-superuser`. To verify, you can extract and decode the username secret:
+Before you can launch the CQLSH instance that's deployed by K8ssandra in your Kubernetes cluster, you'll need authentication credentials. The superuser secret defaults to `<cluster-name>-superuser`. In this example: `demo-superuser`. To verify, you can extract and decode the username secret:
 
-`kubectl get secret k8ssandra-superuser -o jsonpath="{.data.username}" | base64 --decode`
-`k8ssandra-superuser`
+`kubectl get secret demo-superuser -o jsonpath="{.data.username}" | base64 --decode`
+`demo-superuser`
 
-The command output (second line above) verified that the username to use on a subsequent command is `k8ssandra-superuser`.
+The command output (second line above) verified that the username to use on a subsequent command is `demo-superuser`.
 
 Next, extract and decode the password secret. For example:
 
-`kubectl get secret k8ssandra-superuser -o jsonpath="{.data.password}" | base64 --decode`
+`kubectl get secret demo-superuser -o jsonpath="{.data.password}" | base64 --decode`
 ```
 7kZV7YUFSWUTksJ9nfZoWzuTL0qGSgjp54kEVAlgrbMTW_E3RXcTsg
 ```
@@ -216,11 +216,11 @@ Next, extract and decode the password secret. For example:
 
 For example:
 
-`kubectl exec -it k8ssandra-dc1-default-sts-0 -c cassandra -- cqlsh -u k8ssandra-superuser -p 7kZV7YUFSWUTksJ9nfZoWzuTL0qGSgjp54kEVAlgrbMTW_E3RXcTsg -f /tmp/test_data.cql`
+`kubectl exec -it demo-dc1-default-sts-0 -c cassandra -- cqlsh -u demo-superuser -p 7kZV7YUFSWUTksJ9nfZoWzuTL0qGSgjp54kEVAlgrbMTW_E3RXcTsg -f /tmp/test_data.cql`
 
 ### Exec open CQLSH and enter DML and DDL statements
 
-`kubectl exec -it k8ssandra-dc1-default-sts-0 -c cassandra -- cqlsh -u k8ssandra-superuser -p 7kZV7YUFSWUTksJ9nfZoWzuTL0qGSgjp54kEVAlgrbMTW_E3RXcTsg`
+`kubectl exec -it demo-dc1-default-sts-0 -c cassandra -- cqlsh -u demo-superuser -p 7kZV7YUFSWUTksJ9nfZoWzuTL0qGSgjp54kEVAlgrbMTW_E3RXcTsg`
 
 ```
 Connected to k8ssandra at 127.0.0.1:9042.
@@ -249,7 +249,7 @@ Exit out of CQLSH:
 
 Now create a backup using a `test` chart:
 
-`helm install test charts/backup --set name=test,cassandraDatacenter.name=dc1`
+`helm install demo charts/backup --set name=test,cassandraDatacenter.name=dc1`
 
 ```
 kubectl get cassandrabackup
@@ -292,7 +292,7 @@ You can also examine the in-progress logs:
 Exec into CQLSH and select the data again, to verify the restore operation.
 
 ```
-kubectl exec -it k8ssandra-dc1-default-stc-0 -c cassandra -cqlsh
+kubectl exec -it demo-dc1-default-stc-0 -c cassandra -cqlsh
 
 Connected to k8ssandra at 127.0.0.1:9042.
 [cqlsh 5.0.1 | Cassandra 3.11.10 | CQL spec 3.4.4 | Native protocol v4]
