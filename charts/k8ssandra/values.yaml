@@ -252,11 +252,11 @@ backupRestore:
 
     # -- API interface used by the object store. Supported values include `s3`, 's3_compatible'
     # and `gcs`. For pod mapped storage, use 'local'
-    storage: s3_compatible
+    storage: s3
 
-    # -- Optional properties for storage
-    storage_properties:
-      # Optional argument to define region for s3
+    # -- Optional properties for storage. Supported values depend on the type of the storage. 
+    storage_properties: {}
+      # Define region for s3 / s3_compatible
       # region: eu-west-1
 
       # For s3_compatible option, one must define target host
@@ -265,15 +265,16 @@ backupRestore:
       # For s3_compatible option, port is optional
       # port: 9000
 
-      # Is SSL used or not, for s3_compatible
+      # Is SSL used or not for s3_compatible connection
       # secure: false
 
-    # -- Name of the remote storage bucket where backups will be stored.
+    # -- Name of the remote storage bucket where backups will be stored. If using 'local' storage, set the
+    # path of the local storage here.
     bucketName: awstest
 
     # -- Name of the Kubernetes `Secret` that stores the key file for the
     # storage provider's API
-    bucketSecret: medusaminiotest
+    bucketSecret: medusa-bucket-key
 
 # Support for accessing the various web-interfaces via K8s ingress controllers.
 # Depending on the ingress available in your cluster enable the appropriate
