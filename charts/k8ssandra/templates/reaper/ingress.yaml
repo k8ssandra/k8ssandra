@@ -15,9 +15,7 @@ metadata:
 {{ include "k8ssandra.labels" . | indent 4 }}
 spec:
   entryPoints:
-  {{- range $reaperIngress.traefik.entrypoints }}
-    - {{ . }}
-  {{- end }}
+    - {{ $reaperIngress.traefik.entrypoint }}
   routes:
   - match: Host(`{{ required "repair.reaper.ingress.host must be specified when repair.reaper.ingress.enabled is true" $reaperIngress.host }}`)
     kind: Rule

@@ -324,9 +324,8 @@ repair:
       method: traefik
 
       traefik:
-        # -- Traefik entrypoints where traffic is sourced.
-        entrypoints:
-          - web
+        # -- Traefik entrypoint where traffic is sourced.
+        entrypoint: web
 
 
 backupRestore:
