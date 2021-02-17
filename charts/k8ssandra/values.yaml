@@ -229,7 +229,7 @@ backupRestore:
       # -- Specifies the container repository for Medusa
       repository: docker.io/k8ssandra/medusa
       # -- Tag of an image within the specified repository
-      tag: 6ab6a55541e9
+      tag: 48a42da3
       # -- The image pull policy
       pullPolicy: IfNotPresent
 
