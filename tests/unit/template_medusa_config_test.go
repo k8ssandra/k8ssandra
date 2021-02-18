@@ -44,7 +44,7 @@ var _ = Describe("Verify medusa config template", func() {
 			},
 			Entry("supported s3", "s3", true),
 			Entry("supported s3 compatible", "s3_compatible", true),
-			Entry("supported gcs", "gcs", true),
+			Entry("supported gcs", "google_storage", true),
 			Entry("supported local", "local", true),
 			Entry("unsupported azure", "azure", false),
 			Entry("unsupported ibm_storage (use s3_compatible instead)", "ibm_storage", false),

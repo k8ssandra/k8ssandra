@@ -342,8 +342,9 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			Expect(len(cassdc.Spec.PodTemplateSpec.Spec.Containers)).To(Equal(1))
 			// No env slice should be present
 			Expect(cassdc.Spec.PodTemplateSpec.Spec.Containers[0].Env).To(BeNil())
-			// No initcontainers slice should be present
-			Expect(cassdc.Spec.PodTemplateSpec.Spec.InitContainers).To(BeNil())
+
+			AssertInitContainerNamesMatch(cassdc, ConfigInitContainer)
+
 			// No users should exist
 			Expect(cassdc.Spec.Users).To(BeNil())
 		})
