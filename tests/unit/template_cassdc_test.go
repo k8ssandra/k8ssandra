@@ -895,7 +895,7 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 		Expect(cassdc.Spec.Users).To(ConsistOf(cassdcv1beta1.CassandraUser{Superuser: true, SecretName: clusterName + "-stargate"}))
 	})
 
-	FDescribeTable("check num_tokens",
+	DescribeTable("check num_tokens",
 		func(version, numTokens string, expectedTokens int) {
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
