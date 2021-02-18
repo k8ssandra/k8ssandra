@@ -83,6 +83,7 @@ In the YAML, notice the `stringData` property value: `medusa_s3_credentials`. Th
 Apply the YAML to your Kubernetes environment. In this example, assume that you had copied `medusa-bucket-key.yaml` to `my-medusa-bucket-key.yaml`:
 
 `kubectl apply -f my-medusa-bucket-key.yaml`
+ 
 `secret/medusa-bucket-key configured`
 
 **TIP:** If the values noted above in your edited **copy** of medusa-bucket-key.yaml do not match the S3 bucket's values, a subsequent attempt to install K8ssandra will begin and most pods will reach a Ready state; however, the Medusa container in the `k8ssandra-dc1-default-sts-0` pod will fail due to the misconfiguration, and you will not be able to perform backup and restore operations. 
