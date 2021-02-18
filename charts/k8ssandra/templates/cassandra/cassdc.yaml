@@ -2,7 +2,7 @@
 {{- $medusaImage := (printf "%s:%s" .Values.backupRestore.medusa.image.repository .Values.backupRestore.medusa.image.tag) -}}
 {{- $cassandrUid := 999 -}}
 {{- $cassandraGid := 999 -}}
-{{- $medusaUid := 1001 -}}
+{{- $medusaUid := 999 -}}
 
 {{- if and (not .Values.cassandra.image)  (not (hasKey .Values.cassandra.versionImageMap .Values.cassandra.version)) }}
   {{- fail (print .Values.cassandra.version " is not a supported Cassandra version") }}
@@ -106,15 +106,9 @@ spec:
         runAsUser: {{ $cassandrUid }}
         fsGroup: {{ $cassandraGid }}
         runAsNonRoot: true
-{{- if or .Values.repair.reaper.enabled .Values.backupRestore.medusa.enabled }}
       initContainers:
-      {{/* The server-config-init container is "built-in" in that it is provided by
-           cass-operator. We specify it here in order to make it run first. It needs
-           to run first when backup/restore is enabled. The configs need to be generated
-           and present for the medusa-restore initContainer.
-        */}}
       - name: server-config-init
-{{- if .Values.reaper.enabled }}
+     {{- if .Values.repair.reaper.enabled }}
       - name: jmx-credentials
         image: busybox
         imagePullPolicy: IfNotPresent
@@ -136,6 +130,8 @@ spec:
         volumeMounts:
           - mountPath: /config
             name: server-config
+      {{- end }}
+      {{- if (eq .Values.cassandra.version "4.0.0") }}
       - name: jvm-client-options
         image: busybox
         imagePullPolicy: IfNotPresent
@@ -167,8 +163,8 @@ spec:
         volumeMounts:
           - mountPath: /config
             name: server-config
-{{- end}}
-{{- if .Values.backupRestore.medusa.enabled }}
+      {{- end }}
+      {{- if .Values.backupRestore.medusa.enabled }}
       - name: get-jolokia
         image: busybox
         args:
@@ -181,10 +177,6 @@ spec:
       - name: medusa-restore
         image: {{ $medusaImage }}
         imagePullPolicy: {{ .Values.backupRestore.medusa.image.pullPolicy }}
-        securityContext:
-          runAsUser: {{ $medusaUid }}
-          fsGroup: {{ $cassandraGid }}
-          runAsNonRoot: true
         env:
           - name: MEDUSA_MODE
             value: RESTORE
@@ -220,19 +212,18 @@ spec:
             mountPath: /etc/cassandra
           - mountPath: /var/lib/cassandra
             name: server-data
-          - name:  {{ .Values.backupRestore.medusa.bucketSecret }}
+          - name:  {{ .Values.backupRestore.medusa.storageSecret }}
             mountPath: /etc/medusa-secrets
-{{- end}}
-{{- end}}
+      {{- end }}
       containers:
       - name: cassandra
-{{- if or .Values.reaper.enabled .Values.backupRestore.medusa.enabled }}
+       {{- if or .Values.repair.reaper.enabled .Values.backupRestore.medusa.enabled }}
         env:
-{{- if .Values.reaper.enabled }}
+          {{- if .Values.repair.reaper.enabled }}
           - name: LOCAL_JMX
             value: "no"
-{{- end}}
-{{- if .Values.backupRestore.medusa.enabled }}
+          {{- end }}
+       {{- if .Values.backupRestore.medusa.enabled }}
           - name: JVM_EXTRA_OPTS
             value: -javaagent:/etc/cassandra/jolokia-jvm-1.6.2-agent.jar=port=7373,host=localhost
         volumeMounts:
@@ -241,10 +232,6 @@ spec:
       - name: medusa
         image: {{ $medusaImage }}
         imagePullPolicy: {{ .Values.backupRestore.medusa.image.pullPolicy }}
-        securityContext:
-          runAsUser: {{ $medusaUid }}
-          fsGroup: {{ $cassandraGid }}
-          runAsNonRoot: true
         ports:
           - containerPort: 50051
         env:
@@ -273,8 +260,8 @@ spec:
               secretKeyRef:
                 name: {{ include "k8ssandra.clusterName" . }}-medusa
                 key: password
-        {{- end}}
-        {{- end}}
+        {{- end }}
+        {{- end }}
         readinessProbe:
           exec:
             command: [ "/bin/grpc_health_probe", "-addr=:50051" ]
@@ -291,7 +278,7 @@ spec:
           - mountPath: /var/lib/cassandra
             name: server-data
           - mountPath: /etc/medusa-secrets
-            name: {{ .Values.backupRestore.medusa.bucketSecret }}
+            name: {{ .Values.backupRestore.medusa.storageSecret }}
       volumes:
       - name: {{ .Release.Name }}-medusa-config-k8ssandra
         configMap:
@@ -301,8 +288,8 @@ spec:
               path: medusa.ini
       - name: cassandra-config
         emptyDir: {}
-      - name:  {{ .Values.backupRestore.medusa.bucketSecret }}
+      - name:  {{ .Values.backupRestore.medusa.storageSecret }}
         secret:
-          secretName: {{ .Values.backupRestore.medusa.bucketSecret }}
+          secretName: {{ .Values.backupRestore.medusa.storageSecret }}
 {{- end }}
 {{- end }}

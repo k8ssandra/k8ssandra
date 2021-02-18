@@ -1,4 +1,4 @@
-{{- $bucketStorageTypes :=  list "s3" "gcs" -}}
+{{- $bucketStorageTypes :=  list "s3" "google_storage" -}}
 
 {{- if .Values.backupRestore.medusa.enabled }}
 apiVersion: v1
@@ -19,8 +19,8 @@ data:
     check_running = nodetool version
 
     [storage]
-  {{- if not (or (eq .Values.backupRestore.medusa.storage "s3") (eq .Values.backupRestore.medusa.storage "gcs") (eq .Values.backupRestore.medusa.storage "s3_compatible") (eq .Values.backupRestore.medusa.storage "local")) }}
-    {{ fail "Accepted storage type values are s3, s3_compatible, local and gcs" }}
+  {{- if not (or (eq .Values.backupRestore.medusa.storage "s3") (eq .Values.backupRestore.medusa.storage "google_storage") (eq .Values.backupRestore.medusa.storage "s3_compatible") (eq .Values.backupRestore.medusa.storage "local")) }}
+    {{ fail "Accepted storage type values are s3, s3_compatible, local and google_storage" }}
   {{- end }}
     storage_provider = {{ .Values.backupRestore.medusa.storage }}
   {{- range $key, $value := .Values.backupRestore.medusa.storage_properties }}
@@ -31,8 +31,11 @@ data:
   {{- else }}
     bucket_name = {{ .Values.backupRestore.medusa.bucketName }}
   {{- end }}
-    # TODO The file name needs to be parameterized. In the current set up it comes from the secret.
-    key_file = /etc/medusa-secrets/medusa_s3_credentials
+  {{- if (eq .Values.backupRestore.medusa.storage "s3") }}
+    key_file /etc/medusa-secrets/medusa_s3_credentials
+  {{- else if (eq .Values.backupRestore.medusa.storage "google_storage") }}
+    key_file = /etc/medusa-secrets/medusa_gcp_key.json
+  {{- end }}
 {{- if and .Values.backupRestore.medusa.multiTenant (has .Values.backupRestore.medusa.storage $bucketStorageTypes)}}
     prefix = {{ .Values.clusterName }}.{{ .Release.Namespace }}
 {{- end }}

@@ -404,7 +404,7 @@ backupRestore:
 
     # -- Name of the Kubernetes `Secret` that stores the key file for the
     # storage provider's API
-    bucketSecret: medusa-bucket-key
+    storageSecret: medusa-bucket-key
 
 # Support for accessing the various web-interfaces via K8s ingress controllers.
 # Depending on the ingress available in your cluster enable the appropriate
