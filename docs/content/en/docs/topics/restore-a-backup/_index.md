@@ -80,10 +80,9 @@ stringData:
 
 In the YAML, notice the `stringData` property value: `medusa_s3_credentials`. The secret gets mounted to this location; this is where Medusa expects to get the AWS credentials.
 
-Apply the YAML to your Kubernetes environment. In this example, assume that you had copied medusa-bucket-key.yaml to my-medusa-bucket-key.yaml:
+Apply the YAML to your Kubernetes environment. In this example, assume that you had copied `medusa-bucket-key.yaml` to `my-medusa-bucket-key.yaml`:
 
 `kubectl apply -f my-medusa-bucket-key.yaml`
- 
 `secret/medusa-bucket-key configured`
 
 **TIP:** If the values noted above in your edited **copy** of medusa-bucket-key.yaml do not match the S3 bucket's values, a subsequent attempt to install K8ssandra will begin and most pods will reach a Ready state; however, the Medusa container in the `k8ssandra-dc1-default-sts-0` pod will fail due to the misconfiguration, and you will not be able to perform backup and restore operations. 
@@ -106,7 +105,7 @@ Here's an example from the AWS S3 dashboard showing a sample bucket name and reg
 
 ![Amazon S3 bucket name and region sample](k8ssandra-aws-s3-sample-values.png)
 
-Notice how in this example, the region defined in the AWS console is `us-east-1`. The backup-restore-values.yaml file that you use in the next step should match it.
+Notice how in this example, the region defined in the AWS console is `us-east-1`, and the bucket name on S3 is `jsmart-k8ssandra-bucket2`.  The backup-restore-values.yaml file that you use in the next step should match your values.
 
 ### Create or update the k8ssandra cluster
 
@@ -124,17 +123,17 @@ backupRestore:
       region: us-east-1
 ```
 
-Modify a copy of the file for your purposes.
+Modify a copy of the file for your purposes. In this example, the `bucketName` setting shown in the prior section would be changed to `jsmart-k8ssandra-bucket2`.
 
-The chart's entries relate to a Kubernetes Secret, which contains the object store credentials. Specifically, the `bucketSecret` property specifies the name of a secret that should contain an AWS access key. As described in the [Medusa documentation](https://github.com/thelastpickle/cassandra-medusa/blob/master/docs/aws_s3_setup.md), the AWS account with which the key is associated should have the permissions that are required for Medusa to access the S3 bucket.
+The chart's entries relate to a Kubernetes Secret, which contains the object store credentials. Specifically, the `bucketSecret` property specifies the name of a secret that should contain an AWS access key. As described in the [Medusa documentation](https://github.com/thelastpickle/cassandra-medusa/blob/master/docs/aws_s3_setup.md), the AWS account with which the key is associated should have the permissions that are required for Medusa to access the S3 bucket. For these examples, assume that you had copied `backup-restore-values.yaml` to `my-backup-restore-values.yaml` and edited it with values for your environment. 
 
 Example for a new K8ssandra installation, in which we use `demo` as the cluster name:
 
-`helm install demo k8ssandra/k8ssandra -f backup-restore-values.yaml`
+`helm install demo k8ssandra/k8ssandra -f my-backup-restore-values.yaml`
 
 Example for an existing K8ssandra installation, in which we used `demo` as the cluster name:
 
-`helm upgrade demo k8ssandra/k8ssandra -f backup-restore-values.yaml`
+`helm upgrade demo k8ssandra/k8ssandra -f my-backup-restore-values.yaml`
 
 Allow a few minutes for the pods to start and proceed to a Ready state; check the pod status periodically:
 
