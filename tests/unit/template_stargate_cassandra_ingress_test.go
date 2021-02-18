@@ -75,6 +75,7 @@ var _ = Describe("Verify Stargate Cassandra ingress template", func() {
 				KubectlOptions: defaultKubeCtlOptions,
 				SetValues: map[string]string{
 					"stargate.enabled":                   "true",
+					"stargate.ingress.enabled":           "true",
 					"stargate.ingress.cassandra.enabled": "true",
 					"stargate.ingress.cassandra.method":  "somethingElse",
 				},
@@ -89,6 +90,8 @@ var _ = Describe("Verify Stargate Cassandra ingress template", func() {
 				KubectlOptions: defaultKubeCtlOptions,
 				SetValues: map[string]string{
 					"cassandra.ingress.enabled":          "true",
+					"stargate.enabled":                   "true",
+					"stargate.ingress.enabled":           "true",
 					"stargate.ingress.cassandra.enabled": "true",
 				},
 			}
@@ -122,6 +125,7 @@ var _ = Describe("Verify Stargate Cassandra ingress template", func() {
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
 				SetValues: map[string]string{
+					"stargate.enabled":                   "true",
 					"cassandra.ingress.enabled":          "false",
 					"stargate.ingress.enabled":           "true",
 					"stargate.ingress.cassandra.enabled": "true",
@@ -144,6 +148,7 @@ var _ = Describe("Verify Stargate Cassandra ingress template", func() {
 				KubectlOptions: defaultKubeCtlOptions,
 				SetValues: map[string]string{
 					"cassandra.clusterName":              clusterName,
+					"stargate.enabled":                   "true",
 					"stargate.ingress.enabled":           "true",
 					"stargate.ingress.cassandra.enabled": "true",
 				},
@@ -164,6 +169,7 @@ var _ = Describe("Verify Stargate Cassandra ingress template", func() {
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
 				SetValues: map[string]string{
+					"stargate.enabled":         "true",
 					"stargate.ingress.enabled": "true",
 					"stargate.ingress.host":    stargateHost,
 				},

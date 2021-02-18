@@ -41,6 +41,7 @@ var _ = Describe("Verify k8ssandra and dependent template labels", func() {
 					"cassandra.ingress.enabled":                     "false",
 					"ingress.traefik.monitoring.grafana.enabled":    "true",
 					"ingress.traefik.monitoring.prometheus.enabled": "true",
+					"stargate.ingress.enabled":                      "true",
 					"stargate.ingress.auth.enabled":                 "true",
 					"stargate.ingress.rest.enabled":                 "true",
 					"stargate.ingress.graphql.enabled":              "true",

@@ -72,6 +72,8 @@ var _ = Describe("Verify Cassandra ingress template", func() {
 				KubectlOptions: defaultKubeCtlOptions,
 				SetValues: map[string]string{
 					"cassandra.ingress.enabled":          "true",
+					"stargate.enabled":                   "true",
+					"stargate.ingress.enabled":           "true",
 					"stargate.ingress.cassandra.enabled": "true",
 				},
 			}
@@ -88,6 +90,40 @@ var _ = Describe("Verify Cassandra ingress template", func() {
 				SetValues: map[string]string{
 					"cassandra.ingress.enabled":          "true",
 					"stargate.ingress.cassandra.enabled": "false",
+				},
+			}
+
+			Expect(renderTemplate(options)).To(Succeed())
+			Expect(ingress.Kind).To(Equal("IngressRouteTCP"))
+
+			VerifyTraefikTCPIngressRoute(ingress, "cassandra", "HostSNI(`*`)", Sprintf("%s-%s-service", HelmReleaseName, "dc1"), 9042)
+		})
+
+		It("it is enabled and Stargate ingress is disabled", func() {
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+				SetValues: map[string]string{
+					"cassandra.ingress.enabled":          "true",
+					"stargate.enabled":                   "true",
+					"stargate.ingress.enabled":           "false",
+					"stargate.ingress.cassandra.enabled": "true",
+				},
+			}
+
+			Expect(renderTemplate(options)).To(Succeed())
+			Expect(ingress.Kind).To(Equal("IngressRouteTCP"))
+
+			VerifyTraefikTCPIngressRoute(ingress, "cassandra", "HostSNI(`*`)", Sprintf("%s-%s-service", HelmReleaseName, "dc1"), 9042)
+		})
+
+		It("it is enabled and Stargate is disabled", func() {
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+				SetValues: map[string]string{
+					"cassandra.ingress.enabled":          "true",
+					"stargate.enabled":                   "false",
+					"stargate.ingress.enabled":           "true",
+					"stargate.ingress.cassandra.enabled": "true",
 				},
 			}
 
