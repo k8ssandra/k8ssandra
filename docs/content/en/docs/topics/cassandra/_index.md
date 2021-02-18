@@ -1,9 +1,9 @@
 ---
-title: "Cassandra"
-linkTitle: "Cassandra"
+title: "Access Cassandra"
+linkTitle: "Access Cassandra"
 weight: 1
 description: |
-  Accessing the K8ssandra Apache Cassandra interfaces.
+  Access the K8ssandra Apache Cassandra interfaces.
 ---
 
 ## Tools

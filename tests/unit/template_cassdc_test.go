@@ -13,6 +13,7 @@ import (
 	"github.com/gruntwork-io/terratest/modules/helm"
 	. "github.com/k8ssandra/k8ssandra/tests/unit/utils/cassdc"
 	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/ginkgo/extensions/table"
 	. "github.com/onsi/gomega"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/resource"
@@ -27,6 +28,7 @@ type CassandraConfig struct {
 	PermissionsUpdateMillis   int64 `json:"permissions_update_interval_in_ms"`
 	CredentialsValidityMillis int64 `json:"credentials_validity_in_ms"`
 	CredentialsUpdateMillis   int64 `json:"credentials_update_interval_in_ms"`
+	NumTokens                 int64 `json:"num_tokens"`
 }
 
 type JvmOptions struct {
@@ -927,6 +929,30 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 
 		Expect(cassdc.Spec.Users).To(ConsistOf(cassdcv1beta1.CassandraUser{Superuser: true, SecretName: clusterName + "-stargate"}))
 	})
+
+	DescribeTable("check num_tokens",
+		func(version, numTokens string, expectedTokens int) {
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+				SetValues: map[string]string{
+					"cassandra.version": version,
+					// Need the following parameters to succeed in rendering
+					"cassandra.datacenters[0].name": "dc-test",
+					"cassandra.datacenters[0].size": "1",
+				},
+			}
+			if numTokens != "" {
+				options.SetValues["cassandra.datacenters[0].num_tokens"] = numTokens
+			}
+
+			Expect(renderTemplate(options)).To(Succeed())
+			var config Config
+			Expect(json.Unmarshal(cassdc.Spec.Config, &config)).To(Succeed())
+			Expect(config.CassandraConfig.NumTokens).To(Equal(int64(expectedTokens)))
+		},
+		Entry("3.11.10 default", "3.11.10", "", 256),
+		Entry("3.11.10 custom", "3.11.10", "16", 16),
+	)
 })
 
 // Assert that volumeMount names of all containers matches a volumeName in PodSpec.Volumes.

@@ -1,7 +1,7 @@
 ---
-title: "Backup and Restore"
-linkTitle: "Backup and Restore"
-weight: 3
+title: "Backup and restore Cassandra"
+linkTitle: "Backup and restore Cassandra"
+weight: 4
 description: K8ssandra provides backup/restore via Medusa
 ---
 
@@ -49,7 +49,9 @@ Update Complete. ⎈Happy Helming!⎈
 
 Before installing the k8ssandra cluster, we need to supply credentials so that Medusa has read/write access to an AWS S3 bucket, which is where the backup will be stored. Medusa supports local, Amazon S3, Google Cloud Storage, and Azure buckets. K8ssandra only exposes configuration for S3 at this time.
 
-**Note:** See [AWS S3 setup](https://github.com/thelastpickle/cassandra-medusa/blob/master/docs/aws_s3_setup.md) on the Medusa wiki for more details for configuring S3.
+{{% alert title="Note" color="info" %}}
+See [AWS S3 setup](https://github.com/thelastpickle/cassandra-medusa/blob/master/docs/aws_s3_setup.md) on the Medusa wiki for more details for configuring S3.
+{{% /alert %}}
 
 To do this, start by creating a secret with the credentials for the S3 bucket.
 
