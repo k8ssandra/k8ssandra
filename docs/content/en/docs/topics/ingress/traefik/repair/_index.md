@@ -119,6 +119,6 @@ detecting the appropriate services.
     Kubernetes logo to the right of the table indicating it was provisioned via
     a Kubernetes custom resource.
 
-## Next Steps
+## Next
 
-Check out how to [Access the Repair Interface]({{< ref "docs/topics/accessing-services/repair" >}})
+Check out how to [Access the Repair Interface]({{< ref "docs/topics/repair" >}})

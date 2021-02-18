@@ -85,7 +85,7 @@ REVISION: 1
 TEST SUITE: None
 ```
 
-## 5. Access Traefik Dashboard
+## 4. Access Traefik Dashboard
 
 With the deployment complete we need to retrieve the loadbalancer's IP address.
 This may be accomplished with:
