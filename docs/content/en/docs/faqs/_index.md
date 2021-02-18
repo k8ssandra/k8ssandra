@@ -20,16 +20,16 @@ Any way you want! But think of it this way:  "Kate" + "Sandra".
 At a pure component level, K8ssandra integrates and packages together:
 
 * Apache Cassandra
-* Kubernetes Operator for Apache Cassandra (cass-operator)
-* Reaper, also known as the Repair Web Interface
-* Medusa for backup and restore
-* Metrics Collector, with Prometheus integration, and visualization via preconfigured Grafana dashboards
 * Stargate, the open source data gateway
-* Templates for connections into your Kubernetes environment via Ingress solutions such as Traefik
+* Kubernetes Operator for Apache Cassandra (cass-operator)
+* Reaper, also known as the Repair Web Interface (reaper-operator)
+* Medusa for backup and restore (medusa-operator)
+* Metrics Collector, with Prometheus integration, and visualization via preconfigured Grafana dashboards
+* Templates for connections into your Kubernetes environment via Ingress solutions
 
 An illustration always helps:
 
-![K8ssandra components](k8ssandra-components.png)
+![K8ssandra components](k8ssandra-components2.png)
 
 In addition to the set of components, it's important to emphasize that K8ssandra is really a collection of experience from the community of Cassandra + Kubernetes users, packaged and ready for everyone to use freely. 
 
@@ -152,7 +152,7 @@ Among the tasks are dynamically scaling up or down the size of your cluster. See
 
 Yes - here are the steps and commands in a single graphic:
 
-<p><img style="height: 100%; width: 100%; object-fit: contain" src="https://k8ssandra.io/docs/faqs/k8ssandra-steps.png"></p>
+![K8ssandra steps](k8ssandra-steps2.png)
 
 ### How can I contribute to the K8ssandra docs?
 
