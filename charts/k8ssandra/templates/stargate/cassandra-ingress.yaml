@@ -1,15 +1,18 @@
 {{- $stargate := .Values.stargate -}}
 {{- if $stargate.enabled }}
-  {{- $stargateCassIngress := $stargate.ingress.cassandra -}}
-  {{- if $stargateCassIngress.enabled }}
-    {{- $cassIngress := .Values.cassandra.ingress -}}
+  {{- $stargateIngress := $stargate.ingress -}}
+  {{- if $stargateIngress.enabled }}
+    {{- $stargateCassIngress := $stargateIngress.cassandra -}}
+    {{- if $stargateCassIngress.enabled }}
 
-    {{- if $cassIngress.enabled }}
-      {{- fail "stargate.ingress.cassandra.enabled and cassandra.ingress.enabled cannot both be true." }}
-    {{- end }}
-    {{- if eq $stargateCassIngress.method "traefik" }}
-      {{- $releaseName := .Release.Name -}}
-      {{- $datacenterName := include "k8ssandra.datacenterName" . -}}
+      {{- $cassIngress := .Values.cassandra.ingress -}}
+      {{- if $cassIngress.enabled }}
+        {{- fail "stargate.ingress.cassandra.enabled and cassandra.ingress.enabled cannot both be true." }}
+      {{- end }}
+
+      {{- if eq $stargateCassIngress.method "traefik" }}
+        {{- $releaseName := .Release.Name -}}
+        {{- $datacenterName := include "k8ssandra.datacenterName" . -}}
 apiVersion: traefik.containo.us/v1alpha1
 kind: IngressRouteTCP
 metadata:
@@ -25,6 +28,7 @@ spec:
         - name: {{ $releaseName }}-{{ $datacenterName }}-stargate-service
           kind: Service
           port: 9042
+      {{- end }}
     {{- end }}
   {{- end }}
 {{- end }}

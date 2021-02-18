@@ -37,11 +37,34 @@ var _ = Describe("Verify Stargate Cassandra ingress template", func() {
 	}
 
 	Context("by confirming it does not render when", func() {
-		It("is explicitly disabled", func() {
+		It("is explicitly disabled at the Stargate level", func() {
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+				SetValues: map[string]string{
+					"stargate.enabled":                   "false",
+					"stargate.ingress.enabled":           "true",
+					"stargate.ingress.cassandra.enabled": "true",
+				},
+			}
+			Expect(renderTemplate(options)).ShouldNot(Succeed())
+		})
+		It("is explicitly disabled at the Stargate-Ingress level", func() {
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
 				SetValues: map[string]string{
 					"stargate.enabled":                   "true",
+					"stargate.ingress.enabled":           "false",
+					"stargate.ingress.cassandra.enabled": "true",
+				},
+			}
+			Expect(renderTemplate(options)).ShouldNot(Succeed())
+		})
+		It("is explicitly disabled at the Stargate-Ingress-Cassandra level", func() {
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+				SetValues: map[string]string{
+					"stargate.enabled":                   "true",
+					"stargate.ingress.enabled":           "true",
 					"stargate.ingress.cassandra.enabled": "false",
 				},
 			}
@@ -76,11 +99,21 @@ var _ = Describe("Verify Stargate Cassandra ingress template", func() {
 	})
 
 	Context("by confirming", func() {
-		It("is enabled by default", func() {
+		It("is disabled by default", func() {
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
 			}
-			Expect(renderTemplate(options)).Should(Succeed())
+			Expect(renderTemplate(options)).ShouldNot(Succeed())
+		})
+		It("ingress is off by default", func() {
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+				SetValues: map[string]string{
+					"stargate.enabled":                   "true",
+					"stargate.ingress.cassandra.enabled": "true",
+				},
+			}
+			Expect(renderTemplate(options)).ShouldNot(Succeed())
 		})
 	})
 
@@ -90,6 +123,7 @@ var _ = Describe("Verify Stargate Cassandra ingress template", func() {
 				KubectlOptions: defaultKubeCtlOptions,
 				SetValues: map[string]string{
 					"cassandra.ingress.enabled":          "false",
+					"stargate.ingress.enabled":           "true",
 					"stargate.ingress.cassandra.enabled": "true",
 				},
 			}
@@ -110,6 +144,7 @@ var _ = Describe("Verify Stargate Cassandra ingress template", func() {
 				KubectlOptions: defaultKubeCtlOptions,
 				SetValues: map[string]string{
 					"cassandra.clusterName":              clusterName,
+					"stargate.ingress.enabled":           "true",
 					"stargate.ingress.cassandra.enabled": "true",
 				},
 			}
@@ -129,7 +164,8 @@ var _ = Describe("Verify Stargate Cassandra ingress template", func() {
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
 				SetValues: map[string]string{
-					"stargate.ingress.host": stargateHost,
+					"stargate.ingress.enabled": "true",
+					"stargate.ingress.host":    stargateHost,
 				},
 			}
 

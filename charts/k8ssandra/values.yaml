@@ -199,8 +199,11 @@ stargate:
     # -- Optional hostname used to match requests
     host:
 
+    # -- Enables all Stargate ingresses. Note: This must be true for any Stargate ingress to function.
+    enabled: false
+
     auth:
-      # -- Enables authentication ingress
+      # -- Enables Stargate authentication ingress. Note: stargate.ingress.enabled must also be true.
       enabled: true
       # -- Optional hostname used to match requests, overriding stargate.ingress.host if set
       host:
@@ -212,7 +215,7 @@ stargate:
       #   secretName: my-secret
 
     rest:
-      # -- Enables REST
+      # -- Enables Stargate REST ingress. Note: stargate.ingress.enabled must also be true.
       enabled: true
       # -- Optional hostname used to match requests, overriding stargate.ingress.host if set
       host:
@@ -224,7 +227,7 @@ stargate:
       #   secretName: my-secret
 
     graphql:
-      # -- Enables GraphQL API endpoint ingress
+      # -- Enables Stargate GraphQL API ingress. Note: stargate.ingress.enabled must also be true.
       enabled: true
       # -- Optional hostname used to match requests, overriding stargate.ingress.host if set
       host:
@@ -235,11 +238,11 @@ stargate:
       #   # -- Secret containing the TLS certificate and key for encrypting requests to this endpoint
       #   secretName: my-secret
       playground:
-        # -- Enables GraphQL playground interface ingress.
+        # -- Enables GraphQL playground ingress.  Note: stargate.ingress.enabled and stargate.ingress.graphql.enabled must also be true.
         enabled: true
 
     cassandra:
-      # -- Enables C* native protocol ingress with Traefik. Note that this is mutually exclusive with cassandra.ingress.enabled
+      # -- Enables C* native protocol ingress with Traefik. Note that this is mutually exclusive with cassandra.ingress.enabled, and stargate.ingress.enabled must also be true.
       enabled: true
       # -- Determines which TCP-based ingress custom resources to template out. Currently only `traefik` is supported
       method: traefik
