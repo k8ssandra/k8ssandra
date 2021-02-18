@@ -141,16 +141,17 @@ Allow a few minutes for the pods to start and proceed to a Ready state; check th
 `kubectl get pods`                           
 
 ```
-NAME                                                  READY   STATUS      RESTARTS   AGE
-demo-cass-operator-6666588dc5-dzgtn              1/1     Running     0          3m50s
-demo-dc1-default-sts-0                           3/3     Running     0          3m17s
-demo-grafana-6858f6bbc-62vv6                     2/2     Running     0          3m50s
-demo-kube-prometheus-operator-5556885bd6-h8qtr   1/1     Running     0          3m50s
-demo-medusa-operator-6848b9bf85-rdmf9            1/1     Running     0          3m50s
-demo-reaper-k8ssandra-7d58bd94dc-4wz8m           1/1     Running     0          3m50s
-demo-reaper-k8ssandra-schema-74bsv               0/1     Completed   0          3m50s
-demo-reaper-operator-cc46fd5f4-9fkrm             1/1     Running     0          3m50s
-prometheus-demo-kube-prometheus-prometheus-0     2/2     Running     1          3m50s
+NAME                                                   READY   STATUS      RESTARTS   AGE
+demo-cass-operator-65cc657-fq6bc                       1/1     Running     0          7m20s
+demo-dc1-default-sts-0                                 3/3     Running     0          6m53s
+demo-dc1-stargate-bb47877d5-54sdt                      1/1     Running     0          7m20s
+demo-grafana-7f84d96d47-xd79s                          2/2     Running     0          7m20s
+demo-kube-prometheus-stack-operator-76b984f9f4-pp745   1/1     Running     0          7m20s
+demo-medusa-operator-6888946787-qwzsx                  1/1     Running     0          7m20s
+demo-reaper-k8ssandra-656f5b77cc-nqfzv                 1/1     Running     0          4m21s
+demo-reaper-k8ssandra-schema-88cpx                     0/1     Completed   0          4m31s
+demo-reaper-operator-5b8c4c66b8-8cf86                  1/1     Running     0          7m20s
+prometheus-demo-kube-prometheus-stack-prometheus-0     2/2     Running     1          7m17s
 ```
 
 Backup and restore operations are enabled by default. In the example YAML, `bucketName` corresponds to the name of the S3 bucket: `K8ssanda-bucket-dev`.  The `bucketSecret` corresponds to the secret credentials.
