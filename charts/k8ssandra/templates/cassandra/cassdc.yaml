@@ -108,6 +108,13 @@ spec:
            and present for the medusa-restore initContainer.
         */}}
       - name: server-config-init
+      - name: metrics-collector-config-init
+        image: {{ default (get .Values.cassandra.versionImageMap .Values.cassandra.version) .Values.cassandra.image }}
+        volumeMounts:
+          - name: metrics-collector-config
+            mountPath: /config
+        command: ['/bin/sh']
+        args: ['-c', 'cp -r /opt/metrics-collector/config/* /config']
 {{- if .Values.repair.reaper.enabled }}
       - name: jmx-credentials
         image: busybox
