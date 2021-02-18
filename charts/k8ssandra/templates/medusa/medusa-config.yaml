@@ -4,7 +4,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ .Release.Name }}-medusa-config-k8ssandra
+  name: {{ include "medusa.configMapName" . }}
   labels: {{ include "k8ssandra.labels" . | indent 4 }}
 data:
   medusa.ini: |-

@@ -154,3 +154,7 @@ Set default num_tokens based on the server version
     {{- end }}
     {{- end }}
 {{- end }}
+
+{{- define "medusa.configMapName" -}}
+{{ .Release.Name }}-medusa
+{{- end }}
