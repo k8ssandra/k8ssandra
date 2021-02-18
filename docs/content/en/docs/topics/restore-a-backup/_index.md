@@ -254,7 +254,7 @@ Exit out of CQLSH:
 
 Now create a backup by referencing the backup chart in GitHub:
 
-`helm install test charts/backup --set name=test,cassandraDatacenter.name=dc1`
+`helm install test k8ssandra/backup --set name=test,cassandraDatacenter.name=dc1`
 
 ```
 kubectl get cassandrabackup
