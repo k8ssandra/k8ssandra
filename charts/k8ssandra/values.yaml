@@ -138,7 +138,10 @@ cassandra:
     # -- Determines which TCP-based ingress custom resources to template out. Currently only `traefik` is supported
     method: traefik
 
-    # -- Optional hostname used to match requests
+    # -- Optional hostname used to match requests. Warning: many native Cassandra clients, notably including cqlsh, initialize their connection by querying for
+    # the cluster's contactPoints, and thereafter communicate to the cluster using those names/IPs rather than whatever host was specified to the client. In
+    # order for clients to work correctly through ingress with a host filter, this means that the host filter must match the hostnames specified in the
+    # contactPoints. This value must be a DNS-resolvable hostname and not an IP address. To avoid this issue, leave this setting blank.
     host:
 
     traefik:
@@ -196,7 +199,11 @@ stargate:
     username: ""
 
   ingress:
-    # -- Optional hostname used to match requests
+    # -- Optional hostname used to match requests. Warning: many native Cassandra clients, notably including cqlsh, initialize their connection by querying for
+    # the cluster's contactPoints, and thereafter communicate to the cluster using those names/IPs rather than whatever host was specified to the client. In
+    # order for clients to work correctly through ingress with a host filter, this means that the host filter must match the hostnames specified in the
+    # contactPoints. This value must be a DNS-resolvable hostname and not an IP address. To avoid this issue, leave this setting blank, or override it to ""
+    # (empty string) for stargate.ingress.cassandra.host. This note does not apply to clients of Stargate's auth, REST, or GraphQL APIs.
     host:
 
     # -- Enables all Stargate ingresses. Note: This must be true for any Stargate ingress to function.
@@ -247,7 +254,11 @@ stargate:
       # -- Determines which TCP-based ingress custom resources to template out. Currently only `traefik` is supported
       method: traefik
 
-      # -- Optional hostname used to match requests
+      # -- Optional hostname used to match requests. Warning: many native Cassandra clients, notably including cqlsh, initialize their connection by querying for
+      # the cluster's contactPoints, and thereafter communicate to the cluster using those names/IPs rather than whatever host was specified to the client. In
+      # order for clients to work correctly through ingress with a host filter, this means that the host filter must match the hostnames specified in the
+      # contactPoints. This value must be a DNS-resolvable hostname and not an IP address. To avoid this issue, leave this setting blank, or if
+      # stargate.ingress.host is set, override it here to "" (empty string). This note does not apply to clients of Stargate's auth, REST, or GraphQL APIs.
       host:
 
       # -- Parameters used by the Traefik IngressRoute custom resource
