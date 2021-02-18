@@ -97,6 +97,10 @@ cassandra:
     # environments.
     size: 1
 
+    # -- Number of tokens within the datacenter. If not defined, the default values will be
+    # used, which are 256 tokens for 3.11 releases and 16 tokens for 4.0 releases.
+    # num_tokens: 16
+
     # -- Specifies the racks for the data center, if unset the datacenter will
     # be composed of a single rack named `default`. The number of racks should
     # equal the replication factor of your application keyspaces. Cassandra will

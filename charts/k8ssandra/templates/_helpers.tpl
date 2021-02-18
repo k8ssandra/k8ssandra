@@ -87,3 +87,19 @@ Create the jvm options based on heap properties specified.
   {{- end }}
 {{- end }}
 {{- end }}
+
+{{/*
+Set default num_tokens based on the server version
+*/}}
+{{- define "k8ssandra.default_num_tokens" -}}
+{{- $datacenter := (index .Values.cassandra.datacenters 0) -}}
+    {{- if $datacenter.num_tokens }}
+      num_tokens: {{ $datacenter.num_tokens }}
+    {{- else }}
+    {{- if hasPrefix "3.11" .Values.cassandra.version }}
+      num_tokens: 256
+    {{- else }}
+      num_tokens: 16
+    {{- end }}
+    {{- end }}
+{{- end }}
