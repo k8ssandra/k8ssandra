@@ -75,6 +75,7 @@ spec:
 {{- end }}
   config:
     cassandra-yaml:
+      {{- include "k8ssandra.default_num_tokens" . }}
 {{- if .Values.cassandra.auth.enabled }}
       authenticator: PasswordAuthenticator
       authorizer: CassandraAuthorizer
@@ -177,13 +178,8 @@ spec:
             mountPath: /etc/cassandra
           - mountPath: /var/lib/cassandra
             name: server-data
-{{- if eq .Values.backupRestore.medusa.storage "s3"}}
-          - name: medusa-bucket-key
-            mountPath: /etc/medusa-secrets
-{{- else if eq .Values.backupRestore.medusa.storage "gcs"}}
           - name:  {{ .Values.backupRestore.medusa.bucketSecret }}
             mountPath: /etc/medusa-secrets
-{{- end}}
 {{- end}}
 {{- end}}
       containers:

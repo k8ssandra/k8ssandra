@@ -97,6 +97,10 @@ cassandra:
     # environments.
     size: 1
 
+    # -- Number of tokens within the datacenter. If not defined, the default values will be
+    # used, which are 256 tokens for 3.11 releases and 16 tokens for 4.0 releases.
+    # num_tokens: 16
+
     # -- Specifies the racks for the data center, if unset the datacenter will
     # be composed of a single rack named `default`. The number of racks should
     # equal the replication factor of your application keyspaces. Cassandra will
@@ -353,7 +357,7 @@ backupRestore:
       # -- Specifies the container repository for Medusa
       repository: docker.io/k8ssandra/medusa
       # -- Tag of an image within the specified repository
-      tag: 6ab6a55541e9
+      tag: 1e8a4695
       # -- The image pull policy
       pullPolicy: IfNotPresent
 
@@ -374,16 +378,31 @@ backupRestore:
     # -- Enables usage of a bucket across multiple clusters.
     multiTenant: false
 
-    # -- API interface used by the object store. Supported values include `s3`
-    # and `gcs`
+    # -- API interface used by the object store. Supported values include `s3`, 's3_compatible'
+    # and `gcs`. For pod mapped storage, use 'local'
     storage: s3
 
-    # -- Name of the remote storage bucket where backups will be stored.
-    bucketName: ""
+    # -- Optional properties for storage. Supported values depend on the type of the storage. 
+    storage_properties: {}
+      # Define region for s3 / s3_compatible
+      # region: eu-west-1
+
+      # For s3_compatible option, one must define target host
+      # host: 192.168.1.201
+
+      # For s3_compatible option, port is optional
+      # port: 9000
+
+      # Is SSL used or not for s3_compatible connection
+      # secure: false
+
+    # -- Name of the remote storage bucket where backups will be stored. If using 'local' storage, set the
+    # path of the local storage here.
+    bucketName: awstest
 
     # -- Name of the Kubernetes `Secret` that stores the key file for the
     # storage provider's API
-    bucketSecret: ""
+    bucketSecret: medusa-bucket-key
 
 monitoring:
   grafana:

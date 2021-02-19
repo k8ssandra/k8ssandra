@@ -1,7 +1,7 @@
 ---
 title: "Repair UI"
 linkTitle: "Repair UI"
-weight: 1
+weight: 3
 description: |
   Follow these steps to access the Repair Web Interface (Reaper).
 ---
@@ -101,4 +101,3 @@ Notice the repair job kicking off.
 * [Running a cluster repair](http://cassandra-reaper.io/docs/usage/single/)
 * [Reaper details](http://cassandra-reaper.io/)
 * [Blog articles](https://thelastpickle.com/blog/)
-

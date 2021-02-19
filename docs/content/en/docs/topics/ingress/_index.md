@@ -1,7 +1,7 @@
 ---
-title: "Ingress"
-linkTitle: "Ingress"
-weight: 1
+title: "Configure Ingress"
+linkTitle: "Configure Ingress"
+weight: 7
 description: |
   Routing from the outside in.
 ---

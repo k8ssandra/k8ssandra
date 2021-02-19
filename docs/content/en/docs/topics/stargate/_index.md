@@ -1,7 +1,7 @@
 ---
-title: "Stargate"
-linkTitle: "Stargate"
-weight: 1
+title: "Access the Stargate API"
+linkTitle: "Access Stargate"
+weight: 6
 description: |
   Accessing the K8ssandra Stargate interfaces.
 ---

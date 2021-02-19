@@ -1,7 +1,7 @@
 ---
-title: "Provision a Cluster"
-linkTitle: "Provision a Cluster"
-weight: 1
+title: "Scale your Cassandra Cluster"
+linkTitle: "Scale Cassandra"
+weight: 4
 description: Steps to provision a cluster in Kubernetes
 ---
 
