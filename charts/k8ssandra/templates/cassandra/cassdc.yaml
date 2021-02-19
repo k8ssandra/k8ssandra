@@ -124,7 +124,7 @@ spec:
           - mountPath: /config
             name: server-config
       {{- end }}
-      {{- if (eq .Values.cassandra.version "4.0.0") }}
+      {{- if (hasPrefix "4" .Values.cassandra.version) }}
       - name: jvm-client-options
         image: busybox
         imagePullPolicy: IfNotPresent

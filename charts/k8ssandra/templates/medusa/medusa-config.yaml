@@ -1,4 +1,4 @@
-{{- $bucketStorageTypes :=  list "s3" "google_storage" -}}
+{{- $storageTypes :=  list "s3" "google_storage" "s3_compatible" "local" -}}
 
 {{- if .Values.medusa.enabled }}
 apiVersion: v1
@@ -19,8 +19,8 @@ data:
     check_running = nodetool version
 
     [storage]
-  {{- if not (or (eq .Values.medusa.storage "s3") (eq .Values.medusa.storage "google_storage") (eq .Values.medusa.storage "s3_compatible") (eq .Values.medusa.storage "local")) }}
-    {{ fail "Accepted storage type values are s3, s3_compatible, local and google_storage" }}
+  {{- if (not (has .Values.medusa.storage $storageTypes)) }}
+    {{ fail (print "Accepted storage type values are " $storageTypes) }}
   {{- end }}
     storage_provider = {{ .Values.medusa.storage }}
   {{- range $key, $value := .Values.medusa.storage_properties }}
@@ -36,7 +36,7 @@ data:
   {{- else if (eq .Values.medusa.storage "google_storage") }}
     key_file = /etc/medusa-secrets/medusa_gcp_key.json
   {{- end }}
-{{- if and .Values.medusa.multiTenant (has .Values.medusa.storage $bucketStorageTypes)}}
+{{- if .Values.medusa.multiTenant }}
     prefix = {{ .Values.clusterName }}.{{ .Release.Namespace }}
 {{- end }}
 
