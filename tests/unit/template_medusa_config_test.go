@@ -34,17 +34,17 @@ var _ = Describe("Verify medusa config template", func() {
 				options := &helm.Options{
 					KubectlOptions: defaultKubeCtlOptions,
 					SetValues: map[string]string{
-						"backupRestore.medusa.enabled":      "true",
-						"backupRestore.medusa.storage":      storageType,
-						"backupRestore.medusa.bucketName":   "testbucket",
-						"backupRestore.medusa.bucketSecret": "secretkey",
+						"medusa.enabled":      "true",
+						"medusa.storage":      storageType,
+						"medusa.bucketName":   "testbucket",
+						"medusa.bucketSecret": "secretkey",
 					},
 				}
 				Expect(renderTemplate(options)).To(Equal(expected))
 			},
 			Entry("supported s3", "s3", true),
 			Entry("supported s3 compatible", "s3_compatible", true),
-			Entry("supported gcs", "gcs", true),
+			Entry("supported gcs", "google_storage", true),
 			Entry("supported local", "local", true),
 			Entry("unsupported azure", "azure", false),
 			Entry("unsupported ibm_storage (use s3_compatible instead)", "ibm_storage", false),

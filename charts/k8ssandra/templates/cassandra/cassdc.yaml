@@ -1,5 +1,5 @@
 {{- $datacenter := (index .Values.cassandra.datacenters 0) -}}
-{{- $medusaImage := (printf "%s:%s" .Values.backupRestore.medusa.image.repository .Values.backupRestore.medusa.image.tag) -}}
+{{- $medusaImage := (printf "%s:%s" .Values.medusa.image.repository .Values.medusa.image.tag) -}}
 
 {{- if and (not .Values.cassandra.image)  (not (hasKey .Values.cassandra.versionImageMap .Values.cassandra.version)) }}
   {{- fail (print .Values.cassandra.version " is not a supported Cassandra version") }}
@@ -18,7 +18,7 @@ spec:
   clusterName: {{ include "k8ssandra.clusterName" . }}
   serverType: cassandra
   serverVersion: {{ .Values.cassandra.version | quote }}
-  dockerImageRunsAsCassandra: false
+  dockerImageRunsAsCassandra: true
   serverImage: {{ default (get .Values.cassandra.versionImageMap .Values.cassandra.version) .Values.cassandra.image }}
   managementApiAuth:
     insecure: {}
@@ -57,14 +57,14 @@ spec:
 {{- else if .Values.cassandra.auth.superuser.username }}
   superuserSecretName: {{ include "k8ssandra.clusterName" . }}-superuser
 {{- end }}
-  {{- if or .Values.reaper.enabled .Values.backupRestore.medusa.enabled .Values.stargate.enabled }}
+  {{- if or .Values.reaper.enabled .Values.medusa.enabled .Values.stargate.enabled }}
   users:
   {{- if .Values.reaper.enabled }}
     - secretName: {{ default (printf "%s-%s" (include "k8ssandra.clusterName" .) "reaper") .Values.reaper.cassandraUser.secret }}
       superuser: true
   {{- end }}
-  {{- if .Values.backupRestore.medusa.enabled }}
-    - secretName: {{ default (printf "%s-%s" (include "k8ssandra.clusterName" .) "medusa") .Values.backupRestore.medusa.cassandraUser.secret }}
+  {{- if .Values.medusa.enabled }}
+    - secretName: {{ default (printf "%s-%s" (include "k8ssandra.clusterName" .) "medusa") .Values.medusa.cassandraUser.secret }}
       superuser: true
   {{- end }}
   {{- if .Values.stargate.enabled }}
@@ -90,7 +90,11 @@ spec:
       permissions_update_interval_in_ms: {{ .Values.cassandra.auth.cacheUpdateIntervalMillis }}
       credentials_validity_in_ms: {{ .Values.cassandra.auth.cacheValidityPeriodMillis }}
       credentials_update_interval_in_ms: {{ .Values.cassandra.auth.cacheUpdateIntervalMillis }}
+  {{- if (hasPrefix "3" .Values.cassandra.version) }}
     jvm-options:
+  {{- else }}
+    jvm-server-options:
+  {{- end }}
 {{- include "k8ssandra.configureJvmHeap" . }}
       additional-jvm-opts:
 {{- if .Values.cassandra.auth.enabled }}
@@ -99,15 +103,9 @@ spec:
 {{- end }}
   podTemplateSpec:
     spec:
-{{- if or .Values.reaper.enabled .Values.backupRestore.medusa.enabled }}
       initContainers:
-      {{/* The server-config-init container is "built-in" in that it is provided by
-           cass-operator. We specify it here in order to make it run first. It needs
-           to run first when backup/restore is enabled. The configs need to be generated
-           and present for the medusa-restore initContainer.
-        */}}
       - name: server-config-init
-{{- if .Values.reaper.enabled }}
+     {{- if .Values.reaper.enabled }}
       - name: jmx-credentials
         image: busybox
         imagePullPolicy: IfNotPresent
@@ -129,68 +127,76 @@ spec:
         volumeMounts:
           - mountPath: /config
             name: server-config
-{{- end}}
-{{- if .Values.backupRestore.medusa.enabled }}
+      {{- end }}
+      {{- if (hasPrefix "4" .Values.cassandra.version) }}
+      - name: jvm-client-options
+        image: busybox
+        imagePullPolicy: IfNotPresent
+        command:
+          - /bin/sh
+        args:
+          - -c
+          - echo "-Djdk.attach.allowAttachSelf=true" > /config/jvm11-clients.options &&
+            echo "--add-exports java.base/jdk.internal.misc=ALL-UNNAMED" >> /config/jvm11-clients.options &&
+            echo "--add-exports java.base/jdk.internal.ref=ALL-UNNAMED" >> /config/jvm11-clients.options &&
+            echo "--add-exports java.base/sun.nio.ch=ALL-UNNAMED" >> /config/jvm11-clients.options &&
+            echo "--add-exports java.rmi/sun.rmi.registry=ALL-UNNAMED" >> /config/jvm11-clients.options &&
+            echo "--add-exports java.rmi/sun.rmi.server=ALL-UNNAMED" >> /config/jvm11-clients.options &&
+            echo "--add-exports java.sql/java.sql=ALL-UNNAMED" >> /config/jvm11-clients.options &&
+            echo "" >> /config/jvm11-clients.options &&
+            echo "--add-opens java.base/java.lang.module=ALL-UNNAMED" >> /config/jvm11-clients.options &&
+            echo "--add-opens java.base/jdk.internal.loader=ALL-UNNAMED" >> /config/jvm11-clients.options &&
+            echo "--add-opens java.base/jdk.internal.ref=ALL-UNNAMED" >> /config/jvm11-clients.options &&
+            echo "--add-opens java.base/jdk.internal.reflect=ALL-UNNAMED" >> /config/jvm11-clients.options &&
+            echo "--add-opens java.base/jdk.internal.math=ALL-UNNAMED" >> /config/jvm11-clients.options &&
+            echo "--add-opens java.base/jdk.internal.module=ALL-UNNAMED" >> /config/jvm11-clients.options &&
+            echo "--add-opens java.base/jdk.internal.util.jar=ALL-UNNAMED" >> /config/jvm11-clients.options &&
+            echo "--add-opens jdk.management/com.sun.management.internal=ALL-UNNAMED" >> /config/jvm11-clients.options &&
+            echo "" >> /config/jvm11-clients.options &&
+            echo "# The newline in the end of file is intentional" >> /config/jvm11-clients.options &&
+            echo "" >> /config/jvm11-clients.options &&
+            echo "# The newline in the end of file is intentional" > /config/jvm-clients.options &&
+            echo "" >> /config/jmv-clients.options
+        volumeMounts:
+          - mountPath: /config
+            name: server-config
+      {{- end }}
+      {{- if .Values.medusa.enabled }}
       - name: get-jolokia
         image: busybox
         args:
           - /bin/sh
           - -c
-          - wget https://search.maven.org/remotecontent?filepath=org/jolokia/jolokia-jvm/1.6.2/jolokia-jvm-1.6.2-agent.jar && mv jolokia-jvm-1.6.2-agent.jar /config
+          - wget -O  /config/jolokia-jvm-1.6.2-agent.jar https://search.maven.org/remotecontent?filepath=org/jolokia/jolokia-jvm/1.6.2/jolokia-jvm-1.6.2-agent.jar
         volumeMounts:
           - mountPath: /config
             name: server-config
       - name: medusa-restore
         image: {{ $medusaImage }}
-        imagePullPolicy: {{ .Values.backupRestore.medusa.image.pullPolicy }}
+        imagePullPolicy: {{ .Values.medusa.image.pullPolicy }}
         env:
           - name: MEDUSA_MODE
             value: RESTORE
-        {{- if .Values.cassandra.auth.enabled }}
-        {{- if .Values.backupRestore.medusa.cassandraUser.secret }}
-          - name: CQL_USERNAME
-            valueFrom:
-              secretKeyRef:
-                name: {{ .Values.backupRestore.medusa.cassandraUser.secret }}
-                key: username
-          - name: CQL_PASSWORD
-            valueFrom:
-              secretKeyRef:
-                name: {{ .Values.backupRestore.medusa.cassandraUser.secret }}
-                key: password
-        {{- else }}
-          - name: CQL_USERNAME
-            valueFrom:
-              secretKeyRef:
-                name: {{ include "k8ssandra.clusterName" . }}-medusa
-                key: username
-          - name: CQL_PASSWORD
-            valueFrom:
-              secretKeyRef:
-                name: {{ include "k8ssandra.clusterName" . }}-medusa
-                key: password
-        {{- end}}
-        {{- end}}
+          {{- include "medusa.cassandraAuthEnvVars" . }}
         volumeMounts:
-          - name: {{ .Release.Name }}-medusa-config-k8ssandra
+          - name: {{ include "medusa.configMapName" . }}
             mountPath: /etc/medusa
           - name: server-config
             mountPath: /etc/cassandra
           - mountPath: /var/lib/cassandra
             name: server-data
-          - name:  {{ .Values.backupRestore.medusa.bucketSecret }}
+          - name:  {{ .Values.medusa.storageSecret }}
             mountPath: /etc/medusa-secrets
-{{- end}}
-{{- end}}
+      {{- end }}
       containers:
       - name: cassandra
-{{- if or .Values.reaper.enabled .Values.backupRestore.medusa.enabled }}
+       {{- if or .Values.reaper.enabled .Values.medusa.enabled }}
         env:
-{{- if .Values.reaper.enabled }}
+          {{- if .Values.reaper.enabled }}
           - name: LOCAL_JMX
             value: "no"
-{{- end}}
-{{- if .Values.backupRestore.medusa.enabled }}
+          {{- end }}
+       {{- if .Values.medusa.enabled }}
           - name: JVM_EXTRA_OPTS
             value: -javaagent:/etc/cassandra/jolokia-jvm-1.6.2-agent.jar=port=7373,host=localhost
         volumeMounts:
@@ -198,37 +204,13 @@ spec:
             mountPath: /etc/cassandra
       - name: medusa
         image: {{ $medusaImage }}
-        imagePullPolicy: {{ .Values.backupRestore.medusa.image.pullPolicy }}
+        imagePullPolicy: {{ .Values.medusa.image.pullPolicy }}
         ports:
           - containerPort: 50051
         env:
           - name: MEDUSA_MODE
             value: GRPC
-        {{- if .Values.cassandra.auth.enabled }}
-        {{- if .Values.backupRestore.medusa.cassandraUser.secret }}
-          - name: CQL_USERNAME
-            valueFrom:
-              secretKeyRef:
-                name: {{ .Values.backupRestore.medusa.cassandraUser.secret }}
-                key: username
-          - name: CQL_PASSWORD
-            valueFrom:
-              secretKeyRef:
-                name: {{ .Values.backupRestore.medusa.cassandraUser.secret }}
-                key: password
-        {{- else }}
-          - name: CQL_USERNAME
-            valueFrom:
-              secretKeyRef:
-                name: {{ include "k8ssandra.clusterName" . }}-medusa
-                key: username
-          - name: CQL_PASSWORD
-            valueFrom:
-              secretKeyRef:
-                name: {{ include "k8ssandra.clusterName" . }}-medusa
-                key: password
-        {{- end}}
-        {{- end}}
+          {{- include "medusa.cassandraAuthEnvVars" . }}
         readinessProbe:
           exec:
             command: [ "/bin/grpc_health_probe", "-addr=:50051" ]
@@ -238,25 +220,25 @@ spec:
             command: [ "/bin/grpc_health_probe", "-addr=:50051" ]
           initialDelaySeconds: 10
         volumeMounts:
-          - name: {{ .Release.Name }}-medusa-config-k8ssandra
+          - name: {{ include "medusa.configMapName" . }}
             mountPath: /etc/medusa
           - name: cassandra-config
             mountPath: /etc/cassandra
           - mountPath: /var/lib/cassandra
             name: server-data
           - mountPath: /etc/medusa-secrets
-            name: {{ .Values.backupRestore.medusa.bucketSecret }}
+            name: {{ .Values.medusa.storageSecret }}
       volumes:
-      - name: {{ .Release.Name }}-medusa-config-k8ssandra
+      - name: {{ include "medusa.configMapName" . }}
         configMap:
-          name: {{ .Release.Name }}-medusa-config-k8ssandra
+          name: {{ include "medusa.configMapName" . }}
           items:
             - key: medusa.ini
               path: medusa.ini
       - name: cassandra-config
         emptyDir: {}
-      - name:  {{ .Values.backupRestore.medusa.bucketSecret }}
+      - name:  {{ .Values.medusa.storageSecret }}
         secret:
-          secretName: {{ .Values.backupRestore.medusa.bucketSecret }}
+          secretName: {{ .Values.medusa.storageSecret }}
 {{- end }}
 {{- end }}

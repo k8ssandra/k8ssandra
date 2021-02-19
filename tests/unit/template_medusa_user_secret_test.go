@@ -38,10 +38,10 @@ var _ = Describe("Verify medusa user secret template", func() {
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
 				SetValues: map[string]string{
-					"cassandra.clusterName":                       clusterName,
-					"cassandra.auth.enabled":                      "true",
-					"backupRestore.medusa.enabled":                "true",
-					"backupRestore.medusa.cassandraUser.username": username,
+					"cassandra.clusterName":         clusterName,
+					"cassandra.auth.enabled":        "true",
+					"medusa.enabled":                "true",
+					"medusa.cassandraUser.username": username,
 				},
 			}
 
@@ -56,9 +56,9 @@ var _ = Describe("Verify medusa user secret template", func() {
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
 				SetValues: map[string]string{
-					"cassandra.clusterName":        clusterName,
-					"cassandra.auth.enabled":       "true",
-					"backupRestore.medusa.enabled": "true",
+					"cassandra.clusterName":  clusterName,
+					"cassandra.auth.enabled": "true",
+					"medusa.enabled":         "true",
 				},
 			}
 
@@ -73,9 +73,9 @@ var _ = Describe("Verify medusa user secret template", func() {
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
 				SetValues: map[string]string{
-					"cassandra.clusterName":                     clusterName,
-					"cassandra.auth.enabled":                    "true",
-					"backupRestore.medusa.cassandraUser.secret": "medusa-secret",
+					"cassandra.clusterName":       clusterName,
+					"cassandra.auth.enabled":      "true",
+					"medusa.cassandraUser.secret": "medusa-secret",
 				},
 			}
 

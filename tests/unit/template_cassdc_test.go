@@ -39,13 +39,14 @@ type JvmOptions struct {
 }
 
 type Config struct {
-	CassandraConfig CassandraConfig `json:"cassandra-yaml"`
-	JvmOptions      JvmOptions      `json:"jvm-options"`
+	CassandraConfig  CassandraConfig `json:"cassandra-yaml"`
+	JvmOptions       *JvmOptions     `json:"jvm-options"`
+	JvmServerOptions *JvmOptions     `json:"jvm-server-options"`
 }
 
 var (
 	reaperInstanceValue    = fmt.Sprintf("%s-reaper-k8ssandra", HelmReleaseName)
-	medusaConfigVolumeName = fmt.Sprintf("%s-medusa-config-k8ssandra", HelmReleaseName)
+	medusaConfigVolumeName = fmt.Sprintf("%s-medusa", HelmReleaseName)
 )
 
 const (
@@ -105,7 +106,7 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			Expect(cassdc.Spec.PodTemplateSpec.Spec.Containers[0].Env[0].Name).To(Equal("LOCAL_JMX"))
 			Expect(cassdc.Spec.PodTemplateSpec.Spec.Containers[0].Env[0].Value).To(Equal("no"))
 			Expect(cassdc.Spec.AllowMultipleNodesPerWorker).To(Equal(false))
-			Expect(*cassdc.Spec.DockerImageRunsAsCassandra).To(BeFalse())
+			Expect(*cassdc.Spec.DockerImageRunsAsCassandra).To(BeTrue())
 
 			// Server version and mgmt-api image specified
 			Expect(cassdc.Spec.ServerVersion).ToNot(BeEmpty())
@@ -329,9 +330,9 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 		It("disabling reaper and medusa and stargate", func() {
 			options := &helm.Options{
 				SetValues: map[string]string{
-					"stargate.enabled":             "false",
-					"reaper.enabled":               "false",
-					"backupRestore.medusa.enabled": "false",
+					"stargate.enabled": "false",
+					"reaper.enabled":   "false",
+					"medusa.enabled":   "false",
 				},
 				KubectlOptions: defaultKubeCtlOptions,
 			}
@@ -342,15 +343,16 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			Expect(len(cassdc.Spec.PodTemplateSpec.Spec.Containers)).To(Equal(1))
 			// No env slice should be present
 			Expect(cassdc.Spec.PodTemplateSpec.Spec.Containers[0].Env).To(BeNil())
-			// No initcontainers slice should be present
-			Expect(cassdc.Spec.PodTemplateSpec.Spec.InitContainers).To(BeNil())
+
+			AssertInitContainerNamesMatch(cassdc, ConfigInitContainer)
+
 			// No users should exist
 			Expect(cassdc.Spec.Users).To(BeNil())
 		})
 
 		It("enabling only medusa", func() {
 			options := &helm.Options{
-				SetValues:      map[string]string{"backupRestore.medusa.enabled": "true", "reaper.enabled": "false"},
+				SetValues:      map[string]string{"medusa.enabled": "true", "reaper.enabled": "false"},
 				KubectlOptions: defaultKubeCtlOptions,
 			}
 
@@ -379,11 +381,11 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			secretName := clusterName + "-medusa"
 			options := &helm.Options{
 				SetValues: map[string]string{
-					"cassandra.clusterName":        clusterName,
-					"cassandra.auth.enabled":       "true",
-					"backupRestore.medusa.enabled": "true",
-					"reaper.enabled":               "false",
-					"stargate.enabled":             "false",
+					"cassandra.clusterName":  clusterName,
+					"cassandra.auth.enabled": "true",
+					"medusa.enabled":         "true",
+					"reaper.enabled":         "false",
+					"stargate.enabled":       "false",
 				},
 			}
 
@@ -461,12 +463,12 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			secretName := "medusa-user"
 			options := &helm.Options{
 				SetValues: map[string]string{
-					"cassandra.clusterName":                     clusterName,
-					"cassandra.auth.enabled":                    "true",
-					"backupRestore.medusa.enabled":              "true",
-					"backupRestore.medusa.cassandraUser.secret": secretName,
-					"reaper.enabled":                            "false",
-					"stargate.enabled":                          "false",
+					"cassandra.clusterName":       clusterName,
+					"cassandra.auth.enabled":      "true",
+					"medusa.enabled":              "true",
+					"medusa.cassandraUser.secret": secretName,
+					"reaper.enabled":              "false",
+					"stargate.enabled":            "false",
 				},
 			}
 
@@ -541,7 +543,7 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 		It("enabling reaper and medusa", func() {
 			// Simple verification that both have properties correctly applied
 			options := &helm.Options{
-				SetValues:      map[string]string{"backupRestore.medusa.enabled": "true"},
+				SetValues:      map[string]string{"medusa.enabled": "true"},
 				KubectlOptions: defaultKubeCtlOptions,
 			}
 
@@ -615,8 +617,10 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			Expect(renderedErr.Error()).To(ContainSubstring("set resource limits/requests when enabling allowMultipleNodesPerWorker"))
 
 		})
+	})
 
-		It("setting JVM heap settings at cluster-level only", func() {
+	Context("when configuring the JVM heap for Cassandra 3.11", func() {
+		It("at cluster-level only", func() {
 
 			dcName := "dc1"
 			options := &helm.Options{
@@ -637,10 +641,11 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			Expect(config.JvmOptions.InitialHeapSize).To(Equal("700M"))
 			Expect(config.JvmOptions.MaxHeapSize).To(Equal("700M"))
 			Expect(config.JvmOptions.YoungGenSize).To(Equal("350M"))
+			Expect(config.JvmServerOptions).To(BeNil())
 		})
 
 		// Note: currently only one DC supported, to be expanded in future release.
-		It("setting JVM heap settings at dc-level overriding cluster level", func() {
+		It("at dc-level overriding cluster level", func() {
 
 			dcName := "dc1"
 			options := &helm.Options{
@@ -662,9 +667,10 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			Expect(config.JvmOptions.InitialHeapSize).To(Equal("300M"))
 			Expect(config.JvmOptions.MaxHeapSize).To(Equal("300M"))
 			Expect(config.JvmOptions.YoungGenSize).To(Equal("150M"))
+			Expect(config.JvmServerOptions).To(BeNil())
 		})
 
-		It("setting JVM heap settings at dc-level without newGenSize", func() {
+		It("at dc-level without newGenSize", func() {
 
 			dcName := "dc1"
 			options := &helm.Options{
@@ -684,9 +690,10 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			Expect(config.JvmOptions.InitialHeapSize).To(Equal("300M"))
 			Expect(config.JvmOptions.MaxHeapSize).To(Equal("300M"))
 			Expect(config.JvmOptions.YoungGenSize).To(Equal(""))
+			Expect(config.JvmServerOptions).To(BeNil())
 		})
 
-		It("setting JVM heap settings at dc-level without size", func() {
+		It("at dc-level without size", func() {
 
 			dcName := "dc1"
 			options := &helm.Options{
@@ -706,9 +713,10 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			Expect(config.JvmOptions.InitialHeapSize).To(Equal(""))
 			Expect(config.JvmOptions.MaxHeapSize).To(Equal(""))
 			Expect(config.JvmOptions.YoungGenSize).To(Equal("150M"))
+			Expect(config.JvmServerOptions).To(BeNil())
 		})
 
-		It("setting JVM heap settings at cluster-level without newGenSize", func() {
+		It("at cluster-level without newGenSize", func() {
 
 			dcName := "dc1"
 			options := &helm.Options{
@@ -729,9 +737,10 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			Expect(config.JvmOptions.InitialHeapSize).To(Equal("300M"))
 			Expect(config.JvmOptions.MaxHeapSize).To(Equal("300M"))
 			Expect(config.JvmOptions.YoungGenSize).To(Equal(""))
+			Expect(config.JvmServerOptions).To(BeNil())
 		})
 
-		It("setting JVM heap settings at cluster-level without size", func() {
+		It("at cluster-level without size", func() {
 
 			dcName := "dc1"
 			options := &helm.Options{
@@ -752,15 +761,44 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			Expect(config.JvmOptions.InitialHeapSize).To(Equal(""))
 			Expect(config.JvmOptions.MaxHeapSize).To(Equal(""))
 			Expect(config.JvmOptions.YoungGenSize).To(Equal("150M"))
+			Expect(config.JvmServerOptions).To(BeNil())
+		})
+
+		Context("when configuring the JVM heap for Cassandra 4.0", func() {
+			It("at cluster-level only", func() {
+
+				dcName := "dc1"
+				options := &helm.Options{
+					SetValues: map[string]string{
+						"cassandra.version":             "4.0.0",
+						"cassandra.heap.size":           "700M",
+						"cassandra.heap.newGenSize":     "350M",
+						"cassandra.datacenters[0].name": dcName,
+					},
+					KubectlOptions: defaultKubeCtlOptions,
+				}
+
+				Expect(renderTemplate(options)).To(Succeed())
+
+				var config Config
+				Expect(json.Unmarshal(cassdc.Spec.Config, &config)).To(Succeed())
+
+				Expect(config.JvmServerOptions).ToNot(BeNil())
+				Expect(config.JvmServerOptions.InitialHeapSize).To(Equal("700M"))
+				Expect(config.JvmServerOptions.MaxHeapSize).To(Equal("700M"))
+				Expect(config.JvmServerOptions.YoungGenSize).To(Equal("350M"))
+				Expect(config.JvmOptions).To(BeNil())
+			})
 		})
 	})
 
 	Context("when configuring the Cassandra version and/or image", func() {
 		cassandraVersionImageMap := map[string]string{
-			"3.11.7":  "datastax/cassandra-mgmtapi-3_11_7:v0.1.19",
-			"3.11.8":  "datastax/cassandra-mgmtapi-3_11_8:v0.1.19",
-			"3.11.9":  "datastax/cassandra-mgmtapi-3_11_9:v0.1.19",
-			"3.11.10": "datastax/cassandra-mgmtapi-3_11_10:v0.1.19",
+			"3.11.7":  "datastax/cassandra-mgmtapi-3_11_7:v0.1.22",
+			"3.11.8":  "datastax/cassandra-mgmtapi-3_11_8:v0.1.22",
+			"3.11.9":  "datastax/cassandra-mgmtapi-3_11_9:v0.1.22",
+			"3.11.10": "datastax/cassandra-mgmtapi-3_11_10:v0.1.22",
+			"4.0.0":   "datastax/cassandra-mgmtapi-4_0_0:v0.1.22",
 		}
 
 		It("using the default version", func() {
@@ -771,7 +809,7 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			Expect(renderTemplate(options)).To(Succeed())
 
 			Expect(cassdc.Spec.ServerVersion).To(Equal("3.11.10"))
-			Expect(cassdc.Spec.ServerImage).To(Equal("datastax/cassandra-mgmtapi-3_11_10:v0.1.19"))
+			Expect(cassdc.Spec.ServerImage).To(Equal("datastax/cassandra-mgmtapi-3_11_10:v0.1.22"))
 		})
 
 		It("using 3.11.7", func() {
@@ -834,6 +872,21 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			Expect(cassdc.Spec.ServerImage).To(Equal(cassandraVersionImageMap[version]))
 		})
 
+		It("using 4.0.0", func() {
+			version := "4.0.0"
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+				SetValues: map[string]string{
+					"cassandra.version": version,
+				},
+			}
+
+			Expect(renderTemplate(options)).To(Succeed())
+
+			Expect(cassdc.Spec.ServerVersion).To(Equal(version))
+			Expect(cassdc.Spec.ServerImage).To(Equal(cassandraVersionImageMap[version]))
+		})
+
 		It("using an unsupported version", func() {
 			ver := "3.12.225"
 			options := &helm.Options{
@@ -875,7 +928,7 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			SetValues: map[string]string{
 				"stargate.enabled":              "true",
 				"cassandra.clusterName":         clusterName,
-				"backupRestore.medusa.enabled":  "false",
+				"medusa.enabled":                "false",
 				"reaper.enabled":                "false",
 				"cassandra.auth.enabled":        "true",
 				"cassandra.datacenters[0].name": dcName,
