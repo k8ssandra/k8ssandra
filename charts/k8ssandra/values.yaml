@@ -145,7 +145,7 @@ cassandra:
     host:
 
     traefik:
-      # -- Traefik entrypoint where traffic is sourced.
+      # -- Traefik entrypoint where traffic is sourced. See https://doc.traefik.io/traefik/routing/entrypoints/
       entrypoint: cassandra
       # Future parameters
       # tls:
@@ -264,7 +264,7 @@ stargate:
       # -- Parameters used by the Traefik IngressRoute custom resource
       traefik:
 
-        # -- Traefik entrypoint where traffic is sourced.
+        # -- Traefik entrypoint where traffic is sourced. See https://doc.traefik.io/traefik/routing/entrypoints/
         entrypoint: cassandra
         # Future parameters
         # tls:
@@ -337,7 +337,7 @@ reaper:
     method: traefik
 
     traefik:
-      # -- Traefik entrypoint where traffic is sourced.
+      # -- Traefik entrypoint where traffic is sourced. See https://doc.traefik.io/traefik/routing/entrypoints/
       entrypoint: web
 
 
