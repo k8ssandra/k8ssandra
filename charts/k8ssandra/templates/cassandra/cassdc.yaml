@@ -1,8 +1,5 @@
 {{- $datacenter := (index .Values.cassandra.datacenters 0) -}}
 {{- $medusaImage := (printf "%s:%s" .Values.medusa.image.repository .Values.medusa.image.tag) -}}
-{{- $cassandrUid := 999 -}}
-{{- $cassandraGid := 999 -}}
-{{- $medusaUid := 999 -}}
 
 {{- if and (not .Values.cassandra.image)  (not (hasKey .Values.cassandra.versionImageMap .Values.cassandra.version)) }}
   {{- fail (print .Values.cassandra.version " is not a supported Cassandra version") }}
