@@ -102,10 +102,10 @@ spec:
 {{- end }}
   podTemplateSpec:
     spec:
-      securityContext:
-        runAsUser: {{ $cassandrUid }}
-        fsGroup: {{ $cassandraGid }}
-        runAsNonRoot: true
+{{/*      securityContext:*/}}
+{{/*        runAsUser: {{ $cassandrUid }}*/}}
+{{/*        fsGroup: {{ $cassandraGid }}*/}}
+{{/*        runAsNonRoot: true*/}}
       initContainers:
       - name: server-config-init
      {{- if .Values.repair.reaper.enabled }}
