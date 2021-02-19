@@ -8,7 +8,7 @@
 apiVersion: traefik.containo.us/v1alpha1
 kind: IngressRoute
 metadata:
-  name: {{ $releaseName }}-k8ssandra-repair
+  name: {{ $releaseName }}-reaper
   labels:
 {{ include "k8ssandra.labels" . | indent 4 }}
 spec:
