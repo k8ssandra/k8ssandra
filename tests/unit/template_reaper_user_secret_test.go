@@ -38,9 +38,9 @@ var _ = Describe("Verify reaper user secret template", func() {
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
 				SetValues: map[string]string{
-					"cassandra.clusterName":                clusterName,
-					"cassandra.auth.enabled":               "true",
-					"repair.reaper.cassandraUser.username": username,
+					"cassandra.clusterName":         clusterName,
+					"cassandra.auth.enabled":        "true",
+					"reaper.cassandraUser.username": username,
 				},
 			}
 
@@ -71,9 +71,9 @@ var _ = Describe("Verify reaper user secret template", func() {
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
 				SetValues: map[string]string{
-					"cassandra.clusterName":              clusterName,
-					"cassandra.auth.enabled":             "true",
-					"repair.reaper.cassandraUser.secret": "reaper-secret",
+					"cassandra.clusterName":       clusterName,
+					"cassandra.auth.enabled":      "true",
+					"reaper.cassandraUser.secret": "reaper-secret",
 				},
 			}
 

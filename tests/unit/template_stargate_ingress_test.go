@@ -38,134 +38,262 @@ var _ = Describe("Verify Stargate ingress template", func() {
 	}
 
 	Context("by confirming it does not render when", func() {
-		It("is explicitly disabled at the Ingress level", func() {
+		It("is disabled at the Stargate level", func() {
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
 				SetValues: map[string]string{
-					"ingress.traefik.enabled": "false",
+					"stargate.enabled":                 "false",
+					"stargate.ingress.enabled":         "true",
+					"stargate.ingress.auth.enabled":    "true",
+					"stargate.ingress.rest.enabled":    "true",
+					"stargate.ingress.graphql.enabled": "true",
 				},
 			}
 			Expect(renderTemplate(options)).ShouldNot(Succeed())
 		})
 
-		It("is explicitly disabled at the Stargate level", func() {
+		It("is disabled at the Stargate ingress level", func() {
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
 				SetValues: map[string]string{
-					"ingress.traefik.enabled":          "true",
-					"ingress.traefik.stargate.enabled": "false",
+					"stargate.enabled":                 "true",
+					"stargate.ingress.enabled":         "false",
+					"stargate.ingress.auth.enabled":    "true",
+					"stargate.ingress.rest.enabled":    "true",
+					"stargate.ingress.graphql.enabled": "true",
 				},
 			}
 			Expect(renderTemplate(options)).ShouldNot(Succeed())
 		})
 
-		It("is explicitly disabled at the Ingress level even when enabled at the Stargate level", func() {
+		It("is disabled at the individual ingress levels", func() {
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
 				SetValues: map[string]string{
-					"ingress.traefik.enabled":          "false",
-					"ingress.traefik.stargate.enabled": "true",
+					"stargate.enabled":                 "true",
+					"stargate.ingress.enabled":         "true",
+					"stargate.ingress.auth.enabled":    "false",
+					"stargate.ingress.rest.enabled":    "false",
+					"stargate.ingress.graphql.enabled": "false",
 				},
 			}
 			Expect(renderTemplate(options)).ShouldNot(Succeed())
 		})
 	})
 
-	Context("by confirming it fails when", func() {
-		It("stargate host is not defined", func() {
+	Context("by confirming", func() {
+		It("is disabled by default", func() {
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
-				SetValues: map[string]string{
-					"ingress.traefik.enabled":           "true",
-					"ingress.traefik.cassandra.enabled": "true",
-					"ingress.traefik.stargate.enabled":  "true",
-					"ingress.traefik.stargate.host":     "",
-				},
 			}
 			Expect(renderTemplate(options)).ShouldNot(Succeed())
 		})
 	})
 
 	Context("by rendering it with options", func() {
-		It("using only default options", func() {
+		It("using only default options and Stargate ingress enabled", func() {
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
 				SetValues: map[string]string{
-					"ingress.traefik.enabled": "true",
+					"stargate.ingress.enabled": "true",
 				},
 			}
 
 			Expect(renderTemplate(options)).To(Succeed())
 			Expect(ingress.Kind).To(Equal("Ingress"))
-			verifyIngressRules(ingress, nil, true, true, true)
+			verifyIngressRules(ingress, true, nil, true, true, nil, true, nil)
 		})
 
-		It("with everything enabled and default settings", func() {
-			options := &helm.Options{
-				KubectlOptions: defaultKubeCtlOptions,
-				SetValues: map[string]string{
-					"ingress.traefik.enabled":                             "true",
-					"ingress.traefik.cassandra.enabled":                   "false",
-					"ingress.traefik.stargate.graphql.playground.enabled": "true",
-					"ingress.traefik.stargate.cassandra.enabled":          "true",
-				},
-			}
-
-			Expect(renderTemplate(options)).To(Succeed())
-			Expect(ingress.Kind).To(Equal("Ingress"))
-			verifyIngressRules(ingress, nil, true, true, true)
-		})
-
-		It("with everything enabled and custom host", func() {
+		It("with everything explicitly enabled and custom host", func() {
 			stargateHost := "stargate.host"
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
 				SetValues: map[string]string{
-					"ingress.traefik.enabled":                             "true",
-					"ingress.traefik.cassandra.enabled":                   "false",
-					"ingress.traefik.stargate.host":                       stargateHost,
-					"ingress.traefik.stargate.graphql.playground.enabled": "true",
-					"ingress.traefik.stargate.cassandra.enabled":          "true",
-					"ingress.traefik.stargate.rest.enabled":               "true",
+					"stargate.enabled":                            "true",
+					"stargate.ingress.enabled":                    "true",
+					"stargate.ingress.cassandra.enabled":          "false",
+					"stargate.ingress.host":                       stargateHost,
+					"stargate.ingress.graphql.playground.enabled": "true",
+					"stargate.ingress.rest.enabled":               "true",
 				},
 			}
 
 			Expect(renderTemplate(options)).To(Succeed())
 			Expect(ingress.Kind).To(Equal("Ingress"))
-			verifyIngressRules(ingress, &stargateHost, true, true, true)
+			verifyIngressRules(ingress, true, &stargateHost, true, true, &stargateHost, true, &stargateHost)
 
 		})
 
-		It("with everything enabled and wildcard host", func() {
+		It("with everything explicitly enabled and wildcard host", func() {
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
 				SetValues: map[string]string{
-					"ingress.traefik.enabled":                             "true",
-					"ingress.traefik.cassandra.enabled":                   "false",
-					"ingress.traefik.stargate.host":                       "*",
-					"ingress.traefik.stargate.graphql.playground.enabled": "true",
-					"ingress.traefik.stargate.cassandra.enabled":          "true",
-					"ingress.traefik.stargate.rest.enabled":               "true",
+					"stargate.enabled":                            "true",
+					"stargate.ingress.enabled":                    "true",
+					"stargate.ingress.host":                       "*",
+					"stargate.ingress.graphql.playground.enabled": "true",
+					"stargate.ingress.rest.enabled":               "true",
 				},
 			}
 
 			Expect(renderTemplate(options)).To(Succeed())
 			Expect(ingress.Kind).To(Equal("Ingress"))
-			verifyIngressRules(ingress, nil, true, true, true)
+			verifyIngressRules(ingress, true, nil, true, true, nil, true, nil)
+
+		})
+
+		It("with only auth enabled", func() {
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+				SetValues: map[string]string{
+					"stargate.enabled":                 "true",
+					"stargate.ingress.enabled":         "true",
+					"stargate.ingress.auth.enabled":    "true",
+					"stargate.ingress.rest.enabled":    "false",
+					"stargate.ingress.graphql.enabled": "false",
+				},
+			}
+
+			Expect(renderTemplate(options)).To(Succeed())
+			Expect(ingress.Kind).To(Equal("Ingress"))
+			verifyIngressRules(ingress, true, nil, false, false, nil, false, nil)
+
+		})
+
+		It("with only rest enabled", func() {
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+				SetValues: map[string]string{
+					"stargate.enabled":                 "true",
+					"stargate.ingress.enabled":         "true",
+					"stargate.ingress.auth.enabled":    "false",
+					"stargate.ingress.rest.enabled":    "true",
+					"stargate.ingress.graphql.enabled": "false",
+				},
+			}
+
+			Expect(renderTemplate(options)).To(Succeed())
+			Expect(ingress.Kind).To(Equal("Ingress"))
+			verifyIngressRules(ingress, false, nil, false, false, nil, true, nil)
+
+		})
+
+		It("with only graphql enabled and playground implicitly enabled", func() {
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+				SetValues: map[string]string{
+					"stargate.enabled":                 "true",
+					"stargate.ingress.enabled":         "true",
+					"stargate.ingress.auth.enabled":    "false",
+					"stargate.ingress.rest.enabled":    "false",
+					"stargate.ingress.graphql.enabled": "true",
+				},
+			}
+
+			Expect(renderTemplate(options)).To(Succeed())
+			Expect(ingress.Kind).To(Equal("Ingress"))
+			verifyIngressRules(ingress, false, nil, true, true, nil, false, nil)
+
+		})
+
+		It("with only graphql enabled and playground explicitly enabled", func() {
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+				SetValues: map[string]string{
+					"stargate.enabled":                            "true",
+					"stargate.ingress.enabled":                    "true",
+					"stargate.ingress.auth.enabled":               "false",
+					"stargate.ingress.rest.enabled":               "false",
+					"stargate.ingress.graphql.enabled":            "true",
+					"stargate.ingress.graphql.playground.enabled": "true",
+				},
+			}
+
+			Expect(renderTemplate(options)).To(Succeed())
+			Expect(ingress.Kind).To(Equal("Ingress"))
+			verifyIngressRules(ingress, false, nil, true, true, nil, false, nil)
+
+		})
+
+		It("with only graphql and playground disabled", func() {
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+				SetValues: map[string]string{
+					"stargate.enabled":                            "true",
+					"stargate.ingress.enabled":                    "true",
+					"stargate.ingress.auth.enabled":               "false",
+					"stargate.ingress.rest.enabled":               "false",
+					"stargate.ingress.graphql.enabled":            "true",
+					"stargate.ingress.graphql.playground.enabled": "false",
+				},
+			}
+
+			Expect(renderTemplate(options)).To(Succeed())
+			Expect(ingress.Kind).To(Equal("Ingress"))
+			verifyIngressRules(ingress, false, nil, true, false, nil, false, nil)
+
+		})
+
+		It("with everything enabled and varying hosts", func() {
+			stargateDefaultHost := "stargate.host" // we're not setting a host for rest, so it should inherit this
+			stargateGraphqlHost := "graphql.host"  // this should override the default
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+				SetValues: map[string]string{
+					"stargate.enabled":                 "true",
+					"stargate.ingress.enabled":         "true",
+					"stargate.ingress.auth.enabled":    "true",
+					"stargate.ingress.rest.enabled":    "true",
+					"stargate.ingress.graphql.enabled": "true",
+					"stargate.ingress.host":            stargateDefaultHost,
+					"stargate.ingress.auth.host":       "", // accept auth requests from any host, overriding the default
+					"stargate.ingress.graphql.host":    stargateGraphqlHost,
+				},
+			}
+
+			Expect(renderTemplate(options)).To(Succeed())
+			Expect(ingress.Kind).To(Equal("Ingress"))
+			verifyIngressRules(ingress, true, nil, true, true, &stargateGraphqlHost, true, &stargateDefaultHost)
+
+		})
+
+		It("with everything enabled, no default host, and some overridden hosts", func() {
+			stargateRestHost := "rest.host"
+			stargateGraphqlHost := "graphql.host"
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+				SetValues: map[string]string{
+					"stargate.enabled":                 "true",
+					"stargate.ingress.enabled":         "true",
+					"stargate.ingress.auth.enabled":    "true",
+					"stargate.ingress.rest.enabled":    "true",
+					"stargate.ingress.graphql.enabled": "true",
+					"stargate.ingress.rest.host":       stargateRestHost,
+					"stargate.ingress.graphql.host":    stargateGraphqlHost,
+				},
+			}
+
+			Expect(renderTemplate(options)).To(Succeed())
+			Expect(ingress.Kind).To(Equal("Ingress"))
+			verifyIngressRules(ingress, true, nil, true, true, &stargateGraphqlHost, true, &stargateRestHost)
 
 		})
 	})
 })
 
-func verifyIngressRules(ingress networking.Ingress, host *string, graphEnabled bool, playgroundEnabled bool, restEnabled bool) {
+func verifyIngressRules(ingress networking.Ingress, authEnabled bool, authHost *string, graphEnabled bool, playgroundEnabled bool, graphHost *string, restEnabled bool, restHost *string) {
 	rules := ingress.Spec.Rules
 	serviceName := Sprintf("%s-%s-stargate-service", HelmReleaseName, "dc1")
-	kubeapi.VerifyIngressRule(rules, "/v1/auth", nil, host, serviceName, 8081)
+	if authEnabled {
+		kubeapi.VerifyIngressRule(rules, "/v1/auth", authHost, serviceName, 8081)
+	} else {
+		kubeapi.VerifyNoRuleWithPath(rules, "/v1/auth")
+	}
 	if graphEnabled {
-		kubeapi.VerifyIngressRule(rules, "/graphql/", nil, host, serviceName, 8080)
-		kubeapi.VerifyIngressRule(rules, "/graphql-schema", nil, host, serviceName, 8080)
+		kubeapi.VerifyIngressRule(rules, "/graphql/", graphHost, serviceName, 8080)
+		kubeapi.VerifyIngressRule(rules, "/graphql-schema", graphHost, serviceName, 8080)
 		if playgroundEnabled {
-			kubeapi.VerifyIngressRule(rules, "/playground", nil, host, serviceName, 8080)
+			kubeapi.VerifyIngressRule(rules, "/playground", graphHost, serviceName, 8080)
 		} else {
 			kubeapi.VerifyNoRuleWithPath(rules, "/playground")
 		}
@@ -175,7 +303,7 @@ func verifyIngressRules(ingress networking.Ingress, host *string, graphEnabled b
 		kubeapi.VerifyNoRuleWithPath(rules, "/playground")
 	}
 	if restEnabled {
-		kubeapi.VerifyIngressRule(rules, "/v2/", nil, host, serviceName, 8082)
+		kubeapi.VerifyIngressRule(rules, "/v2/", restHost, serviceName, 8082)
 	} else {
 		kubeapi.VerifyNoRuleWithPath(rules, "/v2/")
 	}

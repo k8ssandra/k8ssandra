@@ -44,11 +44,46 @@ var _ = Describe("Verify Reaper ingress template", func() {
 			Expect(renderTemplate(options)).ShouldNot(Succeed())
 		})
 
-		It("is explicitly disabled", func() {
+		It("is explicitly disabled at the Ingress level", func() {
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
 				SetValues: map[string]string{
-					"ingress.traefik.enabled": "false",
+					"reaper.ingress.enabled": "false",
+				},
+			}
+			Expect(renderTemplate(options)).ShouldNot(Succeed())
+		})
+
+		It("is explicitly disabled at the Reaper level, even when enabled at the Ingress level", func() {
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+				SetValues: map[string]string{
+					"reaper.enabled":         "false",
+					"reaper.ingress.enabled": "true",
+					"reaper.ingress.host":    "localhost",
+				},
+			}
+			Expect(renderTemplate(options)).ShouldNot(Succeed())
+		})
+
+		It("is enabled but host is not specified", func() {
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+				SetValues: map[string]string{
+					"reaper.enabled":         "true",
+					"reaper.ingress.enabled": "true",
+				},
+			}
+			Expect(renderTemplate(options)).ShouldNot(Succeed())
+		})
+
+		It("method is not traefik", func() {
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+				SetValues: map[string]string{
+					"reaper.enabled":         "true",
+					"reaper.ingress.enabled": "true",
+					"reaper.ingress.method":  "somethingElse",
 				},
 			}
 			Expect(renderTemplate(options)).ShouldNot(Succeed())
@@ -56,25 +91,26 @@ var _ = Describe("Verify Reaper ingress template", func() {
 	})
 
 	Context("by rendering it with options", func() {
-		It("using only default options", func() {
+		It("using only required options", func() {
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
 				SetValues: map[string]string{
-					"ingress.traefik.enabled": "true",
+					"reaper.ingress.enabled": "true",
+					"reaper.ingress.host":    "*",
 				},
 			}
 
 			Expect(renderTemplate(options)).To(Succeed())
 			Expect(ingress.Kind).To(Equal("IngressRoute"))
-			VerifyTraefikHTTPIngressRoute(ingress, "web", "Host(`repair.k8ssandra.cluster.local`)", Sprintf("%s-reaper-k8ssandra-reaper-service", HelmReleaseName), 8080)
+			VerifyTraefikHTTPIngressRoute(ingress, "web", "Host(`*`)", Sprintf("%s-reaper-k8ssandra-reaper-service", HelmReleaseName), 8080)
 		})
 
 		It("with custom host", func() {
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
 				SetValues: map[string]string{
-					"ingress.traefik.enabled":     "true",
-					"ingress.traefik.repair.host": "reaper.host",
+					"reaper.ingress.enabled": "true",
+					"reaper.ingress.host":    "reaper.host",
 				},
 			}
 

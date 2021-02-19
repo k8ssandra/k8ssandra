@@ -63,7 +63,7 @@ var _ = Describe("Verify Reaper template", func() {
 
 		It("modifying autoscheduling option", func() {
 			options := &helm.Options{
-				SetStrValues:   map[string]string{"repair.reaper.autoschedule": "true"},
+				SetStrValues:   map[string]string{"reaper.autoschedule": "true"},
 				KubectlOptions: defaultKubeCtlOptions,
 			}
 

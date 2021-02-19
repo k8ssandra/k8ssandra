@@ -1,14 +1,18 @@
-{{- $traefik := .Values.ingress.traefik -}}
-{{- if $traefik.enabled }}
-{{- $releaseName := .Release.Name -}}
-{{- $datacenterName := include "k8ssandra.datacenterName" . -}}
+{{- $stargate := .Values.stargate -}}
+{{- if $stargate.enabled }}
+  {{- $stargateIngress := $stargate.ingress -}}
+  {{- if $stargateIngress.enabled }}
+    {{- $stargateCassIngress := $stargateIngress.cassandra -}}
+    {{- if $stargateCassIngress.enabled }}
 
-{{- if $traefik.stargate.enabled }}
-{{- if and $traefik.stargate.cassandra.enabled $traefik.cassandra.enabled }}
-  {{- fail "ingress.traefik.stargate.cassandra.enabled and ingress.traefik.cassandra.enabled cannot both be enabled." }}
-{{- end }}
-{{- $stargateHost := required "Values.ingress.traefik.stargate.host is required" $traefik.stargate.host }}
-{{- if $traefik.stargate.cassandra.enabled }}
+      {{- $cassIngress := .Values.cassandra.ingress -}}
+      {{- if $cassIngress.enabled }}
+        {{- fail "stargate.ingress.cassandra.enabled and cassandra.ingress.enabled cannot both be true." }}
+      {{- end }}
+
+      {{- if eq $stargateCassIngress.method "traefik" }}
+        {{- $releaseName := .Release.Name -}}
+        {{- $datacenterName := include "k8ssandra.datacenterName" . -}}
 apiVersion: traefik.containo.us/v1alpha1
 kind: IngressRouteTCP
 metadata:
@@ -17,15 +21,14 @@ metadata:
 {{ include "k8ssandra.labels" . | indent 4 }}
 spec:
   entryPoints:
-  {{- range $traefik.stargate.cassandra.entrypoints }}
-  - {{ . }}
-  {{- end }}
+    - {{ $stargateCassIngress.traefik.entrypoint }}
   routes:
-    - match: HostSNI(`{{ $stargateHost }}`)
+    - match: HostSNI(`{{ default "*" (include "k8ssandra.stargateIngressCassandraHost" .) }}`)
       services:
-        - name: {{ include "k8ssandra.clusterName" . }}-{{ $datacenterName }}-stargate-service
+        - name: {{ $releaseName }}-{{ $datacenterName }}-stargate-service
           kind: Service
           port: 9042
-{{- end }}
-{{- end }}
+      {{- end }}
+    {{- end }}
+  {{- end }}
 {{- end }}

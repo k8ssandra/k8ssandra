@@ -11,7 +11,7 @@ metadata:
   name: {{ $datacenter.name }}
   labels: {{ include "k8ssandra.labels" . | indent 4 }}
   annotations:
-{{- if .Values.repair.reaper.enabled }}
+{{- if .Values.reaper.enabled }}
     reaper.cassandra-reaper.io/instance: {{ .Release.Name }}-reaper-k8ssandra
 {{- end }}
 spec:
@@ -43,9 +43,9 @@ spec:
   allowMultipleNodesPerWorker: {{ .Values.cassandra.allowMultipleNodesPerWorker | default false}}
 {{- if .Values.cassandra.allowMultipleNodesPerWorker}}
   resources:
-    limits: 
+    limits:
 {{ toYaml (required "set resource limits/requests when enabling allowMultipleNodesPerWorker" .Values.cassandra.resources.limits) | indent 6}}
-    requests:      
+    requests:
 {{ toYaml (required "set resource limits/requests when enabling allowMultipleNodesPerWorker" .Values.cassandra.resources.requests) | indent 6}}
 {{- else if .Values.cassandra.resources }}
   resources:
@@ -57,10 +57,10 @@ spec:
 {{- else if .Values.cassandra.auth.superuser.username }}
   superuserSecretName: {{ include "k8ssandra.clusterName" . }}-superuser
 {{- end }}
-  {{- if or .Values.repair.reaper.enabled .Values.backupRestore.medusa.enabled .Values.stargate.enabled }}
+  {{- if or .Values.reaper.enabled .Values.backupRestore.medusa.enabled .Values.stargate.enabled }}
   users:
-  {{- if .Values.repair.reaper.enabled }}
-    - secretName: {{ default (printf "%s-%s" (include "k8ssandra.clusterName" .) "reaper") .Values.repair.reaper.cassandraUser.secret }}
+  {{- if .Values.reaper.enabled }}
+    - secretName: {{ default (printf "%s-%s" (include "k8ssandra.clusterName" .) "reaper") .Values.reaper.cassandraUser.secret }}
       superuser: true
   {{- end }}
   {{- if .Values.backupRestore.medusa.enabled }}
@@ -73,7 +73,7 @@ spec:
   {{- end }}
   {{- end }}
 {{- end }}
-  config:    
+  config:
     cassandra-yaml:
       {{- include "k8ssandra.default_num_tokens" . }}
 {{- if .Values.cassandra.auth.enabled }}
@@ -99,7 +99,7 @@ spec:
 {{- end }}
   podTemplateSpec:
     spec:
-{{- if or .Values.repair.reaper.enabled .Values.backupRestore.medusa.enabled }}
+{{- if or .Values.reaper.enabled .Values.backupRestore.medusa.enabled }}
       initContainers:
       {{/* The server-config-init container is "built-in" in that it is provided by
            cass-operator. We specify it here in order to make it run first. It needs
@@ -107,7 +107,7 @@ spec:
            and present for the medusa-restore initContainer.
         */}}
       - name: server-config-init
-{{- if .Values.repair.reaper.enabled }}
+{{- if .Values.reaper.enabled }}
       - name: jmx-credentials
         image: busybox
         imagePullPolicy: IfNotPresent
@@ -184,9 +184,9 @@ spec:
 {{- end}}
       containers:
       - name: cassandra
-{{- if or .Values.repair.reaper.enabled .Values.backupRestore.medusa.enabled }}
+{{- if or .Values.reaper.enabled .Values.backupRestore.medusa.enabled }}
         env:
-{{- if .Values.repair.reaper.enabled }}
+{{- if .Values.reaper.enabled }}
           - name: LOCAL_JMX
             value: "no"
 {{- end}}

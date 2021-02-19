@@ -49,6 +49,25 @@ var _ = Describe("Verify Stargate template", func() {
 		})
 	})
 
+	Context("by confirming it does render when", func() {
+		It("is implicitly enabled", func() {
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+			}
+			Expect(renderTemplate(options)).Should(Succeed())
+		})
+
+		It("is explicitly enabled", func() {
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+				SetValues: map[string]string{
+					"stargate.enabled": "true",
+				},
+			}
+			Expect(renderTemplate(options)).Should(Succeed())
+		})
+	})
+
 	Context("by rendering it with options", func() {
 		It("using only default options", func() {
 			options := &helm.Options{

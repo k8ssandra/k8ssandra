@@ -133,6 +133,35 @@ cassandra:
       #size:
       #newGenSize:
 
+  # Cassandra native transport ingress support
+  ingress:
+    # -- Enables Cassandra Traefik ingress definitions. Note that
+    # this is mutually exclusive with stargate.ingress.cassandra.enabled
+    enabled: false
+
+    # -- Determines which TCP-based ingress custom resources to template out. Currently only `traefik` is supported
+    method: traefik
+
+    # -- Optional hostname used to match requests. Warning: many native Cassandra clients, notably including cqlsh, initialize their connection by querying for
+    # the cluster's contactPoints, and thereafter communicate to the cluster using those names/IPs rather than whatever host was specified to the client. In
+    # order for clients to work correctly through ingress with a host filter, this means that the host filter must match the hostnames specified in the
+    # contactPoints. This value must be a DNS-resolvable hostname and not an IP address. To avoid this issue, leave this setting blank.
+    host:
+
+    traefik:
+      # -- Traefik entrypoint where traffic is sourced. See https://doc.traefik.io/traefik/routing/entrypoints/
+      entrypoint: cassandra
+      # Future parameters
+      # tls:
+      #   client_auth:
+      #     # -- Collection of Secrets containing TLS certificates. KEYS ARE NOT REQUIRED HERE
+      #     ca_secrets:
+      #       - ca_secret_1
+      #   domains:
+      #     - example.com
+      #   # -- Secret containing the TLS certificate and key for the listener
+      #   secretName: tls-secret
+
 stargate:
   # -- Enable Stargate resources as part of this release
   enabled: true
@@ -173,53 +202,148 @@ stargate:
     secret: ""
     username: ""
 
-repair:
-  reaper:
-    # -- When enabled, Reaper automatically sets up repair schedules for all
-    # non-system keypsaces. Repear monitors the cluster so that as keyspaces are
-    # added or removed repair schedules will be added or removed respectively.
-    autoschedule: false
+  ingress:
+    # -- Optional hostname used to match requests. Warning: many native Cassandra clients, notably including cqlsh, initialize their connection by querying for
+    # the cluster's contactPoints, and thereafter communicate to the cluster using those names/IPs rather than whatever host was specified to the client. In
+    # order for clients to work correctly through ingress with a host filter, this means that the host filter must match the hostnames specified in the
+    # contactPoints. This value must be a DNS-resolvable hostname and not an IP address. To avoid this issue, leave this setting blank, or override it to ""
+    # (empty string) for stargate.ingress.cassandra.host. This note does not apply to clients of Stargate's auth, REST, or GraphQL APIs.
+    host:
 
-    # -- Enable Reaper resources as part of this release. Note that Reaper uses
-    # Cassandra's JMX APIs to perform repairs. When Reaper is enabled, Cassandra
-    # will also be configured to allow remote JMX access. JMX authentication
-    # will be configured in Cassandra with credentials only created for Reaper
-    # in order to limit access.
-    enabled: true
+    # -- Enables all Stargate ingresses. Note: This must be true for any Stargate ingress to function.
+    enabled: false
 
-    # Configures the Reaper container image to use.
-    image:
-      # -- Specifies the container repository for cassandra-reaper
-      repository: docker.io/thelastpickle/cassandra-reaper
-      # -- Tag of an image within the specified repository
-      tag: 2.1.3
+    auth:
+      # -- Enables Stargate authentication ingress. Note: stargate.ingress.enabled must also be true.
+      enabled: true
+      # -- Optional hostname used to match requests, overriding stargate.ingress.host if set
+      host:
+      # tls:
+      #   # -- Hostnames to match as part of SNI routing
+      #   hosts:
+      #     - example.com
+      #   # -- Secret containing the TLS certificate and key for encrypting requests to this endpoint
+      #   secretName: my-secret
 
-    # -- Configures the Cassandra user used by Reaper when authentication is
-    # enabled. If neither cassandraUser.secret nor casandraUser.username are
-    # set, then a Cassandra user and a secret with the user's credentials will
-    # be created. The username will be reaper. The secret name will be of the
-    # form {clusterName}-reaper. The password will be a random 20 character
-    # password. If cassandraUser.secret is set, then the Cassandra user will be
-    # created from the contents of the secret. If cassandraUser.secret is not
-    # set and if cassandraUser.username is set, a secret will be generated using
-    # the specified username. The password will be generated as previously
-    # described.
-    cassandraUser:
-      secret: ""
-      username: ""
+    rest:
+      # -- Enables Stargate REST ingress. Note: stargate.ingress.enabled must also be true.
+      enabled: true
+      # -- Optional hostname used to match requests, overriding stargate.ingress.host if set
+      host:
+      # tls:
+      #   # -- Hostnames to match as part of SNI routing
+      #   hosts:
+      #     - example.com
+      #   # -- Secret containing the TLS certificate and key for encrypting requests to this endpoint
+      #   secretName: my-secret
 
-    # -- Configures JMX access to the Cassandra cluster. Reaper requires remote
-    # JMX access to perform repairs. The Cassandra cluster will be configured
-    # with remote JMX access enabled when Reaper is deployed. The JMX access
-    # will be configured to use authentication.
-    jmx:
-      # -- Username that Reaper will use for JMX access. If left blank a random,
-      # alphanumeric string will be generated.
-      username: ""
+    graphql:
+      # -- Enables Stargate GraphQL API ingress. Note: stargate.ingress.enabled must also be true.
+      enabled: true
+      # -- Optional hostname used to match requests, overriding stargate.ingress.host if set
+      host:
+      # tls:
+      #   # -- Hostnames to match as part of SNI routing
+      #   hosts:
+      #     - example.com
+      #   # -- Secret containing the TLS certificate and key for encrypting requests to this endpoint
+      #   secretName: my-secret
+      playground:
+        # -- Enables GraphQL playground ingress.  Note: stargate.ingress.enabled and stargate.ingress.graphql.enabled must also be true.
+        enabled: true
 
-      # -- Password that Reaper will use for JMX access. If left blank a random,
-      # alphanumeric string will be generated.
-      password: ""
+    cassandra:
+      # -- Enables C* native protocol ingress with Traefik. Note that this is mutually exclusive with cassandra.ingress.enabled, and stargate.ingress.enabled must also be true.
+      enabled: true
+      # -- Determines which TCP-based ingress custom resources to template out. Currently only `traefik` is supported
+      method: traefik
+
+      # -- Optional hostname used to match requests. Warning: many native Cassandra clients, notably including cqlsh, initialize their connection by querying for
+      # the cluster's contactPoints, and thereafter communicate to the cluster using those names/IPs rather than whatever host was specified to the client. In
+      # order for clients to work correctly through ingress with a host filter, this means that the host filter must match the hostnames specified in the
+      # contactPoints. This value must be a DNS-resolvable hostname and not an IP address. To avoid this issue, leave this setting blank, or if
+      # stargate.ingress.host is set, override it here to "" (empty string). This note does not apply to clients of Stargate's auth, REST, or GraphQL APIs.
+      host:
+
+      # -- Parameters used by the Traefik IngressRoute custom resource
+      traefik:
+
+        # -- Traefik entrypoint where traffic is sourced. See https://doc.traefik.io/traefik/routing/entrypoints/
+        entrypoint: cassandra
+        # Future parameters
+        # tls:
+        #   client_auth:
+        #     # -- Collection of Secrets containing TLS certificates. KEYS ARE NOT REQUIRED HERE
+        #     ca_secrets:
+        #       - ca_secret_1
+        #   domains:
+        #     - example.com
+        #   # -- Secret containing the TLS certificate and key for the listener
+        #   secretName: tls-secret
+
+reaper:
+  # -- When enabled, Reaper automatically sets up repair schedules for all
+  # non-system keypsaces. Repear monitors the cluster so that as keyspaces are
+  # added or removed repair schedules will be added or removed respectively.
+  autoschedule: false
+
+  # -- Enable Reaper resources as part of this release. Note that Reaper uses
+  # Cassandra's JMX APIs to perform repairs. When Reaper is enabled, Cassandra
+  # will also be configured to allow remote JMX access. JMX authentication
+  # will be configured in Cassandra with credentials only created for Reaper
+  # in order to limit access.
+  enabled: true
+
+  # Configures the Reaper container image to use.
+  image:
+    # -- Specifies the container repository for cassandra-reaper
+    repository: docker.io/thelastpickle/cassandra-reaper
+    # -- Tag of an image within the specified repository
+    tag: 2.1.3
+
+  # -- Configures the Cassandra user used by Reaper when authentication is
+  # enabled. If neither cassandraUser.secret nor casandraUser.username are
+  # set, then a Cassandra user and a secret with the user's credentials will
+  # be created. The username will be reaper. The secret name will be of the
+  # form {clusterName}-reaper. The password will be a random 20 character
+  # password. If cassandraUser.secret is set, then the Cassandra user will be
+  # created from the contents of the secret. If cassandraUser.secret is not
+  # set and if cassandraUser.username is set, a secret will be generated using
+  # the specified username. The password will be generated as previously
+  # described.
+  cassandraUser:
+    secret: ""
+    username: ""
+
+  # -- Configures JMX access to the Cassandra cluster. Reaper requires remote
+  # JMX access to perform repairs. The Cassandra cluster will be configured
+  # with remote JMX access enabled when Reaper is deployed. The JMX access
+  # will be configured to use authentication.
+  jmx:
+    # -- Username that Reaper will use for JMX access. If left blank a random,
+    # alphanumeric string will be generated.
+    username: ""
+
+    # -- Password that Reaper will use for JMX access. If left blank a random,
+    # alphanumeric string will be generated.
+    password: ""
+
+  ingress:
+    # -- Enables Reaper ingress definitions. When enabled, you must specify a value for reaper.ingress.host.
+    enabled: false
+
+    # -- Hostname to use for routing requests to the repair UI. If
+    # using a local deployment consider leveraging dynamic DNS services like
+    # xip.io. Example: `repair.127.0.0.1.xip.io` will return `127.0.0.1` for
+    # DNS requests routing requests to your local machine. This is required when reaper.ingress.enabled is true.
+    host:
+
+    method: traefik
+
+    traefik:
+      # -- Traefik entrypoint where traffic is sourced. See https://doc.traefik.io/traefik/routing/entrypoints/
+      entrypoint: web
+
 
 backupRestore:
   medusa:
@@ -279,82 +403,6 @@ backupRestore:
     # -- Name of the Kubernetes `Secret` that stores the key file for the
     # storage provider's API
     bucketSecret: medusa-bucket-key
-
-# Support for accessing the various web-interfaces via K8s ingress controllers.
-# Depending on the ingress available in your cluster enable the appropriate
-# section.
-ingress:
-  traefik:
-    # -- Enable Traefik custom resources as part of this release.
-    enabled: false
-
-    # Repair service
-    repair:
-      # -- Enables Reaper Traefik ingress definitions. Note this will **only**
-      # work if `ingress.traefik.enabled` is also `true`
-      enabled: true
-
-      # -- Traefik entrypoints where traffic is sourced.
-      entrypoints:
-        - web
-
-      # -- Hostname Traefik should use for routing requests to the repair UI. If
-      # using a local deployment consider leveraging dynamic DNS services like
-      # xip.io. Example: `repair.127.0.0.1.xip.io` will return `127.0.0.1` for
-      # DNS requests routing requests to your local machine.
-      host: repair.k8ssandra.cluster.local
-
-    # Cassandra native transport ingress support
-    cassandra:
-      # -- Enables Cassandra Traefik ingress definitions. Note this will
-      # **only** work if `ingress.traefik.enabled` is also `true`. Additionally,
-      # this is mutually exclusive with
-      # ingress.traefik.stargate.cassandra.enabled
-      enabled: false
-
-      # -- Traefik entrypoints where traffic is sourced.
-      entrypoints:
-        - cassandra
-
-    # Stargate ingress support
-    stargate:
-      # -- Enables Stargate Traefik ingress definitions. Note this will **only**
-      # work if `stargate.enabled` and `ingress.traefik.enabled` are also `true`. Additionally, when
-      # enabled the authentication API (port 8081) is enabled automatically.
-      enabled: true
-
-      # -- Hostname Traefik should use for routing requests to Stargate. If
-      # using a local deployment consider leveraging dynamic DNS services like
-      # xip.io. Example: `stargate.127.0.0.1.xip.io` will return `127.0.0.1` for
-      # DNS requests routing requests to your local machine.
-      host: "*"
-
-      # Ingress for each Stargate API can be enabled/disabled independently
-      graphql:
-        # -- Enables ingress resources for Stargate GraphQL API. Note this will
-        # **only** work if `stargate.enabled`, `ingress.traefik.enabled`, and
-        # `ingress.traefik.stargate.enabled` are also `true`
-        enabled: true
-
-        playground:
-          # -- Enables GraphQL playground interface ingress.
-          enabled: true
-
-      rest:
-        # -- Enables ingress resources for Stargate REST API. Note this will
-        # **only** work if `stargate.enabled`, `ingress.traefik.enabled`, and
-        # `ingress.traefik.stargate.enabled` are also `true`
-        enabled: true
-
-      cassandra:
-        # -- Enables Traefik ingress resources for Stargate Cassandra API. Note
-        # this will **only** work if `stargate.enabled`,
-        # `ingress.traefik.enabled`, and `ingress.traefik.stargate.enabled` are
-        # also `true`. Additionally, this is mutually exclusive with
-        # ingress.traefik.cassandra.enabled
-        enabled: true
-        entrypoints:
-          - cassandra
 
 monitoring:
   grafana:
