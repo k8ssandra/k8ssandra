@@ -4,7 +4,7 @@ cassandra:
   #    - 3.11.8
   #    - 3.11.9
   #    - 3.11.10
-  #
+  #    - 4.0.0
   version: "3.11.10"
 
   # -- Specifies the image to use for a particular Cassandra version. Exercise
@@ -402,82 +402,6 @@ medusa:
   # -- Name of the Kubernetes `Secret` that stores the key file for the
   # storage provider's API
   storageSecret: medusa-bucket-key
-
-# Support for accessing the various web-interfaces via K8s ingress controllers.
-# Depending on the ingress available in your cluster enable the appropriate
-# section.
-ingress:
-  traefik:
-    # -- Enable Traefik custom resources as part of this release.
-    enabled: false
-
-    # Repair service
-    repair:
-      # -- Enables Reaper Traefik ingress definitions. Note this will **only**
-      # work if `ingress.traefik.enabled` is also `true`
-      enabled: true
-
-      # -- Traefik entrypoints where traffic is sourced.
-      entrypoints:
-        - web
-
-      # -- Hostname Traefik should use for routing requests to the repair UI. If
-      # using a local deployment consider leveraging dynamic DNS services like
-      # xip.io. Example: `repair.127.0.0.1.xip.io` will return `127.0.0.1` for
-      # DNS requests routing requests to your local machine.
-      host: repair.k8ssandra.cluster.local
-
-    # Cassandra native transport ingress support
-    cassandra:
-      # -- Enables Cassandra Traefik ingress definitions. Note this will
-      # **only** work if `ingress.traefik.enabled` is also `true`. Additionally,
-      # this is mutually exclusive with
-      # ingress.traefik.stargate.cassandra.enabled
-      enabled: false
-
-      # -- Traefik entrypoints where traffic is sourced.
-      entrypoints:
-        - cassandra
-
-    # Stargate ingress support
-    stargate:
-      # -- Enables Stargate Traefik ingress definitions. Note this will **only**
-      # work if `stargate.enabled` and `ingress.traefik.enabled` are also `true`. Additionally, when
-      # enabled the authentication API (port 8081) is enabled automatically.
-      enabled: true
-
-      # -- Hostname Traefik should use for routing requests to Stargate. If
-      # using a local deployment consider leveraging dynamic DNS services like
-      # xip.io. Example: `stargate.127.0.0.1.xip.io` will return `127.0.0.1` for
-      # DNS requests routing requests to your local machine.
-      host: "*"
-
-      # Ingress for each Stargate API can be enabled/disabled independently
-      graphql:
-        # -- Enables ingress resources for Stargate GraphQL API. Note this will
-        # **only** work if `stargate.enabled`, `ingress.traefik.enabled`, and
-        # `ingress.traefik.stargate.enabled` are also `true`
-        enabled: true
-
-        playground:
-          # -- Enables GraphQL playground interface ingress.
-          enabled: true
-
-      rest:
-        # -- Enables ingress resources for Stargate REST API. Note this will
-        # **only** work if `stargate.enabled`, `ingress.traefik.enabled`, and
-        # `ingress.traefik.stargate.enabled` are also `true`
-        enabled: true
-
-      cassandra:
-        # -- Enables Traefik ingress resources for Stargate Cassandra API. Note
-        # this will **only** work if `stargate.enabled`,
-        # `ingress.traefik.enabled`, and `ingress.traefik.stargate.enabled` are
-        # also `true`. Additionally, this is mutually exclusive with
-        # ingress.traefik.cassandra.enabled
-        enabled: true
-        entrypoints:
-          - cassandra
 
 monitoring:
   grafana:
