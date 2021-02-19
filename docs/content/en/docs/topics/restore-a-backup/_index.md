@@ -325,4 +325,4 @@ You can look again at the cassandrarestore helm-test YAML for the start and endi
 
 ## Next
 
-Learn how to use the [Repear Web Interface]({{< ref "/docs/topics/accessing-services/repair/" >}}).
+Learn how to use the [Repear Web Interface]({{< ref "/docs/topics/repair/" >}}).
