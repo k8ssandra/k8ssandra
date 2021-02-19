@@ -60,7 +60,7 @@ spec:
 {{- else if .Values.cassandra.auth.superuser.username }}
   superuserSecretName: {{ include "k8ssandra.clusterName" . }}-superuser
 {{- end }}
-  {{- if or .Values.repair.reaper.enabled .Values.medusa.enabled .Values.stargate.enabled }}
+  {{- if or .Values.reaper.enabled .Values.medusa.enabled .Values.stargate.enabled }}
   users:
   {{- if .Values.reaper.enabled }}
     - secretName: {{ default (printf "%s-%s" (include "k8ssandra.clusterName" .) "reaper") .Values.reaper.cassandraUser.secret }}
@@ -102,13 +102,9 @@ spec:
 {{- end }}
   podTemplateSpec:
     spec:
-{{/*      securityContext:*/}}
-{{/*        runAsUser: {{ $cassandrUid }}*/}}
-{{/*        fsGroup: {{ $cassandraGid }}*/}}
-{{/*        runAsNonRoot: true*/}}
       initContainers:
       - name: server-config-init
-     {{- if .Values.repair.reaper.enabled }}
+     {{- if .Values.reaper.enabled }}
       - name: jmx-credentials
         image: busybox
         imagePullPolicy: IfNotPresent
@@ -193,9 +189,9 @@ spec:
       {{- end }}
       containers:
       - name: cassandra
-       {{- if or .Values.repair.reaper.enabled .Values.medusa.enabled }}
+       {{- if or .Values.reaper.enabled .Values.medusa.enabled }}
         env:
-          {{- if .Values.repair.reaper.enabled }}
+          {{- if .Values.reaper.enabled }}
           - name: LOCAL_JMX
             value: "no"
           {{- end }}

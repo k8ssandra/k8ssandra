@@ -329,9 +329,9 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 		It("disabling reaper and medusa and stargate", func() {
 			options := &helm.Options{
 				SetValues: map[string]string{
-					"stargate.enabled":             "false",
-					"reaper.enabled":               "false",
-					"backupRestore.medusa.enabled": "false",
+					"stargate.enabled": "false",
+					"reaper.enabled":   "false",
+					"medusa.enabled":   "false",
 				},
 				KubectlOptions: defaultKubeCtlOptions,
 			}
@@ -351,7 +351,7 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 
 		It("enabling only medusa", func() {
 			options := &helm.Options{
-				SetValues:      map[string]string{"backupRestore.medusa.enabled": "true", "reaper.enabled": "false"},
+				SetValues:      map[string]string{"medusa.enabled": "true", "reaper.enabled": "false"},
 				KubectlOptions: defaultKubeCtlOptions,
 			}
 
@@ -380,11 +380,11 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			secretName := clusterName + "-medusa"
 			options := &helm.Options{
 				SetValues: map[string]string{
-					"cassandra.clusterName":        clusterName,
-					"cassandra.auth.enabled":       "true",
-					"backupRestore.medusa.enabled": "true",
-					"reaper.enabled":               "false",
-					"stargate.enabled":             "false",
+					"cassandra.clusterName":  clusterName,
+					"cassandra.auth.enabled": "true",
+					"medusa.enabled":         "true",
+					"reaper.enabled":         "false",
+					"stargate.enabled":       "false",
 				},
 			}
 
@@ -462,12 +462,12 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			secretName := "medusa-user"
 			options := &helm.Options{
 				SetValues: map[string]string{
-					"cassandra.clusterName":                     clusterName,
-					"cassandra.auth.enabled":                    "true",
-					"backupRestore.medusa.enabled":              "true",
-					"backupRestore.medusa.cassandraUser.secret": secretName,
-					"reaper.enabled":                            "false",
-					"stargate.enabled":                          "false",
+					"cassandra.clusterName":       clusterName,
+					"cassandra.auth.enabled":      "true",
+					"medusa.enabled":              "true",
+					"medusa.cassandraUser.secret": secretName,
+					"reaper.enabled":              "false",
+					"stargate.enabled":            "false",
 				},
 			}
 
@@ -892,7 +892,7 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			SetValues: map[string]string{
 				"stargate.enabled":              "true",
 				"cassandra.clusterName":         clusterName,
-				"backupRestore.medusa.enabled":  "false",
+				"medusa.enabled":                "false",
 				"reaper.enabled":                "false",
 				"cassandra.auth.enabled":        "true",
 				"cassandra.datacenters[0].name": dcName,

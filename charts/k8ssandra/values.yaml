@@ -345,12 +345,10 @@ reaper:
       # -- Traefik entrypoint where traffic is sourced. See https://doc.traefik.io/traefik/routing/entrypoints/
       entrypoint: web
 
-
-backupRestore:
-  medusa:
-    # -- Enable Medusa resources as part of this release. If enabled,
-    # `bucketName` and `bucketSecret` **must** be defined.
-    enabled: false
+medusa:
+  # -- Enable Medusa resources as part of this release. If enabled,
+  # `bucketName` and `bucketSecret` **must** be defined.
+  enabled: false
 
   # Configures the Medusa image which is built from
   # https://github.com/thelastpickle/cassandra-medusa/tree/master/k8s.
@@ -394,7 +392,7 @@ backupRestore:
     # For s3_compatible option, port is optional
     # port: 9000
 
-    # Is SSL used or not for s3_compatible connection
+  # Is SSL used or not for s3_compatible connection
   # secure: false
 
   # -- Name of the remote storage bucket where backups will be stored. If using 'local' storage, set the

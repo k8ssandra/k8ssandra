@@ -35,7 +35,7 @@ var _ = Describe("Verify k8ssandra and dependent template labels", func() {
 				SetValues: map[string]string{
 					"stargate.enabled":                              "true",
 					"reaper.enabled":                                "true",
-					"backupRestore.medusa.enabled":                  "true",
+					"medusa.enabled":                                "true",
 					"reaper.ingress.enabled":                        "true",
 					"reaper.ingress.host":                           "reaper.host",
 					"cassandra.ingress.enabled":                     "false",
