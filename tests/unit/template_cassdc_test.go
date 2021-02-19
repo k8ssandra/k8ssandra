@@ -542,7 +542,7 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 		It("enabling reaper and medusa", func() {
 			// Simple verification that both have properties correctly applied
 			options := &helm.Options{
-				SetValues:      map[string]string{"backupRestore.medusa.enabled": "true"},
+				SetValues:      map[string]string{"medusa.enabled": "true"},
 				KubectlOptions: defaultKubeCtlOptions,
 			}
 

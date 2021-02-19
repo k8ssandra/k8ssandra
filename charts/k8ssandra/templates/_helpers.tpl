@@ -164,16 +164,16 @@ Creates Cassandra auth environment variables if authentication is enabled.
 */}}
 {{- define "medusa.cassandraAuthEnvVars" -}}
 {{- if .Values.cassandra.auth.enabled }}
-  {{- if .Values.backupRestore.medusa.cassandraUser.secret }}
+  {{- if .Values.medusa.cassandraUser.secret }}
     {{- nindent 10 "- name: CQL_USERNAME" }}
     {{- nindent 12 "valueFrom:" }}
     {{- nindent 14 "secretKeyRef:" }}
-    {{- nindent 16 (print "name: " .Values.backupRestore.medusa.cassandraUser.secret) }}
+    {{- nindent 16 (print "name: " .Values.medusa.cassandraUser.secret) }}
     {{- nindent 16 "key: username" }}
     {{- nindent 10 "- name: CQL_PASSWORD" }}
     {{- nindent 12 "valueFrom:" }}
     {{- nindent 14 "secretKeyRef:" }}
-    {{- nindent 16 (print "name: " .Values.backupRestore.medusa.cassandraUser.secret) }}
+    {{- nindent 16 (print "name: " .Values.medusa.cassandraUser.secret) }}
     {{- nindent 16 "key: password" }}
   {{- else }}
     {{- nindent 10 "- name: CQL_USERNAME" -}}

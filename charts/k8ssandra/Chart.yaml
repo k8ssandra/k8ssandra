@@ -20,7 +20,7 @@ dependencies:
   - name: medusa-operator
     version: 0.27.0
     repository: file://../medusa-operator
-    condition: backupRestore.medusa.enabled
+    condition: medusa.enabled
 
   - name: k8ssandra-common
     version: 0.28.0

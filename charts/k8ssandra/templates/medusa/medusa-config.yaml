@@ -1,6 +1,6 @@
 {{- $bucketStorageTypes :=  list "s3" "google_storage" -}}
 
-{{- if .Values.backupRestore.medusa.enabled }}
+{{- if .Values.medusa.enabled }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -19,24 +19,24 @@ data:
     check_running = nodetool version
 
     [storage]
-  {{- if not (or (eq .Values.backupRestore.medusa.storage "s3") (eq .Values.backupRestore.medusa.storage "google_storage") (eq .Values.backupRestore.medusa.storage "s3_compatible") (eq .Values.backupRestore.medusa.storage "local")) }}
+  {{- if not (or (eq .Values.medusa.storage "s3") (eq .Values.medusa.storage "google_storage") (eq .Values.medusa.storage "s3_compatible") (eq .Values.medusa.storage "local")) }}
     {{ fail "Accepted storage type values are s3, s3_compatible, local and google_storage" }}
   {{- end }}
-    storage_provider = {{ .Values.backupRestore.medusa.storage }}
-  {{- range $key, $value := .Values.backupRestore.medusa.storage_properties }}
+    storage_provider = {{ .Values.medusa.storage }}
+  {{- range $key, $value := .Values.medusa.storage_properties }}
     {{ $key }} = {{ $value }}
   {{- end }}
-  {{- if eq "local" .Values.backupRestore.medusa.storage }}
-    base_path = {{ .Values.backupRestore.medusa.bucketName }}
+  {{- if eq "local" .Values.medusa.storage }}
+    base_path = {{ .Values.medusa.bucketName }}
   {{- else }}
-    bucket_name = {{ .Values.backupRestore.medusa.bucketName }}
+    bucket_name = {{ .Values.medusa.bucketName }}
   {{- end }}
-  {{- if (eq .Values.backupRestore.medusa.storage "s3") }}
+  {{- if (eq .Values.medusa.storage "s3") }}
     key_file /etc/medusa-secrets/medusa_s3_credentials
-  {{- else if (eq .Values.backupRestore.medusa.storage "google_storage") }}
+  {{- else if (eq .Values.medusa.storage "google_storage") }}
     key_file = /etc/medusa-secrets/medusa_gcp_key.json
   {{- end }}
-{{- if and .Values.backupRestore.medusa.multiTenant (has .Values.backupRestore.medusa.storage $bucketStorageTypes)}}
+{{- if and .Values.medusa.multiTenant (has .Values.medusa.storage $bucketStorageTypes)}}
     prefix = {{ .Values.clusterName }}.{{ .Release.Namespace }}
 {{- end }}
 

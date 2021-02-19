@@ -352,59 +352,58 @@ backupRestore:
     # `bucketName` and `bucketSecret` **must** be defined.
     enabled: false
 
-    # Configures the Medusa image which is built from
-    # https://github.com/thelastpickle/cassandra-medusa/tree/master/k8s.
-    image:
-      # -- Specifies the container repository for Medusa
-      repository: docker.io/k8ssandra/medusa
-      # -- Tag of an image within the specified repository
-      tag: 1e8a4695
-      # -- The image pull policy
-      pullPolicy: IfNotPresent
+  # Configures the Medusa image which is built from
+  # https://github.com/thelastpickle/cassandra-medusa/tree/master/k8s.
+  image:
+    # -- Specifies the container repository for Medusa
+    repository: docker.io/k8ssandra/medusa
+    # -- Tag of an image within the specified repository
+    tag: eaed2410
+    # -- The image pull policy
+    pullPolicy: IfNotPresent
 
-    # -- Configures the Cassandra user used by Medusa when authentication is
-    # enabled. If neither `cassandraUser.secret` nor `casandraUser.username` are
-    # set, then a Cassandra user and a secret will be created. The username will
-    # be medusa. The secret name will be of the form {clusterName}-medusa. The
-    # password will be a random 20 character password. If `cassandraUser.secret`
-    # is set, then the Cassandra user will be created from the contents of the
-    # secret. If `cassandraUser.secret` is not set and if
-    # `cassandraUser.username` is set, a secret will be generated using the
-    # specified username. The password will be generated as previously
-    # described.
-    cassandraUser:
-      secret: ""
-      username: ""
+  # -- Configures the Cassandra user used by Medusa when authentication is
+  # enabled. If neither `cassandraUser.secret` nor `casandraUser.username` are
+  # set, then a Cassandra user and a secret will be created. The username will
+  # be medusa. The secret name will be of the form {clusterName}-medusa. The
+  # password will be a random 20 character password. If `cassandraUser.secret`
+  # is set, then the Cassandra user will be created from the contents of the
+  # secret. If `cassandraUser.secret` is not set and if
+  # `cassandraUser.username` is set, a secret will be generated using the
+  # specified username. The password will be generated as previously
+  # described.
+  cassandraUser:
+    secret: ""
+    username: ""
 
-    # -- Enables usage of a bucket across multiple clusters.
-    multiTenant: false
+  # -- Enables usage of a bucket across multiple clusters.
+  multiTenant: false
 
-    # -- API interface used by the object store. Supported values include `s3`, 's3_compatible'
-    # and `gcs`. For pod mapped storage, use 'local'
-    storage: s3
+  # -- API interface used by the object store. Supported values include `s3`, 's3_compatible'
+  # and `gcs`. For pod mapped storage, use 'local'
+  storage: s3
 
-    # -- Optional properties for storage. Supported values depend on the type of the storage. 
-    storage_properties: {}
-      # Define region for s3 / s3_compatible
-      # region: eu-west-1
+  # -- Optional properties for storage. Supported values depend on the type of the storage.
+  storage_properties: {}
+    # Define region for s3 / s3_compatible
+    # region: eu-west-1
 
-    # -- Name of the Kubernetes `Secret` that stores the key file for the
-    # storage provider's API
-    bucketSecret: ""
+    # For s3_compatible option, one must define target host
+    # host: 192.168.1.201
 
-      # For s3_compatible option, port is optional
-      # port: 9000
+    # For s3_compatible option, port is optional
+    # port: 9000
 
-      # Is SSL used or not for s3_compatible connection
-      # secure: false
+    # Is SSL used or not for s3_compatible connection
+  # secure: false
 
-    # -- Name of the remote storage bucket where backups will be stored. If using 'local' storage, set the
-    # path of the local storage here.
-    bucketName: awstest
+  # -- Name of the remote storage bucket where backups will be stored. If using 'local' storage, set the
+  # path of the local storage here.
+  bucketName: awstest
 
-    # -- Name of the Kubernetes `Secret` that stores the key file for the
-    # storage provider's API
-    storageSecret: medusa-bucket-key
+  # -- Name of the Kubernetes `Secret` that stores the key file for the
+  # storage provider's API
+  storageSecret: medusa-bucket-key
 
 # Support for accessing the various web-interfaces via K8s ingress controllers.
 # Depending on the ingress available in your cluster enable the appropriate
