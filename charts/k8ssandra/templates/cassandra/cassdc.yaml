@@ -90,7 +90,11 @@ spec:
       permissions_update_interval_in_ms: {{ .Values.cassandra.auth.cacheUpdateIntervalMillis }}
       credentials_validity_in_ms: {{ .Values.cassandra.auth.cacheValidityPeriodMillis }}
       credentials_update_interval_in_ms: {{ .Values.cassandra.auth.cacheUpdateIntervalMillis }}
+  {{- if (hasPrefix "3" .Values.cassandra.version) }}
     jvm-options:
+  {{- else }}
+    jvm-server-options:
+  {{- end }}
 {{- include "k8ssandra.configureJvmHeap" . }}
       additional-jvm-opts:
 {{- if .Values.cassandra.auth.enabled }}

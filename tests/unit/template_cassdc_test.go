@@ -39,8 +39,9 @@ type JvmOptions struct {
 }
 
 type Config struct {
-	CassandraConfig CassandraConfig `json:"cassandra-yaml"`
-	JvmOptions      JvmOptions      `json:"jvm-options"`
+	CassandraConfig  CassandraConfig `json:"cassandra-yaml"`
+	JvmOptions       *JvmOptions     `json:"jvm-options"`
+	JvmServerOptions *JvmOptions     `json:"jvm-server-options"`
 }
 
 var (
@@ -616,8 +617,10 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			Expect(renderedErr.Error()).To(ContainSubstring("set resource limits/requests when enabling allowMultipleNodesPerWorker"))
 
 		})
+	})
 
-		It("setting JVM heap settings at cluster-level only", func() {
+	Context("when configuring the JVM heap for Cassandra 3.11", func() {
+		It("at cluster-level only", func() {
 
 			dcName := "dc1"
 			options := &helm.Options{
@@ -638,10 +641,11 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			Expect(config.JvmOptions.InitialHeapSize).To(Equal("700M"))
 			Expect(config.JvmOptions.MaxHeapSize).To(Equal("700M"))
 			Expect(config.JvmOptions.YoungGenSize).To(Equal("350M"))
+			Expect(config.JvmServerOptions).To(BeNil())
 		})
 
 		// Note: currently only one DC supported, to be expanded in future release.
-		It("setting JVM heap settings at dc-level overriding cluster level", func() {
+		It("at dc-level overriding cluster level", func() {
 
 			dcName := "dc1"
 			options := &helm.Options{
@@ -663,9 +667,10 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			Expect(config.JvmOptions.InitialHeapSize).To(Equal("300M"))
 			Expect(config.JvmOptions.MaxHeapSize).To(Equal("300M"))
 			Expect(config.JvmOptions.YoungGenSize).To(Equal("150M"))
+			Expect(config.JvmServerOptions).To(BeNil())
 		})
 
-		It("setting JVM heap settings at dc-level without newGenSize", func() {
+		It("at dc-level without newGenSize", func() {
 
 			dcName := "dc1"
 			options := &helm.Options{
@@ -685,9 +690,10 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			Expect(config.JvmOptions.InitialHeapSize).To(Equal("300M"))
 			Expect(config.JvmOptions.MaxHeapSize).To(Equal("300M"))
 			Expect(config.JvmOptions.YoungGenSize).To(Equal(""))
+			Expect(config.JvmServerOptions).To(BeNil())
 		})
 
-		It("setting JVM heap settings at dc-level without size", func() {
+		It("at dc-level without size", func() {
 
 			dcName := "dc1"
 			options := &helm.Options{
@@ -707,9 +713,10 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			Expect(config.JvmOptions.InitialHeapSize).To(Equal(""))
 			Expect(config.JvmOptions.MaxHeapSize).To(Equal(""))
 			Expect(config.JvmOptions.YoungGenSize).To(Equal("150M"))
+			Expect(config.JvmServerOptions).To(BeNil())
 		})
 
-		It("setting JVM heap settings at cluster-level without newGenSize", func() {
+		It("at cluster-level without newGenSize", func() {
 
 			dcName := "dc1"
 			options := &helm.Options{
@@ -730,9 +737,10 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			Expect(config.JvmOptions.InitialHeapSize).To(Equal("300M"))
 			Expect(config.JvmOptions.MaxHeapSize).To(Equal("300M"))
 			Expect(config.JvmOptions.YoungGenSize).To(Equal(""))
+			Expect(config.JvmServerOptions).To(BeNil())
 		})
 
-		It("setting JVM heap settings at cluster-level without size", func() {
+		It("at cluster-level without size", func() {
 
 			dcName := "dc1"
 			options := &helm.Options{
@@ -753,6 +761,34 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			Expect(config.JvmOptions.InitialHeapSize).To(Equal(""))
 			Expect(config.JvmOptions.MaxHeapSize).To(Equal(""))
 			Expect(config.JvmOptions.YoungGenSize).To(Equal("150M"))
+			Expect(config.JvmServerOptions).To(BeNil())
+		})
+
+		Context("when configuring the JVM heap for Cassandra 4.0", func() {
+			It("at cluster-level only", func() {
+
+				dcName := "dc1"
+				options := &helm.Options{
+					SetValues: map[string]string{
+						"cassandra.version":             "4.0.0",
+						"cassandra.heap.size":           "700M",
+						"cassandra.heap.newGenSize":     "350M",
+						"cassandra.datacenters[0].name": dcName,
+					},
+					KubectlOptions: defaultKubeCtlOptions,
+				}
+
+				Expect(renderTemplate(options)).To(Succeed())
+
+				var config Config
+				Expect(json.Unmarshal(cassdc.Spec.Config, &config)).To(Succeed())
+
+				Expect(config.JvmServerOptions).ToNot(BeNil())
+				Expect(config.JvmServerOptions.InitialHeapSize).To(Equal("700M"))
+				Expect(config.JvmServerOptions.MaxHeapSize).To(Equal("700M"))
+				Expect(config.JvmServerOptions.YoungGenSize).To(Equal("350M"))
+				Expect(config.JvmOptions).To(BeNil())
+			})
 		})
 	})
 
