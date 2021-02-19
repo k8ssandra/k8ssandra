@@ -32,7 +32,7 @@ data:
     bucket_name = {{ .Values.medusa.bucketName }}
   {{- end }}
   {{- if (eq .Values.medusa.storage "s3") }}
-    key_file /etc/medusa-secrets/medusa_s3_credentials
+    key_file = /etc/medusa-secrets/medusa_s3_credentials
   {{- else if (eq .Values.medusa.storage "google_storage") }}
     key_file = /etc/medusa-secrets/medusa_gcp_key.json
   {{- end }}
