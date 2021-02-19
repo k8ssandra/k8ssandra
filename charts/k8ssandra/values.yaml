@@ -329,13 +329,13 @@ reaper:
     password: ""
 
   ingress:
-    # -- Enables Reaper ingress definitions.
+    # -- Enables Reaper ingress definitions. When enabled, you must specify a value for reaper.ingress.host.
     enabled: false
 
     # -- Hostname to use for routing requests to the repair UI. If
     # using a local deployment consider leveraging dynamic DNS services like
     # xip.io. Example: `repair.127.0.0.1.xip.io` will return `127.0.0.1` for
-    # DNS requests routing requests to your local machine.
+    # DNS requests routing requests to your local machine. This is required when reaper.ingress.enabled is true.
     host:
 
     method: traefik
