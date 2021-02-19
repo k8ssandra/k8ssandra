@@ -133,6 +133,60 @@ var _ = Describe("Verify Cassandra ingress template", func() {
 			VerifyTraefikTCPIngressRoute(ingress, "cassandra", "HostSNI(`*`)", Sprintf("%s-%s-service", HelmReleaseName, "dc1"), 9042)
 		})
 
+		It("it is enabled with a custom host", func() {
+			cassandraHost := "cassandra.host"
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+				SetValues: map[string]string{
+					"stargate.enabled":          "false",
+					"cassandra.ingress.enabled": "true",
+					"cassandra.ingress.host":    cassandraHost,
+				},
+			}
+
+			Expect(renderTemplate(options)).To(Succeed())
+			Expect(ingress.Kind).To(Equal("IngressRouteTCP"))
+
+			VerifyTraefikTCPIngressRoute(ingress, "cassandra",
+				Sprintf("HostSNI(`%s`)", cassandraHost),
+				Sprintf("%s-%s-service", HelmReleaseName, "dc1"),
+				9042)
+		})
+
+		It("it is enabled with host=empty string", func() {
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+				SetValues: map[string]string{
+					"stargate.enabled":          "false",
+					"cassandra.ingress.enabled": "true",
+					"cassandra.ingress.host":    "",
+				},
+			}
+
+			Expect(renderTemplate(options)).To(Succeed())
+			Expect(ingress.Kind).To(Equal("IngressRouteTCP"))
+
+			VerifyTraefikTCPIngressRoute(ingress, "cassandra",
+				"HostSNI(`*`)",
+				Sprintf("%s-%s-service", HelmReleaseName, "dc1"),
+				9042)
+		})
+
+		It("it is enabled with host=nil", func() {
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+				ValuesFiles:    []string{"./testdata/cassandra-ingress-nil-host.yaml"},
+			}
+
+			Expect(renderTemplate(options)).To(Succeed())
+			Expect(ingress.Kind).To(Equal("IngressRouteTCP"))
+
+			VerifyTraefikTCPIngressRoute(ingress, "cassandra",
+				"HostSNI(`*`)",
+				Sprintf("%s-%s-service", HelmReleaseName, "dc1"),
+				9042)
+		})
+
 		It("it is enabled and Stargate Cassandra ingress is disabled with release name != cluster name", func() {
 			clusterName := Sprintf("k8ssandracluster%s", UniqueIdSuffix)
 			options := &helm.Options{

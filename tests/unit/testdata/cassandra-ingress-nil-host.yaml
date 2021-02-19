@@ -1,0 +1,6 @@
+stargate:
+  enabled: false
+cassandra:
+  ingress:
+    enabled: true
+    host:

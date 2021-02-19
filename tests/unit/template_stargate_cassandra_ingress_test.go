@@ -164,7 +164,7 @@ var _ = Describe("Verify Stargate Cassandra ingress template", func() {
 				9042)
 		})
 
-		It("is enabled with custom host", func() {
+		It("is enabled with custom Stargate ingress host", func() {
 			stargateHost := "stargate.host"
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
@@ -181,6 +181,119 @@ var _ = Describe("Verify Stargate Cassandra ingress template", func() {
 			VerifyTraefikTCPIngressRoute(ingress,
 				"cassandra",
 				Sprintf("HostSNI(`%s`)", stargateHost),
+				Sprintf("%s-%s-stargate-service", HelmReleaseName, "dc1"),
+				9042)
+		})
+
+		It("is enabled with custom Stargate Cassandra ingress host", func() {
+			stargateHost := "stargate.host"
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+				SetValues: map[string]string{
+					"stargate.enabled":                "true",
+					"stargate.ingress.enabled":        "true",
+					"stargate.ingress.cassandra.host": stargateHost,
+				},
+			}
+
+			Expect(renderTemplate(options)).To(Succeed())
+			Expect(ingress.Kind).To(Equal("IngressRouteTCP"))
+
+			VerifyTraefikTCPIngressRoute(ingress,
+				"cassandra",
+				Sprintf("HostSNI(`%s`)", stargateHost),
+				Sprintf("%s-%s-stargate-service", HelmReleaseName, "dc1"),
+				9042)
+		})
+
+		It("is enabled with custom Stargate Cassandra ingress host overriding custom Stargate ingress host", func() {
+			stargateHost := "stargate.host"
+			stargateCassandraHost := "stargate.cassandra.host"
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+				SetValues: map[string]string{
+					"stargate.enabled":                "true",
+					"stargate.ingress.enabled":        "true",
+					"stargate.ingress.host":           stargateHost,
+					"stargate.ingress.cassandra.host": stargateCassandraHost,
+				},
+			}
+
+			Expect(renderTemplate(options)).To(Succeed())
+			Expect(ingress.Kind).To(Equal("IngressRouteTCP"))
+
+			VerifyTraefikTCPIngressRoute(ingress,
+				"cassandra",
+				Sprintf("HostSNI(`%s`)", stargateCassandraHost),
+				Sprintf("%s-%s-stargate-service", HelmReleaseName, "dc1"),
+				9042)
+		})
+
+		It("is enabled with nil Stargate ingress host", func() {
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+				ValuesFiles:    []string{"./testdata/stargate-ingress-nil-host.yaml"},
+			}
+
+			Expect(renderTemplate(options)).To(Succeed())
+			Expect(ingress.Kind).To(Equal("IngressRouteTCP"))
+
+			VerifyTraefikTCPIngressRoute(ingress,
+				"cassandra",
+				"HostSNI(`*`)",
+				Sprintf("%s-%s-stargate-service", HelmReleaseName, "dc1"),
+				9042)
+		})
+
+		It("is enabled with empty Stargate ingress host", func() {
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+				SetValues: map[string]string{
+					"stargate.enabled":         "true",
+					"stargate.ingress.enabled": "true",
+					"stargate.ingress.host":    "",
+				},
+			}
+
+			Expect(renderTemplate(options)).To(Succeed())
+			Expect(ingress.Kind).To(Equal("IngressRouteTCP"))
+
+			VerifyTraefikTCPIngressRoute(ingress,
+				"cassandra",
+				"HostSNI(`*`)",
+				Sprintf("%s-%s-stargate-service", HelmReleaseName, "dc1"),
+				9042)
+		})
+
+		It("is enabled with nil Stargate Cassandra ingress host which DOES NOT override the Stargate ingress host", func() {
+
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+				ValuesFiles:    []string{"./testdata/stargate-cassandra-ingress-nil-host.yaml"},
+			}
+
+			Expect(renderTemplate(options)).To(Succeed())
+			Expect(ingress.Kind).To(Equal("IngressRouteTCP"))
+
+			VerifyTraefikTCPIngressRoute(ingress,
+				"cassandra",
+				"HostSNI(`stargate.host`)",
+				Sprintf("%s-%s-stargate-service", HelmReleaseName, "dc1"),
+				9042)
+		})
+
+		It("is enabled with empty Stargate Cassandra ingress host which DOES override the Stargate ingress host", func() {
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+				ValuesFiles:    []string{"./testdata/stargate-cassandra-ingress-empty-host.yaml"},
+			}
+
+			Expect(renderTemplate(options)).To(Succeed())
+			Expect(ingress.Kind).To(Equal("IngressRouteTCP"))
+
+			VerifyTraefikTCPIngressRoute(ingress,
+				"cassandra",
+				"HostSNI(`*`)",
 				Sprintf("%s-%s-stargate-service", HelmReleaseName, "dc1"),
 				9042)
 		})
