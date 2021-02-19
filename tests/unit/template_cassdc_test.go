@@ -49,10 +49,11 @@ var (
 )
 
 const (
-	ConfigInitContainer         = "server-config-init"
-	MedusaInitContainer         = "medusa-restore"
-	JmxCredentialsInitContainer = "jmx-credentials"
-	GetJolokiaInitContainer     = "get-jolokia"
+	ConfigInitContainer           = "server-config-init"
+	MetricsCollectorInitContainer = "metrics-collector-config-init"
+	MedusaInitContainer           = "medusa-restore"
+	JmxCredentialsInitContainer   = "jmx-credentials"
+	GetJolokiaInitContainer       = "get-jolokia"
 
 	CassandraContainer = "cassandra"
 	MedusaContainer    = "medusa"
@@ -94,11 +95,12 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			Expect(cassdc.Annotations).Should(HaveKeyWithValue(ReaperInstanceAnnotation, reaperInstanceValue))
 
 			initContainers := cassdc.Spec.PodTemplateSpec.Spec.InitContainers
-			Expect(len(initContainers)).To(Equal(2))
+			Expect(len(initContainers)).To(Equal(3))
 			Expect(initContainers[0].Name).To(Equal(ConfigInitContainer))
 
-			// Verify initContainers includes JMX credentials
-			Expect(initContainers[1].Name).To(Equal(JmxCredentialsInitContainer))
+			// Verify initContainers includes JMX credentials and metrics collector config init
+			AssertInitContainerNamesMatch(cassdc, ConfigInitContainer, MetricsCollectorInitContainer, JmxCredentialsInitContainer)
+
 			// Verify LOCAL_JMX value
 			Expect(len(cassdc.Spec.PodTemplateSpec.Spec.Containers)).To(Equal(1))
 			Expect(len(cassdc.Spec.PodTemplateSpec.Spec.Containers[0].Env)).To(Equal(1))
@@ -387,7 +389,7 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 
 			Expect(renderTemplate(options)).To(Succeed())
 
-			AssertInitContainerNamesMatch(cassdc, ConfigInitContainer, GetJolokiaInitContainer, MedusaInitContainer)
+			AssertInitContainerNamesMatch(cassdc, ConfigInitContainer, MetricsCollectorInitContainer, GetJolokiaInitContainer, MedusaInitContainer)
 
 			// Two containers, medusa and cassandra
 			Expect(len(cassdc.Spec.PodTemplateSpec.Spec.Containers)).To(Equal(2))
@@ -424,7 +426,7 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 
 			Expect(cassdc.Spec.Users).To(ContainElement(cassdcv1beta1.CassandraUser{Superuser: true, SecretName: clusterName + "-medusa"}))
 
-			AssertInitContainerNamesMatch(cassdc, ConfigInitContainer, GetJolokiaInitContainer, MedusaInitContainer)
+			AssertInitContainerNamesMatch(cassdc, ConfigInitContainer, MetricsCollectorInitContainer, GetJolokiaInitContainer, MedusaInitContainer)
 
 			initContainer := GetInitContainer(cassdc, "medusa-restore")
 			Expect(initContainer).To(Not(BeNil()))
@@ -506,7 +508,7 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			Expect(renderTemplate(options)).To(Succeed())
 			Expect(cassdc.Spec.Users).To(ContainElement(cassdcv1beta1.CassandraUser{Superuser: true, SecretName: secretName}))
 
-			AssertInitContainerNamesMatch(cassdc, ConfigInitContainer, GetJolokiaInitContainer, MedusaInitContainer)
+			AssertInitContainerNamesMatch(cassdc, ConfigInitContainer, MetricsCollectorInitContainer, GetJolokiaInitContainer, MedusaInitContainer)
 
 			initContainer := GetInitContainer(cassdc, MedusaInitContainer)
 			Expect(initContainer).To(Not(BeNil()))
@@ -580,7 +582,7 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 
 			Expect(renderTemplate(options)).To(Succeed())
 
-			AssertInitContainerNamesMatch(cassdc, ConfigInitContainer, JmxCredentialsInitContainer, GetJolokiaInitContainer, MedusaInitContainer)
+			AssertInitContainerNamesMatch(cassdc, ConfigInitContainer, MetricsCollectorInitContainer, JmxCredentialsInitContainer, GetJolokiaInitContainer, MedusaInitContainer)
 			AssertContainerNamesMatch(cassdc, CassandraContainer, MedusaContainer)
 
 			verifyVolumeMounts(&cassdc.Spec.PodTemplateSpec.Spec)
