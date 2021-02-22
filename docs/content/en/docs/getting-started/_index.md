@@ -16,10 +16,6 @@ In this quick start, we'll cover the following topics:
 * [K8ssandra Helm repository configuration]({{< relref "#configure-the-k8ssandra-helm-repository" >}}): Accessing the Helm charts that install K8ssandra.
 * [K8ssandra installation]({{< relref "#install-k8ssandra" >}}): Getting K8ssandra up and running using the Helm chart repo.
 * [Verifying K8ssandra functionality]({{< relref "#verify-your-k8ssandra-installation" >}}): Making sure K8ssandra is working as expected.
-* [Accessing K8ssandra using CQLSH]({{< relref "#access-k8ssandra-using-cqlsh" >}}): Accessing K8ssandra using the standard Cassandra CQLSH utility.
-* [Upgrading K8ssandra with Ingress support]({{< relref "#configure-ingress" >}}): Enabling access to K8ssandra from outside the K8s cluster via Traefik.
-* [Accessing K8ssandra utilities]({{< relref "#access-k8ssandra-utilities" >}}): Accessing useful utilities like the Cassandra Reaper repair tool and Grafana metrics reporting.
-* [Accessing K8ssandra via Stargate]({{< relref "#access-k8ssandra-using-the-stargate-api" >}}): Accessing K8ssandra using the Stargate API and the GraphQL Playground.
 * [Starting and stopping K8ssandra]({{< relref "#cassandra-operations" >}}): Cleanly stopping and restarting the K8ssandra pod.
 
 ## Prerequisites
@@ -137,8 +133,6 @@ To install a single node K8ssandra cluster:
     ```yaml
     cassandra:
       version: "3.11.7"
-      auth:
-        enabled: false
       clusterName: k8ssandra
       datacenters:
       - name: dc1
@@ -162,25 +156,25 @@ To install a single node K8ssandra cluster:
     REVISION: 1
     ```
 
-    {{% alert title="Note" color="primary" %}}
-    When installing K8ssandra on newer versions of Kubernetes (v1.19+), some warnings may be visible on the command line related to deprecated API usage.  This is currently a known issue and will not impact the provisioning of the cluster.
+{{% alert title="Note" color="primary" %}}
+When installing K8ssandra on newer versions of Kubernetes (v1.19+), some warnings may be visible on the command line related to deprecated API usage.  This is currently a known issue and will not impact the provisioning of the cluster.
 
-    ```bash
-    W0128 11:24:54.792095  27657 warnings.go:70] 
-    apiextensions.k8s.io/v1beta1 CustomResourceDefinition is 
-    deprecated in v1.16+, unavailable in v1.22+; 
-    use apiextensions.k8s.io/v1 CustomResourceDefinition
-    ```
+```bash
+W0128 11:24:54.792095  27657 warnings.go:70] 
+apiextensions.k8s.io/v1beta1 CustomResourceDefinition is 
+deprecated in v1.16+, unavailable in v1.22+; 
+use apiextensions.k8s.io/v1 CustomResourceDefinition
+```
 
-    For more information, check out issue [#267](https://github.com/k8ssandra/k8ssandra/issues/267).
-    {{% /alert %}}
+For more information, check out issue [#267](https://github.com/k8ssandra/k8ssandra/issues/267).
+{{% /alert %}}
 
 ## Verify your K8ssandra installation
 
 Depending upon your K8 configuration, initialization of your K8ssandra installation can take a few minutes. To check the status of your K8ssandra deployment, use the `kubectl` command:
 
 ```bash
-kubectl get po -A
+kubectl get pods
 NAMESPACE     NAME                                                  READY   STATUS      RESTARTS   AGE
 default       k8ssandra-cass-operator-6666588dc5-rrbwx              1/1     Running     0          15m
 default       k8ssandra-dc1-default-sts-0                           2/2     Running     0          15m
@@ -191,14 +185,12 @@ default       k8ssandra-reaper-k8ssandra-64cc9d57d9-rc2z4           1/1     Runn
 default       k8ssandra-reaper-k8ssandra-schema-pxdcz               0/1     Completed   0          12m
 default       k8ssandra-reaper-operator-cc46fd5f4-hlmck             1/1     Running     0          15m
 default       prometheus-k8ssandra-kube-prometheus-prometheus-0     2/2     Running     1          15m
-kube-system   coredns-66bff467f8-xqfxv                              1/1     Running     0          19m
-kube-system   etcd-k8ssandra                                        1/1     Running     0          19m
-kube-system   kube-apiserver-k8ssandra                              1/1     Running     0          19m
-kube-system   kube-controller-manager-k8ssandra                     1/1     Running     0          19m
-kube-system   kube-proxy-7ldzn                                      1/1     Running     0          19m
-kube-system   kube-scheduler-k8ssandra                              1/1     Running     0          19m
-kube-system   storage-provisioner                                   1/1     Running     0          19m
 ```
+
+NOTE: k8ssandra prefixes the pod names. Stargate takes 4 minutes to register as ready.
+
+
+
 
 Once all the pods are in the `Running` or `Completed` state, you can check the health of your K8ssandra cluster.
 
@@ -255,236 +247,6 @@ To check the health of your K8ssandra cluster:
 Save the superuser name and password for use in future steps.
 {{% /alert %}}
 
-## Access Cassandra using CQLSH
-
-Now that K8ssandra is installed and running as expected, we can interact with the actual Cassandra node, `k8ssandra-dc1-default-sts-0`, using CQLSH. We'll do this using the `kubectl exec` utility which doesn't require any fancy Ingress configuration.
-
-Let's prepare some data, copy it to the Cassandra node, and then run a query using an interactive CQLSH session:
-
-1. Populate a CQL file with the following data and save as `test-data.cql`:
-
-    ```sql
-    CREATE KEYSPACE k8ssandra_test  WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 1};
-    USE k8ssandra_test;
-    CREATE TABLE users (email text primary key, name text, state text);
-    insert into users (email, name, state) values ('alice@example.com', 'Alice Smith', 'TX');
-    insert into users (email, name, state) values ('bob@example.com', 'Bob Jones', 'VA');
-    insert into users (email, name, state) values ('carol@example.com', 'Carol Jackson', 'CA');
-    insert into users (email, name, state) values ('david@example.com', 'David Yang', 'NV');
-    ```
-
-2. Copy `test-data.cql` to the `/tmp/` directory of the Cassandra node using `kubectl cp`:
-
-    ```bash
-    kubectl cp ./test-data.cql k8ssandra-dc1-default-sts-0:/tmp/ -c cassandra
-    ```
-
-3. Import the test data into the Cassandra node using `cqlsh -f`, providing the superuser name and password from the previous section:
-
-    ```bash
-    kubectl exec -it k8ssandra-dc1-default-sts-0 -c cassandra -- cqlsh -u k8ssandra-superuser -p PGo8kROUgAJOa8vhjQrE49Lgruw7s32HCPyVvcfVmmACW8oUhfoO9A -f /tmp/test-data.cql
-    ```
-
-4. Open an interactive `cqlsh` session on the node, providing the superuser name and password from the previous section:
-
-    ```bash
-    kubectl exec -it k8ssandra-dc1-default-sts-0 -c cassandra -- cqlsh -u k8ssandra-superuser -p PGo8kROUgAJOa8vhjQrE49Lgruw7s32HCPyVvcfVmmACW8oUhfoO9A
-    Connected to k8ssandra at 127.0.0.1:9042.
-    [cqlsh 5.0.1 | Cassandra 3.11.7 | CQL spec 3.4.4 | Native protocol v4]
-    Use HELP for help.
-    cqlsh>
-   ```
-
-5. Query the data:
-
-    ```sql
-    cqlsh> SELECT * FROM k8ssandra_test.users;
-
-     email             | name          | state
-    -------------------+---------------+-------
-     alice@example.com |   Alice Smith |    TX
-       bob@example.com |     Bob Jones |    VA
-     david@example.com |    David Yang |    NV
-     carol@example.com | Carol Jackson |    CA
-
-    (4 rows)
-    ```
-
-For complete details on Cassandra, see the [Apache Cassandra](https://cassandra.apache.org/) web site.
-
-## Configure Ingress
-
-Right now, you can only interact with your Cassandra node within the K8s cluster using `kubectl` commands which is a pretty severe limitation. To enable external access for applications as well as enable access to K8ssandra features like Grafana dashboards, the Reaper Repair UI, and the Stargate GraphQL playground, you'll need to configure Ingress. In this section we'll upgrade your existing K8ssandra installation to support Ingress using a Traefik Helm chart.
-
-{{% alert title="Tip" color="success" %}}
-Kubernetes Ingress configuration is a complicated topic. Really all that is happening in this upgrade is that a set of external URIs and ports are being mapped to internal Kubernetes resources. It's not necessary to understand all of the configuration particulars in order to successfully complete this section.
-{{% /alert %}}
-
-To upgrade K8ssandra:
-
-1. Copy the following YAML into a new file named `k8ssandra-traefik.values.yaml`:
-
-    ```yaml
-    cassandra:
-      version: "3.11.7"
-      auth:
-        enabled: false
-      clusterName: k8ssandra
-      datacenters:
-      - name: dc1
-        size: 1
-    ingress:
-      traefik:
-        enabled: true
-        repair:
-          enabled: true
-          host: repair.127.0.0.1.nip.io
-        stargate:
-          enabled: true
-          host: stargate.127.0.0.1.nip.io
-    kube-prometheus-stack:
-      prometheus:
-        enabled: true
-        prometheusSpec:
-          externalUrl: http://localhost:9090/prometheus
-          routePrefix: /prometheus
-        ingress:
-          enabled: true
-          paths:
-            - /prometheus
-      grafana:
-        enabled: true
-        ingress:
-          enabled: true
-          path: /grafana
-        adminUser: admin
-        adminPassword: admin123
-        grafana.ini:
-          server:
-            root_url: http://localhost:3000/grafana
-           serve_from_sub_path: true
-    ```
-
-1. Copy the following YAML into a file named `traefik.values.yaml`:
-
-    ```yaml
-    ---
-    providers:
-      kubernetesCRD:
-        namespaces:
-          - default
-          - traefik
-      kubernetesIngress:
-        namespaces:
-          - default
-          - traefik
-
-    ports:
-      traefik:
-        expose: true
-        nodePort: 32090
-      web:
-        nodePort: 32080
-      websecure:
-        nodePort: 32443
-      cassandra:
-        expose: true
-        port: 9042
-        nodePort: 32091
-      cassandrasecure:
-        expose: true
-        port: 9142
-        nodePort: 32092
-      sg-graphql:
-        expose: true
-        port: 8080
-        nodePort: 30080
-      sg-auth:
-        expose: true
-        port: 8081
-        nodePort: 30081
-      sg-rest:
-        expose: true
-        port: 8082
-        nodePort: 30082
-
-    service:
-      type: NodePort
-    ```
-
-1. Install Traefik:
-
-    ```bash
-    helm install -f traefik.values.yaml traefik traefik/traefik -n traefik --create-namespace
-    NAME: traefik
-    LAST DEPLOYED: Fri Feb 19 12:40:36 2021
-    NAMESPACE: traefik
-    STATUS: deployed
-    REVISION: 1
-    TEST SUITE: None
-    ```
-
-1. Upgrade the K8ssandra pod with Traefik support:
-
-    ```bash
-    helm upgrade -f k8ssandra-traefik.values.yaml k8ssandra k8ssandra/k8ssandra
-    Release "k8ssandra" has been upgraded. Happy Helming!
-    NAME: k8ssandra
-    LAST DEPLOYED: Fri Feb 19 12:46:49 2021
-    NAMESPACE: default
-    STATUS: deployed
-    REVISION: 2
-    ```
-
-1. Verify that the Traefik pod is `Running`:
-
-    ```bash
-    kubectl get po -A | grep "traefik"
-    traefik       traefik-55996cbb6-v6s9p                1/1     Running     0          13m
-    ```
-
-Now you're ready to access the full suite of K8ssandra supporting applications.
-
-{{% alert title="Tip" color="success" %}}
-If you've followed the configuration instructions in this quick start, the URLs in the sections below should take you directly to the associated utilities.
-{{% /alert %}}
-
-## Access Cassandra using the Stargate API
-
-Stargate is an open-source data gateway providing common API interfaces for backend databases. You can experiment with Stargate using the [K8ssandra GraphQL Playground](http://stargate.127.0.0.1.nip.io:8080/playground) 
-
-For more detailed configuration instructions and a usage example, see [Access the Stargate API]({{< relref "docs/topics/stargate" >}}).
-
-{{% alert title="Tip" color="success" %}}
-Make a note of the K8ssandra superuser name and password for use in the K8ssandra Stargate topic.
-{{% /alert %}}
-
-For complete details on Stargate, see the [Stargate documentation](https://stargate.io/docs/stargate/1.0/quickstart/quickstart.html).
-
-## Access K8ssandra utilities
-
-K8ssandra includes the following bundled and customized utilities:
-
-### Cassandra Reaper
-
-[Cassandra Reaper](<"http://repair.127.0.0.1.nip.io:8080/webui">) provides an easy interface for managing K8ssandra cluster repairs. For details, see the [Cassandra Reaper](http://cassandra-reaper.io/) web site.
-
-### Prometheus
-
-[Prometheus](http://127.0.0.1.nip.io:8080/prometheus/) is a standard metrics collection and alerting tool. For more information, see the [Prometheus](https://prometheus.io/) web site.
-
-### Grafana
-
-[Grafana](http://127.0.0.1.nip.io:8080/grafana/login) provides a set of pre-configured dashboards displaying important K8ssandra metrics. For more information see the [Grafana](https://grafana.com/) web site.
-
-{{% alert title="Tip" color="success" %}}
-If you've followed the configuration instructions in this quick start, use `admin` for the username and `admin123` for the password.
-{{% /alert %}}
-
-### Medusa backup and restore
-
-K8ssandra provides a complete backup and restore solution using [Medusa](https://github.com/thelastpickle/cassandra-medusa). For detailed configuration and usage instructions, see [Backup and restore Cassandra]({{< relref "docs/topics/restore-a-backup" >}}).
-
 ## Stopping and starting Cassandra {#cassandra-operations}
 
 Before shutting down your Kubernetes cluster, you'll want to make sure you cleanly shut down your Cassandra datacenters. You can do that using the `kubectl patch` command and setting the `spec:stopped` property to either `true` (stopped) or `false` (running).
@@ -524,5 +286,5 @@ cassandradatacenter.cassandra.datastax.com/dc1 patched
 * For detailed information on additional K8ssandra tasks, see [Tasks]({{< relref "docs/topics" >}}).
 * For a list of frequently asked questions, see the [FAQs]({{< relref "docs/faqs" >}}).
 * For detailed information on K8ssandra, see [Architecture]({{< relref "docs/architecture" >}}).
-* For information on the various K8ssandra Helm charts, see [Architecture]({{< relref "docs/reference" >}}).
+* For information on the various K8ssandra Helm charts, see [Reference]({{< relref "docs/reference" >}}).
 * If you'd like to contribute to K8ssandra, see [Contribution guidelines]({{< relref "docs/contribution-guidelines" >}}).
