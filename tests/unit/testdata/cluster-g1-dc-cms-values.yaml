@@ -1,0 +1,26 @@
+cassandra:
+  gc:
+    g1:
+      enabled: true
+      setUpdatingPauseTimePercent: 7
+      maxGcPauseMillis: 600
+      initiatingHeapOccupancyPercent: 80
+      parallelGcThreads: 18
+      concurrentGcThreads: 18
+    cms:
+      enabled: false
+      survivorRatio: 6
+      maxTenuringThreshold: 1
+      initiatingOccupancyFraction: 75
+      waitDuration: 11000
+
+  datacenters:
+    - name: dc1
+      size: 3
+      gc:
+        cms:
+          enabled: true
+          survivorRatio: 6
+          maxTenuringThreshold: 1
+          initiatingOccupancyFraction: 75
+          waitDuration: 11000

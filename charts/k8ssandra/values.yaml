@@ -82,6 +82,52 @@ cassandra:
    #size:
    #newGenSize:
 
+  # -- Optional cluster-level garbage collection configuration. It can be overridden at
+  # the datacenter level.
+  gc:
+    # -- GC configuration for the CMS collector.
+    cms: {}
+      # -- Enables the CMS garbage collector
+      # enabled: true
+
+      # -- Controls the size of the two survivor spaces in the heap's young
+      # generation.
+      # survivorRatio: 8
+
+      # -- The number of times an object survives a minor collection before
+      # being promoted to the old generation.
+      # maxTenuringThreshold: 1
+
+      # -- A major collection starts if the occupancy of the old generation
+      # exceeds this percentage.
+      # initiatingOccupancyFraction: 75
+
+      # -- The time in milliseconds that CMS threads wait for young GC.
+      # waitDuration: 10000
+
+    # -- GC configuration for the G1 collector.
+    g1: {}
+      # -- Enabled the G1 garbage collector.
+      # enabled: true
+
+      # -- Determines the percentage of total garbage collection time that
+      # should be spent in the Update RS phase updating any remaining
+      # remembered sets. G1 controls the amount of concurrent remembered set
+      # updates using this setting.
+      # setUpdatingPauseTimePercent: 5
+
+      # -- Sets a target value for desired maximum pause time.
+      # maxGcPauseMillis: 500
+
+      # -- Sets the heap occupancy threshold that triggers a marking cycle.
+      # initiatingHeapOccupancyPercent: 70
+
+      # -- Set the number of stop the world (STW) worker threads.
+      # parallelGcThreads: 16
+
+      # -- Set the number of stop the world (STW) worker threads.
+      # concurrentGcThreads: 16
+
   # -- Resource requests for each Cassandra pod.
   resources: {}
 
@@ -133,6 +179,51 @@ cassandra:
     heap: {}
       #size:
       #newGenSize:
+
+    # -- Optional datacenter-level garbage collection configuration.
+    gc:
+      # -- Optional GC configuration for the CMS collector
+      cms: {}
+        # -- Enables the CMS garbage collector
+        # enabled: true
+
+        # -- Controls the size of the two survivor spaces in the heap's young
+        # generation.
+        # survivorRatio: 8
+
+        # -- The number of times an object survives a minor collection before
+        # being promoted to the old generation.
+        # maxTenuringThreshold: 1
+
+        # -- A major collection starts if the occupancy of the old generation
+        # exceeds this percentage.
+        # initiatingOccupancyFraction: 75
+
+        # -- The time in milliseconds that CMS threads wait for young GC.
+        # waitDuration: 10000
+
+      # -- Optional GC configuration for the G1 collector
+      g1: {}
+        # -- Enabled the G1 garbage collector.
+        # enabled: true
+
+        # -- Determines the percentage of total garbage collection time that
+        # should be spent in the Update RS phase updating any remaining
+        # remembered sets. G1 controls the amount of concurrent remembered set
+        # updates using this setting.
+        # setUpdatingPauseTimePercent: 5
+
+        # -- Sets a target value for desired maximum pause time.
+        # maxGcPauseMillis: 500
+
+        # -- Sets the heap occupancy threshold that triggers a marking cycle.
+        # initiatingHeapOccupancyPercent: 70
+
+        # -- Set the number of stop the world (STW) worker threads.
+        # parallelGcThreads: 16
+
+        # -- Sets the number of parallel marking threads.
+        # concurrentGcThreads: 16
 
   # Cassandra native transport ingress support
   ingress:
