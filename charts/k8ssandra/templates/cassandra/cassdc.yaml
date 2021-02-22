@@ -81,15 +81,23 @@ spec:
   {{- end }}
 {{- end }}
   config:
+  {{- /*
+    configOverride is an undocumented property that is intended for advanced use cases like
+    production support. General use is discouraged If there is a particular Cassandra or
+    JVM setting you need exposed, please open an issue for it.
+   */ -}}
+  {{- if .Values.cassandra.configOverride }}
+    {{- toYaml .Values.cassandra.configOverride | nindent 4 -}}
+  {{- else }}
     cassandra-yaml:
       {{- include "k8ssandra.default_num_tokens" . }}
-{{- if .Values.cassandra.auth.enabled }}
+  {{- if .Values.cassandra.auth.enabled }}
       authenticator: PasswordAuthenticator
       authorizer: CassandraAuthorizer
-{{- else }}
+  {{- else }}
       authenticator: AllowAllAuthenticator
       authorizer: AllowAllAuthorizer
-{{- end }}
+  {{- end }}
       role_manager: CassandraRoleManager
       roles_validity_in_ms: {{ .Values.cassandra.auth.cacheValidityPeriodMillis }}
       roles_update_interval_in_ms: {{ .Values.cassandra.auth.cacheUpdateIntervalMillis }}
@@ -108,6 +116,7 @@ spec:
 {{- if .Values.cassandra.auth.enabled }}
         - "-Dcassandra.system_distributed_replication_dc_names={{ $datacenter.name }}"
         - "-Dcassandra.system_distributed_replication_per_dc={{ min 5 $datacenter.size }}"
+{{- end }}
 {{- end }}
   podTemplateSpec:
     spec:
