@@ -88,13 +88,14 @@ Apply the YAML to your Kubernetes environment. In this example, assume that you 
  
 `secret/medusa-bucket-key configured`
 
-**TIP:** If the values noted above in your edited **copy** of medusa-bucket-key.yaml do not match the S3 bucket's values, a subsequent attempt to install K8ssandra will begin and most pods will reach a Ready state; however, the Medusa container in the `k8ssandra-dc1-default-sts-0` pod will fail due to the misconfiguration, and you will not be able to perform backup and restore operations. 
+{{% alert title="Warning" color="warning" %}}
+If the values noted above in your edited **copy** of medusa-bucket-key.yaml do not match the S3 bucket's values, a subsequent attempt to install K8ssandra will begin and most pods will reach a Ready state; however, the Medusa container in the `<cluster-name>-dc1-default-sts-0` pod will fail due to the misconfiguration, and you will not be able to perform backup and restore operations. Also, make sure that the region used by your S3 bucket matches the region expected by Medusa. If there is a mismatch, you'll see an error in the logs.
+{{% /alert %}}
 
-**IMPORTANT:** Also, make sure that the region used by your S3 bucket matches the region expected by Medusa. If there is a mismatch, you'll see an error like the following:
+For example, if there is a configuration mismatch:
 
-`kubectl logs k8ssandra-dc1-default-sts-0 -c medusa`
-
-```
+```bash
+kubectl logs demo-dc1-default-sts-0 -c medusa
 .
 .
 .
@@ -192,75 +193,87 @@ status:
 Now let’s create some test data.  The [test_data.cql](test_data.cql) sample file in GitHub contains:
 
 ```
-CREATE KEYSPACE medusa_test WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 1};
+CREATE KEYSPACE medusa_test  WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 1};
 USE medusa_test;
 CREATE TABLE users (email text primary key, name text, state text);
-insert into users (email, name, state) values ('john@gamil.com', 'John Smith', 'NC');
-insert into users (email, name, state) values ('joe@gamil.com', 'Joe Jones', 'VA');
-insert into users (email, name, state) values ('sue@help.com', 'Sue Sas', 'CA');
-insert into users (email, name, state) values ('tom@yes.com', 'Tom and Jerry', 'NV');
+insert into users (email, name, state) values ('alice@example.com', 'Alice Smith', 'TX');
+insert into users (email, name, state) values ('bob@example.com', 'Bob Jones', 'VA');
+insert into users (email, name, state) values ('carol@example.com', 'Carol Jackson', 'CA');
+insert into users (email, name, state) values ('david@example.com', 'David Yang', 'NV');
 ```
 
 Copy the cql file to the k8ssandra container (pod):
 
 `kubectl cp test_data.cql demo-dc1-default-sts-0:/tmp -c cassandra`
 
-Before you can launch the CQLSH instance that's deployed by K8ssandra in your Kubernetes cluster, you'll need authentication credentials. The superuser secret defaults to `<cluster-name>-superuser`. In this example: `demo-superuser`. To verify, you can extract and decode the username secret:
+{{% alert title="Tip" color="info" %}}
+Before you can launch the CQLSH instance that's deployed by K8ssandra to a cloud-based Kubernetes cluster (such as Google Kubernetes Engine), you'll need authentication credentials. The superuser secret name defaults to `<cluster-name>-superuser`. 
+{{% /alert %}}
 
-`kubectl get secret demo-superuser -o jsonpath="{.data.username}" | base64 --decode`
-`demo-superuser`
+In this example: `demo-superuser`. To verify, you can extract and decode the username secret:
+
+ ```bash
+ kubectl get secret demo-superuser -o jsonpath="{.data.username}" | base64 --decode | more
+ demo-superuser
+ ```
 
 The command output (second line above) verified that the username to use on a subsequent command is `demo-superuser`.
 
 Next, extract and decode the password secret. For example:
 
-`kubectl get secret demo-superuser -o jsonpath="{.data.password}" | base64 --decode`
-```
-7kZV7YUFSWUTksJ9nfZoWzuTL0qGSgjp54kEVAlgrbMTW_E3RXcTsg
-```
+ ```bash
+ kubectl get secret demo-superuser -o jsonpath="{.data.password}" | base64 --decode | more
+ ItSCody8Nou2R0vYWd4FPDGi2RPy-Jvtg-mSeOoUlbU5UNsIlDF8QQ
+ ```
 
-**Note:** This sample value is for _this_ cluster. Your cluster will have a different value.
+{{% alert title="Tip" color="success" %}}
+The sample generated password is for _this_ cluster. Your cluster will have a different value.
+{{% /alert %}}
 
 ### Use the credentials and add the data to the Cassandra database:
 
 For example:
 
-`kubectl exec -it demo-dc1-default-sts-0 -c cassandra -- cqlsh -u demo-superuser -p 7kZV7YUFSWUTksJ9nfZoWzuTL0qGSgjp54kEVAlgrbMTW_E3RXcTsg -f /tmp/test_data.cql`
+`kubectl exec -it demo-dc1-default-sts-0 -c cassandra -- cqlsh -u demo-superuser -p ItSCody8Nou2R0vYWd4FPDGi2RPy-Jvtg-mSeOoUlbU5UNsIlDF8QQ -f /tmp/test_data.cql`
 
 ### Exec open CQLSH and enter DML and DDL statements
 
-`kubectl exec -it demo-dc1-default-sts-0 -c cassandra -- cqlsh -u demo-superuser -p 7kZV7YUFSWUTksJ9nfZoWzuTL0qGSgjp54kEVAlgrbMTW_E3RXcTsg`
-
-```
-Connected to k8ssandra at 127.0.0.1:9042.
+```bash
+kubectl exec -it demo-dc1-default-sts-0 -c cassandra -- cqlsh -u demo-superuser -p ItSCody8Nou2R0vYWd4FPDGi2RPy-Jvtg-mSeOoUlbU5UNsIlDF8QQ
+ 
+Connected to demo at 127.0.0.1:9042.
 [cqlsh 5.0.1 | Cassandra 3.11.10 | CQL spec 3.4.4 | Native protocol v4]
 Use HELP for help.
-cqlsh> use medusa_test;
-cqlsh:medusa_test> select * from medusa_test.users;
+demo-superuser@cqlsh> USE medusa_test;
+demo-superuser@cqlsh:medusa_test> SELECT * from medusa_test.users;
 
- email          | name          | state
-----------------+---------------+-------
- john@gamil.com |    John Smith |    NC
-  joe@gamil.com |     Joe Jones |    VA
-   sue@help.com |       Sue Sas |    CA
-    tom@yes.com | Tom and Jerry |    NV
+ email             | name          | state
+-------------------+---------------+-------
+ alice@example.com |   Alice Smith |    TX
+   bob@example.com |     Bob Jones |    VA
+ david@example.com |    David Yang |    NV
+ carol@example.com | Carol Jackson |    CA
 
 (4 rows)
 ```
 
 Exit out of CQLSH:
 
-`cqlsh:medusa_test> exit`
+```
+demo-superuser@cqlsh:medusa_test> exit
+```
 
-**TIP:** Keep the sample `medusa_test.users` table data in mind -- we will use subsequent backup and restore steps with this data.
+{{% alert title="Tip" color="success" %}}
+Keep the sample `medusa_test.users` keyspace.table data in mind -- we will use subsequent backup and restore steps with this data.
+{{% /alert %}}
 
 ### Create the backup
 
-Now create a backup by referencing the backup chart in GitHub:
+Now create a backup by referencing the backup chart:
 
-`helm install test k8ssandra/backup --set name=test,cassandraDatacenter.name=dc1`
-
-```
+```bash
+helm install test k8ssandra/backup --set name=test,cassandraDatacenter.name=dc1
+ 
 kubectl get cassandrabackup
 NAME       AGE
 test       17s
@@ -300,21 +313,21 @@ You can also examine the in-progress logs:
 
 Exec into CQLSH and select the data again, to verify the restore operation.
 
-```
-kubectl exec -it demo-dc1-default-stc-0 -c cassandra -cqlsh
-
-Connected to k8ssandra at 127.0.0.1:9042.
+```bash
+kubectl exec -it demo-dc1-default-sts-0 -c cassandra -- cqlsh -u demo-superuser -p ItSCody8Nou2R0vYWd4FPDGi2RPy-Jvtg-mSeOoUlbU5UNsIlDF8QQ
+ 
+Connected to demo at 127.0.0.1:9042.
 [cqlsh 5.0.1 | Cassandra 3.11.10 | CQL spec 3.4.4 | Native protocol v4]
 Use HELP for help.
-cqlsh> use medusa_test;
-cqlsh:medusa_test> select * from medusa_test.users;
+demo-superuser@cqlsh> USE medusa_test;
+demo-superuser@cqlsh:medusa_test> SELECT * from medusa_test.users;
 
- email          | name          | state
-----------------+---------------+-------
- john@gamil.com |    John Smith |    NC
-  joe@gamil.com |     Joe Jones |    VA
-   sue@help.com |       Sue Sas |    CA
-    tom@yes.com | Tom and Jerry |    NV
+ email             | name          | state
+-------------------+---------------+-------
+ alice@example.com |   Alice Smith |    TX
+   bob@example.com |     Bob Jones |    VA
+ david@example.com |    David Yang |    NV
+ carol@example.com | Carol Jackson |    CA
 
 (4 rows)
 ```
