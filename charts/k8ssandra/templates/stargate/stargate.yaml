@@ -3,7 +3,7 @@
   {{- $heapMB := required "stargate.heapMB is required" .Values.stargate.heapMB -}}
   {{- $clusterVersion := "3.11" }}
   {{- $computedImage := printf "stargateio/stargate-3_11:v%s" $stargateVersion }}
-  {{- if eq .Values.cassandra.version "4.0.0" }}
+  {{- if not (hasPrefix "3" .Values.cassandra.version) }}
     {{ $clusterVersion = "4.0" }}
     {{- $computedImage = printf "stargateio/stargate-4_0:v%s" $stargateVersion }}
   {{- end }}
