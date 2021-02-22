@@ -322,5 +322,21 @@ var _ = Describe("Verify Stargate template", func() {
 			container := deployment.Spec.Template.Spec.Containers[0]
 			Expect(container.Image).To(Equal(alternateImage))
 		})
+
+		It("changing stargate version with Cassandra 4.0", func() {
+			alternateImage := "stargateio/stargate-4_0:v1.0.6"
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+				SetValues: map[string]string{
+					"stargate.enabled":  "true",
+					"stargate.version":  "1.0.6",
+					"cassandra.version": "4.0.0",
+				},
+			}
+
+			Expect(renderTemplate(options)).To(Succeed())
+			container := deployment.Spec.Template.Spec.Containers[0]
+			Expect(container.Image).To(Equal(alternateImage))
+		})
 	})
 })
