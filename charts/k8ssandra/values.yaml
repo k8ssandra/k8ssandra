@@ -176,6 +176,10 @@ stargate:
   # will derive an appropriate image based on your cluster version.
   image:
 
+  # -- Sets the CLUSTER_VERSION variable provided to the Stargate containers.
+  # If left blank (recommended), k8ssandra will derive an appropriate image based on your cluster version.
+  clusterVersion:
+
   # -- Sets the imagePullPolicy used by the Stargate pods
   imagePullPolicy: IfNotPresent
 

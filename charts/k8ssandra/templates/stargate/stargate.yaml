@@ -1,6 +1,6 @@
 {{- if .Values.stargate.enabled }}
 {{- $heapMB := required "stargate.heapMB is required" .Values.stargate.heapMB -}}
-{{- $image := default "stargateio/stargate-3_11:v1.0.7" .Values.stargate.image -}}
+{{- $image := default "stargateio/stargate-3_11:v1.0.8" .Values.stargate.image -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -84,7 +84,7 @@ spec:
             - name: CLUSTER_NAME
               value: {{ include "k8ssandra.clusterName" . | quote }}
             - name: CLUSTER_VERSION
-              value: "3.11"
+              value: {{ .Values.stargate.clusterVersion | default "3.11" | quote }}
             - name: SEED
               value: "{{ include "k8ssandra.clusterName" . }}-seed-service.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain | default "cluster.local" }}"
             - name: DATACENTER_NAME
