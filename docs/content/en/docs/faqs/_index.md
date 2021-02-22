@@ -64,16 +64,17 @@ The chart installs Kubernetes Operator for Apache Cassandra (cass-operator), Pro
 After those installs, and all the pods are in a Ready state, from `kubectl get pods` you'll see output similar to:
 
 ```
-NAME                                                              READY   STATUS      RESTARTS   AGE
-cass-operator-65956c4f6d-f25nl                                    1/1     Running     0          10m
-grafana-deployment-8467d8bc9d-czsg5                               1/1     Running     0          6m23s
-k8ssandra-grafana-operator-k8ssandra-5bcb746b8d-4nlhz             1/1     Running     0          6m20s
-k8ssandra-a-reaper-k8ssandra-6cf5b87b8f-vxrwj                     1/1     Running     6          6m20s
-k8ssandra-a-reaper-k8ssandra-schema-pjmv8                         0/1     Completed   5          6m20s
-k8ssandra-a-reaper-operator-k8ssandra-55dc486998-f4r46            1/1     Running     2          6m20s
-k8ssandra-dc1-default-sts-0                                       2/2     Running     0          10m
-k8ssandra-tools-kube-prome-operator-6d57f758dd-7zd92              1/1     Running     0          10m
-prometheus-k8ssandra-a-prometheus-k8ssandra-0                     2/2     Running     1          10m
+NAME                                                   READY   STATUS      RESTARTS   AGE
+demo-cass-operator-65cc657-fq6bc                       1/1     Running     0          10m
+demo-dc1-default-sts-0                                 3/3     Running     0          10m
+demo-dc1-stargate-bb47877d5-54sdt                      1/1     Running     0          10m
+demo-grafana-7f84d96d47-xd79s                          2/2     Running     0          10m
+demo-kube-prometheus-stack-operator-76b984f9f4-pp745   1/1     Running     0          10m
+demo-medusa-operator-6888946787-qwzsx                  1/1     Running     2          10m
+demo-reaper-k8ssandra-656f5b77cc-nqfzv                 1/1     Running     0          10m
+demo-reaper-k8ssandra-schema-88cpx                     0/1     Completed   0          10m
+demo-reaper-operator-5b8c4c66b8-8cf86                  1/1     Running     2          10m
+prometheus-demo-kube-prometheus-stack-prometheus-0     2/2     Running     1          10m
 ```
 
 ### Does k8ssandra have to be installed in a particular namespace?
@@ -81,14 +82,12 @@ prometheus-k8ssandra-a-prometheus-k8ssandra-0                     2/2     Runnin
 The chart can be installed to any namespace. The following example demonstrates this:
 
 ```
-# Install k8ssandra-tool in the k8ssandra namespace
-$ helm install k8ssandra k8ssandra/k8ssandra -n k8ssandra --create-namespace
+$ helm install demo k8ssandra/k8ssandra -n k8ssandra --create-namespace
 ```
 
 ### Can I install multiple releases of k8ssandra?
 
-Some of the objects installed by the k8ssandra chart are currently configured to be cluster-scoped; consequently, you should only install those components once. This should be
-fixed before version 1.0 to allow multiple installations. Other parts can be installed multiple times to allow creating multiple Cassandra clusters in a single k8s cluster.
+Some of the objects installed by the k8ssandra chart are currently configured to be cluster-scoped; consequently, you should only install those components once. This should be fixed before version 1.0 to allow multiple installations. Other parts can be installed multiple times to allow creating multiple Cassandra clusters in a single k8s cluster.
 
 ### What components does k8ssandra install?
 
@@ -122,7 +121,7 @@ Kubernetes Operator for Apache Cassandra -- [cass-operator](https://github.com/d
 
 ### What is Reaper?
 
-Reaper is a tool that helps manage the critical maintenance task of anti-entropy **repair** in a Cassandra cluster. We also refer to Reaper as the [Repair Web Interface]({{< ref "/docs/topics/repair/" >}}). Originally created by Spotify, later adopted and maintained by The Last Pickle. If you were to sit a group of Cassandra DBAs down to talk about what they do, chances are they would talk a lot about running repairs. It’s an important operation because it keeps data consistent despite inevitable issues that happen like node failures and network partitions. In K8ssandra, Reaper runs it for you automatically! And because this is built for SREs, you can expect a good set of pre-built metrics to verify everything is working great. 
+Reaper is a tool that helps manage the critical maintenance task of anti-entropy **repair** in a Cassandra cluster. Originally created by Spotify, later adopted and maintained by The Last Pickle, and one of the features installed by K8ssandra. If you were to sit a group of Cassandra DBAs down to talk about what they do, chances are they would talk a lot about running repairs. It’s an important operation because it keeps data consistent despite inevitable issues that happen like node failures and network partitions. In K8ssandra, Reaper runs it for you automatically! And because this is built for SREs, you can expect a good set of pre-built metrics to verify everything is working great. See the [Reaper UI for Cassandra repairs]({{< ref "/docs/topics/repair/" >}}).
 
 ### What is Medusa?
 
@@ -134,7 +133,7 @@ Medusa provides backup/restore functionality for Cassandra data; this project al
 
 ### How can I access Kubernetes resources from outside the environment?
 
-K8ssandra provides [preconfigured]({{< ref "/docs/topics/ingress/traefik/" >}}) Traefik Ingress integrations. Traefik is a modern reverse proxy and load balancer that makes deploying microservices easy.  Traefik integrates with your existing infrastructure components and configures itself automatically and dynamically. Traefik handles advanced ingress deployments including mTLS of TCP with SNI and UDP. Operators define rules for routing traffic to downstream systems through Kubernetes Ingress objects or more specific Custom Resource Definitions. K8ssandra supports deploying `IngressRoute objects` as part of a deployment to expose metrics, repair, and Cassandra interfaces. For more, start in the [Traefik]({{< ref "/docs/topics/ingress/traefik/" >}}) topic.
+K8ssandra provides [preconfigured]({{< ref "/docs/topics/ingress/traefik/" >}}) Ingress integrations, such as Traefik, which is a modern reverse proxy and load balancer that makes deploying microservices easy. Traefik integrates with your existing infrastructure components and configures itself automatically and dynamically. Traefik handles advanced ingress deployments including mTLS of TCP with SNI and UDP. Operators define rules for routing traffic to downstream systems through Kubernetes Ingress objects or more specific Custom Resource Definitions. K8ssandra supports deploying `IngressRoute objects` as part of a deployment to expose metrics, repair, and Cassandra interfaces. For more, start in the [Traefik]({{< ref "/docs/topics/ingress/traefik/" >}}) topic.
 
 ### How can I monitor the health of my Kubernetes + Cassandra cluster?
 
@@ -146,7 +145,15 @@ The default configured Grafana username is `admin`, and the password is `secret`
 
 ### What kind of provisioning tasks can I perform with K8ssandra?
 
-Among the tasks are dynamically scaling up or down the size of your cluster. See [Provisioning a cluster]({{< ref "/docs/topics/provision-a-cluster/" >}}). 
+Among the tasks are to dynamically scale up or down the size of your cluster. See [Provisioning a cluster]({{< ref "/docs/topics/provision-a-cluster/" >}}).
+
+### How can I backup and restore my Cassandra data?
+
+Backup and restore Cassandra data to/from a supported storage object, such as an Amazon S3 bucket or Google Cloud Storage. See [Backup and restore Cassandra]({{<ref "/docs/topics/restore-a-backup/" >}}).
+
+### How do I schedule and orchestrate repairs of my Cassandra data?
+
+Periodically run anti-entropy operations to repair your Cassandra data. A general recommendation is once every 7-10 days. With the Reaper UI, you can schedule repairs, run repairs, and check the cluster's health. See the [Reaper UI for Cassandra repairs]({{<ref "/docs/topics/repair/" >}}).
 
 ### Can you illustrate the steps and sample commands I'll use with K8ssandra?
 
@@ -154,10 +161,12 @@ Yes - here are the steps and commands in a single graphic:
 
 ![K8ssandra steps](k8ssandra-steps2.png)
 
+For command-line and UI details, see K8ssandra [tasks]({{< ref "/docs/topics/" >}}).
+
 ### How can I contribute to the K8ssandra docs?
 
 See the documentation [guidelines]({{< ref "/docs/contribution-guidelines/" >}}) topic. 
 
 ## Next
 
-Read the documentation [topics]({{< ref "/docs/topics" >}}) and actively participate in the [community](https://k8ssandra.io/community/) of K8ssandra users.
+Read the documentation [tasks]({{< ref "/docs/topics" >}}) and actively participate in the [community](https://k8ssandra.io/community/) of K8ssandra users.
