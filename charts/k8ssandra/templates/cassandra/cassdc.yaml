@@ -146,7 +146,7 @@ spec:
         {{- if .Values.reaper.enabled }}
           - echo "$REAPER_JMX_USERNAME $REAPER_JMX_PASSWORD" > /config/jmxremote.password && echo "$SUPERUSER_JMX_USERNAME $SUPERUSER_JMX_PASSWORD" >> /config/jmxremote.password
         {{- else }}
-          - echo echo "$SUPERUSER_JMX_USERNAME $SUPERUSER_JMX_PASSWORD" >> /config/jmxremote.password
+          - echo "$SUPERUSER_JMX_USERNAME $SUPERUSER_JMX_PASSWORD" > /config/jmxremote.password
         {{- end }}
         volumeMounts:
           - mountPath: /config

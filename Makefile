@@ -23,9 +23,6 @@ test: fmt vet
 integ-test:
 	go test -v -test.timeout=5m ./tests/integration/... -coverprofile cover.out
 
-test-auth:
-	go test -test.timeout=1m ./tests/unit/... -coverprofile cover.out -args -ginkgo.focus=".*auth.*"
-
 fmt:
 	go fmt ./pkg/...
 	go fmt ./tests/...
