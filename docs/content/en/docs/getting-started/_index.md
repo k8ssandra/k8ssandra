@@ -237,10 +237,6 @@ To check the health of your K8ssandra cluster:
         (END)
         ```
 
-    {{% alert title="Tip" color="success" %}}
-    Save the superuser name and password for use in future steps.
-    {{% /alert %}}
-
 1. Run `nodetool status`, using the Cassandra node name `k8ssandra-dc1-default-sts-0`, and passing the superuser name and password. Verify that the node is in the state `UN` or Up Normal:
 
     ```bash
@@ -254,6 +250,10 @@ To check the health of your K8ssandra cluster:
 
     Note: Non-system keyspaces don't have the same replication settings, effective ownership information is meaningless
     ```
+
+{{% alert title="Tip" color="success" %}}
+Save the superuser name and password for use in future steps.
+{{% /alert %}}
 
 ## Access Cassandra using CQLSH
 
