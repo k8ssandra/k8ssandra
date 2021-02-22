@@ -8,6 +8,20 @@ description: |
 
 Welcome to K8ssandra! This guide gets you up and running with a single-node Apache Cassandra&reg; cluster on Kubernetes. If you are interested in a more detailed component walkthroughs check out the [tasks]({{< ref "topics">}}) section.
 
+All told, this quick start should take you about 20 to 30 minutes.
+
+In this quick start, we'll cover the following:
+
+* <a href='{{< relref "#prerequisites" >}}'>Prerequisites</a>: Required supporting software including resource recommendations.
+* <a href='{{< relref "#configure-the-k8ssandra-helm-repository" >}}'>K8ssandra Helm repository configuration</a>: Accessing the Helm charts that install K8ssandra.
+* <a href='{{< relref "#install-k8ssandra" >}}'>K8ssandra installation</a>: Getting K8ssandra up and running using the Helm chart repo.
+* <a href='{{< relref "#verify-your-k8ssandra-installation" >}}'>Verifying K8ssandra functionality</a>: Making sure K8ssandra is working as expected.
+* <a href='{{< relref "#access-k8ssandra-using-cqlsh" >}}'>Accessing K8ssandra using CQLSH</a>: Accessing K8ssandra using the standard Cassandra CQLSH utility.
+* <a href='{{< relref "#configure-ingress" >}}'>Upgrading K8ssandra with Ingress support</a>: Enabling access to K8ssandra from outside the K8s cluster via Traefik.
+* <a href='{{< relref "#access-k8ssandra-utilities" >}}'>Accessing K8ssandra utilities</a>: Accessing useful utilities like the Cassandra Reaper repair tool and Grafana metrics reporting.
+* <a href='{{< relref "#access-k8ssandra-using-the-stargate-api" >}}'>Accessing K8ssandra via Stargate</a>: Accessing K8ssandra using the Stargate API and the GraphQL Playground.
+* <a href='{{< relref "#cassandra-operations" >}}'>Starting and stopping K8ssandra</a>: Cleanly stopping and restarting the K8ssandra pod.
+
 ## Prerequisites
 
 In your local environment the following tools are required for provisioning a K8ssandra cluster.
@@ -33,9 +47,29 @@ If you do not have a Kubernetes cluster available, you can use [OpenShift CodeRe
 
 The instructions in this section focus on the Docker container solutions above, but the general instructions should work for other environments as well.
 
+### Kubernetes version support
+
+K8ssandra works with the following versions of Kubernetes either standalone or via a cloud provider:
+
+* 1.16
+* 1.17
+* 1.18
+* 1.19
+* 1.20
+
+### Cassandra version support
+
+K8ssandra can install the following versions of Apache Cassandra:
+
+* 3.11.7
+* 3.11.8
+* 3.11.9
+* 3.11.10
+* 4.0-beta4
+
 ### Resource recommendations
 
-The minimum recommended development configuration for a single Cassandra node is 8 gigs of RAM and 2 virtual processor cores (2 physical cores). Given that, we recommend a machine specification of no less than 16 gigs of RAM and 8 virtual processor cores (4 physical cores). You'll want to adjust your Docker resource preferences accordingly. For this quick start we're allocating 4 virtual processors and 8 gigs of RAM to the Docker environment.
+The minimum recommended development configuration for a single Cassandra node is 8 gigs of RAM and 2 virtual processor cores (2 physical cores). Given that, we recommend a machine specification of **no less** than 16 gigs of RAM and 8 virtual processor cores (4 physical cores). You'll want to adjust your Docker resource preferences accordingly. For this quick start we're allocating 4 virtual processors and 8 gigs of RAM to the Docker environment.
 
 An ideal environment, enabling you to run a 3 node Cassandra cluster, enforcing QUORUM consistency, would consist of 32 gigs of RAM and 12 virtual cores (6 physical cores).
 
@@ -43,7 +77,7 @@ See the documentation for your particular flavor of Docker for instructions on c
 
 ### Example K8s container configuration
 
-The following minikube example creates a K8s cluster named `k8ssandra` running K8s version 1.18.16 with 4 virtual processor cores and 8 gigs of RAM:
+The following Minikube example creates a K8s cluster named `k8ssandra` running K8s version 1.18.16 with 4 virtual processor cores and 8 gigs of RAM:
 
 ```bash
 minikube start --cpus=4 --memory='8128m' --kubernetes-version=1.18.16 -p k8ssandra
@@ -172,7 +206,9 @@ Once all the pods are in the `Running` or `Completed` state, you can check the h
 The pod `k8ssandra-reaper-k8ssandra-schema-xxxxx` runs once and does not persist.
 {{% /alert %}}
 
-The actual Cassandra node name from the listing above is `k8ssandra-dc1-default-sts-0`. If you've configured multiple nodes, `sts-0` will increment. We'll use node name `k8ssandra-dc1-default-sts-0` throughout the following sections.
+The actual Cassandra node name from the listing above is `k8ssandra-dc1-default-sts-0`. If you've configured multiple nodes, `sts-0` will increment.
+
+We'll use node name `k8ssandra-dc1-default-sts-0` throughout the following sections.
 
 To check the health of your K8ssandra cluster:
 
@@ -214,6 +250,10 @@ To check the health of your K8ssandra cluster:
 
     Note: Non-system keyspaces don't have the same replication settings, effective ownership information is meaningless
     ```
+
+{{% alert title="Tip" color="success" %}}
+Make a note of the K8ssandra superuser name and password for upcoming sections.
+{{% /alert %}}
 
 ## Access Cassandra using CQLSH
 
@@ -270,9 +310,13 @@ Let's prepare some data, copy it to the Cassandra node, and then run a query usi
     (4 rows)
     ```
 
-## Configure Ingress (optional but recommended)
+## Configure Ingress
 
 Right now, you're limited to interacting with your Cassandra node within the K8s cluster using `kubectl` commands which is a pretty severe limitation. To enable external access for applications as well as enable access to K8ssandra features like Grafana dashboards, the Reaper Repair UI, and the Stargate GraphQL playground, you'll need to configure Ingress. In this section we'll upgrade your existing K8ssandra installation to support Ingress using a Traefik Helm chart.
+
+{{% alert title="Tip" color="success" %}}
+Kubernetes Ingress configuration can be a complicated topic. Really all that is happening in this upgrade is that a set of external URIs and ports are being mapped to internal Kubernetes resources. It's not necessary to understand all of the configuration particulars in order to successfully complete this section.
+{{% /alert %}}
 
 To upgrade K8ssandra:
 
@@ -397,6 +441,8 @@ To upgrade K8ssandra:
     traefik       traefik-55996cbb6-v6s9p                1/1     Running     0          13m
     ```
 
+Now you're ready to access the full suite of K8ssandra supporting applications.
+
 ## Access K8ssandra utilities
 
 Prometheus, Grafana, Reaper
@@ -415,12 +461,6 @@ Do the things.
 * GraphQL Playground:
     <http://stargate.127.0.0.1.nip.io:8080/playground>
 
-## Get the JMX credentials (for now)
-
-```bash
-kubectl exec -it k8ssandra-dc1-default-sts-0 -c cassandra -- more /etc/cassandra/jmxremote.password
-```
-
 ## Cassandra operations
 
 Start up:
@@ -433,4 +473,10 @@ Shut down:
 
 ```bash
 kubectl patch cassdc dc1 --type merge -p '{"spec":{"stopped":true}}'
+```
+
+## Get the JMX credentials (for now)
+
+```bash
+kubectl exec -it k8ssandra-dc1-default-sts-0 -c cassandra -- more /etc/cassandra/jmxremote.password
 ```
