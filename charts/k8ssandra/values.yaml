@@ -409,7 +409,7 @@ reaper:
     # -- Specifies the container repository for cassandra-reaper
     repository: docker.io/thelastpickle/cassandra-reaper
     # -- Tag of an image within the specified repository
-    tag: 2.1.3
+    tag: 2.2.0
 
   # -- Configures the Cassandra user used by Reaper when authentication is
   # enabled. If neither cassandraUser.secret nor casandraUser.username are
