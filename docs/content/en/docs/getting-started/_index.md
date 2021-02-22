@@ -236,6 +236,7 @@ To check the health of your K8ssandra cluster:
         PGo8kROUgAJOa8vhjQrE49Lgruw7s32HCPyVvcfVmmACW8oUhfoO9A
         (END)
         ```
+  
 
 1. Run `nodetool status`, using the Cassandra node name `k8ssandra-dc1-default-sts-0`, and passing the superuser name and password. Verify that the node is in the state `UN` or Up Normal:
 
@@ -250,6 +251,10 @@ To check the health of your K8ssandra cluster:
 
     Note: Non-system keyspaces don't have the same replication settings, effective ownership information is meaningless
     ```
+
+    {{% alert title="Tip" color="success" %}}
+    Save the superuser name and password for use in future steps.
+    {{% /alert %}}
 
 ## Access Cassandra using CQLSH
 
@@ -278,13 +283,13 @@ Let's prepare some data, copy it to the Cassandra node, and then run a query usi
 3. Import the test data into the Cassandra node using `cqlsh -f`:
 
     ```bash
-    kubectl exec -it k8ssandra-dc1-default-sts-0 -c cassandra -- cqlsh -f /tmp/test-data.cql
+    kubectl exec -it k8ssandra-dc1-default-sts-0 -c cassandra -- cqlsh -u k8ssandra-superuser -p PGo8kROUgAJOa8vhjQrE49Lgruw7s32HCPyVvcfVmmACW8oUhfoO9A -f /tmp/test-data.cql
     ```
 
 4. Open an interactive `cqlsh` session on the node:
 
     ```bash
-    kubectl exec -it k8ssandra-dc1-default-sts-0 -c cassandra -- cqlsh
+    kubectl exec -it k8ssandra-dc1-default-sts-0 -c cassandra -- cqlsh -u k8ssandra-superuser -p PGo8kROUgAJOa8vhjQrE49Lgruw7s32HCPyVvcfVmmACW8oUhfoO9A
     Connected to k8ssandra at 127.0.0.1:9042.
     [cqlsh 5.0.1 | Cassandra 3.11.7 | CQL spec 3.4.4 | Native protocol v4]
     Use HELP for help.
