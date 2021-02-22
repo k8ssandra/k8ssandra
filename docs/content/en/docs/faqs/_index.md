@@ -110,7 +110,7 @@ K8ssandra deploys the following components, some components are optional, and de
 * [Medusa](https://github.com/thelastpickle/cassandra-medusa)
   * 0.9.0-dev ([unreleased](https://github.com/thelastpickle/cassandra-medusa/tree/6ab6a55541e98505e502eb698b2cb7805764a9f2))
 * [Cassandra Reaper](http://cassandra-reaper.io/)
-  * 2.1.3
+  * 2.2.0
 * [Stargate](https://stargate.io/)
   * 1.0.8
 
