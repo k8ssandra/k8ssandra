@@ -1,13 +1,17 @@
 {{- if .Values.stargate.enabled }}
-  {{- $stargateVersion := "1.0.8" }}
-  {{- $heapMB := required "stargate.heapMB is required" .Values.stargate.heapMB -}}
-  {{- $clusterVersion := "3.11" }}
-  {{- $computedImage := printf "stargateio/stargate-3_11:v%s" $stargateVersion }}
-  {{- if not (hasPrefix "3" .Values.cassandra.version) }}
-    {{ $clusterVersion = "4.0" }}
+  {{- $stargateVersion := .Values.stargate.version }}
+  {{- $computedClusterVersion := "" }}
+  {{- $computedImage := "" }}
+  {{- if hasPrefix "3" .Values.cassandra.version }}
+    {{- $computedClusterVersion = "3.11" }}
+    {{- $computedImage = printf "stargateio/stargate-3_11:v%s" $stargateVersion }}
+  {{- else }}
+    {{- $computedClusterVersion = "4.0" }}
     {{- $computedImage = printf "stargateio/stargate-4_0:v%s" $stargateVersion }}
   {{- end }}
   {{- $image := default $computedImage .Values.stargate.image -}}
+  {{- $clusterVersion := default $computedClusterVersion .Values.stargate.clusterVersion -}}
+  {{- $heapMB := required "stargate.heapMB is required" .Values.stargate.heapMB -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:

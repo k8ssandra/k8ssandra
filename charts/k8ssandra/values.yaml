@@ -167,17 +167,26 @@ stargate:
   # -- Enable Stargate resources as part of this release
   enabled: true
 
+  # -- version of Stargate to deploy
+  version: "1.0.8"
+
   # -- Number of Stargate instances to deploy. This value may be scaled independently of
   # Cassandra cluster nodes. Each instance handles API and coordination tasks
   # for inbound queries.
   replicas: 1
 
-  # -- Sets the Stargate container image. If left blank (recommended), k8ssandra
-  # will derive an appropriate image based on your cluster version.
+  # -- Sets the Stargate container image. This value must be compatible
+  # with the value provided for stargate.clusterVersion. If left blank (recommended),
+  # k8ssandra will derive an appropriate image based on cassandra.clusterVersion.
   image:
 
   # -- Sets the imagePullPolicy used by the Stargate pods
   imagePullPolicy: IfNotPresent
+
+  # -- Sets the CLUSTER_VERSION environment variable provided to the Stargate containers.
+  # This value must be compatible with the value provided for stargate.image. If left blank (recommended),
+  # k8ssandra will derive an appropriate image based on cassandra.clusterVersion.
+  clusterVersion:
 
   # -- Sets the heap size Stargate will use in megabytes. Memory request and
   # limit for the pod will be set to this value x2 and x4, respectively.
