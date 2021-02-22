@@ -189,3 +189,93 @@ Creates Cassandra auth environment variables if authentication is enabled.
   {{- end -}}
 {{- end }}
 {{- end }}
+
+{{/*
+Add garbage collection settings based on the following rules in the order listed:
+
+  1) If no GC is enabled do nothing.
+  2) DC-level GC overrides cluster-level GC.
+  3) If multiple garbage collectors are enabled at the DC-level, fail.
+  4) If a DC-level garbage collector is enabled, use it.
+  5) If multple garbage collectors are enabled at the cluster-level, fail.
+  6) If a cluster-level garbage collector is enabled, use it.
+*/}}
+{{- define "k8ssandra.configureGc" -}}
+{{- $datacenter := (index .Values.cassandra.datacenters 0) }}
+{{- $clusterCmsEnabled := .Values.cassandra.gc.cms.enabled }}
+{{- $clusterG1Enabled := .Values.cassandra.gc.g1.enabled }}
+{{- $dcCmsEnabled := false }}
+{{- $dcG1Enabled := false }}
+{{- $gc := "" -}}
+
+{{- if $datacenter.gc }}
+  {{- if $datacenter.gc.cms }}
+    {{ $dcCmsEnabled = $datacenter.gc.cms.enabled }}
+  {{- end }}
+  {{- if $datacenter.gc.g1 }}
+    {{ $dcG1Enabled = $datacenter.gc.g1.enabled }}
+  {{- end }}
+{{- end }}
+
+{{- $dcGcEnabled := or $dcCmsEnabled $dcG1Enabled }}
+{{- $clusterGcEnabled := or $clusterCmsEnabled $clusterG1Enabled }}
+
+{{- if and $dcCmsEnabled $dcG1Enabled }}
+  {{- fail "Only one of the CMS and G1 garbage collectors can be enabled" }}
+{{- end }}
+
+{{- if not $dcGcEnabled }}
+  {{- if and $clusterCmsEnabled $clusterG1Enabled }}
+    {{- fail "Only one of the CMS and G1 garbage collectors can be enabled" }}
+  {{- end }}
+{{- end }}
+
+{{- if $dcGcEnabled }}
+  {{- if $dcCmsEnabled }}
+    {{ include "k8ssandra.gcCms" $datacenter.gc.cms }}
+  {{- else if $dcG1Enabled }}
+    {{ include "k8ssandra.gcG1" $datacenter.gc.g1 }}
+  {{- end }}
+{{- else if $clusterGcEnabled }}
+  {{- if $clusterCmsEnabled }}
+    {{ include "k8ssandra.gcCms" .Values.cassandra.gc.cms }}
+  {{- else if $clusterG1Enabled }}
+    {{ include "k8ssandra.gcG1" .Values.cassandra.gc.g1 }}
+  {{- end }}
+{{- end }}
+{{- end -}}
+
+{{- define "k8ssandra.gcCms" -}}
+{{- indent 2  "garbage_collector: CMS" -}}
+{{- if .survivorRatio }}
+  {{ indent 4 (cat "survivor_ratio:" .survivorRatio) }}
+{{- end }}
+{{- if .maxTenuringThreshold }}
+  {{ indent 4 (cat "max_tenuring_threshold:" .maxTenuringThreshold) }}
+{{- end }}
+{{- if .initiatingOccupancyFraction }}
+  {{ indent 4 (cat "cms_initiating_occupancy_fraction:" .initiatingOccupancyFraction) }}
+{{- end }}
+{{- if .waitDuration }}
+  {{ indent 4 (cat "cms_wait_duration:" .waitDuration) }}
+{{- end }}
+{{- end -}}
+
+{{- define "k8ssandra.gcG1" -}}
+{{- indent 2 "garbage_collector: G1" -}}
+{{- if .setUpdatingPauseTimePercent }}
+  {{ indent 4 (cat "g1r_set_updating_pause_time_percent:" .setUpdatingPauseTimePercent) }}
+{{- end }}
+{{- if .maxGcPauseMillis }}
+  {{ indent 4 (cat "max_gc_pause_millis:" .maxGcPauseMillis) }}
+{{- end }}
+{{- if .initiatingHeapOccupancyPercent }}
+  {{ indent 4 (cat "initiating_heap_occupancy_percent:" .initiatingHeapOccupancyPercent) }}
+{{- end }}
+{{- if .parallelGcThreads }}
+  {{ indent 4 (cat "parallel_gc_threads:" .parallelGcThreads) }}
+{{- end }}
+{{- if .concurrentGcThreads }}
+  {{ indent 4 (cat "conc_gc_threads:" .concurrentGcThreads) }}
+{{- end }}
+{{- end -}}

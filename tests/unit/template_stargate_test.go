@@ -12,6 +12,15 @@ import (
 	appsv1 "k8s.io/api/apps/v1"
 )
 
+const (
+	DefaultStargate3Image          = "stargateio/stargate-3_11:v1.0.8"
+	DefaultStargate4Image          = "stargateio/stargate-4_0:v1.0.8"
+	DefaultStargate3ClusterVersion = "3.11"
+	DefaultStargate4ClusterVersion = "4.0"
+	DefaultStargateImage           = DefaultStargate3Image
+	DefaultStargateClusterVersion  = DefaultStargate3ClusterVersion
+)
+
 var _ = Describe("Verify Stargate template", func() {
 	var (
 		helmChartPath string
@@ -90,7 +99,7 @@ var _ = Describe("Verify Stargate template", func() {
 
 			Expect(len(templateSpec.Containers)).To(Equal(1))
 			container := templateSpec.Containers[0]
-			Expect(container.Image).To(Equal("stargateio/stargate-3_11:v1.0.7"))
+			Expect(container.Image).To(Equal(DefaultStargateImage))
 			Expect(container.Name).To(Equal(Sprintf("%s-dc1-stargate", HelmReleaseName)))
 			Expect(string(container.ImagePullPolicy)).To(Equal("IfNotPresent"))
 
@@ -110,11 +119,92 @@ var _ = Describe("Verify Stargate template", func() {
 			clusterName := kubeapi.FindEnvVarByName(container, "CLUSTER_NAME")
 			Expect(clusterName.Value).To(Equal(HelmReleaseName))
 
+			clusterVersion := kubeapi.FindEnvVarByName(container, "CLUSTER_VERSION")
+			Expect(clusterVersion.Value).To(Equal(DefaultStargateClusterVersion))
+
 			seed := kubeapi.FindEnvVarByName(container, "SEED")
 			Expect(seed.Value).To(Equal(Sprintf("%s-seed-service.%s.svc.cluster.local", HelmReleaseName, DefaultTestNamespace)))
 
 			datacenterName := kubeapi.FindEnvVarByName(container, "DATACENTER_NAME")
 			Expect(datacenterName.Value).To(Equal("dc1"))
+		})
+
+		It("using custom image and clusterVersion", func() {
+			// This combination of values makes no real sense and would not work
+			// but this tests that the defaults are avoided when a specific value is provided
+			image := "stargateio/stargate-4_0:v1.0.5"
+			clusterVersion := "3.0"
+
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+				SetValues: map[string]string{
+					"stargate.enabled":        "true",
+					"stargate.image":          image,
+					"stargate.clusterVersion": clusterVersion,
+				},
+			}
+
+			Expect(renderTemplate(options)).To(Succeed())
+			templateSpec := deployment.Spec.Template.Spec
+			Expect(len(templateSpec.Containers)).To(Equal(1))
+			container := templateSpec.Containers[0]
+			Expect(container.Image).To(Equal(image))
+			clusterVersionEnv := kubeapi.FindEnvVarByName(container, "CLUSTER_VERSION")
+			Expect(clusterVersionEnv.Value).To(Equal(clusterVersion))
+		})
+
+		It("using defaults and empty clusterVersion", func() {
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+				SetValues: map[string]string{
+					"stargate.enabled":        "true",
+					"stargate.clusterVersion": "",
+				},
+			}
+
+			Expect(renderTemplate(options)).To(Succeed())
+			templateSpec := deployment.Spec.Template.Spec
+			Expect(len(templateSpec.Containers)).To(Equal(1))
+			container := templateSpec.Containers[0]
+			Expect(container.Image).To(Equal(DefaultStargateImage))
+			clusterVersionEnv := kubeapi.FindEnvVarByName(container, "CLUSTER_VERSION")
+			Expect(clusterVersionEnv.Value).To(Equal(DefaultStargateClusterVersion))
+		})
+
+		It("using cassandra version 4.0.0", func() {
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+				SetValues: map[string]string{
+					"stargate.enabled":  "true",
+					"cassandra.version": "4.0.0",
+				},
+			}
+
+			Expect(renderTemplate(options)).To(Succeed())
+			templateSpec := deployment.Spec.Template.Spec
+			Expect(len(templateSpec.Containers)).To(Equal(1))
+			container := templateSpec.Containers[0]
+			Expect(container.Image).To(Equal(DefaultStargate4Image))
+			clusterVersionEnv := kubeapi.FindEnvVarByName(container, "CLUSTER_VERSION")
+			Expect(clusterVersionEnv.Value).To(Equal(DefaultStargate4ClusterVersion))
+		})
+
+		It("using cassandra version 3.11.10", func() {
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+				SetValues: map[string]string{
+					"stargate.enabled":  "true",
+					"cassandra.version": "3.11.10",
+				},
+			}
+
+			Expect(renderTemplate(options)).To(Succeed())
+			templateSpec := deployment.Spec.Template.Spec
+			Expect(len(templateSpec.Containers)).To(Equal(1))
+			container := templateSpec.Containers[0]
+			Expect(container.Image).To(Equal(DefaultStargate3Image))
+			clusterVersionEnv := kubeapi.FindEnvVarByName(container, "CLUSTER_VERSION")
+			Expect(clusterVersionEnv.Value).To(Equal(DefaultStargate3ClusterVersion))
 		})
 
 		It("changing cluster name", func() {
@@ -216,6 +306,37 @@ var _ = Describe("Verify Stargate template", func() {
 			container := deployment.Spec.Template.Spec.Containers[0]
 			Expect(container.Image).To(Equal(alternateImage))
 			Expect(string(container.ImagePullPolicy)).To(Equal(alternatePullPolicy))
+		})
+
+		It("changing stargate version", func() {
+			alternateImage := "stargateio/stargate-3_11:v1.0.5"
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+				SetValues: map[string]string{
+					"stargate.enabled": "true",
+					"stargate.version": "1.0.5",
+				},
+			}
+
+			Expect(renderTemplate(options)).To(Succeed())
+			container := deployment.Spec.Template.Spec.Containers[0]
+			Expect(container.Image).To(Equal(alternateImage))
+		})
+
+		It("changing stargate version with Cassandra 4.0", func() {
+			alternateImage := "stargateio/stargate-4_0:v1.0.6"
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+				SetValues: map[string]string{
+					"stargate.enabled":  "true",
+					"stargate.version":  "1.0.6",
+					"cassandra.version": "4.0.0",
+				},
+			}
+
+			Expect(renderTemplate(options)).To(Succeed())
+			container := deployment.Spec.Template.Spec.Containers[0]
+			Expect(container.Image).To(Equal(alternateImage))
 		})
 	})
 })

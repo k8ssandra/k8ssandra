@@ -1,9 +1,9 @@
 {{- $datacenter := (index .Values.cassandra.datacenters 0) -}}
 {{- $medusaImage := (printf "%s:%s" .Values.medusa.image.repository .Values.medusa.image.tag) -}}
 
-{{- if and (not .Values.cassandra.image)  (not (hasKey .Values.cassandra.versionImageMap .Values.cassandra.version)) }}
+{{- if and (not .Values.cassandra.image)  (not (hasKey .Values.cassandra.versionImageMap .Values.cassandra.version)) -}}
   {{- fail (print .Values.cassandra.version " is not a supported Cassandra version") }}
-{{- end}}
+{{- end -}}
 
 apiVersion: cassandra.datastax.com/v1beta1
 kind: CassandraDatacenter
@@ -95,6 +95,7 @@ spec:
   {{- else }}
     jvm-server-options:
   {{- end }}
+  {{- include "k8ssandra.configureGc" . -}}
 {{- include "k8ssandra.configureJvmHeap" . }}
       additional-jvm-opts:
 {{- if .Values.cassandra.auth.enabled }}

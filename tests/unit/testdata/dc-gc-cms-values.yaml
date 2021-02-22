@@ -1,0 +1,19 @@
+cassandra:
+  gc:
+    cms:
+      enabled: true
+      survivorRatio: 6
+      maxTenuringThreshold: 1
+      initiatingOccupancyFraction: 75
+      waitDuration: 11000
+
+  datacenters:
+    - name: dc1
+      size: 3
+      gc:
+        cms:
+          enabled: true
+          survivorRatio: 10
+          maxTenuringThreshold: 5
+          initiatingOccupancyFraction: 80
+          waitDuration: 12000
