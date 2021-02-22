@@ -113,11 +113,12 @@ spec:
     spec:
       initContainers:
       - name: server-config-init
-     {{- if .Values.reaper.enabled }}
+     {{- if (or .Values.cassandra.auth.enabled .Values.reaper.enabled) }}
       - name: jmx-credentials
         image: busybox
         imagePullPolicy: IfNotPresent
         env:
+        {{- if .Values.reaper.enabled }}
           - name: REAPER_JMX_USERNAME
             valueFrom:
               secretKeyRef:
@@ -128,6 +129,7 @@ spec:
               secretKeyRef:
                 name: {{ .Release.Name }}-reaper-secret-k8ssandra
                 key: password
+          {{- end }}
           - name: SUPERUSER_JMX_USERNAME
             valueFrom:
               secretKeyRef:
@@ -141,7 +143,11 @@ spec:
         args:
           - /bin/sh
           - -c
+        {{- if .Values.reaper.enabled }}
           - echo "$REAPER_JMX_USERNAME $REAPER_JMX_PASSWORD" > /config/jmxremote.password && echo "$SUPERUSER_JMX_USERNAME $SUPERUSER_JMX_PASSWORD" >> /config/jmxremote.password
+        {{- else }}
+          - echo echo "$SUPERUSER_JMX_USERNAME $SUPERUSER_JMX_PASSWORD" >> /config/jmxremote.password
+        {{- end }}
         volumeMounts:
           - mountPath: /config
             name: server-config
