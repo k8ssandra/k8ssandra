@@ -23,9 +23,6 @@ test: fmt vet
 integ-test:
 	go test -v -test.timeout=5m ./tests/integration/... -coverprofile cover.out
 
-test-gc: fmt vet
-	go test -v -test.timeout=3m ./tests/unit/... -coverprofile cover.out -args -ginkgo.focus=".*garbage\ collection.*"
-
 fmt:
 	go fmt ./pkg/...
 	go fmt ./tests/...
