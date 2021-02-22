@@ -13,8 +13,8 @@ import (
 )
 
 const (
-	DefaultStargate3Image          = "stargateio/stargate-3_11:v1.0.8"
-	DefaultStargate4Image          = "stargateio/stargate-4_0:v1.0.8"
+	DefaultStargate3Image          = "stargateio/stargate-3_11:v1.0.9"
+	DefaultStargate4Image          = "stargateio/stargate-4_0:v1.0.9"
 	DefaultStargate3ClusterVersion = "3.11"
 	DefaultStargate4ClusterVersion = "4.0"
 	DefaultStargateImage           = DefaultStargate3Image
