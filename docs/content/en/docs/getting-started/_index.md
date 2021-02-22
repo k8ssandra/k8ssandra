@@ -12,15 +12,15 @@ All told, this quick start should take you about 20 to 30 minutes.
 
 In this quick start, we'll cover the following:
 
-* <a href='{{< relref "#prerequisites" >}}'>Prerequisites</a>: Required supporting software including resource recommendations.
-* <a href='{{< relref "#configure-the-k8ssandra-helm-repository" >}}'>K8ssandra Helm repository configuration</a>: Accessing the Helm charts that install K8ssandra.
-* <a href='{{< relref "#install-k8ssandra" >}}'>K8ssandra installation</a>: Getting K8ssandra up and running using the Helm chart repo.
-* <a href='{{< relref "#verify-your-k8ssandra-installation" >}}'>Verifying K8ssandra functionality</a>: Making sure K8ssandra is working as expected.
-* <a href='{{< relref "#access-k8ssandra-using-cqlsh" >}}'>Accessing K8ssandra using CQLSH</a>: Accessing K8ssandra using the standard Cassandra CQLSH utility.
-* <a href='{{< relref "#configure-ingress" >}}'>Upgrading K8ssandra with Ingress support</a>: Enabling access to K8ssandra from outside the K8s cluster via Traefik.
-* <a href='{{< relref "#access-k8ssandra-utilities" >}}'>Accessing K8ssandra utilities</a>: Accessing useful utilities like the Cassandra Reaper repair tool and Grafana metrics reporting.
-* <a href='{{< relref "#access-k8ssandra-using-the-stargate-api" >}}'>Accessing K8ssandra via Stargate</a>: Accessing K8ssandra using the Stargate API and the GraphQL Playground.
-* <a href='{{< relref "#cassandra-operations" >}}'>Starting and stopping K8ssandra</a>: Cleanly stopping and restarting the K8ssandra pod.
+* [Prerequisites]({{< relref "#prerequisites" >}}): Required supporting software including resource recommendations.
+* [K8ssandra Helm repository configuration]({{< relref "#configure-the-k8ssandra-helm-repository" >}}): Accessing the Helm charts that install K8ssandra.
+* [K8ssandra installation]({{< relref "#install-k8ssandra" >}}): Getting K8ssandra up and running using the Helm chart repo.
+* [Verifying K8ssandra functionality]({{< relref "#verify-your-k8ssandra-installation" >}}): Making sure K8ssandra is working as expected.
+* [Accessing K8ssandra using CQLSH]({{< relref "#access-k8ssandra-using-cqlsh" >}}): Accessing K8ssandra using the standard Cassandra CQLSH utility.
+* [Upgrading K8ssandra with Ingress support]({{< relref "#configure-ingress" >}}): Enabling access to K8ssandra from outside the K8s cluster via Traefik.
+* [Accessing K8ssandra utilities]({{< relref "#access-k8ssandra-utilities" >}}): Accessing useful utilities like the Cassandra Reaper repair tool and Grafana metrics reporting.
+* [Accessing K8ssandra via Stargate]({{< relref "#access-k8ssandra-using-the-stargate-api" >}}): Accessing K8ssandra using the Stargate API and the GraphQL Playground.
+* [Starting and stopping K8ssandra]({{< relref "#cassandra-operations" >}}): Cleanly stopping and restarting the K8ssandra pod.
 
 ## Prerequisites
 
@@ -315,7 +315,7 @@ Let's prepare some data, copy it to the Cassandra node, and then run a query usi
 Right now, you're limited to interacting with your Cassandra node within the K8s cluster using `kubectl` commands which is a pretty severe limitation. To enable external access for applications as well as enable access to K8ssandra features like Grafana dashboards, the Reaper Repair UI, and the Stargate GraphQL playground, you'll need to configure Ingress. In this section we'll upgrade your existing K8ssandra installation to support Ingress using a Traefik Helm chart.
 
 {{% alert title="Tip" color="success" %}}
-Kubernetes Ingress configuration can be a complicated topic. Really all that is happening in this upgrade is that a set of external URIs and ports are being mapped to internal Kubernetes resources. It's not necessary to understand all of the configuration particulars in order to successfully complete this section.
+Kubernetes Ingress configuration is a complicated topic. Really all that is happening in this upgrade is that a set of external URIs and ports are being mapped to internal Kubernetes resources. It's not necessary to understand all of the configuration particulars in order to successfully complete this section.
 {{% /alert %}}
 
 To upgrade K8ssandra:
@@ -443,25 +443,46 @@ To upgrade K8ssandra:
 
 Now you're ready to access the full suite of K8ssandra supporting applications.
 
-## Access K8ssandra utilities
-
-Prometheus, Grafana, Reaper
-
-* Cassandra Reaper:
-    <http://repair.127.0.0.1.nip.io:8080/webui>
-* Prometheus:
-    <http://127.0.0.1.nip.io:8080/prometheus/graph>
-* Grafana (login as `admin` with password `admin123`):
-    <http://127.0.0.1.nip.io:8080/grafana/login>
+{{% alert title="Tip" color="success" %}}
+If you've followed the configuration instructions in this quick start, the URLs in the sections below should take you directly to the associated utilities.
+{{% /alert %}}
 
 ## Access Cassandra using the Stargate API
 
-Do the things.
+[Stargate]({{< relref "docs/topics/stargate" >}}).
 
 * GraphQL Playground:
     <http://stargate.127.0.0.1.nip.io:8080/playground>
 
-## Cassandra operations
+## Access K8ssandra utilities
+
+With Traefik configured you can now access the following bundled utilities.
+
+{{% alert title="Tip" color="success" %}}
+If you've followed the configuration instructions in this quick start, the URLs in the sections below should take you directly to the associated utilities.
+{{% /alert %}}
+
+### Cassandra Reaper
+
+[Cassandra Reaper](<"http://repair.127.0.0.1.nip.io:8080/webui">) provides an easy interface for managing K8ssandra cluster repairs. For details, see [Cassandra Reaper](http://cassandra-reaper.io/).
+
+### Prometheus
+
+[Prometheus] is a standard metrics collection and alerting tool. For more information, see the [Prometheus](https://prometheus.io/) web site.
+
+### Grafana
+
+[Grafana](http://127.0.0.1.nip.io:8080/grafana/login) provides a set of pre-configured dashboards displaying important K8ssandra metrics. For more information see the [Grafana](https://grafana.com/) web site.
+
+{{% alert title="Tip" color="success" %}}
+If you've followed the configuration instructions in this quick start, use `admin` for the username and `admin123` for the password.
+{{% /alert %}}
+
+### Medusa backup and restore
+
+K8ssandra provides a complete backup and restore solution using Medusa. For detailed configuration and usage instructions, see [Backup and restore Cassandra]({{< relref "docs/topics/restore-a-backup" >}}).
+
+## Stopping and starting Cassandra {#cassandra-operations}
 
 Start up:
 
@@ -473,10 +494,4 @@ Shut down:
 
 ```bash
 kubectl patch cassdc dc1 --type merge -p '{"spec":{"stopped":true}}'
-```
-
-## Get the JMX credentials (for now)
-
-```bash
-kubectl exec -it k8ssandra-dc1-default-sts-0 -c cassandra -- more /etc/cassandra/jmxremote.password
 ```
