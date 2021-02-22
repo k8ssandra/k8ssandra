@@ -166,6 +166,7 @@ var _ = Describe("Verify Stargate template", func() {
 			templateSpec := deployment.Spec.Template.Spec
 			Expect(len(templateSpec.Containers)).To(Equal(1))
 			container := templateSpec.Containers[0]
+			Expect(container.Image).To(Equal(DefaultStargateImage))
 			clusterVersionEnv := kubeapi.FindEnvVarByName(container, "CLUSTER_VERSION")
 			Expect(clusterVersionEnv.Value).To(Equal(DefaultStargateClusterVersion))
 		})
