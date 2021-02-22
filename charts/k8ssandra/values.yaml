@@ -284,11 +284,6 @@ stargate:
   # -- Sets the imagePullPolicy used by the Stargate pods
   imagePullPolicy: IfNotPresent
 
-  # -- Sets the CLUSTER_VERSION environment variable provided to the Stargate containers.
-  # This value must be compatible with the value provided for stargate.image. If left blank (recommended),
-  # k8ssandra will derive an appropriate image based on cassandra.clusterVersion.
-  clusterVersion:
-
   # -- Sets the heap size Stargate will use in megabytes. Memory request and
   # limit for the pod will be set to this value x2 and x4, respectively.
   heapMB: 256
