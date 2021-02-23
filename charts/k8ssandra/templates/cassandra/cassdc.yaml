@@ -131,12 +131,12 @@ spec:
           - name: REAPER_JMX_USERNAME
             valueFrom:
               secretKeyRef:
-                name: {{ .Release.Name }}-reaper-secret-k8ssandra
+                name: {{ .Release.Name }}-reaper-jmx
                 key: username
           - name: REAPER_JMX_PASSWORD
             valueFrom:
               secretKeyRef:
-                name: {{ .Release.Name }}-reaper-secret-k8ssandra
+                name: {{ .Release.Name }}-reaper-jmx
                 key: password
           {{- end }}
           - name: SUPERUSER_JMX_USERNAME
