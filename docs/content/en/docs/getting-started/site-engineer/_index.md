@@ -8,6 +8,7 @@ description: |
 
 * [Upgrading K8ssandra with Ingress support]({{< relref "#configure-ingress" >}}): Enabling access to K8ssandra from outside the K8s cluster via Traefik.
 * [Accessing K8ssandra utilities]({{< relref "#access-k8ssandra-utilities" >}}): Accessing useful utilities like the Cassandra Reaper repair tool and Grafana metrics reporting.
+* [Starting and stopping K8ssandra]({{< relref "#cassandra-operations" >}}): Cleanly stopping and restarting the K8ssandra pod.
 
 ## Configure Ingress
 
@@ -169,3 +170,53 @@ If you've followed the configuration instructions in this quick start, use `admi
 ### Medusa backup and restore
 
 K8ssandra provides a complete backup and restore solution using [Medusa](https://github.com/thelastpickle/cassandra-medusa). For detailed configuration and usage instructions, see [Backup and restore Cassandra]({{< relref "docs/topics/restore-a-backup" >}}).
+
+## Stopping and starting Cassandra {#cassandra-operations}
+
+Before shutting down your Kubernetes cluster, you'll want to make sure you cleanly shut down your Cassandra datacenters. You can do that using the `kubectl patch` command and setting the `spec:stopped` property to either `true` (stopped) or `false` (running).
+
+### Shut down Cassandra
+
+To shut down a Cassandra datacenter:
+
+```bash
+kubectl patch cassdc <datacenter-name> --type merge -p '{"spec":{"stopped":true}}'
+```
+
+Example:
+
+```bash
+kubectl patch cassdc dc1 --type merge -p '{"spec":{"stopped":true}}'
+cassandradatacenter.cassandra.datastax.com/dc1 patched
+```
+
+### Start up Cassandra
+
+To start up a Cassandra datacenter
+
+```bash
+kubectl patch cassdc <datacenter-name> --type merge -p '{"spec":{"stopped":false}}'
+```
+
+Example:
+
+```bash
+kubectl patch cassdc dc1 --type merge -p '{"spec":{"stopped":false}}'
+cassandradatacenter.cassandra.datastax.com/dc1 patched
+```
+
+## Nodetool fragment
+
+1. Run `nodetool status`, using the Cassandra node name `k8ssandra-dc1-default-sts-0`, and passing the superuser name and password. Verify that the node is in the state `UN` or Up Normal:
+
+    ```bash
+    kubectl exec -it k8ssandra-dc1-default-sts-0 -c cassandra -- nodetool -u k8ssandra-superuser -pw 6WH3pp8scIOvyJqGc0m_Ubb-Ft07lmKkYb3Ye_hXpc6TiscaQtwcuA status
+    Datacenter: dc1
+    ===============
+    Status=Up/Down
+    |/ State=Normal/Leaving/Joining/Moving
+    --  Address      Load       Owns    Host ID                               Token                                    Rack
+    UN  10.244.1.12  215.3 KiB  ?       75e52e51-edc9-49f8-84f6-f044999ac130  -1080085985719557225                     default
+
+    Note: Non-system keyspaces don't have the same replication settings, effective ownership information is meaningless
+    ```

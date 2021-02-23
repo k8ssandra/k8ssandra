@@ -1,14 +1,15 @@
 ---
 title: "K8ssandra quick start"
 linkTitle: "Quick start"
+no_list: true
 weight: 1
 description: |
   Kick the tires and take K8ssandra for a spin!
 ---
 
-Welcome to K8ssandra! This guide gets you up and running with a single-node Apache Cassandra&reg; cluster on Kubernetes. If you're interested in a more detailed component walkthroughs check out the [tasks]({{< ref "topics">}}) section.
+**Completion time**: **10 minutes**.
 
-**Completion time**: 15 to 20 minutes.
+Welcome to K8ssandra! This guide gets you up and running with a single-node Apache Cassandra&reg; cluster on Kubernetes (K8s). If you're interested in a more detailed component walkthroughs check out the [tasks]({{< ref "topics">}}) section.
 
 In this quick start, we'll cover the following topics:
 
@@ -16,34 +17,18 @@ In this quick start, we'll cover the following topics:
 * [K8ssandra Helm repository configuration]({{< relref "#configure-the-k8ssandra-helm-repository" >}}): Accessing the Helm charts that install K8ssandra.
 * [K8ssandra installation]({{< relref "#install-k8ssandra" >}}): Getting K8ssandra up and running using the Helm chart repo.
 * [Verifying K8ssandra functionality]({{< relref "#verify-your-k8ssandra-installation" >}}): Making sure K8ssandra is working as expected.
-* [Starting and stopping K8ssandra]({{< relref "#cassandra-operations" >}}): Cleanly stopping and restarting the K8ssandra pod.
+* [Retrieve K8ssandra superuser credentials]({{< relref "#superuser" >}}): Getting the K8ssandra superuser name and password so you can access common utilities as well as the Stargate API.
+
+Once these basic configuration and verification steps are completed, you can choose more detailed paths for either a developer or a site reliability engineer.
 
 ## Prerequisites
 
-In your local environment the following tools are required for provisioning a K8ssandra cluster.
+In your local environment the following tools are required for provisioning a K8ssandra cluster:
 
 * [Helm v3+](https://helm.sh/docs/intro/install/)
 * [Kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/)
 
-As K8ssandra deploys on a Kubernetes cluster, one must be available to target for installation. The K8 environment may be a local version running on your development machine, an on-premises self-hosted environment, or a managed cloud offering. To that end the cluster must be up and available to your `kubectl` command:
-
-```bash
-kubectl cluster-info
-Kubernetes control plane is running at https://127.0.0.1:55017
-KubeDNS is running at https://127.0.0.1:55017/api/v1/namespaces/kube-system/services/kube-dns:dns/proxy
-
-To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
-```
-
-If you do not have a Kubernetes cluster available, you can use [OpenShift CodeReady Containers](https://developers.redhat.com/products/codeready-containers/overview) that run within a VM, or one of the following local versions that run within Docker:
-
-* [K3D](https://k3d.io/)
-* [Minikube](https://minikube.sigs.k8s.io/docs/start/)
-* [Kind](https://kind.sigs.k8s.io/)
-
-The instructions in this section focus on the Docker container solutions above, but the general instructions should work for other environments as well.
-
-### Kubernetes version support
+As K8ssandra deploys on a K8s cluster, one must be available to target for installation. The K8s environment may be a local version running on your development machine, an on-premises self-hosted environment, or a managed cloud offering.
 
 K8ssandra works with the following versions of Kubernetes either standalone or via a cloud provider:
 
@@ -53,31 +38,35 @@ K8ssandra works with the following versions of Kubernetes either standalone or v
 * 1.19
 * 1.20
 
-### Cassandra version support
-
-K8ssandra can install the following versions of Apache Cassandra:
-
-* 3.11.7
-* 3.11.8
-* 3.11.9
-* 3.11.10
-* 4.0-beta4
-
-### Resource recommendations
-
-The minimum recommended development configuration for a single Cassandra node is 8 gigs of RAM and 2 virtual processor cores (2 physical cores). Given that, we recommend a machine specification of **no less** than 16 gigs of RAM and 8 virtual processor cores (4 physical cores). You'll want to adjust your Docker resource preferences accordingly. For this quick start we're allocating 4 virtual processors and 8 gigs of RAM to the Docker environment.
-
-An ideal environment, enabling you to run a 3 node Cassandra cluster, enforcing QUORUM consistency, would consist of 32 gigs of RAM and 12 virtual cores (6 physical cores).
-
-See the documentation for your particular flavor of Docker for instructions on configuring resource limits.
-
-### Example K8s container configuration
-
-The following Minikube example creates a K8s cluster named `k8ssandra` running K8s version 1.18.16 with 4 virtual processor cores and 8 gigs of RAM:
+To verify your K8s version:
 
 ```bash
-minikube start --cpus=4 --memory='8128m' --kubernetes-version=1.18.16 -p k8ssandra
-😄  [k8ssandra] minikube v1.17.1 on Darwin 11.2.1
+kubectl version
+Client Version: version.Info{Major:"1", Minor:"20", GitVersion:"v1.20.3", GitCommit:"01849e73f3c86211f05533c2e807736e776fcf29", GitTreeState:"clean", BuildDate:"2021-02-18T12:10:55Z", GoVersion:"go1.15.8", Compiler:"gc", Platform:"darwin/amd64"}
+Server Version: version.Info{Major:"1", Minor:"18", GitVersion:"v1.18.16", GitCommit:"7a98bb2b7c9112935387825f2fce1b7d40b76236", GitTreeState:"clean", BuildDate:"2021-02-17T11:52:32Z", GoVersion:"go1.13.15", Compiler:"gc", Platform:"linux/amd64"}
+```
+
+If you don't have a K8s cluster available, you can use [OpenShift CodeReady Containers](https://developers.redhat.com/products/codeready-containers/overview) that run within a VM, or one of the following local versions that run within Docker:
+
+* [K3D](https://k3d.io/)
+* [Minikube](https://minikube.sigs.k8s.io/docs/start/)
+* [Kind](https://kind.sigs.k8s.io/)
+
+The instructions in this section focus on the Docker container solutions above, but the general instructions should work for other environments as well.
+
+### Resource recommendations for local Kubernetes installations
+
+We recommend a machine specification of **no less** than 16 gigs of RAM and 8 virtual processor cores (4 physical cores). You'll want to adjust your Docker resource preferences accordingly. For this quick start we're allocating 4 virtual processors and 8 gigs of RAM to the Docker environment.
+
+{{% alert title="Tip" color="success" %}}
+See the documentation for your particular flavor of Docker for instructions on configuring resource limits.
+{{% /alert %}}
+
+The following Minikube example creates a K8s cluster running K8s version 1.18.16 with 4 virtual processor cores and 8 gigs of RAM:
+
+```bash
+minikube start --cpus=4 --memory='8128m' --kubernetes-version=1.18.16
+😄  minikube v1.17.1 on Darwin 11.2.1
 ✨  Automatically selected the docker driver. Other choices: hyperkit, ssh
 👍  Starting control plane node k8ssandra in cluster k8ssandra
 🔥  Creating docker container (CPUs=4, Memory=8128MB) ...
@@ -87,7 +76,70 @@ minikube start --cpus=4 --memory='8128m' --kubernetes-version=1.18.16 -p k8ssand
     ▪ Configuring RBAC rules ...
 🔎  Verifying Kubernetes components...
 🌟  Enabled addons: storage-provisioner, default-storageclass
-🏄  Done! kubectl is now configured to use "k8ssandra" cluster and "default" namespace by default
+🏄  Done! kubectl is now configured to use "minikube" cluster and "default" namespace by default
+```
+
+### Verify your Kubernetes environment
+
+To verify your Kubernetes environment:
+
+1. Check that you have a versions of K8s supported by K8ssandra:
+
+    ```bash
+    kubectl version
+    Client Version: version.Info{Major:"1", Minor:"20", GitVersion:"v1.20.3", GitCommit:"01849e73f3c86211f05533c2e807736e776fcf29", GitTreeState:"clean", BuildDate:"2021-02-18T12:10:55Z", GoVersion:"go1.15.8", Compiler:"gc", Platform:"darwin/amd64"}
+    Server Version: version.Info{Major:"1", Minor:"18", GitVersion:"v1.18.16", GitCommit:"7a98bb2b7c9112935387825f2fce1b7d40b76236", GitTreeState:"clean", BuildDate:"2021-02-17T11:52:32Z", GoVersion:"go1.13.15", Compiler:"gc", Platform:"linux/amd64"}
+    ```
+
+    K8ssandra supports the following K8s versions:
+
+    * 1.16
+    * 1.17
+    * 1.18
+    * 1.19
+    * 1.20
+
+1. Verify that your K8s instance is up and running in the `READY` status:
+
+    ```bash
+    kubectl get nodes
+    NAME        STATUS   ROLES    AGE   VERSION
+    k8ssandra   Ready    master   21m   v1.18.16
+    ```
+
+### Validate the available Kubernetes StorageClasses {#storage-classes}
+
+Your K8s instance **must** support a storage class with a `VOLUMEBINDINGMODE` of `WaitForFirstConsumer`.
+
+To list the available K8s storage classes for your K8s instance:
+
+```bash
+kubectl get storageclasses
+NAME                 PROVISIONER                RECLAIMPOLICY   VOLUMEBINDINGMODE   ALLOWVOLUMEEXPANSION   AGE
+standard (default)   k8s.io/minikube-hostpath   Delete          Immediate           false                  2m25s
+```
+
+If you don't have a storage class with a `VOLUMEBINDINGMODE` of `WaitForFirstConsumer` as in the Minikube example above, you can install the [Rancher Local Path Provisioner](https://github.com/rancher/local-path-provisioner):
+
+```bash
+kubectl apply -f https://raw.githubusercontent.com/rancher/local-path-provisioner/master/deploy/local-path-storage.yaml
+
+namespace/local-path-storage created
+serviceaccount/local-path-provisioner-service-account created
+clusterrole.rbac.authorization.k8s.io/local-path-provisioner-role created
+clusterrolebinding.rbac.authorization.k8s.io/local-path-provisioner-bind created
+deployment.apps/local-path-provisioner created
+storageclass.storage.k8s.io/local-path created
+configmap/local-path-config created
+```
+
+Rechecking the available storage classes, you should see that a new `local-path` storage class is available with the required `VOLUMEBINDINGMODE` of `WaitForFirstConsumer`:
+
+```bash
+kubectl get storageclasses
+NAME                 PROVISIONER                RECLAIMPOLICY   VOLUMEBINDINGMODE      ALLOWVOLUMEEXPANSION   AGE
+local-path           rancher.io/local-path      Delete          WaitForFirstConsumer   false                  3s
+standard (default)   k8s.io/minikube-hostpath   Delete          Immediate              false                  39s
 ```
 
 ## Configure the K8ssandra Helm repository
@@ -96,19 +148,21 @@ K8ssandra is delivered via a collection of Helm charts for easy installation, so
 
 To add the K8ssandra helm chart repos:
 
+1. Install [Helm v3+](https://helm.sh/docs/intro/install/) if you haven't already.
+
 1. Add the main K8ssandra Helm chart repo:
 
     ```bash
     helm repo add k8ssandra https://helm.k8ssandra.io/
     ```
 
-2. If you want to access K8ssandra services from outside of the Kubernetes cluster, also add the Traefik Ingress repo (highly recommended):
+1. If you want to access K8ssandra services from outside of the Kubernetes cluster, also add the Traefik Ingress repo:
 
     ```bash
     helm repo add traefik https://helm.traefik.io/traefik
     ```
 
-3. Finally, update your helm repository listing:
+1. Finally, update your helm repository listing:
 
     ```bash
     helm repo update
@@ -122,8 +176,16 @@ Alternatively, you can download the individual charts directly from the project'
 
 The K8ssandra helm charts make installation a snap. You can override chart configurations during installation as necessary if you're an advanced user, or make changes after a default installation using `helm upgrade` at a later time.
 
+K8ssandra can install the following versions of Apache Cassandra:
+
+* 3.11.7
+* 3.11.8
+* 3.11.9
+* 3.11.10
+* 4.0-beta4
+
 {{% alert title="Important" color="warning" %}}
-K8ssandra comes out of the box with a set of default values tailored to getting up and running quickly.  Those defaults are intended to be a great starting point for smaller-scale local development but are **not** intended for production deployments.
+K8ssandra comes out of the box with a set of [default values](https://github.com/k8ssandra/k8ssandra/blob/main/charts/k8ssandra/values.yaml) tailored to getting up and running quickly.  Those defaults are intended to be a great starting point for smaller-scale local development but are **not** intended for production deployments.
 {{% /alert %}}
 
 To install a single node K8ssandra cluster:
@@ -132,20 +194,52 @@ To install a single node K8ssandra cluster:
 
     ```yaml
     cassandra:
-      version: "3.11.7"
-      clusterName: k8ssandra
+      version: "3.11.10"
+      cassandraLibDirVolume:
+        storageClass: local-path
+        size: 5Gi
+      heap:
+       size: 1G
+       newGenSize: 1G
+      resources:
+        requests:
+          cpu: 1000m
+          memory: 2Gi
+        limits:
+          cpu: 1000m
+          memory: 2Gi
       datacenters:
       - name: dc1
         size: 1
+        racks:
+        - name: default
     kube-prometheus-stack:
       grafana:
-        adminUser: admin
-        adminPassword: admin123
+      adminUser: admin
+      adminPassword: admin123
+    stargate:
+      enabled: true
+      replicas: 1
+      heapMB: 256
+      cpuReqMillicores: 200
+      cpuLimMillicores: 1000
     ```
 
-    The configuration file creates a K8ssandra cluster named `k8ssandra` with a datacenter, `dc1` containing a single Cassandra node.
+    That configuration file creates a K8ssandra cluster with a datacenter, `dc1`, containing a single Cassandra node, `size: 1` version `3.11.10` with the following specifications:
 
-2. Use `helm install` to install K8ssandra, referring to the example configuration file:
+    * 1 GB of heap
+    * 2 GB of RAM for the container
+    * 1 CPU core
+    * 5 GB of storage
+    * 1 Stargate node with
+      * 1 CPU core
+      * 256 MB of heap
+
+    {{% alert title="Important" color="warning" %}}
+The `storageClass:` parameter must be a storage class with a `VOLUMEBINDINGMODE` of `WaitForFirstConsumer` as described in [Validate the available Kubernetes StorageClasses]({{< relref "#storage-classes" >}}).
+    {{% /alert %}}
+
+1. Use `helm install` to install K8ssandra, pointing to the example configuration file using the `-f` flag:
 
     ```bash
     helm install -f k8ssandra.yaml k8ssandra k8ssandra/k8ssandra
@@ -156,7 +250,11 @@ To install a single node K8ssandra cluster:
     REVISION: 1
     ```
 
-{{% alert title="Note" color="primary" %}}
+    {{% alert title="Tip" color="success" %}}
+In the example above, the K8ssandra pods will have the cluster name `k8ssandra` prefixed or appended inline.
+    {{% /alert %}}
+
+    {{% alert title="Note" color="primary" %}}
 When installing K8ssandra on newer versions of Kubernetes (v1.19+), some warnings may be visible on the command line related to deprecated API usage.  This is currently a known issue and will not impact the provisioning of the cluster.
 
 ```bash
@@ -167,40 +265,41 @@ use apiextensions.k8s.io/v1 CustomResourceDefinition
 ```
 
 For more information, check out issue [#267](https://github.com/k8ssandra/k8ssandra/issues/267).
-{{% /alert %}}
+    {{% /alert %}}
 
 ## Verify your K8ssandra installation
 
-Depending upon your K8 configuration, initialization of your K8ssandra installation can take a few minutes. To check the status of your K8ssandra deployment, use the `kubectl` command:
+Depending upon your K8s configuration, initialization of your K8ssandra installation can take a few minutes. To check the status of your K8ssandra deployment, use the `kubectl get pods` command:
 
 ```bash
 kubectl get pods
-NAMESPACE     NAME                                                  READY   STATUS      RESTARTS   AGE
-default       k8ssandra-cass-operator-6666588dc5-rrbwx              1/1     Running     0          15m
-default       k8ssandra-dc1-default-sts-0                           2/2     Running     0          15m
-default       k8ssandra-dc1-stargate-7db4dbfdd5-dxk5v               1/1     Running     0          15m
-default       k8ssandra-grafana-b6f7978c4-cwdwg                     2/2     Running     0          15m
-default       k8ssandra-kube-prometheus-operator-5556885bd6-2tn4t   1/1     Running     0          15m
-default       k8ssandra-reaper-k8ssandra-64cc9d57d9-rc2z4           1/1     Running     0          12m
-default       k8ssandra-reaper-k8ssandra-schema-pxdcz               0/1     Completed   0          12m
-default       k8ssandra-reaper-operator-cc46fd5f4-hlmck             1/1     Running     0          15m
-default       prometheus-k8ssandra-kube-prometheus-prometheus-0     2/2     Running     1          15m
+NAME                                                  READY   STATUS      RESTARTS   AGE
+k8ssandra-cass-operator-6666588dc5-s4xgc              1/1     Running     0          6m59s
+k8ssandra-dc1-default-sts-0                           2/2     Running     0          6m27s
+k8ssandra-dc1-stargate-6f7f5d6fd6-2dz8f               1/1     Running     0          7m
+k8ssandra-grafana-6c4f6577d8-469qx                    2/2     Running     0          6m59s
+k8ssandra-kube-prometheus-operator-5556885bd6-l5pxz   1/1     Running     0          6m59s
+k8ssandra-reaper-k8ssandra-5b6cc959b7-wt22j           1/1     Running     0          3m20s
+k8ssandra-reaper-k8ssandra-schema-dnrpk               0/1     Completed   0          3m35s
+k8ssandra-reaper-operator-cc46fd5f4-lzq96             1/1     Running     0          7m
+prometheus-k8ssandra-kube-prometheus-prometheus-0     2/2     Running     1          6m32s
 ```
 
-NOTE: k8ssandra prefixes the pod names. Stargate takes 4 minutes to register as ready.
+The K8ssandra pods in the example above have the identifier `k8ssandra` either prefixed or inline, since that's the name that was specified when the cluster was created using Helm. If you choose a different cluster name during installation, your pod names will be different.
 
+The actual Cassandra node name from the listing above is `k8ssandra-dc1-default-sts-0` which we'll use throughout the following sections.
 
+Verify the following:
 
+* The K8ssandra pod running Cassandra, `k8ssandra-dc1-default-sts-0` in the example above should show `2/2` as `Ready`.
+* The Stargate pod, `k8ssandra-dc1-stargate-6f7f5d6fd6-2dz8f` in the example above should show `1/1` as `Ready`. 
 
-Once all the pods are in the `Running` or `Completed` state, you can check the health of your K8ssandra cluster.
-
-{{% alert title="Tip" color="success" %}}
-The pod `k8ssandra-reaper-k8ssandra-schema-xxxxx` runs once and does not persist.
+{{% alert title="Important" color="warning" %}}
+* The Stargate pod will not show `Ready` until at least 4 minutes have elapsed. 
+* The pod `k8ssandra-reaper-k8ssandra-schema-xxxxx` runs once and does not persist.
 {{% /alert %}}
 
-The actual Cassandra node name from the listing above is `k8ssandra-dc1-default-sts-0`. If you've configured multiple nodes, `sts-0` will increment.
-
-We'll use node name `k8ssandra-dc1-default-sts-0` throughout the following sections.
+Once all the pods are in the `Running` or `Completed` state, you can check the health of your K8ssandra cluster. There must be **no `PENDING` pods**.
 
 To check the health of your K8ssandra cluster:
 
@@ -211,80 +310,59 @@ To check the health of your K8ssandra cluster:
        Cassandra Operator Progress:  Ready
     ```
 
-1. Get K8ssandra superuser credentials:
-
-    * K8ssandra superuser name:
-
-        ```bash
-        kubectl get secret k8ssandra-superuser -o jsonpath="{.data.username}" | base64 --decode | more
-        k8ssandra-superuser
-        (END)
-        ```
-
-    * K8ssandra superuser password:
-
-        ```bash
-        kubectl get secret k8ssandra-superuser -o jsonpath="{.data.password}" | base64 --decode | more
-        PGo8kROUgAJOa8vhjQrE49Lgruw7s32HCPyVvcfVmmACW8oUhfoO9A
-        (END)
-        ```
-
-1. Run `nodetool status`, using the Cassandra node name `k8ssandra-dc1-default-sts-0`, and passing the superuser name and password. Verify that the node is in the state `UN` or Up Normal:
+1. Verify the list of available services:
 
     ```bash
-    kubectl exec -it k8ssandra-dc1-default-sts-0 -c cassandra -- nodetool -u k8ssandra-superuser -pw PGo8kROUgAJOa8vhjQrE49Lgruw7s32HCPyVvcfVmmACW8oUhfoO9A status
-    Datacenter: dc1
-    ===============
-    Status=Up/Down
-    |/ State=Normal/Leaving/Joining/Moving
-    --  Address      Load       Owns    Host ID                               Token                                    Rack
-    UN  10.244.1.12  215.3 KiB  ?       75e52e51-edc9-49f8-84f6-f044999ac130  -1080085985719557225                     default
+    kubectl get services
+    NAME                                        TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)                                                 AGE
+    cass-operator-metrics                       ClusterIP   10.99.98.218     <none>        8383/TCP,8686/TCP                                       47m
+    k8ssandra-dc1-all-pods-service              ClusterIP   None             <none>        9042/TCP,8080/TCP,9103/TCP                              47m
+    k8ssandra-dc1-service                       ClusterIP   None             <none>        9042/TCP,9142/TCP,8080/TCP,9103/TCP,9160/TCP            47m
+    k8ssandra-dc1-stargate-service              ClusterIP   10.106.70.148    <none>        8080/TCP,8081/TCP,8082/TCP,8084/TCP,8085/TCP,9042/TCP   47m
+    k8ssandra-grafana                           ClusterIP   10.96.120.157    <none>        80/TCP                                                  47m
+    k8ssandra-kube-prometheus-operator          ClusterIP   10.97.21.175     <none>        443/TCP                                                 47m
+    k8ssandra-kube-prometheus-prometheus        ClusterIP   10.111.184.111   <none>        9090/TCP                                                47m
+    k8ssandra-reaper-k8ssandra-reaper-service   ClusterIP   10.104.46.103    <none>        8080/TCP                                                47m
+    k8ssandra-seed-service                      ClusterIP   None             <none>        <none>                                                  47m
+    kubernetes                                  ClusterIP   10.96.0.1        <none>        443/TCP                                                 53m
+    prometheus-operated                         ClusterIP   None             <none>        9090/TCP                                                47m
+    ```
 
-    Note: Non-system keyspaces don't have the same replication settings, effective ownership information is meaningless
+1. Verify the name of the Cassandra datacenter:
+
+    ```bash
+    kubectl get cassandradatacenters
+    NAME   AGE
+    dc1    51m
+    ```
+
+## Retrieve K8ssandra superuser credentials {#superuser}
+
+You'll need the K8ssandra superuser name and password in order to access Cassandra utilities and do things like generate a Stargate access token.
+
+To retrieve K8ssandra superuser credentials:
+
+1. Retrieve the K8ssandra superuser name:
+
+    ```bash
+    kubectl get secret k8ssandra-superuser -o jsonpath="{.data.username}" | base64 --decode | more
+    k8ssandra-superuser
+    (END)
+    ```
+
+1. Retrieve the K8ssandra superuser password:
+
+    ```bash
+    kubectl get secret k8ssandra-superuser -o jsonpath="{.data.password}" | base64 --decode | more
+    PGo8kROUgAJOa8vhjQrE49Lgruw7s32HCPyVvcfVmmACW8oUhfoO9A
+    (END)
     ```
 
 {{% alert title="Tip" color="success" %}}
-Save the superuser name and password for use in future steps.
+Save the superuser name and password for use in following sections.
 {{% /alert %}}
-
-## Stopping and starting Cassandra {#cassandra-operations}
-
-Before shutting down your Kubernetes cluster, you'll want to make sure you cleanly shut down your Cassandra datacenters. You can do that using the `kubectl patch` command and setting the `spec:stopped` property to either `true` (stopped) or `false` (running).
-
-### Shut down Cassandra
-
-To shut down a Cassandra datacenter:
-
-```bash
-kubectl patch cassdc <datacenter-name> --type merge -p '{"spec":{"stopped":true}}'
-```
-
-Example:
-
-```bash
-kubectl patch cassdc dc1 --type merge -p '{"spec":{"stopped":true}}'
-cassandradatacenter.cassandra.datastax.com/dc1 patched
-```
-
-### Start up Cassandra
-
-To start up a Cassandra datacenter
-
-```bash
-kubectl patch cassdc <datacenter-name> --type merge -p '{"spec":{"stopped":false}}'
-```
-
-Example:
-
-```bash
-kubectl patch cassdc dc1 --type merge -p '{"spec":{"stopped":false}}'
-cassandradatacenter.cassandra.datastax.com/dc1 patched
-```
 
 ## Next
 
-* For detailed information on additional K8ssandra tasks, see [Tasks]({{< relref "docs/topics" >}}).
-* For a list of frequently asked questions, see the [FAQs]({{< relref "docs/faqs" >}}).
-* For detailed information on K8ssandra, see [Architecture]({{< relref "docs/architecture" >}}).
-* For information on the various K8ssandra Helm charts, see [Reference]({{< relref "docs/reference" >}}).
-* If you'd like to contribute to K8ssandra, see [Contribution guidelines]({{< relref "docs/contribution-guidelines" >}}).
+* If you're a developer, and you'd like to get started coding using CQL or Stargate, see the [K8ssandra developer quick start]({{< relref "docs/getting-started/developer" >}}).
+* If you're a site reliability engineer, and you'd like to explore the K8ssandra administration environment including monitoring and maintenance utilities, see the [K8ssandra site engineer quick start]({{< relref "docs/getting-started/site-engineer" >}}).
