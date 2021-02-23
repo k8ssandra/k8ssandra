@@ -365,6 +365,25 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			Expect(renderedErr.Error()).To(ContainSubstring("set resource limits/requests when enabling allowMultipleNodesPerWorker"))
 
 		})
+
+		It("with the configOverride", func() {
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+				ValuesFiles:    []string{"./testdata/config-override-values.yaml"},
+			}
+
+			Expect(renderTemplate(options)).To(Succeed())
+
+			var config Config
+			Expect(json.Unmarshal(cassdc.Spec.Config, &config)).To(Succeed())
+			Expect(config.CassandraConfig.NumTokens).To(Equal(int64(16)))
+			Expect(config.JvmOptions.InitialHeapSize).To(Equal("800m"))
+			Expect(config.JvmOptions.MaxHeapSize).To(Equal("800m"))
+			Expect(config.JvmOptions.AdditionalJvmOptions).To(ConsistOf(
+				"-Dcassandra.test=true",
+				"-Dcassandra.k8ssandra=true",
+			))
+		})
 	})
 
 	Context("when configuring the JVM heap for Cassandra 3.11", func() {
