@@ -14,23 +14,24 @@ CLEANER_LATEST_IMAGE=$(CLEANER_IMAGE_BASE):latest
 CLEANER_IMG ?= $(CLEANER_LATEST_IMAGE)
 
 TESTS=all
+GO_FLAGS=
 ENVTEST_ASSETS_DIR=$(shell pwd)/testbin
 test: fmt vet unit-test pkg-test
 
 unit-test:
 ifeq ($(TESTS), all)
-	go test -v -test.timeout=3m ./tests/unit/... -coverprofile cover.out
+	go test $(GO_FLAGS) -test.timeout=3m ./tests/unit/... -coverprofile cover.out
 else
-	go test -v -test.timeout=3m ./tests/unit/... -coverprofile cover.out -args -ginkgo.focus="$(TESTS)"
+	go test $(GO_FLAGS) -test.timeout=3m ./tests/unit/... -coverprofile cover.out -args -ginkgo.focus="$(TESTS)"
 endif
 
 pkg-test:
 	mkdir -p ${ENVTEST_ASSETS_DIR}
 	test -f ${ENVTEST_ASSETS_DIR}/setup-envtest.sh || curl -sSLo ${ENVTEST_ASSETS_DIR}/setup-envtest.sh https://raw.githubusercontent.com/kubernetes-sigs/controller-runtime/master/hack/setup-envtest.sh
-	source ${ENVTEST_ASSETS_DIR}/setup-envtest.sh && fetch_envtest_tools $(ENVTEST_ASSETS_DIR) && setup_envtest_env $(ENVTEST_ASSETS_DIR) && go test -v -test.timeout=3m ./pkg/... -coverprofile cover.out
+	source ${ENVTEST_ASSETS_DIR}/setup-envtest.sh && fetch_envtest_tools $(ENVTEST_ASSETS_DIR) && setup_envtest_env $(ENVTEST_ASSETS_DIR) && go test $(GO_FLAGS) -test.timeout=3m ./pkg/... -coverprofile cover.out
 
 integ-test:
-	go test -v -test.timeout=5m ./tests/integration/... -coverprofile cover.out
+	go test $(GO_FLAGS) -test.timeout=5m ./tests/integration/... -coverprofile cover.out
 
 fmt:
 	go fmt ./pkg/...
