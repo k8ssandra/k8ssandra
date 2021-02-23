@@ -159,6 +159,26 @@ Set default num_tokens based on the server version
 {{ .Release.Name }}-medusa
 {{- end }}
 
+{{- define "k8ssandra.superuserSecretName" -}}
+{{- include "k8ssandra.clusterName" . }}-superuser
+{{- end }}
+
+{{- define "k8ssandra.reaperUserSecrentName" }}
+{{- include "k8ssandra.clusterName" . }}-reaper
+{{- end }}
+
+{{- define "k8ssandra.reaperJmxUserSecretName" }}
+{{- include "k8ssandra.clusterName" . }}-reaper-jmx
+{{- end }}
+
+{{- define "k8ssandra.medusaUserSecretName" }}
+{{- include "k8ssandra.clusterName" . }}-medusa
+{{- end }}
+
+{{- define "k8ssandra.stargateUserSecretName" }}
+{{- include "k8ssandra.clusterName" . }}-stargate
+{{- end }}
+
 {{/*
 Creates Cassandra auth environment variables if authentication is enabled.
 */}}
@@ -179,12 +199,12 @@ Creates Cassandra auth environment variables if authentication is enabled.
     {{- nindent 10 "- name: CQL_USERNAME" -}}
     {{- nindent 12 "valueFrom:" }}
     {{- nindent 14 "secretKeyRef:" }}
-    {{- nindent 16 (print "name: " (include "k8ssandra.clusterName" . ) "-medusa") }}
+    {{- nindent 16 (print "name: " (include "k8ssandra.medusaUserSecretName" . )) }}
     {{- nindent 16 "key: username" }}
     {{- nindent 10 "- name: CQL_PASSWORD" }}
     {{- nindent 12 "valueFrom:" }}
     {{- nindent 14 "secretKeyRef:" }}
-    {{- nindent 16 (print "name: " (include "k8ssandra.clusterName" . ) "-medusa") }}
+    {{- nindent 16 (print "name: " (include "k8ssandra.medusaUserSecretName" . )) }}
     {{- nindent 16 "key: password" }}
   {{- end -}}
 {{- end }}
