@@ -1,9 +1,9 @@
 ---
-name: Release Charts
+name: Release Next Charts
 on:
-  push: 
-    tags:
-      - 'v*'
+  push:
+    branches:
+      - main
 jobs:
   setup:
     runs-on: ubuntu-latest
@@ -20,19 +20,15 @@ jobs:
         id: cache
         uses: actions/cache@v2
         with:
-          path: ~/bin
+          path: bin
           key: ${{ runner.os }}-${{ env.HELM_VERSION }}-${{ env.YQ_VERSION }}
-      - name: Download tools if needed
+      - run: scripts/install-helm.sh $HELM_VERSION
         if: steps.cache.outputs.cache-hit != 'true'
-        run: |
-          mkdir $HOME/bin
-          curl -L https://get.helm.sh/helm-v$HELM_VERSION-linux-amd64.tar.gz | \
-            tar -xvzf - --strip-components 1 --directory $HOME/bin/ linux-amd64/helm
-
-          curl -L https://github.com/mikefarah/yq/releases/download/$YQ_VERSION/yq_linux_amd64 > $HOME/bin/yq
-          chmod +x $HOME/bin/yq
+      - run: scripts/install-yq.sh $YQ_VERSION
+        if: steps.cache.outputs.cache-hit != 'true'
       - name: Update PATH
-        run: echo "$HOME/bin" >> $GITHUB_PATH
+        run: |
+          echo "$GITHUB_WORKSPACE/bin" >> $GITHUB_PATH
       - name: Validate tool versions
         run: |
           helm version
@@ -57,10 +53,18 @@ jobs:
         with:
           path: ~/bin
           key: ${{ runner.os }}-${{ needs.setup.outputs.HELM_VERSION }}-${{ needs.setup.outputs.YQ_VERSION }}
-      - name: Update PATH
-        run: echo "$HOME/bin" >> $GITHUB_PATH
       - name: Checkout
         uses: actions/checkout@v2
+      - run: scripts/install-helm.sh $HELM_VERSION
+        if: steps.cache.outputs.cache-hit != 'true'
+      - run: scripts/install-yq.sh $YQ_VERSION
+        if: steps.cache.outputs.cache-hit != 'true'
+      - name: Update PATH
+        run: |
+          echo "$GITHUB_WORKSPACE/bin" >> $GITHUB_PATH
+      - name: Update chart dependencies
+        run: |
+          scripts/update-helm-deps.sh
       - name: Create working directory and copy charts
         run: |
           mkdir build
@@ -94,6 +98,7 @@ jobs:
         with:
           tag_name: ${{ needs.setup.outputs.VERSION }}
           release_name: ${{ needs.setup.outputs.VERSION }}
+          prerelease: true
           draft: true
   
   gh-release-upload:
@@ -126,6 +131,22 @@ jobs:
       - package
     runs-on: ubuntu-latest
     steps:
+      - name: Cache bin path
+        id: cache
+        uses: actions/cache@v2
+        with:
+          path: ~/bin
+          key: ${{ runner.os }}-${{ needs.setup.outputs.HELM_VERSION }}-${{ needs.setup.outputs.YQ_VERSION }}
+      - name: Checkout
+        uses: actions/checkout@v2
+        if: steps.cache.outputs.cache-hit != 'true'
+      - run: scripts/install-helm.sh $HELM_VERSION
+        if: steps.cache.outputs.cache-hit != 'true'
+      - run: scripts/install-yq.sh $YQ_VERSION
+        if: steps.cache.outputs.cache-hit != 'true'
+      - name: Update PATH
+        run: |
+          echo "$GITHUB_WORKSPACE/bin" >> $GITHUB_PATH
       - name: Create build directory
         run: mkdir build
       - name: Download a single artifact
@@ -142,17 +163,17 @@ jobs:
       - name: Download current index from Google Cloud
         env:
           GCP_HELM_BUCKET_NAME: ${{ secrets.GCP_HELM_BUCKET_NAME }}
-        run: gsutil cp gs://$GCP_HELM_BUCKET_NAME/index.yaml ./
+        run: gsutil cp gs://$GCP_HELM_BUCKET_NAME/next/index.yaml ./
         working-directory: build
       - name: Regenerate Helm index
         env:
           GCP_HELM_BUCKET_NAME: ${{ secrets.GCP_HELM_BUCKET_NAME }}
-        run: helm repo index . --merge index.yaml --url "https://$GCP_HELM_BUCKET_NAME/"
+        run: helm repo index . --merge index.yaml --url "https://$GCP_HELM_BUCKET_NAME/next/"
         working-directory: build
       - name: Upload packages and index
         env:
           GCP_HELM_BUCKET_NAME: ${{ secrets.GCP_HELM_BUCKET_NAME }}
         run: |
-          gsutil cp ./*.tgz gs://$GCP_HELM_BUCKET_NAME/
-          gsutil cp ./index.yaml gs://$GCP_HELM_BUCKET_NAME/
+          gsutil cp ./*.tgz gs://$GCP_HELM_BUCKET_NAME/next/
+          gsutil cp ./index.yaml gs://$GCP_HELM_BUCKET_NAME/next/
         working-directory: build

@@ -37,8 +37,8 @@ In addition to the set of components, it's important to emphasize that K8ssandra
 
 It's easy! There are several options, but we recommend using [Helm](https://helm.sh/docs/intro/install/) commands. 
 
-```bash
-helm repo add k8ssandra https://helm.k8ssandra.io/
+```
+helm repo add k8ssandra https://helm.k8ssandra.io/stable/
 helm repo add traefik https://helm.traefik.io/traefik
 helm repo update
 helm install k8ssandra k8ssandra/k8ssandra
