@@ -163,7 +163,7 @@ Set default num_tokens based on the server version
 {{- include "k8ssandra.clusterName" . }}-superuser
 {{- end }}
 
-{{- define "k8ssandra.reaperUserSecrentName" }}
+{{- define "k8ssandra.reaperUserSecretName" }}
 {{- include "k8ssandra.clusterName" . }}-reaper
 {{- end }}
 
