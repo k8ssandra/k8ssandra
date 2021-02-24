@@ -67,7 +67,7 @@ spec:
   {{- if or .Values.reaper.enabled .Values.medusa.enabled .Values.stargate.enabled }}
   users:
   {{- if .Values.reaper.enabled }}
-    - secretName: {{ default (include "k8ssandra.reaperUserSecrentName" .) .Values.reaper.cassandraUser.secret }}
+    - secretName: {{ default (include "k8ssandra.reaperUserSecretName" .) .Values.reaper.cassandraUser.secret }}
       superuser: true
   {{- end }}
   {{- if .Values.medusa.enabled }}
