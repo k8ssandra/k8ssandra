@@ -3,11 +3,11 @@ name: medusa-operator
 description: |
   Installs and configures the Medusa Operator for managing Apache Cassandra backups
 type: application
-version: 0.27.0
+version: 0.28.0
 appVersion: 0.1.0
 dependencies:
   - name: k8ssandra-common
-    version: 0.28.0
+    version: 0.28.1
     repository: file://../k8ssandra-common
 home: https://k8ssandra.io/
 sources:
