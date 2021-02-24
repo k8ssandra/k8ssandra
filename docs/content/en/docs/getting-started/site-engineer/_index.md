@@ -3,7 +3,7 @@ title: "K8ssandra site engineer quick start"
 linkTitle: "Site engineers"
 weight: 2
 description: |
-  Kick the tires and take K8ssandra for a spin!
+  Take a tour of your K8ssandra cluster using all the utilities!
 ---
 
 **Completion time**: **10 minutes**.
@@ -222,3 +222,11 @@ cassandradatacenter.cassandra.datastax.com/dc1 patched
 
     Note: Non-system keyspaces don't have the same replication settings, effective ownership information is meaningless
     ```
+
+## Next
+
+* For detailed information on additional K8ssandra tasks, see [Tasks]({{< relref "docs/topics" >}}).
+* For a list of frequently asked questions, see the [FAQs]({{< relref "docs/faqs" >}}).
+* For detailed information on K8ssandra, see [Architecture]({{< relref "docs/architecture" >}}).
+* For information on the various K8ssandra Helm charts, see [Architecture]({{< relref "docs/reference" >}}).
+* If you'd like to contribute to K8ssandra, see [Contribution guidelines]({{< relref "docs/contribution-guidelines" >}}).
