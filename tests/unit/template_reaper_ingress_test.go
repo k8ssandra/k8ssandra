@@ -102,7 +102,7 @@ var _ = Describe("Verify Reaper ingress template", func() {
 
 			Expect(renderTemplate(options)).To(Succeed())
 			Expect(ingress.Kind).To(Equal("IngressRoute"))
-			VerifyTraefikHTTPIngressRoute(ingress, "web", "Host(`*`)", Sprintf("%s-reaper-k8ssandra-reaper-service", HelmReleaseName), 8080)
+			VerifyTraefikHTTPIngressRoute(ingress, "web", "Host(`*`)", Sprintf("%s-reaper-service", HelmReleaseName), 8080)
 		})
 
 		It("with custom host", func() {
@@ -116,7 +116,7 @@ var _ = Describe("Verify Reaper ingress template", func() {
 
 			Expect(renderTemplate(options)).To(Succeed())
 			Expect(ingress.Kind).To(Equal("IngressRoute"))
-			VerifyTraefikHTTPIngressRoute(ingress, "web", "Host(`reaper.host`)", Sprintf("%s-reaper-k8ssandra-reaper-service", HelmReleaseName), 8080)
+			VerifyTraefikHTTPIngressRoute(ingress, "web", "Host(`reaper.host`)", Sprintf("%s-reaper-service", HelmReleaseName), 8080)
 		})
 	})
 })

@@ -19,7 +19,7 @@ metadata:
   labels: {{ include "k8ssandra.labels" . | indent 4 }}
   annotations:
 {{- if .Values.reaper.enabled }}
-    reaper.cassandra-reaper.io/instance: {{ .Release.Name }}-reaper-k8ssandra
+    reaper.cassandra-reaper.io/instance: {{ .Release.Name }}-reaper
 {{- end }}
 spec:
   clusterName: {{ include "k8ssandra.clusterName" . }}

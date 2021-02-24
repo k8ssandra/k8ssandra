@@ -18,7 +18,7 @@ spec:
   - match: Host(`{{ required "reaper.ingress.host must be specified when reaper.ingress.enabled is true" $reaperIngress.host }}`)
     kind: Rule
     services:
-    - name: {{ $releaseName }}-reaper-k8ssandra-reaper-service
+    - name: {{ $releaseName }}-reaper-service
       kind: Service
       port: 8080
     {{- end }}
