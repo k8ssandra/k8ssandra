@@ -1,0 +1,7 @@
+# -- Replaces the chart name which is used in the metadata.name of objects
+# created by this chart.
+nameOverride: ""
+
+# -- Replaces the value used for metadata.name in objects created by this chart.
+# The default value has the form releaseName-chartName.
+fullnameOverride: ""

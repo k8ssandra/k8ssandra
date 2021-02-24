@@ -27,6 +27,10 @@ for the storage and visualization of these metrics including:
 
 ![Grafana Cluster](grafana-cluster.png)
 
+## Metric Data Retention
+
+Metric data collected in the cluster is retained within Prometheus for 24 hours.
+
 ## Next
 
 Check out [Repairs with Cassandra Reaper]({{< ref "repairs" >}})

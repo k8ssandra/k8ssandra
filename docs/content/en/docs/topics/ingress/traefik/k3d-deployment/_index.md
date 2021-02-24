@@ -2,7 +2,6 @@
 title: "K3d Deployment"
 linkTitle: "K3d Deployment"
 weight: 1
-date: 2020-11-13
 description: |
   Deploy a local K3d cluster with Traefik installed and configured.
 ---
@@ -35,6 +34,9 @@ will be opened:
   is deployed you **must** add additional ports here.
 * `9142` - C* TLS traffic - Secure Cassandra traffic, multiple clusters may run
   behind this single port.
+* `8080` - Stargate GraphQL API
+* `8081` - Stargate Authorization REST API
+* `8082` - Stargate CRUD REST API
 
 ```bash
 $ k3d cluster create \
@@ -44,7 +46,10 @@ $ k3d cluster create \
   --port "443:32443@loadbalancer" \
   --port "9000:32090@loadbalancer" \
   --port "9042:32091@loadbalancer" \
-  --port "9142:32092@loadbalancer"
+  --port "9142:32092@loadbalancer" \
+  --port "8080:30080@loadbalancer" \
+  --port "8081:30081@loadbalancer" \
+  --port "8082:30082@loadbalancer"
 INFO[0000] Created network 'k3d-k3s-default'            
 INFO[0000] Created volume 'k3d-k3s-default-images'      
 INFO[0001] Creating node 'k3d-k3s-default-server-0'     
@@ -61,7 +66,7 @@ Docker container running Kind_ which is forwarded to our local machine.
 
 The `traefik.values.yaml` file referenced here is located in:
 
-https://github.com/k8ssandra/k8ssandra/tree/main/docs/content/en/docs/topics/accessing-services/traefik/kind-deployment/traefik.values.yaml
+https://github.com/k8ssandra/k8ssandra/blob/main/docs/content/en/docs/topics/ingress/traefik/k3d-deployment/traefik.values.yaml
 
 ### [`traefik.values.yaml`](traefik.values.yaml)
 {{< readfilerel file="traefik.values.yaml"  highlight="yaml" >}}
@@ -80,7 +85,7 @@ REVISION: 1
 TEST SUITE: None
 ```
 
-## 5. Access Traefik Dashboard
+## 4. Access Traefik Dashboard
 
 With the deployment complete we need to retrieve the loadbalancer's IP address.
 This may be accomplished with:

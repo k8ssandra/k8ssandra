@@ -2,7 +2,6 @@
 title: "Kind Deployment"
 linkTitle: "Kind Deployment"
 weight: 1
-date: 2020-11-12
 description: |
   Deploy a local Kind cluster with Traefik installed and configured.
 ---
@@ -29,6 +28,9 @@ forwarding rules for the following ports:
   is deployed you **must** add additional ports here.
 * `9142` - C* TLS traffic - Secure Cassandra traffic, multiple clusters may run
   behind this single port.
+* `8080` - Stargate GraphQL API
+* `8081` - Stargate Authorization REST API
+* `8082` - Stargate CRUD REST API
   
 ### [`kind.config.yaml`](kind.config.yaml)
 

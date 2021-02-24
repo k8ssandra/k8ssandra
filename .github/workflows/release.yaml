@@ -1,9 +1,9 @@
 ---
+name: Release Charts
 on:
   push: 
     tags:
       - 'v*'
-
 jobs:
   setup:
     runs-on: ubuntu-latest
@@ -46,43 +46,8 @@ jobs:
           VERSION: ${{ steps.get_version.outputs.VERSION }}
         run: echo "::set-output name=SHORT_VERSION::${VERSION:1}"
 
-  version-check:
-    needs:
-      - setup
-    runs-on: ubuntu-latest
-    steps: 
-      - name: Checkout
-        uses: actions/checkout@v2
-      - name: Cache bin path
-        id: cache
-        uses: actions/cache@v2
-        with:
-          path: ~/bin
-          key: ${{ runner.os }}-${{ needs.setup.outputs.HELM_VERSION }}-${{ needs.setup.outputs.YQ_VERSION }}
-      - name: Update PATH
-        run: echo "$HOME/bin" >> $GITHUB_PATH
-      - name: Create build directory and copy charts
-        run: |
-          mkdir build
-          cp -rv charts/* build/
-      - name: Validate version number in charts match tag
-        env:
-          SHORT_VERSION: ${{ needs.setup.outputs.SHORT_VERSION }}
-        run: |
-          ls | while read c; do
-            if [[ -d $c ]]; then
-              CHART_VERSION=`yq read $c/Chart.yaml version`
-              if [[ "$CHART_VERSION" != "$SHORT_VERSION" ]]; then
-                echo "::error file=charts/$c/Chart.yaml::Chart version, $CHART_VERSION, does not match pushed tag, $SHORT_VERSION."
-                exit 1
-              fi
-            fi
-          done
-        working-directory: build
-  
   package:
     needs:
-      - version-check
       - setup
     runs-on: ubuntu-latest
     steps: 
@@ -117,7 +82,6 @@ jobs:
   gh-release:
     needs:
       - setup
-      - version-check
     runs-on: ubuntu-latest
     outputs:
       RELEASE_UPLOAD_URL: ${{ steps.create_release.outputs.upload_url}}
@@ -142,7 +106,6 @@ jobs:
       matrix:
         chart:
           - k8ssandra
-          - k8ssandra-cluster
     steps:
       - name: Download charts artifact
         uses: actions/download-artifact@v2
@@ -160,7 +123,6 @@ jobs:
 
   helm-release:
     needs:
-      - version-check
       - package
     runs-on: ubuntu-latest
     steps:

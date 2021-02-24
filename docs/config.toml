@@ -125,7 +125,7 @@ algolia_docsearch = false
 offlineSearch = false
 
 # Enable syntax highlighting and copy buttons on code blocks with Prism
-prism_syntax_highlighting = false
+prism_syntax_highlighting = true
 
 # User interface configuration
 [params.ui]
@@ -189,6 +189,9 @@ enable = false
 	url = "https://groups.google.com/g/k8ssandra-developers"
 	icon = "fa fa-envelope"
   desc = "Discuss development issues around the project"
+
+[sitemap]
+changefreq = "daily"
 
 [deployment]
 # By default, files are uploaded in an arbitrary order.

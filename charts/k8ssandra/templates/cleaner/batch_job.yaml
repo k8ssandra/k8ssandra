@@ -1,0 +1,29 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ .Release.Name }}-cleaner-job-k8ssandra
+  labels: {{ include "k8ssandra.labels" . | indent 4 }}
+  annotations:
+    "helm.sh/hook": pre-delete
+    "helm.sh/hook-delete-policy": hook-succeeded,before-hook-creation
+spec:
+  backoffLimit: 3
+  template:
+    metadata:
+      labels: {{ include "k8ssandra.labels" . | indent 8 }}
+    spec:
+      restartPolicy: Never
+      serviceAccountName: {{ .Release.Name }}-cleaner-k8ssandra
+      containers:
+        - name: cleaner-job-k8ssandra
+          image: {{ .Values.cleaner.image }}
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+          args:
+            - -clean
+            - --release
+            - {{ .Release.Name }}

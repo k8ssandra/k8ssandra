@@ -1,8 +1,7 @@
 ---
-title: "Ingress"
-linkTitle: "Ingress"
-weight: 1
-date: 2020-11-14
+title: "Configure Ingress"
+linkTitle: "Configure Ingress"
+weight: 7
 description: |
   Routing from the outside in.
 ---

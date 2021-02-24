@@ -1,7 +1,7 @@
 ---
-title: "Getting Started"
-linkTitle: "Getting Started"
-weight: 2
+title: "Quick start"
+linkTitle: "Quick start"
+weight: 1
 description: |
   Kick the tires and take it for a spin!
 ---
@@ -44,14 +44,29 @@ Alternatively, you may download the individual charts directly from the project'
 
 ## Install K8ssandra
 
-From a packaging perspective, K8ssandra is composed of a number of helm charts. The `k8ssandra-tools` chart handles the installation of operators and custom resources. The `k8ssandra-cluster` chart (which you can uniquely name) is focused on provisioning cluster instances. This loose coupling allows for separate lifecycles of components with an easy procedure - submitting just two `helm install` commands.
+From a packaging perspective, K8ssandra is composed of a number of helm charts. It handles the installation of operators and custom resources as well as
+provisioning the cluster instances.
 
 ```console
-# Install shared dependencies / tooling
-helm install k8ssandra-tools k8ssandra/k8ssandra
-
-# Provision a K8ssandra cluster named "k8ssandra-cluster-a" 
-helm install k8ssandra-cluster-a k8ssandra/k8ssandra-cluster  
+helm install k8ssandra k8ssandra/k8ssandra
 ```
 
-In later steps, you can upgrade your k8ssandra-cluster via `helm upgrade` commands, for example to access services from outside Kubernetes via a Traefik Ingress controller.
+> When installing K8ssandra on newer versions of Kubernetes (v1.19+), some warnings may be visible on the command line 
+> related to deprecated API usage.  This is currently a known issue and will not impact the provisioning of the cluster.
+> 
+> ```
+> W0128 11:24:54.792095  27657 warnings.go:70] apiextensions.k8s.io/v1beta1 CustomResourceDefinition is deprecated in v1.16+, unavailable in v1.22+; use apiextensions.k8s.io/v1 CustomResourceDefinition
+> ```
+> 
+> For more information, check out issue [#267](https://github.com/k8ssandra/k8ssandra/issues/267).
+
+In later steps, you can upgrade your k8ssandra via `helm upgrade` commands, for example to access services from outside Kubernetes via a Traefik Ingress controller.
+
+## Defaults
+
+K8ssandra comes out of the box with a set of default values tailored to getting up and running quickly.  These defaults
+are intended to be a great starting point for smaller-scale local development and should be carefully customized for 
+production deployments.
+
+For more information on the configuration options available, and the developer focused defaults provided, take a look 
+at the [k8ssandra reference]({{< ref "/docs/reference/k8ssandra/" >}}) documentation.

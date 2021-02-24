@@ -2,7 +2,6 @@
 title: "Repair"
 linkTitle: "Repair"
 weight: 2
-date: 2020-11-13
 description: |
   Configuring Traefik to expose the K8ssandra repair interface
 ---
@@ -33,7 +32,7 @@ Reaper).
 
 ## Helm Parameters
 
-The `k8ssandra-cluster` Helm chart contains templates for Traefik `IngressRoute`
+The `k8ssandra` Helm chart contains templates for Traefik `IngressRoute`
 and `IngressRouteTCP` Custom Resources. These may be enabled at any time either
 through a `values.yaml` file or via command-line flags.
 
@@ -72,21 +71,21 @@ of both approaches are provided below as reference.
 
 ```bash
 # New Install
-helm install cluster-name k8ssandra/k8ssandra-cluster -f traefik.values.yaml
+helm install cluster-name k8ssandra/k8ssandra -f traefik.values.yaml
 
 # Existing Cluster
-helm upgrade cluster-name k8ssandra/k8ssandra-cluster -f traefik.values.yaml
+helm upgrade cluster-name k8ssandra/k8ssandra -f traefik.values.yaml
 ```
 
 ### Command-line
 ```bash
 # New Install
-helm install cluster-name k8ssandra/k8ssandra-cluster \
+helm install cluster-name k8ssandra/k8ssandra \
   --set ingress.traefik.enabled=true \
   --set ingress.traefik.repair.host=repair.cluster-name.k8ssandra.cluster.local
 
 # Existing Cluster
-helm upgrade cluster-name k8ssandra/k8ssandra-cluster \
+helm upgrade cluster-name k8ssandra/k8ssandra \
   --set ingress.traefik.enabled=true \
   --set ingress.traefik.repair.host=repair.cluster-name.k8ssandra.cluster.local
 ```
@@ -120,6 +119,6 @@ detecting the appropriate services.
     Kubernetes logo to the right of the table indicating it was provisioned via
     a Kubernetes custom resource.
 
-## Next Steps
+## Next
 
-Check out how to [Access the Repair Interface]({{< ref "docs/topics/accessing-services/repair" >}})
+Check out how to [Access the Repair Interface]({{< ref "docs/topics/repair" >}})
