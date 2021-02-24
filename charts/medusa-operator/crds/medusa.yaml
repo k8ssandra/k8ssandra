@@ -37,7 +37,7 @@ spec:
               description: The name of the backup. TODO document format of generated name
               type: string
           required:
-            - cassandraDatacenter
+          - cassandraDatacenter
           type: object
         status:
           description: CassandraBackupStatus defines the observed state of CassandraBackup
@@ -77,8 +77,8 @@ spec:
                         limits:
                           additionalProperties:
                             anyOf:
-                              - type: integer
-                              - type: string
+                            - type: integer
+                            - type: string
                             pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
                             x-kubernetes-int-or-string: true
                           description: 'Limits describes the maximum amount of compute resources allowed. More info: https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/'
@@ -86,8 +86,8 @@ spec:
                         requests:
                           additionalProperties:
                             anyOf:
-                              - type: integer
-                              - type: string
+                            - type: integer
+                            - type: string
                             pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
                             x-kubernetes-int-or-string: true
                           description: 'Requests describes the minimum amount of compute resources required. If Requests is omitted for a container, it defaults to Limits if that is explicitly specified, otherwise to an implementation-defined value. More info: https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/'
@@ -127,8 +127,8 @@ spec:
                             skipSecretValidation:
                               type: boolean
                           required:
-                            - clientSecretName
-                            - serverSecretName
+                          - clientSecretName
+                          - serverSecretName
                           type: object
                       type: object
                     networking:
@@ -201,8 +201,8 @@ spec:
                                                         type: string
                                                       type: array
                                                   required:
-                                                    - key
-                                                    - operator
+                                                  - key
+                                                  - operator
                                                   type: object
                                                 type: array
                                               matchFields:
@@ -222,8 +222,8 @@ spec:
                                                         type: string
                                                       type: array
                                                   required:
-                                                    - key
-                                                    - operator
+                                                  - key
+                                                  - operator
                                                   type: object
                                                 type: array
                                             type: object
@@ -232,8 +232,8 @@ spec:
                                             format: int32
                                             type: integer
                                         required:
-                                          - preference
-                                          - weight
+                                        - preference
+                                        - weight
                                         type: object
                                       type: array
                                     requiredDuringSchedulingIgnoredDuringExecution:
@@ -261,8 +261,8 @@ spec:
                                                         type: string
                                                       type: array
                                                   required:
-                                                    - key
-                                                    - operator
+                                                  - key
+                                                  - operator
                                                   type: object
                                                 type: array
                                               matchFields:
@@ -282,14 +282,14 @@ spec:
                                                         type: string
                                                       type: array
                                                   required:
-                                                    - key
-                                                    - operator
+                                                  - key
+                                                  - operator
                                                   type: object
                                                 type: array
                                             type: object
                                           type: array
                                       required:
-                                        - nodeSelectorTerms
+                                      - nodeSelectorTerms
                                       type: object
                                   type: object
                                 podAffinity:
@@ -323,8 +323,8 @@ spec:
                                                             type: string
                                                           type: array
                                                       required:
-                                                        - key
-                                                        - operator
+                                                      - key
+                                                      - operator
                                                       type: object
                                                     type: array
                                                   matchLabels:
@@ -342,15 +342,15 @@ spec:
                                                 description: This pod should be co-located (affinity) or not co-located (anti-affinity) with the pods matching the labelSelector in the specified namespaces, where co-located is defined as running on a node whose value of the label with key topologyKey matches that of any node on which any of the selected pods is running. Empty topologyKey is not allowed.
                                                 type: string
                                             required:
-                                              - topologyKey
+                                            - topologyKey
                                             type: object
                                           weight:
                                             description: weight associated with matching the corresponding podAffinityTerm, in the range 1-100.
                                             format: int32
                                             type: integer
                                         required:
-                                          - podAffinityTerm
-                                          - weight
+                                        - podAffinityTerm
+                                        - weight
                                         type: object
                                       type: array
                                     requiredDuringSchedulingIgnoredDuringExecution:
@@ -378,8 +378,8 @@ spec:
                                                         type: string
                                                       type: array
                                                   required:
-                                                    - key
-                                                    - operator
+                                                  - key
+                                                  - operator
                                                   type: object
                                                 type: array
                                               matchLabels:
@@ -397,7 +397,7 @@ spec:
                                             description: This pod should be co-located (affinity) or not co-located (anti-affinity) with the pods matching the labelSelector in the specified namespaces, where co-located is defined as running on a node whose value of the label with key topologyKey matches that of any node on which any of the selected pods is running. Empty topologyKey is not allowed.
                                             type: string
                                         required:
-                                          - topologyKey
+                                        - topologyKey
                                         type: object
                                       type: array
                                   type: object
@@ -432,8 +432,8 @@ spec:
                                                             type: string
                                                           type: array
                                                       required:
-                                                        - key
-                                                        - operator
+                                                      - key
+                                                      - operator
                                                       type: object
                                                     type: array
                                                   matchLabels:
@@ -451,15 +451,15 @@ spec:
                                                 description: This pod should be co-located (affinity) or not co-located (anti-affinity) with the pods matching the labelSelector in the specified namespaces, where co-located is defined as running on a node whose value of the label with key topologyKey matches that of any node on which any of the selected pods is running. Empty topologyKey is not allowed.
                                                 type: string
                                             required:
-                                              - topologyKey
+                                            - topologyKey
                                             type: object
                                           weight:
                                             description: weight associated with matching the corresponding podAffinityTerm, in the range 1-100.
                                             format: int32
                                             type: integer
                                         required:
-                                          - podAffinityTerm
-                                          - weight
+                                        - podAffinityTerm
+                                        - weight
                                         type: object
                                       type: array
                                     requiredDuringSchedulingIgnoredDuringExecution:
@@ -487,8 +487,8 @@ spec:
                                                         type: string
                                                       type: array
                                                   required:
-                                                    - key
-                                                    - operator
+                                                  - key
+                                                  - operator
                                                   type: object
                                                 type: array
                                               matchLabels:
@@ -506,7 +506,7 @@ spec:
                                             description: This pod should be co-located (affinity) or not co-located (anti-affinity) with the pods matching the labelSelector in the specified namespaces, where co-located is defined as running on a node whose value of the label with key topologyKey matches that of any node on which any of the selected pods is running. Empty topologyKey is not allowed.
                                             type: string
                                         required:
-                                          - topologyKey
+                                        - topologyKey
                                         type: object
                                       type: array
                                   type: object
@@ -556,7 +556,7 @@ spec:
                                                   description: Specify whether the ConfigMap or its key must be defined
                                                   type: boolean
                                               required:
-                                                - key
+                                              - key
                                               type: object
                                             fieldRef:
                                               description: 'Selects a field of the pod: supports metadata.name, metadata.namespace, metadata.labels, metadata.annotations, spec.nodeName, spec.serviceAccountName, status.hostIP, status.podIP, status.podIPs.'
@@ -568,7 +568,7 @@ spec:
                                                   description: Path of the field to select in the specified API version.
                                                   type: string
                                               required:
-                                                - fieldPath
+                                              - fieldPath
                                               type: object
                                             resourceFieldRef:
                                               description: 'Selects a resource of the container: only resources limits and requests (limits.cpu, limits.memory, limits.ephemeral-storage, requests.cpu, requests.memory and requests.ephemeral-storage) are currently supported.'
@@ -578,8 +578,8 @@ spec:
                                                   type: string
                                                 divisor:
                                                   anyOf:
-                                                    - type: integer
-                                                    - type: string
+                                                  - type: integer
+                                                  - type: string
                                                   description: Specifies the output format of the exposed resources, defaults to "1"
                                                   pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
                                                   x-kubernetes-int-or-string: true
@@ -587,7 +587,7 @@ spec:
                                                   description: 'Required: resource to select'
                                                   type: string
                                               required:
-                                                - resource
+                                              - resource
                                               type: object
                                             secretKeyRef:
                                               description: Selects a key of a secret in the pod's namespace
@@ -602,11 +602,11 @@ spec:
                                                   description: Specify whether the Secret or its key must be defined
                                                   type: boolean
                                               required:
-                                                - key
+                                              - key
                                               type: object
                                           type: object
                                       required:
-                                        - name
+                                      - name
                                       type: object
                                     type: array
                                   envFrom:
@@ -678,8 +678,8 @@ spec:
                                                       description: The header field value
                                                       type: string
                                                   required:
-                                                    - name
-                                                    - value
+                                                  - name
+                                                  - value
                                                   type: object
                                                 type: array
                                               path:
@@ -687,15 +687,15 @@ spec:
                                                 type: string
                                               port:
                                                 anyOf:
-                                                  - type: integer
-                                                  - type: string
+                                                - type: integer
+                                                - type: string
                                                 description: Name or number of the port to access on the container. Number must be in the range 1 to 65535. Name must be an IANA_SVC_NAME.
                                                 x-kubernetes-int-or-string: true
                                               scheme:
                                                 description: Scheme to use for connecting to the host. Defaults to HTTP.
                                                 type: string
                                             required:
-                                              - port
+                                            - port
                                             type: object
                                           tcpSocket:
                                             description: 'TCPSocket specifies an action involving a TCP port. TCP hooks not yet supported TODO: implement a realistic TCP lifecycle hook'
@@ -705,12 +705,12 @@ spec:
                                                 type: string
                                               port:
                                                 anyOf:
-                                                  - type: integer
-                                                  - type: string
+                                                - type: integer
+                                                - type: string
                                                 description: Number or name of the port to access on the container. Number must be in the range 1 to 65535. Name must be an IANA_SVC_NAME.
                                                 x-kubernetes-int-or-string: true
                                             required:
-                                              - port
+                                            - port
                                             type: object
                                         type: object
                                       preStop:
@@ -743,8 +743,8 @@ spec:
                                                       description: The header field value
                                                       type: string
                                                   required:
-                                                    - name
-                                                    - value
+                                                  - name
+                                                  - value
                                                   type: object
                                                 type: array
                                               path:
@@ -752,15 +752,15 @@ spec:
                                                 type: string
                                               port:
                                                 anyOf:
-                                                  - type: integer
-                                                  - type: string
+                                                - type: integer
+                                                - type: string
                                                 description: Name or number of the port to access on the container. Number must be in the range 1 to 65535. Name must be an IANA_SVC_NAME.
                                                 x-kubernetes-int-or-string: true
                                               scheme:
                                                 description: Scheme to use for connecting to the host. Defaults to HTTP.
                                                 type: string
                                             required:
-                                              - port
+                                            - port
                                             type: object
                                           tcpSocket:
                                             description: 'TCPSocket specifies an action involving a TCP port. TCP hooks not yet supported TODO: implement a realistic TCP lifecycle hook'
@@ -770,12 +770,12 @@ spec:
                                                 type: string
                                               port:
                                                 anyOf:
-                                                  - type: integer
-                                                  - type: string
+                                                - type: integer
+                                                - type: string
                                                 description: Number or name of the port to access on the container. Number must be in the range 1 to 65535. Name must be an IANA_SVC_NAME.
                                                 x-kubernetes-int-or-string: true
                                             required:
-                                              - port
+                                            - port
                                             type: object
                                         type: object
                                     type: object
@@ -813,8 +813,8 @@ spec:
                                                   description: The header field value
                                                   type: string
                                               required:
-                                                - name
-                                                - value
+                                              - name
+                                              - value
                                               type: object
                                             type: array
                                           path:
@@ -822,15 +822,15 @@ spec:
                                             type: string
                                           port:
                                             anyOf:
-                                              - type: integer
-                                              - type: string
+                                            - type: integer
+                                            - type: string
                                             description: Name or number of the port to access on the container. Number must be in the range 1 to 65535. Name must be an IANA_SVC_NAME.
                                             x-kubernetes-int-or-string: true
                                           scheme:
                                             description: Scheme to use for connecting to the host. Defaults to HTTP.
                                             type: string
                                         required:
-                                          - port
+                                        - port
                                         type: object
                                       initialDelaySeconds:
                                         description: 'Number of seconds after the container has started before liveness probes are initiated. More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#container-probes'
@@ -852,12 +852,12 @@ spec:
                                             type: string
                                           port:
                                             anyOf:
-                                              - type: integer
-                                              - type: string
+                                            - type: integer
+                                            - type: string
                                             description: Number or name of the port to access on the container. Number must be in the range 1 to 65535. Name must be an IANA_SVC_NAME.
                                             x-kubernetes-int-or-string: true
                                         required:
-                                          - port
+                                        - port
                                         type: object
                                       timeoutSeconds:
                                         description: 'Number of seconds after which the probe times out. Defaults to 1 second. Minimum value is 1. More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#container-probes'
@@ -901,8 +901,8 @@ spec:
                                                   description: The header field value
                                                   type: string
                                               required:
-                                                - name
-                                                - value
+                                              - name
+                                              - value
                                               type: object
                                             type: array
                                           path:
@@ -910,15 +910,15 @@ spec:
                                             type: string
                                           port:
                                             anyOf:
-                                              - type: integer
-                                              - type: string
+                                            - type: integer
+                                            - type: string
                                             description: Name or number of the port to access on the container. Number must be in the range 1 to 65535. Name must be an IANA_SVC_NAME.
                                             x-kubernetes-int-or-string: true
                                           scheme:
                                             description: Scheme to use for connecting to the host. Defaults to HTTP.
                                             type: string
                                         required:
-                                          - port
+                                        - port
                                         type: object
                                       initialDelaySeconds:
                                         description: 'Number of seconds after the container has started before liveness probes are initiated. More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#container-probes'
@@ -940,12 +940,12 @@ spec:
                                             type: string
                                           port:
                                             anyOf:
-                                              - type: integer
-                                              - type: string
+                                            - type: integer
+                                            - type: string
                                             description: Number or name of the port to access on the container. Number must be in the range 1 to 65535. Name must be an IANA_SVC_NAME.
                                             x-kubernetes-int-or-string: true
                                         required:
-                                          - port
+                                        - port
                                         type: object
                                       timeoutSeconds:
                                         description: 'Number of seconds after which the probe times out. Defaults to 1 second. Minimum value is 1. More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#container-probes'
@@ -958,8 +958,8 @@ spec:
                                       limits:
                                         additionalProperties:
                                           anyOf:
-                                            - type: integer
-                                            - type: string
+                                          - type: integer
+                                          - type: string
                                           pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
                                           x-kubernetes-int-or-string: true
                                         description: 'Limits describes the maximum amount of compute resources allowed. More info: https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/'
@@ -967,8 +967,8 @@ spec:
                                       requests:
                                         additionalProperties:
                                           anyOf:
-                                            - type: integer
-                                            - type: string
+                                          - type: integer
+                                          - type: string
                                           pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
                                           x-kubernetes-int-or-string: true
                                         description: 'Requests describes the minimum amount of compute resources required. If Requests is omitted for a container, it defaults to Limits if that is explicitly specified, otherwise to an implementation-defined value. More info: https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/'
@@ -1080,8 +1080,8 @@ spec:
                                                   description: The header field value
                                                   type: string
                                               required:
-                                                - name
-                                                - value
+                                              - name
+                                              - value
                                               type: object
                                             type: array
                                           path:
@@ -1089,15 +1089,15 @@ spec:
                                             type: string
                                           port:
                                             anyOf:
-                                              - type: integer
-                                              - type: string
+                                            - type: integer
+                                            - type: string
                                             description: Name or number of the port to access on the container. Number must be in the range 1 to 65535. Name must be an IANA_SVC_NAME.
                                             x-kubernetes-int-or-string: true
                                           scheme:
                                             description: Scheme to use for connecting to the host. Defaults to HTTP.
                                             type: string
                                         required:
-                                          - port
+                                        - port
                                         type: object
                                       initialDelaySeconds:
                                         description: 'Number of seconds after the container has started before liveness probes are initiated. More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#container-probes'
@@ -1119,12 +1119,12 @@ spec:
                                             type: string
                                           port:
                                             anyOf:
-                                              - type: integer
-                                              - type: string
+                                            - type: integer
+                                            - type: string
                                             description: Number or name of the port to access on the container. Number must be in the range 1 to 65535. Name must be an IANA_SVC_NAME.
                                             x-kubernetes-int-or-string: true
                                         required:
-                                          - port
+                                        - port
                                         type: object
                                       timeoutSeconds:
                                         description: 'Number of seconds after which the probe times out. Defaults to 1 second. Minimum value is 1. More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#container-probes'
@@ -1158,8 +1158,8 @@ spec:
                                           description: name must match the name of a persistentVolumeClaim in the pod
                                           type: string
                                       required:
-                                        - devicePath
-                                        - name
+                                      - devicePath
+                                      - name
                                       type: object
                                     type: array
                                   volumeMounts:
@@ -1186,15 +1186,15 @@ spec:
                                           description: Expanded path within the volume from which the container's volume should be mounted. Behaves similarly to SubPath but environment variable references $(VAR_NAME) are expanded using the container's environment. Defaults to "" (volume's root). SubPathExpr and SubPath are mutually exclusive.
                                           type: string
                                       required:
-                                        - mountPath
-                                        - name
+                                      - mountPath
+                                      - name
                                       type: object
                                     type: array
                                   workingDir:
                                     description: Container's working directory. If not specified, the container runtime's default will be used, which might be configured in the container image. Cannot be updated.
                                     type: string
                                 required:
-                                  - name
+                                - name
                                 type: object
                               type: array
                             dnsConfig:
@@ -1271,7 +1271,7 @@ spec:
                                                   description: Specify whether the ConfigMap or its key must be defined
                                                   type: boolean
                                               required:
-                                                - key
+                                              - key
                                               type: object
                                             fieldRef:
                                               description: 'Selects a field of the pod: supports metadata.name, metadata.namespace, metadata.labels, metadata.annotations, spec.nodeName, spec.serviceAccountName, status.hostIP, status.podIP, status.podIPs.'
@@ -1283,7 +1283,7 @@ spec:
                                                   description: Path of the field to select in the specified API version.
                                                   type: string
                                               required:
-                                                - fieldPath
+                                              - fieldPath
                                               type: object
                                             resourceFieldRef:
                                               description: 'Selects a resource of the container: only resources limits and requests (limits.cpu, limits.memory, limits.ephemeral-storage, requests.cpu, requests.memory and requests.ephemeral-storage) are currently supported.'
@@ -1293,8 +1293,8 @@ spec:
                                                   type: string
                                                 divisor:
                                                   anyOf:
-                                                    - type: integer
-                                                    - type: string
+                                                  - type: integer
+                                                  - type: string
                                                   description: Specifies the output format of the exposed resources, defaults to "1"
                                                   pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
                                                   x-kubernetes-int-or-string: true
@@ -1302,7 +1302,7 @@ spec:
                                                   description: 'Required: resource to select'
                                                   type: string
                                               required:
-                                                - resource
+                                              - resource
                                               type: object
                                             secretKeyRef:
                                               description: Selects a key of a secret in the pod's namespace
@@ -1317,11 +1317,11 @@ spec:
                                                   description: Specify whether the Secret or its key must be defined
                                                   type: boolean
                                               required:
-                                                - key
+                                              - key
                                               type: object
                                           type: object
                                       required:
-                                        - name
+                                      - name
                                       type: object
                                     type: array
                                   envFrom:
@@ -1393,8 +1393,8 @@ spec:
                                                       description: The header field value
                                                       type: string
                                                   required:
-                                                    - name
-                                                    - value
+                                                  - name
+                                                  - value
                                                   type: object
                                                 type: array
                                               path:
@@ -1402,15 +1402,15 @@ spec:
                                                 type: string
                                               port:
                                                 anyOf:
-                                                  - type: integer
-                                                  - type: string
+                                                - type: integer
+                                                - type: string
                                                 description: Name or number of the port to access on the container. Number must be in the range 1 to 65535. Name must be an IANA_SVC_NAME.
                                                 x-kubernetes-int-or-string: true
                                               scheme:
                                                 description: Scheme to use for connecting to the host. Defaults to HTTP.
                                                 type: string
                                             required:
-                                              - port
+                                            - port
                                             type: object
                                           tcpSocket:
                                             description: 'TCPSocket specifies an action involving a TCP port. TCP hooks not yet supported TODO: implement a realistic TCP lifecycle hook'
@@ -1420,12 +1420,12 @@ spec:
                                                 type: string
                                               port:
                                                 anyOf:
-                                                  - type: integer
-                                                  - type: string
+                                                - type: integer
+                                                - type: string
                                                 description: Number or name of the port to access on the container. Number must be in the range 1 to 65535. Name must be an IANA_SVC_NAME.
                                                 x-kubernetes-int-or-string: true
                                             required:
-                                              - port
+                                            - port
                                             type: object
                                         type: object
                                       preStop:
@@ -1458,8 +1458,8 @@ spec:
                                                       description: The header field value
                                                       type: string
                                                   required:
-                                                    - name
-                                                    - value
+                                                  - name
+                                                  - value
                                                   type: object
                                                 type: array
                                               path:
@@ -1467,15 +1467,15 @@ spec:
                                                 type: string
                                               port:
                                                 anyOf:
-                                                  - type: integer
-                                                  - type: string
+                                                - type: integer
+                                                - type: string
                                                 description: Name or number of the port to access on the container. Number must be in the range 1 to 65535. Name must be an IANA_SVC_NAME.
                                                 x-kubernetes-int-or-string: true
                                               scheme:
                                                 description: Scheme to use for connecting to the host. Defaults to HTTP.
                                                 type: string
                                             required:
-                                              - port
+                                            - port
                                             type: object
                                           tcpSocket:
                                             description: 'TCPSocket specifies an action involving a TCP port. TCP hooks not yet supported TODO: implement a realistic TCP lifecycle hook'
@@ -1485,12 +1485,12 @@ spec:
                                                 type: string
                                               port:
                                                 anyOf:
-                                                  - type: integer
-                                                  - type: string
+                                                - type: integer
+                                                - type: string
                                                 description: Number or name of the port to access on the container. Number must be in the range 1 to 65535. Name must be an IANA_SVC_NAME.
                                                 x-kubernetes-int-or-string: true
                                             required:
-                                              - port
+                                            - port
                                             type: object
                                         type: object
                                     type: object
@@ -1528,8 +1528,8 @@ spec:
                                                   description: The header field value
                                                   type: string
                                               required:
-                                                - name
-                                                - value
+                                              - name
+                                              - value
                                               type: object
                                             type: array
                                           path:
@@ -1537,15 +1537,15 @@ spec:
                                             type: string
                                           port:
                                             anyOf:
-                                              - type: integer
-                                              - type: string
+                                            - type: integer
+                                            - type: string
                                             description: Name or number of the port to access on the container. Number must be in the range 1 to 65535. Name must be an IANA_SVC_NAME.
                                             x-kubernetes-int-or-string: true
                                           scheme:
                                             description: Scheme to use for connecting to the host. Defaults to HTTP.
                                             type: string
                                         required:
-                                          - port
+                                        - port
                                         type: object
                                       initialDelaySeconds:
                                         description: 'Number of seconds after the container has started before liveness probes are initiated. More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#container-probes'
@@ -1567,12 +1567,12 @@ spec:
                                             type: string
                                           port:
                                             anyOf:
-                                              - type: integer
-                                              - type: string
+                                            - type: integer
+                                            - type: string
                                             description: Number or name of the port to access on the container. Number must be in the range 1 to 65535. Name must be an IANA_SVC_NAME.
                                             x-kubernetes-int-or-string: true
                                         required:
-                                          - port
+                                        - port
                                         type: object
                                       timeoutSeconds:
                                         description: 'Number of seconds after which the probe times out. Defaults to 1 second. Minimum value is 1. More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#container-probes'
@@ -1605,7 +1605,7 @@ spec:
                                           description: Protocol for port. Must be UDP, TCP, or SCTP. Defaults to "TCP".
                                           type: string
                                       required:
-                                        - containerPort
+                                      - containerPort
                                       type: object
                                     type: array
                                   readinessProbe:
@@ -1642,8 +1642,8 @@ spec:
                                                   description: The header field value
                                                   type: string
                                               required:
-                                                - name
-                                                - value
+                                              - name
+                                              - value
                                               type: object
                                             type: array
                                           path:
@@ -1651,15 +1651,15 @@ spec:
                                             type: string
                                           port:
                                             anyOf:
-                                              - type: integer
-                                              - type: string
+                                            - type: integer
+                                            - type: string
                                             description: Name or number of the port to access on the container. Number must be in the range 1 to 65535. Name must be an IANA_SVC_NAME.
                                             x-kubernetes-int-or-string: true
                                           scheme:
                                             description: Scheme to use for connecting to the host. Defaults to HTTP.
                                             type: string
                                         required:
-                                          - port
+                                        - port
                                         type: object
                                       initialDelaySeconds:
                                         description: 'Number of seconds after the container has started before liveness probes are initiated. More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#container-probes'
@@ -1681,12 +1681,12 @@ spec:
                                             type: string
                                           port:
                                             anyOf:
-                                              - type: integer
-                                              - type: string
+                                            - type: integer
+                                            - type: string
                                             description: Number or name of the port to access on the container. Number must be in the range 1 to 65535. Name must be an IANA_SVC_NAME.
                                             x-kubernetes-int-or-string: true
                                         required:
-                                          - port
+                                        - port
                                         type: object
                                       timeoutSeconds:
                                         description: 'Number of seconds after which the probe times out. Defaults to 1 second. Minimum value is 1. More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#container-probes'
@@ -1699,8 +1699,8 @@ spec:
                                       limits:
                                         additionalProperties:
                                           anyOf:
-                                            - type: integer
-                                            - type: string
+                                          - type: integer
+                                          - type: string
                                           pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
                                           x-kubernetes-int-or-string: true
                                         description: 'Limits describes the maximum amount of compute resources allowed. More info: https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/'
@@ -1708,8 +1708,8 @@ spec:
                                       requests:
                                         additionalProperties:
                                           anyOf:
-                                            - type: integer
-                                            - type: string
+                                          - type: integer
+                                          - type: string
                                           pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
                                           x-kubernetes-int-or-string: true
                                         description: 'Requests describes the minimum amount of compute resources required. If Requests is omitted for a container, it defaults to Limits if that is explicitly specified, otherwise to an implementation-defined value. More info: https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/'
@@ -1821,8 +1821,8 @@ spec:
                                                   description: The header field value
                                                   type: string
                                               required:
-                                                - name
-                                                - value
+                                              - name
+                                              - value
                                               type: object
                                             type: array
                                           path:
@@ -1830,15 +1830,15 @@ spec:
                                             type: string
                                           port:
                                             anyOf:
-                                              - type: integer
-                                              - type: string
+                                            - type: integer
+                                            - type: string
                                             description: Name or number of the port to access on the container. Number must be in the range 1 to 65535. Name must be an IANA_SVC_NAME.
                                             x-kubernetes-int-or-string: true
                                           scheme:
                                             description: Scheme to use for connecting to the host. Defaults to HTTP.
                                             type: string
                                         required:
-                                          - port
+                                        - port
                                         type: object
                                       initialDelaySeconds:
                                         description: 'Number of seconds after the container has started before liveness probes are initiated. More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#container-probes'
@@ -1860,12 +1860,12 @@ spec:
                                             type: string
                                           port:
                                             anyOf:
-                                              - type: integer
-                                              - type: string
+                                            - type: integer
+                                            - type: string
                                             description: Number or name of the port to access on the container. Number must be in the range 1 to 65535. Name must be an IANA_SVC_NAME.
                                             x-kubernetes-int-or-string: true
                                         required:
-                                          - port
+                                        - port
                                         type: object
                                       timeoutSeconds:
                                         description: 'Number of seconds after which the probe times out. Defaults to 1 second. Minimum value is 1. More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#container-probes'
@@ -1902,8 +1902,8 @@ spec:
                                           description: name must match the name of a persistentVolumeClaim in the pod
                                           type: string
                                       required:
-                                        - devicePath
-                                        - name
+                                      - devicePath
+                                      - name
                                       type: object
                                     type: array
                                   volumeMounts:
@@ -1930,15 +1930,15 @@ spec:
                                           description: Expanded path within the volume from which the container's volume should be mounted. Behaves similarly to SubPath but environment variable references $(VAR_NAME) are expanded using the container's environment. Defaults to "" (volume's root). SubPathExpr and SubPath are mutually exclusive.
                                           type: string
                                       required:
-                                        - mountPath
-                                        - name
+                                      - mountPath
+                                      - name
                                       type: object
                                     type: array
                                   workingDir:
                                     description: Container's working directory. If not specified, the container runtime's default will be used, which might be configured in the container image. Cannot be updated.
                                     type: string
                                 required:
-                                  - name
+                                - name
                                 type: object
                               type: array
                             hostAliases:
@@ -2020,7 +2020,7 @@ spec:
                                                   description: Specify whether the ConfigMap or its key must be defined
                                                   type: boolean
                                               required:
-                                                - key
+                                              - key
                                               type: object
                                             fieldRef:
                                               description: 'Selects a field of the pod: supports metadata.name, metadata.namespace, metadata.labels, metadata.annotations, spec.nodeName, spec.serviceAccountName, status.hostIP, status.podIP, status.podIPs.'
@@ -2032,7 +2032,7 @@ spec:
                                                   description: Path of the field to select in the specified API version.
                                                   type: string
                                               required:
-                                                - fieldPath
+                                              - fieldPath
                                               type: object
                                             resourceFieldRef:
                                               description: 'Selects a resource of the container: only resources limits and requests (limits.cpu, limits.memory, limits.ephemeral-storage, requests.cpu, requests.memory and requests.ephemeral-storage) are currently supported.'
@@ -2042,8 +2042,8 @@ spec:
                                                   type: string
                                                 divisor:
                                                   anyOf:
-                                                    - type: integer
-                                                    - type: string
+                                                  - type: integer
+                                                  - type: string
                                                   description: Specifies the output format of the exposed resources, defaults to "1"
                                                   pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
                                                   x-kubernetes-int-or-string: true
@@ -2051,7 +2051,7 @@ spec:
                                                   description: 'Required: resource to select'
                                                   type: string
                                               required:
-                                                - resource
+                                              - resource
                                               type: object
                                             secretKeyRef:
                                               description: Selects a key of a secret in the pod's namespace
@@ -2066,11 +2066,11 @@ spec:
                                                   description: Specify whether the Secret or its key must be defined
                                                   type: boolean
                                               required:
-                                                - key
+                                              - key
                                               type: object
                                           type: object
                                       required:
-                                        - name
+                                      - name
                                       type: object
                                     type: array
                                   envFrom:
@@ -2142,8 +2142,8 @@ spec:
                                                       description: The header field value
                                                       type: string
                                                   required:
-                                                    - name
-                                                    - value
+                                                  - name
+                                                  - value
                                                   type: object
                                                 type: array
                                               path:
@@ -2151,15 +2151,15 @@ spec:
                                                 type: string
                                               port:
                                                 anyOf:
-                                                  - type: integer
-                                                  - type: string
+                                                - type: integer
+                                                - type: string
                                                 description: Name or number of the port to access on the container. Number must be in the range 1 to 65535. Name must be an IANA_SVC_NAME.
                                                 x-kubernetes-int-or-string: true
                                               scheme:
                                                 description: Scheme to use for connecting to the host. Defaults to HTTP.
                                                 type: string
                                             required:
-                                              - port
+                                            - port
                                             type: object
                                           tcpSocket:
                                             description: 'TCPSocket specifies an action involving a TCP port. TCP hooks not yet supported TODO: implement a realistic TCP lifecycle hook'
@@ -2169,12 +2169,12 @@ spec:
                                                 type: string
                                               port:
                                                 anyOf:
-                                                  - type: integer
-                                                  - type: string
+                                                - type: integer
+                                                - type: string
                                                 description: Number or name of the port to access on the container. Number must be in the range 1 to 65535. Name must be an IANA_SVC_NAME.
                                                 x-kubernetes-int-or-string: true
                                             required:
-                                              - port
+                                            - port
                                             type: object
                                         type: object
                                       preStop:
@@ -2207,8 +2207,8 @@ spec:
                                                       description: The header field value
                                                       type: string
                                                   required:
-                                                    - name
-                                                    - value
+                                                  - name
+                                                  - value
                                                   type: object
                                                 type: array
                                               path:
@@ -2216,15 +2216,15 @@ spec:
                                                 type: string
                                               port:
                                                 anyOf:
-                                                  - type: integer
-                                                  - type: string
+                                                - type: integer
+                                                - type: string
                                                 description: Name or number of the port to access on the container. Number must be in the range 1 to 65535. Name must be an IANA_SVC_NAME.
                                                 x-kubernetes-int-or-string: true
                                               scheme:
                                                 description: Scheme to use for connecting to the host. Defaults to HTTP.
                                                 type: string
                                             required:
-                                              - port
+                                            - port
                                             type: object
                                           tcpSocket:
                                             description: 'TCPSocket specifies an action involving a TCP port. TCP hooks not yet supported TODO: implement a realistic TCP lifecycle hook'
@@ -2234,12 +2234,12 @@ spec:
                                                 type: string
                                               port:
                                                 anyOf:
-                                                  - type: integer
-                                                  - type: string
+                                                - type: integer
+                                                - type: string
                                                 description: Number or name of the port to access on the container. Number must be in the range 1 to 65535. Name must be an IANA_SVC_NAME.
                                                 x-kubernetes-int-or-string: true
                                             required:
-                                              - port
+                                            - port
                                             type: object
                                         type: object
                                     type: object
@@ -2277,8 +2277,8 @@ spec:
                                                   description: The header field value
                                                   type: string
                                               required:
-                                                - name
-                                                - value
+                                              - name
+                                              - value
                                               type: object
                                             type: array
                                           path:
@@ -2286,15 +2286,15 @@ spec:
                                             type: string
                                           port:
                                             anyOf:
-                                              - type: integer
-                                              - type: string
+                                            - type: integer
+                                            - type: string
                                             description: Name or number of the port to access on the container. Number must be in the range 1 to 65535. Name must be an IANA_SVC_NAME.
                                             x-kubernetes-int-or-string: true
                                           scheme:
                                             description: Scheme to use for connecting to the host. Defaults to HTTP.
                                             type: string
                                         required:
-                                          - port
+                                        - port
                                         type: object
                                       initialDelaySeconds:
                                         description: 'Number of seconds after the container has started before liveness probes are initiated. More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#container-probes'
@@ -2316,12 +2316,12 @@ spec:
                                             type: string
                                           port:
                                             anyOf:
-                                              - type: integer
-                                              - type: string
+                                            - type: integer
+                                            - type: string
                                             description: Number or name of the port to access on the container. Number must be in the range 1 to 65535. Name must be an IANA_SVC_NAME.
                                             x-kubernetes-int-or-string: true
                                         required:
-                                          - port
+                                        - port
                                         type: object
                                       timeoutSeconds:
                                         description: 'Number of seconds after which the probe times out. Defaults to 1 second. Minimum value is 1. More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#container-probes'
@@ -2365,8 +2365,8 @@ spec:
                                                   description: The header field value
                                                   type: string
                                               required:
-                                                - name
-                                                - value
+                                              - name
+                                              - value
                                               type: object
                                             type: array
                                           path:
@@ -2374,15 +2374,15 @@ spec:
                                             type: string
                                           port:
                                             anyOf:
-                                              - type: integer
-                                              - type: string
+                                            - type: integer
+                                            - type: string
                                             description: Name or number of the port to access on the container. Number must be in the range 1 to 65535. Name must be an IANA_SVC_NAME.
                                             x-kubernetes-int-or-string: true
                                           scheme:
                                             description: Scheme to use for connecting to the host. Defaults to HTTP.
                                             type: string
                                         required:
-                                          - port
+                                        - port
                                         type: object
                                       initialDelaySeconds:
                                         description: 'Number of seconds after the container has started before liveness probes are initiated. More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#container-probes'
@@ -2404,12 +2404,12 @@ spec:
                                             type: string
                                           port:
                                             anyOf:
-                                              - type: integer
-                                              - type: string
+                                            - type: integer
+                                            - type: string
                                             description: Number or name of the port to access on the container. Number must be in the range 1 to 65535. Name must be an IANA_SVC_NAME.
                                             x-kubernetes-int-or-string: true
                                         required:
-                                          - port
+                                        - port
                                         type: object
                                       timeoutSeconds:
                                         description: 'Number of seconds after which the probe times out. Defaults to 1 second. Minimum value is 1. More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#container-probes'
@@ -2422,8 +2422,8 @@ spec:
                                       limits:
                                         additionalProperties:
                                           anyOf:
-                                            - type: integer
-                                            - type: string
+                                          - type: integer
+                                          - type: string
                                           pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
                                           x-kubernetes-int-or-string: true
                                         description: 'Limits describes the maximum amount of compute resources allowed. More info: https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/'
@@ -2431,8 +2431,8 @@ spec:
                                       requests:
                                         additionalProperties:
                                           anyOf:
-                                            - type: integer
-                                            - type: string
+                                          - type: integer
+                                          - type: string
                                           pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
                                           x-kubernetes-int-or-string: true
                                         description: 'Requests describes the minimum amount of compute resources required. If Requests is omitted for a container, it defaults to Limits if that is explicitly specified, otherwise to an implementation-defined value. More info: https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/'
@@ -2544,8 +2544,8 @@ spec:
                                                   description: The header field value
                                                   type: string
                                               required:
-                                                - name
-                                                - value
+                                              - name
+                                              - value
                                               type: object
                                             type: array
                                           path:
@@ -2553,15 +2553,15 @@ spec:
                                             type: string
                                           port:
                                             anyOf:
-                                              - type: integer
-                                              - type: string
+                                            - type: integer
+                                            - type: string
                                             description: Name or number of the port to access on the container. Number must be in the range 1 to 65535. Name must be an IANA_SVC_NAME.
                                             x-kubernetes-int-or-string: true
                                           scheme:
                                             description: Scheme to use for connecting to the host. Defaults to HTTP.
                                             type: string
                                         required:
-                                          - port
+                                        - port
                                         type: object
                                       initialDelaySeconds:
                                         description: 'Number of seconds after the container has started before liveness probes are initiated. More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#container-probes'
@@ -2583,12 +2583,12 @@ spec:
                                             type: string
                                           port:
                                             anyOf:
-                                              - type: integer
-                                              - type: string
+                                            - type: integer
+                                            - type: string
                                             description: Number or name of the port to access on the container. Number must be in the range 1 to 65535. Name must be an IANA_SVC_NAME.
                                             x-kubernetes-int-or-string: true
                                         required:
-                                          - port
+                                        - port
                                         type: object
                                       timeoutSeconds:
                                         description: 'Number of seconds after which the probe times out. Defaults to 1 second. Minimum value is 1. More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#container-probes'
@@ -2622,8 +2622,8 @@ spec:
                                           description: name must match the name of a persistentVolumeClaim in the pod
                                           type: string
                                       required:
-                                        - devicePath
-                                        - name
+                                      - devicePath
+                                      - name
                                       type: object
                                     type: array
                                   volumeMounts:
@@ -2650,15 +2650,15 @@ spec:
                                           description: Expanded path within the volume from which the container's volume should be mounted. Behaves similarly to SubPath but environment variable references $(VAR_NAME) are expanded using the container's environment. Defaults to "" (volume's root). SubPathExpr and SubPath are mutually exclusive.
                                           type: string
                                       required:
-                                        - mountPath
-                                        - name
+                                      - mountPath
+                                      - name
                                       type: object
                                     type: array
                                   workingDir:
                                     description: Container's working directory. If not specified, the container runtime's default will be used, which might be configured in the container image. Cannot be updated.
                                     type: string
                                 required:
-                                  - name
+                                - name
                                 type: object
                               type: array
                             nodeName:
@@ -2672,8 +2672,8 @@ spec:
                             overhead:
                               additionalProperties:
                                 anyOf:
-                                  - type: integer
-                                  - type: string
+                                - type: integer
+                                - type: string
                                 pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
                                 x-kubernetes-int-or-string: true
                               description: 'Overhead represents the resource overhead associated with running a pod for a given RuntimeClass. This field will be autopopulated at admission time by the RuntimeClass admission controller. If the RuntimeClass admission controller is enabled, overhead must not be set in Pod create requests. The RuntimeClass admission controller will reject Pod create requests which have the overhead already set. If RuntimeClass is configured and selected in the PodSpec, Overhead will be set to the value defined in the corresponding RuntimeClass, otherwise it will remain unset and treated as zero. More info: https://git.k8s.io/enhancements/keps/sig-node/20190226-pod-overhead.md This field is alpha-level as of Kubernetes v1.16, and is only honored by servers that enable the PodOverhead feature.'
@@ -2697,7 +2697,7 @@ spec:
                                     description: ConditionType refers to a condition in the pod's condition list with matching type.
                                     type: string
                                 required:
-                                  - conditionType
+                                - conditionType
                                 type: object
                               type: array
                             restartPolicy:
@@ -2764,8 +2764,8 @@ spec:
                                         description: Value of a property to set
                                         type: string
                                     required:
-                                      - name
-                                      - value
+                                    - name
+                                    - value
                                     type: object
                                   type: array
                                 windowsOptions:
@@ -2843,7 +2843,7 @@ spec:
                                         description: 'Unique ID of the persistent disk resource in AWS (Amazon EBS volume). More info: https://kubernetes.io/docs/concepts/storage/volumes#awselasticblockstore'
                                         type: string
                                     required:
-                                      - volumeID
+                                    - volumeID
                                     type: object
                                   azureDisk:
                                     description: AzureDisk represents an Azure Data Disk mount on the host and bind mount to the pod.
@@ -2867,8 +2867,8 @@ spec:
                                         description: Defaults to false (read/write). ReadOnly here will force the ReadOnly setting in VolumeMounts.
                                         type: boolean
                                     required:
-                                      - diskName
-                                      - diskURI
+                                    - diskName
+                                    - diskURI
                                     type: object
                                   azureFile:
                                     description: AzureFile represents an Azure File Service mount on the host and bind mount to the pod.
@@ -2883,8 +2883,8 @@ spec:
                                         description: Share Name
                                         type: string
                                     required:
-                                      - secretName
-                                      - shareName
+                                    - secretName
+                                    - shareName
                                     type: object
                                   cephfs:
                                     description: CephFS represents a Ceph FS mount on the host that shares a pod's lifetime
@@ -2914,7 +2914,7 @@ spec:
                                         description: 'Optional: User is the rados user name, default is admin More info: https://examples.k8s.io/volumes/cephfs/README.md#how-to-use-it'
                                         type: string
                                     required:
-                                      - monitors
+                                    - monitors
                                     type: object
                                   cinder:
                                     description: 'Cinder represents a cinder volume attached and mounted on kubelets host machine. More info: https://examples.k8s.io/mysql-cinder-pd/README.md'
@@ -2936,41 +2936,7 @@ spec:
                                         description: 'volume id used to identify the volume in cinder. More info: https://examples.k8s.io/mysql-cinder-pd/README.md'
                                         type: string
                                     required:
-                                      - volumeID
-                                    type: object
-                                  configMap:
-                                    description: ConfigMap represents a configMap that should populate this volume
-                                    properties:
-                                      defaultMode:
-                                        description: 'Optional: mode bits to use on created files by default. Must be a value between 0 and 0777. Defaults to 0644. Directories within the path are not affected by this setting. This might be in conflict with other options that affect the file mode, like fsGroup, and the result can be other mode bits set.'
-                                        format: int32
-                                        type: integer
-                                      items:
-                                        description: If unspecified, each key-value pair in the Data field of the referenced ConfigMap will be projected into the volume as a file whose name is the key and content is the value. If specified, the listed keys will be projected into the specified paths, and unlisted keys will not be present. If a key is specified which is not present in the ConfigMap, the volume setup will error unless it is marked optional. Paths must be relative and may not contain the '..' path or start with '..'.
-                                        items:
-                                          description: Maps a string key to a path within a volume.
-                                          properties:
-                                            key:
-                                              description: The key to project.
-                                              type: string
-                                            mode:
-                                              description: 'Optional: mode bits to use on this file, must be a value between 0 and 0777. If not specified, the volume defaultMode will be used. This might be in conflict with other options that affect the file mode, like fsGroup, and the result can be other mode bits set.'
-                                              format: int32
-                                              type: integer
-                                            path:
-                                              description: The relative path of the file to map the key to. May not be an absolute path. May not contain the path element '..'. May not start with the string '..'.
-                                              type: string
-                                          required:
-                                            - key
-                                            - path
-                                          type: object
-                                        type: array
-                                      name:
-                                        description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?'
-                                        type: string
-                                      optional:
-                                        description: Specify whether the ConfigMap or its keys must be defined
-                                        type: boolean
+                                    - volumeID
                                     type: object
                                   csi:
                                     description: CSI (Container Storage Interface) represents storage that is handled by an external CSI driver (Alpha feature).
@@ -2997,7 +2963,7 @@ spec:
                                         description: VolumeAttributes stores driver-specific properties that are passed to the CSI driver. Consult your driver's documentation for supported values.
                                         type: object
                                     required:
-                                      - driver
+                                    - driver
                                     type: object
                                   downwardAPI:
                                     description: DownwardAPI represents downward API about the pod that should populate this volume
@@ -3021,7 +2987,7 @@ spec:
                                                   description: Path of the field to select in the specified API version.
                                                   type: string
                                               required:
-                                                - fieldPath
+                                              - fieldPath
                                               type: object
                                             mode:
                                               description: 'Optional: mode bits to use on this file, must be a value between 0 and 0777. If not specified, the volume defaultMode will be used. This might be in conflict with other options that affect the file mode, like fsGroup, and the result can be other mode bits set.'
@@ -3038,8 +3004,8 @@ spec:
                                                   type: string
                                                 divisor:
                                                   anyOf:
-                                                    - type: integer
-                                                    - type: string
+                                                  - type: integer
+                                                  - type: string
                                                   description: Specifies the output format of the exposed resources, defaults to "1"
                                                   pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
                                                   x-kubernetes-int-or-string: true
@@ -3047,10 +3013,10 @@ spec:
                                                   description: 'Required: resource to select'
                                                   type: string
                                               required:
-                                                - resource
+                                              - resource
                                               type: object
                                           required:
-                                            - path
+                                          - path
                                           type: object
                                         type: array
                                     type: object
@@ -3062,8 +3028,8 @@ spec:
                                         type: string
                                       sizeLimit:
                                         anyOf:
-                                          - type: integer
-                                          - type: string
+                                        - type: integer
+                                        - type: string
                                         description: 'Total amount of local storage required for this EmptyDir volume. The size limit is also applicable for memory medium. The maximum usage on memory medium EmptyDir would be the minimum value between the SizeLimit specified here and the sum of memory limits of all containers in a pod. The default is nil which means that the limit is undefined. More info: http://kubernetes.io/docs/user-guide/volumes#emptydir'
                                         pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
                                         x-kubernetes-int-or-string: true
@@ -3117,7 +3083,7 @@ spec:
                                             type: string
                                         type: object
                                     required:
-                                      - driver
+                                    - driver
                                     type: object
                                   flocker:
                                     description: Flocker represents a Flocker volume attached to a kubelet's host machine. This depends on the Flocker control service being running
@@ -3146,7 +3112,7 @@ spec:
                                         description: 'ReadOnly here will force the ReadOnly setting in VolumeMounts. Defaults to false. More info: https://kubernetes.io/docs/concepts/storage/volumes#gcepersistentdisk'
                                         type: boolean
                                     required:
-                                      - pdName
+                                    - pdName
                                     type: object
                                   gitRepo:
                                     description: 'GitRepo represents a git repository at a particular revision. DEPRECATED: GitRepo is deprecated. To provision a container with a git repo, mount an EmptyDir into an InitContainer that clones the repo using git, then mount the EmptyDir into the Pod''s container.'
@@ -3161,7 +3127,7 @@ spec:
                                         description: Commit hash for the specified revision.
                                         type: string
                                     required:
-                                      - repository
+                                    - repository
                                     type: object
                                   glusterfs:
                                     description: 'Glusterfs represents a Glusterfs mount on the host that shares a pod''s lifetime. More info: https://examples.k8s.io/volumes/glusterfs/README.md'
@@ -3176,8 +3142,8 @@ spec:
                                         description: 'ReadOnly here will force the Glusterfs volume to be mounted with read-only permissions. Defaults to false. More info: https://examples.k8s.io/volumes/glusterfs/README.md#create-a-pod'
                                         type: boolean
                                     required:
-                                      - endpoints
-                                      - path
+                                    - endpoints
+                                    - path
                                     type: object
                                   hostPath:
                                     description: 'HostPath represents a pre-existing file or directory on the host machine that is directly exposed to the container. This is generally used for system agents or other privileged things that are allowed to see the host machine. Most containers will NOT need this. More info: https://kubernetes.io/docs/concepts/storage/volumes#hostpath --- TODO(jonesdl) We need to restrict who can use host directory mounts and who can/can not mount host directories as read/write.'
@@ -3189,7 +3155,7 @@ spec:
                                         description: 'Type for HostPath Volume Defaults to "" More info: https://kubernetes.io/docs/concepts/storage/volumes#hostpath'
                                         type: string
                                     required:
-                                      - path
+                                    - path
                                     type: object
                                   iscsi:
                                     description: 'ISCSI represents an ISCSI Disk resource that is attached to a kubelet''s host machine and then exposed to the pod. More info: https://examples.k8s.io/volumes/iscsi/README.md'
@@ -3235,9 +3201,9 @@ spec:
                                         description: iSCSI Target Portal. The Portal is either an IP or ip_addr:port if the port is other than default (typically TCP ports 860 and 3260).
                                         type: string
                                     required:
-                                      - iqn
-                                      - lun
-                                      - targetPortal
+                                    - iqn
+                                    - lun
+                                    - targetPortal
                                     type: object
                                   name:
                                     description: 'Volume''s name. Must be a DNS_LABEL and unique within the pod. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names'
@@ -3255,8 +3221,8 @@ spec:
                                         description: 'Server is the hostname or IP address of the NFS server. More info: https://kubernetes.io/docs/concepts/storage/volumes#nfs'
                                         type: string
                                     required:
-                                      - path
-                                      - server
+                                    - path
+                                    - server
                                     type: object
                                   persistentVolumeClaim:
                                     description: 'PersistentVolumeClaimVolumeSource represents a reference to a PersistentVolumeClaim in the same namespace. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#persistentvolumeclaims'
@@ -3268,7 +3234,7 @@ spec:
                                         description: Will force the ReadOnly setting in VolumeMounts. Default false.
                                         type: boolean
                                     required:
-                                      - claimName
+                                    - claimName
                                     type: object
                                   photonPersistentDisk:
                                     description: PhotonPersistentDisk represents a PhotonController persistent disk attached and mounted on kubelets host machine
@@ -3280,7 +3246,7 @@ spec:
                                         description: ID that identifies Photon Controller persistent disk
                                         type: string
                                     required:
-                                      - pdID
+                                    - pdID
                                     type: object
                                   portworxVolume:
                                     description: PortworxVolume represents a portworx volume attached and mounted on kubelets host machine
@@ -3295,7 +3261,7 @@ spec:
                                         description: VolumeID uniquely identifies a Portworx volume
                                         type: string
                                     required:
-                                      - volumeID
+                                    - volumeID
                                     type: object
                                   projected:
                                     description: Items for all in one resources secrets, configmaps, and downward API
@@ -3328,8 +3294,8 @@ spec:
                                                         description: The relative path of the file to map the key to. May not be an absolute path. May not contain the path element '..'. May not start with the string '..'.
                                                         type: string
                                                     required:
-                                                      - key
-                                                      - path
+                                                    - key
+                                                    - path
                                                     type: object
                                                   type: array
                                                 name:
@@ -3357,7 +3323,7 @@ spec:
                                                             description: Path of the field to select in the specified API version.
                                                             type: string
                                                         required:
-                                                          - fieldPath
+                                                        - fieldPath
                                                         type: object
                                                       mode:
                                                         description: 'Optional: mode bits to use on this file, must be a value between 0 and 0777. If not specified, the volume defaultMode will be used. This might be in conflict with other options that affect the file mode, like fsGroup, and the result can be other mode bits set.'
@@ -3374,8 +3340,8 @@ spec:
                                                             type: string
                                                           divisor:
                                                             anyOf:
-                                                              - type: integer
-                                                              - type: string
+                                                            - type: integer
+                                                            - type: string
                                                             description: Specifies the output format of the exposed resources, defaults to "1"
                                                             pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
                                                             x-kubernetes-int-or-string: true
@@ -3383,10 +3349,10 @@ spec:
                                                             description: 'Required: resource to select'
                                                             type: string
                                                         required:
-                                                          - resource
+                                                        - resource
                                                         type: object
                                                     required:
-                                                      - path
+                                                    - path
                                                     type: object
                                                   type: array
                                               type: object
@@ -3409,8 +3375,8 @@ spec:
                                                         description: The relative path of the file to map the key to. May not be an absolute path. May not contain the path element '..'. May not start with the string '..'.
                                                         type: string
                                                     required:
-                                                      - key
-                                                      - path
+                                                    - key
+                                                    - path
                                                     type: object
                                                   type: array
                                                 name:
@@ -3434,12 +3400,12 @@ spec:
                                                   description: Path is the path relative to the mount point of the file to project the token into.
                                                   type: string
                                               required:
-                                                - path
+                                              - path
                                               type: object
                                           type: object
                                         type: array
                                     required:
-                                      - sources
+                                    - sources
                                     type: object
                                   quobyte:
                                     description: Quobyte represents a Quobyte mount on the host that shares a pod's lifetime
@@ -3463,8 +3429,8 @@ spec:
                                         description: Volume is a string that references an already created Quobyte volume by name.
                                         type: string
                                     required:
-                                      - registry
-                                      - volume
+                                    - registry
+                                    - volume
                                     type: object
                                   rbd:
                                     description: 'RBD represents a Rados Block Device mount on the host that shares a pod''s lifetime. More info: https://examples.k8s.io/volumes/rbd/README.md'
@@ -3500,8 +3466,8 @@ spec:
                                         description: 'The rados user name. Default is admin. More info: https://examples.k8s.io/volumes/rbd/README.md#how-to-use-it'
                                         type: string
                                     required:
-                                      - image
-                                      - monitors
+                                    - image
+                                    - monitors
                                     type: object
                                   scaleIO:
                                     description: ScaleIO represents a ScaleIO persistent volume attached and mounted on Kubernetes nodes.
@@ -3541,9 +3507,9 @@ spec:
                                         description: The name of a volume already created in the ScaleIO system that is associated with this volume source.
                                         type: string
                                     required:
-                                      - gateway
-                                      - secretRef
-                                      - system
+                                    - gateway
+                                    - secretRef
+                                    - system
                                     type: object
                                   secret:
                                     description: 'Secret represents a secret that should populate this volume. More info: https://kubernetes.io/docs/concepts/storage/volumes#secret'
@@ -3568,8 +3534,8 @@ spec:
                                               description: The relative path of the file to map the key to. May not be an absolute path. May not contain the path element '..'. May not start with the string '..'.
                                               type: string
                                           required:
-                                            - key
-                                            - path
+                                          - key
+                                          - path
                                           type: object
                                         type: array
                                       optional:
@@ -3618,14 +3584,14 @@ spec:
                                         description: Path that identifies vSphere volume vmdk
                                         type: string
                                     required:
-                                      - volumePath
+                                    - volumePath
                                     type: object
                                 required:
-                                  - name
+                                - name
                                 type: object
                               type: array
                           required:
-                            - containers
+                          - containers
                           type: object
                       type: object
                     racks:
@@ -3646,7 +3612,7 @@ spec:
                             description: Deprecated. Use nodeAffinityLabels instead. Zone name to pin the rack, using node affinity
                             type: string
                         required:
-                          - name
+                        - name
                         type: object
                       type: array
                     reaper:
@@ -3664,8 +3630,8 @@ spec:
                             limits:
                               additionalProperties:
                                 anyOf:
-                                  - type: integer
-                                  - type: string
+                                - type: integer
+                                - type: string
                                 pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
                                 x-kubernetes-int-or-string: true
                               description: 'Limits describes the maximum amount of compute resources allowed. More info: https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/'
@@ -3673,8 +3639,8 @@ spec:
                             requests:
                               additionalProperties:
                                 anyOf:
-                                  - type: integer
-                                  - type: string
+                                - type: integer
+                                - type: string
                                 pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
                                 x-kubernetes-int-or-string: true
                               description: 'Requests describes the minimum amount of compute resources required. If Requests is omitted for a container, it defaults to Limits if that is explicitly specified, otherwise to an implementation-defined value. More info: https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/'
@@ -3692,8 +3658,8 @@ spec:
                         limits:
                           additionalProperties:
                             anyOf:
-                              - type: integer
-                              - type: string
+                            - type: integer
+                            - type: string
                             pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
                             x-kubernetes-int-or-string: true
                           description: 'Limits describes the maximum amount of compute resources allowed. More info: https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/'
@@ -3701,8 +3667,8 @@ spec:
                         requests:
                           additionalProperties:
                             anyOf:
-                              - type: integer
-                              - type: string
+                            - type: integer
+                            - type: string
                             pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
                             x-kubernetes-int-or-string: true
                           description: 'Requests describes the minimum amount of compute resources required. If Requests is omitted for a container, it defaults to Limits if that is explicitly specified, otherwise to an implementation-defined value. More info: https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/'
@@ -3717,8 +3683,8 @@ spec:
                     serverType:
                       description: 'Server type: "cassandra" or "dse"'
                       enum:
-                        - cassandra
-                        - dse
+                      - cassandra
+                      - dse
                       type: string
                     serverVersion:
                       description: Version string for config builder, used to generate Cassandra server configuration
@@ -3770,8 +3736,8 @@ spec:
                                         description: Name is the name of resource being referenced
                                         type: string
                                     required:
-                                      - kind
-                                      - name
+                                    - kind
+                                    - name
                                     type: object
                                   resources:
                                     description: 'Resources represents the minimum resources the volume should have. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#resources'
@@ -3779,8 +3745,8 @@ spec:
                                       limits:
                                         additionalProperties:
                                           anyOf:
-                                            - type: integer
-                                            - type: string
+                                          - type: integer
+                                          - type: string
                                           pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
                                           x-kubernetes-int-or-string: true
                                         description: 'Limits describes the maximum amount of compute resources allowed. More info: https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/'
@@ -3788,8 +3754,8 @@ spec:
                                       requests:
                                         additionalProperties:
                                           anyOf:
-                                            - type: integer
-                                            - type: string
+                                          - type: integer
+                                          - type: string
                                           pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
                                           x-kubernetes-int-or-string: true
                                         description: 'Requests describes the minimum amount of compute resources required. If Requests is omitted for a container, it defaults to Limits if that is explicitly specified, otherwise to an implementation-defined value. More info: https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/'
@@ -3815,8 +3781,8 @@ spec:
                                                 type: string
                                               type: array
                                           required:
-                                            - key
-                                            - operator
+                                          - key
+                                          - operator
                                           type: object
                                         type: array
                                       matchLabels:
@@ -3836,9 +3802,9 @@ spec:
                                     type: string
                                 type: object
                             required:
-                              - mountPath
-                              - name
-                              - pvcSpec
+                            - mountPath
+                            - name
+                            - pvcSpec
                             type: object
                           type: array
                         cassandraDataVolumeClaimSpec:
@@ -3862,8 +3828,8 @@ spec:
                                   description: Name is the name of resource being referenced
                                   type: string
                               required:
-                                - kind
-                                - name
+                              - kind
+                              - name
                               type: object
                             resources:
                               description: 'Resources represents the minimum resources the volume should have. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#resources'
@@ -3871,8 +3837,8 @@ spec:
                                 limits:
                                   additionalProperties:
                                     anyOf:
-                                      - type: integer
-                                      - type: string
+                                    - type: integer
+                                    - type: string
                                     pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
                                     x-kubernetes-int-or-string: true
                                   description: 'Limits describes the maximum amount of compute resources allowed. More info: https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/'
@@ -3880,8 +3846,8 @@ spec:
                                 requests:
                                   additionalProperties:
                                     anyOf:
-                                      - type: integer
-                                      - type: string
+                                    - type: integer
+                                    - type: string
                                     pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
                                     x-kubernetes-int-or-string: true
                                   description: 'Requests describes the minimum amount of compute resources required. If Requests is omitted for a container, it defaults to Limits if that is explicitly specified, otherwise to an implementation-defined value. More info: https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/'
@@ -3907,8 +3873,8 @@ spec:
                                           type: string
                                         type: array
                                     required:
-                                      - key
-                                      - operator
+                                    - key
+                                    - operator
                                     type: object
                                   type: array
                                 matchLabels:
@@ -3940,8 +3906,8 @@ spec:
                         limits:
                           additionalProperties:
                             anyOf:
-                              - type: integer
-                              - type: string
+                            - type: integer
+                            - type: string
                             pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
                             x-kubernetes-int-or-string: true
                           description: 'Limits describes the maximum amount of compute resources allowed. More info: https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/'
@@ -3949,8 +3915,8 @@ spec:
                         requests:
                           additionalProperties:
                             anyOf:
-                              - type: integer
-                              - type: string
+                            - type: integer
+                            - type: string
                             pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
                             x-kubernetes-int-or-string: true
                           description: 'Requests describes the minimum amount of compute resources required. If Requests is omitted for a container, it defaults to Limits if that is explicitly specified, otherwise to an implementation-defined value. More info: https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/'
@@ -3965,19 +3931,19 @@ spec:
                           superuser:
                             type: boolean
                         required:
-                          - secretName
-                          - superuser
+                        - secretName
+                        - superuser
                         type: object
                       type: array
                   required:
-                    - clusterName
-                    - serverType
-                    - serverVersion
-                    - size
-                    - storageConfig
+                  - clusterName
+                  - serverType
+                  - serverVersion
+                  - size
+                  - storageConfig
                   type: object
               required:
-                - spec
+              - spec
               type: object
             failed:
               items:
@@ -3998,14 +3964,113 @@ spec:
               format: date-time
               type: string
           required:
-            - cassdcTemplateSpec
+          - cassdcTemplateSpec
           type: object
       type: object
   version: v1alpha1
   versions:
-    - name: v1alpha1
-      served: true
-      storage: true
+  - name: v1alpha1
+    served: true
+    storage: true
+status:
+  acceptedNames:
+    kind: ""
+    plural: ""
+  conditions: []
+  storedVersions: []
+---
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.3.0
+  creationTimestamp: null
+  name: cassandrarestores.cassandra.k8ssandra.io
+spec:
+  group: cassandra.k8ssandra.io
+  names:
+    kind: CassandraRestore
+    listKind: CassandraRestoreList
+    plural: cassandrarestores
+    singular: cassandrarestore
+  scope: Namespaced
+  subresources:
+    status: {}
+  validation:
+    openAPIV3Schema:
+      description: CassandraRestore is the Schema for the cassandrarestores API
+      properties:
+        apiVersion:
+          description: 'APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+          type: string
+        kind:
+          description: 'Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+          type: string
+        metadata:
+          type: object
+        spec:
+          description: CassandraRestoreSpec defines the desired state of CassandraRestore
+          properties:
+            backup:
+              description: The name of the CassandraBackup to restore
+              type: string
+            cassandraDatacenter:
+              properties:
+                clusterName:
+                  description: The name to give the C* cluster.
+                  type: string
+                name:
+                  description: The name to give the new, restored CassandraDatacenter
+                  type: string
+              required:
+              - clusterName
+              - name
+              type: object
+            inPlace:
+              description: When true the restore will be performed on the source cluster from which the backup was taken. There will be a rolling restart of the source cluster.
+              type: boolean
+            shutdown:
+              description: When set to true, the cluster is shutdown before the restore is applied. This is necessary process if there are schema changes between the backup and current schema. Recommended.
+              type: boolean
+          required:
+          - backup
+          - cassandraDatacenter
+          - inPlace
+          - shutdown
+          type: object
+        status:
+          description: CassandraRestoreStatus defines the observed state of CassandraRestore
+          properties:
+            failed:
+              items:
+                type: string
+              type: array
+            finishTime:
+              format: date-time
+              type: string
+            finished:
+              items:
+                type: string
+              type: array
+            inProgress:
+              items:
+                type: string
+              type: array
+            restoreKey:
+              description: A unique key that identifies the restore operation.
+              type: string
+            startTime:
+              format: date-time
+              type: string
+          required:
+          - restoreKey
+          type: object
+      type: object
+  version: v1alpha1
+  versions:
+  - name: v1alpha1
+    served: true
+    storage: true
 status:
   acceptedNames:
     kind: ""
