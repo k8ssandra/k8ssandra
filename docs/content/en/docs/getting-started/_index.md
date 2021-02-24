@@ -150,10 +150,10 @@ To add the K8ssandra helm chart repos:
 
 1. Install [Helm v3+](https://helm.sh/docs/intro/install/) if you haven't already.
 
-1. Add the main K8ssandra Helm chart repo:
+1. Add the main K8ssandra stable Helm chart repo:
 
     ```bash
-    helm repo add k8ssandra https://helm.k8ssandra.io/
+    helm repo add k8ssandra https://helm.k8ssandra.io/stable
     ```
 
 1. If you want to access K8ssandra services from outside of the Kubernetes cluster, also add the Traefik Ingress repo:
