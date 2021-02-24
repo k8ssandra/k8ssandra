@@ -54,7 +54,7 @@ type Config struct {
 }
 
 var (
-	reaperInstanceValue    = fmt.Sprintf("%s-reaper-k8ssandra", HelmReleaseName)
+	reaperInstanceValue    = fmt.Sprintf("%s-reaper", HelmReleaseName)
 	medusaConfigVolumeName = fmt.Sprintf("%s-medusa", HelmReleaseName)
 )
 
