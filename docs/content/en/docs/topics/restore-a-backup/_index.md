@@ -75,10 +75,7 @@ stringData:
    aws_secret_access_key = my_secret_key
 ```
    
-**Make a copy** of [medusa-bucket-key.yaml](medusa-bucket-key.yaml), and then replace:
-
-* `my_access_key` and `my_secret_key` with your S3 values
-* The `name` of the S3 bucket defined in the AWS console.
+**Make a copy** of [medusa-bucket-key.yaml](medusa-bucket-key.yaml), and then replace `my_access_key` and `my_secret_key` with your S3 values.
 
 In the YAML, notice the `stringData` property value: `medusa_s3_credentials`. The secret gets mounted to this location; this is where Medusa expects to get the AWS credentials.
 
@@ -127,7 +124,7 @@ backupRestore:
       region: us-east-1
 ```
 
-Modify a copy of the file for your purposes. In this example, the `bucketName` setting shown in the prior section would be changed to `jsmart-k8ssandra-bucket2`.
+Modify a copy of the file for your purposes. In this example, the `bucketName` setting would be changed to `jsmart-k8ssandra-bucket2`.
 
 The chart's entries relate to a Kubernetes Secret, which contains the object store credentials. Specifically, the `bucketSecret` property specifies the name of a secret that should contain an AWS access key. As described in the [Medusa documentation](https://github.com/thelastpickle/cassandra-medusa/blob/master/docs/aws_s3_setup.md), the AWS account with which the key is associated should have the permissions that are required for Medusa to access the S3 bucket. For these examples, assume that you had copied `backup-restore-values.yaml` to `my-backup-restore-values.yaml` and edited it with values for your environment. 
 
@@ -157,7 +154,7 @@ demo-reaper-operator-5b8c4c66b8-8cf86                  1/1     Running     0    
 prometheus-demo-kube-prometheus-stack-prometheus-0     2/2     Running     1          7m17s
 ```
 
-Backup and restore operations are enabled by default. In the example YAML, `bucketName` corresponds to the name of the S3 bucket: `K8ssanda-bucket-dev`.  The `bucketSecret` corresponds to the secret credentials.
+Backup and restore operations are enabled by default. The `bucketSecret` corresponds to the secret credentials.
 
 `kubectl get cassdc dc1 -o yaml`
 
