@@ -17,4 +17,4 @@ then
   chmod +x bin/helm
 fi
 
-bin/helm --version
+bin/helm version
