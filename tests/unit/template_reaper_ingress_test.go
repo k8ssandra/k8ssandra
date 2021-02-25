@@ -2,13 +2,14 @@ package unit_test
 
 import (
 	. "fmt"
+	"path/filepath"
+
 	"github.com/gruntwork-io/terratest/modules/helm"
 	helmUtils "github.com/k8ssandra/k8ssandra/tests/unit/utils/helm"
 	. "github.com/k8ssandra/k8ssandra/tests/unit/utils/traefik"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	traefik "github.com/traefik/traefik/v2/pkg/provider/kubernetes/crd/traefik/v1alpha1"
-	"path/filepath"
 )
 
 var _ = Describe("Verify Reaper ingress template", func() {
@@ -102,7 +103,7 @@ var _ = Describe("Verify Reaper ingress template", func() {
 
 			Expect(renderTemplate(options)).To(Succeed())
 			Expect(ingress.Kind).To(Equal("IngressRoute"))
-			VerifyTraefikHTTPIngressRoute(ingress, "web", "Host(`*`)", Sprintf("%s-reaper-service", HelmReleaseName), 8080)
+			VerifyTraefikHTTPIngressRoute(ingress, "web", "Host(`*`)", Sprintf("%s-reaper-reaper-service", HelmReleaseName), 8080)
 		})
 
 		It("with custom host", func() {
@@ -116,7 +117,7 @@ var _ = Describe("Verify Reaper ingress template", func() {
 
 			Expect(renderTemplate(options)).To(Succeed())
 			Expect(ingress.Kind).To(Equal("IngressRoute"))
-			VerifyTraefikHTTPIngressRoute(ingress, "web", "Host(`reaper.host`)", Sprintf("%s-reaper-service", HelmReleaseName), 8080)
+			VerifyTraefikHTTPIngressRoute(ingress, "web", "Host(`reaper.host`)", Sprintf("%s-reaper-reaper-service", HelmReleaseName), 8080)
 		})
 	})
 })
