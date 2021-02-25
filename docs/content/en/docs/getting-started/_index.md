@@ -42,6 +42,11 @@ To verify your K8s version:
 
 ```bash
 kubectl version
+```
+
+**Output**:
+
+```json
 Client Version: version.Info{Major:"1", Minor:"20", GitVersion:"v1.20.3", GitCommit:"01849e73f3c86211f05533c2e807736e776fcf29", GitTreeState:"clean", BuildDate:"2021-02-18T12:10:55Z", GoVersion:"go1.15.8", Compiler:"gc", Platform:"darwin/amd64"}
 Server Version: version.Info{Major:"1", Minor:"18", GitVersion:"v1.18.16", GitCommit:"7a98bb2b7c9112935387825f2fce1b7d40b76236", GitTreeState:"clean", BuildDate:"2021-02-17T11:52:32Z", GoVersion:"go1.13.15", Compiler:"gc", Platform:"linux/amd64"}
 ```
@@ -66,6 +71,11 @@ The following Minikube example creates a K8s cluster running K8s version 1.18.16
 
 ```bash
 minikube start --cpus=4 --memory='8128m' --kubernetes-version=1.18.16
+```
+
+**Output**:
+
+```bash
 😄  minikube v1.17.1 on Darwin 11.2.1
 ✨  Automatically selected the docker driver. Other choices: hyperkit, ssh
 👍  Starting control plane node k8ssandra in cluster k8ssandra
@@ -83,26 +93,15 @@ minikube start --cpus=4 --memory='8128m' --kubernetes-version=1.18.16
 
 To verify your Kubernetes environment:
 
-1. Check that you have a versions of K8s supported by K8ssandra:
-
-    ```bash
-    kubectl version
-    Client Version: version.Info{Major:"1", Minor:"20", GitVersion:"v1.20.3", GitCommit:"01849e73f3c86211f05533c2e807736e776fcf29", GitTreeState:"clean", BuildDate:"2021-02-18T12:10:55Z", GoVersion:"go1.15.8", Compiler:"gc", Platform:"darwin/amd64"}
-    Server Version: version.Info{Major:"1", Minor:"18", GitVersion:"v1.18.16", GitCommit:"7a98bb2b7c9112935387825f2fce1b7d40b76236", GitTreeState:"clean", BuildDate:"2021-02-17T11:52:32Z", GoVersion:"go1.13.15", Compiler:"gc", Platform:"linux/amd64"}
-    ```
-
-    K8ssandra supports the following K8s versions:
-
-    * 1.16
-    * 1.17
-    * 1.18
-    * 1.19
-    * 1.20
-
 1. Verify that your K8s instance is up and running in the `READY` status:
 
     ```bash
     kubectl get nodes
+    ```
+
+    **Output**:
+
+    ```bash
     NAME        STATUS   ROLES    AGE   VERSION
     k8ssandra   Ready    master   21m   v1.18.16
     ```
@@ -115,6 +114,11 @@ To list the available K8s storage classes for your K8s instance:
 
 ```bash
 kubectl get storageclasses
+```
+
+**Output**:
+
+```bash
 NAME                 PROVISIONER                RECLAIMPOLICY   VOLUMEBINDINGMODE   ALLOWVOLUMEEXPANSION   AGE
 standard (default)   k8s.io/minikube-hostpath   Delete          Immediate           false                  2m25s
 ```
@@ -123,7 +127,11 @@ If you don't have a storage class with a `VOLUMEBINDINGMODE` of `WaitForFirstCon
 
 ```bash
 kubectl apply -f https://raw.githubusercontent.com/rancher/local-path-provisioner/master/deploy/local-path-storage.yaml
+```
 
+**Output**:
+
+```bash
 namespace/local-path-storage created
 serviceaccount/local-path-provisioner-service-account created
 clusterrole.rbac.authorization.k8s.io/local-path-provisioner-role created
@@ -137,6 +145,11 @@ Rechecking the available storage classes, you should see that a new `local-path`
 
 ```bash
 kubectl get storageclasses
+```
+
+**Output**:
+
+```bash
 NAME                 PROVISIONER                RECLAIMPOLICY   VOLUMEBINDINGMODE      ALLOWVOLUMEEXPANSION   AGE
 local-path           rancher.io/local-path      Delete          WaitForFirstConsumer   false                  3s
 standard (default)   k8s.io/minikube-hostpath   Delete          Immediate              false                  39s
@@ -243,6 +256,11 @@ The `storageClass:` parameter must be a storage class with a `VOLUMEBINDINGMODE`
 
     ```bash
     helm install -f k8ssandra.yaml k8ssandra k8ssandra/k8ssandra
+    ```
+
+    **Output**:
+
+    ```bash
     NAME: k8ssandra
     LAST DEPLOYED: Thu Feb 18 10:05:44 2021
     NAMESPACE: default
@@ -273,6 +291,11 @@ Depending upon your K8s configuration, initialization of your K8ssandra installa
 
 ```bash
 kubectl get pods
+```
+
+**Output**:
+
+```bash
 NAME                                                  READY   STATUS      RESTARTS   AGE
 k8ssandra-cass-operator-6666588dc5-s4xgc              1/1     Running     0          6m59s
 k8ssandra-dc1-default-sts-0                           2/2     Running     0          6m27s
@@ -292,21 +315,41 @@ The actual Cassandra node name from the listing above is `k8ssandra-dc1-default-
 Verify the following:
 
 * The K8ssandra pod running Cassandra, `k8ssandra-dc1-default-sts-0` in the example above should show `2/2` as `Ready`.
-* The Stargate pod, `k8ssandra-dc1-stargate-6f7f5d6fd6-2dz8f` in the example above should show `1/1` as `Ready`. 
+* The Stargate pod, `k8ssandra-dc1-stargate-6f7f5d6fd6-2dz8f` in the example above should show `1/1` as `Ready`.
 
 {{% alert title="Important" color="warning" %}}
-* The Stargate pod will not show `Ready` until at least 4 minutes have elapsed. 
-* The pod `k8ssandra-reaper-k8ssandra-schema-xxxxx` runs once and does not persist.
+
+* The Stargate pod will not show `Ready` until at least 4 minutes have elapsed.
+* The pod `k8ssandra-reaper-k8ssandra-schema-xxxxx` runs once as part of a job and does not persist.
+
 {{% /alert %}}
 
 Once all the pods are in the `Running` or `Completed` state, you can check the health of your K8ssandra cluster. There must be **no `PENDING` pods**.
 
 To check the health of your K8ssandra cluster:
 
-1. Confirm that the Cassandra operator is `Ready`:
+1. Verify the name of the Cassandra datacenter:
+
+    ```bash
+    kubectl get cassandradatacenters
+    ```
+
+    **Output**:
+
+    ```bash
+    NAME   AGE
+    dc1    51m
+    ```
+
+1. Confirm that the Cassandra operator for the datacenter is `Ready`:
 
     ```bash
     kubectl describe CassandraDataCenter dc1 | grep "Cassandra Operator Progress:"
+    ```
+
+    **Output**:
+
+    ```bash
        Cassandra Operator Progress:  Ready
     ```
 
@@ -314,6 +357,11 @@ To check the health of your K8ssandra cluster:
 
     ```bash
     kubectl get services
+    ```
+
+    **Output**:
+
+    ```bash
     NAME                                        TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)                                                 AGE
     cass-operator-metrics                       ClusterIP   10.99.98.218     <none>        8383/TCP,8686/TCP                                       47m
     k8ssandra-dc1-all-pods-service              ClusterIP   None             <none>        9042/TCP,8080/TCP,9103/TCP                              47m
@@ -328,13 +376,12 @@ To check the health of your K8ssandra cluster:
     prometheus-operated                         ClusterIP   None             <none>        9090/TCP                                                47m
     ```
 
-1. Verify the name of the Cassandra datacenter:
+    Verify that the following services are present:
 
-    ```bash
-    kubectl get cassandradatacenters
-    NAME   AGE
-    dc1    51m
-    ```
+    * <cluster-name>-<datacenter-name>-all-pods-service
+    * <cluster-name>-<datacenter-name>-dc1-service
+    * <cluster-name>-<datacenter-name>-stargate-service
+    * <cluster-name>-<datacenter-name>-seed-service
 
 ## Retrieve K8ssandra superuser credentials {#superuser}
 
@@ -345,17 +392,25 @@ To retrieve K8ssandra superuser credentials:
 1. Retrieve the K8ssandra superuser name:
 
     ```bash
-    kubectl get secret k8ssandra-superuser -o jsonpath="{.data.username}" | base64 --decode | more
+    kubectl get secret k8ssandra-superuser -o jsonpath="{.data.username}" | base64 --decode ; echo
+    ```
+
+    **Output**:
+
+    ```bash
     k8ssandra-superuser
-    (END)
     ```
 
 1. Retrieve the K8ssandra superuser password:
 
     ```bash
-    kubectl get secret k8ssandra-superuser -o jsonpath="{.data.password}" | base64 --decode | more
+    kubectl get secret k8ssandra-superuser -o jsonpath="{.data.password}" | base64 --decode ; echo
+    ```
+
+    **Output**:
+
+    ```bash
     PGo8kROUgAJOa8vhjQrE49Lgruw7s32HCPyVvcfVmmACW8oUhfoO9A
-    (END)
     ```
 
 {{% alert title="Tip" color="success" %}}

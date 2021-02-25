@@ -8,15 +8,15 @@ description: |
 
 **Completion time**: **10 minutes**.
 
+{{% alert title="Important" color="warning" %}}
+You **must** complete the steps in [Quick start]({{< relref "docs/getting-started" >}}) before continuing.
+{{% /alert %}}
+
 In this quick start, we'll cover:
 
 * [Setting up port forwarding]({{< relref "#set-up-port-forwarding" >}}) to access Stargate services and CQLSH outside your Kubernetes (K8s) cluster.
 * [Accessing K8ssandra via Stargate]({{< relref "#access-k8ssandra-using-the-stargate-api" >}}) by creating an access token, and using Stargates's REST, GraphQL and document interfaces.
 * [Accessing K8ssandra using CQLSH]({{< relref "#access-k8ssandra-using-cqlsh" >}}).
-
-{{% alert title="Important" color="warning" %}}
-You **must** complete the steps in [Quick start]({{< relref "docs/getting-started" >}}) before continuing.
-{{% /alert %}}
 
 ## Set up port forwarding
 
@@ -26,6 +26,11 @@ Begin by getting a list of your K8ssandra K8s pods and ports:
 
 ```bash
 kubectl get services
+```
+
+**Output**:
+
+```bash
 NAME                                        TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)                                                 AGE
 cass-operator-metrics                       ClusterIP   10.99.98.218     <none>        8383/TCP,8686/TCP                                       21h
 k8ssandra-dc1-all-pods-service              ClusterIP   None             <none>        9042/TCP,8080/TCP,9103/TCP                              21h
@@ -56,10 +61,18 @@ To configure port forwarding:
 
 1. Open a new terminal.
 
-2. Run the `kubectl port-forward` command:
+1. Run the `kubectl port-forward` command in the background:
 
     ```bash
-    kubectl port-forward svc/k8ssandra-dc1-stargate-service 8080 8081 8082 8084 8085 9042
+    kubectl port-forward svc/k8ssandra-dc1-stargate-service 8080 8081 8082 8084 8085 9042 &
+    ```
+
+    **Output**:
+
+    ```bash
+    [1] 80940
+
+    ~/k8ssandra-testing 
     Forwarding from 127.0.0.1:8080 -> 8080
     Forwarding from [::1]:8080 -> 8080
     Forwarding from 127.0.0.1:8081 -> 8081
@@ -70,14 +83,33 @@ To configure port forwarding:
     Forwarding from [::1]:8084 -> 8084
     Forwarding from 127.0.0.1:8085 -> 8085
     Forwarding from [::1]:8085 -> 8085
-    Forwarding from 127.0.0.1:9042 -> 9042
-    Forwarding from [::1]:9042 -> 9042
     ```
 
-3. Leave the terminal running in the background.
+{{% alert title="Tip" color="success" %}}
+To terminate the port forwarding service, get the process ID:
 
-{{% alert title="Important" color="warning" %}}
-If you close the terminal for any reason, you'll shut down the port forwarding service.
+```bash
+jobs -l
+```
+
+**Output**:
+
+```bash
+[1]  + 80940 running    kubectl port-forward svc/k8ssandra-dc1-stargate-service 8080 8081 8082 8084
+```
+
+and kill the process
+
+```bash
+kill 80940
+```
+
+**Output**:
+
+```bash
+[1]  + terminated  kubectl port-forward svc/k8ssandra-dc1-stargate-service 8080 8081 8082 8084
+```
+
 {{% /alert %}}
 
 ## Access K8assandra using the Stargate APIs
@@ -138,6 +170,11 @@ To access K8ssandra using Stargate:
 
     ```bash
     curl -L -X POST 'http://localhost:8081/v1/auth' -H 'Content-Type: application/json' --data-raw '{"username": "<k8ssandra-username>", "password": "<k8ssandra-password>"}'
+    ```
+
+    **Output**:
+
+    ```json
     {"authToken":"<access-token>"}
     ```
 
@@ -153,7 +190,7 @@ For complete details on Stargate, see the [Stargate documentation](https://starg
 
 ## Access Cassandra using CQLSH
 
-If you're familiar with Cassandra, then you're familiar with CQLSH. You can download a full-featured CQLSH utility from Datastax and use that to interact with K8ssandra as if you were in a native Cassandra environment.
+If you're familiar with Cassandra, then you're familiar with CQLSH. You can download a full-featured [stand alone CQLSH utility](https://docs.datastax.com/en/dse/5.1/cql/cql/cql_using/startCqlshStandalone.html) from Datastax and use that to interact with K8ssandra as if you were in a native Cassandra environment.
 
 To access K8ssandra using the stand alone CQLSH utility:
 
@@ -165,35 +202,53 @@ To access K8ssandra using the stand alone CQLSH utility:
 
     ```bash
     cqlsh -u <k8ssandra-username> -p <k8ssandra-password>
+    ```
+
+    **Output**:
+
+    ```bash
     Connected to k8ssandra at 127.0.0.1:9042.
     [cqlsh 6.8.0 | Cassandra 3.11.6 | CQL spec 3.4.4 | Native protocol v4]
     Use HELP for help.
     k8ssandra-superuser@cqlsh>
    ```
 
-1. Populate a CQL file with the following data and save as `test-data.cql`:
+1. Create a new keyspace, `k8ssandra_test`, using [CREATE KEYSPACE](https://docs.datastax.com/en/cql-oss/3.x/cql/cql_reference/cqlCreateKeyspace.html):
 
     ```sql
     CREATE KEYSPACE k8ssandra_test  WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 1};
+    ```
+
+1. Switch to the new keyspace using [USE](https://docs.datastax.com/en/cql-oss/3.x/cql/cql_reference/cqlUse.html):
+
+    ```sql
     USE k8ssandra_test;
+    ```
+
+1. Create a new table, `users` using [CREATE TABLE](https://docs.datastax.com/en/cql-oss/3.x/cql/cql_reference/cqlCreateTable.html#cqlCreateTable)
+
+    ```sql
     CREATE TABLE users (email text primary key, name text, state text);
-    insert into users (email, name, state) values ('alice@example.com', 'Alice Smith', 'TX');
-    insert into users (email, name, state) values ('bob@example.com', 'Bob Jones', 'VA');
-    insert into users (email, name, state) values ('carol@example.com', 'Carol Jackson', 'CA');
-    insert into users (email, name, state) values ('david@example.com', 'David Yang', 'NV');
     ```
 
-1. Import the test data into the Cassandra node using the CQL `SOURCE` command:
+1. Insert some sample data into the new table using [INSERT](https://docs.datastax.com/en/cql-oss/3.x/cql/cql_reference/cqlInsert.html)
 
-    ```bash
-    SOURCE 'test-data.cql';
+    ```sql
+    INSERT INTO users (email, name, state) values ('alice@example.com', 'Alice Smith', 'TX');
+    INSERT INTO users (email, name, state) values ('bob@example.com', 'Bob Jones', 'VA');
+    INSERT INTO users (email, name, state) values ('carol@example.com', 'Carol Jackson', 'CA');
+    INSERT INTO users (email, name, state) values ('david@example.com', 'David Yang', 'NV');
     ```
 
-1. Query the data:
+1. Query the data using [SELECT](https://docs.datastax.com/en/cql-oss/3.x/cql/cql_reference/cqlSelect.html) and validate the return results:
 
     ```sql
     cqlsh> SELECT * FROM k8ssandra_test.users;
+    ```
 
+    **Output**:
+
+    ```sql
      email             | name          | state
     -------------------+---------------+-------
      alice@example.com |   Alice Smith |    TX
@@ -204,6 +259,12 @@ To access K8ssandra using the stand alone CQLSH utility:
     (4 rows)
     ```
 
+1. When you're done, exit CQLSH using `QUIT`:
+
+    ```sql
+    cqlsh> QUIT;
+    ```
+
 For complete details on Cassandra, CQL and CQLSH, see the [Apache Cassandra](https://cassandra.apache.org/) web site.
 
 ## Next
@@ -211,5 +272,5 @@ For complete details on Cassandra, CQL and CQLSH, see the [Apache Cassandra](htt
 * For detailed information on additional K8ssandra tasks, see [Tasks]({{< relref "docs/topics" >}}).
 * For a list of frequently asked questions, see the [FAQs]({{< relref "docs/faqs" >}}).
 * For detailed information on K8ssandra, see [Architecture]({{< relref "docs/architecture" >}}).
-* For information on the various K8ssandra Helm charts, see [Architecture]({{< relref "docs/reference" >}}).
+* For information on the various K8ssandra Helm charts, see [Helm chart references]({{< relref "docs/reference" >}}).
 * If you'd like to contribute to K8ssandra, see [Contribution guidelines]({{< relref "docs/contribution-guidelines" >}}).
