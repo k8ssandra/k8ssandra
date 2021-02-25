@@ -159,6 +159,13 @@ Set default num_tokens based on the server version
 {{ .Release.Name }}-medusa
 {{- end }}
 
+{{/*
+Generatea a random, alphanumeric password that is 20 characters long.
+**/}}
+{{- define "k8ssandra.password" -}}
+{{ randAlphaNum 20 }}
+{{- end }}
+
 {{- define "k8ssandra.superuserSecretName" -}}
 {{- include "k8ssandra.clusterName" . }}-superuser
 {{- end }}
