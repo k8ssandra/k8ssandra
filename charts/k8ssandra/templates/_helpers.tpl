@@ -175,7 +175,11 @@ Generatea a random, alphanumeric password that is 20 characters long.
 {{- end }}
 
 {{- define "k8ssandra.reaperJmxUserSecretName" }}
+{{- if .Values.reaper.jmx.secret }}
+{{ .Values.reaper.jmx.secret }}
+{{- else }}
 {{- include "k8ssandra.clusterName" . }}-reaper-jmx
+{{- end }}
 {{- end }}
 
 {{- define "k8ssandra.medusaUserSecretName" }}

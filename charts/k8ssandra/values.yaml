@@ -425,14 +425,14 @@ reaper:
   # JMX access to perform repairs. The Cassandra cluster will be configured
   # with remote JMX access enabled when Reaper is deployed. The JMX access
   # will be configured to use authentication.
+  #
+  # If neither `jmx.secret` nor `jmx.username` are set, then a default user and
+  # secret with the user's credentials will be created.
   jmx:
+    secret: ""
     # -- Username that Reaper will use for JMX access. If left blank a random,
     # alphanumeric string will be generated.
     username: ""
-
-    # -- Password that Reaper will use for JMX access. If left blank a random,
-    # alphanumeric string will be generated.
-    password: ""
 
   ingress:
     # -- Enables Reaper ingress definitions. When enabled, you must specify a value for reaper.ingress.host.
