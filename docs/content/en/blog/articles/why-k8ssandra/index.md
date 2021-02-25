@@ -1,5 +1,5 @@
 ---
-date: 2021-02-12
+date: 2021-02-26
 title: "Why K8ssandra?"
 linkTitle: "Why K8ssandra?"
 description: >
