@@ -20,7 +20,7 @@ In this guide, we'll cover:
 
 ## Set up port forwarding
 
-In order to access Cassandra outside of the K8s cluster, if you don't have an Ingress setup as described in [Configure Ingress]({{< relref "/docs/topics/ingress" >}}), you'll need to configure port forwarding.
+In order to access Cassandra outside of the K8s cluster, you'll need to utilize port forwarding unless ingress is [configured]({{< relref "/docs/topics/ingress" >}}).
 
 Begin by getting a list of your K8ssandra K8s services and ports:
 
