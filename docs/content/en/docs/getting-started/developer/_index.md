@@ -108,7 +108,7 @@ To terminate the port forwarding service:
     **Output**:
 
     ```bash
-    [1]  + terminated  kubectl port-forward svc/k8ssandra-dc1-stargate-service 8080 8081 8082 8084
+    [1]  + terminated  kubectl port-forward svc/k8ssandra-dc1-stargate-service 8080 8081 8082
     ```
 
 {{% alert title="Tip" color="success" %}}
