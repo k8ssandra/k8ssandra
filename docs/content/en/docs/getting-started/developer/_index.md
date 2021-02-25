@@ -51,8 +51,6 @@ In the output above, the service of interest is:
   * **8080/TCP**: GraphQL interface
   * **8081/TCP**: REST authorization service for generating tokens
   * **8082/TCP**: REST interface
-  * **8084/TCP**: Health check (/healthcheck)
-  * **8085/TCP**: Metrics (/metrics)
   * **9042/TCP**: CQL service
 
 Those are the ports we'll need to forward for CQLSH and Stargate access.
