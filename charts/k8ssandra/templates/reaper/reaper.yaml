@@ -10,7 +10,7 @@ spec:
     autoScheduling:
       enabled: {{ .Values.reaper.autoschedule }}
     storageType: cassandra
-    jmxUserSecretName: {{ .Release.Name }}-reaper-secret-k8ssandra
+    jmxUserSecretName: {{ .Release.Name }}-reaper-jmx
     cassandraBackend:
     {{- if .Values.reaper.cassandraUser.secret }}
       cassandraUserSecretName: {{ .Values.reaper.cassandraUser.secret }}
