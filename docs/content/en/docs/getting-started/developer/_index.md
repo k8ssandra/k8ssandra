@@ -12,7 +12,7 @@ description: |
 You **must** complete the steps in [Quick start]({{< relref "docs/getting-started" >}}) before continuing.
 {{% /alert %}}
 
-In this quick start, we'll cover:
+In this guide, we'll cover:
 
 * [Setting up port forwarding]({{< relref "#set-up-port-forwarding" >}}) to access Stargate services and CQLSH outside your Kubernetes (K8s) cluster.
 * [Accessing K8ssandra using Stargate]({{< relref "#access-k8ssandra-using-the-stargate-api" >}}) by creating an access token, and using Stargates's REST, GraphQL and document interfaces.
