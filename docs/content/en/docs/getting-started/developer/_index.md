@@ -62,7 +62,7 @@ To configure port forwarding:
 2. Run the `kubectl port-forward` command in the background:
 
     ```bash
-    kubectl port-forward svc/k8ssandra-dc1-stargate-service 8080 8081 8082 8084 8085 9042 &
+    kubectl port-forward svc/k8ssandra-dc1-stargate-service 8080 8081 8082 9042 &
     ```
 
     **Output**:
