@@ -10,13 +10,11 @@ spec:
     autoScheduling:
       enabled: {{ .Values.reaper.autoschedule }}
     storageType: cassandra
-    jmxUserSecretName: {{ .Release.Name }}-reaper-jmx
+    jmxUserSecretName: {{ include "k8ssandra.reaperJmxUserSecretName" . }}
     cassandraBackend:
-    {{- if .Values.reaper.cassandraUser.secret }}
-      cassandraUserSecretName: {{ .Values.reaper.cassandraUser.secret }}
-    {{- else if or .Values.reaper.cassandraUser.username .Values.cassandra.auth.enabled }}
-      cassandraUserSecretName: {{ include "k8ssandra.clusterName" . }}-reaper
-    {{- end }}
+      {{- if .Values.cassandra.auth.enabled }}
+      cassandraUserSecretName: {{ default (include "k8ssandra.reaperUserSecretName" .) .Values.reaper.cassandraUser.secret }}
+      {{- end }}
       cassandraDatacenter:
         name: {{ include "k8ssandra.datacenterName" . }}
       replication:

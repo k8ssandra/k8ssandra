@@ -1,8 +1,9 @@
 package unit_test
 
 import (
-	helmUtils "github.com/k8ssandra/k8ssandra/tests/unit/utils/helm"
 	"path/filepath"
+
+	helmUtils "github.com/k8ssandra/k8ssandra/tests/unit/utils/helm"
 
 	"github.com/gruntwork-io/terratest/modules/helm"
 	api "github.com/k8ssandra/reaper-operator/api/v1alpha1"
@@ -69,6 +70,32 @@ var _ = Describe("Verify Reaper template", func() {
 
 			renderTemplate(options)
 			Expect(reaper.Spec.ServerConfig.AutoScheduling).ToNot(BeNil())
+		})
+
+		It("modifying secret options", func() {
+			options := &helm.Options{
+				SetStrValues: map[string]string{
+					"reaper.jmx.secret":           "somethingelse",
+					"reaper.cassandraUser.secret": "cassandraSpecial",
+				},
+				KubectlOptions: defaultKubeCtlOptions,
+			}
+
+			renderTemplate(options)
+			Expect(reaper.Spec.ServerConfig.CassandraBackend.CassandraUserSecretName).To(Equal("cassandraSpecial"))
+			Expect(reaper.Spec.ServerConfig.JmxUserSecretName).To(Equal("somethingelse"))
+		})
+
+		It("verifying default secret values", func() {
+			options := &helm.Options{
+				SetStrValues: map[string]string{
+					"cassandra.clusterName": "nowyouseeme",
+				},
+				KubectlOptions: defaultKubeCtlOptions,
+			}
+
+			renderTemplate(options)
+			Expect(reaper.Spec.ServerConfig.JmxUserSecretName).To(HavePrefix("nowyouseeme"))
 		})
 	})
 })
