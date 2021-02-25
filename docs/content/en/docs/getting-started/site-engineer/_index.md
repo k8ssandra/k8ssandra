@@ -128,6 +128,131 @@ Other useful nodetool commands include:
 
 For details on all nodetool commands, see [The nodetool utility](https://docs.datastax.com/en/cassandra-oss/3.x/cassandra/tools/toolsNodetool.html).
 
+## Access K8ssandra utilities
+
+K8ssandra includes the following bundled and customized utilities:
+
+* [Prometheus](https://prometheus.io/) a standard metrics collection and alerting tool.
+* [Grafana](https://grafana.com/) a set of pre-configured dashboards displaying important K8ssandra metrics.
+* [Cassandra Reaper](http://cassandra-reaper.io/) an easy interface for managing K8ssandra cluster repairs
+
+In this section you'll configure port forwarding so you can access those utilities and take a brief look at their highlights.
+
+### Configure port forwarding
+
+Begin by getting a list of your K8ssandra K8s pods and ports:
+
+```bash
+kubectl get services
+```
+
+**Output**:
+
+```bash
+NAME                                        TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)                                                 AGE
+cass-operator-metrics                       ClusterIP   10.99.98.218     <none>        8383/TCP,8686/TCP                                       21h
+k8ssandra-dc1-all-pods-service              ClusterIP   None             <none>        9042/TCP,8080/TCP,9103/TCP                              21h
+k8ssandra-dc1-service                       ClusterIP   None             <none>        9042/TCP,9142/TCP,8080/TCP,9103/TCP,9160/TCP            21h
+k8ssandra-dc1-stargate-service              ClusterIP   10.106.70.148    <none>        8080/TCP,8081/TCP,8082/TCP,8084/TCP,8085/TCP,9042/TCP   21h
+k8ssandra-grafana                           ClusterIP   10.96.120.157    <none>        80/TCP                                                  21h
+k8ssandra-kube-prometheus-operator          ClusterIP   10.97.21.175     <none>        443/TCP                                                 21h
+k8ssandra-kube-prometheus-prometheus        ClusterIP   10.111.184.111   <none>        9090/TCP                                                21h
+k8ssandra-reaper-k8ssandra-reaper-service   ClusterIP   10.104.46.103    <none>        8080/TCP                                                21h
+k8ssandra-seed-service                      ClusterIP   None             <none>        <none>                                                  21h
+kubernetes                                  ClusterIP   10.96.0.1        <none>        443/TCP                                                 21h
+prometheus-operated                         ClusterIP   None             <none>        9090/TCP                                                2
+```
+
+In the output above, the services of interest are:
+
+* **k8ssandra-grafana**: The K8ssandra grafana service where the name is a combination of the K8ssandra cluster name you specified during the Helm install, `k8ssandra`, and the postfix, `-grafana`. This service listens on the internal K8s port `80`.
+* **prometheus-operated**: The K8ssandra Prometheus daemon. This service listens on the internal K8s port `9090`.
+* **k8ssandra-reaper-k8ssandra-reaper-service**: The K8ssandra Cassandra Reaper service where the name is a combination of the K8ssandra cluster name you specified during the Helm install, `k8ssandra`, `-reaper`, the K8ssandra cluster name again, and the postfix `-reaper-service`. This port listens on the internal K8s port `8080`.
+
+To configure port forwarding:
+
+1. Open a new terminal.
+
+2. Run the following 3 `kubectl port-forward` commands in the background:
+
+    ```bash
+    kubectl port-forward svc/k8ssandra-grafana 9191:80 &
+    kubectl port-forward svc/prometheus-operated 9292:9090 &
+    kubectl port-forward svc/k8ssandra-reaper-k8ssandra-reaper-service 9393:8080 &
+    ```
+
+    **Output**:
+
+    ```bash
+    [1] 29211
+    [2] 29212
+    [3] 29213
+
+    ~/
+    Forwarding from 127.0.0.1:9292 -> 9090
+    Forwarding from [::1]:9292 -> 9090
+    Forwarding from 127.0.0.1:9393 -> 8080
+    Forwarding from [::1]:9393 -> 8080
+    Forwarding from 127.0.0.1:9191 -> 3000
+    Forwarding from [::1]:9191 -> 3000
+    ```
+
+The K8ssandra services are now available at:
+
+* Prometheus: <http://127.0.0.1:9292>
+* Grafana: <http://127.0.0.1:9191>
+* Cassandra Reaper: <http://127.0.0.1:9393/webui>
+
+#### Terminate port forwarding
+
+To terminate a particular forwarded port:
+
+1. Get the process ID:
+
+    ```bash
+    jobs -l
+    ```
+
+    **Output**:
+
+    ```bash
+    [1]  + 80940 running    kubectl port-forward svc/k8ssandra-dc1-stargate-service 8080 8081 8082 8084
+    ```
+
+1. Kill the process
+
+    ```bash
+    kill 80940
+    ```
+
+    **Output**:
+
+    ```bash
+    [1]  + terminated  kubectl port-forward svc/k8ssandra-dc1-stargate-service 8080 8081 8082 8084
+    ```
+
+{{% alert title="Tip" color="success" %}}
+Exiting the terminal instance will terminate all port forwarding services.
+{{% /alert %}}
+### Prometheus
+
+<http://127.0.0.1.nip.io:8080/prometheus/> is a standard metrics collection and alerting tool. For more information, see the [Prometheus](https://prometheus.io/) web site.
+
+### Grafana
+
+<http://127.0.0.1.nip.io:8080/grafana/login> provides a set of pre-configured dashboards displaying important K8ssandra metrics. For more information see the [Grafana](https://grafana.com/) web site.
+
+{{% alert title="Tip" color="success" %}}
+If you've followed the configuration instructions in this quick start, use `admin` for the username and `admin123` for the password.
+{{% /alert %}}
+### Cassandra Reaper
+
+<http://repair.127.0.0.1.nip.io:8080/webui> provides an easy interface for managing K8ssandra cluster repairs. For details, see the [Cassandra Reaper](http://cassandra-reaper.io/) web site.
+
+### Medusa backup and restore
+
+K8ssandra provides a complete backup and restore solution using [Medusa](https://github.com/thelastpickle/cassandra-medusa). For detailed configuration and usage instructions, see [Backup and restore Cassandra]({{< relref "docs/topics/restore-a-backup" >}}).
+
 ## Upgrade your K8ssandra cluster
 
 While you can use port forwarding as described above, to enable _persistent_ external access for applications, and K8ssandra features, you'll need to configure Ingress. In this section we'll demonstrate upgrading your existing K8ssandra installation to support Ingress using a Traefik Helm chart.
@@ -252,29 +377,6 @@ The following K8ssandra application are now available at the following persisten
 * Prometheus: <http://127.0.0.1.nip.io:8080/prometheus/>
 * Grafana: <http://127.0.0.1.nip.io:8080/prometheus/>
 * Cassandra Reaper: <http://repair.127.0.0.1.nip.io:8080/webui>
-
-## Access K8ssandra utilities
-
-K8ssandra includes the following bundled and customized utilities:
-
-### Prometheus
-
-<http://127.0.0.1.nip.io:8080/prometheus/> is a standard metrics collection and alerting tool. For more information, see the [Prometheus](https://prometheus.io/) web site.
-
-### Grafana
-
-<http://127.0.0.1.nip.io:8080/grafana/login> provides a set of pre-configured dashboards displaying important K8ssandra metrics. For more information see the [Grafana](https://grafana.com/) web site.
-
-{{% alert title="Tip" color="success" %}}
-If you've followed the configuration instructions in this quick start, use `admin` for the username and `admin123` for the password.
-{{% /alert %}}
-### Cassandra Reaper
-
-<http://repair.127.0.0.1.nip.io:8080/webui> provides an easy interface for managing K8ssandra cluster repairs. For details, see the [Cassandra Reaper](http://cassandra-reaper.io/) web site.
-
-### Medusa backup and restore
-
-K8ssandra provides a complete backup and restore solution using [Medusa](https://github.com/thelastpickle/cassandra-medusa). For detailed configuration and usage instructions, see [Backup and restore Cassandra]({{< relref "docs/topics/restore-a-backup" >}}).
 
 ## Next
 

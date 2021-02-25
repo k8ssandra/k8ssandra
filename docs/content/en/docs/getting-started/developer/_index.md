@@ -15,8 +15,8 @@ You **must** complete the steps in [Quick start]({{< relref "docs/getting-starte
 In this quick start, we'll cover:
 
 * [Setting up port forwarding]({{< relref "#set-up-port-forwarding" >}}) to access Stargate services and CQLSH outside your Kubernetes (K8s) cluster.
-* [Accessing K8ssandra via Stargate]({{< relref "#access-k8ssandra-using-the-stargate-api" >}}) by creating an access token, and using Stargates's REST, GraphQL and document interfaces.
-* [Accessing K8ssandra using CQLSH]({{< relref "#access-k8ssandra-using-cqlsh" >}}).
+* [Accessing K8ssandra using Stargate]({{< relref "#access-k8ssandra-using-the-stargate-api" >}}) by creating an access token, and using Stargates's REST, GraphQL and document interfaces.
+* [Accessing K8ssandra using CQLSH]({{< relref "#access-k8ssandra-using-cqlsh" >}}) including some basic CQL commands.
 
 ## Set up port forwarding
 
@@ -45,9 +45,9 @@ kubernetes                                  ClusterIP   10.96.0.1        <none> 
 prometheus-operated                         ClusterIP   None             <none>        9090/TCP                                                2
 ```
 
-In the output above, the pod of interest is:
+In the output above, the service of interest is:
 
-* **k8ssandra-dc1-stargate-service**: The K8ssandra Stargate where the name is a combination of the K8ssandra cluster name you specified during the Helm install, `k8ssandra`, the datacenter name, `dc1` and the postfix, `-service`. This service listens on the ports:
+* **k8ssandra-dc1-stargate-service**: The K8ssandra Stargate service where the name is a combination of the K8ssandra cluster name you specified during the Helm install, `k8ssandra`, the datacenter name, `dc1` and the postfix, `-service`. This service listens on the ports:
   * **8080/TCP**: GraphQL interface
   * **8081/TCP**: REST authorization service for generating tokens
   * **8082/TCP**: REST interface
@@ -72,7 +72,7 @@ To configure port forwarding:
     ```bash
     [1] 80940
 
-    ~/k8ssandra-testing 
+    ~/
     Forwarding from 127.0.0.1:8080 -> 8080
     Forwarding from [::1]:8080 -> 8080
     Forwarding from 127.0.0.1:8081 -> 8081
@@ -85,31 +85,36 @@ To configure port forwarding:
     Forwarding from [::1]:8085 -> 8085
     ```
 
+### Terminate port forwarding
+
+To terminate the port forwarding service:
+
+1. Get the process ID:
+
+    ```bash
+    jobs -l
+    ```
+
+    **Output**:
+
+    ```bash
+    [3]  + 29213 running    kubectl port-forward svc/k8ssandra-reaper-k8ssandra-reaper-service 9393:8080
+    ```
+
+1. Kill the process
+
+    ```bash
+    kill 29212
+    ```
+
+    **Output**:
+
+    ```bash
+    [2]  - terminated  kubectl port-forward svc/prometheus-operated 9292:9090
+    ```
+
 {{% alert title="Tip" color="success" %}}
-To terminate the port forwarding service, get the process ID:
-
-```bash
-jobs -l
-```
-
-**Output**:
-
-```bash
-[1]  + 80940 running    kubectl port-forward svc/k8ssandra-dc1-stargate-service 8080 8081 8082 8084
-```
-
-and kill the process
-
-```bash
-kill 80940
-```
-
-**Output**:
-
-```bash
-[1]  + terminated  kubectl port-forward svc/k8ssandra-dc1-stargate-service 8080 8081 8082 8084
-```
-
+Exiting the terminal instance will terminate the port forwarding service.
 {{% /alert %}}
 
 ## Access K8assandra using the Stargate APIs
