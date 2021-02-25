@@ -34,16 +34,18 @@ You will need storage for the backups. This topic shows the use of AWS S3 bucket
   * The `name` of the S3 bucket
   * The region assigned to the S3 bucket
   
-  Or contact your IT team if they manage those assets. You'll provide those details in an edited version of the [medusa-bucket-key.yaml](medusa-bucket-key.yaml) file. For information about the S3 setup steps, see this helpful [readme](https://github.com/thelastpickle/cassandra-medusa/blob/master/docs/aws_s3_setup.md).  
+  Or contact your IT team if they manage those assets. You'll provide those details in edited versions of the sample [medusa-bucket-key.yaml](medusa-bucket-key.yaml) and [backup-restore-values.yaml](backup-restore-values.yaml) files. For information about the S3 setup steps, see this helpful [readme](https://github.com/thelastpickle/cassandra-medusa/blob/master/docs/aws_s3_setup.md).  
 
 * Add and update the following repo, which has in one chart all the settings for K8ssandra plus the backup/restore settings:
 
-```
+```bash
 helm repo add k8ssandra https://helm.k8ssandra.io/
 helm repo update
 ```
 
-```
+**Output:**
+
+```bash
 Hang tight while we grab the latest from your chart repositories...
 ...Successfully got an update from the "k8ssandra" chart repository
 Update Complete. ⎈Happy Helming!⎈
@@ -61,7 +63,7 @@ Start by creating a secret with the credentials for the S3 bucket.
 
 The [medusa-bucket-key.yaml](medusa-bucket-key.yaml) sample in GitHub contains:
 
-```
+```bash
 apiVersion: v1
 kind: Secret
 metadata:
@@ -81,18 +83,29 @@ In the YAML, notice the `stringData` property value: `medusa_s3_credentials`. Th
 
 Apply the YAML to your Kubernetes environment. In this example, assume that you had copied `medusa-bucket-key.yaml` to `my-medusa-bucket-key.yaml`:
 
-`kubectl apply -f my-medusa-bucket-key.yaml`
+```bash
+kubectl apply -f my-medusa-bucket-key.yaml
+```
+
+**Output:**
  
-`secret/medusa-bucket-key configured`
+```bash
+secret/medusa-bucket-key configured
+```
 
 {{% alert title="Warning" color="warning" %}}
-If the values noted above in your edited **copy** of medusa-bucket-key.yaml do not match the S3 bucket's values, a subsequent attempt to install K8ssandra will begin and most pods will reach a Ready state; however, the Medusa container in the `<cluster-name>-dc1-default-sts-0` pod will fail due to the misconfiguration, and you will not be able to perform backup and restore operations. Also, make sure that the region used by your S3 bucket matches the region expected by Medusa. If there is a mismatch, you'll see an error in the logs.
+If the values noted above in your edited **copy** of medusa-bucket-key.yaml do not match the S3 bucket's values, a subsequent attempt to install K8ssandra will begin and most pods will reach a Ready state; however, the Medusa container in the `<releaseName>-dc1-default-sts-0` pod will fail due to the misconfiguration, and you will not be able to perform backup and restore operations. Also, make sure that the region used by your S3 bucket matches the region expected by Medusa. If there is a mismatch, you'll see an error in the logs.
 {{% /alert %}}
 
 For example, if there is a configuration mismatch:
 
 ```bash
 kubectl logs demo-dc1-default-sts-0 -c medusa
+```
+
+**Output:**
+
+```bash
 .
 .
 .
@@ -100,7 +113,7 @@ File "/usr/local/lib/python3.6/dist-packages/libcloud/storage/drivers/s3.py", li
 libcloud.common.types.LibcloudError: <LibcloudError in <class 'libcloud.storage.drivers.s3.S3StorageDriver'> 'This bucket is located in a different region. Please use the correct driver. Bucket region "us-east-2", used region "us-east-1".'>
 ```
 
-If your IT group manages the AWS S3 bucket settings, consult with them to get the correct values. 
+The solution is easy - for S3 buckets, specify the correct region in a values file that you'll reference in the K8ssandra install or upgrade; see the section below. If your IT group manages the AWS S3 bucket settings, consult with them to get the correct values. 
 
 Here's an example from the AWS S3 dashboard showing a sample bucket name and region:
 
@@ -112,7 +125,7 @@ Notice how in this example, the region defined in the AWS console is `us-east-1`
 
 Install the `k8ssandra` chart with the following properties. You can reference an edited copy of the provided [backup-restore-values.yaml](backup-restore-values.yaml) file; customize the `name` of the S3 bucket defined for your purposes, and make sure the region value matches the region used by the S3 bucket. Before edits, this sample values file contains:
 
-```
+```bash
 size: 3
 backupRestore: 
   medusa:
@@ -130,17 +143,25 @@ The chart's entries relate to a Kubernetes Secret, which contains the object sto
 
 Example for a new K8ssandra installation, in which we use `demo` as the cluster name:
 
-`helm install demo k8ssandra/k8ssandra -f my-backup-restore-values.yaml`
+```bash
+helm install demo k8ssandra/k8ssandra -f my-backup-restore-values.yaml
+```
 
 Example for an existing K8ssandra installation, in which we used `demo` as the cluster name:
 
-`helm upgrade demo k8ssandra/k8ssandra -f my-backup-restore-values.yaml`
+```bash
+helm upgrade demo k8ssandra/k8ssandra -f my-backup-restore-values.yaml
+```
 
 Allow a few minutes for the pods to start and proceed to a Ready state; check the pod status periodically:
 
-`kubectl get pods`                           
-
+```bash
+kubectl get pods
 ```
+
+**Output:**
+
+```bash
 NAME                                                   READY   STATUS      RESTARTS   AGE
 demo-cass-operator-65cc657-fq6bc                       1/1     Running     0          7m20s
 demo-dc1-default-sts-0                                 3/3     Running     0          6m53s
@@ -156,9 +177,11 @@ prometheus-demo-kube-prometheus-stack-prometheus-0     2/2     Running     1    
 
 Backup and restore operations are enabled by default. The `bucketSecret` corresponds to the secret credentials.
 
-`kubectl get cassdc dc1 -o yaml`
+```bash
+kubectl get cassdc dc1 -o yaml
+```
 
-In the output, see the `podTemplateSpec` property; two containers were added for Medusa.  Here’s the entry for the GRPC backup service:
+In the output, see the `podTemplateSpec` property; two containers were added for Medusa.  Here’s the entry for the gRPC backup service:
 
 `    name: medusa`
 
@@ -168,8 +191,13 @@ Here’s the entry for the restore’s init container. K8ssandra looks for an en
 
 After a few minutes, once the pods have started, check the status:
 
-```
+```bash
 kubectl get cassdc dc1 -o yaml
+```
+
+**Output:**
+
+```bash
 .
 .
 .
@@ -189,7 +217,7 @@ status:
 
 Now let’s create some test data.  The [test_data.cql](test_data.cql) sample file in GitHub contains:
 
-```
+```bash
 CREATE KEYSPACE medusa_test  WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 1};
 USE medusa_test;
 CREATE TABLE users (email text primary key, name text, state text);
@@ -199,9 +227,11 @@ insert into users (email, name, state) values ('carol@example.com', 'Carol Jacks
 insert into users (email, name, state) values ('david@example.com', 'David Yang', 'NV');
 ```
 
-Copy the cql file to the k8ssandra container (pod):
+Copy the cql file to the K8ssandra StatefulSet (sts) pod:
 
-`kubectl cp test_data.cql demo-dc1-default-sts-0:/tmp -c cassandra`
+```bash
+kubectl cp test_data.cql demo-dc1-default-sts-0:/tmp -c cassandra
+```
 
 {{% alert title="Tip" color="info" %}}
 Before you can launch the CQLSH instance that's deployed by K8ssandra to a cloud-based Kubernetes cluster (such as Google Kubernetes Engine), you'll need authentication credentials. The superuser secret name defaults to `<cluster-name>-superuser`. 
@@ -210,16 +240,26 @@ Before you can launch the CQLSH instance that's deployed by K8ssandra to a cloud
 In this example: `demo-superuser`. To verify, you can extract and decode the username secret:
 
  ```bash
- kubectl get secret demo-superuser -o jsonpath="{.data.username}" | base64 --decode | more
+ kubectl get secret demo-superuser -o jsonpath="{.data.username}" | base64 --decode ; echo
+ ```
+ 
+ **Output:**
+ 
+ ```bash
  demo-superuser
  ```
 
-The command output (second line above) verified that the username to use on a subsequent command is `demo-superuser`.
+The output verified that the username to use on a subsequent command is `demo-superuser`.
 
 Next, extract and decode the password secret. For example:
 
  ```bash
- kubectl get secret demo-superuser -o jsonpath="{.data.password}" | base64 --decode | more
+ kubectl get secret demo-superuser -o jsonpath="{.data.password}" | base64 --decode ; echo
+ ```
+ 
+ **Output:**
+ 
+ ```bash
  ItSCody8Nou2R0vYWd4FPDGi2RPy-Jvtg-mSeOoUlbU5UNsIlDF8QQ
  ```
 
@@ -231,7 +271,8 @@ The sample generated password is for _this_ cluster. Your cluster will have a di
 
 For example:
 
-`kubectl exec -it demo-dc1-default-sts-0 -c cassandra -- cqlsh -u demo-superuser -p ItSCody8Nou2R0vYWd4FPDGi2RPy-Jvtg-mSeOoUlbU5UNsIlDF8QQ -f /tmp/test_data.cql`
+```bash
+kubectl exec -it demo-dc1-default-sts-0 -c cassandra -- cqlsh -u demo-superuser -p ItSCody8Nou2R0vYWd4FPDGi2RPy-Jvtg-mSeOoUlbU5UNsIlDF8QQ -f /tmp/test_data.cql
 
 ### Exec open CQLSH and enter DML and DDL statements
 
@@ -256,7 +297,7 @@ demo-superuser@cqlsh:medusa_test> SELECT * from medusa_test.users;
 
 Exit out of CQLSH:
 
-```
+```bash
 demo-superuser@cqlsh:medusa_test> exit
 ```
 
@@ -270,7 +311,11 @@ Now create a backup by referencing the backup chart:
 
 ```bash
 helm install test k8ssandra/backup --set name=test,cassandraDatacenter.name=dc1
- 
+```
+
+**Output:**
+
+```bash
 kubectl get cassandrabackup
 NAME       AGE
 test       17s
@@ -278,7 +323,9 @@ test       17s
 
 Examine the YAML:
 
-`kubectl get cassandrabackup test -o yaml`
+```bash
+kubectl get cassandrabackup test -o yaml
+```
 
 The Status section in the YAML shows the backup operation’s start and finish timestamps.
 
@@ -294,17 +341,23 @@ S3 maintains the `backup_index` bucket so it only has to store a single copy of 
 
 Consider the case where an unexpected event occurred, such as an authorized user accidentally entering cqlsh `TRUNCATE` commands that wiped out data in Cassandra. You can restore data from the backup. For example:
 
-`helm install restore-test ./restore --set name=helm-test,backup.name=test,cassandraDatacenter.name=dc1`
+```bash
+helm install restore-test ./restore --set name=helm-test,backup.name=test,cassandraDatacenter.name=dc1
+```
 
 Examine the YAML:
 
-`kubectl get cassandrarestore helm-test -o yaml`
+```bash
+kubectl get cassandrarestore helm-test -o yaml
+```
 
-The output shows the restore operation’s start time and that the `cassandraDatacenter` is being recreated.
+The output will show the restore operation’s start time and that the `cassandraDatacenter` is being recreated.
 
 You can also examine the in-progress logs:
 
-`kubectl logs cassandra-dc1-default-sts-0 -c medusa-restore`
+```bash
+kubectl logs cassandra-dc1-default-sts-0 -c medusa-restore
+```
 
 ### Launch CQLSH again and verify the restore
 
@@ -331,7 +384,9 @@ demo-superuser@cqlsh:medusa_test> SELECT * from medusa_test.users;
 
 You can look again at the cassandrarestore helm-test YAML for the start and ending timestamps:
 
-`kubectl get cassadrarestore helm-test -o yaml`
+```bash
+kubectl get cassadrarestore helm-test -o yaml
+```
 
 ## Next
 
