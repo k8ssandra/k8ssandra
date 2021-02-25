@@ -272,8 +272,10 @@ For complete details on Cassandra, CQL and CQLSH, see the [Apache Cassandra](htt
 
 ## Next
 
-* For detailed information on additional K8ssandra tasks, see [Tasks]({{< relref "docs/topics" >}}).
-* For a list of frequently asked questions, see the [FAQs]({{< relref "docs/faqs" >}}).
-* For detailed information on K8ssandra, see [Architecture]({{< relref "docs/architecture" >}}).
-* For information on the various K8ssandra Helm charts, see [Helm chart references]({{< relref "docs/reference" >}}).
+With a running installation check out some of our other guides and docs.
+
+* [Task Guides]({{< relref "docs/topics" >}}).
+* [FAQs]({{< relref "docs/faqs" >}}).
+* [K8ssandra Architecture]({{< relref "docs/architecture" >}}).
+* [Helm chart references]({{< relref "docs/reference" >}}).
 * If you'd like to contribute to K8ssandra, see [Contribution guidelines]({{< relref "docs/contribution-guidelines" >}}).
