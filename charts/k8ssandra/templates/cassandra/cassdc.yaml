@@ -5,13 +5,6 @@
   {{- fail (print .Values.cassandra.version " is not a supported Cassandra version") }}
 {{- end -}}
 
-{{- $superuserSecret := "" }}
-{{- if .Values.cassandra.auth.superuser.secret }}
-  {{- $superuserSecret = .Values.cassandra.auth.superuser.secret }}
-{{- else }}
-  {{- $superuserSecret = (include "k8ssandra.superuserSecretName" .) }}
-{{- end }}
-
 apiVersion: cassandra.datastax.com/v1beta1
 kind: CassandraDatacenter
 metadata:
@@ -67,15 +60,15 @@ spec:
   {{- if or .Values.reaper.enabled .Values.medusa.enabled .Values.stargate.enabled }}
   users:
   {{- if .Values.reaper.enabled }}
-    - secretName: {{ default (include "k8ssandra.reaperUserSecretName" .) .Values.reaper.cassandraUser.secret }}
+    - secretName: {{ include "k8ssandra.reaperUserSecretName" . }}
       superuser: true
   {{- end }}
   {{- if .Values.medusa.enabled }}
-    - secretName: {{ default (include "k8ssandra.medusaUserSecretName" .) .Values.medusa.cassandraUser.secret }}
+    - secretName: {{ include "k8ssandra.medusaUserSecretName" . }}
       superuser: true
   {{- end }}
   {{- if .Values.stargate.enabled }}
-    - secretName: {{ default (include "k8ssandra.stargateUserSecretName" .) .Values.stargate.cassandraUser.secret }}
+    - secretName: {{ include "k8ssandra.stargateUserSecretName" . }}
       superuser: true
   {{- end }}
   {{- end }}
@@ -142,12 +135,12 @@ spec:
           - name: SUPERUSER_JMX_USERNAME
             valueFrom:
               secretKeyRef:
-                name: {{ $superuserSecret }}
+                name: {{ include "k8ssandra.superuserSecretName" . }}
                 key: username
           - name: SUPERUSER_JMX_PASSWORD
             valueFrom:
               secretKeyRef:
-                name: {{ $superuserSecret }}
+                name: {{ include "k8ssandra.superuserSecretName" . }}
                 key: password
         args:
           - /bin/sh
