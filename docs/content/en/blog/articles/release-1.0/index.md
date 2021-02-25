@@ -45,18 +45,14 @@ covered over that time.
 ## Features
 * Installation with a single chart
 * Dedicated charts for sub-projects
-* Stargate integration
+* [Stargate](/docs/architecture/stargate) integration
 * Authentication enabled by default
 * Non-root containers
-* Migration to kube-prometheus-stack
-* Comprehensive Getting Started and Tasks documentation
+* [Migration to kube-prometheus-stack](/docs/architecture/monitoring)
+* Comprehensive [Getting Started](/docs/getting-started) and [Tasks](/docs/topics) documentation
 * Integration with native K8s Ingress resources for HTTP workloads
 * Additional C* configuration points (topology, heap, storage class)
 * Namespace-scoped resources
-
-## Events
-
-![K8ssandra Events](events.png)
 
 ## Components
 
@@ -71,6 +67,14 @@ covered over that time.
 * kube-prometheus-stack chart - v12.11.3
   * Prometheus - v0.44.0
   * Grafana - v6.1
+
+## Events
+
+| Event | Video | Resources |
+|-------|-------|-----------|
+| KubeCon NA 2020 Workshop: Putting Apache Cassandra™ on Automatic with Kubernetes | [YouTube Recording]() | [GitHub Repo](https://github.com/DataStax-Academy/kubecon2020) |
+| Developer Week 2021 Talk: Building a Data Plane with K8ssandra, Apache Cassandra on Kubernetes | Coming Soon | [Slides](https://www.slideshare.net/ChristopherBradford2/building-a-data-plane-with-k8ssandra-apache-cassandra-on-kubernetes) | 
+| DataStax Devs Workshop Series: Kubernetes and Docker | [YouTube Playlist]() | [GitHub Repo](https://github.com/datastaxdevs/learningpath-docker) |
 
 ## Contributors
 THANK YOU to everyone who contributed to the project and made 1.0 happen. Whether it's a typo correction, YAML indentation tweak, or operator go code, every bit shared makes this project better. A huge thank you to the core team: 
