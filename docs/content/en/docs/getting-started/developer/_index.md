@@ -20,9 +20,9 @@ In this quick start, we'll cover:
 
 ## Set up port forwarding
 
-In order to access Cassandra outside of the K8s cluster, if you don't have an Ingress setup as described in [Configure Ingress]({{< relref "/docs/topics/ingress" >}}), you'll need to configure port forwarding for both CQLSH and Stargate access.
+In order to access Cassandra outside of the K8s cluster, if you don't have an Ingress setup as described in [Configure Ingress]({{< relref "/docs/topics/ingress" >}}), you'll need to configure port forwarding.
 
-Begin by getting a list of your K8ssandra K8s pods and ports:
+Begin by getting a list of your K8ssandra K8s services and ports:
 
 ```bash
 kubectl get services
@@ -61,7 +61,7 @@ To configure port forwarding:
 
 1. Open a new terminal.
 
-1. Run the `kubectl port-forward` command in the background:
+2. Run the `kubectl port-forward` command in the background:
 
     ```bash
     kubectl port-forward svc/k8ssandra-dc1-stargate-service 8080 8081 8082 8084 8085 9042 &
@@ -98,7 +98,7 @@ To terminate the port forwarding service:
     **Output**:
 
     ```bash
-    [3]  + 29213 running    kubectl port-forward svc/k8ssandra-reaper-k8ssandra-reaper-service 9393:8080
+    [1]  + 80940 running    kubectl port-forward svc/k8ssandra-dc1-stargate-service 8080 8081 8082 8084
     ```
 
 1. Kill the process
@@ -110,7 +110,7 @@ To terminate the port forwarding service:
     **Output**:
 
     ```bash
-    [2]  - terminated  kubectl port-forward svc/prometheus-operated 9292:9090
+    [1]  + terminated  kubectl port-forward svc/k8ssandra-dc1-stargate-service 8080 8081 8082 8084
     ```
 
 {{% alert title="Tip" color="success" %}}

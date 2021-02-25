@@ -1,9 +1,9 @@
 ---
-title: "K8ssandra site engineer quick start"
-linkTitle: "Site engineers"
+title: "K8ssandra site reliability engineer quick start"
+linkTitle: "Site reliability engineers"
 weight: 2
 description: |
-  Take a tour of your K8ssandra cluster using all the utilities!
+  Familiarize yourself with K8ssandra utilities and upgrade procedures!
 ---
 
 **Completion time**: **10 minutes**.
@@ -12,13 +12,15 @@ description: |
 You **must** complete the steps in [Quick start]({{< relref "docs/getting-started" >}}) before continuing.
 {{% /alert %}}
 
-In this quick start we'll cover common tasks of interest for site reliability engineers including:
+In this quick start we'll cover the following topics:
 
-* [Accessing nodetool commands]({{< relref "#access-nodetool" >}}) like status, ring, and info.
-* [Accessing K8ssandra utilities]({{< relref "#access-k8ssandra-utilities" >}}) like the Cassandra Reaper repair tool and Grafana metrics reporting using port forwarding.
-* [Upgrading a K8ssandra cluster]({{< relref "#upgrade-your-k8ssandra-cluster" >}}): to enable access to K8ssandra from outside the K8s cluster via Traefik.
+* [Accessing nodetool commands]({{< relref "#nodetool" >}}) like status, ring, and info.
+* [Configure port forwarding]({{< relref "#port-forwarding" >}}) for the Prometheus and Grafana monitoring utilties as well as Cassandra Reaper.
+* [Accessing the K8ssandra monitoring utilities]({{< relref "#monitoring" >}}), Prometheus and Grafana.
+* [Accessing the Cassandra Reaper]({{< relref "#monitoring" >}}), an easy to use repair interface.
+* [Upgrading a K8ssandra cluster]({{< relref "#upgrade" >}}): to enable access to K8ssandra from outside the K8s cluster via Traefik.
 
-## Access the Cassandra nodetool utility {#access-nodetool}
+## Access the Cassandra nodetool utility {#nodetool}
 
 Cassandra's nodetool utility is commonly used for a variety of monitoring and management tasks. You'll need to run nodetool on your K8ssandra cluster using the `kubectl exec` command, since there's no external stand alone option available.
 
@@ -128,19 +130,11 @@ Other useful nodetool commands include:
 
 For details on all nodetool commands, see [The nodetool utility](https://docs.datastax.com/en/cassandra-oss/3.x/cassandra/tools/toolsNodetool.html).
 
-## Access K8ssandra utilities
+## Configure port forwarding {#port-forwarding}
 
-K8ssandra includes the following bundled and customized utilities:
+In order to access Cassandra utilities outside of the K8s cluster, if you don't have an Ingress setup as described in [Configure Ingress]({{< relref "/docs/topics/ingress" >}}), you'll need to configure port forwarding.
 
-* [Prometheus](https://prometheus.io/) a standard metrics collection and alerting tool.
-* [Grafana](https://grafana.com/) a set of pre-configured dashboards displaying important K8ssandra metrics.
-* [Cassandra Reaper](http://cassandra-reaper.io/) an easy interface for managing K8ssandra cluster repairs
-
-In this section you'll configure port forwarding so you can access those utilities and take a brief look at their highlights.
-
-### Configure port forwarding
-
-Begin by getting a list of your K8ssandra K8s pods and ports:
+Begin by getting a list of your K8ssandra K8s services and ports:
 
 ```bash
 kubectl get services
@@ -173,7 +167,7 @@ To configure port forwarding:
 
 1. Open a new terminal.
 
-2. Run the following 3 `kubectl port-forward` commands in the background:
+1. Run the following 3 `kubectl port-forward` commands in the background:
 
     ```bash
     kubectl port-forward svc/k8ssandra-grafana 9191:80 &
@@ -203,7 +197,7 @@ The K8ssandra services are now available at:
 * Grafana: <http://127.0.0.1:9191>
 * Cassandra Reaper: <http://127.0.0.1:9393/webui>
 
-#### Terminate port forwarding
+### Terminate port forwarding
 
 To terminate a particular forwarded port:
 
@@ -216,7 +210,7 @@ To terminate a particular forwarded port:
     **Output**:
 
     ```bash
-    [1]  + 80940 running    kubectl port-forward svc/k8ssandra-dc1-stargate-service 8080 8081 8082 8084
+    [3]  + 29213 running    kubectl port-forward svc/k8ssandra-reaper-k8ssandra-reaper-service 9393:8080
     ```
 
 1. Kill the process
@@ -228,160 +222,225 @@ To terminate a particular forwarded port:
     **Output**:
 
     ```bash
-    [1]  + terminated  kubectl port-forward svc/k8ssandra-dc1-stargate-service 8080 8081 8082 8084
+    [3]  + terminated  kubectl port-forward svc/k8ssandra-reaper-k8ssandra-reaper-service 9393:8080
     ```
 
 {{% alert title="Tip" color="success" %}}
 Exiting the terminal instance will terminate all port forwarding services.
 {{% /alert %}}
+
+## Access K8ssandra monitoring utilities {#monitoring}
+
+K8ssandra includes the following customized monitoring utilties:
+
+* [Prometheus](https://prometheus.io/) a standard metrics collection and alerting tool.
+* [Grafana](https://grafana.com/) a set of pre-configured dashboards displaying important K8ssandra metrics.
+
 ### Prometheus
 
-<http://127.0.0.1.nip.io:8080/prometheus/> is a standard metrics collection and alerting tool. For more information, see the [Prometheus](https://prometheus.io/) web site.
+To check on the health of your K8ssandra cluster using the K8ssandra Prometheus interface:
+
+1. Access the Prometheus home page at <http://127.0.0.1:9292>:
+
+    ![Prometheus home page](prom-home.png)
+
+1. From the **Status** menu, choose **Targets**.
+
+1. Verify that the `stargate/0` and `k8ssandra/0` are in the state `UP`:
+
+    ![Prometheus targets](prom-targets.png)
+
+For more details on Prometheus, see the [Prometheus](https://prometheus.io/) web site.
 
 ### Grafana
 
-<http://127.0.0.1.nip.io:8080/grafana/login> provides a set of pre-configured dashboards displaying important K8ssandra metrics. For more information see the [Grafana](https://grafana.com/) web site.
+To monitor the health and performance of your K8ssandra cluster using the pre-configured K8ssandra dashboards:
 
-{{% alert title="Tip" color="success" %}}
-If you've followed the configuration instructions in this quick start, use `admin` for the username and `admin123` for the password.
-{{% /alert %}}
-### Cassandra Reaper
-
-<http://repair.127.0.0.1.nip.io:8080/webui> provides an easy interface for managing K8ssandra cluster repairs. For details, see the [Cassandra Reaper](http://cassandra-reaper.io/) web site.
-
-### Medusa backup and restore
-
-K8ssandra provides a complete backup and restore solution using [Medusa](https://github.com/thelastpickle/cassandra-medusa). For detailed configuration and usage instructions, see [Backup and restore Cassandra]({{< relref "docs/topics/restore-a-backup" >}}).
-
-## Upgrade your K8ssandra cluster
-
-While you can use port forwarding as described above, to enable _persistent_ external access for applications, and K8ssandra features, you'll need to configure Ingress. In this section we'll demonstrate upgrading your existing K8ssandra installation to support Ingress using a Traefik Helm chart.
-
-To upgrade K8ssandra with Traefik Ingress support:
-
-1. Copy the following YAML into a file named `traefik.values.yaml`:
-
-    ```yaml
-    ---
-    providers:
-      kubernetesCRD:
-        namespaces:
-          - default
-          - traefik
-      kubernetesIngress:
-        namespaces:
-          - default
-          - traefik
-
-    ports:
-      traefik:
-        expose: true
-        nodePort: 32090
-      web:
-        nodePort: 32080
-      websecure:
-        nodePort: 32443
-      cassandra:
-        expose: true
-        port: 9042
-        nodePort: 32091
-      cassandrasecure:
-        expose: true
-        port: 9142
-        nodePort: 32092
-      sg-graphql:
-        expose: true
-        port: 8080
-        nodePort: 30080
-      sg-auth:
-        expose: true
-        port: 8081
-        nodePort: 30081
-      sg-rest:
-        expose: true
-        port: 8082
-        nodePort: 30082
-
-    service:
-      type: NodePort
-    ```
-
-2. Install Traefik:
+1. Retrieve the Grafana login username using the `helm show` command:
 
     ```bash
-    helm install -f traefik.values.yaml traefik traefik/traefik -n traefik --create-namespace
-    NAME: traefik
-    LAST DEPLOYED: Fri Feb 19 12:40:36 2021
-    NAMESPACE: traefik
-    STATUS: deployed
-    REVISION: 1
-    TEST SUITE: None
+    helm show values k8ssandra/k8ssandra | grep "adminUser"
     ```
 
-3. Copy the following YAML into a new file named `k8ssandra-traefik.values.yaml`:
+    **Output**:
+
+    ```bash
+    admin
+    ```
+
+1. Retrieve the Grafana login password using the `helm show` command:
+
+    ```bash
+    helm show values k8ssandra/k8ssandra | grep "adminPassword"
+    ```
+
+    **Output**:
+
+    ```bash
+    secret
+    ```
+
+1. Access the Grafana login screen at <http://127.0.0.1:9191> and login using the username and password:
+
+    ![Grafana login page](grafana-login.png)
+
+1. Click the home button indicated by the arrow:
+
+    ![Grafana home page](grafana-home.png)
+
+1. Click the `K8ssandra Overview` dashboard:
+
+    ![Grafana dashboards](grafana-dashboards.png)
+
+1. The `K8ssandra Overview` dashboard is displayed:
+
+    ![Grafana K8ssandra overview](grafana-k8overview.png)
+
+1. Explore the other K8ssandra dashboards.
+
+For more information see the [Grafana](https://grafana.com/) web site.
+
+## Access Cassandra Reaper {#reaper}
+
+The [Cassandra Reaper](http://cassandra-reaper.io/) an easy interface for managing K8ssandra cluster repairs.
+
+![Cassandra Reaper](cass-reaper.png)
+
+For more details, see the [Cassandra Reaper](http://cassandra-reaper.io/) web site.
+
+## Upgrade K8ssandra {#upgrade}
+
+You can easily upgrade your K8ssandra cluster using the `helm upgrade` command. In this section we'll show you an example upgrading the single node Cassandra instance we've been using to a 3 node Cassandra instance.
+
+Upgrading a K8ssandra instance is essentially a two step process:
+
+1. Update or create a configuration YAML file with the changes you want to apply the cluster.
+1. Apply the changes using the `helm upgrade` command.
+
+To upgrade your single node instance to a 3 node instance:
+
+1. Open the `k8ssandra.yaml` file you created in [K8ssandra quick start]({{< relref "docs/getting-started" >}}) in an editor of your choice:
 
     ```yaml
-    ingress:
-      traefik:
-        enabled: true
-        repair:
-          enabled: true
-          host: repair.127.0.0.1.nip.io
-        stargate:
-          enabled: true
-          host: stargate.127.0.0.1.nip.io
+    cassandra:
+      version: "3.11.10"
+      cassandraLibDirVolume:
+        storageClass: local-path
+        size: 5Gi
+      heap:
+       size: 1G
+       newGenSize: 1G
+      resources:
+        requests:
+          cpu: 1000m
+          memory: 2Gi
+        limits:
+          cpu: 1000m
+          memory: 2Gi
+      datacenters:
+      - name: dc1
+        size: 1
+        racks:
+        - name: default
     kube-prometheus-stack:
-      prometheus:
-        enabled: true
-        prometheusSpec:
-          externalUrl: http://localhost:9090/prometheus
-          routePrefix: /prometheus
-        ingress:
-          enabled: true
-          paths:
-            - /prometheus
       grafana:
-        enabled: true
-        ingress:
-          enabled: true
-          path: /grafana
-        adminUser: admin
-        adminPassword: admin123
-        grafana.ini:
-          server:
-            root_url: http://localhost:3000/grafana
-           serve_from_sub_path: true
+      adminUser: admin
+      adminPassword: admin123
+    stargate:
+      enabled: true
+      replicas: 1
+      heapMB: 256
+      cpuReqMillicores: 200
+      cpuLimMillicores: 1000
     ```
 
-4. Upgrade the K8ssandra installation with Traefik support:
+1. Add a new entry, `allowMultipleNodesPerWorker: true` under `cassandra:` and change `size: 1` under `datacenters` to `3`. Your file should now look like:
+
+    ```yaml
+    cassandra:
+      allowMultipleNodesPerWorker: true
+      version: "3.11.10"
+      cassandraLibDirVolume:
+        storageClass: local-path
+        size: 5Gi
+      heap:
+       size: 1G
+       newGenSize: 1G
+      resources:
+        requests:
+          cpu: 1000m
+          memory: 2Gi
+        limits:
+          cpu: 1000m
+          memory: 2Gi
+      datacenters:
+      - name: dc1
+        size: 3
+        racks:
+        - name: default
+    kube-prometheus-stack:
+      grafana:
+      adminUser: admin
+      adminPassword: admin123
+    stargate:
+      enabled: true
+      replicas: 1
+      heapMB: 256
+      cpuReqMillicores: 200
+      cpuLimMillicores: 1000
+    ```
+
+    {{% alert title="Tip" color="success" %}}
+The `allowMultipleNodesPerWorker` parameter only is required if your particular version of K8s doesn't support running multiple K8ssandra pods on a single worker.
+    {{% /alert %}}
+
+1. Save the file and exit your editor.
+
+1. Upgrade the cluster using the `helm upgrade` command:
 
     ```bash
-    helm upgrade -f k8ssandra-traefik.values.yaml k8ssandra k8ssandra/k8ssandra
+    helm upgrade -f k8ssandra.yaml k8ssandra k8ssandra/k8ssandra
+    ```
+
+    **Output**:
+
+    ```bash
     Release "k8ssandra" has been upgraded. Happy Helming!
     NAME: k8ssandra
-    LAST DEPLOYED: Fri Feb 19 12:46:49 2021
+    LAST DEPLOYED: Thu Feb 25 14:27:57 2021
     NAMESPACE: default
     STATUS: deployed
     REVISION: 2
     ```
 
-5. Verify that the Traefik pod is `Running`:
+    Notice that the REVISION is now at `2`. It will increment each time you run a `helm upgrade` command.
+
+1. Monitor `kubectl get pods` until the new Cassandra nodes are up and running:
 
     ```bash
-    kubectl get po -A | grep "traefik"
-    traefik       traefik-55996cbb6-v6s9p                1/1     Running     0          13m
+    kubectl get pods
     ```
 
-The following K8ssandra application are now available at the following persistent URLs:
+    **Output**:
 
-* Prometheus: <http://127.0.0.1.nip.io:8080/prometheus/>
-* Grafana: <http://127.0.0.1.nip.io:8080/prometheus/>
-* Cassandra Reaper: <http://repair.127.0.0.1.nip.io:8080/webui>
+    ```bash
+    NAME                                                  READY   STATUS      RESTARTS   AGE
+    k8ssandra-cass-operator-6666588dc5-qpvzg              1/1     Running     4          2d2h
+    k8ssandra-dc1-default-sts-0                           2/2     Running     0          76m
+    k8ssandra-dc1-default-sts-1                           2/2     Running     0          3m29s
+    k8ssandra-dc1-default-sts-2                           2/2     Running     0          3m28s
+    k8ssandra-dc1-stargate-6f7f5d6fd6-sblt8               1/1     Running     13         2d2h
+    k8ssandra-grafana-6c4f6577d8-hsbf7                    2/2     Running     0          3m32s
+    k8ssandra-kube-prometheus-operator-5556885bd6-st4fp   1/1     Running     4          2d2h
+    k8ssandra-reaper-k8ssandra-5b6cc959b7-zzlzr           1/1     Running     22         2d2h
+    k8ssandra-reaper-k8ssandra-schema-47qzk               0/1     Completed   0          2d2h
+    k8ssandra-reaper-operator-cc46fd5f4-85mk5             1/1     Running     5          2d2h
+    prometheus-k8ssandra-kube-prometheus-prometheus-0     2/2     Running     9          2d2h
+    ```
+
+   Eventually you should see two additional K8ssandra pods with the extensions `-sts-1` and `-sts-2` in `RUNNING` status.
 
 ## Next
 
-* For detailed information on additional K8ssandra tasks, see [Tasks]({{< relref "docs/topics" >}}).
-* For a list of frequently asked questions, see the [FAQs]({{< relref "docs/faqs" >}}).
-* For detailed information on K8ssandra, see [Architecture]({{< relref "docs/architecture" >}}).
-* For information on the various K8ssandra Helm charts, see [Helm chart references]({{< relref "docs/reference" >}}).
-* If you'd like to contribute to K8ssandra, see [Contribution guidelines]({{< relref "docs/contribution-guidelines" >}}).
+* To learn about K8ssandra's backup and restore support via Medusa, see [Backup and restore Cassandra]({{< relref "docs/topics/restore-a-backup" >}}).
+* For information on enabling K8s Ingress via Traefik, see [Configure Ingress]({{< relref "docs/topics/ingress" >}}).
