@@ -117,59 +117,11 @@ Exiting the terminal instance will terminate the port forwarding service.
 
 ## Access K8assandra using the Stargate APIs
 
-[Stargate](https://stargate.io/) provides APIs, data types and access methods that bring new capabilities to existing databases. Currently Stargate adds both REST and GraphQL APIs for CRUD access to data stored in Apache Cassandra® and there are many more APIs coming soon. Separating compute and storage also has benefits for maximizing resource consumption in cloud environments. When using Stargate with Cassandra, you can offload the request coordination overhead from your storage instances onto Stargate instances which has shown latency improvements in preliminary testing.
+[Stargate](https://stargate.io/) provides APIs, data types and access methods that bring new capabilities to existing databases. Currently Stargate adds Document, REST and GraphQL APIs for CRUD access to data stored in Apache Cassandra® and there are many more APIs coming soon. Separating compute and storage also has benefits for maximizing resource consumption in cloud environments. When using Stargate with Cassandra, you can offload the request coordination overhead from your storage instances onto Stargate instances which has shown latency improvements in preliminary testing.
 
 To access K8ssandra using Stargate:
 
-1. Make sure that all the Stargate services are in order at the Stargate health check endpoint, <http://127.0.0.1:8084/healthcheck>. The pretty-printed raw JSON data should have a value of `true` for each `healthy` key:
-
-   ```json
-    {
-      "bundles": {
-        "healthy": true,
-        "message": "All bundles active",
-        "duration": 0,
-        "timestamp": "2021-02-24T19:06:57.450Z"
-      },
-      "cql": {
-        "healthy": true,
-        "message": "Available",
-        "duration": 0,
-        "timestamp": "2021-02-24T19:06:57.452Z"
-      },
-      "datastore": {
-        "healthy": true,
-        "message": "DataStore is operational",
-        "duration": 3,
-        "timestamp": "2021-02-24T19:06:57.450Z"
-      },
-      "deadlocks": {
-        "healthy": true,
-        "duration": 1,
-        "timestamp": "2021-02-24T19:06:57.452Z"
-      },
-      "graphql": {
-        "healthy": true,
-        "message": "Ready to process requests",
-        "duration": 0,
-        "timestamp": "2021-02-24T19:06:57.450Z"
-      },
-      "restapi": {
-        "healthy": true,
-        "message": "Available",
-        "duration": 0,
-        "timestamp": "2021-02-24T19:06:57.450Z"
-      },
-      "schema-agreement": {
-        "healthy": true,
-        "message": "All schemas agree",
-        "duration": 0,
-        "timestamp": "2021-02-24T19:06:57.450Z"
-      }
-    }
-    ```
-
-2. Generate a Stargate access token replacing `<k8ssandra-username>` and `<k8ssandra-password>` with the values you retrieved in [Retrieve K8ssandra superuser credentials]({{< relref "/docs/getting-started#superuser" >}}):
+1. Generate a Stargate access token replacing `<k8ssandra-username>` and `<k8ssandra-password>` with the values you retrieved in [Retrieve K8ssandra superuser credentials]({{< relref "/docs/getting-started#superuser" >}}):
 
     ```bash
     curl -L -X POST 'http://localhost:8081/v1/auth' -H 'Content-Type: application/json' --data-raw '{"username": "<k8ssandra-username>", "password": "<k8ssandra-password>"}'
@@ -181,13 +133,18 @@ To access K8ssandra using Stargate:
     {"authToken":"<access-token>"}
     ```
 
-3. Use `<access-token>` to populate the `x-cassandra-token` header for all Stargate requests.
+1. Use `<access-token>` to populate the `x-cassandra-token` header for all Stargate requests.
 
 Once you've got the access token, take a look at the following Stargate access options:
 
 * [Access Document Data API]({{< relref "docs/topics/stargate#access-document-data-api" >}})
 * [Access REST Data API]({{< relref "docs/topics/stargate#access-rest-data-api" >}})
 * [Access GraphQL Data API]({{< relref "docs/topics/stargate#access-graphql-data-api" >}})
+
+You can access the following interfaces to make development easier as well:
+
+* Stargate swagger UI: <http://127.0.0.1:8082/swagger-ui>
+* GraphQL Playground: <http://127.0.0.1:8080/playground>
 
 For complete details on Stargate, see the [Stargate documentation](https://stargate.io/docs/stargate/1.0/quickstart/quickstart.html).
 
