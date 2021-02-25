@@ -8,7 +8,9 @@ description: |
 
 Repairs are a critical anti-entropy operation in Apache Cassandra&reg;. In the past, there have been many custom solutions to manage them outside of your main Cassandra installation. K8ssandra provides the Reaper Web Interface that eliminates the need for a custom solution. Just like K8ssandra makes Cassandra setup easy, Reaper makes configuration of repairs even easier.
 
-**Note:** The requirement for your environment may vary considerably, however the general recommendation is to run a repair operation on your Cassandra clusters about once a week. 
+{{% alert title="Tip" color="success" %}}
+The requirement for your environment may vary considerably, however the general recommendation is to run a repair operation on your Cassandra clusters about once a week. 
+{{% /alert %}}
 
 ## Tools
 
@@ -18,13 +20,13 @@ Repairs are a critical anti-entropy operation in Apache Cassandra&reg;. In the p
 ## Prerequisites
 
 1. Kubernetes cluster with the following elements deployed:
-   * [K8ssandra]({{< ref "getting-started#install-k8ssandra" >}}) Helm Chart
+   * [K8ssandra]({{< ref "getting-started#install-k8ssandra" >}}) Helm chart
    * [Ingress Controller]({{< ref "ingress" >}})
 1. DNS name configured for the Reaper interface, referred to as _REPAIR DOMAIN_ below.
 
 ## Access the Reaper Web Interface
 
-![Reaper UI](reaper-ui.png)
+![Reaper UI](reaper-main-ui.png)
 
 With the prerequisites satisfied the Reaper Web Interface should be available at the following address:
 
@@ -38,8 +40,13 @@ Notice how in this example, the DNS host name is specified on the command line a
 
 After a few minutes, check that the pods are running. Example:
 
-```
+```bash
 kubectl get pods
+```
+
+**Output:**
+
+```bash
 NAME                                                        READY   STATUS      RESTARTS   AGE
 k8ssandra-cass-operator-65cc657-fq6bc                       1/1     Running     0          10m
 k8ssandra-dc1-default-sts-0                                 3/3     Running     0          10m
@@ -61,7 +68,7 @@ To access Reaper, if you are running locally, navigate to [http://repair.localho
 
 In the Reaper UI, notice how the nodes are displayed inside the datacenter for the cluster.
 
-![OK](https://github.com/DataStax-Academy/kubecon2020/blob/main/Images/reaper1.png?raw=true)
+![Reaper cluster](reaper-cluster.png)
 
 The color of the nodes indicates the overall load the nodes are experiencing at the current moment. 
 
@@ -71,15 +78,15 @@ See [Check a cluster's health](http://cassandra-reaper.io/docs/usage/health/).
 
 On the UI's left sidebar, notice the **Schedule** option.
 
-![OK](https://github.com/DataStax-Academy/kubecon2020/blob/main/Images/reaper2.png?raw=true)
+![Reaper schedule](reaper-schedule.png)
 
 Click **Schedules**
 
-![OK](https://github.com/DataStax-Academy/kubecon2020/blob/main/Images/reaper3.png?raw=true)
+![Reaper add schedule](reaper-add-schedule1.png)
 
 Click **Add schedule** and fill out the details when you are done click the final _add schedule_ to apply the new repair job.  A Cassandra best practice is to have one repair complete per week to prevent zombie data from coming back after a deletion. 
 
-![OK](https://github.com/DataStax-Academy/kubecon2020/blob/main/Images/reaper4.png?raw=true)
+![Reaper add schedule part 2](reaper-add-schedule2.png)
 
 Enter values for the keyspace, tables, owner, and other fields. Then click **Add Schedule**. The details for adding a schedule are similar to the details for the Repair form, except the “Clause” field is replaced with two fields:
 
@@ -102,7 +109,7 @@ Users with access to the Reaper Web Interface can pause or delete scheduled repa
 
 On the repair job you just configured, click **Run now**.
 
-![OK](https://github.com/DataStax-Academy/kubecon2020/blob/main/Images/reaper5.png?raw=true)
+![Reaper run now](reaper-schedule-run-now.png)
 
 Notice the repair job kicking off.
 
