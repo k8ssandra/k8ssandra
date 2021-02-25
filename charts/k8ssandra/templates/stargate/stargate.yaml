@@ -45,9 +45,9 @@ spec:
                 done
                 echo "Cassandra is ready. Starting Stargate..."
       containers:
-        - name: { { .Release.Name } }-{{ include "k8ssandra.datacenterName" . }}-stargate
-          image: { { $image } }
-          imagePullPolicy: { { .Values.stargate.imagePullPolicy } }
+        - name: {{ .Release.Name }}-{{ include "k8ssandra.datacenterName" . }}-stargate
+          image: {{ $image }}
+          imagePullPolicy: {{ .Values.stargate.imagePullPolicy }}
           lifecycle:
             preStop:
               exec:
