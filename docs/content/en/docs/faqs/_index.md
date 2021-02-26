@@ -22,8 +22,8 @@ At a pure component level, K8ssandra integrates and packages together:
 * Apache Cassandra
 * Stargate, the open source data gateway
 * Kubernetes Operator for Apache Cassandra (cass-operator)
-* Reaper, an anti-entropy repair feature for Apache Cassandra (reaper-operator)
-* Medusa for backup and restore (medusa-operator)
+* Reaper for Apache Cassandra, an anti-entropy repair feature for Apache Cassandra (reaper-operator)
+* Medusa for Apache Cassandra for backup and restore (medusa-operator)
 * Metrics Collector, with Prometheus integration, and visualization via preconfigured Grafana dashboards
 * Templates for connections into your Kubernetes environment via Ingress solutions
 
@@ -59,7 +59,7 @@ For more information, check out issue [#267](https://github.com/k8ssandra/k8ssan
 
 ### What does K8ssandra install?
 
-The chart installs Kubernetes Operator for Apache Cassandra (cass-operator), Prometheus Operator, Reaper (repairs), Medusa (backup/restore), the Grafana Operator, (optional) Stargate, and launches instances.
+The chart installs Kubernetes Operator for Apache Cassandra (cass-operator), Prometheus Operator, Reaper for Apache Cassandra (repairs), Medusa for Apache Cassandra (backup/restore), the Grafana Operator, (optional) Stargate, and launches instances.
 
 After those installs, and all the pods are in a Ready state, from `kubectl get pods` you'll see output similar to:
 
@@ -127,7 +127,7 @@ Kubernetes Operator for Apache Cassandra -- [cass-operator](https://github.com/d
 
 ### What is Reaper for Apache Cassandra?
 
-Reaper for Apache Cassandra (Reaper) is a tool that helps manage the critical maintenance task of anti-entropy **repair** in a Cassandra cluster. Originally created by Spotify, later adopted and maintained by The Last Pickle, and one of the features installed by K8ssandra. If you were to sit a group of Cassandra DBAs down to talk about what they do, chances are they would talk a lot about running repairs. It’s an important operation because it keeps data consistent despite inevitable issues that happen like node failures and network partitions. In K8ssandra, Reaper runs it for you automatically! And because this is built for SREs, you can expect a good set of pre-built metrics to verify everything is working great. See the [Reaper Web Interface for Cassandra repairs]({{< ref "/docs/topics/repair/" >}}).
+Reaper for Apache Cassandra (Reaper) is a tool that helps manage the critical maintenance task of anti-entropy **repair** in a Cassandra cluster. Originally created by Spotify, later adopted and maintained by The Last Pickle, and one of the features installed by K8ssandra. If you were to sit a group of Cassandra DBAs down to talk about what they do, chances are they would talk a lot about running repairs. It’s an important operation because it keeps data consistent despite inevitable issues that happen like node failures and network partitions. In K8ssandra, Reaper runs it for you automatically! And because this is built for SREs, you can expect a good set of pre-built metrics to verify everything is working great. See the [Reaper for Apache Cassandra web interface]({{< ref "/docs/topics/repair/" >}}).
 
 ### What is Medusa for Apache Cassandra?
 

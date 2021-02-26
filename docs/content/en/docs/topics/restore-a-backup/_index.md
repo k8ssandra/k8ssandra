@@ -9,10 +9,10 @@ This topic walks you through the steps to backup and restore Cassandra data runn
 
 ## Tools
 
-* K8ssandra Helm chart, which we'll extend with `backupRestore` Medusa buckets for Amazon S3 integration
+* K8ssandra Helm chart, which we'll extend with `backupRestore` Medusa for Apache Cassandra buckets for Amazon S3 integration
 * Sample files in GitHub:
   * [medusa-bucket-key.yaml](medusa-bucket-key.yaml) to create a secret with credentials for AWS S3 buckets
-  * [backup-restore-values.yaml](backup-restore-values.yaml) to enable Medusa (backup/restore service) and set values
+  * [backup-restore-values.yaml](backup-restore-values.yaml) to enable Medusa for Apache Cassandra (backup/restore service) and set values
   * [test_data.cql](test_data.cql) to populate a Cassandra keyspace and table with data
  
 ## Prerequisites
@@ -53,10 +53,10 @@ Update Complete. ⎈Happy Helming!⎈
 
 ### Create secret for read/write access to an S3 bucket
 
-Before installing the k8ssandra cluster, we need to supply credentials so that Medusa has read/write access to an AWS S3 bucket, which is where the backup will be stored. Medusa supports local, Amazon S3, Google Cloud Storage (GCS), and Azure buckets. At this time, K8ssandra exposes configurations for S3 and GCS. The example in this topic uses an S3 bucket.
+Before installing the k8ssandra cluster, we need to supply credentials so that Medusa for Apache Cassandra has read/write access to an AWS S3 bucket, which is where the backup will be stored. Medusa for Apache Cassandra supports local, Amazon S3, Google Cloud Storage (GCS), and Azure buckets. At this time, K8ssandra exposes configurations for S3 and GCS. The example in this topic uses an S3 bucket.
 
 {{% alert title="Note" color="info" %}}
-See [AWS S3 setup](https://github.com/thelastpickle/cassandra-medusa/blob/master/docs/aws_s3_setup.md) on the Medusa wiki for more details for configuring S3.
+See [AWS S3 setup](https://github.com/thelastpickle/cassandra-medusa/blob/master/docs/aws_s3_setup.md) on the Medusa for Apache Cassandra wiki for more details for configuring S3.
 {{% /alert %}}
 
 Start by creating a secret with the credentials for the S3 bucket.
@@ -94,7 +94,7 @@ secret/medusa-bucket-key configured
 ```
 
 {{% alert title="Warning" color="warning" %}}
-If the values noted above in your edited **copy** of medusa-bucket-key.yaml do not match the S3 bucket's values, a subsequent attempt to install K8ssandra will begin and most pods will reach a Ready state; however, the Medusa container in the `<releaseName>-dc1-default-sts-0` pod will fail due to the misconfiguration, and you will not be able to perform backup and restore operations. Also, make sure that the region used by your S3 bucket matches the region expected by Medusa. If there is a mismatch, you'll see an error in the logs.
+If the values noted above in your edited **copy** of medusa-bucket-key.yaml do not match the S3 bucket's values, a subsequent attempt to install K8ssandra will begin and most pods will reach a Ready state; however, the Medusa for Apache Cassandra container in the `<releaseName>-dc1-default-sts-0` pod will fail due to the misconfiguration, and you will not be able to perform backup and restore operations. Also, make sure that the region used by your S3 bucket matches the region expected by Medusa for Apache Cassandra. If there is a mismatch, you'll see an error in the logs.
 {{% /alert %}}
 
 For example, if there is a configuration mismatch:
@@ -139,7 +139,7 @@ backupRestore:
 
 Modify a copy of the file for your purposes. In this example, the `bucketName` setting would be changed to `jsmart-k8ssandra-bucket2`.
 
-The chart's entries relate to a Kubernetes Secret, which contains the object store credentials. Specifically, the `bucketSecret` property specifies the name of a secret that should contain an AWS access key. As described in the [Medusa documentation](https://github.com/thelastpickle/cassandra-medusa/blob/master/docs/aws_s3_setup.md), the AWS account with which the key is associated should have the permissions that are required for Medusa to access the S3 bucket. For these examples, assume that you had copied `backup-restore-values.yaml` to `my-backup-restore-values.yaml` and edited it with values for your environment. 
+The chart's entries relate to a Kubernetes Secret, which contains the object store credentials. Specifically, the `bucketSecret` property specifies the name of a secret that should contain an AWS access key. As described in the [Medusa for Apache Cassandra documentation](https://github.com/thelastpickle/cassandra-medusa/blob/master/docs/aws_s3_setup.md), the AWS account with which the key is associated should have the permissions that are required for Medusa for Apache Cassandra to access the S3 bucket. For these examples, assume that you had copied `backup-restore-values.yaml` to `my-backup-restore-values.yaml` and edited it with values for your environment. 
 
 Example for a new K8ssandra installation, in which we use `demo` as the cluster name:
 
@@ -181,7 +181,7 @@ Backup and restore operations are enabled by default. The `bucketSecret` corresp
 kubectl get cassdc dc1 -o yaml
 ```
 
-In the output, see the `podTemplateSpec` property; two containers were added for Medusa.  Here’s the entry for the gRPC backup service:
+In the output, see the `podTemplateSpec` property; two containers were added for Medusa for Apache Cassandra.  Here’s the entry for the gRPC backup service:
 
 `    name: medusa`
 
@@ -336,7 +336,7 @@ Let's look at the resources in the Amazon S3 dashboard.
 
 S3 maintains the `backup_index` bucket so it only has to store a single copy of an SSTable across backups.  S3 stores pointers in the index to the SSTables. That implementation avoids a large amount of storage.  For example:
 
-![Amazon S3 with Medusa buckets](s3K8ssandraMedusaBuckets.png)
+![Amazon S3 with Medusa for Apache Cassandra buckets](s3K8ssandraMedusaBuckets.png)
 
 ### Restore data from the backup
 

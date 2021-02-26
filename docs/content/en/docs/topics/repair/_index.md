@@ -24,11 +24,11 @@ The requirement for your environment may vary considerably, however the general 
    * [Ingress Controller]({{< ref "ingress" >}})
 1. DNS name configured for the Reaper for Apache Cassandra interface, referred to as _REPAIR DOMAIN_ below.
 
-## Access the Reaper Web Interface
+## Access the Reaper for Apache Cassandra web interface
 
 ![Reaper UI](reaper-main-ui.png)
 
-With the prerequisites satisfied the Reaper web interface should be available at the following address:
+With the prerequisites satisfied the Reaper for Apache Cassandra web interface should be available at the following address:
 
 http://REPAIR_DOMAIN/webui
 
@@ -60,13 +60,13 @@ k8ssandra-reaper-operator-5b8c4c66b8-8cf86                  1/1     Running     
 prometheus-k8ssandra-kube-prometheus-stack-prometheus-0     2/2     Running     1          10m
 ```
 
-## What can I do in Reaper?
+## What can I do in Reaper for Apache Cassandra?
 
-To access Reaper, if you are running locally, navigate to [http://repair.localhost:8080/webui/](http://repair.localhost:8080/webui/).
+To access Reaper for Apache Cassandra, if you are running locally, navigate to [http://repair.localhost:8080/webui/](http://repair.localhost:8080/webui/).
 
 ### Check the cluster’s health
 
-In the Reaper UI, notice how the nodes are displayed inside the datacenter for the cluster.
+In the Reaper for Apache Cassandra UI, notice how the nodes are displayed inside the datacenter for the cluster.
 
 ![Reaper cluster](reaper-cluster.png)
 
@@ -102,7 +102,7 @@ When choosing to add a new repair schedule, we recommended that you limit the re
 For additional information, see [Schedule a cluster repair](http://cassandra-reaper.io/docs/usage/schedule/) on the Reaper site.
 
 {{% alert title="Warning" color="warning" %}}
-Users with access to the Reaper web interface can pause or delete scheduled repairs. To add authentication security in the UI, see [Reaper authentication](http://cassandra-reaper.io/docs/configuration/authentication/).
+Users with access to the Reaper for Apache Cassandra web interface can pause or delete scheduled repairs. To add authentication security in the UI, see [Reaper for Apache Cassandra authentication](http://cassandra-reaper.io/docs/configuration/authentication/).
 {{% /alert %}}
 
 ### Run a cluster repair
@@ -116,5 +116,5 @@ Notice the repair job kicking off.
 ## Recommended reading
 
 * [Running a cluster repair](http://cassandra-reaper.io/docs/usage/single/)
-* [Reaper details](http://cassandra-reaper.io/)
+* [Reaper for Apache Cassandra details](http://cassandra-reaper.io/)
 * [Blog articles](https://thelastpickle.com/blog/)
