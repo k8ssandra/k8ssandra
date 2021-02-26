@@ -58,7 +58,7 @@ Because Stargate nodes are Cassandra-compatible, they participate in the Cassand
 
 ## Join the Community!
 
-The potential for Cassandra on Kubernetes is massive, and are lots of areas to explore for people of all experience levels and backgrounds: 
+The potential for Cassandra on Kubernetes is massive, and there are lots of areas to explore for people of all experience levels and backgrounds: 
 
 * If you’re new to the project, make sure to check out the [Quick Start](/docs/getting-started/) guides and follow up with some of the [guided tutorials](/docs/topics/). 
 * Ready to dig into the source? Check out the [GitHub project](https://github.com/k8ssandra/k8ssandra) and [contribution guidelines](/docs/contribution-guidelines/). 
