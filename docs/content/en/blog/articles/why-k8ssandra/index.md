@@ -54,7 +54,7 @@ Another example is how K8ssandra leverages TCP [ingresses](https://kubernetes.io
 
 While fast access to CQL endpoints is attractive to developers who are already using Cassandra, most developers we’ve talked with would prefer to code to data APIs for new development, rather than learning a new database query language. This is why K8ssandra also includes [K8ssandra also includes Stargate](/docs/topics/stargate/), a data services gateway, which provides REST, Document, and GraphQL APIs on top of Cassandra. These familiar APIs lead to increased productivity and reduced time to market.
 
-Because Stargate nodes are Cassandra-compatible, they participate in the Cassandra cluster. This architecture confers additional benefits: Stargate nodes do the compute intensive coordination, while the Cassandra nodes handle data storage. This means that you can configure Cassandra deployments in Kubernetes with the right mix of compute-intensive Stargate and storage-intensive Cassandra machines for your use case. By selecting different instance types for Stargate and Cassandra nodes, you can achieve the ideal balance of cost and performance for your deployment.
+Because Stargate nodes are Cassandra-compatible, they participate in the Cassandra cluster. This architecture confers additional benefits: Stargate nodes do the compute-intensive coordination, while the Cassandra nodes handle data storage. This means that you can configure Cassandra deployments in Kubernetes with the right mix of compute-intensive Stargate and storage-intensive Cassandra machines for your use case. By selecting different instance types for Stargate and Cassandra nodes, you can achieve the ideal balance of cost and performance for your deployment.
 
 ## Join the Community!
 
@@ -65,4 +65,3 @@ The potential for Cassandra on Kubernetes is massive, and are lots of areas to e
 * Do you have knowledge, lessons learned, or best practices to share? We’d love to hear from you on Twitter ([@K8ssandra](https://twitter.com/k8ssandra)) or our [mailing lists](/community) (forums are coming soon). 
 
 We’re excited to have you here!
-
