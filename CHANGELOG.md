@@ -14,7 +14,7 @@ When cutting a new release of the parent `k8ssandra` chart update the `main / un
 ## v1.0.0 - 2021-02-26
 
 * [ENHANCEMENT] #444 Upgrade cass-operator to 1.6.0
-* [ENHANCEMENT] #TBD Add CHANGELOG.md
+* [ENHANCEMENT] #450 Add CHANGELOG.md
 
 ## v0.60.3 - 2021-02-25
 
