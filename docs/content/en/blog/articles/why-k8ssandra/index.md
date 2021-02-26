@@ -15,7 +15,7 @@ resources:
 
 The past decade and a half has brought tremendous change in how we in the software industry think about building and delivering internet applications. With the launch of Amazon Web Services (AWS) in 2006, companies of any size could access cloud computing infrastructure. The burst of creativity that followed gave birth to concepts like [cloud-native](http://pzf.fremantle.org/2010/05/cloud-native.html) in 2010, and methodologies such as the [twelve factor app](https://12factor.net/) in 2011.
 
-In parallel, there were major developments in open-source infrastructure for data and computing. [Apache Cassandra™](http://cassandra.apache.org/) and other NoSQL databases first appeared around 2008, supporting amazing performance and reliability at internet scale. Infrastructure for deploying and running containerized applications took huge leaps forward with the release of Docker in 2013, and Kubernetes rapidly became the default standard for container orchestration soon after its release in 2016. 
+In parallel, there were major developments in open-source infrastructure for data and computing. [Apache Cassandra&reg;](http://cassandra.apache.org/) and other NoSQL databases first appeared around 2008, supporting amazing performance and reliability at internet scale. Infrastructure for deploying and running containerized applications took huge leaps forward with the release of Docker in 2013, and Kubernetes rapidly became the default standard for container orchestration soon after its release in 2016. 
 
 {{< imgproc origins Fit "727x210" >}}
 Computing trends that inspired K8ssandra.
