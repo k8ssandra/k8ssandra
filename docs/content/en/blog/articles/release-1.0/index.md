@@ -99,4 +99,4 @@ And new contributors:
 * [@stanislawwos](https://github.com/stanislawwos)
 * [@tlasica](https://github.com/tlasica)
 
-Looking for a guided experience with K8ssandra? Join us at the [workshop](https://www.datastax.com/workshops/142078180663) next week as we walk through installation and exploration of this cloud native data platform. Explore the updated [Getting Started](/docs/getting-started/) guide and join the [community](/community) as we move forward towards the next release.
+Looking for a guided experience with K8ssandra? Join us at the [workshop](https://www.datastax.com/workshops/142078180663) next week as we walk through installation and exploration of this cloud-native data platform. Explore the updated [Getting Started](/docs/getting-started/) guide and join the [community](/community) as we move forward towards the next release.
