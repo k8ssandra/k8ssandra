@@ -61,6 +61,8 @@ covered over that time.
 * Stargate - v1.0.9
 * Medusa for Apache Cassandra&reg; - v0.9.0
 * Reaper for Apache Cassandra&reg; - v2.2.1
+* Metrics Collector for Apache Cassandra - v0.2.0
+* Management API for Apache Cassandra - v0.1.22
 * Cass Operator - v1.6.0
 * Medusa Operator - v0.1.0
 * Reaper Operator - v0.1.1
