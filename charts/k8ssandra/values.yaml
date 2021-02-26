@@ -269,7 +269,7 @@ stargate:
 
   # -- version of Stargate to deploy. This is used in conjunction with cassandra.version to select the Stargate container image.
   # If stargate.image is set, this value has no effect.
-  version: "1.0.9"
+  version: "1.0.11"
 
   # -- Number of Stargate instances to deploy. This value may be scaled independently of
   # Cassandra cluster nodes. Each instance handles API and coordination tasks
