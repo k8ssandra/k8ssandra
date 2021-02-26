@@ -6,7 +6,7 @@ description: |
   Configuring Traefik to expose the K8ssandra repair interface
 ---
 
-Follow these steps to configure and install `Traefik Ingress` custom resources for accessing your K8ssandra cluster's repair interface (provided by Reaper for Apache Cassandra®).
+Follow these steps to configure and install `Traefik Ingress` custom resources for accessing your K8ssandra cluster's repair interface (provided by Reaper for Apache Cassandra® (Reaper)).
 
 ## Tools
 
@@ -51,7 +51,7 @@ ingress:
       host: repair.k8ssandra.cluster.local
 ```
 
-Note the `host` parameter: this is where the DNS name must be provided. You will reference this DNS when accessing Reaper for Apache Cassandra (Reaper) in a Web URL.
+Note the `host` parameter: this is where the DNS name must be provided. You will reference this DNS when accessing Reaper in a Web URL.
 
 If you maintain a values.yaml or traefik.values.yaml file, change the `ingress.traefik.enabled` Boolean from `false` to `true`.  Or, specify `--set ingress.traefik.enabled=true` on the helm install command line. 
 

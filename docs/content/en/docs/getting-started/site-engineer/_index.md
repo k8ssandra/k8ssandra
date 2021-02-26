@@ -15,9 +15,9 @@ You **must** complete the steps in [Quick start]({{< relref "docs/getting-starte
 In this quick start we'll cover the following topics:
 
 * [Accessing nodetool commands]({{< relref "#nodetool" >}}) like status, ring, and info.
-* [Configure port forwarding]({{< relref "#port-forwarding" >}}) for the Prometheus and Grafana monitoring utilties as well as Reaper for Apache Cassandra.
+* [Configure port forwarding]({{< relref "#port-forwarding" >}}) for the Prometheus and Grafana monitoring utilties as well as Reaper for Apache Cassandra® (Reaper).
 * [Accessing the K8ssandra monitoring utilities]({{< relref "#monitoring" >}}), Prometheus and Grafana.
-* [Accessing the Reaper for Apache Cassandra®]({{< relref "#monitoring" >}}), an easy to use repair interface.
+* [Accessing Reaper]({{< relref "#monitoring" >}}), an easy to use repair interface.
 * [Upgrading a K8ssandra cluster]({{< relref "#upgrade" >}}): to enable access to K8ssandra from outside the K8s cluster via Traefik.
 
 ## Access the Apache Cassandra® nodetool utility {#nodetool}
@@ -161,13 +161,13 @@ In the output above, the services of interest are:
 
 * **k8ssandra-grafana**: The K8ssandra grafana service where the name is a combination of the K8ssandra cluster name you specified during the Helm install, `k8ssandra`, and the postfix, `-grafana`. This service listens on the internal K8s port `80`.
 * **prometheus-operated**: The K8ssandra Prometheus daemon. This service listens on the internal K8s port `9090`.
-* **k8ssandra-reaper-k8ssandra-reaper-service**: The K8ssandra Reaper for Apache Cassandra service where the name is a combination of the K8ssandra cluster name you specified during the Helm install, `k8ssandra`, `-reaper`, the K8ssandra cluster name again, and the postfix `-reaper-service`. This port listens on the internal K8s port `8080`.
+* **k8ssandra-reaper-k8ssandra-reaper-service**: The K8ssandra Reaper service where the name is a combination of the K8ssandra cluster name you specified during the Helm install, `k8ssandra`, `-reaper`, the K8ssandra cluster name again, and the postfix `-reaper-service`. This port listens on the internal K8s port `8080`.
 
 To configure port forwarding:
 
 1. Open a new terminal.
 
-1. Run the following 3 `kubectl port-forward` commands in the background:
+2. Run the following 3 `kubectl port-forward` commands in the background:
 
     ```bash
     kubectl port-forward svc/k8ssandra-grafana 9191:80 &
@@ -195,7 +195,7 @@ The K8ssandra services are now available at:
 
 * Prometheus: <http://127.0.0.1:9292>
 * Grafana: <http://127.0.0.1:9191>
-* Reaper for Apache Cassandra: <http://127.0.0.1:9393/webui>
+* Reaper: <http://127.0.0.1:9393/webui>
 
 ### Terminate port forwarding
 
@@ -300,13 +300,13 @@ To monitor the health and performance of your K8ssandra cluster using the pre-co
 
 For more information see the [Grafana](https://grafana.com/) web site.
 
-## Access Reaper for Apache Cassandra {#reaper}
+## Access Reaper (Reaper) {#reaper}
 
-The [Reaper for Apache Cassandra](http://cassandra-reaper.io/) an easy interface for managing K8ssandra cluster repairs.
+The [Reaper](http://cassandra-reaper.io/) an easy interface for managing K8ssandra cluster repairs.
 
-![Reaper for Apache Cassandra](cass-reaper.png)
+![Reaper](cass-reaper.png)
 
-For more details, see the [Reaper for Apache Cassandra](http://cassandra-reaper.io/) web site.
+For more details, see the [Reaper](http://cassandra-reaper.io/) web site.
 
 ## Upgrade K8ssandra {#upgrade}
 
