@@ -3,12 +3,12 @@
 title: "K8ssandra third-party software licenses"
 linkTitle: "3rd-party licenses"
 weight: 8
-description: Direct dependencies on third-party software licenses in K8ssandra roadmap.
+description: Third-party software licenses.
 ---
 
-K8ssandra provides a production-ready platform for running Apache Cassandra on Kubernetes. This includes automation for operational tasks such as repairs, backups, and monitoring.
+K8ssandra provides a production-ready platform for running Apache Cassandra&reg; on Kubernetes. This includes automation for operational tasks such as repairs, backup and restores, and monitoring.
 
-Third-party software, direct dependencies:
+Direct dependencies:
 
 |Title                                                                |Version                                 |License                                                                                                                                                                                                                                                                                                                                                    |
 |---------------------------------------------------------------------|----------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
