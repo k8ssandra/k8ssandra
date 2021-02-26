@@ -77,10 +77,6 @@ To configure port forwarding:
     Forwarding from [::1]:8081 -> 8081
     Forwarding from 127.0.0.1:8082 -> 8082
     Forwarding from [::1]:8082 -> 8082
-    Forwarding from 127.0.0.1:8084 -> 8084
-    Forwarding from [::1]:8084 -> 8084
-    Forwarding from 127.0.0.1:8085 -> 8085
-    Forwarding from [::1]:8085 -> 8085
     ```
 
 ### Terminate port forwarding
