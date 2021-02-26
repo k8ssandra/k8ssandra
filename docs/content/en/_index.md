@@ -21,6 +21,9 @@ linkTitle: K8ssandra
 								<a class="nav-link" href="/docs/">Documentation</a>
 							</li>
 							<li class="nav-item">
+								<a class="nav-link" href="/blog/">Blog</a>
+							</li>
+							<li class="nav-item">
 								<a class="nav-link" href="/community/">Community</a>
 							</li>
 						</ul>
@@ -32,7 +35,7 @@ linkTitle: K8ssandra
 				<div class="row">
 					<div id="hero" class="col text-align-center">
 						<div class="w-75 mx-auto text">
-							K8ssandra provides a production-ready platform for running Apache Cassandra on Kubernetes. This includes automation for operational tasks such as repairs, backups, and monitoring.
+							K8ssandra provides a production-ready platform for running Apache Cassandra® on Kubernetes. This includes automation for operational tasks such as repairs, backups, and monitoring.
 						</div>
 						<div class="mx-auto">
 							<a class="btn btn-lg btn-primary" href="{{< relref "docs" >}}">

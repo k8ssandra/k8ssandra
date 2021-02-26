@@ -29,12 +29,19 @@ After you've met the prerequisites identified below, access the preconfigured Gr
 
 If you haven't already, upgrade an existing `k8ssandra` by enabling the Traefik Ingress and passing in Prometheus and Grafana host flags. A command-line example when the host is local:
 
-`helm upgrade k8ssandra k8ssandra/k8ssandra --set ingress.traefik.enabled=true --set ingress.traefik.monitoring.grafana.host=grafana.localhost --set ingress.traefik.monitoring.prometheus.host=prometheus.localhost`
+```bash
+helm upgrade k8ssandra k8ssandra/k8ssandra --set ingress.traefik.enabled=true --set ingress.traefik.monitoring.grafana.host=grafana.localhost --set ingress.traefik.monitoring.prometheus.host=prometheus.localhost
+```
 
 After a few minutes, check that the pods configured by K8ssandra are running:
 
-`kubectl get pods`
+```bash
+kubectl get pods
 ```
+
+**Output**:
+
+```bash
 NAME                                                              READY   STATUS      RESTARTS   AGE
 cass-operator-65956c4f6d-f25nl                                    1/1     Running     0          4h26m
 grafana-deployment-8467d8bc9d-czsg5                               1/1     Running     0          4h13m
@@ -51,39 +58,39 @@ Notice that the Grafana Operator is running, as well as other services such as P
 
 If you are running a local Kubernetes environment, you can access the Grafana dashboard with a URL such as:
 
-[http://grafana.localhost:8080/](http://grafana.localhost:8080/)
+<http://grafana.localhost:8080>
 
 ### Grafana credentials
 
 The default configured credentials for Grafana are:
 
-```
+```yaml
 grafana:
   adminUser: admin
   adminPassword: secret
 ```
 
-Refer to:
-
-https://github.com/k8ssandra/k8ssandra/blob/main/charts/k8ssandra/values.yaml
+Refer to: <https://github.com/k8ssandra/k8ssandra/blob/main/charts/k8ssandra/values.yaml>
 
 You can change the credentials in several ways:
 
-* In the Grafana admin UI. See:
-
-    [http://grafana.localhost:8080/profile/password](http://grafana.localhost:8080/profile/password)
+* In the Grafana admin UI. See: <http://grafana.localhost:8080/profile/password>
 
 * Or edit a **copy** of [values.yaml](https://github.com/k8ssandra/k8ssandra/blob/main/charts/k8ssandra/values.yaml); update the credentials; submit a `helm upgrade` command to the cluster. Example: 
 
-    `helm upgrade cluster-name k8ssandra/k8ssandra -f my-values.yaml`
- 
+    ```bash
+    helm upgrade cluster-name k8ssandra/k8ssandra -f my-values.yaml`
+    ```
+
 * Or pass in a `--set grafana.adminPassword` flag. Example:
 
+    ```bash
     `helm upgrade cluster-name k8ssandra/k8ssandra --set  grafana.adminPassword=NewpAssw0rd!`
+    ```
 
 ### Navigating in Grafana
 
-From the Grafana start page, [http://grafana.localhost:8080/](http://grafana.localhost:8080/) in local installs, click the Dashboards icon shown below and select the **Manage** pane:
+From the Grafana start page, <http://grafana.localhost:8080> in local installs, click the Dashboards icon shown below and select the **Manage** pane:
 
 ![OK](grafana-dashboards-icon.png)
 
@@ -91,11 +98,11 @@ Grafana loads its dashboard options:
 
 1. Enable the **Default** checkbox.
 1. Click the checkbox for one of the dashboards that K8ssandra created when you installed the `k8ssandra` instance
-1. To open the selected dashboard, click on its text link. In this example, you'd click on Cassandra Cluster Condensed:
+1. To open the selected dashboard, click on its text link. In this example, you'd click on `Cassandra Cluster Condensed`:
 
 ![OK](grafana-dashboards-default-selected1.png)
 
-Here's an example of the Cassandra Cluster Condensed dashboard in Grafana:
+Here's an example of the `Cassandra Cluster Condensed` dashboard in Grafana:
 
 ![OK](grafana-cass-cluster-condensed.png)
 
@@ -108,13 +115,11 @@ Here's an example of the Cassandra Cluster Condensed dashboard in Grafana:
 
 ![Prometheus UI](prometheus-example.png)
 
-Prometheus is available at the following address:
-
-**http://PROMETHEUS_DOMAIN/**
+Prometheus is available at the following address: <http://PROMETHEUS_DOMAIN>
 
 For example:
 
-[http://prometheus.localhost:8080/](http://prometheus.localhost:8080/)
+<http://prometheus.localhost:8080>
 
 ### What can I do in Prometheus?
 

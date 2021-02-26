@@ -5,12 +5,9 @@ weight: 7
 description: K8ssandra roadmap ideas for community consideration.
 ---
 
-K8ssandra today is deployed as an entire stack. This open-source technology
-currently assumes your deployment uses the entire stack. Trading out certain
-components for others is not supported at this time. As part of the roadmap, one
-goal is to support a la carte composition of components.
+K8ssandra today is deployed as an entire stack. This open-source technology currently assumes your deployment uses the entire stack. Trading out certain components for others is not supported at this time. As part of the roadmap, one goal is to support a la carte composition of components.
 
-The following additional ideas are not yet in priority order. 
+The following additional ideas are not yet in priority order:
 
 * Preconfigured alerts for metrics
   * Support sending to a configured single email address
@@ -45,5 +42,5 @@ The following additional ideas are not yet in priority order.
   * Kubeless
   * Knative
 * Dynamics secrets with Vault
-  * Roles via Cassandra plugin
+  * Roles via Apache Cassandra® plugin
   * Rotating TLS certificates for clients, nodes, ingress, etc.

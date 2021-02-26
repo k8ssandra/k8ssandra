@@ -218,7 +218,6 @@ Add styles or override variables from the theme here.
 #site-footer {
   background: #153E71;
   color: #FFFFFF;
-  font-family: Roboto;
   font-style: normal;
   font-weight: 500;
   font-size: 14px;
@@ -258,3 +257,14 @@ Add styles or override variables from the theme here.
   }
 }
 
+.td-blog {
+  .td-outer {
+    padding-left: 0px;
+    padding-right: 0px;
+
+    .row {
+      margin-left: 0px;
+      margin-right: 0px;
+    }
+  }
+}

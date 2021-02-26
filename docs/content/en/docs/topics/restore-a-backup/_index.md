@@ -1,8 +1,8 @@
 ---
-title: "Backup and restore Cassandra"
+title: "Backup and restore Apache Cassandra®"
 linkTitle: "Backup and restore Cassandra"
 weight: 4
-description: K8ssandra provides backup/restore via Medusa
+description: K8ssandra provides backup/restore via Medusa for Apache Cassandra (Medusa)
 ---
 
 This topic walks you through the steps to backup and restore Cassandra data running in a Kubernetes cluster.
@@ -25,7 +25,7 @@ All other prerequisites are handled by the installed tools listed above.
 
 ## Steps
 
-### Verify you've met the prereqs
+### Verify you've met the prerequisites
 
 You will need storage for the backups. This topic shows the use of AWS S3 buckets.
 
@@ -34,7 +34,7 @@ You will need storage for the backups. This topic shows the use of AWS S3 bucket
   * The `name` of the S3 bucket
   * The region assigned to the S3 bucket
   
-  Or contact your IT team if they manage those assets. You'll provide those details in edited versions of the sample [medusa-bucket-key.yaml](medusa-bucket-key.yaml) and [backup-restore-values.yaml](backup-restore-values.yaml) files. For information about the S3 setup steps, see this helpful [readme](https://github.com/thelastpickle/cassandra-medusa/blob/master/docs/aws_s3_setup.md).  
+  Contact your IT team if they manage those assets. You'll provide those details in edited versions of the sample [medusa-bucket-key.yaml](medusa-bucket-key.yaml) and [backup-restore-values.yaml](backup-restore-values.yaml) files. For information about the S3 setup steps, see this helpful [readme](https://github.com/thelastpickle/cassandra-medusa/blob/master/docs/aws_s3_setup.md).  
 
 * Add and update the following repo, which has in one chart all the settings for K8ssandra plus the backup/restore settings:
 
@@ -63,7 +63,7 @@ Start by creating a secret with the credentials for the S3 bucket.
 
 The [medusa-bucket-key.yaml](medusa-bucket-key.yaml) sample in GitHub contains:
 
-```bash
+```yaml
 apiVersion: v1
 kind: Secret
 metadata:
@@ -76,7 +76,7 @@ stringData:
    aws_access_key_id = my_access_key
    aws_secret_access_key = my_secret_key
 ```
-   
+
 **Make a copy** of [medusa-bucket-key.yaml](medusa-bucket-key.yaml), and then replace `my_access_key` and `my_secret_key` with your S3 values.
 
 In the YAML, notice the `stringData` property value: `medusa_s3_credentials`. The secret gets mounted to this location; this is where Medusa expects to get the AWS credentials.
@@ -88,7 +88,7 @@ kubectl apply -f my-medusa-bucket-key.yaml
 ```
 
 **Output:**
- 
+
 ```bash
 secret/medusa-bucket-key configured
 ```
@@ -125,7 +125,7 @@ Notice how in this example, the region defined in the AWS console is `us-east-1`
 
 Install the `k8ssandra` chart with the following properties. You can reference an edited copy of the provided [backup-restore-values.yaml](backup-restore-values.yaml) file; customize the `name` of the S3 bucket defined for your purposes, and make sure the region value matches the region used by the S3 bucket. Before edits, this sample values file contains:
 
-```bash
+```yaml
 size: 3
 backupRestore: 
   medusa:
@@ -217,7 +217,7 @@ status:
 
 Now let’s create some test data.  The [test_data.cql](test_data.cql) sample file in GitHub contains:
 
-```bash
+```sql
 CREATE KEYSPACE medusa_test  WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 1};
 USE medusa_test;
 CREATE TABLE users (email text primary key, name text, state text);
@@ -242,9 +242,9 @@ In this example: `demo-superuser`. To verify, you can extract and decode the use
  ```bash
  kubectl get secret demo-superuser -o jsonpath="{.data.username}" | base64 --decode ; echo
  ```
- 
+
  **Output:**
- 
+
  ```bash
  demo-superuser
  ```
@@ -256,9 +256,9 @@ Next, extract and decode the password secret. For example:
  ```bash
  kubectl get secret demo-superuser -o jsonpath="{.data.password}" | base64 --decode ; echo
  ```
- 
+
  **Output:**
- 
+
  ```bash
  ItSCody8Nou2R0vYWd4FPDGi2RPy-Jvtg-mSeOoUlbU5UNsIlDF8QQ
  ```
@@ -273,6 +273,7 @@ For example:
 
 ```bash
 kubectl exec -it demo-dc1-default-sts-0 -c cassandra -- cqlsh -u demo-superuser -p ItSCody8Nou2R0vYWd4FPDGi2RPy-Jvtg-mSeOoUlbU5UNsIlDF8QQ -f /tmp/test_data.cql
+```
 
 ### Exec open CQLSH and enter DML and DDL statements
 
@@ -298,7 +299,7 @@ demo-superuser@cqlsh:medusa_test> SELECT * from medusa_test.users;
 Exit out of CQLSH:
 
 ```bash
-demo-superuser@cqlsh:medusa_test> exit
+demo-superuser@cqlsh:medusa_test> quit;
 ```
 
 {{% alert title="Tip" color="success" %}}
@@ -331,9 +332,9 @@ The Status section in the YAML shows the backup operation’s start and finish t
 
 ### Amazon S3 buckets
 
-Let's look at the resources in the Amazon S3 dashboard. 
+Let's look at the resources in the Amazon S3 dashboard.
 
-S3 maintains the `backup_index` bucket so it only has to store a single copy of an SSTable across backups.  S3 stores pointers in the index to the SSTables. That implementation avoids a large amount of storage.  For example: 
+S3 maintains the `backup_index` bucket so it only has to store a single copy of an SSTable across backups.  S3 stores pointers in the index to the SSTables. That implementation avoids a large amount of storage.  For example:
 
 ![Amazon S3 with Medusa buckets](s3K8ssandraMedusaBuckets.png)
 
@@ -382,7 +383,7 @@ demo-superuser@cqlsh:medusa_test> SELECT * from medusa_test.users;
 (4 rows)
 ```
 
-You can look again at the cassandrarestore helm-test YAML for the start and ending timestamps:
+You can look again at the `cassandrarestore` helm-test YAML for the start and ending timestamps:
 
 ```bash
 kubectl get cassadrarestore helm-test -o yaml
@@ -390,4 +391,4 @@ kubectl get cassadrarestore helm-test -o yaml
 
 ## Next
 
-Learn how to use the [Reaper Web Interface]({{< ref "/docs/topics/repair/" >}}).
+Learn how to use the [Reaper web interface]({{< ref "/docs/topics/repair/" >}}).
