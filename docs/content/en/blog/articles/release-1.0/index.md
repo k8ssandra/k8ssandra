@@ -31,7 +31,7 @@ Whether you are looking to take the latest feature for a spin, or validate a
 bugfix before a wider release, you can do so without having to clone the repo
 and build from source.
 
-Since the initial release of K8ssandra at Kubecon NA 2020, there have been 55
+Since the initial release of K8ssandra at Kubecon NA 2020, there have been 59
 incremental version updates. Let's take a look at how much ground has been
 covered over that time.
 
@@ -57,10 +57,10 @@ covered over that time.
 ## Components
 
 * K8ssandra - v1.0.0
-* Cassandra - 3.11.6, 3.11.7, 3.11.8, 3.11.9, 3.11.10, 4.0-beta4
+* Apache Cassandra&reg; - 3.11.6, 3.11.7, 3.11.8, 3.11.9, 3.11.10, 4.0-beta4
 * Stargate - v1.0.9
-* Medusa - v0.9.0
-* Reaper - v2.2.1
+* Medusa for Apache Cassandra&reg; - v0.9.0
+* Reaper for Apache Cassandra&reg; - v2.2.1
 * Cass Operator - v1.6.0
 * Medusa Operator - v0.1.0
 * Reaper Operator - v0.1.1
@@ -73,7 +73,7 @@ covered over that time.
 | Event | Video | Resources |
 |-------|-------|-----------|
 | KubeCon NA 2020 Workshop: Putting Apache Cassandra™ on Automatic with Kubernetes | [YouTube Recording](https://www.youtube.com/watch?v=pvzr75ZYwLE&list=PL2g2h-wyI4Sq_6MQEVn4fFmjSJ10IwVrU) | [GitHub Repo](https://github.com/DataStax-Academy/kubecon2020) |
-| Developer Week 2021 Talk: Building a Data Plane with K8ssandra, Apache Cassandra on Kubernetes | _Coming Soon_ | [Slides](https://www.slideshare.net/ChristopherBradford2/building-a-data-plane-with-k8ssandra-apache-cassandra-on-kubernetes) | 
+| Developer Week 2021 Talk: Building a Data Plane with K8ssandra, Apache Cassandra&reg; on Kubernetes | _Coming Soon_ | [Slides](https://www.slideshare.net/ChristopherBradford2/building-a-data-plane-with-k8ssandra-apache-cassandra-on-kubernetes) | 
 | DataStax Devs Workshop Series: Kubernetes and Docker | [YouTube Playlist](https://www.youtube.com/playlist?list=PL2g2h-wyI4Sq5EUI7FJ37f2XSGhhdaHpi) | [GitHub Repo](https://github.com/datastaxdevs/learningpath-docker) |
 
 ## Contributors
