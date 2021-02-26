@@ -319,82 +319,25 @@ Upgrading a K8ssandra instance is essentially a two step process:
 
 To upgrade your single node instance to a 3 node instance:
 
-1. Open the `k8ssandra.yaml` file you created in [K8ssandra quick start]({{< relref "docs/getting-started" >}}) in an editor of your choice:
+1. Create a new `k8ssandra-upgrade.yaml` file with the following configuration fragment:
 
     ```yaml
     cassandra:
-      version: "3.11.10"
-      cassandraLibDirVolume:
-        storageClass: local-path
-        size: 5Gi
-      heap:
-       size: 1G
-       newGenSize: 1G
-      resources:
-        requests:
-          cpu: 1000m
-          memory: 2Gi
-        limits:
-          cpu: 1000m
-          memory: 2Gi
-      datacenters:
-      - name: dc1
-        size: 1
-        racks:
-        - name: default
-    kube-prometheus-stack:
-      grafana:
-      adminUser: admin
-      adminPassword: admin123
-    stargate:
-      enabled: true
-      replicas: 1
-      heapMB: 256
-      cpuReqMillicores: 200
-      cpuLimMillicores: 1000
-    ```
-
-1. Change `size: 1` under `datacenters` to `3`. Your file should now look like:
-
-    ```yaml
-    cassandra:
-      version: "3.11.10"
-      cassandraLibDirVolume:
-        storageClass: local-path
-        size: 5Gi
-      heap:
-       size: 1G
-       newGenSize: 1G
-      resources:
-        requests:
-          cpu: 1000m
-          memory: 2Gi
-        limits:
-          cpu: 1000m
-          memory: 2Gi
       datacenters:
       - name: dc1
         size: 3
-        racks:
-        - name: default
-    kube-prometheus-stack:
-      grafana:
-      adminUser: admin
-      adminPassword: admin123
-    stargate:
-      enabled: true
-      replicas: 1
-      heapMB: 256
-      cpuReqMillicores: 200
-      cpuLimMillicores: 1000
     ```
 
-2. Save the file and exit your editor.
+    The cluster size has increased from `1` to `3`
 
-3. Upgrade the cluster using the `helm upgrade` command:
+    {{% alert title="Tip" color="success" %}}
+You only need the YAML statements pertinent to the upgrade. You don't need to duplicate the entire original configuration file.
+    {{% /alert %}}
+
+1. Upgrade the cluster using the `helm upgrade` command:
 
     ```bash
-    helm upgrade -f k8ssandra.yaml k8ssandra k8ssandra/k8ssandra
+    helm upgrade -f k8ssandra-upgrade.yaml k8ssandra k8ssandra/k8ssandra
     ```
 
     **Output**:
@@ -410,7 +353,7 @@ To upgrade your single node instance to a 3 node instance:
 
     Notice that the REVISION is now at `2`. It will increment each time you run a `helm upgrade` command.
 
-4. Monitor `kubectl get pods` until the new Cassandra nodes are up and running:
+1. Monitor `kubectl get pods` until the new Cassandra nodes are up and running:
 
     ```bash
     kubectl get pods
