@@ -57,7 +57,7 @@ covered over that time.
 ## Components
 
 * K8ssandra - v1.0.0
-* Apache Cassandra™ - 3.11.6, 3.11.7, 3.11.8, 3.11.9, 3.11.10, 4.0-beta4
+* Apache Cassandra&reg; - 3.11.6, 3.11.7, 3.11.8, 3.11.9, 3.11.10, 4.0-beta4
 * Stargate - v1.0.9
 * Medusa for Apache Cassandra™ - v0.9.0
 * Reaper for Apache Cassandra™ - v2.2.1
