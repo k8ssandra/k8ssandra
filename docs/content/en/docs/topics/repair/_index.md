@@ -105,6 +105,12 @@ For additional information, see [Schedule a cluster repair](http://cassandra-rea
 Users with access to the Reaper web interface can pause or delete scheduled repairs. To add authentication security in the UI, see [Reaper authentication](http://cassandra-reaper.io/docs/configuration/authentication/).
 {{% /alert %}}
 
+### Autoschedule repairs
+
+When you enable the autoscheduling feature, Reaper dynamically schedules repairs for all non-system keyspaces in a cluster. A cluster's keyspaces are monitored and any modifications (additions or removals) are detected. When a new keyspace is created, a new repair schedule is created automatically for that keyspace. Conversely, when a keyspace is removed, the corresponding repair schedule is deleted.
+
+To enable autoscheduling, set the property `repair.reaper.autoschedule` to `true`. 
+
 ### Run a cluster repair
 
 On the repair job you just configured, click **Run now**.
