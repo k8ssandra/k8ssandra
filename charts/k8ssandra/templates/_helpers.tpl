@@ -166,14 +166,31 @@ Generatea a random, alphanumeric password that is 20 characters long.
 {{ randAlphaNum 20 }}
 {{- end }}
 
+{{/*
+Gets the superuser secret name.
+*/}}
 {{- define "k8ssandra.superuserSecretName" -}}
+{{- if .Values.cassandra.auth.superuser.secret -}}
+{{ .Values.cassandra.auth.superuser.secret }}
+{{- else }}
 {{- include "k8ssandra.clusterName" . }}-superuser
 {{- end }}
-
-{{- define "k8ssandra.reaperUserSecretName" }}
-{{- include "k8ssandra.clusterName" . }}-reaper
 {{- end }}
 
+{{/*
+Gets the reaper user secret name.
+*/}}
+{{- define "k8ssandra.reaperUserSecretName" }}
+{{- if .Values.reaper.cassandraUser.secret -}}
+{{ .Values.reaper.cassandraUser.secret }}
+{{- else }}
+{{- include "k8ssandra.clusterName" . }}-reaper
+{{- end }}
+{{- end }}
+
+{{/*
+Gets the reaper jmx user secret name.
+*/}}
 {{- define "k8ssandra.reaperJmxUserSecretName" }}
 {{- if .Values.reaper.jmx.secret -}}
 {{ .Values.reaper.jmx.secret }}
@@ -182,12 +199,26 @@ Generatea a random, alphanumeric password that is 20 characters long.
 {{- end }}
 {{- end }}
 
+{{/*
+Gets the medus user secret name.
+*/}}
 {{- define "k8ssandra.medusaUserSecretName" }}
+{{- if .Values.medusa.cassandraUser.secret -}}
+{{ .Values.medusa.cassandraUser.secret }}
+{{- else }}
 {{- include "k8ssandra.clusterName" . }}-medusa
 {{- end }}
+{{- end }}
 
+{{/*
+Gets the stargate user secret name.
+*/}}
 {{- define "k8ssandra.stargateUserSecretName" }}
+{{- if .Values.stargate.cassandraUser.secret -}}
+{{ .Values.stargate.cassandraUser.secret }}
+{{- else }}
 {{- include "k8ssandra.clusterName" . }}-stargate
+{{- end }}
 {{- end }}
 
 {{/*

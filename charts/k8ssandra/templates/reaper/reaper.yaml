@@ -13,7 +13,7 @@ spec:
     jmxUserSecretName: {{ include "k8ssandra.reaperJmxUserSecretName" . }}
     cassandraBackend:
       {{- if .Values.cassandra.auth.enabled }}
-      cassandraUserSecretName: {{ default (include "k8ssandra.reaperUserSecretName" .) .Values.reaper.cassandraUser.secret }}
+      cassandraUserSecretName: {{ include "k8ssandra.reaperUserSecretName" . }}
       {{- end }}
       cassandraDatacenter:
         name: {{ include "k8ssandra.datacenterName" . }}

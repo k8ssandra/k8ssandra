@@ -1,6 +1,6 @@
 ---
-title: "Contribution Guidelines"
-linkTitle: "Contribution Guidelines"
+title: "Contribution guidelines"
+linkTitle: "Contribute"
 weight: 6
 description: >
   How to contribute to K8ssandra documentation.

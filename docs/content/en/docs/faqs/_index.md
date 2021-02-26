@@ -22,7 +22,7 @@ At a pure component level, K8ssandra integrates and packages together:
 * Apache Cassandra
 * Stargate, the open source data gateway
 * Kubernetes Operator for Apache Cassandra (cass-operator)
-* Reaper, also known as the Repair Web Interface (reaper-operator)
+* Reaper, an anti-entropy repair feature for Apache Cassandra (reaper-operator)
 * Medusa for backup and restore (medusa-operator)
 * Metrics Collector, with Prometheus integration, and visualization via preconfigured Grafana dashboards
 * Templates for connections into your Kubernetes environment via Ingress solutions
@@ -37,7 +37,7 @@ In addition to the set of components, it's important to emphasize that K8ssandra
 
 It's easy! There are several options, but we recommend using [Helm](https://helm.sh/docs/intro/install/) commands. 
 
-```
+```bash
 helm repo add k8ssandra https://helm.k8ssandra.io/
 helm repo add traefik https://helm.traefik.io/traefik
 helm repo update
@@ -57,13 +57,13 @@ W0128 11:24:54.792095  27657 warnings.go:70] apiextensions.k8s.io/v1beta1 Custom
 
 For more information, check out issue [#267](https://github.com/k8ssandra/k8ssandra/issues/267).
 
-### What exactly does k8ssandra install?
+### What does k8ssandra install?
 
-The chart installs Kubernetes Operator for Apache Cassandra (cass-operator), Prometheus Operator, reaper (repairs), medusa (backup/restores), the Grafana Operator, (optional) Stargate, and launches instances.
+The chart installs Kubernetes Operator for Apache Cassandra (cass-operator), Prometheus Operator, Reaper (repairs), Medusa (backup/restore), the Grafana Operator, (optional) Stargate, and launches instances.
 
 After those installs, and all the pods are in a Ready state, from `kubectl get pods` you'll see output similar to:
 
-```
+```bash
 NAME                                                   READY   STATUS      RESTARTS   AGE
 demo-cass-operator-65cc657-fq6bc                       1/1     Running     0          10m
 demo-dc1-default-sts-0                                 3/3     Running     0          10m
@@ -81,8 +81,8 @@ prometheus-demo-kube-prometheus-stack-prometheus-0     2/2     Running     1    
 
 The chart can be installed to any namespace. The following example demonstrates this:
 
-```
-$ helm install demo k8ssandra/k8ssandra -n k8ssandra --create-namespace
+```bash
+helm install demo k8ssandra/k8ssandra -n k8ssandra --create-namespace
 ```
 
 ### Can I install multiple releases of k8ssandra?
@@ -115,21 +115,21 @@ K8ssandra deploys the following components, some components are optional, and de
 
 *Note: Throughout these docs, examples are shown to deploy [Traefik](https://traefik.io/) as a means to provide external access to the k8ssandra cluster.  It is deployed separately from k8ssandra, and as such, the version deployed will vary.*
 
+### What is Stargate?
+
+[Stargate](https://stargate.io/) is an open source data gateway that abstracts away many Apache Cassandra specific concepts, providing access to the database through various API options.  It helps to remove barriers of entry for developers new to Apache Cassandra by providing REST, GraphQL, and schemaless JSON document based APIs in addition to traditional CQL access.
+
 ### What is cass-operator?
 
 Kubernetes Operator for Apache Cassandra -- [cass-operator](https://github.com/datastax/cass-operator) -- is the most critical element bridging Kubernetes and Cassandra. The community has been focusing much of its attention on operators over the past two years, as the appropriate starting place. If there is magic happening, it’s all in the operator. The cass-operator serves as the translation layer between the control plane of Kubernetes and actual operation done by the Cassandra cluster. Recently, the Apache Cassandra project agreed on gathering around a single operator: cass-operator. Some great contributions from Orange with CassKop will be merged with the DataStax operator and a final version will be merged into the Apache project. This is the best example of actual production knowledge finding its way into code. Community members contributing to cass-operator are running large amounts of Cassandra in Kubernetes every day. 
 
 ### What is Reaper?
 
-Reaper is a tool that helps manage the critical maintenance task of anti-entropy **repair** in a Cassandra cluster. Originally created by Spotify, later adopted and maintained by The Last Pickle, and one of the features installed by K8ssandra. If you were to sit a group of Cassandra DBAs down to talk about what they do, chances are they would talk a lot about running repairs. It’s an important operation because it keeps data consistent despite inevitable issues that happen like node failures and network partitions. In K8ssandra, Reaper runs it for you automatically! And because this is built for SREs, you can expect a good set of pre-built metrics to verify everything is working great. See the [Reaper UI for Cassandra repairs]({{< ref "/docs/topics/repair/" >}}).
+Reaper is a tool that helps manage the critical maintenance task of anti-entropy **repair** in a Cassandra cluster. Originally created by Spotify, later adopted and maintained by The Last Pickle, and one of the features installed by K8ssandra. If you were to sit a group of Cassandra DBAs down to talk about what they do, chances are they would talk a lot about running repairs. It’s an important operation because it keeps data consistent despite inevitable issues that happen like node failures and network partitions. In K8ssandra, Reaper runs it for you automatically! And because this is built for SREs, you can expect a good set of pre-built metrics to verify everything is working great. See the [Reaper Web Interface for Cassandra repairs]({{< ref "/docs/topics/repair/" >}}).
 
 ### What is Medusa?
 
 Medusa provides backup/restore functionality for Cassandra data; this project also originated at Spotify. Medusa not only helps coordinate backup &amp; restore tasks, it manages the placement of the data at rest. The initial implementation allows backup sets to be stored and retrieved on cloud object storage (such as AWS S3 buckets) with more options on the way. K8ssandra offers this [backup and restore]({{< ref "/docs/topics/restore-a-backup/" >}}) feature to help you recover Cassandra data when inevitable real-world issues occur.
-
-### What is Stargate?
-
-[Stargate](https://stargate.io/) is an open source data gateway that abstracts away many Apache Cassandra specific concepts, providing access to the database through various API options.  It helps to remove barriers of entry for developers new to Apache Cassandra by providing REST, GraphQL, and schemaless JSON document based APIs in addition to traditional CQL access.
 
 ### How can I access Kubernetes resources from outside the environment?
 
