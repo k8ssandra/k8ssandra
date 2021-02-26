@@ -21,6 +21,9 @@ linkTitle: K8ssandra
 								<a class="nav-link" href="/docs/">Documentation</a>
 							</li>
 							<li class="nav-item">
+								<a class="nav-link" href="/blog/">Blog</a>
+							</li>
+							<li class="nav-item">
 								<a class="nav-link" href="/community/">Community</a>
 							</li>
 						</ul>
