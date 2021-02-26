@@ -20,7 +20,7 @@ In this quick start we'll cover the following topics:
 * [Accessing the Cassandra Reaper]({{< relref "#monitoring" >}}), an easy to use repair interface.
 * [Upgrading a K8ssandra cluster]({{< relref "#upgrade" >}}): to enable access to K8ssandra from outside the K8s cluster via Traefik.
 
-## Access the Cassandra nodetool utility {#nodetool}
+## Access the Apache Cassandra® nodetool utility {#nodetool}
 
 Cassandra's nodetool utility is commonly used for a variety of monitoring and management tasks. You'll need to run nodetool on your K8ssandra cluster using the `kubectl exec` command, since there's no external stand alone option available.
 
@@ -380,5 +380,5 @@ You only need the YAML statements pertinent to the upgrade. You don't need to du
 
 ## Next
 
-* To learn about K8ssandra's backup and restore support via Medusa, see [Backup and restore Cassandra]({{< relref "docs/topics/restore-a-backup" >}}).
+* To learn about K8ssandra's backup and restore support via Medusa for Apache Cassandra, see [Backup and restore Cassandra]({{< relref "docs/topics/restore-a-backup" >}}).
 * For information on enabling K8s Ingress via Traefik, see [Configure Ingress]({{< relref "docs/topics/ingress" >}}).

@@ -1,8 +1,8 @@
 ---
-title: "Scale your Cassandra Cluster"
+title: "Scale your Apache Cassandra® Cluster"
 linkTitle: "Scale Cassandra"
 weight: 4
-description: Steps to provision a cluster in Kubernetes
+description: Steps to provision a Cassandra cluster in Kubernetes
 ---
 
 ## Tools
@@ -12,7 +12,7 @@ description: Steps to provision a cluster in Kubernetes
 ## Prerequisites
 
 * A Kubernetes environment
-* k8ssandra installed and running in Kubernetes - see [Quick start]({{< ref "getting-started" >}})
+* K8ssandra installed and running in Kubernetes - see [Quick start]({{< ref "getting-started" >}})
 
 ## Steps
 
@@ -22,9 +22,13 @@ For many basic configuration options, you may change values in the deployed YAML
 
 Let's check the currently running values. First get the list of the installed K8ssandra chart. In this example, assume the `releaseName` was defined as `demo` on the `helm install demo k8ssandra/k8ssandra` command.
 
-`helm list`
- 
+```bash
+helm list
 ```
+
+**Output**:
+
+```bash
 NAME	NAMESPACE	REVISION	UPDATED                                	STATUS  	CHART           	APP VERSION
 demo	default  	1       	2021-02-18 23:34:14.547364974 +0000 UTC	deployed	k8ssandra-0.51.0	3.11.10     
 ```
@@ -39,11 +43,13 @@ Helm displays full details of the properties defined in each deployed YAML file.
 
 To scale up, focus on the `size` property. Again, in this example `releaseName` was defind at kubectl install time as `demo`:
 
-`helm get manifest demo | grep size`
-
-The output includes:
-   
+```bash
+helm get manifest demo | grep size
 ```
+
+**Output**:
+
+```yaml
 .
 .
 .
@@ -61,13 +67,15 @@ Notice the value of `size: 1` from cassdc.yaml. This is the Cassandra DataCenter
 
 To scale up, you could change the `size` to 3. Example with helm:
 
-`helm upgrade demo k8ssandra/k8ssandra --set k8ssandra.size=3 --reuse-values`
+```bash
+helm upgrade demo k8ssandra/k8ssandra --set k8ssandra.size=3 --reuse-values
+```
 
 {{% alert title="Tip" color="success" %}}
 Use `--reuse-values` to ensure keeping settings from a previous `helm upgrade`.
 {{% /alert %}}
 
-```
+```bash
 Release "demo" has been upgraded. Happy Helming!
 NAME: demo
 LAST DEPLOYED: Thu Feb 18 23:35:12 2021
@@ -79,9 +87,13 @@ TEST SUITE: None
 
 Verify the upgrade:
 
-`helm get manifest demo | grep size`
- 
+```bash
+helm get manifest demo | grep size
 ```
+
+**Output**:
+
+```yaml
 .
 .
 .
@@ -99,9 +111,13 @@ Verify the upgrade:
 
 Similarly, to scale down, lower the current `size` to conserve cloud resource costs, if the new value can support your computing requirements in Kubernetes. Example:
 
-`helm upgrade demo k8ssandra/k8ssandra --set k8ssandra.size=1 --reuse-values`
- 
+```bash
+helm upgrade demo k8ssandra/k8ssandra --set k8ssandra.size=1 --reuse-values
 ```
+
+**Output**:
+
+```bash
 Release "demo" has been upgraded. Happy Helming!
 NAME: demo
 LAST DEPLOYED: Thu Feb 18 23:37:25 2021
@@ -113,8 +129,13 @@ TEST SUITE: None
 
 Again, verify the upgrade:
 
-`helm get manifest demo | grep size`
+```bash
+helm get manifest demo | grep size
 ```
+
+**Output**:
+
+```yaml
 .
 .
 .
@@ -130,4 +151,4 @@ Again, verify the upgrade:
 
 ## Next
 
-Use Medusa to [backup and restore]({{< ref "/docs/topics/restore-a-backup/" >}}) data from/to a Cassandra database. 
+Use Medusa for Apache Cassandra to [backup and restore]({{< ref "/docs/topics/restore-a-backup/" >}}) data from/to a Cassandra database.
