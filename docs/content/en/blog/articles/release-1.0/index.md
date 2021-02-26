@@ -72,9 +72,9 @@ covered over that time.
 
 | Event | Video | Resources |
 |-------|-------|-----------|
-| KubeCon NA 2020 Workshop: Putting Apache Cassandra™ on Automatic with Kubernetes | [YouTube Recording]() | [GitHub Repo](https://github.com/DataStax-Academy/kubecon2020) |
-| Developer Week 2021 Talk: Building a Data Plane with K8ssandra, Apache Cassandra on Kubernetes | Coming Soon | [Slides](https://www.slideshare.net/ChristopherBradford2/building-a-data-plane-with-k8ssandra-apache-cassandra-on-kubernetes) | 
-| DataStax Devs Workshop Series: Kubernetes and Docker | [YouTube Playlist]() | [GitHub Repo](https://github.com/datastaxdevs/learningpath-docker) |
+| KubeCon NA 2020 Workshop: Putting Apache Cassandra™ on Automatic with Kubernetes | [YouTube Recording](https://www.youtube.com/watch?v=pvzr75ZYwLE&list=PL2g2h-wyI4Sq_6MQEVn4fFmjSJ10IwVrU) | [GitHub Repo](https://github.com/DataStax-Academy/kubecon2020) |
+| Developer Week 2021 Talk: Building a Data Plane with K8ssandra, Apache Cassandra on Kubernetes | _Coming Soon_ | [Slides](https://www.slideshare.net/ChristopherBradford2/building-a-data-plane-with-k8ssandra-apache-cassandra-on-kubernetes) | 
+| DataStax Devs Workshop Series: Kubernetes and Docker | [YouTube Playlist](https://www.youtube.com/playlist?list=PL2g2h-wyI4Sq5EUI7FJ37f2XSGhhdaHpi) | [GitHub Repo](https://github.com/datastaxdevs/learningpath-docker) |
 
 ## Contributors
 THANK YOU to everyone who contributed to the project and made 1.0 happen. Whether it's a typo correction, YAML indentation tweak, or operator go code, every bit shared makes this project better. A huge thank you to the core team: 
@@ -99,4 +99,4 @@ And new contributors:
 * [@stanislawwos](https://github.com/stanislawwos)
 * [@tlasica](https://github.com/tlasica)
 
-Check out ways to join the [community](/community) as we move forward towards the next release. Looking for a guided experience with K8ssandra? Join us at the [workshop](https://www.datastax.com/workshops/142078180663) next week as we walk through installation and exploration of this cloud-native data platform.
+Looking for a guided experience with K8ssandra? Join us at the [workshop](https://www.datastax.com/workshops/142078180663) next week as we walk through installation and exploration of this cloud-native data platform. Explore the updated [Getting Started](/docs/getting-started/) guide and join the [community](/community) as we move forward towards the next release.
