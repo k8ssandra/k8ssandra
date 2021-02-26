@@ -26,4 +26,4 @@ Metric data collected in the cluster is retained within Prometheus for 24 hours.
 
 ## Next
 
-Check out [Repairs with Reaper for Apache Cassandra]({{< ref "repairs" >}})
+Check out [Repairs with Reaper]({{< ref "repairs" >}})

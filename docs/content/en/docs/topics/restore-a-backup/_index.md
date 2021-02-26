@@ -2,7 +2,7 @@
 title: "Backup and restore Apache Cassandra®"
 linkTitle: "Backup and restore Cassandra"
 weight: 4
-description: K8ssandra provides backup/restore via Medusa for Apache Cassandra
+description: K8ssandra provides backup/restore via Medusa for Apache Cassandra (Medusa)
 ---
 
 This topic walks you through the steps to backup and restore Cassandra data running in a Kubernetes cluster.
@@ -391,4 +391,4 @@ kubectl get cassadrarestore helm-test -o yaml
 
 ## Next
 
-Learn how to use the [Reaper for Apache Cassandra web interface]({{< ref "/docs/topics/repair/" >}}).
+Learn how to use the [Reaper web interface]({{< ref "/docs/topics/repair/" >}}).

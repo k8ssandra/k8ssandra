@@ -3,10 +3,10 @@ title: "Reaper for Apache Cassandra® web interface for Cassandra repairs"
 linkTitle: "Reaper UI for repairs"
 weight: 3
 description: |
-  Use the Reaper for Apache Cassandra web interface for repairs.
+  Use the Reaper for Apache Cassandra (Reaper) web interface for repairs.
 ---
 
-Repairs are a critical anti-entropy operation in Apache Cassandra (Cassandra). In the past, there have been many custom solutions to manage them outside of your main Cassandra installation. K8ssandra provides the Reaper for Apache Cassandra web interface (Reaper) that eliminates the need for a custom solution. Just like K8ssandra makes Cassandra setup easy, Reaper makes configuration of repairs even easier.
+Repairs are a critical anti-entropy operation in Apache Cassandra (Cassandra). In the past, there have been many custom solutions to manage them outside of your main Cassandra installation. K8ssandra provides the Reaper web interface (Reaper) that eliminates the need for a custom solution. Just like K8ssandra makes Cassandra setup easy, Reaper makes configuration of repairs even easier.
 
 {{% alert title="Tip" color="success" %}}
 The requirement for your environment may vary considerably, however the general recommendation is to run a repair operation on your Cassandra clusters about once a week.
@@ -22,9 +22,9 @@ The requirement for your environment may vary considerably, however the general 
 1. Kubernetes cluster with the following elements deployed:
    * [K8ssandra]({{< ref "getting-started#install-k8ssandra" >}}) Helm chart
    * [Ingress Controller]({{< ref "ingress" >}})
-1. DNS name configured for the Reaper for Apache Cassandra interface, referred to as _REPAIR DOMAIN_ below.
+2. DNS name configured for the Reaper interface, referred to as _REPAIR DOMAIN_ below.
 
-## Access the Reaper Web Interface
+## Access the Reaper web interface
 
 ![Reaper UI](reaper-main-ui.png)
 
