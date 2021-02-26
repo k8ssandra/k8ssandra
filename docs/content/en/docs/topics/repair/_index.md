@@ -1,34 +1,34 @@
 ---
-title: "Reaper Web Interface for Cassandra repairs"
+title: "Reaper for Apache Cassandra® web interface for Cassandra repairs"
 linkTitle: "Reaper UI for repairs"
 weight: 3
 description: |
-  Use the Reaper Web Interface for Cassandra repairs.
+  Use the Reaper for Apache Cassandra web interface for repairs.
 ---
 
-Repairs are a critical anti-entropy operation in Apache Cassandra&reg;. In the past, there have been many custom solutions to manage them outside of your main Cassandra installation. K8ssandra provides the Reaper Web Interface that eliminates the need for a custom solution. Just like K8ssandra makes Cassandra setup easy, Reaper makes configuration of repairs even easier.
+Repairs are a critical anti-entropy operation in Apache Cassandra (Cassandra). In the past, there have been many custom solutions to manage them outside of your main Cassandra installation. K8ssandra provides the Reaper for Apache Cassandra web interface (Reaper) that eliminates the need for a custom solution. Just like K8ssandra makes Cassandra setup easy, Reaper makes configuration of repairs even easier.
 
 {{% alert title="Tip" color="success" %}}
-The requirement for your environment may vary considerably, however the general recommendation is to run a repair operation on your Cassandra clusters about once a week. 
+The requirement for your environment may vary considerably, however the general recommendation is to run a repair operation on your Cassandra clusters about once a week.
 {{% /alert %}}
 
 ## Tools
 
 * Web Browser
-* values.yaml configuration, or use `--set` flags on the command line
+* `values.yaml` configuration, or use `--set` flags on the command line
 
 ## Prerequisites
 
 1. Kubernetes cluster with the following elements deployed:
    * [K8ssandra]({{< ref "getting-started#install-k8ssandra" >}}) Helm chart
    * [Ingress Controller]({{< ref "ingress" >}})
-1. DNS name configured for the Reaper interface, referred to as _REPAIR DOMAIN_ below.
+1. DNS name configured for the Reaper for Apache Cassandra interface, referred to as _REPAIR DOMAIN_ below.
 
 ## Access the Reaper Web Interface
 
 ![Reaper UI](reaper-main-ui.png)
 
-With the prerequisites satisfied the Reaper Web Interface should be available at the following address:
+With the prerequisites satisfied the Reaper web interface should be available at the following address:
 
 http://REPAIR_DOMAIN/webui
 
@@ -70,7 +70,7 @@ In the Reaper UI, notice how the nodes are displayed inside the datacenter for t
 
 ![Reaper cluster](reaper-cluster.png)
 
-The color of the nodes indicates the overall load the nodes are experiencing at the current moment. 
+The color of the nodes indicates the overall load the nodes are experiencing at the current moment.
 
 See [Check a cluster's health](http://cassandra-reaper.io/docs/usage/health/).
 
@@ -84,13 +84,13 @@ Click **Schedules**
 
 ![Reaper add schedule](reaper-add-schedule1.png)
 
-Click **Add schedule** and fill out the details when you are done click the final _add schedule_ to apply the new repair job.  A Cassandra best practice is to have one repair complete per week to prevent zombie data from coming back after a deletion. 
+Click **Add schedule** and fill out the details when you are done click the final _add schedule_ to apply the new repair job.  A Cassandra best practice is to have one repair complete per week to prevent zombie data from coming back after a deletion.
 
 ![Reaper add schedule part 2](reaper-add-schedule2.png)
 
 Enter values for the keyspace, tables, owner, and other fields. Then click **Add Schedule**. The details for adding a schedule are similar to the details for the Repair form, except the “Clause” field is replaced with two fields:
 
-* “Start time” 
+* “Start time”
 * “Interval in days”
 
 After creating a scheduled repair, the page is updated with a list of Active and Paused repair schedules.
@@ -102,7 +102,7 @@ When choosing to add a new repair schedule, we recommended that you limit the re
 For additional information, see [Schedule a cluster repair](http://cassandra-reaper.io/docs/usage/schedule/) on the Reaper site.
 
 {{% alert title="Warning" color="warning" %}}
-Users with access to the Reaper Web Interface can pause or delete scheduled repairs. To add authentication security in the UI, see [Reaper authentication](http://cassandra-reaper.io/docs/configuration/authentication/). 
+Users with access to the Reaper web interface can pause or delete scheduled repairs. To add authentication security in the UI, see [Reaper authentication](http://cassandra-reaper.io/docs/configuration/authentication/).
 {{% /alert %}}
 
 ### Run a cluster repair
