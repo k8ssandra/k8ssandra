@@ -73,7 +73,7 @@ covered over that time.
 | Event | Video | Resources |
 |-------|-------|-----------|
 | KubeCon NA 2020 Workshop: Putting Apache Cassandra™ on Automatic with Kubernetes | [YouTube Recording](https://www.youtube.com/watch?v=pvzr75ZYwLE&list=PL2g2h-wyI4Sq_6MQEVn4fFmjSJ10IwVrU) | [GitHub Repo](https://github.com/DataStax-Academy/kubecon2020) |
-| Developer Week 2021 Talk: Building a Data Plane with K8ssandra, Apache Cassandra™ on Kubernetes | _Coming Soon_ | [Slides](https://www.slideshare.net/ChristopherBradford2/building-a-data-plane-with-k8ssandra-apache-cassandra-on-kubernetes) | 
+| Developer Week 2021 Talk: Building a Data Plane with K8ssandra, Apache Cassandra&reg; on Kubernetes | _Coming Soon_ | [Slides](https://www.slideshare.net/ChristopherBradford2/building-a-data-plane-with-k8ssandra-apache-cassandra-on-kubernetes) | 
 | DataStax Devs Workshop Series: Kubernetes and Docker | [YouTube Playlist](https://www.youtube.com/playlist?list=PL2g2h-wyI4Sq5EUI7FJ37f2XSGhhdaHpi) | [GitHub Repo](https://github.com/datastaxdevs/learningpath-docker) |
 
 ## Contributors
