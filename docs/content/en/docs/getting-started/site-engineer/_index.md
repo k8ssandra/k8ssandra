@@ -354,11 +354,10 @@ To upgrade your single node instance to a 3 node instance:
       cpuLimMillicores: 1000
     ```
 
-1. Add a new entry, `allowMultipleNodesPerWorker: true` under `cassandra:` and change `size: 1` under `datacenters` to `3`. Your file should now look like:
+1. Change `size: 1` under `datacenters` to `3`. Your file should now look like:
 
     ```yaml
     cassandra:
-      allowMultipleNodesPerWorker: true
       version: "3.11.10"
       cassandraLibDirVolume:
         storageClass: local-path
@@ -390,13 +389,9 @@ To upgrade your single node instance to a 3 node instance:
       cpuLimMillicores: 1000
     ```
 
-    {{% alert title="Tip" color="success" %}}
-The `allowMultipleNodesPerWorker` parameter only is required if your particular version of K8s doesn't support running multiple K8ssandra pods on a single worker.
-    {{% /alert %}}
+2. Save the file and exit your editor.
 
-1. Save the file and exit your editor.
-
-1. Upgrade the cluster using the `helm upgrade` command:
+3. Upgrade the cluster using the `helm upgrade` command:
 
     ```bash
     helm upgrade -f k8ssandra.yaml k8ssandra k8ssandra/k8ssandra
@@ -415,7 +410,7 @@ The `allowMultipleNodesPerWorker` parameter only is required if your particular 
 
     Notice that the REVISION is now at `2`. It will increment each time you run a `helm upgrade` command.
 
-1. Monitor `kubectl get pods` until the new Cassandra nodes are up and running:
+4. Monitor `kubectl get pods` until the new Cassandra nodes are up and running:
 
     ```bash
     kubectl get pods

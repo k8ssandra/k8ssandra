@@ -213,6 +213,7 @@ To install a single node K8ssandra cluster:
       cassandraLibDirVolume:
         storageClass: local-path
         size: 5Gi
+      allowMultipleNodesPerWorker: true
       heap:
        size: 1G
        newGenSize: 1G
