@@ -15,7 +15,7 @@ resources:
 
 The past decade and a half has brought tremendous change in how we in the software industry think about building and delivering internet applications. With the launch of Amazon Web Services (AWS) in 2006, companies of any size could access cloud computing infrastructure. The burst of creativity that followed gave birth to concepts like [cloud-native](http://pzf.fremantle.org/2010/05/cloud-native.html) in 2010, and methodologies such as the [twelve factor app](https://12factor.net/) in 2011.
 
-In parallel, there were major developments in open-source infrastructure for data and computing. [Apache Cassandra](http://cassandra.apache.org/) and other NoSQL databases first appeared around 2008, supporting amazing performance and reliability at internet scale. Infrastructure for deploying and running containerized applications took huge leaps forward with the release of Docker in 2013, and Kubernetes rapidly became the default standard for container orchestration soon after its release in 2016. 
+In parallel, there were major developments in open-source infrastructure for data and computing. [Apache Cassandra™](http://cassandra.apache.org/) and other NoSQL databases first appeared around 2008, supporting amazing performance and reliability at internet scale. Infrastructure for deploying and running containerized applications took huge leaps forward with the release of Docker in 2013, and Kubernetes rapidly became the default standard for container orchestration soon after its release in 2016. 
 
 {{< imgproc origins Fit "727x210" >}}
 Computing trends that inspired K8ssandra.
@@ -25,13 +25,13 @@ Unfortunately, computing and data infrastructure have been maturing in largely s
 
 ## The solution: K8ssandra == Production-ready Cassandra on Kubernetes
 
-The solution is to move the data tier into Kubernetes. Deploying Cassandra on Kubernetes directly alongside applications can be a significant driver of increased developer productivity and scalability at reduced cost. Whether you are a Cassandra user looking to move clusters to Kubernetes, a Kubernetes user looking for a scalable data solution, or an application developer looking to get up and running quickly with data APIs that “just work”, K8ssandra was created to provide a production-ready deployment of Cassandra on Kubernetes. This includes not only the database itself, but also supporting infrastructure for monitoring and management so that you can deploy with confidence.
+The solution is to move the data tier into Kubernetes. Deploying Cassandra on Kubernetes directly alongside applications can be a significant driver of increased developer productivity and scalability at reduced cost. Whether you are a Cassandra user looking to move clusters to Kubernetes, a Kubernetes user looking for a scalable data solution, or an application developer looking to get up and running quickly with data APIs that “just work,” K8ssandra was created to provide a production-ready deployment of Cassandra on Kubernetes. This includes not only the database itself, but also supporting infrastructure for monitoring and management so that you can deploy with confidence.
 
 ## K8ssandra Defined
 
-So, what is K8ssandra, exactly? K8ssandra is an open source project with the mission of capturing SRE knowledge and best practices. This knowledge is distilled into a collection of Helm charts. The charts are deployable prescriptions for how to run Cassandra, along with supporting tools that ensure smooth operations of Cassandra clusters of any size. 
+So, what is K8ssandra, exactly? K8ssandra is an open source project with the mission of capturing SRE knowledge and best practices. This knowledge is distilled into a collection of Helm charts. The charts are deployable prescriptions for how to run Cassandra, along with supporting tools that ensure smooth operation of Cassandra clusters of any size. 
 
-The core of K8ssandra is [cass-operator](/docs/architecture/cassandra/), a [Kubernetes operator](https://kubernetes.io/docs/concepts/extend-kubernetes/operator/) which includes a [custom resource definition (CRD)](https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/) for Cassandra Datacenters. Cass-operator has two fundamental roles. First, it translates logical Cassandra terms like datacenters, racks, and nodes into Kubernetes resources such as labels, stateful sets, and pods and deploys those resources on the Kubernetes distribution of your choice. Second, it responds to Kubernetes notifications and takes corrective actions to reconcile state changes. This includes scaling the Cassandra cluster up or down based on a change to your desired number of nodes, or reacting to a pod terminated event for a Cassandra node by creating a replacement node and attaching a storage volume containing the correct data files.
+The core of K8ssandra is [cass-operator](/docs/architecture/cassandra/), a [Kubernetes operator](https://kubernetes.io/docs/concepts/extend-kubernetes/operator/) which includes a [custom resource definition (CRD)](https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/) for Cassandra Datacenters. Cass-operator has two fundamental roles. First, it translates logical Cassandra terms like datacenters, racks, and nodes into Kubernetes resources such as labels, stateful sets, and pods, and deploys those resources on the Kubernetes distribution of your choice. Second, it responds to Kubernetes notifications and takes corrective actions to reconcile state changes. This includes scaling the Cassandra cluster up or down based on a change to your desired number of nodes, or reacting to a pod terminated event for a Cassandra node by creating a replacement node and attaching a storage volume containing the correct data files.
 
 
 ## Configuration Tailored to Your Kubernetes Environment
@@ -54,17 +54,15 @@ Another example is how K8ssandra leverages TCP [ingresses](https://kubernetes.io
 
 While fast access to CQL endpoints is attractive to developers who are already using Cassandra, most developers we’ve talked with would prefer to code to data APIs for new development, rather than learning a new database query language. This is why K8ssandra also includes [K8ssandra also includes Stargate](/docs/topics/stargate/), a data services gateway, which provides REST, Document, and GraphQL APIs on top of Cassandra. These familiar APIs lead to increased productivity and reduced time to market.
 
-Because Stargate nodes are Cassandra-compatible, they participate in the Cassandra cluster. This architecture confers additional benefits: Stargate nodes do the compute intensive co-ordination, while the Cassandra nodes handle data storage. This means that you can configure Cassandra deployments in Kubernetes with the right mix of compute-intensive Stargate and storage-intensive Cassandra machines for your use case. By selecting different instance types for Stargate and Cassandra nodes, you can achieve the ideal balance of cost and performance for your deployment.
+Because Stargate nodes are Cassandra-compatible, they participate in the Cassandra cluster. This architecture confers additional benefits: Stargate nodes do the compute intensive coordination, while the Cassandra nodes handle data storage. This means that you can configure Cassandra deployments in Kubernetes with the right mix of compute-intensive Stargate and storage-intensive Cassandra machines for your use case. By selecting different instance types for Stargate and Cassandra nodes, you can achieve the ideal balance of cost and performance for your deployment.
 
 ## Join the Community!
 
-The possibilities for Cassandra on Kubernetes are massive, and there’s a lot of areas to explore for people of all experience levels and backgrounds. If you’re new to the project, make sure to check out our [Getting Started](/docs/getting-started/) guide and follow up with some of our [guided tutorials](/docs/topics/). If you’re ready to dig into the source, check out the [GitHub project](https://github.com/k8ssandra/k8ssandra) and [contribution guidelines](/docs/contribution-guidelines/). We’re excited to have you here!
+The potential for Cassandra on Kubernetes is massive, and are lots of areas to explore for people of all experience levels and backgrounds: 
 
-The possibilities for Cassandra on Kubernetes are massive, and there’s a lot of areas to explore for people of all experience levels and backgrounds: 
-
-If you’re new to the project, make sure to check out the [Quick Start](/docs/getting-started/) guides and follow up with some of the [guided tutorials](/docs/topics/). 
-Ready to dig into the source? Check out the [GitHub project](https://github.com/k8ssandra/k8ssandra) and [contribution guidelines](/docs/contribution-guidelines/). 
-Do you have knowledge, lessons learned, or best practices to share? We’d love to hear from you on Twitter ([@K8ssandra](https://twitter.com/k8ssandra)) or our [mailing lists](/community) (forums are coming soon). 
+* If you’re new to the project, make sure to check out the [Quick Start](/docs/getting-started/) guides and follow up with some of the [guided tutorials](/docs/topics/). 
+* Ready to dig into the source? Check out the [GitHub project](https://github.com/k8ssandra/k8ssandra) and [contribution guidelines](/docs/contribution-guidelines/). 
+* Do you have knowledge, lessons learned, or best practices to share? We’d love to hear from you on Twitter ([@K8ssandra](https://twitter.com/k8ssandra)) or our [mailing lists](/community) (forums are coming soon). 
 
 We’re excited to have you here!
 
