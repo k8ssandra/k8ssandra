@@ -87,7 +87,25 @@ helm install demo k8ssandra/k8ssandra -n k8ssandra --create-namespace
 
 ### Can I install multiple releases of K8ssandra?
 
-Some of the objects installed by the K8ssandra chart are currently configured to be cluster-scoped; consequently, you should only install those components once. This should be fixed before version 1.0 to allow multiple installations. Other parts can be installed multiple times to allow creating multiple Cassandra clusters in a single k8s cluster.
+You can install multiple releases of K8ssandra in a Kubernetes environment, provided:
+
+* You wait for all the pods to reach a Ready or Completed state for a given K8ssandra install, before attempting the next K8ssandra install
+* **And** provided you use a unique cluster-name per install
+
+### How do I install K8ssandra using the K8 included with Docker Desktop for Mac?
+
+When installing K8ssandra in the K8 instance of Docker Desktop for Mac, you may encounter the following error:
+
+```bash
+Error: failed pre-install: timed out waiting for the condition
+```
+
+To solve the issue, install K8ssandra using the following Helm command:
+
+```bash
+helm install <cluster-name> k8ssandra/k8ssandra \
+   --set cassandra.cassandraLibDirVolume.storageClass=hostpath
+```
 
 ### What components does K8ssandra install?
 
@@ -98,8 +116,13 @@ K8ssandra deploys the following components, some components are optional, and de
   * 3.11.8
   * 3.11.9
   * 3.11.10 (default)
+* [Cass Operator](https://github.com/datastax/cass-operator)
+  * 1.6.0  
+  * See the Cass Operator [CHANGELOG](https://github.com/datastax/cass-operator/blob/master/CHANGELOG.md) and [documentation](https://docs.datastax.com/en/cass-operator/doc/cass-operator/cassOperatorTOC.html)
 * [Management API for Apache Cassandra](https://github.com/datastax/management-api-for-apache-cassandra)
   * 0.1.19
+* [Stargate](https://stargate.io/)
+  * 1.0.9
 * [Metric Collector for Apache Cassandra (MCAC)](https://github.com/datastax/metric-collector-for-apache-cassandra)
   * 0.1.9
 * [Prometheus](https://prometheus.io/)
@@ -110,8 +133,6 @@ K8ssandra deploys the following components, some components are optional, and de
   * 0.9.0
 * [Reaper for Apache Cassandra](http://cassandra-reaper.io/)
   * 2.2.1
-* [Stargate](https://stargate.io/)
-  * 1.0.9
 
 {{% alert title="Note" color="primary" %}}
 Throughout these docs, examples are shown to deploy [Traefik](https://traefik.io/) as a means to provide external access to the k8ssandra cluster.  It is deployed separately from K8ssandra, and as such, the version deployed will vary.*
