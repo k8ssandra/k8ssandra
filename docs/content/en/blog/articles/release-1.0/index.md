@@ -59,8 +59,8 @@ covered over that time.
 * K8ssandra - v1.0.0
 * Apache Cassandra&reg; - 3.11.6, 3.11.7, 3.11.8, 3.11.9, 3.11.10, 4.0-beta4
 * Stargate - v1.0.9
-* Medusa for Apache Cassandra™ - v0.9.0
-* Reaper for Apache Cassandra™ - v2.2.1
+* Medusa for Apache Cassandra&reg; - v0.9.0
+* Reaper for Apache Cassandra&reg; - v2.2.1
 * Cass Operator - v1.6.0
 * Medusa Operator - v0.1.0
 * Reaper Operator - v0.1.1
