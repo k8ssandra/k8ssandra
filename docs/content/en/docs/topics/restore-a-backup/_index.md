@@ -136,7 +136,8 @@ medusa:
    storageSecret: medusa-bucket-key
    storage: s3
    storage_properties:
-     region: us-east-1```
+     region: us-east-1
+```
 
 Modify a copy of the file for your purposes. In this example, the `bucketName` setting would be changed to `jsmart-k8ssandra-bucket2`.
 
