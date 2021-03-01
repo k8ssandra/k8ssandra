@@ -211,8 +211,10 @@ spec:
             mountPath: /etc/cassandra
           - mountPath: /var/lib/cassandra
             name: server-data
+          {{- if not (eq .Values.medusa.storage "local") }}
           - name:  {{ .Values.medusa.storageSecret }}
             mountPath: /etc/medusa-secrets
+          {{- end }}
       {{- end }}
       containers:
       - name: cassandra
@@ -252,8 +254,10 @@ spec:
             mountPath: /etc/cassandra
           - mountPath: /var/lib/cassandra
             name: server-data
+          {{- if not (eq .Values.medusa.storage "local") }}
           - mountPath: /etc/medusa-secrets
             name: {{ .Values.medusa.storageSecret }}
+          {{- end }}
       volumes:
       - name: {{ include "medusa.configMapName" . }}
         configMap:
@@ -263,8 +267,10 @@ spec:
               path: medusa.ini
       - name: cassandra-config
         emptyDir: {}
+      {{- if not (eq .Values.medusa.storage "local") }}
       - name:  {{ .Values.medusa.storageSecret }}
         secret:
           secretName: {{ .Values.medusa.storageSecret }}
+      {{- end }}
 {{- end }}
 {{- end }}
