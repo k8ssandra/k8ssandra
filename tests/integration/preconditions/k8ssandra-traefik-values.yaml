@@ -24,6 +24,18 @@ ports:
     expose: true
     port: 9142
     nodePort: 32092
+  sg-graphql:
+    expose: true
+    port: 8080
+    nodePort: 30080
+  sg-auth:
+    expose: true
+    port: 8081
+    nodePort: 30081
+  sg-rest:
+    expose: true
+    port: 8082
+    nodePort: 30082
 
 service:
   type: NodePort
