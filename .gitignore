@@ -262,3 +262,4 @@ docs/tech-doc-hugo
 
 # testenv
 testbin/
+docs/.vscode/settings.json

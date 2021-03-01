@@ -22,7 +22,7 @@ Create chart name and version as used by the chart label.
 {{- end }}
 
 {{- define "k8ssandra-common.labels" }}
-{{- include "common.labels.standard" . -}}
+{{ include "common.labels.standard" . }}
 app.kubernetes.io/part-of: k8ssandra-{{ .Release.Name }}-{{ .Release.Namespace }}
 {{- end }}
 

@@ -6,14 +6,10 @@ description: |
   Deploy a local Kind cluster with Traefik installed and configured.
 ---
 
-When configuring Kind to use Traefik additional configuration options are
-required. The following guide walks through standing up a Kind k8s cluster with
-Traefik configured for ingress on ports other than the standard `80` and `443`.
+When configuring Kind to use Traefik additional configuration options are required. The following guide walks through standing up a Kind k8s cluster with Traefik configured for ingress on ports other than the standard `80` and `443`.
 
 ## 1. Create a Kind configuration file
-Kind supports an optional configuration file for configuring specific behaviors
-of the Docker container which runs the Kubelet process. Here we are adding port
-forwarding rules for the following ports:
+Kind supports an optional configuration file for configuring specific behaviors of the Docker container which runs the Kubelet process. Here we are adding port forwarding rules for the following ports:
 
 * `8080` - HTTP traffic - This is used for accessing the metrics and repair user
   interfaces
@@ -37,7 +33,7 @@ forwarding rules for the following ports:
 The `kind.config.yaml` file referenced here is located in:
 
 https://github.com/k8ssandra/k8ssandra/blob/main/docs/content/en/docs/topics/ingress/traefik/kind-deployment/kind.config.yaml
- 
+
 {{< readfilerel file="kind.config.yaml"  highlight="yaml" >}}
 
 ## 2. Start Kind Cluster

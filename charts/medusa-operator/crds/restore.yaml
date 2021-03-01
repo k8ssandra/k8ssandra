@@ -1,3 +1,4 @@
+---
 apiVersion: apiextensions.k8s.io/v1beta1
 kind: CustomResourceDefinition
 metadata:
@@ -48,10 +49,14 @@ spec:
             inPlace:
               description: When true the restore will be performed on the source cluster from which the backup was taken. There will be a rolling restart of the source cluster.
               type: boolean
+            shutdown:
+              description: When set to true, the cluster is shutdown before the restore is applied. This is necessary process if there are schema changes between the backup and current schema. Recommended.
+              type: boolean
           required:
             - backup
             - cassandraDatacenter
             - inPlace
+            - shutdown
           type: object
         status:
           description: CassandraRestoreStatus defines the observed state of CassandraRestore

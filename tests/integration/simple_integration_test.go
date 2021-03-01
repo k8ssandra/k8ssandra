@@ -71,7 +71,8 @@ var _ = Describe("Install the cluster", func() {
 					"ingress.traefik.enabled":                    "true",
 					"ingress.traefik.monitoring.grafana.host":    "grafana.localhost",
 					"ingress.traefik.monitoring.prometheus.host": "prometheus.localhost",
-					"ingress.traefik.repair.host":                "repair.localhost",
+					"reaper.ingress.enabled":                     "true",
+					"reaper.ingress.host":                        "repair.localhost",
 				},
 				KubectlOptions: k8s.NewKubectlOptions("", "", namespace),
 			}

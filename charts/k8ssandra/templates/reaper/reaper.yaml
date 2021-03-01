@@ -1,22 +1,20 @@
-{{- if .Values.repair.reaper.enabled }}
+{{- if .Values.reaper.enabled }}
 apiVersion: reaper.cassandra-reaper.io/v1alpha1
 kind: Reaper
 metadata:
-  name: {{ .Release.Name }}-reaper-k8ssandra
+  name: {{ .Release.Name }}-reaper
   labels: {{ include "k8ssandra.labels" . | indent 4 }}
 spec:
-  image: {{ .Values.repair.reaper.image.repository }}:{{ .Values.repair.reaper.image.tag }}
+  image: {{ .Values.reaper.image.repository }}:{{ .Values.reaper.image.tag }}
   serverConfig:
     autoScheduling:
-      enabled: {{ .Values.repair.reaper.autoschedule }}
+      enabled: {{ .Values.reaper.autoschedule }}
     storageType: cassandra
-    jmxUserSecretName: {{ .Release.Name }}-reaper-secret-k8ssandra
+    jmxUserSecretName: {{ include "k8ssandra.reaperJmxUserSecretName" . }}
     cassandraBackend:
-    {{- if .Values.repair.reaper.cassandraUser.secret }}
-      cassandraUserSecretName: {{ .Values.repair.reaper.cassandraUser.secret }}
-    {{- else if or .Values.repair.reaper.cassandraUser.username .Values.cassandra.auth.enabled }}
-      cassandraUserSecretName: {{ include "k8ssandra.clusterName" . }}-reaper
-    {{- end }}
+      {{- if .Values.cassandra.auth.enabled }}
+      cassandraUserSecretName: {{ include "k8ssandra.reaperUserSecretName" . }}
+      {{- end }}
       cassandraDatacenter:
         name: {{ include "k8ssandra.datacenterName" . }}
       replication:

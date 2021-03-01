@@ -3,11 +3,11 @@ name: cass-operator
 description: |
   Kubernetes operator which handles the provisioning and management of Apache Cassandra clusters.
 type: application
-version: 0.28.0
+version: 0.29.0
 appVersion: 1.5.0
 dependencies:
   - name: k8ssandra-common
-    version: 0.28.0
+    version: 0.28.1
     repository: file://../k8ssandra-common
 home: https://github.com/datastax/cass-operator
 sources:

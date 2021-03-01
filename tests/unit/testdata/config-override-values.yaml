@@ -1,0 +1,10 @@
+cassandra:
+  configOverride:
+    cassandra-yaml:
+      num_tokens: 16
+    jvm-options:
+      initial_heap_size: "800m"
+      max_heap_size: "800m"
+      additional-jvm-opts:
+        - "-Dcassandra.test=true"
+        - "-Dcassandra.k8ssandra=true"
