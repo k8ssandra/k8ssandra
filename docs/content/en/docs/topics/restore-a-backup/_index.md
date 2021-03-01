@@ -126,20 +126,21 @@ Notice how in this example, the region defined in the AWS console is `us-east-1`
 Install the `k8ssandra` chart with the following properties. You can reference an edited copy of the provided [backup-restore-values.yaml](backup-restore-values.yaml) file; customize the `name` of the Amazon S3 bucket defined for your purposes, and make sure the region value matches the region used by the Amazon S3 bucket. Before edits, this sample values file contains:
 
 ```yaml
-size: 3
-backupRestore: 
-  medusa:
-    enabled: true
-    bucketName: k8ssandra-bucket-dev
-    bucketSecret: medusa-bucket-key
-    storage: s3
-    storage_properties:
-      region: us-east-1
-```
+cassandra:
+  datacenters:
+  - name: dc1
+    size: 3
+medusa:
+  enabled: true
+   bucketName: k8ssandra-bucket-dev
+   storageSecret: medusa-bucket-key
+   storage: s3
+   storage_properties:
+     region: us-east-1```
 
 Modify a copy of the file for your purposes. In this example, the `bucketName` setting would be changed to `jsmart-k8ssandra-bucket2`.
 
-The chart's entries relate to a Kubernetes Secret, which contains the object store credentials. Specifically, the `bucketSecret` property specifies the name of a secret that should contain an AWS access key. As described in the [Medusa documentation](https://github.com/thelastpickle/cassandra-medusa/blob/master/docs/aws_s3_setup.md), the AWS account with which the key is associated should have the permissions that are required for Medusa to access the Amazon S3 bucket. For these examples, assume that you had copied `backup-restore-values.yaml` to `my-backup-restore-values.yaml` and edited it with values for your environment. 
+The chart's entries relate to a Kubernetes Secret, which contains the object store credentials. Specifically, the `storageSecret` property specifies the name of a secret that should contain an AWS access key. As described in the [Medusa documentation](https://github.com/thelastpickle/cassandra-medusa/blob/master/docs/aws_s3_setup.md), the AWS account with which the key is associated should have the permissions that are required for Medusa to access the Amazon S3 bucket. For these examples, assume that you had copied `backup-restore-values.yaml` to `my-backup-restore-values.yaml` and edited it with values for your environment. 
 
 Example for a new K8ssandra installation, in which we use `demo` as the cluster name:
 
