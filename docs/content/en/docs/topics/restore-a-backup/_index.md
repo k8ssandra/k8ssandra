@@ -132,11 +132,11 @@ cassandra:
     size: 3
 medusa:
   enabled: true
-   bucketName: k8ssandra-bucket-dev
-   storageSecret: medusa-bucket-key
-   storage: s3
-   storage_properties:
-     region: us-east-1
+  bucketName: k8ssandra-bucket-dev
+  storageSecret: medusa-bucket-key
+  storage: s3
+  storage_properties:
+    region: us-east-1
 ```
 
 Modify a copy of the file for your purposes. In this example, the `bucketName` setting would be changed to `jsmart-k8ssandra-bucket2`.
