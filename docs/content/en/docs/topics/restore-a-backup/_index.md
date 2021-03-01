@@ -2,7 +2,7 @@
 title: "Backup and restore Apache Cassandra®"
 linkTitle: "Backup and restore Cassandra"
 weight: 4
-description: K8ssandra provides backup/restore via Medusa for Apache Cassandra (Medusa)
+description: K8ssandra provides backup/restore via Medusa for Apache Cassandra
 ---
 
 This topic walks you through the steps to backup and restore Cassandra data running in a Kubernetes cluster.
