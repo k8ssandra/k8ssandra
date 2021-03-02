@@ -7,6 +7,7 @@ import (
 	"strconv"
 
 	helmUtils "github.com/k8ssandra/k8ssandra/tests/unit/utils/helm"
+	"github.com/k8ssandra/k8ssandra/tests/unit/utils/kubeapi"
 
 	cassdcv1beta1 "github.com/datastax/cass-operator/operator/pkg/apis/cassandra/v1beta1"
 	"github.com/gruntwork-io/terratest/modules/helm"
@@ -263,8 +264,13 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 		})
 
 		It("enabling only medusa", func() {
+			storageSecret := HelmReleaseName + "-medusa-storage"
 			options := &helm.Options{
-				SetValues:      map[string]string{"medusa.enabled": "true", "reaper.enabled": "false"},
+				SetValues: map[string]string{
+					"medusa.enabled":       "true",
+					"medusa.storageSecret": storageSecret,
+					"reaper.enabled":       "false",
+				},
 				KubectlOptions: defaultKubeCtlOptions,
 			}
 
@@ -280,12 +286,40 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			// Second container should be medusa
 			Expect(cassdc.Spec.PodTemplateSpec.Spec.Containers[1].Name).To(Equal(MedusaContainer))
 
-			// Verify volumeMounts and volumes
-			Expect(len(cassdc.Spec.PodTemplateSpec.Spec.Containers[1].VolumeMounts)).To(Equal(4))
-			Expect(cassdc.Spec.PodTemplateSpec.Spec.Containers[1].VolumeMounts[0].Name).To(Equal(medusaConfigVolumeName))
+			medusaContainer := GetContainer(cassdc, MedusaContainer)
+			medusaConfigMap := HelmReleaseName + "-medusa"
 
-			Expect(len(cassdc.Spec.PodTemplateSpec.Spec.Volumes)).To(Equal(3))
-			Expect(cassdc.Spec.PodTemplateSpec.Spec.Volumes[0].Name).To(Equal(medusaConfigVolumeName))
+			Expect(kubeapi.GetVolumeMountNames(medusaContainer)).To(ConsistOf(medusaConfigMap, "cassandra-config", "server-data", storageSecret))
+			Expect(kubeapi.GetVolumeNames(cassdc.Spec.PodTemplateSpec)).To(ConsistOf(medusaConfigMap, "cassandra-config", storageSecret))
+		})
+
+		It("enabling only medusa with local storage", func() {
+			options := &helm.Options{
+				SetValues: map[string]string{
+					"medusa.enabled": "true",
+					"medusa.storage": "local",
+					"reaper.enabled": "false",
+				},
+				KubectlOptions: defaultKubeCtlOptions,
+			}
+
+			Expect(renderTemplate(options)).To(Succeed())
+
+			AssertInitContainerNamesMatch(cassdc, ConfigInitContainer, JmxCredentialsInitContainer, GetJolokiaInitContainer, MedusaInitContainer)
+
+			// Two containers, medusa and cassandra
+			Expect(len(cassdc.Spec.PodTemplateSpec.Spec.Containers)).To(Equal(2))
+			// Cassandra container should have JVM_EXTRA_OPTS for jolokia
+			Expect(len(cassdc.Spec.PodTemplateSpec.Spec.Containers[0].Env)).To(Equal(1))
+			Expect(cassdc.Spec.PodTemplateSpec.Spec.Containers[0].Env[0].Name).To(Equal("JVM_EXTRA_OPTS"))
+			// Second container should be medusa
+			Expect(cassdc.Spec.PodTemplateSpec.Spec.Containers[1].Name).To(Equal(MedusaContainer))
+
+			medusaContainer := GetContainer(cassdc, MedusaContainer)
+			medusaConfigMap := HelmReleaseName + "-medusa"
+
+			Expect(kubeapi.GetVolumeMountNames(medusaContainer)).To(ConsistOf(medusaConfigMap, "cassandra-config", "server-data"))
+			Expect(kubeapi.GetVolumeNames(cassdc.Spec.PodTemplateSpec)).To(ConsistOf(medusaConfigMap, "cassandra-config"))
 		})
 
 		It("enabling reaper and medusa", func() {
