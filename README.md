@@ -1,3 +1,5 @@
+This is a test branch for triggering medusa-operator patches to
+
 # K8ssandra
 [K8ssandra](https://k8ssandra.io/) is a simple to manage, production-ready,
 distribution of [Apache Cassandra](https://cassandra.apache.org/) and
