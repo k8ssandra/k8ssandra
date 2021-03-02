@@ -10,6 +10,7 @@ require (
 	github.com/onsi/gomega v1.10.3
 	github.com/stretchr/testify v1.6.1
 	github.com/traefik/traefik/v2 v2.3.7
+	github.com/trivago/cluecumber-report-plugin v0.0.0-20210302121305-b2e68b2c78dd // indirect
 	k8s.io/api v0.19.3
 	k8s.io/apimachinery v0.19.3
 	k8s.io/client-go v12.0.0+incompatible
