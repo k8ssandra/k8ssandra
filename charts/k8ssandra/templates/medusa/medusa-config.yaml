@@ -32,7 +32,7 @@ data:
       Medusa requires the bucket_name property to be set even when using local storage.
       See https://github.com/thelastpickle/cassandra-medusa/issues/299.
     */ -}}
-    bucket_name = "local"
+    {{ nindent 4 "" }}bucket_name = "local"
   {{- else }}
     bucket_name = {{ .Values.medusa.bucketName }}
   {{- end }}

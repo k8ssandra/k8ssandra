@@ -34,10 +34,10 @@ var _ = Describe("Verify medusa config template", func() {
 				options := &helm.Options{
 					KubectlOptions: defaultKubeCtlOptions,
 					SetValues: map[string]string{
-						"medusa.enabled":      "true",
-						"medusa.storage":      storageType,
-						"medusa.bucketName":   "testbucket",
-						"medusa.bucketSecret": "secretkey",
+						"medusa.enabled":       "true",
+						"medusa.storage":       storageType,
+						"medusa.bucketName":    "testbucket",
+						"medusa.storageSecret": "secretkey",
 					},
 				}
 				Expect(renderTemplate(options)).To(Equal(expected))
