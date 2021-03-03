@@ -66,15 +66,15 @@ helm upgrade cluster-name k8ssandra/k8ssandra -f traefik.values.yaml
 
 ```bash
 # New Install
-helm install k8ssandra k8ssandra/k8ssandra --set prometheus.ingress.enabled=true , prometheus.ingress.host=localhost
-helm install k8ssandra k8ssandra/k8ssandra --set grafana.ingress.enabled=true , grafana.ingress.host=localhost
+helm install k8ssandra k8ssandra/k8ssandra --set prometheus.ingress.enabled=true,prometheus.ingress.host=localhost
+helm install k8ssandra k8ssandra/k8ssandra --set grafana.ingress.enabled=true,grafana.ingress.host=localhost
 ```
 
 **Existing cluster:**
 
 ```bash
-helm upgrade k8ssandra k8ssandra/k8ssandra --set prometheus.ingress.enabled=true , prometheus.ingress.host=localhost
-helm upgrade k8ssandra k8ssandra/k8ssandra --set grafana.ingress.enabled=true , grafana.ingress.host=localhost
+helm upgrade k8ssandra k8ssandra/k8ssandra --set prometheus.ingress.enabled=true,prometheus.ingress.host=localhost
+helm upgrade k8ssandra k8ssandra/k8ssandra --set grafana.ingress.enabled=true,grafana.ingress.host=localhost
 ```
 
 ## Validate Traefik Configuration
