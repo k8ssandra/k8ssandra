@@ -67,13 +67,13 @@ helm upgrade cluster-name k8ssandra/k8ssandra -f traefik.values.yaml
 **New install:**
 
 ```bash
-helm install cluster-name k8ssandra/k8ssandra --set reaper.ingress.enabled=true , reaper.ingress.host=localhost
+helm install cluster-name k8ssandra/k8ssandra --set reaper.ingress.enabled=true,reaper.ingress.host=localhost
 ```
 
 **Existing cluster:**
 
 ```bash
-helm install cluster-name k8ssandra/k8ssandra --set reaper.ingress.enabled=true , reaper.ingress.host=localhost
+helm install cluster-name k8ssandra/k8ssandra --set reaper.ingress.enabled=true,reaper.ingress.host=localhost
 ```
 
 ## Validate Traefik Configuration
