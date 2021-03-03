@@ -37,11 +37,46 @@ If you haven't already, upgrade an existing `k8ssandra` by enabling the Traefik 
 Command-line examples when the host is local, and `k8ssandra` is the cluster-name:
 
 ```bash
-helm upgrade k8ssandra k8ssandra/k8ssandra --set prometheus.ingress.enabled=true , prometheus.ingress.host=localhost
-helm upgrade k8ssandra k8ssandra/k8ssandra --set grafana.ingress.enabled=true , grafana.ingress.host=localhost
+helm upgrade k8ssandra k8ssandra/k8ssandra --set prometheus.ingress.enabled=true,prometheus.ingress.host=localhost
+helm upgrade k8ssandra k8ssandra/k8ssandra --set grafana.ingress.enabled=true,grafana.ingress.host=localhost
 ```
 
-After a few minutes, check that the upgraded pods configured by K8ssandra are running:
+To check the installed or upgraded pods' ready status, without having to submit multiple `kubectl get pods` commands, use `kubectl rollout status`. The command waits up to ten minutes (timeout is configurable) and gives a line of output as one or more pods in the set become ready. The format to check a statefulset (sts) is: 
+
+`kubectl rollout status statefulset ${CLUSTERNAME}-${DATACENTER}-default-sts`
+
+An example where the `CLUSTERNAME` from the prior `helm install` or `helm upgrade` was `k8ssandra`:
+
+```bash
+kubectl rollout status statefulset k8ssandra-dc1-default-sts
+```
+
+**Output:**
+
+```bash
+Waiting for 1 pods to be ready...
+Waiting for 1 pods to be ready...
+partitioned roll out complete: 1 new pods have been updated...
+```
+
+If you submit the command above too quickly after the `helm install` or `helm upgrade` you may get an error that no statefulset with that name exists; in which case, you can run the `kubectl rollout status` command again.  
+
+You should also check the `stargate` pod status before proceeding. Example:
+
+```bash
+kubectl rollout status deployment k8ssandra-dc1-stargate
+```
+
+**Output:**
+
+```bash
+Waiting for 1 pods to be ready...
+Waiting for 1 pods to be ready...
+Waiting for 1 pods to be ready...
+partitioned roll out complete: 1 new pods have been updated...
+```
+
+Then check the overall status of the deployed pods.
 
 ```bash
 kubectl get pods
@@ -51,8 +86,8 @@ kubectl get pods
 
 ```bash
 NAME                                                        READY   STATUS      RESTARTS   AGE
-k8ssandra-cass-operator-65cc657-fq6bc                       1/1     Running     0          10m
-k8ssandra-dc1-default-sts-0                                 3/3     Running     0          10m
+k8ssandra-cass-operator-65cc657-fq6bc                       1/1     Running     0          12m
+k8ssandra-dc1-default-sts-0                                 3/3     Running     0          12m
 k8ssandra-dc1-stargate-bb47877d5-54sdt                      1/1     Running     0          10m
 k8ssandra-grafana-7f84d96d47-xd79s                          2/2     Running     0          10m
 k8ssandra-kube-prometheus-stack-operator-76b984f9f4-pp745   1/1     Running     0          10m
