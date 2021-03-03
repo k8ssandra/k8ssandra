@@ -1,6 +1,6 @@
 
 
-![Version: 0.28.0](https://img.shields.io/badge/Version-0.28.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.5.0](https://img.shields.io/badge/AppVersion-1.5.0-informational?style=flat-square)
+![Version: 0.29.0](https://img.shields.io/badge/Version-0.29.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.5.0](https://img.shields.io/badge/AppVersion-1.5.0-informational?style=flat-square)
 
 ## Maintainers
 
@@ -18,7 +18,7 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| file://../k8ssandra-common | k8ssandra-common | 0.28.0 |
+| file://../k8ssandra-common | k8ssandra-common | 0.28.1 |
 
 ## Values
 
@@ -33,7 +33,7 @@
 | admissionWebhooks.enabled | bool | `false` | Turns the admission webhooks on or off |
 | image.repository | string | `"docker.io/datastax/cass-operator"` | Docker repository for cass-operator |
 | image.pullPolicy | string | `"IfNotPresent"` | Pull policy for the operator container |
-| image.tag | string | `"master-a45fd80b40e0129e8883a953d595ca85e4b7ce79"` | Tag of the cass-operator image to pull from image.repository |
+| image.tag | string | `"1.6.0"` | Tag of the cass-operator image to pull from image.repository |
 | image.registryOverride | string | `nil` | Docker registry containing all cass-operator related images. Setting this allows for usage of an internal registry without specifying serverImage, configBuilderImage, and busyboxImage on all CassandraDatacenter objects. |
 | imagePullSecrets | list | `[]` | References to secrets to use when pulling images. See: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/ |
 | serviceAccount.annotations | object | `{}` | Annotations to add to the service account. |
