@@ -42,7 +42,7 @@ http://REAPER_DOMAIN/webui
 For example, to upgrade a previously installed `k8ssandra` that's running locally, where the `releaseName` used on the prior `helm install` command was `k8ssandra`:
 
 ```bash
-helm upgrade k8ssandra k8ssandra/k8ssandra --set reaper.ingress.enabled=true , reaper.ingress.host=localhost
+helm upgrade k8ssandra k8ssandra/k8ssandra --set reaper.ingress.enabled=true,reaper.ingress.host=localhost
 ```
 
 {{% alert title="Tip" color="success" %}}
