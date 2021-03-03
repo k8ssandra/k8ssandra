@@ -23,47 +23,24 @@ Follow these steps to configure and install `Traefik Ingress` custom resources f
 1. DNS name for the Grafana service
 1. DNS name for the Prometheus service
 
-{{% alert title="Tip" color="success" %}}
+{{% alert title="Note" color="success" %}}
 If you do not have a DNS name available, consider using a service like [xip.io](http://xip.io) to generate a domain name based on the ingress IP address. For local Kind clusters this may look like `monitoring.127.0.0.1.xip.io` which would return the address `127.0.0.1` during DNS lookup.
+{{% /alert %}}
+
+{{% alert title="Tip" color="success" %}}
+As an alternative to configuring an Ingress, consider port forwarding. It's another way to provide external access to resources that have been deployed by K8ssandra in your Kubernetes environment. Those resources could include Prometheus metrics, pre-configured Grafana dashboards, and the Reaper web interface for repairs of Cassandra&reg; data. The `kubectl port-forward` command does not require an Ingress/Traefik to work. 
+
+* Developers, see [Set up port forwarding]({{< ref "/docs/getting-started/developer/#set-up-port-forwarding" >}}).  
+* Site reliability engineers, see [Configure port forwarding]({{< ref "/docs/getting-started/developer/#set-up-port-forwarding" >}}).
 {{% /alert %}}
 
 ## Helm Parameters
 
-The `k8ssandra` Helm chart contains templates for Traefik `IngressRoute` and `IngressRouteTCP` Custom Resources. These may be enabled at any time either through a `values.yaml` file of command-line flags.
+The `k8ssandra` Helm chart contains templates for the Traefik `IngressRoute` custom resource. These may be enabled at any time either through a `values.yaml` file or command-line flags.
 
-### `values.yaml`
-```yaml
-ingress:
-  traefik:
-    # Set to `true` to enable the templating of Traefik ingress custom resources
-    enabled: false
+For the latest, see the sample [values.yaml](https://github.com/k8ssandra/k8ssandra/blob/main/charts/k8ssandra/values.yaml). 
 
-    # Monitoring ingress
-    monitoring: 
-      grafana:
-        # Note this will **only** work if `traefik.enabled` is also `true`
-        enabled: true
-
-        # Name of the Traefik entrypoints where we want to source traffic.
-        entrypoints: 
-          - web
-
-        # Hostname Traefik should use for matching requests.
-        host: grafana.k8ssandra.cluster.local
-      
-      prometheus:
-        # Note this will **only** work if `traefik.enabled` is also `true`
-        enabled: true
-
-        # Name of the Traefik entrypoints where we want to source traffic.
-        entrypoints: 
-          - web
-
-        # Hostname Traefik should use for matching requests.
-        host: prometheus.k8ssandra.cluster.local
-```
-
-Note the `host` parameters: this is where the DNS names must be provided.
+Note the `host` parameters in the values.yaml is where the DNS names must be provided.
 
 ## Enabling Traefik Ingress
 
@@ -71,28 +48,33 @@ Traefik ingress may be enabled on the command-line or via a `values.yaml` file. 
 
 ### `values.yaml`
 
-```bash
-# New Install
-helm install cluster-name k8ssandra/k8ssandra -f traefik.values.yaml
+**New install:**
 
-# Existing Cluster
+```bash
+helm install cluster-name k8ssandra/k8ssandra -f traefik.values.yaml
+```
+
+**Existing cluster:**
+
+```bash
 helm upgrade cluster-name k8ssandra/k8ssandra -f traefik.values.yaml
 ```
 
 ### Command-line
 
+**New install:**
+
 ```bash
 # New Install
-helm install cluster-name k8ssandra/k8ssandra \
-  --set ingress.traefik.enabled=true \
-  --set ingress.traefik.monitoring.grafana.host=grafana.cluster-name.k8ssandra.cluster.local \
-  --set ingress.traefik.monitoring.prometheus.host=prometheus.cluster-name.k8ssandra.cluster.local
+helm install k8ssandra k8ssandra/k8ssandra --set prometheus.ingress.enabled=true , prometheus.ingress.host=localhost
+helm install k8ssandra k8ssandra/k8ssandra --set grafana.ingress.enabled=true , grafana.ingress.host=localhost
+```
 
-# Existing Cluster
-helm upgrade cluster-name k8ssandra/k8ssandra \
-  --set ingress.traefik.enabled=true \
-  --set ingress.traefik.monitoring.grafana.host=grafana.cluster-name.k8ssandra.cluster.local \
-  --set ingress.traefik.monitoring.prometheus.host=prometheus.cluster-name.k8ssandra.cluster.local
+**Existing cluster:**
+
+```bash
+helm upgrade k8ssandra k8ssandra/k8ssandra --set prometheus.ingress.enabled=true , prometheus.ingress.host=localhost
+helm upgrade k8ssandra k8ssandra/k8ssandra --set grafana.ingress.enabled=true , grafana.ingress.host=localhost
 ```
 
 ## Validate Traefik Configuration

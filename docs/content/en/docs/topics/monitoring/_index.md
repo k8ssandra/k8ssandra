@@ -21,19 +21,27 @@ After you've met the prerequisites identified below, access the preconfigured Gr
 1. Kubernetes cluster with the following elements deployed:
    * [K8ssandra]({{< ref "getting-started#install-k8ssandra" >}})
    * [Ingress Controller]({{< ref "ingress" >}})
-1. DNS name for the Grafana service, referred to as _GRAFANA DOMAIN_ below.
-1. DNS name for the Prometheus service, referred to as _PROMETHEUS DOMAIN_
-   below.
+1. DNS name for the Grafana service 
+1. DNS name for the Prometheus service
+
+{{% alert title="Tip" color="success" %}}
+As an alternative to configuring an Ingress, consider port forwarding. It's another way to provide external access to resources that have been deployed by K8ssandra in your Kubernetes environment. Those resources could include Prometheus metrics, pre-configured Grafana dashboards, and the Reaper web interface for repairs of Cassandra&reg; data. The `kubectl port-forward` command does not require an Ingress/Traefik to work. 
+
+* Developers, see [Set up port forwarding]({{< ref "/docs/getting-started/developer/#set-up-port-forwarding" >}}).  
+* Site reliability engineers, see [Configure port forwarding]({{< ref "/docs/getting-started/developer/#set-up-port-forwarding" >}}).
+{{% /alert %}}
 
 ## Access Grafana Interface
 
-If you haven't already, upgrade an existing `k8ssandra` by enabling the Traefik Ingress and passing in Prometheus and Grafana host flags. A command-line example when the host is local:
+If you haven't already, upgrade an existing `k8ssandra` by enabling the Traefik Ingress and passing in Prometheus and Grafana host flags. 
+Command-line examples when the host is local, and `k8ssandra` is the cluster-name:
 
 ```bash
-helm upgrade k8ssandra k8ssandra/k8ssandra --set ingress.traefik.enabled=true --set ingress.traefik.monitoring.grafana.host=grafana.localhost --set ingress.traefik.monitoring.prometheus.host=prometheus.localhost
+helm upgrade k8ssandra k8ssandra/k8ssandra --set prometheus.ingress.enabled=true , prometheus.ingress.host=localhost
+helm upgrade k8ssandra k8ssandra/k8ssandra --set grafana.ingress.enabled=true , grafana.ingress.host=localhost
 ```
 
-After a few minutes, check that the pods configured by K8ssandra are running:
+After a few minutes, check that the upgraded pods configured by K8ssandra are running:
 
 ```bash
 kubectl get pods
@@ -42,21 +50,22 @@ kubectl get pods
 **Output**:
 
 ```bash
-NAME                                                              READY   STATUS      RESTARTS   AGE
-cass-operator-65956c4f6d-f25nl                                    1/1     Running     0          4h26m
-grafana-deployment-8467d8bc9d-czsg5                               1/1     Running     0          4h13m
-k8ssandra-grafana-operator-k8ssandra-5bcb746b8d-4nlhz             1/1     Running     0          4h22m
-k8ssandra-reaper-k8ssandra-6cf5b87b8f-vxrwj                       1/1     Running     0          4h5m
-k8ssandra-reaper-k8ssandra-schema-pjmv8                           0/1     Completed   5          4h8m
-k8ssandra-reaper-operator-k8ssandra-55dc486998-f4r46              1/1     Running     0          4h22m
-k8ssandra-dc1-default-sts-0                                       2/2     Running     0          4h22m
-k8ssandra-tools-kube-prome-operator-6d57f758dd-7zd92              1/1     Running     0          4h26m
-prometheus-k8ssandra-prometheus-k8ssandra-0                       2/2     Running     1          4h22m
+NAME                                                        READY   STATUS      RESTARTS   AGE
+k8ssandra-cass-operator-65cc657-fq6bc                       1/1     Running     0          10m
+k8ssandra-dc1-default-sts-0                                 3/3     Running     0          10m
+k8ssandra-dc1-stargate-bb47877d5-54sdt                      1/1     Running     0          10m
+k8ssandra-grafana-7f84d96d47-xd79s                          2/2     Running     0          10m
+k8ssandra-kube-prometheus-stack-operator-76b984f9f4-pp745   1/1     Running     0          10m
+k8ssandra-medusa-operator-6888946787-qwzsx                  1/1     Running     2          10m
+k8ssandra-reaper-k8ssandra-656f5b77cc-nqfzv                 1/1     Running     0          10m
+k8ssandra-reaper-k8ssandra-schema-88cpx                     0/1     Completed   0          10m
+k8ssandra-reaper-operator-5b8c4c66b8-8cf86                  1/1     Running     2          10m
+prometheus-k8ssandra-kube-prometheus-stack-prometheus-0     2/2     Running     1          10m
 ```
 
 Notice that the Grafana Operator is running, as well as other services such as Prometheus.
 
-If you are running a local Kubernetes environment, you can access the Grafana dashboard with a URL such as:
+If you are in a local Kubernetes environment, you can now access the Grafana dashboard with a URL such as:
 
 <http://grafana.localhost:8080>
 
@@ -115,9 +124,7 @@ Here's an example of the `Cassandra Cluster Condensed` dashboard in Grafana:
 
 ![Prometheus UI](prometheus-example.png)
 
-Prometheus is available at the following address: <http://PROMETHEUS_DOMAIN>
-
-For example:
+Prometheus is available at the following address if running locally:
 
 <http://prometheus.localhost:8080>
 
@@ -128,4 +135,4 @@ For example:
 
 ## Next
 
-Access the [Repair Web interface]({{< ref "/docs/topics/repair/" >}}).
+Access the [Reaper web interface]({{< ref "/docs/topics/repair/" >}}) to perform periodic repairs of Cassandra data.
