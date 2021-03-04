@@ -11,6 +11,9 @@ Changelog for K8ssandra, new PRs should update the `main / unreleased` section w
 
 When cutting a new release of the parent `k8ssandra` chart update the `main / unreleased` heading to the tag being generated and date `## vX.Y.Z - YYYY-MM-DD` and create a new placeholder section for  `main / unreleased` entries.
 
+## main / unreleased
+* [BUGFIX] #396 cqlsh commands show warnings
+
 ## v1.0.0 - 2021-02-26
 
 * [ENHANCEMENT] #444 Upgrade cass-operator to 1.6.0
