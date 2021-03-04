@@ -455,7 +455,7 @@ reaper:
 
 medusa:
   # -- Enable Medusa resources as part of this release. If enabled,
-  # `bucketName` and `bucketSecret` **must** be defined.
+  # `bucketName` and `storageSecret` **must** be defined.
   enabled: false
 
   # Configures the Medusa image which is built from
@@ -519,7 +519,7 @@ monitoring:
     provision_dashboards: true
 
   prometheus:
-    # -- Enabes the creation of Prometheus Operator ServiceMonitor custom
+    # -- Enables the creation of Prometheus Operator ServiceMonitor custom
     # resources. If you are not using the kube prometheus stack sub-chart or do
     # not have the ServiceMonitor CRD installed on your cluster, set this value
     # to `false`.

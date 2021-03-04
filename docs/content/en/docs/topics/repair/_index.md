@@ -6,7 +6,7 @@ description: |
   Use the Reaper for Apache Cassandra (Reaper) web interface for repairs.
 ---
 
-Repairs are a critical anti-entropy operation in Apache Cassandra (Cassandra). In the past, there have been many custom solutions to manage them outside of your main Cassandra installation. K8ssandra provides the Reaper web interface (Reaper) that eliminates the need for a custom solution. Just like K8ssandra makes Cassandra setup easy, Reaper makes configuration of repairs even easier.
+Repairs are a critical anti-entropy operation in Apache Cassandra&reg;. In the past, there have been many custom solutions to manage them outside of your main Cassandra installation. K8ssandra provides the Reaper web interface that eliminates the need for a custom solution. Just like K8ssandra makes Cassandra setup easy, Reaper makes configuration of repairs even easier.
 
 {{% alert title="Tip" color="success" %}}
 The requirement for your environment may vary considerably, however the general recommendation is to run a repair operation on your Cassandra clusters about once a week.
@@ -22,7 +22,14 @@ The requirement for your environment may vary considerably, however the general 
 1. Kubernetes cluster with the following elements deployed:
    * [K8ssandra]({{< ref "getting-started#install-k8ssandra" >}}) Helm chart
    * [Ingress Controller]({{< ref "ingress" >}})
-2. DNS name configured for the Reaper interface, referred to as _REPAIR DOMAIN_ below.
+2. DNS name configured for the Reaper web interface
+
+{{% alert title="Tip" color="success" %}}
+As an alternative to configuring an Ingress, consider port forwarding. It's another way to provide external access to resources that have been deployed by K8ssandra in your Kubernetes environment. Those resources could include Prometheus metrics, pre-configured Grafana dashboards, and the Reaper web interface for repairs of Cassandra&reg; data. The `kubectl port-forward` command does not require an Ingress/Traefik to work. 
+
+* Developers, see [Set up port forwarding]({{< ref "/docs/getting-started/developer/#set-up-port-forwarding" >}}).  
+* Site reliability engineers, see [Configure port forwarding]({{< ref "/docs/getting-started/developer/#set-up-port-forwarding" >}}).
+{{% /alert %}}
 
 ## Access the Reaper web interface
 
@@ -30,15 +37,19 @@ The requirement for your environment may vary considerably, however the general 
 
 With the prerequisites satisfied the Reaper web interface should be available at the following address:
 
-http://REPAIR_DOMAIN/webui
+http://REAPER_DOMAIN/webui
 
 For example, to upgrade a previously installed `k8ssandra` that's running locally, where the `releaseName` used on the prior `helm install` command was `k8ssandra`:
 
-`helm upgrade k8ssandra k8ssandra/k8ssandra --set ingress.traefik.enabled=true --set ingress.traefik.repair.host=repair.localhost`
+```bash
+helm upgrade k8ssandra k8ssandra/k8ssandra --set reaper.ingress.enabled=true,reaper.ingress.host=localhost
+```
 
-Notice how in this example, the DNS host name is specified on the command line as `repair.localhost`.
+{{% alert title="Tip" color="success" %}}
+Notice how in the `helm upgrade` example above, with Ingress/Traefik access, the DNS hostname is specified on the command line as `localhost`. If you are not running locally, specify a hostname other than `localhost`. 
+{{% /alert %}}
 
-After a few minutes, check that the pods are running. Example:
+After about five or more minutes, check that the pods are running. Example:
 
 ```bash
 kubectl get pods
@@ -62,7 +73,11 @@ prometheus-k8ssandra-kube-prometheus-stack-prometheus-0     2/2     Running     
 
 ## What can I do in Reaper?
 
-To access Reaper, if you are running locally, navigate to [http://repair.localhost:8080/webui/](http://repair.localhost:8080/webui/).
+To access Reaper, navigate to [http://localhost:8080/webui/](http://localhost:8080/webui/). 
+
+{{% alert title="Tip" color="success" %}}
+Again, if you are not running locally, use the hostname value in the URL that you specified on the `--set reaper.ingress.host` flag above.
+{{% /alert %}}
 
 ### Check the cluster’s health
 

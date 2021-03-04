@@ -28,10 +28,15 @@ data:
   {{- end }}
   {{- if eq "local" .Values.medusa.storage }}
     base_path = {{ .Values.medusa.bucketName }}
+    {{- /*
+      Medusa requires the bucket_name property to be set even when using local storage.
+      See https://github.com/thelastpickle/cassandra-medusa/issues/299.
+    */ -}}
+    {{ nindent 4 "" }}bucket_name = "local"
   {{- else }}
     bucket_name = {{ .Values.medusa.bucketName }}
   {{- end }}
-  {{- if (eq .Values.medusa.storage "s3") }}
+  {{- if or (eq .Values.medusa.storage "s3") (eq .Values.medusa.storage "s3_compatible") }}
     key_file = /etc/medusa-secrets/medusa_s3_credentials
   {{- else if (eq .Values.medusa.storage "google_storage") }}
     key_file = /etc/medusa-secrets/medusa_gcp_key.json
