@@ -39,10 +39,6 @@ K8ssandra is a great fit for operators looking for easy to install and manage Ca
 * Grafana Operator `Dashboard` custom resources configured with metrics exposed by Prometheus
 * Reaper for Apache Cassandra custom resources connected to the cluster.
 
-## What is K8ssandra *not yet* good for?
-
-Right now K8ssandra is deployed as an entire stack. It currently assumes your deployment uses the entire stack. Trading out certain components for others is not supported. As part of the [Roadmap]({{< ref "roadmap" >}}) we would like to see this change to support a la carte composition of components.
-
 ## Where should I go next?
 
 Depending on your needs, see the following:
