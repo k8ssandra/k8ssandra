@@ -6,7 +6,7 @@ import (
 	"github.com/gruntwork-io/terratest/modules/random"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"k8s.io/helm/pkg/chartutil"
+	"helm.sh/helm/v3/pkg/chartutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -33,20 +33,20 @@ var (
 // Uses commons template to obtain list of required labels for verification.
 func GetRequiredLabels(targetChartsPath string) map[string]interface{} {
 
-	chart, _ := chartutil.Load(targetChartsPath)
-	Expect(chart).ToNot(BeNil())
+	chartMetadata, _ := chartutil.LoadChartfile(filepath.Join(targetChartsPath, "Chart.yaml"))
+	Expect(chartMetadata).ToNot(BeNil())
 
 	// k8ssandra-common.labels
 	commonLabels := map[string]interface{}{
-		"helm.sh/chart":                chart.Metadata.Name + "-" + chart.Metadata.Version,
-		"app.kubernetes.io/name":       chart.Metadata.Name,
+		"helm.sh/chart":                chartMetadata.Name + "-" + chartMetadata.Version,
+		"app.kubernetes.io/name":       chartMetadata.Name,
 		"app.kubernetes.io/instance":   HelmReleaseName,
 		"app.kubernetes.io/managed-by": "Helm",
 		"app.kubernetes.io/part-of":    "k8ssandra" + "-" + HelmReleaseName + "-" + DefaultTestNamespace,
 	}
 	// k8ssandra.lables includes version label in addition to k8ssandra-common.labels
 	if targetChartsPath == ChartsPath {
-		commonLabels["app.kubernetes.io/version"] = chart.Metadata.AppVersion
+		commonLabels["app.kubernetes.io/version"] = chartMetadata.AppVersion
 	}
 	return commonLabels
 }
