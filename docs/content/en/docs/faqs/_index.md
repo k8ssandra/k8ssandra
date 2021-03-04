@@ -89,8 +89,8 @@ helm install demo k8ssandra/k8ssandra -n k8ssandra --create-namespace
 
 You can install multiple releases of K8ssandra in a Kubernetes environment, provided:
 
-* You wait for all the pods to reach a Ready or Completed state for a given K8ssandra install, before attempting the next K8ssandra install
-* **And** provided you use a unique cluster-name per install
+* You install one release per namespace
+* The release names are unique across the entire Kubernetes cluster
 
 ### How do I install K8ssandra using the K8 included with Docker Desktop for Mac?
 
