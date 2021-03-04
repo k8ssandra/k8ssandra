@@ -122,7 +122,7 @@ K8ssandra deploys the following components, some components are optional, and de
 * [Management API for Apache Cassandra](https://github.com/datastax/management-api-for-apache-cassandra)
   * 0.1.19
 * [Stargate](https://stargate.io/)
-  * 1.0.11
+  * 1.0.13
 * [Metric Collector for Apache Cassandra (MCAC)](https://github.com/datastax/metric-collector-for-apache-cassandra)
   * 0.1.9
 * [Prometheus](https://prometheus.io/)
