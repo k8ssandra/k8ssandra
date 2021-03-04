@@ -30,7 +30,7 @@ helm list
 
 ```bash
 NAME	NAMESPACE	REVISION	UPDATED                                	STATUS  	CHART           	APP VERSION
-demo	default  	1       	2021-02-18 23:34:14.547364974 +0000 UTC	deployed	k8ssandra-0.51.0	3.11.10     
+demo	default  	1       	2021-03-04 15:21:41.573192403 +0000 UTC	deployed	k8ssandra-0.55.0	3.11.10     
 ```
 
 You can specify the name of the installed cluster's `releaseName` to get the full manifest. 
@@ -54,35 +54,25 @@ helm get manifest demo | grep size
 .
 .
   size: 1
-      initial_heap_size: "800M"
-      max_heap_size: "800M"
-    :[{\"expr\":\"sum(mcac_table_memtable_off_heap_size{cluster=~\\\"$cluster\\\"\
-    :\"A\"},{\"expr\":\"sum(mcac_table_memtable_on_heap_size{cluster=~\\\"$cluster\\\
-    ,\"description\":\"Total sizes of the data on distinct nodes\",\"fill\":0,\"gridPos\"\
-    datasource\":\"$PROMETHEUS_DS\",\"description\":\"Maximum JVM Heap Memory size\
-    \ (worst node) and minimum available heap size\",\"fill\":1,\"gridPos\":{},\"\
 ```
 
-Notice the value of `size: 1` from cassdc.yaml. This is the Cassandra DataCenter definition. 
+The value of `size: 1` is from cassdc.yaml, which is the Cassandra DataCenter definition. 
 
-To scale up, you could change the `size` to 3. Example with helm:
+To scale up, you could change the `size` to 3. Example:
 
 ```bash
-helm upgrade demo k8ssandra/k8ssandra --set k8ssandra.size=3 --reuse-values
+helm upgrade demo k8ssandra/k8ssandra --set cassandra.datacenters\[0\].size=3,cassandra.datacenters\[0\].name=dc1
 ```
 
-{{% alert title="Tip" color="success" %}}
-Use `--reuse-values` to ensure keeping settings from a previous `helm upgrade`.
-{{% /alert %}}
+**Output:**
 
 ```bash
 Release "demo" has been upgraded. Happy Helming!
 NAME: demo
-LAST DEPLOYED: Thu Feb 18 23:35:12 2021
+LAST DEPLOYED: Thu Mar  4 15:39:58 2021
 NAMESPACE: default
 STATUS: deployed
 REVISION: 2
-TEST SUITE: None
 ```
 
 Verify the upgrade:
@@ -98,13 +88,6 @@ helm get manifest demo | grep size
 .
 .
   size: 3
-      initial_heap_size: "800M"
-      max_heap_size: "800M"
-    :[{\"expr\":\"sum(mcac_table_memtable_off_heap_size{cluster=~\\\"$cluster\\\"\
-    :\"A\"},{\"expr\":\"sum(mcac_table_memtable_on_heap_size{cluster=~\\\"$cluster\\\
-    ,\"description\":\"Total sizes of the data on distinct nodes\",\"fill\":0,\"gridPos\"\
-    datasource\":\"$PROMETHEUS_DS\",\"description\":\"Maximum JVM Heap Memory size\
-    \ (worst node) and minimum available heap size\",\"fill\":1,\"gridPos\":{},\"\
 ```
 
 ### Scale down the cluster
@@ -112,7 +95,7 @@ helm get manifest demo | grep size
 Similarly, to scale down, lower the current `size` to conserve cloud resource costs, if the new value can support your computing requirements in Kubernetes. Example:
 
 ```bash
-helm upgrade demo k8ssandra/k8ssandra --set k8ssandra.size=1 --reuse-values
+helm upgrade demo k8ssandra/k8ssandra --set cassandra.datacenters\[0\].size=1,cassandra.datacenters\[0\].name=dc1
 ```
 
 **Output**:
@@ -120,11 +103,10 @@ helm upgrade demo k8ssandra/k8ssandra --set k8ssandra.size=1 --reuse-values
 ```bash
 Release "demo" has been upgraded. Happy Helming!
 NAME: demo
-LAST DEPLOYED: Thu Feb 18 23:37:25 2021
+LAST DEPLOYED: Thu Mar  4 15:42:39 2021
 NAMESPACE: default
 STATUS: deployed
 REVISION: 3
-TEST SUITE: None
 ```
 
 Again, verify the upgrade:
@@ -140,13 +122,6 @@ helm get manifest demo | grep size
 .
 .
   size: 1
-      initial_heap_size: "800M"
-      max_heap_size: "800M"
-    :[{\"expr\":\"sum(mcac_table_memtable_off_heap_size{cluster=~\\\"$cluster\\\"\
-    :\"A\"},{\"expr\":\"sum(mcac_table_memtable_on_heap_size{cluster=~\\\"$cluster\\\
-    ,\"description\":\"Total sizes of the data on distinct nodes\",\"fill\":0,\"gridPos\"\
-    datasource\":\"$PROMETHEUS_DS\",\"description\":\"Maximum JVM Heap Memory size\
-    \ (worst node) and minimum available heap size\",\"fill\":1,\"gridPos\":{},\"\
 ```
 
 ## Next
