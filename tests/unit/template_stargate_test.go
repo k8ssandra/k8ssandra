@@ -127,6 +127,27 @@ var _ = Describe("Verify Stargate template", func() {
 
 			datacenterName := kubeapi.FindEnvVarByName(container, "DATACENTER_NAME")
 			Expect(datacenterName.Value).To(Equal("dc1"))
+
+			preStopSleepSeconds := container.Lifecycle.PreStop.Exec.Command[1]
+			Expect(preStopSleepSeconds).To(Equal("20"))
+		})
+
+		It("using custom preStopDelaySeconds", func() {
+			customSeconds := "30"
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+				SetValues: map[string]string{
+					"stargate.enabled":             "true",
+					"stargate.preStopDelaySeconds": customSeconds,
+				},
+			}
+
+			Expect(renderTemplate(options)).To(Succeed())
+			templateSpec := deployment.Spec.Template.Spec
+			Expect(len(templateSpec.Containers)).To(Equal(1))
+			container := templateSpec.Containers[0]
+			preStopSleepSeconds := container.Lifecycle.PreStop.Exec.Command[1]
+			Expect(preStopSleepSeconds).To(Equal(customSeconds))
 		})
 
 		It("using custom image and clusterVersion", func() {

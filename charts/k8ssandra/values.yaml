@@ -287,6 +287,10 @@ stargate:
   # limit for the pod will be set to this value x2 and x4, respectively.
   heapMB: 256
 
+  # -- Configures the amount of time Stargate containers that need to shut down are given
+  # to finish processing open requests before Kubernetes sends SIGTERM.
+  preStopDelaySeconds: 20
+
   # -- Sets the CPU request for the Stargate pod in millicores.
   cpuReqMillicores: 200
 

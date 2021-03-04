@@ -51,7 +51,7 @@ spec:
           lifecycle:
             preStop:
               exec:
-                command: [ "sleep", "20" ]
+                command: [ "sleep", "{{ .Values.stargate.preStopDelaySeconds }}" ]
           ports:
             - name: graphql
               containerPort: 8080
