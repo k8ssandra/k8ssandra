@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ .Release.Name }}-k8ssandra-grafana-system-metrics-dashboard
+  name: {{ .Release.Name }}-system-metrics-dashboard
   labels:
     grafana_dashboard: "true"
 {{ include "k8ssandra.labels" . | indent 4 }}

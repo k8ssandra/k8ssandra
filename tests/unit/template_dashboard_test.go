@@ -49,28 +49,28 @@ var _ = Describe("Verify dashboards Config Map templates", func() {
 			}
 
 			It("does not render the Cassandra Overview dashboard", func() {
-				err = renderTemplate(options, "templates/grafana/cassandra-overview.configmap.yaml")
+				err = renderTemplate(options, "templates/cassandra/overview-dashboard.yaml")
 
 				Expect(err).ToNot(BeNil())
 				Expect(err.Error()).To(ContainSubstring("could not find template"))
 			})
 
 			It("does not render the Cassandra Condensed dashboard", func() {
-				err = renderTemplate(options, "templates/grafana/cassandra-condensed.configmap.yaml")
+				err = renderTemplate(options, "templates/cassandra/condensed-dashboard.yaml")
 
 				Expect(err).ToNot(BeNil())
 				Expect(err.Error()).To(ContainSubstring("could not find template"))
 			})
 
 			It("does not render the System Metrics dashboard", func() {
-				err = renderTemplate(options, "templates/grafana/system-metrics.configmap.yaml")
+				err = renderTemplate(options, "templates/cassandra/system-metrics-dashboard.yaml")
 
 				Expect(err).ToNot(BeNil())
 				Expect(err.Error()).To(ContainSubstring("could not find template"))
 			})
 
 			It("does not render the Stargate dashboard", func() {
-				err = renderTemplate(options, "templates/grafana/stargate.configmap.yaml")
+				err = renderTemplate(options, "templates/stargate/api-dashboard.yaml")
 
 				Expect(err).ToNot(BeNil())
 				Expect(err.Error()).To(ContainSubstring("could not find template"))
@@ -85,7 +85,7 @@ var _ = Describe("Verify dashboards Config Map templates", func() {
 			}
 
 			It("renders the Cassandra Overview dashboard", func() {
-				Expect(renderTemplate(options, "templates/grafana/cassandra-overview.configmap.yaml")).To(Succeed())
+				Expect(renderTemplate(options, "templates/cassandra/overview-dashboard.yaml")).To(Succeed())
 
 				data := cm["data"].(map[string]interface{})
 				Expect(data).ToNot(BeNil())
@@ -94,7 +94,7 @@ var _ = Describe("Verify dashboards Config Map templates", func() {
 			})
 
 			It("renders the Cassandra Condensed dashboard", func() {
-				Expect(renderTemplate(options, "templates/grafana/cassandra-condensed.configmap.yaml")).To(Succeed())
+				Expect(renderTemplate(options, "templates/cassandra/condensed-dashboard.yaml")).To(Succeed())
 
 				data := cm["data"].(map[string]interface{})
 				Expect(data).ToNot(BeNil())
@@ -103,7 +103,7 @@ var _ = Describe("Verify dashboards Config Map templates", func() {
 			})
 
 			It("renders the System Metrics dashboard", func() {
-				Expect(renderTemplate(options, "templates/grafana/system-metrics.configmap.yaml")).To(Succeed())
+				Expect(renderTemplate(options, "templates/cassandra/system-metrics-dashboard.yaml")).To(Succeed())
 
 				data := cm["data"].(map[string]interface{})
 				Expect(data).ToNot(BeNil())
@@ -121,7 +121,7 @@ var _ = Describe("Verify dashboards Config Map templates", func() {
 				}
 
 				It("does not render the Stargate dashboard", func() {
-					err = renderTemplate(options, "templates/grafana/stargate.configmap.yaml")
+					err = renderTemplate(options, "templates/stargate/api-dashboard.yaml")
 
 					Expect(err).ToNot(BeNil())
 					Expect(err.Error()).To(ContainSubstring("could not find template"))
@@ -138,7 +138,7 @@ var _ = Describe("Verify dashboards Config Map templates", func() {
 				}
 
 				It("renders the Stargate dashboard", func() {
-					Expect(renderTemplate(options, "templates/grafana/stargate.configmap.yaml")).To(Succeed())
+					Expect(renderTemplate(options, "templates/stargate/api-dashboard.yaml")).To(Succeed())
 
 					data := cm["data"].(map[string]interface{})
 					Expect(data).ToNot(BeNil())

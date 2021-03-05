@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ .Release.Name }}-k8ssandra-grafana-cassandra-overview-dashboard
+  name: {{ .Release.Name }}-cassandra-overview-dashboard
   labels:
     grafana_dashboard: "true"
 {{ include "k8ssandra.labels" . | indent 4 }}

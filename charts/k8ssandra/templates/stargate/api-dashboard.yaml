@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ .Release.Name }}-k8ssandra-grafana-stargate-dashboard
+  name: {{ .Release.Name }}-stargate-dashboard
   labels:
     grafana_dashboard: "true"
 {{ include "k8ssandra.labels" . | indent 4 }}
