@@ -59,7 +59,7 @@ helm get manifest k8ssandra | grep size
       heap_size_young_generation: 1G
 ```
 
-The value of `size: 1` is from cassdc.yaml, which is the Cassandra DataCenter definition. 
+The value of `size: 1` is from cassdc.yaml, which is the CassandraDatacenter definition. 
 
 To scale up, you could change the `size` to 3. In the following example, we'll also set the name `dc1`:
 
@@ -97,7 +97,7 @@ helm get manifest k8ssandra | grep size
 
 ### Scale down the cluster
 
-Similarly, to scale down, lower the current `size` to conserve cloud resource costs, if the new value can support your computing requirements in Kubernetes. For example, this time we'll lower the size to 1, and again set the datacenter name `dc1` (currently required each time) with the command:
+Similarly, to scale down, lower the current `size` to conserve cloud resource costs, if the new value can support your computing requirements in Kubernetes. For example, this time we'll lower the size to 1, and again set the CassandraDatacenter name `dc1` (currently required each time) with the command:
 
 ```bash
 helm upgrade k8ssandra k8ssandra/k8ssandra --set cassandra.datacenters\[0\].size=1,cassandra.datacenters\[0\].name=dc1
