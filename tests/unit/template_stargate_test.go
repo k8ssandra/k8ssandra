@@ -56,6 +56,18 @@ var _ = Describe("Verify Stargate template", func() {
 			}
 			Expect(renderTemplate(options)).ShouldNot(Succeed())
 		})
+
+		It("preStopDelaySeconds is unset", func() {
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+				SetValues: map[string]string{
+					"stargate.enabled":             "true",
+					"stargate.preStopDelaySeconds": "",
+				},
+			}
+
+			Expect(renderTemplate(options)).ShouldNot(Succeed())
+		})
 	})
 
 	Context("by confirming it does render when", func() {

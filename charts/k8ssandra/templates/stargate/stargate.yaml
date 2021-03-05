@@ -1,5 +1,6 @@
 {{- if .Values.stargate.enabled }}
   {{- $stargateVersion := .Values.stargate.version }}
+  {{- $preStopDelaySeconds := required "stargate.preStopDelaySeconds is required" .Values.stargate.preStopDelaySeconds }}
   {{- $computedClusterVersion := "" }}
   {{- $computedImage := "" }}
   {{- if hasPrefix "3" .Values.cassandra.version }}
@@ -51,7 +52,7 @@ spec:
           lifecycle:
             preStop:
               exec:
-                command: [ "sleep", "{{ .Values.stargate.preStopDelaySeconds }}" ]
+                command: [ "sleep", "{{ $preStopDelaySeconds }}" ]
           ports:
             - name: graphql
               containerPort: 8080
