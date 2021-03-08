@@ -13,8 +13,8 @@ CLEANER_LATEST_IMAGE=$(CLEANER_IMAGE_BASE):latest
 # Image URL to use all building/pushing image targets
 CLEANER_IMG ?= $(CLEANER_LATEST_IMAGE)
 
-TESTS=all
-GO_FLAGS=
+TESTS?=all
+GO_FLAGS?=
 ENVTEST_ASSETS_DIR=$(shell pwd)/testbin
 test: fmt vet unit-test pkg-test
 
