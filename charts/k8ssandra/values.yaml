@@ -177,10 +177,20 @@ cassandra:
       # https://kubernetes.io/docs/tasks/configure-pod-container/assign-pods-nodes-using-node-affinity/
       # for background on using affinity rules.
       #
-      # topology.kubernetes.io/zone is a well-known k8s label used by cloud
-      # providers to indicate the failure zone in which a k8s worker node is
-      # running. The following example illustrates how you can pin racks to
-      # specific failure zones.
+      # topology.kubernetes.io/zone is a well-known k8s label used by cloud providers to
+      # indicate the failure zone in which a k8s worker node is running. The following
+      # example illustrates how you can pin racks to specific failure zones.
+      #
+      # racks:
+      # - name: r1
+      #   affinityLabels:
+      #     topology.kubernetes.io/zone: us-east1-b
+      # - name: r2
+      #   affinityLabels:
+      #     topology.kubernetes.io/zone: us-east1-a
+      # - name: r3
+      #   affinityLabels:
+      #     topology.kubernetes.io/zone: us-east1-c
       affinityLabels: {}
 
     # -- Optional datacenter-level heap setting, overrides cluster-level setting
