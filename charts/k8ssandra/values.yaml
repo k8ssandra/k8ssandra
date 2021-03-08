@@ -87,7 +87,9 @@ cassandra:
   allowMultipleNodesPerWorker: false
 
   # -- Optional cluster-level heap configuration, can be overridden at `datacenters` level.
-  # Options are commented out for reference.
+  # Options are commented out for reference. Note that k8ssandra does not
+  # automatically apply default values for heap size. It instead defers to
+  # Cassandra's out of box defaults.
   heap: {}
    #size:
    #newGenSize:
@@ -138,7 +140,9 @@ cassandra:
       # -- Set the number of stop the world (STW) worker threads.
       # concurrentGcThreads: 16
 
-  # -- Resource requests for each Cassandra pod.
+  # -- Resource requests for each Cassandra pod. See
+  # https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
+  # for background on managing resources.
   resources: {}
 
   datacenters:
@@ -194,7 +198,9 @@ cassandra:
       affinityLabels: {}
 
     # -- Optional datacenter-level heap setting, overrides cluster-level setting
-    # `cassandra.heap`.  Options are commented out for reference.
+    # `cassandra.heap`. Options are commented out for reference. Note that
+    # k8ssandra does not automatically apply default values for heap size. It
+    # instead defers to Cassandra's out of box defaults.
     heap: {}
       #size:
       #newGenSize:
@@ -410,7 +416,9 @@ reaper:
   # in order to limit access.
   enabled: true
 
-  # Configures the Reaper container image to use.
+  # Configures the Reaper container image to use. Exercise care when changing
+  # the Reaper image. Reaper is deployed and managed by reaper-operator. You
+  # will need to make sure that the image is compatible with reaper-operator.
   image:
     # -- Specifies the container repository for cassandra-reaper
     repository: docker.io/thelastpickle/cassandra-reaper
@@ -492,8 +500,11 @@ medusa:
   # -- Enables usage of a bucket across multiple clusters.
   multiTenant: false
 
-  # -- API interface used by the object store. Supported values include `s3`, 's3_compatible'
-  # and `gcs`. For pod mapped storage, use 'local'
+  # -- API interface used by the object store. Supported values include `s3`,
+  # 's3_compatible' and `gcs`. For file system storage, i.e., a pod volume
+  # mount, use 'local'. Note that 'local' does not necessarily imply a local
+  # volume. It could also be network attached storage. It is simply accessed
+  # through the local file system.
   storage: s3
 
   # -- Optional properties for storage. Supported values depend on the type of the storage.
@@ -521,17 +532,25 @@ medusa:
 monitoring:
   grafana:
     # -- Enables the creation of configmaps containing Grafana dashboards. If
-    # leveraging the kube prometheus stack sub-chart this value should be
-    # `true`.
+    # leveraging the kube-prometheus-stack subchart this value should be
+    # `true`. See
+    # https://helm.sh/docs/chart_template_guide/subcharts_and_globals/ for
+    # background on subcharts.
     provision_dashboards: true
 
   prometheus:
     # -- Enables the creation of Prometheus Operator ServiceMonitor custom
-    # resources. If you are not using the kube prometheus stack sub-chart or do
+    # resources. If you are not using the kube-prometheus-stack subchart or do
     # not have the ServiceMonitor CRD installed on your cluster, set this value
     # to `false`.
     provision_service_monitors: true
 
+# -- The cleaner is a pre-delete hook that ensures the CassandraDatacenter
+# object is deleted before the cass-operator deployment is deleted.
+# cass-operator sets a finalizer on the CassandraDatacenter. Kubernetes blocks
+# deletion of an object until all of its finalizers are cleared. cass-operator
+# removes the finalizer. We need this pre-delete hook because Helm does not
+# provide any ordering guarantees for deletion when you run `helm uninstall`.
 cleaner:
   image: k8ssandra/k8ssandra-cleaner:618b8ff9d368
 
@@ -554,7 +573,9 @@ kube-prometheus-stack:
   # installed.
   enabled: true
 
-  # Disable default service monitors
+  # Disable default service monitors. These service monitors are focused on
+  # monitoring Kubernetes components. They are disabled as since the focus is
+  # on monitoring k8ssandra components.
   coreDns:
     enabled: false
   kubeApiServer:
