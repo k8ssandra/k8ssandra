@@ -13,6 +13,7 @@ When cutting a new release of the parent `k8ssandra` chart update the `main / un
 
 ## main / unreleased
 * [BUGFIX] #396 cqlsh commands show warnings
+* [BUGFIX] #507 `TESTS` and `GO_FLAGS` Makefile vars cannot be set from command line
 
 ## v1.0.0 - 2021-02-26
 
