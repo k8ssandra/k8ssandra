@@ -342,10 +342,10 @@ S3 maintains the `backup_index` bucket so it only has to store a single copy of 
 
 ### Restore data from the backup
 
-Consider the case where an unexpected event occurred, such as an authorized user accidentally entering cqlsh `TRUNCATE` commands that wiped out data in Cassandra. You can restore data from the backup. For example:
+Consider the case where an unexpected event occurred, such as an authorized user accidentally entering cqlsh `TRUNCATE` commands that wiped out data in Cassandra. You can restore data from the backup. Recall that in the prior `helm install test k8ssandra/backup...` command above, we identified the configured backup's name as `test`. So, for example, a subsequent restore can reference the `test` backup this way:
 
 ```bash
-helm install restore-test ./restore --set name=helm-test,backup.name=test,cassandraDatacenter.name=dc1
+helm install restore-test k8ssandra/restore --set name=helm-test,backup.name=test,cassandraDatacenter.name=dc1
 ```
 
 Examine the YAML:
