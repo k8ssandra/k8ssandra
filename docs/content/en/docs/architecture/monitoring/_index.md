@@ -41,3 +41,4 @@ Let's walk through this architecture from left to right. We'll provide links to 
 Check out the [monitoring tasks](/docs/topics/accessing-services/monitoring) for more detailed instructions.
 
 Next architecture topic: [Repairs with Cassandra Reaper]({{< ref "repairs" >}})
+

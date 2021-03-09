@@ -1,26 +1,21 @@
 ---
-title: "Contribution Guidelines"
-linkTitle: "Contribution Guidelines"
+title: "Contribution guidelines"
+linkTitle: "Contribute"
 weight: 6
 description: >
   How to contribute to K8ssandra documentation.
 ---
 
-We use [Hugo](https://gohugo.io/) to format and generate this website, the [Docsy](https://github.com/google/docsy) theme for styling and site structure, and [Google Cloud Storage](https://console.cloud.google.com/) to manage the deployment of the site. 
+We use [Hugo](https://gohugo.io/) to format and generate this website, the [Docsy](https://github.com/google/docsy) theme for styling and site structure, and [Google Cloud Storage](https://console.cloud.google.com/) to manage the deployment of the site.
 
-Hugo is an open-source static site generator that provides us with templates, content organization in a standard directory structure, and a website generation 
-engine. You write the pages in Markdown (or HTML if you want), and Hugo wraps them up into a website.
+Hugo is an open-source static site generator that provides us with templates, content organization in a standard directory structure, and a website generation engine. You write the pages in Markdown (or HTML if you want), and Hugo wraps them up into a website.
 
-All submissions, including submissions by project members, require review. We
-use GitHub pull requests for this purpose. Consult
-[GitHub Help](https://help.github.com/articles/about-pull-requests/) for more
-information on using pull requests.
+All submissions, including submissions by project members, require review. We use GitHub pull requests for this purpose. Consult
+[GitHub Help](https://help.github.com/articles/about-pull-requests/) for more information on using pull requests.
 
 ## Deploying to K8ssandra.io
 
-Here's a quick guide to updating the docs. It assumes you're familiar with the
-GitHub workflow and you're happy to use the automated preview of your doc
-updates:
+Here's a quick guide to updating the docs. It assumes you're familiar with the GitHub workflow and you're happy to use the automated preview of your doc updates:
 
 1. **Fork** the [K8ssandra docs repo](https://github.com/k8ssandra/k8ssandra.git) on GitHub. 
 1. Make your changes and send a pull request (PR).
@@ -49,7 +44,7 @@ If you want to run your own local Hugo server to preview your changes as you wor
 1. Follow the instructions to install [Hugo](https://gohugo.io/) and any other tools you need. You'll need at least **Hugo version 0.45** (we recommend using the most recent available version), and it must be the **extended** version, which supports SCSS.
 1. Fork the [K8ssandra repo](https://github.com/k8ssandra/k8ssandra) repo into your own project, then create a local copy using `git clone`. Don’t forget to use `--recurse-submodules` or you won’t pull down some of the code you need to generate a working site.
 
-    ```
+    ```bash
     git clone --recurse-submodules --depth 1 https://github.com/k8ssandra/k8ssandra.git
     ```
 
@@ -66,5 +61,3 @@ If you've found a problem in the docs, but you're not sure how to fix it yoursel
 * [Docsy user guide](https://www.docsy.dev/docs/): All about Docsy, including how it manages navigation, look and feel, and multi-language support.
 * [Hugo documentation](https://gohugo.io/documentation/): Comprehensive reference for Hugo.
 * [Github Hello World!](https://guides.github.com/activities/hello-world/): A basic introduction to GitHub concepts and workflow.
-
-

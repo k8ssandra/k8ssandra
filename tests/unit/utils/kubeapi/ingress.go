@@ -22,12 +22,13 @@ func FindIngressRuleByHttpPath(rules []networkingv1.IngressRule, path string) (*
 // VerifyNoRuleWithPath asserts that none of the given IngressRules have a given HTTP path entry.
 func VerifyNoRuleWithPath(rules []networkingv1.IngressRule, path string) {
 	authRule, _ := FindIngressRuleByHttpPath(rules, path)
-	Expect(authRule).To(BeNil())
+	description := Sprintf("Found a rule with path %v when none was expected", path)
+	Expect(authRule).To(BeNil(), description)
 }
 
-// VerifyIngressRule finds an IngresssRule from the given array with the given path and asserts that
+// VerifyIngressRule finds an IngressRule from the given array with the given path and asserts that
 // it exists and has the correct pathType, host, serviceName, and port.
-func VerifyIngressRule(rules []networkingv1.IngressRule, path string, pathType *networkingv1.PathType, host *string, serviceName string, port int) {
+func VerifyIngressRule(rules []networkingv1.IngressRule, path string, host *string, serviceName string, port int) {
 	rule, httpPath := FindIngressRuleByHttpPath(rules, path)
 
 	description := Sprintf("rule not found for path %v", path)
@@ -41,11 +42,7 @@ func VerifyIngressRule(rules []networkingv1.IngressRule, path string, pathType *
 	} else {
 		Expect(rule.Host).To(Equal(*host), description)
 	}
-	if pathType == nil {
-		Expect(httpPath.PathType).To(BeNil(), description)
-	} else {
-		Expect(httpPath.PathType).To(Equal(pathType), description)
-	}
+	Expect(httpPath.PathType).To(BeNil(), description) // PathType requires k8s 1.18+; as of now we are supporting 1.16+
 	Expect(httpPath.Backend.ServiceName).To(Equal(serviceName), description)
 	Expect(httpPath.Backend.ServicePort).To(Equal(intstr.FromInt(port)), description)
 }

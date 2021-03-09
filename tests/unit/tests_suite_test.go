@@ -25,8 +25,8 @@ const (
 
 var (
 	UniqueIdSuffix        = strings.ToLower(random.UniqueId())
-	DefaultTestNamespace  = Sprintf("k8ssandranamespace-%s", UniqueIdSuffix)
-	HelmReleaseName       = Sprintf("k8ssandratestrelease-%s", UniqueIdSuffix)
+	DefaultTestNamespace  = Sprintf("k8ssandranamespace%s", UniqueIdSuffix)
+	HelmReleaseName       = Sprintf("k8ssandratestrelease%s", UniqueIdSuffix)
 	defaultKubeCtlOptions = k8s.NewKubectlOptions("", "", DefaultTestNamespace)
 )
 

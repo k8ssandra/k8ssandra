@@ -19,7 +19,7 @@ image:
   # -- Pull policy for the operator container
   pullPolicy: IfNotPresent
   # -- Tag of the reaper-operator image to pull from image.repository
-  tag: 0d6525659e9d
+  tag: v0.1.1
 
 # -- References to secrets to use when pulling images. ref:
 # https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/

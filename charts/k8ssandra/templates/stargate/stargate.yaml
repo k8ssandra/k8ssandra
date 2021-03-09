@@ -1,6 +1,17 @@
 {{- if .Values.stargate.enabled }}
-{{- $heapMB := required "stargate.heapMB is required" .Values.stargate.heapMB -}}
-{{- $image := default "stargateio/stargate-3_11:v1.0.0" .Values.stargate.image -}}
+  {{- $stargateVersion := .Values.stargate.version }}
+  {{- $computedClusterVersion := "" }}
+  {{- $computedImage := "" }}
+  {{- if hasPrefix "3" .Values.cassandra.version }}
+    {{- $computedClusterVersion = "3.11" }}
+    {{- $computedImage = printf "stargateio/stargate-3_11:v%s" $stargateVersion }}
+  {{- else }}
+    {{- $computedClusterVersion = "4.0" }}
+    {{- $computedImage = printf "stargateio/stargate-4_0:v%s" $stargateVersion }}
+  {{- end }}
+  {{- $image := default $computedImage .Values.stargate.image -}}
+  {{- $clusterVersion := default $computedClusterVersion .Values.stargate.clusterVersion -}}
+  {{- $heapMB := required "stargate.heapMB is required" .Values.stargate.heapMB -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -84,7 +95,7 @@ spec:
             - name: CLUSTER_NAME
               value: {{ include "k8ssandra.clusterName" . | quote }}
             - name: CLUSTER_VERSION
-              value: "3.11"
+              value: {{ $clusterVersion | quote }}
             - name: SEED
               value: "{{ include "k8ssandra.clusterName" . }}-seed-service.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain | default "cluster.local" }}"
             - name: DATACENTER_NAME

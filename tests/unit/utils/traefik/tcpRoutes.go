@@ -12,7 +12,7 @@ func VerifyTraefikTCPIngressRoute(ingress traefik.IngressRouteTCP, entrypoint st
 	route := findTraefikTCPRouteByMatch(&ingress.Spec, match)
 	ExpectWithOffset(1, route).ToNot(BeNil(), fmt.Sprintf("No Route found with match=%s for entrypoint=%s", match, entrypoint))
 	service := findTraefikTCPServiceByName(route, backendService)
-	ExpectWithOffset(1, route).ToNot(BeNil(), fmt.Sprintf("No BackendService found with name=%s for match=%s and entrypoint=%s", backendService, match, entrypoint))
+	ExpectWithOffset(1, service).ToNot(BeNil(), fmt.Sprintf("No BackendService found with name=%s for match=%s and entrypoint=%s", backendService, match, entrypoint))
 	ExpectWithOffset(1, service.Port).To(Equal(int32(backendPort)))
 }
 
