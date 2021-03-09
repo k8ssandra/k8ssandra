@@ -38,8 +38,8 @@ You will need storage for the backups. This topic shows the use of Amazon S3 buc
 
 * Add and update the following repo, which has in one chart all the settings for K8ssandra plus the backup/restore settings:
 
-```bash
-helm repo add k8ssandra https://helm.k8ssandra.io/
+```
+helm repo add k8ssandra https://helm.k8ssandra.io/stable/
 helm repo update
 ```
 
