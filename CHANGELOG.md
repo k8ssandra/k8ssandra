@@ -17,6 +17,7 @@ When cutting a new release of the parent `k8ssandra` chart update the `main / un
 * [ENHANCEMENT] #419 Add automation for stable and next release streams
 * [BUGFIX] #396 cqlsh commands show warnings
 * [BUGFIX] #516 Fix issue with scripts not being checked out before attempting to run them.
+* [BUGFIX] #517 Removed GitHub Actions for prereleasing off of main
 
 ## v1.0.0 - 2021-02-26
 
