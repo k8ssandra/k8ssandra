@@ -22,6 +22,8 @@ jobs:
         with:
           path: bin
           key: ${{ runner.os }}-${{ env.HELM_VERSION }}-${{ env.YQ_VERSION }}
+      - name: Checkout
+        uses: actions/checkout@v2
       - run: scripts/install-helm.sh $HELM_VERSION
         if: steps.cache.outputs.cache-hit != 'true'
       - run: scripts/install-yq.sh $YQ_VERSION
