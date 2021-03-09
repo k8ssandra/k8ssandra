@@ -22,8 +22,6 @@ jobs:
         with:
           path: bin
           key: ${{ runner.os }}-${{ env.HELM_VERSION }}-${{ env.YQ_VERSION }}
-      - name: Checkout
-        uses: actions/checkout@v2
       - run: scripts/install-helm.sh $HELM_VERSION
         if: steps.cache.outputs.cache-hit != 'true'
       - run: scripts/install-yq.sh $YQ_VERSION
@@ -84,49 +82,6 @@ jobs:
         with:
           name: charts
           path: build/*.tgz
-  
-  gh-release:
-    needs:
-      - setup
-    runs-on: ubuntu-latest
-    outputs:
-      RELEASE_UPLOAD_URL: ${{ steps.create_release.outputs.upload_url}}
-    steps:
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
-        with:
-          tag_name: ${{ needs.setup.outputs.VERSION }}
-          release_name: ${{ needs.setup.outputs.VERSION }}
-          prerelease: true
-          draft: true
-  
-  gh-release-upload:
-    needs:
-      - setup
-      - gh-release
-      - package
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        chart:
-          - k8ssandra
-    steps:
-      - name: Download charts artifact
-        uses: actions/download-artifact@v2
-        with:
-          name: charts
-      - name: Upload chart package to release
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ needs.gh-release.outputs.RELEASE_UPLOAD_URL }}
-          asset_path: ./${{ matrix.chart }}-${{ needs.setup.outputs.SHORT_VERSION }}.tgz
-          asset_name: ${{ matrix.chart }}-${{ needs.setup.outputs.SHORT_VERSION }}.tgz
-          asset_content_type: application/x-tar
 
   helm-release:
     needs:
