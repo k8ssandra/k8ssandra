@@ -13,9 +13,10 @@ When cutting a new release of the parent `k8ssandra` chart update the `main / un
 
 ## main / unreleased
 * [ENHANCEMENT] #504 split dashboards into separate configmaps
-* [BUGFIX] #396 cqlsh commands show warnings
-
 * [ENHANCEMENT] #436 Upgrade Stargate to 1.0.11 and add a `preStop` lifecycle hook to improve behavior when reducing the number of Stargate replicas in the presence of live traffic
+* [ENHANCEMENT] #419 Add automation for stable and next release streams
+* [BUGFIX] #396 cqlsh commands show warnings
+* [BUGFIX] #516 Fix issue with scripts not being checked out before attempting to run them.
 
 ## v1.0.0 - 2021-02-26
 
