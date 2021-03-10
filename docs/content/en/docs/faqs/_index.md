@@ -130,9 +130,9 @@ K8ssandra deploys the following components, some components are optional, and de
 * [Grafana](https://grafana.com/)
   * 7.3.5
 * [Medusa for Apache Cassandra](https://github.com/thelastpickle/cassandra-medusa)
-  * 0.9.0
+  * 0.9.1
 * [Reaper for Apache Cassandra](http://cassandra-reaper.io/)
-  * 2.2.1
+  * 2.2.2
 
 {{% alert title="Note" color="primary" %}}
 Throughout these docs, examples are shown to deploy [Traefik](https://traefik.io/) as a means to provide external access to the k8ssandra cluster.  It is deployed separately from K8ssandra, and as such, the version deployed will vary.*
