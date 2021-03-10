@@ -3,7 +3,7 @@ date: 2021-03-10
 title: "Requirements for running K8ssandra for development"
 linkTitle: "K8ssandra development configuration"
 description: >
-  K8ssandra is a complete stack for running Apache Cassandra© in production. As such, it comes with several components that can consume a lot of resources and make it challenging to run on a dev laptop. Let’s explore how we can configure K8ssandra for this environment and run some simple benchmarks to determine what performance we can expect.
+  K8ssandra is a complete stack for running Apache Cassandra&reg; in production. As such, it comes with several components that can consume a lot of resources and make it challenging to run on a dev laptop. Let’s explore how we can configure K8ssandra for this environment and run some simple benchmarks to determine what performance we can expect.
 author: Alexander Dejanovski ([@alexanderDeja](https://twitter.com/alexanderDeja))
 
 ---
@@ -132,7 +132,7 @@ Docker Desktop allows to tune its allocated resources by clicking on its icon in
 
 Then click on “Resources” in the left menu, which will allow you to set the number of cores and the amount of RAM Docker can use overall:
 
-![Docker Resoureces](docker-resources.png)
+![Docker Resources](docker-resources.png)
 
 # Running the benchmarks
 We used [NoSQLBench](https://github.com/nosqlbench/nosqlbench) to perform moderate load benchmarks. It comes with a convenient Docker image that we could use straight away to run stress jobs in our k8s cluster.
@@ -243,7 +243,7 @@ Once Stargate is ready, the above command should output something like this:
 ```
 deployment "k8ssandra-dc1-stargate" successfully rolled out.
 ```
-You can execute a NoSQLBench stress run by creating a k8s job. You’ll need the superuser credentials so that NoSQLBench can connect to the Cassandra cluster.
+You can execute a NoSQLBench stress run by creating a k8s [job](https://kubernetes.io/docs/concepts/workloads/controllers/job/). You’ll need the superuser credentials so that NoSQLBench can connect to the Cassandra cluster.
 You can get those credentials with the following commands ( requires [`jq`](https://stedolan.github.io/jq/) to be installed):
 
 ```
