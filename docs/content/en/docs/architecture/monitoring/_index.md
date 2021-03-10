@@ -10,7 +10,7 @@ When running applications in Kubernetes, observability is key. K8ssandra include
 
 ![Monitoring Overview](monitoring-overview.png)
 
-With K8ssandra and cass-operator,  This exposes Cassandra node-level metrics in the Prometheus format, covering everything from operations per second and latency, to compaction throughput and heap usage. Examples of these metrics are shown in the Grafana dashboard below.
+Cassandra node-level metrics are reported in the Prometheus format, covering everything from operations per second and latency, to compaction throughput and heap usage. Examples of these metrics are shown in the Grafana dashboard below.
 
 ![Grafana Overview](grafana-overview.png)
 
