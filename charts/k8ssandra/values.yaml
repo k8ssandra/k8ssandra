@@ -504,7 +504,7 @@ medusa:
   # 's3_compatible' and `gcs`. For file system storage, i.e., a pod volume
   # mount, use 'local'. Note that 'local' does not necessarily imply a local
   # volume. It could also be network attached storage. It is simply accessed
-  # through the local file system.
+  # through the file system.
   storage: s3
 
   # -- Optional properties for storage. Supported values depend on the type of the storage.
