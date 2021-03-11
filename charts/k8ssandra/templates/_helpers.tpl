@@ -341,3 +341,10 @@ Add garbage collection settings based on the following rules in the order listed
   {{ indent 4 (cat "conc_gc_threads:" .concurrentGcThreads) }}
 {{- end }}
 {{- end -}}
+
+{{/*
+Cassandra image (Management API image and version tag).
+*/}}
+{{- define "k8ssandra.cassandraImage" -}}
+{{- default (get .Values.cassandra.versionImageMap .Values.cassandra.version) .Values.cassandra.image }}
+{{- end }}
