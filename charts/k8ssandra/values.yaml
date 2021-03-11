@@ -545,12 +545,14 @@ monitoring:
     # to `false`.
     provision_service_monitors: true
 
-# -- The cleaner is a pre-delete hook that ensures the CassandraDatacenter
-# object is deleted before the cass-operator deployment is deleted.
-# cass-operator sets a finalizer on the CassandraDatacenter. Kubernetes blocks
-# deletion of an object until all of its finalizers are cleared. cass-operator
-# removes the finalizer. We need this pre-delete hook because Helm does not
-# provide any ordering guarantees for deletion when you run `helm uninstall`.
+# -- The cleaner is a pre-delete hook that that ensures objects with finalizers
+# get deleted. For example, cass-operator sets a finalizer on the
+# CassandraDatacenter. Kubernetes blocks deletion of an object until all of its
+# finalizers are cleared. In the case of the CassandraDatacenter object,
+# cass-operator removes the finalizer. The problem is that there are no
+# ordering guarantees with helm uninstall which means that the cass-operator
+# deployment could be deleted before the CassandraDatacenter. The cleaner
+# ensures that the CassandraDatacenter is deleted before cass-operator.
 cleaner:
   image: k8ssandra/k8ssandra-cleaner:618b8ff9d368
 
