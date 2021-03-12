@@ -28,7 +28,7 @@ Let's walk through this architecture from left to right. We'll provide links to 
 
 * One or more Prometheus instances are deployed in another StatefulSet, with the default configuration starting with a single instance. Using a StatefulSet allows each Prometheus node to connect to a Persistent Volume (PV) for longer term storage. The default K8ssandra chart configuration does not use PVs. By default, metric data collected in the cluster is retained within Prometheus for 24 hours.
 
-* An instance of the Prometheus Operator is deployed using a Replica Set. The `kube-prometheus-stack` also defines several useful Kubernetes [custom resources (CRDs)](https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/) that the Prometheus Operator uses to manage Prometheus. One of these is the `ServiceMonitor`. K8ssandra uses `ServiceMonitor` resources, specifying labels selectors to indicate the Cassandra nodes to connect to in each datacenter, and how to relabel each metric as it is stored in Prometheus. `ServiceMonitors` can also be configured to pull metrics from `cass-operator` and Stargate.
+* An instance of the Prometheus Operator is deployed using a Replica Set. The `kube-prometheus-stack` also defines several useful Kubernetes [custom resources (CRDs)](https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/) that the Prometheus Operator uses to manage Prometheus. One of these is the `ServiceMonitor`. K8ssandra uses `ServiceMonitor` resources, specifying labels selectors to indicate the Cassandra pods to connect to in each datacenter, and how to relabel each metric as it is stored in Prometheus. K8ssandra provides a `ServiceMonitor` for Stargate when it is enabled. Users may also configure `ServiceMonitors` to pull metrics from the various operators, but pre-configured instances are not provided at this time.
 
 * The `AlertManager` is an additional resource provided by `kube-prometheus-stack` that can be configured to specify thresholds for specific metrics that will trigger alerts. Use of this feature is a K8ssandra [roadmap](/docs/roadmap) item. 
   
@@ -41,4 +41,3 @@ Let's walk through this architecture from left to right. We'll provide links to 
 Check out the [monitoring tasks](/docs/topics/accessing-services/monitoring) for more detailed instructions.
 
 Next architecture topic: [Repairs with Cassandra Reaper]({{< ref "repairs" >}})
-
