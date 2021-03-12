@@ -1,11 +1,11 @@
 # Overview
 This document describes the steps involved to upgrade the steps involves to apply a cass-operator upgrade in k8ssandra. There are a number of steps involved in the process. Here is a quick rundown:
 
-* Update medusa-operator
-  * Update cass-operator manifests including CassandraDatacenter CRD
-  * Update cass-operator image
-  * Update CassandraDatacenter manifests if necessary
-  * Update version in go.mod
+* [Update medusa-operator](#medusa-operator)
+  * [Update cass-operator manifests including CassandraDatacenter CRD](#medusa-operator-cass-operator-manifests)
+  * [Update cass-operator image](#medusa-operator-cass-operator-image)
+  * [Update CassandraDatacenter manifests if necessary](#medusa-operator-cassdc-manifests)
+  * [Update version in go.mod](#medusa-operator-go-mod)
 * Update reaper-operator
   * Update cass-operator manifests include CassandraDatacenter CRD
   * Update cass-operator image
@@ -17,10 +17,10 @@ This document describes the steps involved to upgrade the steps involves to appl
   * Update version in go.mod 
 
 
-# Update medusa-operator
+# [Update medusa-operator](#medusa-operator)
 medusa-operator uses kustomize to generate manifests for tests and to be used in the k8ssandra Helm charts.
 
-## Update cass-operator manifests
+## [Update cass-operator manifests](#medusa-operator-cass-operator-manifests)
 Let's say we are upgrading to cass-operator 1.6.0. The cass-operator maniests should be taken from the v1.6.0 tag. The manifest (for this example upgrade) can be found [here](https://github.com/datastax/cass-operator/tree/v1.6.0/operator/deploy).
 
 In medusa-operator, the cass-operator manifests, minus the CassandraDatacenter CRD, are bundled together in [cass-operator.yaml](https://github.com/k8ssandra/medusa-operator/blob/master/test/config/cass-operator/cass-operator.yaml).
@@ -29,13 +29,13 @@ In medusa-operator, the cass-operator manifests, minus the CassandraDatacenter C
 
 The CassandraDatacenter CRD to be updates lives at [medusa-operator/test/config/cass-operator/crd/bases/cassandradatacenter.yaml](https://github.com/k8ssandra/medusa-operator/blob/master/test/config/cass-operator/crd/bases/cassandradatacenter.yaml).
 
-## Update cass-operator image
+## [Update cass-operator image](#medusa-operator-cass-operator-image)
 The cass-operator image needs to be udpated in [medusa-operator/test/config/cass-operator/kustomization.yaml](https://github.com/k8ssandra/medusa-operator/blob/master/test/config/cass-operator/kustomization.yaml)
 
-## Update CassandraDatacenter manifests if necessary
+## [Update CassandraDatacenter manifests if necessary](#medusa-operator-cassdc-manifests)
 Depending on the changes in cass-operator we might need to update the CassandraDatacenter manifest in [medusa-operator/test/config/cassdc](https://github.com/k8ssandra/medusa-operator/tree/master/test/config/cassdc).
 
-## Update go.mod
+## [Update go.mod](#medusa-operator-go-mod)
 Update the cass-operator version in [medusa-operator/go.mod](https://github.com/k8ssandra/medusa-operator/blob/master/go.mod)
 
 ## Release new version
@@ -68,3 +68,22 @@ Update the cass-operator version in [reaper-operator/go.mod](https://github.com/
 Create a new release of reaper-operator. This will be needed for the reaper-operator chart in the k8ssandra repo.
 
 **TODO:** Create doc on how to release new version and link to it.
+
+# Update k8ssandra
+Several changes need to be made in the k8ssandra project including:
+
+* Update cass-operator chart
+* Update medusa-operator chart
+* Update reaper-operator chart
+* Update go.mod
+
+## Update cass-operator chart
+Update the templates in the cass-operator chart [here](https://github.com/k8ssandra/k8ssandra/tree/main/charts/cass-operator).
+
+Update the default image in [k8ssandra/charts/cass-operator/values.yaml](https://github.com/k8ssandra/k8ssandra/blob/main/charts/cass-operator/values.yaml).
+
+## Update medusa-operator chart
+Update the default image in [k8ssandra/charts/medusa-operator/values.yaml](https://github.com/k8ssandra/k8ssandra/blob/main/charts/medusa-operator/values.yaml).
+
+## Update reaper-operator chart
+Update the default image in [k8ssandra/charts/reaper-operator/values.yaml](https://github.com/k8ssandra/k8ssandra/blob/main/charts/reaper-operator/values.yaml).
