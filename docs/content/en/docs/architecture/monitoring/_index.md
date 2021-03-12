@@ -22,7 +22,7 @@ K8ssandra uses the [kube-prometheus-stack](https://github.com/prometheus-communi
 
 Let's walk through this architecture from left to right. We'll provide links to the Kubernetes documentation so you can dig into those concepts more if you'd like to.
 
-* The Cassandra nodes in a K8ssandra-managed cluster are organized in one or more data centers, each of which is represented as a Kubernetes [StatefulSet](https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/). (We'll focus here on details of the Cassandra node related to monitoring, you can see other details about Cassandra nodes such as how storage is managed on the [Cassandra architecture](/docs/architecture/cassandra) page.)
+* The Cassandra nodes in a K8ssandra-managed cluster are organized in one or more datacenters, each of which is composed of one or more racks. Each rack represents a failure domain with replicas being placed across multiple racks (if present). In Kubernetes, racks are represented as [StatefulSets](https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/). (We'll focus here on details of the Cassandra node related to monitoring, you can see other details about Cassandra nodes such as how storage is managed on the [Cassandra architecture](/docs/architecture/cassandra) page.)
 
 * Each Cassandra node is deployed as its own [pod](https://kubernetes.io/docs/concepts/workloads/pods/). The pod runs the Cassandra daemon in a Java VM. Each Apache Cassandra pod is configured with the DataStax [Metrics Collector for Apache Cassandra](https://github.com/datastax/metric-collector-for-apache-cassandra), which is implemented as a Java agent running in that same VM. The Metrics Collector is configured to expose metrics on the standard Prometheus port (9103).
 
