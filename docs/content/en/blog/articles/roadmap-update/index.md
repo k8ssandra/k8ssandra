@@ -20,6 +20,8 @@ The new roadmap is implemented as a [Git project](https://github.com/orgs/k8ssan
 
 Chris Bradford shared a quick overview of this new roadmap and contents at the most recent meeting of the Cassandra Kubernetes Special Interest Group (SIG). You can see the video here:
 
+{{< youtube id="RXAdWLKw450" yt_start="2315" >}}
+
 Going forward, we hope to use this roadmap to manage our work. We'll convert items on the project board into issues as work is started on them.
 
 We'd love to have your feedback on the items in the project and their prioritization, as well as any refinements to how we review and document changes.
