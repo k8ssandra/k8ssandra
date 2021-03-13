@@ -7,9 +7,11 @@ description: K8ssandra roadmap ideas for community consideration.
 
 K8ssandra today is deployed as an entire stack. This open-source technology currently assumes your deployment uses the entire stack. Trading out certain components for others is not supported at this time. As part of the roadmap, one goal is to support a la carte composition of components.
 
-The following additional ideas are not yet in priority order:
+The roadmap is currently tracked in GitHub on a [project board](https://github.com/orgs/k8ssandra/projects/6).
 
-* Preconfigured alerts for metrics
+The following is a previous version of the roadmap with ideas in no particular order:
+
+<s>* Preconfigured alerts for metrics
   * Support sending to a configured single email address
   * Support sending to multiple addresses
   * Support sending to multiple addresses based on fired alert
@@ -43,4 +45,4 @@ The following additional ideas are not yet in priority order:
   * Knative
 * Dynamics secrets with Vault
   * Roles via Apache Cassandra® plugin
-  * Rotating TLS certificates for clients, nodes, ingress, etc.
+  * Rotating TLS certificates for clients, nodes, ingress, etc.</s>
