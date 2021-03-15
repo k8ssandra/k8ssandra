@@ -16,12 +16,12 @@ If you've poked around the website a bit, you may have noticed the [roadmap]({{<
 As part of our post-1.0 release cleanup work, we've identified that a more flexible, robust approach was needed, and that it would be much easier to track in Git. The old roadmap page will be available for a short time but eventually phased out.
  
 # New Roadmap 
-The new roadmap is implemented as a [Git project](https://github.com/orgs/k8ssandra/projects/6) under the main K8ssandra GitHub org. The roadmap is broken out by quarter, with a lane for each of the next 4 quarters, and a lane for other items that, while important, are not yet prioritized. 
+The new roadmap is implemented as a [GitHub project](https://github.com/orgs/k8ssandra/projects/6) under the K8ssandra [organization](https://github.com/k8ssandra/). The roadmap is broken out by quarter, with a lane for each of the next 4 quarters, and a lane for other items that, while important, are not yet prioritized. Currently, each item in this list is a "note", which boils down to a single text field. Over the coming days, these will be transitioned into issues within the roadmap [repository](https://github.com/k8ssandra/roadmap) which allow for richer integration with related resources inside Github (milestones, labels, etc) and a cleaner UI. 
 
 Chris Bradford shared a quick overview of this new roadmap and contents at the most recent meeting of the Cassandra Kubernetes Special Interest Group (SIG). You can see the video here:
 
 {{< youtube id="RXAdWLKw450" yt_start="2315" >}}
 
-Going forward, we hope to use this roadmap to manage our work. We'll convert items on the project board into issues as work is started on them.
+Going forward, we hope to use this roadmap to manage our work and define epics that span repository boundaries.
 
 We'd love to have your feedback on the items in the project and their prioritization, as well as any refinements to how we review and document changes.
