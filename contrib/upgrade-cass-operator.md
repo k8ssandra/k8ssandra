@@ -1,11 +1,11 @@
 # Overview
 This document describes the steps involved to upgrade the steps involves to apply a cass-operator upgrade in k8ssandra. There are a number of steps involved in the process. Here is a quick rundown:
 
-* [Update medusa-operator](#medusa-operator)
-  * [Update cass-operator manifests including CassandraDatacenter CRD](#medusa-operator-cass-operator-manifests)
-  * [Update cass-operator image](#medusa-operator-cass-operator-image)
-  * [Update CassandraDatacenter manifests if necessary](#medusa-operator-cassdc-manifests)
-  * [Update version in go.mod](#medusa-operator-go-mod)
+* [medusa-operator](#medusa-operator)
+  * [cass-operator manifests](#cass-operator-manifests)
+  * [cass-operator image](#cass-operator-image)
+  * [CassandraDatacenter CRD](#cassandradatacenter-crd)
+  * [go.mod](#go-mod)
 * Update reaper-operator
   * Update cass-operator manifests include CassandraDatacenter CRD
   * Update cass-operator image
@@ -17,10 +17,10 @@ This document describes the steps involved to upgrade the steps involves to appl
   * Update version in go.mod 
 
 
-# [Update medusa-operator](#medusa-operator)
+# medusa-operator
 medusa-operator uses kustomize to generate manifests for tests and to be used in the k8ssandra Helm charts.
 
-## [Update cass-operator manifests](#medusa-operator-cass-operator-manifests)
+## cass-operator manifests
 Let's say we are upgrading to cass-operator 1.6.0. The cass-operator maniests should be taken from the v1.6.0 tag. The manifest (for this example upgrade) can be found [here](https://github.com/datastax/cass-operator/tree/v1.6.0/operator/deploy).
 
 In medusa-operator, the cass-operator manifests, minus the CassandraDatacenter CRD, are bundled together in [cass-operator.yaml](https://github.com/k8ssandra/medusa-operator/blob/master/test/config/cass-operator/cass-operator.yaml).
@@ -29,13 +29,13 @@ In medusa-operator, the cass-operator manifests, minus the CassandraDatacenter C
 
 The CassandraDatacenter CRD to be updates lives at [medusa-operator/test/config/cass-operator/crd/bases/cassandradatacenter.yaml](https://github.com/k8ssandra/medusa-operator/blob/master/test/config/cass-operator/crd/bases/cassandradatacenter.yaml).
 
-## [Update cass-operator image](#medusa-operator-cass-operator-image)
+## cass-operator image
 The cass-operator image needs to be udpated in [medusa-operator/test/config/cass-operator/kustomization.yaml](https://github.com/k8ssandra/medusa-operator/blob/master/test/config/cass-operator/kustomization.yaml)
 
-## [Update CassandraDatacenter manifests if necessary](#medusa-operator-cassdc-manifests)
+## CassandraDatacenter CRD
 Depending on the changes in cass-operator we might need to update the CassandraDatacenter manifest in [medusa-operator/test/config/cassdc](https://github.com/k8ssandra/medusa-operator/tree/master/test/config/cassdc).
 
-## [Update go.mod](#medusa-operator-go-mod)
+## go.mod
 Update the cass-operator version in [medusa-operator/go.mod](https://github.com/k8ssandra/medusa-operator/blob/master/go.mod)
 
 ## Release new version
