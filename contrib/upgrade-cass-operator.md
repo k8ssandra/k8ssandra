@@ -17,7 +17,7 @@ This document describes the steps involved to upgrade the steps involves to appl
   * [cass-operator chart](#cass-operator-chart)
   * [medusa-operator chart](#medusa-operator-chart)
   * [reaper-operator chart](#reaper-operator-chart)
-  * [go.mod](#gomod)
+  * [go.mod](#gomod-3)
 
 
 # medusa-operator
@@ -69,7 +69,7 @@ Create a new release of reaper-operator. This is be needed for the reaper-operat
 **TODO:** Create doc on how to release new version and link to it.
 
 # k8ssandra
-Several chart updates are needed as well as `go.mod`.
+Several chart updates are needed as well as a Go module dependency update.
 
 ## cass-operator chart
 Update the templates in the cass-operator chart [here](https://github.com/k8ssandra/k8ssandra/tree/main/charts/cass-operator).
