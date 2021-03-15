@@ -5,7 +5,7 @@ This document describes the steps involved to upgrade the steps involves to appl
   * [cass-operator manifests](#cass-operator-manifests)
   * [cass-operator image](#cass-operator-image)
   * [CassandraDatacenter CRD](#cassandradatacenter-crd)
-  * [go.mod](#go-mod)
+  * [go.mod](#gomod)
 * Update reaper-operator
   * Update cass-operator manifests include CassandraDatacenter CRD
   * Update cass-operator image
