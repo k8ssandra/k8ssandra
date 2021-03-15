@@ -1,7 +1,7 @@
 ---
 date: 2021-03-10
 title: "Requirements for running K8ssandra for development"
-linkTitle: "K8ssandra development configuration"
+linkTitle: "K8ssandra Development Configuration"
 description: >
   K8ssandra is a complete stack for running Apache Cassandra&reg; in production. As such, it comes with several components that can consume a lot of resources and make it challenging to run on a dev laptop. Let’s explore how we can configure K8ssandra for this environment and run some simple benchmarks to determine what performance we can expect.
 author: Alexander Dejanovski ([@alexanderDeja](https://twitter.com/alexanderDeja))
