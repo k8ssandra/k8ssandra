@@ -1,6 +1,6 @@
-#K8ssandra Developer - Quick Start
+# K8ssandra Developer - Quick Start
 
-##About
+## About
 This quick start guide is written for developers wanting to find out more about:
 * Getting up and running with a basic IDE environment.
 * Deploying to a local docker-based cluster environment (using kind).
@@ -8,7 +8,7 @@ This quick start guide is written for developers wanting to find out more about:
 * Running unit tests.
 * Troubleshooting.
 
-##Environment setup
+## Environment setup
 Let’s get started by setting up the foundations of a development environment.  Where possible, this guide attempts to maintain an operating system agnostic approach. 
 
 Regarding K8ssandra supported operating systems, the following are supported: 
@@ -23,7 +23,7 @@ Although K8ssandra is created to run in Kubernetes cloud environments, the scope
 
 When installing an integrated development environment (IDE), it’s important to understand the file types you will be editing.  As such, let’s quickly cover the types of files involved with K8ssandra and the Kubernetes ecosystem.
 
-###File types
+### File types
 K8ssandra is mainly composed of:
 * YAML files used for declarative configurations.  In fact, many of the YAML files are a collection of Helm charts.  [Helm](https://helm.sh/) is an open source package management solution for Kubernetes and Helm charts are the packaging format used.
 
@@ -35,7 +35,7 @@ K8ssandra is mainly composed of:
 
 With a  basic understanding of the file types involved, let's install an open source IDE that assists with constructing and editing K8ssandra files.
 
-##Setup IDE
+## Setup IDE
 
 **Note:** If you already have an IDE setup supporting Kubernetes development, feel free to skip past this section.
 
@@ -43,7 +43,7 @@ One popular open source integrated development environment (IDE) that can be use
 
 This guide will reference the free and open source **VS Code**.  
 
-###VS Code installation
+### VS Code installation
 First, download the VS Code binaries and install the necessary extensions to assist with K8ssandra development.
 
 [Download VS Code](https://code.visualstudio.com/) specific to your operating system. 
@@ -60,7 +60,7 @@ Follow the steps in the Go extension’s documentation, which includes a downloa
 Select **1.14+** as a version.
 
 
-###Install Git & GitHub
+### Install Git & GitHub
 If you don’t already have Git installed and have a GitHub account, use the references below to get those in-place.
 
 Reference the following to understand and install 
@@ -69,7 +69,7 @@ Reference the following to understand and install
 * Getting started with GitHub
 
 
-##Kubernetes environment
+## Kubernetes environment
 A quick session (~10 minutes to complete) is provided below that will guide you through the various steps required to set up a running Kubernetes-based environment for K8ssandra. 
 
 Once completed, return to this article and finish-up the rest of the activities.
@@ -77,7 +77,7 @@ Once completed, return to this article and finish-up the rest of the activities.
 > [K8ssandra Getting Started](https://k8ssandra.io/docs/getting-started/)
 
 
-##Checkpoint
+## Checkpoint
 Before continuing on to next steps, you should have the following configured:
 
     ✔ VS Code - or something similiar (IDE)
@@ -87,7 +87,7 @@ Before continuing on to next steps, you should have the following configured:
 
 
 
-##Repository
+## Repository
 The K8ssandra GitHub repository resides [here](https://github.com/k8ssandra/k8ssandra).  
 
  
@@ -102,7 +102,7 @@ Perform a clone.  Be sure to insert your GitHub repository name followed by k8ss
    
 Now you are ready to explore the K8ssandra project.
 
-###Project composition
+### Project composition
 The K8ssandra project has a few important folders of interest.
 
 * **Charts** - contains the Helm-based charts categorized by sub-chart.
@@ -112,7 +112,7 @@ Checkout the docs readme for more detail.
 * **Tests** - contains the set of unit, integration, and end-to-end testing for K8ssandra.
 
 
-##Testing
+## Testing
 Within the test directory are folders for managing and executing tests at the `unit`, `integration`, and `e2e` test levels.
 
 As a working example, using a command line, navigate to the `./k8ssandra/tests/unit` directory.
@@ -132,10 +132,10 @@ Once complete, you should see something like the following:
 >
 >ok      github.com/k8ssandra/k8ssandra/tests/unit       71.557s
 
-##Troubleshooting advice
+## Troubleshooting advice
 This section will be updated over time as K8ssandra grows.  Take a look to enhance your K8ssandra experience. 
 
-###Common errors
+### Common errors
 
 You may experience a `missing in charts/ directory` error message.  
 
@@ -147,7 +147,7 @@ Be sure to run this script so the `./charts` folder is properly located.
 
 
   
-###Collecting useful information 
+### Collecting useful information 
 
 So you have an error after editing a K8ssandra configuration, or you want to inspect some things as you learn.  There are some useful commands that come in handy when needing to dig a bit deeper.  The examples assume you are using a k8ssandra namespace, but this can be adjusted as needed.
 
@@ -177,7 +177,7 @@ Next, targeting a specific pod, filter out `container` specific information.
 
 > kubectl describe pod/<pod-name> -n k8ssandra | grep container -C 3
 
-##Next steps
+## Next steps
 Now that you have a foundation for using K8ssandra, take a look at some other references to better understand what
  is available and where K8ssandara is headed.
 
