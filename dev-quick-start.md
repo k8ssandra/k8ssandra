@@ -65,8 +65,8 @@ If you don’t already have Git installed and have a GitHub account, use the ref
 
 Reference the following to understand and install 
 **Git**.
-* Setup Guide
-* Getting started with GitHub
+* [Setup Guide](https://github.com/git-guides/install-git)
+* [Getting started with GitHub](https://github.com/join)
 
 
 ## Kubernetes environment
