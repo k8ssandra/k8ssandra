@@ -156,14 +156,18 @@ Issue the following `kubectl` command to view the `Cassandra` logs.  Replace *<p
 > kubectl logs pod/<pod-with-cassandra> cassandra -n k8ssandra
 
 
+
 Issue the following `kubectl` command to view `Medusa` logs.  Replace *<pod-with-medusa>* name with an actual pod instance name having the `Medusa` container.
 
 > kubectl logs pod/<pod-with-medusa> -n k8ssandra
 
 
+
 Issue the following `kubectl` command to describe the `Cassandra Datacenter` resource.  This provides a wealth of information about the resource, which includes `aged events` that really help when trying to troubleshoot an issue.
 
 > kubectl describe cassandradatacenter/dc1 -n k8ssandra
+
+
 
 Gather container specific information for a pod.
 
@@ -171,15 +175,18 @@ First, list out the pods scoped to the K8ssandra namespace.
 
 > kubectl get pods -n k8ssandra
 
+
+
 Next, targeting a specific pod, filter out `container` specific information.  
 
 **Note:** the name of the pod will be replaced with the pod of interest.
 
 > kubectl describe pod/<pod-name> -n k8ssandra | grep container -C 3
 
+
 ## Next steps
 Now that you have a foundation for using K8ssandra, take a look at some other references to better understand what
- is available and where K8ssandara is headed.
+ is available and where K8ssandra is headed.
 
 * [Architecture](https://k8ssandra.io/docs/architecture/)
 * [Helm Charts](https://k8ssandra.io/docs/reference/)
