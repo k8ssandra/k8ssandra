@@ -341,6 +341,19 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			AssertContainerNamesMatch(cassdc, CassandraContainer, MedusaContainer)
 		})
 
+		It("adding additionalSeeds", func() {
+			options := &helm.Options{
+				SetValues: map[string]string{
+					"cassandra.additionalSeeds[0]": "127.0.0.1",
+				},
+				KubectlOptions: defaultKubeCtlOptions,
+			}
+
+			Expect(renderTemplate(options)).To(Succeed())
+
+			Expect(cassdc.Spec.AdditionalSeeds).To(HaveLen(1))
+		})
+
 		It("setting allowMultipleNodesPerWorker to true", func() {
 			options := &helm.Options{
 				SetValues: map[string]string{

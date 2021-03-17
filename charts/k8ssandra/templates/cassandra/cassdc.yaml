@@ -40,7 +40,13 @@ spec:
       resources:
         requests:
           storage: {{ .Values.cassandra.cassandraLibDirVolume.size | default "5Gi" }}
-  allowMultipleNodesPerWorker: {{ .Values.cassandra.allowMultipleNodesPerWorker | default false}}
+{{- if .Values.cassandra.additionalSeeds }}
+  additionalSeeds:
+  {{- range .Values.cassandra.additionalSeeds }}
+    - {{ . }}
+  {{- end }}
+{{- end }}
+  allowMultipleNodesPerWorker: {{ .Values.cassandra.allowMultipleNodesPerWorker | default false}}  
 {{- if .Values.cassandra.allowMultipleNodesPerWorker}}
   resources:
     limits:

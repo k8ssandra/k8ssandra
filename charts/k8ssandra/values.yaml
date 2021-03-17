@@ -86,6 +86,9 @@ cassandra:
   # resources.limits and resources.requests **must** be defined.
   allowMultipleNodesPerWorker: false
 
+  # -- Optional additional contact points for the Cassandra cluster to connect to.
+  additionalSeeds: []
+
   # -- Optional cluster-level heap configuration, can be overridden at `datacenters` level.
   # Options are commented out for reference. Note that k8ssandra does not
   # automatically apply default values for heap size. It instead defers to

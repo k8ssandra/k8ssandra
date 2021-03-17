@@ -22,6 +22,7 @@ When cutting a new release of the parent `k8ssandra` chart update the `main / un
 * [BUGFIX] #516 Fix issue with scripts not being checked out before attempting to run them.
 * [BUGFIX] #517 Removed GitHub Actions for prereleasing off of main
 * [BUGFIX] #475 Fix Cassandra config clobbering when enabling Medusa
+* [ENHANCEMENT] #547 Add support for additionalSeeds in the CassandraDatacenter
 
 ## v1.0.0 - 2021-02-26
 
