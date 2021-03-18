@@ -141,14 +141,14 @@ Be sure to run this script so the `./charts` folder is properly located.
 
 So you have an error after editing a K8ssandra configuration, or you want to inspect some things as you learn.  There are some useful commands that come in handy when needing to dig a bit deeper.  The examples assume you are using a k8ssandra namespace, but this can be adjusted as needed.
 
-Issue the following `kubectl` command to view the `Cassandra` logs.  Replace *<cassandra-pod>* with an actual pod instance name.
+Issue the following `kubectl` command to view the `Cassandra` logs.  Replace *cassandra-pod* with an actual pod instance name.
 
-> kubectl logs pod/<cassandra-pod> -c cassandra -n k8ssandra
+> kubectl logs pod/*cassandra-pod* -c cassandra -n k8ssandra
 
 
-Issue the following `kubectl` command to view `Medusa` logs.  Replace *<cassandra-pod>* name with an actual pod instance name.
+Issue the following `kubectl` command to view `Medusa` logs.  Replace *cassandra-pod* with an actual pod instance name.
 
-> kubectl logs pod/<cassandra-pod> -c medusa -n k8ssandra
+> kubectl logs pod/*cassandra-pod* -c medusa -n k8ssandra
 
 
 
