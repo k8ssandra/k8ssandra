@@ -115,22 +115,15 @@ Checkout the docs readme for more detail.
 ## Testing
 Within the test directory are folders for managing and executing tests at the `unit`, `integration`, and `e2e` test levels.
 
-As a working example, using a command line, navigate to the `./k8ssandra/tests/unit` directory.
+As a working example, using a command line, navigate to the k8ssandra project root directory where the Makefile resides.
 
 Issue the command
 
-> go test -v
+> make unit-test
 
 Once complete, you should see something like the following:
 
->Ran 145 of 145 Specs in 71.451 seconds
->
->SUCCESS! -- 145 Passed | 0 Failed | 0 Pending | 0 Skipped
->
-> --- PASS: TestTemplateUnitTests (71.47s)
->PASS
->
->ok      github.com/k8ssandra/k8ssandra/tests/unit       71.557s
+> ok      github.com/k8ssandra/k8ssandra/tests/unit       47.156s
 
 ## Troubleshooting advice
 This section will be updated over time as K8ssandra grows.  Take a look to enhance your K8ssandra experience. 
@@ -139,47 +132,40 @@ This section will be updated over time as K8ssandra grows.  Take a look to enhan
 
 You may experience a `missing in charts/ directory` error message.  
 
-If so, you can 
-utilize a K8ssandra script: `./scripts/update-helm-deps.sh`. This script assists with updating dependencies for each chart in an appropriate order.  
+If so, you can utilize a K8ssandra script: `./scripts/update-helm-deps.sh`. This script assists with updating dependencies for each chart in an appropriate order.  
 
 Be sure to run this script so the `./charts` folder is properly located. 
-
-
 
   
 ### Collecting useful information 
 
 So you have an error after editing a K8ssandra configuration, or you want to inspect some things as you learn.  There are some useful commands that come in handy when needing to dig a bit deeper.  The examples assume you are using a k8ssandra namespace, but this can be adjusted as needed.
 
-Issue the following `kubectl` command to view the `Cassandra` logs.  Replace *<pod-with-cassandra>* with an actual pod instance name having the `Cassandra` container.
+Issue the following `kubectl` command to view the `Cassandra` logs.  Replace *<cassandra-pod>* with an actual pod instance name.
 
-> kubectl logs pod/<pod-with-cassandra> cassandra -n k8ssandra
-
-
-
-Issue the following `kubectl` command to view `Medusa` logs.  Replace *<pod-with-medusa>* name with an actual pod instance name having the `Medusa` container.
-
-> kubectl logs pod/<pod-with-medusa> -n k8ssandra
+> kubectl logs pod/<cassandra-pod> -c cassandra -n k8ssandra
 
 
+Issue the following `kubectl` command to view `Medusa` logs.  Replace *<cassandra-pod>* name with an actual pod instance name.
 
-Issue the following `kubectl` command to describe the `Cassandra Datacenter` resource.  This provides a wealth of information about the resource, which includes `aged events` that really help when trying to troubleshoot an issue.
+> kubectl logs pod/<cassandra-pod> -c medusa -n k8ssandra
+
+
+
+Issue the following `kubectl` command to describe the `Cassandra Datacenter` resource.  This provides a wealth of information about the resource, which includes `aged events` that assist when trying to troubleshoot an issue.
 
 > kubectl describe cassandradatacenter/dc1 -n k8ssandra
 
 
 
 Gather container specific information for a pod.
-
-First, list out the pods scoped to the K8ssandra namespace.
+ First, list out the pods scoped to the K8ssandra namespace.
 
 > kubectl get pods -n k8ssandra
 
 
 
-Next, targeting a specific pod, filter out `container` specific information.  
-
-**Note:** the name of the pod will be replaced with the pod of interest.
+Next, targeting a specific pod, filter out `container` specific information. Replace the name of the pod with the pod of interest.
 
 > kubectl describe pod/<pod-name> -n k8ssandra | grep container -C 3
 
