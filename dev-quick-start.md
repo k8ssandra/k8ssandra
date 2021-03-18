@@ -167,7 +167,7 @@ Gather container specific information for a pod.
 
 Next, targeting a specific pod, filter out `container` specific information. Replace the name of the pod with the pod of interest.
 
-> kubectl describe pod/<pod-name> -n k8ssandra | grep container -C 3
+> kubectl describe pod/*pod-name* -n k8ssandra | grep container -C 3
 
 
 ## Next steps
