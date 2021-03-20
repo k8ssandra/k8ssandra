@@ -141,33 +141,43 @@ Be sure to run this script so the `./charts` folder is properly located.
 
 So you have an error after editing a K8ssandra configuration, or you want to inspect some things as you learn.  There are some useful commands that come in handy when needing to dig a bit deeper.  The examples assume you are using a k8ssandra namespace, but this can be adjusted as needed.
 
+Issue the following `kubectl` command to view the `Management-api` logs.  Replace *cassandra-pod* with an actual pod instance name.
+
+> kubectl logs *cassandra-pod* -c cassandra -n k8ssandra
+
 Issue the following `kubectl` command to view the `Cassandra` logs.  Replace *cassandra-pod* with an actual pod instance name.
 
-> kubectl logs pod/*cassandra-pod* -c cassandra -n k8ssandra
-
+> kubectl logs *cassandra-pod* -c server-system-logger -n k8ssandra
 
 Issue the following `kubectl` command to view `Medusa` logs.  Replace *cassandra-pod* with an actual pod instance name.
 
-> kubectl logs pod/*cassandra-pod* -c medusa -n k8ssandra
+> kubectl logs *cassandra-pod* -c medusa -n k8ssandra
 
-
-
-Issue the following `kubectl` command to describe the `Cassandra Datacenter` resource.  This provides a wealth of information about the resource, which includes `aged events` that assist when trying to troubleshoot an issue.
+Issue the following `kubectl` command to describe the `CassandraDatacenter` resource.  This provides a wealth of information about the resource, which includes `aged events` that assist when trying to troubleshoot an issue.
 
 > kubectl describe cassandradatacenter/dc1 -n k8ssandra
 
-
-
 Gather container specific information for a pod.
- First, list out the pods scoped to the K8ssandra namespace.
 
-> kubectl get pods -n k8ssandra
+ First, list out the pods scoped to the K8ssandra namespace and instance with a target release.
 
+> kubectl get pods -l app.kubernetes.io/instance=*release-name* -n k8ssandra
 
+Note: If you don't know the release name, look it up with:
+
+> helm list -n k8ssandra
 
 Next, targeting a specific pod, filter out `container` specific information. Replace the name of the pod with the pod of interest.
 
 > kubectl describe pod/*pod-name* -n k8ssandra | grep container -C 3
+
+A slight variation, list out pods having the label for a `cassandra` cluster.
+
+> kubectl get pods -l cassandra.datastax.com/cluster=*release-name* -n k8ssandra
+
+Now, using a pod-name returned, describe all the details.
+
+> kubectl describe pod/*pod-name* -n k8ssandra
 
 
 ## Next steps
