@@ -17,6 +17,8 @@ jobs:
     outputs:
       HELM_VERSION: ${{ env.HELM_VERSION}}
       YQ_VERSION: ${{ env.YQ_VERSION }}
+      SONAR_TOKEN: ${{ env.SONAR_TOKEN }}
+      
     steps:
       - name: Cache bin path
         id: cache
