@@ -72,7 +72,7 @@ jobs:
           K8SSANDRA_CASSANDRA_VERSION: ${{ matrix.cassandra_version }}
         run: |
           # Set a valid name for the artifacts in case of failure
-          echo "ARTIFACT_NAME=k8s-artifacts-${K8SSANDRA_CASSANDRA_VERSION}-$(echo $SCENARIO|tr '":' '__')" >> $GITHUB_ENV
+          echo "ARTIFACT_NAME=k8s-artifacts-${K8SSANDRA_CASSANDRA_VERSION}-$(echo $SCENARIO|tr '":/' '___')" >> $GITHUB_ENV
           make kind-integ-test TESTS="$SCENARIO"
 
       - name: Collect artifacts

@@ -33,7 +33,7 @@ func StargateService(t *testing.T, namespace string) (v1.Service, error) {
 func WaitForStargatePodReady(t *testing.T, namespace string) {
 	g(t).Eventually(func() bool {
 		return stargatePodIsReady(t, namespace)
-	}, RETRY_TIMEOUT, RETRY_INTERVAL).Should(BeTrue(), "Stargate deployment didn't roll out within timeout")
+	}, retryTimeout, retryInterval).Should(BeTrue(), "Stargate deployment didn't roll out within timeout")
 }
 
 func stargatePodIsReady(t *testing.T, namespace string) bool {
@@ -49,7 +49,7 @@ func stargatePodIsReady(t *testing.T, namespace string) bool {
 func WaitForAuthEndpoint(t *testing.T) {
 	g(t).Eventually(func() bool {
 		return authEndpointIsReachable(t)
-	}, 2*time.Minute, RETRY_INTERVAL).Should(BeTrue())
+	}, 2*time.Minute, retryInterval).Should(BeTrue())
 }
 
 func authEndpointIsReachable(t *testing.T) bool {

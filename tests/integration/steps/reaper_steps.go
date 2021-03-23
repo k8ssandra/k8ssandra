@@ -15,7 +15,7 @@ import (
 func CheckClusterIsRegisteredInReaper(t *testing.T, clusterName string) {
 	g(t).Eventually(func() bool {
 		return clusterIsRegisteredInReaper(t, clusterName)
-	}, RETRY_TIMEOUT, RETRY_INTERVAL).Should(BeTrue(), "Cluster wasn't properly registered in Reaper")
+	}, retryTimeout, retryInterval).Should(BeTrue(), "Cluster wasn't properly registered in Reaper")
 }
 
 func clusterIsRegisteredInReaper(t *testing.T, clusterName string) bool {
@@ -97,7 +97,7 @@ func WaitForOneSegmentToBeDone(t *testing.T, repairId string) {
 	restClient := resty.New()
 	g(t).Eventually(func() bool {
 		return oneSegmentIsDone(t, repairId, restClient)
-	}, RETRY_TIMEOUT, RETRY_INTERVAL).Should(BeTrue(), "No repair segment was fully processed within timeout")
+	}, retryTimeout, retryInterval).Should(BeTrue(), "No repair segment was fully processed within timeout")
 }
 
 func oneSegmentIsDone(t *testing.T, repairId string, restClient *resty.Client) bool {

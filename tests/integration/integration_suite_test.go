@@ -14,7 +14,7 @@ import (
 const (
 	medusaTestTable    = "medusa_test"
 	medusaTestKeyspace = "medusa"
-	TRAEFIK_NAMESPACE  = "traefik"
+	traefikNamespace   = "traefik"
 )
 
 func TestMain(m *testing.M) {
@@ -33,9 +33,9 @@ func initializeCluster(t *testing.T) string {
 func cleanupCluster(t *testing.T, namespace string) {
 	log.Println(Step("Cleaning up cluster"))
 	UninstallK8ssandraHelmRelease(t, namespace)
-	UninstallTraefikHelmRelease(t, TRAEFIK_NAMESPACE)
+	UninstallTraefikHelmRelease(t, traefikNamespace)
 	DeleteNamespace(t, namespace)
-	DeleteNamespace(t, TRAEFIK_NAMESPACE)
+	DeleteNamespace(t, traefikNamespace)
 	CheckNamespaceIsAbsent(t, namespace)
 }
 
@@ -112,14 +112,8 @@ func TestReaperDeploymentScenario(t *testing.T) {
 	}
 	namespace := initializeCluster(t)
 	deployClusterForReaper(t, namespace)
-
-	reaperSuccess := t.Run("Start repair and stop it after one segment", func(t *testing.T) {
-		testReaper(t, namespace)
-	})
-
-	if reaperSuccess {
-		cleanupCluster(t, namespace)
-	}
+	testReaper(t, namespace)
+	cleanupCluster(t, namespace)
 }
 
 func testReaper(t *testing.T, namespace string) {
@@ -250,6 +244,7 @@ func TestMonitoringDeploymentScenario(t *testing.T) {
 	}
 	namespace := initializeCluster(t)
 	deployClusterForMonitoring(t, namespace)
+
 	prometheusSuccess := t.Run("Test Prometheus", func(t *testing.T) {
 		testPrometheus(t, namespace)
 	})
@@ -299,13 +294,8 @@ func TestStargateDeploymentScenario(t *testing.T) {
 	}
 	namespace := initializeCluster(t)
 	deployClusterForStargate(t, namespace)
-	stargateSuccess := t.Run("Create a document through the Stargate doc API", func(t *testing.T) {
-		testStargate(t, namespace)
-	})
-
-	if stargateSuccess {
-		cleanupCluster(t, namespace)
-	}
+	testStargate(t, namespace)
+	cleanupCluster(t, namespace)
 }
 
 func deployClusterForStargate(t *testing.T, namespace string) {

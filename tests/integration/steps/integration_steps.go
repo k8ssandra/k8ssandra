@@ -23,9 +23,11 @@ import (
 	cassdcapi "github.com/datastax/cass-operator/operator/pkg/apis/cassandra/v1beta1"
 )
 
-const RETRY_TIMEOUT = 15 * time.Minute
-const RETRY_INTERVAL = 30 * time.Second
-const RELEASE_NAME = "k8ssandra"
+const (
+	retryTimeout  = 15 * time.Minute
+	retryInterval = 30 * time.Second
+	releaseName   = "k8ssandra"
+)
 
 var (
 	Info    = Color("\033[1;33m%s\033[0m")
@@ -101,12 +103,12 @@ func deployCluster(t *testing.T, namespace, customValues string, helmValues map[
 	}
 
 	defer timeTrack(time.Now(), "Installing and starting k8ssandra")
-	err = helm.InstallE(t, helmOptions, clusterChartPath, RELEASE_NAME)
+	err = helm.InstallE(t, helmOptions, clusterChartPath, releaseName)
 	g(t).Expect(err).To(BeNil(), "Failed installing k8ssandra with Helm")
 	// Wait for cass-operator pod to be ready
 	g(t).Eventually(func() bool {
 		return PodWithLabelIsReady(t, namespace, "app.kubernetes.io/name=cass-operator")
-	}, RETRY_TIMEOUT, RETRY_INTERVAL).Should(BeTrue())
+	}, retryTimeout, retryInterval).Should(BeTrue())
 
 	// Wait for CassandraDatacenter to be ready..
 	WaitForCassDcToBeReady(t, namespace)
@@ -182,7 +184,7 @@ func WaitForCassDcToBeReady(t *testing.T, namespace string) {
 		}
 		return cassdc.Status.CassandraOperatorProgress == cassdcapi.ProgressReady &&
 			cassdc.GetConditionStatus(cassdcapi.DatacenterReady) == v1.ConditionTrue
-	}, RETRY_TIMEOUT, RETRY_INTERVAL).Should(BeTrue())
+	}, retryTimeout, retryInterval).Should(BeTrue())
 }
 
 func resourceWithLabelIsPresent(t *testing.T, namespace, resourceType, label string) bool {
@@ -226,7 +228,7 @@ func CountPodsWithLabel(t *testing.T, namespace, label string) int {
 func PodWithLabelIsReady(t *testing.T, namespace string, label string) bool {
 	g(t).Eventually(func() bool {
 		return resourceWithLabelIsPresent(t, namespace, "pod", label)
-	}, RETRY_TIMEOUT, RETRY_INTERVAL).Should(BeTrue())
+	}, retryTimeout, retryInterval).Should(BeTrue())
 
 	pods := getPodsWithLabel(t, namespace, label)
 	if len(pods.Items) == 1 {
@@ -238,7 +240,7 @@ func PodWithLabelIsReady(t *testing.T, namespace string, label string) bool {
 func WaitForPodWithLabelToBeReady(t *testing.T, namespace, label string) {
 	g(t).Eventually(func() bool {
 		return PodWithLabelIsReady(t, namespace, label)
-	}, RETRY_TIMEOUT, RETRY_INTERVAL).Should(BeTrue())
+	}, retryTimeout, retryInterval).Should(BeTrue())
 }
 
 func DeployMinioAndCreateBucket(t *testing.T, bucketName string) {
@@ -263,7 +265,7 @@ func MinioServiceName(t *testing.T) string {
 func CheckResourceWithLabelIsPresent(t *testing.T, namespace, resourceType, label string) {
 	g(t).Eventually(func() bool {
 		return resourceWithLabelIsPresent(t, namespace, resourceType, label)
-	}, RETRY_TIMEOUT, RETRY_INTERVAL).Should(BeTrue())
+	}, retryTimeout, retryInterval).Should(BeTrue())
 }
 
 func checkResourcePresence(t *testing.T, namespace, resourceType, name string) {
@@ -300,7 +302,7 @@ func CheckSecretIsPresent(t *testing.T, namespace, secret string) {
 func CheckNamespaceIsAbsent(t *testing.T, namespace string) {
 	g(t).Eventually(func() bool {
 		return namespaceIsAbsent(t, namespace) || namespaceIsTerminating(t, namespace)
-	}, RETRY_TIMEOUT, RETRY_INTERVAL).Should(BeTrue())
+	}, retryTimeout, retryInterval).Should(BeTrue())
 }
 
 func namespaceIsAbsent(t *testing.T, namespace string) bool {
@@ -333,7 +335,7 @@ func CreateNamespace(t *testing.T) string {
 }
 
 func UninstallK8ssandraHelmRelease(t *testing.T, namespace string) {
-	err := RunShellCommand(exec.Command("helm", "uninstall", RELEASE_NAME, "-n", namespace))
+	err := RunShellCommand(exec.Command("helm", "uninstall", releaseName, "-n", namespace))
 	g(t).Expect(err).To(BeNil(), "Failed uninstalling K8ssandra Helm release")
 }
 
