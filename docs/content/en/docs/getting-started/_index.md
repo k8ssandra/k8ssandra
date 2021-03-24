@@ -231,8 +231,8 @@ To install a single node K8ssandra cluster:
         - name: default
     kube-prometheus-stack:
       grafana:
-      adminUser: admin
-      adminPassword: admin123
+        adminUser: admin
+        adminPassword: admin123
     stargate:
       enabled: true
       replicas: 1
