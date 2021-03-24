@@ -1,6 +1,7 @@
 #!/bin/sh
 set -o errexit
 
+kind_cluster=$1
 # create registry container unless it already exists
 reg_name='kind-registry'
 reg_port='5000'
@@ -13,7 +14,7 @@ fi
 
 # create a cluster with the local registry enabled in containerd
 # also add necessary ingress for traefik (for the integration testing)
-cat <<EOF | kind create cluster --image kindest/node:v1.17.11 --config=-
+cat <<EOF | kind create cluster --name $kind_cluster --image kindest/node:v1.17.11 --config=-
 kind: Cluster
 apiVersion: kind.x-k8s.io/v1alpha4
 containerdConfigPatches:

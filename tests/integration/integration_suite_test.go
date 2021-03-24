@@ -15,6 +15,7 @@ const (
 	medusaTestTable    = "medusa_test"
 	medusaTestKeyspace = "medusa"
 	traefikNamespace   = "traefik"
+	minioNamespace     = "minio"
 )
 
 func TestMain(m *testing.M) {
@@ -30,14 +31,35 @@ func initializeCluster(t *testing.T) string {
 	return namespace
 }
 
-func cleanupCluster(t *testing.T, namespace string) {
-	log.Println(Step("Cleaning up cluster"))
-	UninstallK8ssandraHelmRelease(t, namespace)
-	WaitForCassandraDatacenterDeletion(t, namespace)
-	UninstallTraefikHelmRelease(t, traefikNamespace)
-	DeleteNamespace(t, namespace)
-	DeleteNamespace(t, traefikNamespace)
-	CheckNamespaceIsAbsent(t, namespace)
+func cleanupClusterOption() string {
+	if os.Getenv("CLUSTER_CLEANUP") != "" {
+		return os.Getenv("CLUSTER_CLEANUP")
+	} else {
+		return "always"
+	}
+}
+
+func shouldCleanupCluster(success bool) bool {
+	if cleanupClusterOption() == "always" || (cleanupClusterOption() == "success" && success) {
+		return true
+	}
+	return false
+}
+
+func cleanupCluster(t *testing.T, namespace string, success bool) {
+	if shouldCleanupCluster(success) {
+		log.Println(Step("Cleaning up cluster"))
+		UninstallK8ssandraHelmRelease(t, namespace)
+		WaitForCassandraDatacenterDeletion(t, namespace)
+		UninstallTraefikHelmRelease(t, traefikNamespace)
+		UninstallMinioHelmRelease(t, minioNamespace)
+		DeleteNamespace(t, namespace)
+		DeleteNamespace(t, traefikNamespace)
+		DeleteNamespace(t, minioNamespace)
+		CheckNamespaceIsAbsent(t, namespace)
+	} else {
+		log.Println(Info("Not cleaning up cluster as requested"))
+	}
 }
 
 // Full stack scenario:
@@ -56,38 +78,34 @@ func TestFullStackScenario(t *testing.T) {
 		backupName    = "backup1"
 	)
 
-	// only runs when the -short flag isn't used
-	if testing.Short() {
-		t.Skip("Skipped in short mode")
-	}
-
 	namespace := initializeCluster(t)
-	createMedusaSecretAndInstallDeps(t, namespace, medusaBackend)
-	deployFullStackCluster(t, namespace)
 
-	reaperSuccess := t.Run("Test Reaper", func(t *testing.T) {
-		testReaper(t, namespace)
+	success := t.Run("Full Stack Test", func(t *testing.T) {
+		createMedusaSecretAndInstallDeps(t, namespace, medusaBackend)
+		deployFullStackCluster(t, namespace)
+
+		t.Run("Test Reaper", func(t *testing.T) {
+			testReaper(t, namespace)
+		})
+
+		t.Run("Test Medusa", func(t *testing.T) {
+			testMedusa(t, namespace, medusaBackend, backupName)
+		})
+
+		t.Run("Test Prometheus", func(t *testing.T) {
+			testPrometheus(t, namespace)
+		})
+
+		t.Run("Test Grafana", func(t *testing.T) {
+			testGrafana(t, namespace)
+		})
+
+		t.Run("Test Stargate", func(t *testing.T) {
+			testStargate(t, namespace)
+		})
 	})
 
-	medusaSuccess := t.Run("Test Medusa", func(t *testing.T) {
-		testMedusa(t, namespace, medusaBackend, backupName)
-	})
-
-	prometheusSuccess := t.Run("Test Prometheus", func(t *testing.T) {
-		testPrometheus(t, namespace)
-	})
-
-	grafanaSuccess := t.Run("Test Grafana", func(t *testing.T) {
-		testGrafana(t, namespace)
-	})
-
-	stargateSuccess := t.Run("Test Stargate", func(t *testing.T) {
-		testStargate(t, namespace)
-	})
-
-	if reaperSuccess && medusaSuccess && prometheusSuccess && grafanaSuccess && stargateSuccess {
-		cleanupCluster(t, namespace)
-	}
+	cleanupCluster(t, namespace, success)
 }
 
 func deployFullStackCluster(t *testing.T, namespace string) {
@@ -107,14 +125,12 @@ func deployFullStackCluster(t *testing.T, namespace string) {
 // - Cancel the repair
 // - Terminate the namespace and delete the cluster
 func TestReaperDeploymentScenario(t *testing.T) {
-	// only runs when the -short flag is used
-	if !testing.Short() {
-		t.Skip("Skipped in non-short mode")
-	}
 	namespace := initializeCluster(t)
-	deployClusterForReaper(t, namespace)
-	testReaper(t, namespace)
-	cleanupCluster(t, namespace)
+	success := t.Run("Test Reaper", func(t *testing.T) {
+		deployClusterForReaper(t, namespace)
+		testReaper(t, namespace)
+	})
+	cleanupCluster(t, namespace, success)
 }
 
 func testReaper(t *testing.T, namespace string) {
@@ -168,23 +184,17 @@ func waitForSegmentDoneAndCancel(t *testing.T, repairId string) {
 // - Verify that we can read 10 rows
 // - Terminate the namespace and delete the cluster
 func TestMedusaDeploymentScenario(t *testing.T) {
-	// only runs when the -short flag is used
-	if !testing.Short() {
-		t.Skip("Skipped in non-short mode")
-	}
 	const backupName = "backup1"
 	backends := []string{"Minio", "S3"}
 	for _, backend := range backends {
 		t.Run(fmt.Sprintf("Medusa on %s", backend), func(t *testing.T) {
 			namespace := initializeCluster(t)
-			createMedusaSecretAndInstallDeps(t, namespace, backend)
-			deployClusterForMedusa(t, namespace, backend)
 			medusaSuccess := t.Run("Test backup and restore", func(t *testing.T) {
+				createMedusaSecretAndInstallDeps(t, namespace, backend)
+				deployClusterForMedusa(t, namespace, backend)
 				testMedusa(t, namespace, backend, backupName)
 			})
-			if medusaSuccess {
-				cleanupCluster(t, namespace)
-			}
+			cleanupCluster(t, namespace, medusaSuccess)
 		})
 	}
 }
@@ -239,24 +249,21 @@ func createMedusaSecretAndInstallDeps(t *testing.T, namespace, backend string) {
 // - Check that Grafana is reachable through http
 // - Terminate the namespace and delete the cluster
 func TestMonitoringDeploymentScenario(t *testing.T) {
-	// only runs when the -short flag is used
-	if !testing.Short() {
-		t.Skip("Skipped in non-short mode")
-	}
 	namespace := initializeCluster(t)
-	deployClusterForMonitoring(t, namespace)
 
-	prometheusSuccess := t.Run("Test Prometheus", func(t *testing.T) {
-		testPrometheus(t, namespace)
+	success := t.Run("Test Monitoring", func(t *testing.T) {
+		deployClusterForMonitoring(t, namespace)
+
+		t.Run("Test Prometheus", func(t *testing.T) {
+			testPrometheus(t, namespace)
+		})
+
+		t.Run("Test Grafana", func(t *testing.T) {
+			testGrafana(t, namespace)
+		})
 	})
 
-	grafanaSuccess := t.Run("Test Grafana", func(t *testing.T) {
-		testGrafana(t, namespace)
-	})
-
-	if prometheusSuccess && grafanaSuccess {
-		cleanupCluster(t, namespace)
-	}
+	cleanupCluster(t, namespace, success)
 }
 
 func deployClusterForMonitoring(t *testing.T, namespace string) {
@@ -289,14 +296,13 @@ func testGrafana(t *testing.T, namespace string) {
 // - Create a document and read it back through the Stargate document API
 // - Terminate the namespace and delete the cluster
 func TestStargateDeploymentScenario(t *testing.T) {
-	// only runs when the -short flag is used
-	if !testing.Short() {
-		t.Skip("Skipped in non-short mode")
-	}
 	namespace := initializeCluster(t)
-	deployClusterForStargate(t, namespace)
-	testStargate(t, namespace)
-	cleanupCluster(t, namespace)
+
+	success := t.Run("Test Stargate", func(t *testing.T) {
+		deployClusterForStargate(t, namespace)
+		testStargate(t, namespace)
+	})
+	cleanupCluster(t, namespace, success)
 }
 
 func deployClusterForStargate(t *testing.T, namespace string) {

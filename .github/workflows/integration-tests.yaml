@@ -73,7 +73,7 @@ jobs:
         run: |
           # Set a valid name for the artifacts in case of failure
           echo "ARTIFACT_NAME=k8s-artifacts-${K8SSANDRA_CASSANDRA_VERSION}-$(echo $SCENARIO|tr '":/' '___')" >> $GITHUB_ENV
-          make kind-integ-test TESTS="$SCENARIO"
+          make kind-integ-test TESTS="$SCENARIO" GO_FLAGS="-v" CLUSTER_CLEANUP="success"
 
       - name: Collect artifacts
         if: ${{ failure() }}

@@ -134,7 +134,7 @@ When using kind, invoke the full stack scenario with the following command:
 make kind-integ-test
 ```
 
-This will delete any existing kind cluster and recreate it accordingly with the integration tests requirements.
+This will delete any existing `k8ssandra_it` kind cluster and recreate it accordingly with the integration tests requirements.
 In order to run the tests on a specific (and supported) Apache Cassandra version, set the `K8SSANDRA_CASSANDRA_VERSION` environment variable:
 
 ```
@@ -159,6 +159,18 @@ The Medusa tests are specific to a storage backend, which needs to be specified 
 
 ```
 make kind-integ-test TESTS="TestMedusaDeploymentScenario/\"Minio\""
+```
+
+By default, integration tests will cleanup the cluster from the deployed resources even in case of failure. To disable such cleanups and allow investigation, set the `CLUSTER_CLEANUP` argument to `success` which will only cleanup on success:
+
+```
+make kind-integ-test CLUSTER_CLEANUP="success" 
+```
+
+To fully disable clean up, use the following command:
+
+```
+make kind-integ-test CLUSTER_CLEANUP="never" 
 ```
 
 ## Troubleshooting advice

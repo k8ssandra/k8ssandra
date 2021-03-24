@@ -29,7 +29,7 @@ const (
 	retryTimeout   = 15 * time.Minute
 	retryInterval  = 30 * time.Second
 	releaseName    = "k8ssandra"
-	datacenterName = "dc2"
+	datacenterName = "dc1"
 )
 
 var (
@@ -255,7 +255,7 @@ func DeployMinioAndCreateBucket(t *testing.T, bucketName string) {
 
 	helm.RunHelmCommandAndGetOutputE(t, helmOptions, "install",
 		"--set", fmt.Sprintf("accessKey=minio_key,secretKey=minio_secret,defaultBucket.enabled=true,defaultBucket.name=%s", bucketName),
-		"--generate-name", "minio/minio", "-n", "minio", "--create-namespace")
+		"minio", "minio/minio", "-n", "minio", "--create-namespace")
 }
 
 func MinioServiceName(t *testing.T) string {
@@ -338,12 +338,6 @@ func CreateNamespace(t *testing.T) string {
 	return namespace
 }
 
-func UninstallK8ssandraHelmRelease(t *testing.T, namespace string) {
-	err := RunShellCommand(exec.Command("helm", "uninstall", releaseName, "-n", namespace))
-	g(t).Expect(err).To(BeNil(), "Failed uninstalling K8ssandra Helm release")
-
-}
-
 func getCassDcClient(t *testing.T) client.Client {
 	client, err := CassDcClient()
 	g(t).Expect(err).To(BeNil(), "Couldn't instantiate controller-runtime client with cassdc API")
@@ -353,7 +347,6 @@ func getCassDcClient(t *testing.T) client.Client {
 func getCassandraDatacenter(t *testing.T, key types.NamespacedName) (*cassdcapi.CassandraDatacenter, error) {
 	cassdc := &cassdcapi.CassandraDatacenter{}
 	err := getCassDcClient(t).Get(context.Background(), key, cassdc)
-
 	return cassdc, err
 }
 
@@ -368,15 +361,34 @@ func WaitForCassandraDatacenterDeletion(t *testing.T, namespace string) {
 
 func UninstallTraefikHelmRelease(t *testing.T, traefikNamespace string) {
 	err := RunShellCommand(exec.Command("helm", "uninstall", "traefik", "-n", traefikNamespace))
-	g(t).Expect(err).To(BeNil(), "Failed uninstalling Traefik Helm release")
+	if err != nil {
+		t.Logf("Failed uninstalling Traefik Helm release: %s", err.Error())
+	}
 }
 
-func DeleteTraefikNamespace(t *testing.T) {
-	DeleteNamespace(t, "traefik")
+func UninstallMinioHelmRelease(t *testing.T, minioNamespace string) {
+	if !namespaceIsAbsent(t, minioNamespace) {
+		err := RunShellCommand(exec.Command("helm", "uninstall", "minio", "-n", minioNamespace))
+		if err != nil {
+			t.Logf("Failed uninstalling Minio Helm release: %s", err.Error())
+		}
+	}
 }
 
-func DeleteNamespace(t *testing.T, ns string) {
-	k8s.DeleteNamespace(t, getKubectlOptions("default"), ns)
+func UninstallK8ssandraHelmRelease(t *testing.T, namespace string) {
+	err := RunShellCommand(exec.Command("helm", "uninstall", releaseName, "-n", namespace))
+	if err != nil {
+		t.Logf("Failed uninstalling K8ssandra Helm release: %s", err.Error())
+	}
+}
+
+func DeleteNamespace(t *testing.T, namespace string) {
+	if !namespaceIsAbsent(t, namespace) {
+		err := k8s.DeleteNamespaceE(t, getKubectlOptions("default"), namespace)
+		if err != nil {
+			t.Logf("Failed deleting namespace %s: %s", namespace, err.Error())
+		}
+	}
 }
 
 func InstallTraefik(t *testing.T) {
