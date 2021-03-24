@@ -1,0 +1,17 @@
+# This is a comment.
+# Each line is a file pattern followed by one or more owners.
+
+# These owners will be the default owners for everything in
+# the repo. Unless a later match takes precedence,
+# @k8ssandra/maintainers will be requested for
+# review when someone opens a pull request.
+* @k8ssandra/maintainers
+
+# Website resources
+/docs @k8ssandra/website
+
+# Blog
+/docs/contents/en/blog @k8ssandra/website
+
+# Docs
+/docs/contents/end/docs @k8ssandra/docs
