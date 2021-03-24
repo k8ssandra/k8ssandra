@@ -23,10 +23,10 @@ jobs:
           key: ${{ runner.os }}-k8ssandra-buildx
           restore-keys: |
             ${{ runner.os }}-k8ssandra-buildx
-      - name: Set up Go 1.14
+      - name: Set up Go 1.15
         uses: actions/setup-go@v1
         with:
-          go-version: 1.14
+          go-version: 1.15
       - name: Install Dependencies
         run: |
           set -x
@@ -89,6 +89,6 @@ jobs:
       
       # Uncomment to run with SSH on failure
       - name: Setup tmate session
-        if: ${{ startsWith(github.event.head_commit.message, '[SSH]') }}
+        if: "failure() && contains(github.event.head_commit.message, '[SSH]')"
         uses: mxschmitt/action-tmate@v3
         timeout-minutes: 10

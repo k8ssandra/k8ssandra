@@ -23,8 +23,10 @@ func StargateService(t *testing.T, namespace string) (v1.Service, error) {
 
 	services, _ := clientset.CoreV1().Services(namespace).List(context.Background(), metav1.ListOptions{})
 	for _, service := range services.Items {
-		if strings.HasSuffix(service.ObjectMeta.Name, "-stargate-service") {
-			return service, nil
+		if label, ok := service.ObjectMeta.Labels["app"]; ok {
+			if label == fmt.Sprintf("%s-dc1-stargate", releaseName) {
+				return service, nil
+			}
 		}
 	}
 	return v1.Service{}, fmt.Errorf("failed finding Stargate service")
