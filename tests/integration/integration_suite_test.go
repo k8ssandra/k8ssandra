@@ -33,6 +33,7 @@ func initializeCluster(t *testing.T) string {
 func cleanupCluster(t *testing.T, namespace string) {
 	log.Println(Step("Cleaning up cluster"))
 	UninstallK8ssandraHelmRelease(t, namespace)
+	WaitForCassandraDatacenterDeletion(t, namespace)
 	UninstallTraefikHelmRelease(t, traefikNamespace)
 	DeleteNamespace(t, namespace)
 	DeleteNamespace(t, traefikNamespace)
@@ -269,7 +270,7 @@ func testPrometheus(t *testing.T, namespace string) {
 	log.Println(Step("Testing Prometheus..."))
 	PodWithLabelIsReady(t, namespace, "app=prometheus")
 	CheckPrometheusMetricExtraction(t)
-	expectedActiveTargets := CountPodsWithLabel(t, namespace, "app.kubernetes.io/managed-by=cass-operator") + CountPodsWithLabel(t, namespace, "app=k8ssandra-dc1-stargate")
+	expectedActiveTargets := CountMonitoredItems(t, namespace)
 	CheckPrometheusActiveTargets(t, expectedActiveTargets) // We're monitoring 3 Cassandra nodes and 1 Stargate instance
 }
 

@@ -24,7 +24,7 @@ func StargateService(t *testing.T, namespace string) (v1.Service, error) {
 	services, _ := clientset.CoreV1().Services(namespace).List(context.Background(), metav1.ListOptions{})
 	for _, service := range services.Items {
 		if label, ok := service.ObjectMeta.Labels["app"]; ok {
-			if label == fmt.Sprintf("%s-dc1-stargate", releaseName) {
+			if label == fmt.Sprintf("%s-%s-stargate", releaseName, datacenterName) {
 				return service, nil
 			}
 		}
@@ -39,7 +39,7 @@ func WaitForStargatePodReady(t *testing.T, namespace string) {
 }
 
 func stargatePodIsReady(t *testing.T, namespace string) bool {
-	output, err := k8s.RunKubectlAndGetOutputE(t, getKubectlOptions(namespace), "rollout", "status", "deployment", "k8ssandra-dc1-stargate")
+	output, err := k8s.RunKubectlAndGetOutputE(t, getKubectlOptions(namespace), "rollout", "status", "deployment", fmt.Sprintf("%s-%s-stargate", releaseName, datacenterName))
 	if err == nil {
 		if strings.HasSuffix(output, "successfully rolled out") {
 			return true

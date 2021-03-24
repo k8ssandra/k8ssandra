@@ -45,3 +45,7 @@ func CheckGrafanaIsReachable(t *testing.T) {
 	g(t).Expect(err).To(BeNil(), "Failed connecting to Grafana")
 	log.Println(Info("Grafana could be reached through HTTP"))
 }
+
+func CountMonitoredItems(t *testing.T, namespace string) int {
+	return CountPodsWithLabel(t, namespace, "app.kubernetes.io/managed-by=cass-operator") + CountPodsWithLabel(t, namespace, fmt.Sprintf("app=%s-%s-stargate", releaseName, datacenterName))
+}

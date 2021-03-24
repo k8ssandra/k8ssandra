@@ -17,16 +17,19 @@ import (
 	"github.com/gruntwork-io/terratest/modules/k8s"
 	. "github.com/onsi/gomega"
 	v1 "k8s.io/api/core/v1"
+	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 
 	cassdcapi "github.com/datastax/cass-operator/operator/pkg/apis/cassandra/v1beta1"
 )
 
 const (
-	retryTimeout  = 15 * time.Minute
-	retryInterval = 30 * time.Second
-	releaseName   = "k8ssandra"
+	retryTimeout   = 15 * time.Minute
+	retryInterval  = 30 * time.Second
+	releaseName    = "k8ssandra"
+	datacenterName = "dc2"
 )
 
 var (
@@ -95,6 +98,7 @@ func deployCluster(t *testing.T, namespace, customValues string, helmValues map[
 		helmValues["cassandra.version"] = os.Getenv("K8SSANDRA_CASSANDRA_VERSION")
 	}
 
+	helmValues["cassandra.datacenters[0].name"] = datacenterName
 	helmOptions := &helm.Options{
 		// Enable traefik to allow redirections for testing
 		SetValues:      helmValues,
@@ -167,7 +171,7 @@ func DeployClusterWithValuesAndHeapSettings(t *testing.T, namespace, options, ca
 
 func WaitForCassDcToBeReady(t *testing.T, namespace string) {
 	cassdcKey := types.NamespacedName{
-		Name:      "dc1",
+		Name:      datacenterName,
 		Namespace: namespace,
 	}
 
@@ -279,9 +283,9 @@ func checkResourcePresence(t *testing.T, namespace, resourceType, name string) {
 }
 
 func CheckClusterExpectedResources(t *testing.T, namespace string) {
-	checkResourcePresence(t, namespace, "service", "k8ssandra-dc1-all-pods-service")
-	checkResourcePresence(t, namespace, "service", "k8ssandra-dc1-service")
-	checkResourcePresence(t, namespace, "service", "k8ssandra-seed-service")
+	checkResourcePresence(t, namespace, "service", fmt.Sprintf("%s-%s-all-pods-service", releaseName, datacenterName))
+	checkResourcePresence(t, namespace, "service", fmt.Sprintf("%s-%s-service", releaseName, datacenterName))
+	checkResourcePresence(t, namespace, "service", fmt.Sprintf("%s-seed-service", releaseName))
 }
 
 func CheckK8sClusterIsReachable(t *testing.T) {
@@ -337,6 +341,29 @@ func CreateNamespace(t *testing.T) string {
 func UninstallK8ssandraHelmRelease(t *testing.T, namespace string) {
 	err := RunShellCommand(exec.Command("helm", "uninstall", releaseName, "-n", namespace))
 	g(t).Expect(err).To(BeNil(), "Failed uninstalling K8ssandra Helm release")
+
+}
+
+func getCassDcClient(t *testing.T) client.Client {
+	client, err := CassDcClient()
+	g(t).Expect(err).To(BeNil(), "Couldn't instantiate controller-runtime client with cassdc API")
+	return client
+}
+
+func getCassandraDatacenter(t *testing.T, key types.NamespacedName) (*cassdcapi.CassandraDatacenter, error) {
+	cassdc := &cassdcapi.CassandraDatacenter{}
+	err := getCassDcClient(t).Get(context.Background(), key, cassdc)
+
+	return cassdc, err
+}
+
+func WaitForCassandraDatacenterDeletion(t *testing.T, namespace string) {
+	dcKey := types.NamespacedName{Namespace: namespace, Name: datacenterName}
+	// Wait cassandradatacenter object to be actually deleted
+	g(t).Eventually(func() bool {
+		_, err := getCassandraDatacenter(t, dcKey)
+		return apierrors.IsNotFound(err)
+	}, retryTimeout, retryInterval).Should(BeTrue(), "cassandradatacenter object wasn't deleted within timeout")
 }
 
 func UninstallTraefikHelmRelease(t *testing.T, traefikNamespace string) {
@@ -387,7 +414,7 @@ func ExtractUsernamePassword(t *testing.T, secretName, namespace string) credent
 func runCassandraQueryAndGetOutput(t *testing.T, namespace, query string) string {
 	cqlCredentials := ExtractUsernamePassword(t, "k8ssandra-superuser", namespace)
 	// Get reaper service
-	output, _ := k8s.RunKubectlAndGetOutputE(t, getKubectlOptions(namespace), "exec", "-it", "k8ssandra-dc1-default-sts-0", "--", "/opt/cassandra/bin/cqlsh", "--username", cqlCredentials.username, "--password", cqlCredentials.password, "-e", query)
+	output, _ := k8s.RunKubectlAndGetOutputE(t, getKubectlOptions(namespace), "exec", "-it", fmt.Sprintf("%s-%s-default-sts-0", releaseName, datacenterName), "--", "/opt/cassandra/bin/cqlsh", "--username", cqlCredentials.username, "--password", cqlCredentials.password, "-e", query)
 	return output
 }
 

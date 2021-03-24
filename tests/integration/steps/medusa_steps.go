@@ -27,7 +27,7 @@ func PerformBackup(t *testing.T, namespace, backupName string) {
 	helmOptions := &helm.Options{
 		SetValues: map[string]string{
 			"name":                     backupName,
-			"cassandraDatacenter.name": "dc1",
+			"cassandraDatacenter.name": datacenterName,
 		},
 		KubectlOptions: getKubectlOptions(namespace),
 	}
@@ -56,7 +56,7 @@ func RestoreBackup(t *testing.T, namespace, backupName string) {
 	helmOptions := &helm.Options{
 		SetValues: map[string]string{
 			"backup.name":              backupName,
-			"cassandraDatacenter.name": "dc1",
+			"cassandraDatacenter.name": datacenterName,
 			"name":                     "restore-test2",
 		},
 		KubectlOptions: getKubectlOptions(namespace),
