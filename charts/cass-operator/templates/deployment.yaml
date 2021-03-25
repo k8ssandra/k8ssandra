@@ -30,11 +30,9 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           volumeMounts:
-            {{- if .Values.admissionWebhooks.enabled }}
             - mountPath: /tmp/k8s-webhook-server/serving-certs
               name: cass-operator-certs-volume
               readOnly: false
-            {{- end }}
             - mountPath: /tmp/
               name: tmpconfig-volume
               readOnly: false
@@ -96,4 +94,4 @@ spec:
             medium: "Memory"
         - name: cass-operator-certs-volume
           secret:
-            secretName: cass-operator-webhook-config
+            secretName: {{ .Release.Name }}-webhook
