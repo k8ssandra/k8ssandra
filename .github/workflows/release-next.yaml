@@ -8,24 +8,18 @@ jobs:
   setup:
     runs-on: ubuntu-latest
     env:
-      HELM_VERSION: 3.4.0
-      YQ_VERSION: 3.4.1
+      HELM_VERSION: 3.5.3
+      YQ_VERSION: v4.6.3
     outputs:
       VERSION: ${{ steps.get_version.outputs.VERSION }}
       SHORT_VERSION: ${{ steps.get_short_version.outputs.SHORT_VERSION }}
       HELM_VERSION: ${{ env.HELM_VERSION}}
       YQ_VERSION: ${{ env.YQ_VERSION }}
     steps:
-      - name: Cache bin path
-        id: cache
-        uses: actions/cache@v2
-        with:
-          path: bin
-          key: ${{ runner.os }}-${{ env.HELM_VERSION }}-${{ env.YQ_VERSION }}
+      - name: Checkout
+        uses: actions/checkout@v2
       - run: scripts/install-helm.sh $HELM_VERSION
-        if: steps.cache.outputs.cache-hit != 'true'
       - run: scripts/install-yq.sh $YQ_VERSION
-        if: steps.cache.outputs.cache-hit != 'true'
       - name: Update PATH
         run: |
           echo "$GITHUB_WORKSPACE/bin" >> $GITHUB_PATH
@@ -47,24 +41,29 @@ jobs:
       - setup
     runs-on: ubuntu-latest
     steps: 
-      - name: Cache bin path
-        id: cache
-        uses: actions/cache@v2
-        with:
-          path: ~/bin
-          key: ${{ runner.os }}-${{ needs.setup.outputs.HELM_VERSION }}-${{ needs.setup.outputs.YQ_VERSION }}
       - name: Checkout
         uses: actions/checkout@v2
-      - run: scripts/install-helm.sh $HELM_VERSION
-        if: steps.cache.outputs.cache-hit != 'true'
-      - run: scripts/install-yq.sh $YQ_VERSION
-        if: steps.cache.outputs.cache-hit != 'true'
+      - run: scripts/install-helm.sh ${{ needs.setup.outputs.HELM_VERSION }}
+      - run: scripts/install-yq.sh ${{ needs.setup.outputs.YQ_VERSION }}
       - name: Update PATH
         run: |
           echo "$GITHUB_WORKSPACE/bin" >> $GITHUB_PATH
       - name: Update chart dependencies
         run: |
           scripts/update-helm-deps.sh
+      - name: Compute release chart version
+        id: compute_next_version
+        run: |
+          DATE_TIME=$(date '+%Y%m%d%H%M%S')
+          NEXT_VERSION=$(echo $(yq e '.version' charts/k8ssandra/Chart.yaml) | sed "s/-.*/-${DATE_TIME}-${GITHUB_SHA::8}/")
+          echo "Next version is: $NEXT_VERSION"
+          echo "::set-output name=NEXT_VERSION::${NEXT_VERSION}"
+      - name: Update Helm chart version
+        env:
+          NEXT_VERSION: ${{ steps.compute_next_version.outputs.NEXT_VERSION }}
+        run: |
+          yq eval ".version |= \"${NEXT_VERSION}\"" charts/k8ssandra/Chart.yaml -i
+          cat charts/k8ssandra/Chart.yaml
       - name: Create working directory and copy charts
         run: |
           mkdir build
@@ -88,19 +87,10 @@ jobs:
       - package
     runs-on: ubuntu-latest
     steps:
-      - name: Cache bin path
-        id: cache
-        uses: actions/cache@v2
-        with:
-          path: ~/bin
-          key: ${{ runner.os }}-${{ needs.setup.outputs.HELM_VERSION }}-${{ needs.setup.outputs.YQ_VERSION }}
       - name: Checkout
         uses: actions/checkout@v2
-        if: steps.cache.outputs.cache-hit != 'true'
-      - run: scripts/install-helm.sh $HELM_VERSION
-        if: steps.cache.outputs.cache-hit != 'true'
-      - run: scripts/install-yq.sh $YQ_VERSION
-        if: steps.cache.outputs.cache-hit != 'true'
+      - run: scripts/install-helm.sh ${{ needs.setup.outputs.HELM_VERSION }}
+      - run: scripts/install-yq.sh ${{ needs.setup.outputs.YQ_VERSION }}
       - name: Update PATH
         run: |
           echo "$GITHUB_WORKSPACE/bin" >> $GITHUB_PATH
