@@ -11,7 +11,6 @@ Fixes #<issue number>
 
 **Checklist**
 - [ ] Changes manually tested
-- [ ] Chart versions updated (if necessary)
 - [ ] Automated Tests added/updated
 - [ ] Documentation added/updated
 - [ ] CHANGELOG.md updated (not required for documentation PRs)
