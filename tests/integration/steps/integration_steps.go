@@ -194,10 +194,7 @@ func WaitForCassDcToBeReady(t *testing.T, namespace string) {
 func resourceWithLabelIsPresent(t *testing.T, namespace, resourceType, label string) bool {
 	switch resourceType {
 	case "pod":
-		pods := getPodsWithLabel(t, namespace, label)
-		if len(pods.Items) == 1 {
-			return true
-		}
+		return CountPodsWithLabel(t, namespace, label) == 1
 	case "service":
 		services := getServicesWithLabel(t, namespace, label)
 		if len(services.Items) == 1 {
