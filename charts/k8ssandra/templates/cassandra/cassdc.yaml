@@ -117,6 +117,9 @@ spec:
         - "-Dcassandra.system_distributed_replication_per_dc={{ min 5 $datacenter.size }}"
 {{- end }}
 {{- end }}
+{{- if not .Values.cassandra.loggingSidecar.enabled }}
+  disableSystemLoggerSidecar: true
+{{- end }}
   podTemplateSpec:
     spec:
       initContainers:
