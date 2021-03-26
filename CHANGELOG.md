@@ -12,7 +12,7 @@ Changelog for K8ssandra, new PRs should update the `main / unreleased` section w
 When cutting a new release of the parent `k8ssandra` chart update the `main / unreleased` heading to the tag being generated and date `## vX.Y.Z - YYYY-MM-DD` and create a new placeholder section for  `main / unreleased` entries.
 
 ## main / unreleased
-* [ENHANCEMENT] #576 Add option to disable Cassandra loggin sidecar
+* [ENHANCEMENT] #576 Add option to disable Cassandra logging sidecar
 * [ENHANCEMENT] #530 Upgrade Reaper to 2.2.2 and Medusa to 0.9.1
 * [ENHANCEMENT] #510 Add docs and examples in values.yaml
 * [ENHANCEMENT] #504 split dashboards into separate configmaps
