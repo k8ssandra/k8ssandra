@@ -197,6 +197,18 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			Expect(cassdc.Spec.Size, 3)
 		})
 
+		It("disabling the logging sidecar", func() {
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+				SetValues: map[string]string{
+					"cassandra.loggingSidecar.enabled": "false",
+				},
+			}
+
+			Expect(renderTemplate(options)).To(Succeed())
+			AssertContainerNamesMatch(cassdc, CassandraContainer)
+		})
+
 		It("using multiple racks with no affinity labels", func() {
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,

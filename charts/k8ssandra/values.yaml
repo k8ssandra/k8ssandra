@@ -89,6 +89,16 @@ cassandra:
   # -- Optional additional contact points for the Cassandra cluster to connect to.
   additionalSeeds: []
 
+  # -- The management-api runs as pid 1 in the cassandra container which means
+  # its logs are sent to stdout and stderr. To make Cassandra's logs more
+  # accessible, cass-operator deploys the server-system-logger container. You
+  # can get the logs with
+  # `kubectl logs <cassandra pod> -c server-system-logger`.
+  loggingSidecar:
+    # -- Set to false if you do not want to deploy the server-system-logger
+    # container.
+    enabled: true
+
   # -- Optional cluster-level heap configuration, can be overridden at `datacenters` level.
   # Options are commented out for reference. Note that k8ssandra does not
   # automatically apply default values for heap size. It instead defers to
