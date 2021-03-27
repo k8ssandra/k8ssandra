@@ -16,6 +16,10 @@ CLEANER_IMG ?= $(CLEANER_LATEST_IMAGE)
 TESTS=all
 GO_FLAGS=
 ENVTEST_ASSETS_DIR=$(shell pwd)/testbin
+# Possible values: always, success, never
+CLUSTER_CLEANUP=always
+KIND_CLUSTER=k8ssandra-it
+
 test: fmt vet unit-test pkg-test
 
 unit-test:
@@ -31,7 +35,17 @@ pkg-test:
 	source ${ENVTEST_ASSETS_DIR}/setup-envtest.sh && fetch_envtest_tools $(ENVTEST_ASSETS_DIR) && setup_envtest_env $(ENVTEST_ASSETS_DIR) && go test $(GO_FLAGS) -test.timeout=3m ./pkg/... -coverprofile cover.out
 
 integ-test:
-	go test $(GO_FLAGS) -test.timeout=5m ./tests/integration/... -coverprofile cover.out
+ifeq ($(TESTS), all)
+	CLUSTER_CLEANUP=$(CLUSTER_CLEANUP) go test $(GO_FLAGS) -test.timeout=30m ./tests/integration -run="TestFullStackScenario"
+else
+	CLUSTER_CLEANUP=$(CLUSTER_CLEANUP) go test $(GO_FLAGS) -test.timeout=30m ./tests/integration -run=$(TESTS)
+endif
+
+kind-integ-test: create-kind-cluster integ-test
+
+create-kind-cluster:
+	kind delete cluster --name $(KIND_CLUSTER)
+	./tests/integration/scripts/create_kind_cluster.sh $(KIND_CLUSTER)
 
 fmt:
 	go fmt ./pkg/...

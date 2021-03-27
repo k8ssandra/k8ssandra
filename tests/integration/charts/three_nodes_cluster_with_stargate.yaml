@@ -1,0 +1,30 @@
+cassandra:
+  heap:
+   size: 500M
+   newGenSize: 200M
+  datacenters:
+  - name: dc1
+    size: 3
+  ingress:
+    enabled: false
+
+stargate:
+  # -- Enable Stargate resources as part of this release
+  enabled: true
+  heapMB: 300
+  ingress:
+    host: stargate.127.0.0.1.nip.io
+    enabled: true
+
+reaper:
+  autoschedule: false
+  enabled: false
+
+medusa:
+  enabled: false
+
+kube-prometheus-stack:
+  # -- Controls whether the kube-prometheus-stack chart is used at all.
+  # Disabling this parameter prevents all monitoring components from being
+  # installed.
+  enabled: false
