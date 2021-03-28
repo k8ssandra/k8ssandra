@@ -495,7 +495,7 @@ medusa:
     # -- Specifies the container repository for Medusa
     repository: docker.io/k8ssandra/medusa
     # -- Tag of an image within the specified repository
-    tag: 0.9.1
+    tag: 30ed2e15
     # -- The image pull policy
     pullPolicy: IfNotPresent
 

@@ -176,15 +176,6 @@ spec:
             name: server-config
       {{- end }}
       {{- if .Values.medusa.enabled }}
-      - name: get-jolokia
-        image: busybox
-        args:
-          - /bin/sh
-          - -c
-          - wget -O  /config/jolokia-jvm-1.6.2-agent.jar https://search.maven.org/remotecontent?filepath=org/jolokia/jolokia-jvm/1.6.2/jolokia-jvm-1.6.2-agent.jar
-        volumeMounts:
-          - mountPath: /config
-            name: server-config
       - name: medusa-restore
         image: {{ $medusaImage }}
         imagePullPolicy: {{ .Values.medusa.image.pullPolicy }}
@@ -214,11 +205,7 @@ spec:
           - name: LOCAL_JMX
             value: "no"
           {{- end }}
-          {{- if .Values.medusa.enabled}}
-          - name: JVM_EXTRA_OPTS
-            value: -javaagent:/etc/cassandra/jolokia-jvm-1.6.2-agent.jar=port=7373,host=localhost
-          {{- end }}
-        {{- if .Values.medusa.enabled }}
+       {{- if .Values.medusa.enabled }}
         volumeMounts:
           - name: cassandra-config
             mountPath: /etc/cassandra

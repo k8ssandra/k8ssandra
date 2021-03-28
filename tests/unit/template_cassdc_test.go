@@ -64,7 +64,6 @@ const (
 	BaseConfigInitContainer     = "base-config-init"
 	MedusaInitContainer         = "medusa-restore"
 	JmxCredentialsInitContainer = "jmx-credentials"
-	GetJolokiaInitContainer     = "get-jolokia"
 
 	CassandraContainer = "cassandra"
 	MedusaContainer    = "medusa"
@@ -306,13 +305,10 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 
 			Expect(renderTemplate(options)).To(Succeed())
 
-			AssertInitContainerNamesMatch(cassdc, BaseConfigInitContainer, ConfigInitContainer, JmxCredentialsInitContainer, GetJolokiaInitContainer, MedusaInitContainer)
+			AssertInitContainerNamesMatch(cassdc, BaseConfigInitContainer, ConfigInitContainer, JmxCredentialsInitContainer, MedusaInitContainer)
 
 			// Two containers, medusa and cassandra
 			Expect(len(cassdc.Spec.PodTemplateSpec.Spec.Containers)).To(Equal(2))
-			// Cassandra container should have JVM_EXTRA_OPTS for jolokia
-			Expect(len(cassdc.Spec.PodTemplateSpec.Spec.Containers[0].Env)).To(Equal(1))
-			Expect(cassdc.Spec.PodTemplateSpec.Spec.Containers[0].Env[0].Name).To(Equal("JVM_EXTRA_OPTS"))
 			// Second container should be medusa
 			Expect(cassdc.Spec.PodTemplateSpec.Spec.Containers[1].Name).To(Equal(MedusaContainer))
 
@@ -335,13 +331,10 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 
 			Expect(renderTemplate(options)).To(Succeed())
 
-			AssertInitContainerNamesMatch(cassdc, BaseConfigInitContainer, ConfigInitContainer, JmxCredentialsInitContainer, GetJolokiaInitContainer, MedusaInitContainer)
+			AssertInitContainerNamesMatch(cassdc, BaseConfigInitContainer, ConfigInitContainer, JmxCredentialsInitContainer, MedusaInitContainer)
 
 			// Two containers, medusa and cassandra
 			Expect(len(cassdc.Spec.PodTemplateSpec.Spec.Containers)).To(Equal(2))
-			// Cassandra container should have JVM_EXTRA_OPTS for jolokia
-			Expect(len(cassdc.Spec.PodTemplateSpec.Spec.Containers[0].Env)).To(Equal(1))
-			Expect(cassdc.Spec.PodTemplateSpec.Spec.Containers[0].Env[0].Name).To(Equal("JVM_EXTRA_OPTS"))
 			// Second container should be medusa
 			Expect(cassdc.Spec.PodTemplateSpec.Spec.Containers[1].Name).To(Equal(MedusaContainer))
 
@@ -361,7 +354,7 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 
 			Expect(renderTemplate(options)).To(Succeed())
 
-			AssertInitContainerNamesMatch(cassdc, BaseConfigInitContainer, ConfigInitContainer, JmxCredentialsInitContainer, GetJolokiaInitContainer, MedusaInitContainer)
+			AssertInitContainerNamesMatch(cassdc, BaseConfigInitContainer, ConfigInitContainer, JmxCredentialsInitContainer, MedusaInitContainer)
 			AssertContainerNamesMatch(cassdc, CassandraContainer, MedusaContainer)
 		})
 
@@ -708,7 +701,7 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 
 			Expect(cassdc.Spec.Users).To(ContainElement(cassdcv1beta1.CassandraUser{Superuser: true, SecretName: clusterName + "-medusa"}))
 
-			AssertInitContainerNamesMatch(cassdc, BaseConfigInitContainer, ConfigInitContainer, JmxCredentialsInitContainer, GetJolokiaInitContainer, MedusaInitContainer)
+			AssertInitContainerNamesMatch(cassdc, BaseConfigInitContainer, ConfigInitContainer, JmxCredentialsInitContainer, MedusaInitContainer)
 
 			initContainer := GetInitContainer(cassdc, "medusa-restore")
 			Expect(initContainer).To(Not(BeNil()))
@@ -749,9 +742,6 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 
 			cassandraContainer := GetContainer(cassdc, CassandraContainer)
 			Expect(cassandraContainer).To(Not(BeNil()))
-			// Cassandra container should have JVM_EXTRA_OPTS for jolokia
-			Expect(len(cassandraContainer.Env)).To(Equal(1))
-			Expect(cassandraContainer.Env[0].Name).To(Equal("JVM_EXTRA_OPTS"))
 
 			medusaContainer := GetContainer(cassdc, MedusaContainer)
 			Expect(medusaContainer).To(Not(BeNil()))
@@ -790,7 +780,7 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			Expect(renderTemplate(options)).To(Succeed())
 			Expect(cassdc.Spec.Users).To(ContainElement(cassdcv1beta1.CassandraUser{Superuser: true, SecretName: secretName}))
 
-			AssertInitContainerNamesMatch(cassdc, BaseConfigInitContainer, ConfigInitContainer, JmxCredentialsInitContainer, GetJolokiaInitContainer, MedusaInitContainer)
+			AssertInitContainerNamesMatch(cassdc, BaseConfigInitContainer, ConfigInitContainer, JmxCredentialsInitContainer, MedusaInitContainer)
 
 			initContainer := GetInitContainer(cassdc, MedusaInitContainer)
 			Expect(initContainer).To(Not(BeNil()))
@@ -831,9 +821,6 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 
 			cassandraContainer := GetContainer(cassdc, CassandraContainer)
 			Expect(cassandraContainer).To(Not(BeNil()))
-			// Cassandra container should have JVM_EXTRA_OPTS for jolokia
-			Expect(len(cassandraContainer.Env)).To(Equal(1))
-			Expect(cassandraContainer.Env[0].Name).To(Equal("JVM_EXTRA_OPTS"))
 
 			medusaContainer := GetContainer(cassdc, MedusaContainer)
 			Expect(medusaContainer).To(Not(BeNil()))

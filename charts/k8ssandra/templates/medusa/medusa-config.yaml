@@ -49,7 +49,8 @@ data:
     enabled = 1
 
     [kubernetes]
-    cassandra_url = http://localhost:7373/jolokia/
+    cassandra_url = http://127.0.0.1:8080/api/v0/ops/node/snapshots
+    use_mgmt_api = 1
     enabled = 1
 
     [logging]
