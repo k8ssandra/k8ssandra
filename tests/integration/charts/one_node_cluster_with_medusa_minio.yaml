@@ -7,12 +7,17 @@ cassandra:
     size: 1
   ingress:
     enabled: false
+  loggingSidecar:
+    enabled: false
 stargate:
   enabled: false
 reaper:
   enabled: false
 medusa:
   enabled: true
+  image:
+    repository: docker.io/jsanda/medusa
+    tag: grpc-sigterm-13d70bb2
 
   multiTenant: true
   storage: s3_compatible
