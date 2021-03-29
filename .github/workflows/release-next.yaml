@@ -3,7 +3,7 @@ name: Release Next Charts
 on:
   push:
     branches:
-      - main
+      - fix-helm-next-versioning
 jobs:
   setup:
     runs-on: ubuntu-latest
@@ -55,7 +55,7 @@ jobs:
         id: compute_next_version
         run: |
           DATE_TIME=$(date '+%Y%m%d%H%M%S')
-          NEXT_VERSION=$(echo $(yq e '.version' charts/k8ssandra/Chart.yaml) | sed "s/-.*/-${DATE_TIME}-${GITHUB_SHA::8}/")
+          NEXT_VERSION=$(echo $(yq e '.version' charts/k8ssandra/Chart.yaml) | sed "s/-.*/_${DATE_TIME}_${GITHUB_SHA::8}/")
           echo "Next version is: $NEXT_VERSION"
           echo "::set-output name=NEXT_VERSION::${NEXT_VERSION}"
       - name: Update Helm chart version
