@@ -25,6 +25,7 @@ When cutting a new release of the parent `k8ssandra` chart update the `main / un
 * [BUGFIX] #517 Removed GitHub Actions for pre-releasing off of main
 * [BUGFIX] #475 Fix Cassandra config clobbering when enabling Medusa
 * [BUGIFX] #590 Create cass-operator webhook secret
+* [BUGFIX] #602 Fix indentation error in example backup-restore-values.yaml
 * [ENHANCEMENT] #547 Add support for additionalSeeds in the CassandraDatacenter
 
 ## v1.0.0 - 2021-02-26
