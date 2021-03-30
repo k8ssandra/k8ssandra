@@ -265,7 +265,4 @@ You’ve successfully restored your lost data in just a few commands!
 
 # Many backends available
 
-K8ssandra has support for AWS S3 and Google Cloud Storage as Medusa backends since 1.0.0.
-
-MinIO, while being an obvious choice in the Kubernetes world, is not the only S3 compatible backend that K8ssandra can use. You now have a wide variety of solutions that can run on-prem (CEPH, Cloudian, Riak S2, Dell EMC ECS, …) or in cloud environments (IBM Cloud Object Storage, OVHcloud Object Storage, …). \
-K8ssandra already supports AWS S3 and Google Cloud Storage as Medusa backends.
+MinIO, while being an obvious choice in the Kubernetes world, is not the only S3 compatible backend that K8ssandra can use. K8ssandra has supported AWS S3 and Google Cloud Storage as Medusa backends since 1.0.0. There is also a wide variety of solutions that can run on-prem (including CEPH, Cloudian, Riak S2, and Dell EMC ECS) or in cloud environments (including IBM Cloud Object Storage, and OVHcloud Object Storage). See the [K8ssandra backup/restore documentation](https://k8ssandra.io/docs/topics/restore-a-backup/) for more detailed instructions and let us know if you have questions, we love to help!
