@@ -199,7 +199,6 @@ spec:
       {{- end }}
       containers:
       - name: cassandra
-{{/*       {{- if or .Values.reaper.enabled .Values.medusa.enabled }}*/}}
         {{- if .Values.reaper.enabled }}
         env:
           - name: LOCAL_JMX
@@ -242,7 +241,6 @@ spec:
             name: {{ .Values.medusa.storageSecret }}
           {{- end }}
       {{- end }}
-{{/*      {{- end }}*/}}
       volumes:
       - name: cassandra-config
         emptyDir: {}
