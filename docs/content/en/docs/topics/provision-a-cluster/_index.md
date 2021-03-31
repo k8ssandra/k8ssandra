@@ -1,8 +1,7 @@
 ---
-title: "Scale your Apache Cassandra® Cluster"
+title: "Scale your Apache Cassandra® cluster in K8ssandra"
 linkTitle: "Scale Cassandra"
-weight: 4
-description: Steps to provision a Cassandra cluster in Kubernetes
+description: "Steps to provision and scale up or scale down an Apache Cassandra® cluster in Kubernetes"
 ---
 
 ## Tools

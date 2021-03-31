@@ -1,9 +1,7 @@
 ---
-title: "Access the Stargate API"
+title: "Accessing Stargate data APIs in K8ssandra"
 linkTitle: "Access Stargate"
-weight: 6
-description: |
-  Accessing the K8ssandra Stargate interfaces.
+description: "Expose access to Stargate REST, GraphQL and document APIs on top of Apache Cassandra®"
 ---
 
 [Stargate](https://stargate.io/) is an open-source data gateway providing common API interfaces for backend databases. With K8ssandra, Stargate may be deployed in front of the Apache Cassandra® cluster providing CQL, REST, GraphQL, and document-based API endpoints. Stargate itself may be scaled horizontally within the cluster as needed. This scaling is done independently from the data layer.

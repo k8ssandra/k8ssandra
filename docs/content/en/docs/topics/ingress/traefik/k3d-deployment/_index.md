@@ -1,9 +1,7 @@
 ---
-title: "K3d Deployment"
+title: "Deploy K8ssandra and Traefik with K3d"
 linkTitle: "K3d Deployment"
-weight: 1
-description: |
-  Deploy a local K3d cluster with Traefik installed and configured.
+description: "Deploy Apache Cassandra® on Kubernetes in a local K3d cluster with Traefik ingress installed and configured."
 ---
 
 K3d automatically deploys the Traefik ingress controller when the cluster is
