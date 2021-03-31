@@ -56,7 +56,7 @@ datastax-java-driver.basic.load-balancing-policy {
 }
 ```
 
-Also, make sure your clients are using `LOCAL_*` and not `QUORUM` consistency levels. You can check this setting in your `cassandra.yaml` configuration file. 
+Also, make sure your clients are using `LOCAL_*` and not `QUORUM` consistency levels.  
 
 ## Install K8ssandra
 
