@@ -35,7 +35,7 @@ ALTER KEYSPACE system_auth WITH replication = {'class': 'NetworkTopologyStrategy
 Changing the recommendation may result in a topology change; that is, a token ownership change. 
 
 {{% alert title="Recommendation" color="success" %}}
-If you change the replication strategy of a keyspace, run a full, cluster-wide repair on it. See the [nodetool repair](https://docs.datastax.com/en/cassandra-oss/3.x/cassandra/tools/toolsRepair.html) or the [Cassandra Reaper]({{< ref "/docs/topics/repair/" >}}) topic for information on repair operations. 
+If you change the replication strategy of a keyspace, run a full, cluster-wide repair on it using whatever solution you have for scheduling and running repairs. If you do not already have another solution, you can run `nodetool repair -full` on each Cassandra node, one at a time. Repairs can be both time consuming and resource intensive. It is best to run them during a scheduled maintenance window. 
 {{% /alert %}}
 
 ## Check the endpoint snitch
@@ -43,35 +43,58 @@ If you change the replication strategy of a keyspace, run a full, cluster-wide r
 Make sure that `GossipingPropertyFileSnitch` is used, and not `SimpleSnitch`.
 
 {{% alert title="Recommendation" color="success" %}}
-If you change the snitch, run a full, cluster-wide repair. Again, refer to the `nodetool repair` or the Reaper documentation. 
+If you change the snitch, run a full, cluster-wide repair.
 {{% /alert %}}
 
 ## Client changes
 
-Make sure client services are using a `LoadBalancingPolicy` that will route requests to the local datacenter. With version 4.11 of the Java driver you might configure this setting as follows:
+Make sure client services are using a `LoadBalancingPolicy` that will route requests to the local datacenter. Also make sure your clients are using `LOCAL_*` and not `QUORUM` consistency levels.  
 
-```yaml
-datastax-java-driver.basic.load-balancing-policy {
-  local-datacenter = dc1
+Here is an example `application.conf` file for version 4.11 of the Java driver that configures the `LoadBalancingPolicy` and the default consistency level:
+
+```conf
+# application.conf
+
+datastax-java-driver {
+    basic.load-balancing-policy {
+        local-datacenter = dc1
+    }
+
+    basic.request {
+        consistency = LOCAL_QUORUM
+    }
 }
 ```
 
-Also, make sure your clients are using `LOCAL_*` and not `QUORUM` consistency levels.  
-
 ## Install K8ssandra
 
-Before installing K8ssandra, make a note of the IP addresses of the seed nodes of the current datacenter. You will use the following to configure the `additionalSeeds` property in the K8ssandra chart. Here is an example of a chart properties overrides file. Assume that it is named `k8ssandra-values.yaml`:
+Before installing K8ssandra, make a note of the IP addresses of the seed nodes of the current datacenter. You will use the following to configure the `additionalSeeds` property in the k8ssandra chart. Here is an example chart properties overrides file named `k8ssandra-values.yaml` that we can use to install k8ssandra:
 
 ```yaml
+#k8ssandra-values.yaml
+#
+# Note this only demonstrates usage of the additionalSeeds property.
+# Refer to the chart documentation for other properties you may want
+# to configure.
 cassandra:
+  # The cluster name needs to match the cluster name in the original
+  # datacenter.
   clusterName: cassandra
   datacenters:
   - name: dc2
     size: 3
   additionalSeeds:
+  # The following should be replaced with actual IP addresses or
+  # hostnames of pods in the original datacenter.
   - <dc1-seed>
   - <dc1-seed>
-  - <dc2-seed>
+  - <dc1-seed>
+```
+
+Install k8ssandra as follows. Replace `my-k8ssandra` with whatever name you prefer:
+
+```bash
+helm install my-k8ssandra k8ssandra/k8ssandra -f k8ssandra-values.yaml
 ```
 
 Run `nodetool status <keyspace-name>` to verify that the nodes in the new datacenter are gossiping with the old datacenter. For the keyspace argument, you can specify a user-defined one or `system_auth`.  Here is some example output:
@@ -139,8 +162,16 @@ To stop sending traffic to the old datacenter, there are two steps:
 Update the `LoadBalancingPolicy` of client services to route requests to the new datacenter. Here is an example for v4.11 of the Java driver where the new datacenter is named dc2:
 
 ```yaml
-datastax-java-driver.basic.load-balancing-policy {
-  local-datacenter = dc2
+# application.conf
+
+datastax-java-driver {
+    basic.load-balancing-policy {
+        local-datacenter = dc2
+    }
+
+    basic.request {
+        consistency = LOCAL_QUORUM
+    }
 }
 ```
 
