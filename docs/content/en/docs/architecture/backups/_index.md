@@ -1,9 +1,7 @@
 ---
-title: "Backups"
+title: "K8ssandra Architecture - Backups"
 linkTitle: "Backups"
-weight: 4
-description: >
-  Ready for when the unthinkable happens.
+description: "Backing up your data helps you prepare for when the unthinkable happens."
 ---
 
 Even with the heightened availability of Apache Cassandra® a proper backup schedule and testing of restore procedures is good practice in case catastrophe strikes. With distributed systems backups can be tricky, there's the timing of the snapshot process on all nodes, correlation of data files to remote storage, and eventual restore.
