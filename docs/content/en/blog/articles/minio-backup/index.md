@@ -55,12 +55,12 @@ replicaset.apps/minio-5fd4dd687   1         1         1       109s
 Using port forwarding, you can expose access to the MinIO UI in the browser on port 9000:
 
 ```
-% kubectl port-forward service/minio 9000:9000 -n minio
+% kubectl port-forward service/minio 9000 -n minio
 Forwarding from 127.0.0.1:9000 -> 9000
 Forwarding from [::1]:9000 -> 9000
 ```
 
-Now you can login to MinIO at [http://localhost:9000](http://localhost:9000) using your install time defined credentials:
+Now you can login to MinIO at [http://localhost:9000](http://localhost:9000) using your install time defined credentials (if you used the same commands above they would be `minio_key` and `minio_secret`):
 
 ![MinIO Login](minio-login.png)
 
@@ -105,7 +105,7 @@ medusa-bucket-key     Opaque                                1      45s
 
 You can then deploy K8ssandra with the following custom values file (all default values will be used if not customized here) :
 
-```
+```yaml
 medusa:
   enabled: true
   storage: s3_compatible
@@ -117,7 +117,7 @@ medusa:
   storageSecret: medusa-bucket-key
 ```
 
-Save the above file as k8ssandra_medusa_minio.yaml and then install K8ssandra with the following command:
+Save the above file as `k8ssandra_medusa_minio.yaml` and then install K8ssandra with the following command:
 
 ```
 helm install k8ssandra k8ssandra/k8ssandra -f k8ssandra_medusa_minio.yaml -n k8ssandra
@@ -153,11 +153,11 @@ Next, create some data in Cassandra by creating a **test_data.cql** file:
 ```
 CREATE KEYSPACE medusa_test  WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 1};
 USE medusa_test;
-CREATE TABLE users (email text primary key, name text, state text);
-insert into users (email, name, state) values ('alice@example.com', 'Alice Smith', 'TX');
-insert into users (email, name, state) values ('bob@example.com', 'Bob Jones', 'VA');
-insert into users (email, name, state) values ('carol@example.com', 'Carol Jackson', 'CA');
-insert into users (email, name, state) values ('david@example.com', 'David Yang', 'NV');
+CREATE TABLE users (email TEXT PRIMARY KEY, name TEXT, state TEXT);
+INSERT INTO users (email, name, state) VALUES ('alice@example.com', 'Alice Smith', 'TX');
+INSERT INTO users (email, name, state) VALUES ('bob@example.com', 'Bob Jones', 'VA');
+INSERT INTO users (email, name, state) VALUES ('carol@example.com', 'Carol Jackson', 'CA');
+INSERT INTO users (email, name, state) VALUES ('david@example.com', 'David Yang', 'NV');
 ```
 
 And copy it into the Cassandra pod (the StatefulSet one, which contains <code>-<strong>sts</strong>-</code> in its name):
