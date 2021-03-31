@@ -1,9 +1,8 @@
 ---
-title: "K8ssandra developer quick start"
+title: "K8ssandra Quick Start for Developers"
 linkTitle: "Developers"
 weight: 1
-description: |
-  Get up and coding with K8ssandra!
+description: "Get up and coding with K8ssandra by exposing access to Stargate and CQL APIs!"
 ---
 
 **Completion time**: **10 minutes**.

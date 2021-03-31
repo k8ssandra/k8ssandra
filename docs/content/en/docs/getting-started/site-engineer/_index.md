@@ -2,8 +2,7 @@
 title: "K8ssandra site reliability engineer quick start"
 linkTitle: "Site reliability engineers"
 weight: 2
-description: |
-  Familiarize yourself with K8ssandra utilities and upgrade procedures!
+description: "Familiarize yourself with K8ssandra utilities and procedures for monitoring, repair, and upgrading your Apache Cassandra® database!"
 ---
 
 **Completion time**: **10 minutes**.
