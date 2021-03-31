@@ -7,11 +7,17 @@ description: >
 author: Aleks Volochnev ([@hadesarchitect](https://twitter.com/hadesarchitect))
 ---
 
-This live demo shows you how to run an Apache Cassandra® cluster in Kubernetes using K8ssandra. Steps include: installing a cluster using Helm, configuring ingress using Traefik, checking that the installation is running correctly, explanation of each pod included in K8ssandra, viewing metrics using Prometheus and Grafana, and running repairs with Reaper. 
+This walkthrough shows how to run an Apache Cassandra® cluster in Kubernetes using K8ssandra. 
 
-For more information on installing K8ssandra and first use, check out the [getting started guide](/docs/getting-started/).
+Steps include:
+
+* Installing a cluster using Helm
+* Configuring ingress with Traefik
+* Validating the installation
+* Exploration of all pods
+* Viewing metrics using Prometheus and Grafana
+* Running repairs with Reaper
+
+Check out the [getting started guide](/docs/getting-started/) to run K8ssandra in your environment.
 
 {{< youtube id="qlZVLEWzJq0" >}}
-
-
-
