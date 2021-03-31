@@ -338,7 +338,9 @@ The Status section in the YAML shows the backup operation’s start and finish t
 
 Let's look at the resources in the Amazon S3 dashboard.
 
-S3 maintains the `backup_index` bucket so it only has to store a single copy of an SSTable across backups.  S3 stores pointers in the index to the SSTables. That implementation avoids a large amount of storage.  For example:
+Medusa maintains a `backup_index` as top-level folder in the bucket, to make operations such as listing backups faster. That is, Medusa doesn't need to scan the whole bucket; just the index. SSTables are copied only once as part of a differences backup feature (default mode) that checks the manifest from the previous backup to skip SSTables that were already present. The manifest from the newly created backups then points to both pre-existing sstables and newly uploaded ones. The implementation thus avoids a large amount of storage.  
+
+For example:
 
 ![Amazon S3 with Medusa buckets](s3K8ssandraMedusaBuckets.png)
 

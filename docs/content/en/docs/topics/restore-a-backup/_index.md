@@ -10,7 +10,7 @@ Medusa is a Cassandra backup and restore tool. It's packaged with K8ssandra and 
 
 ## Supported object storage types for backups
 
-Supported in K8ssandra since the 1.0.0 release:
+Supported in K8ssandra's Medusa  since the 1.0.0 release:
 
 * Amazon S3  
 
@@ -18,11 +18,19 @@ Supported in K8ssandra since the 1.0.0 release:
 
 Added in K8ssandra 1.1.0:
 
-* MinIO, a popular and S3-compatible object storage suite
+* Support in K8ssandra's Medusa for all S3-compatible implementations, which include:
+
+  * MinIO 
+  * IBM Cloud Object Storage
+  * OVHCloud Object Storage
+  * Riak S2
+  * Dell EMC ECS
+  * CEPH Object Gateway
+  * Others - this list is not exhaustive
 
 ## Backup and restore steps
 
-See the following topics in our K8ssandra documentation:
+For detailed walk-throughs of Medusa backup and restore operations with Amazon S3 or MinIO, see the following topics in the K8ssandra documentation:
 
 * [Backup and restore Cassandra with Amazon S3]({{< relref "amazon-s3" >}})
 
