@@ -3,7 +3,7 @@ date: 2021-03-30
 title: "K8ssandra First Touch"
 linkTitle: "K8ssandra First Touch"
 description: >
-  We've updated our approach to managing the K8ssandra roadmap and would love to get your input.
+  Video walkthrough of installing K8ssandra and running an Apache Cassandra® cluster
 author: Aleks Volochnev ([@hadesarchitect](https://twitter.com/hadesarchitect))
 ---
 
