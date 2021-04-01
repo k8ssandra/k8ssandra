@@ -137,6 +137,17 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			Expect(config.JvmOptions.YoungGenSize).To(BeEmpty())
 		})
 
+		It("is not rendered if disabled", func() {
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+				SetValues: map[string]string{
+					"cassandra.enabled": "false",
+				},
+			}
+
+			Expect(renderTemplate(options)).ShouldNot(Succeed())
+		})
+
 		It("override clusterName", func() {
 			clusterName := "test"
 			options := &helm.Options{

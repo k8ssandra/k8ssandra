@@ -1,4 +1,7 @@
 cassandra:
+  # -- Enables installation of Cassandra cluster. Set to false if you only wish to install operators.
+  enabled: true
+
   # -- The Cassandra version to use. The supported versions include the following:
   #    - 3.11.7
   #    - 3.11.8
