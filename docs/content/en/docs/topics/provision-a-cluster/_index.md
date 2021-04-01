@@ -11,14 +11,11 @@ This topic explains how to add and remove Cassandra nodes in a Kubernetes cluste
 K8ssandra currently only supports a single-datacenter cluster.
 {{% /alert %}}
 
-## Tools
-
-[helm](https://helm.sh/docs/intro/install/)
-
 ## Prerequisites
 
-* A Kubernetes environment
-* K8ssandra installed and running in Kubernetes - see [Quick start]({{< ref "getting-started" >}})
+* A Kubernetes environment.
+* [Helm](https://helm.sh/docs/intro/install/) is installed.
+* K8ssandra is installed and running in Kubernetes - see the [Quick start]({{< ref "getting-started" >}}).
 
 ## Create a cluster
 
@@ -38,7 +35,7 @@ cassandra:
     size: 3
 ```
 
-The helm instal command will result in the creation of a `CassandraDatacenter` object with the size set to 3. The cass-operator product that's installed by K8ssandra will in turn create the underlying StatefulSet that has 3 Cassandra pods.
+The `helm install` command will result in the creation of a `CassandraDatacenter` object with the size set to 3. The cass-operator deployment that's installed by K8ssandra will in turn create the underlying StatefulSet that has 3 Cassandra pods.
 
 ## Add nodes
 
@@ -62,7 +59,7 @@ helm upgrade my-k8ssandra k8ssandra/k8ssandra -f k8ssandra-values.yaml
 Another way to upgrade your K8ssandra cluster is by passing in a `--set` parameter. Example:
 
 ```bash
-helm upgrade my-k8ssandra k8ssandra/k8ssandra --set cassandra.datacenters\[0\].size=4,cassandra.datacenters\[0\].name=dc1
+helm upgrade my-k8ssandra k8ssandra/k8ssandra --reuse-values --set cassandra.datacenters\[0\].size=4,cassandra.datacenters\[0\].name=dc1
 ```
 
 {{% /alert %}}
@@ -154,7 +151,7 @@ status:
 ...
 ```
 
-After the new nodes are up and running, `nodetool cleanup` should run on all of the nodes except the new ones to remove keys and data that no longer belong to those nodes. There is no need to do this manually. The cass-operator product, which again is installed with K8ssandra, automatically runs `nodetool cleanup` for you.
+After the new nodes are up and running, `nodetool cleanup` should run on all of the nodes except the new ones to remove keys and data that no longer belong to those nodes. There is no need to do this manually. The cass-operator deployment, which again is installed with K8ssandra, automatically runs `nodetool cleanup` for you.
 
 ## Remove nodes
 
@@ -168,7 +165,7 @@ Not enough free space available to decommission. my-k8ssandra-dc1-default-sts-3 
 
 The reported units are in bytes.
 
-cass-operator will also add a condition to the `CassandraDatacenter` status. Example:
+The cass-operator deployment will also add a condition to the `CassandraDatacenter` status. Example:
 
 ```yaml
 status:
