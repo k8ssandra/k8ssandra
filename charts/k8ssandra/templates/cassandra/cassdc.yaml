@@ -199,6 +199,8 @@ spec:
             mountPath: /etc/cassandra
           - mountPath: /var/lib/cassandra
             name: server-data
+          - name: podinfo
+            mountPath: /etc/podinfo
           {{- if not (eq .Values.medusa.storage "local") }}
           - name:  {{ .Values.medusa.storageSecret }}
             mountPath: /etc/medusa-secrets
@@ -212,12 +214,18 @@ spec:
           - name: LOCAL_JMX
             value: "no"
           {{- end }}
-       {{- if .Values.medusa.enabled }}
+          {{- if .Values.medusa.enabled}}
           - name: JVM_EXTRA_OPTS
             value: -javaagent:/etc/cassandra/jolokia-jvm-1.6.2-agent.jar=port=7373,host=localhost
+          {{- end }}
+        {{- if .Values.medusa.enabled }}
         volumeMounts:
           - name: cassandra-config
             mountPath: /etc/cassandra
+          - name: podinfo
+            mountPath: /etc/podinfo
+        {{- end }}
+      {{- if .Values.medusa.enabled }}
       - name: medusa
         image: {{ $medusaImage }}
         imagePullPolicy: {{ .Values.medusa.image.pullPolicy }}
@@ -252,6 +260,12 @@ spec:
       - name: cassandra-config
         emptyDir: {}
       {{- if .Values.medusa.enabled }}
+      - name: podinfo
+        downwardAPI:
+          items:
+            - path: "labels"
+              fieldRef:
+                fieldPath: metadata.labels
       - name: {{ include "medusa.configMapName" . }}
         configMap:
           name: {{ include "medusa.configMapName" . }}
