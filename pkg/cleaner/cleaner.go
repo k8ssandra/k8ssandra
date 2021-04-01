@@ -2,7 +2,11 @@ package cleaner
 
 import (
 	"context"
+	apierrors "k8s.io/apimachinery/pkg/api/errors"
+	"k8s.io/apimachinery/pkg/types"
+	"k8s.io/apimachinery/pkg/util/wait"
 	"log"
+	"time"
 
 	cassdcapi "github.com/datastax/cass-operator/operator/pkg/apis/cassandra/v1beta1"
 	"k8s.io/client-go/kubernetes/scheme"
@@ -14,6 +18,9 @@ import (
 const (
 	managedLabel      = "app.kubernetes.io/managed-by"
 	managedLabelValue = "Helm"
+	instanceLabel     = "app.kubernetes.io/instance"
+	nameLabel         = "app.kubernetes.io/name"
+	nameLabelValue    = "k8ssandra"
 	releaseAnnotation = "meta.helm.sh/release-name"
 )
 
@@ -51,24 +58,34 @@ func (a *Agent) RemoveResources(releaseName string) error {
 
 func (a *Agent) removeCassandraDatacenter(releaseName string) error {
 	log.Printf("Removing CassandraDatacenter(s) managed in release %s from namespace %s\n", releaseName, a.Namespace)
+	releaseLabels := client.MatchingLabels{
+		managedLabel: managedLabelValue,
+		instanceLabel: releaseName,
+		nameLabel: nameLabelValue,
+	}
 	list := &cassdcapi.CassandraDatacenterList{}
-	err := a.Client.List(context.Background(), list, client.InNamespace(a.Namespace), client.MatchingLabels(map[string]string{managedLabel: managedLabelValue}))
+	err := a.Client.List(context.Background(), list, client.InNamespace(a.Namespace), releaseLabels)
 	if err != nil {
 		log.Fatalf("Failed to list CassandraDatacenters in namespace: %s", a.Namespace)
 		return err
 	}
 
 	for _, cassdc := range list.Items {
-		if release, found := cassdc.Annotations[releaseAnnotation]; found {
-			if release == releaseName {
-				err = a.Client.Delete(context.Background(), &cassdc)
-				if err != nil {
-					log.Fatalf("Failed to delete CassandraDatacenter: %v\n", cassdc)
-					return err
-				}
-			}
+		if err = a.Client.Delete(context.Background(), &cassdc); err != nil && !apierrors.IsNotFound(err) && !apierrors.IsResourceExpired(err) {
+			log.Fatalf("failed to delete CassandraDatacenter %s: %s",
+				types.NamespacedName{Namespace: cassdc.Namespace, Name: cassdc.Name}, err)
 		}
 	}
 
-	return nil
+	// We need to wait until the CassandraDatacenter is terminated; otherwise, cass-operator could get
+	// deleted before it has a chance to clear the CassandraDatacenter's finalizer.
+	return wait.PollImmediate(10 * time.Second, 10 * time.Minute, func() (bool, error) {
+		list := &cassdcapi.CassandraDatacenterList{}
+		err := a.Client.List(context.Background(), list, client.InNamespace(a.Namespace), releaseLabels)
+		if err != nil {
+			log.Printf("failed to list CassandraDatacenters: %s\n", err)
+			return false, err
+		}
+		return len(list.Items) == 0, nil
+	})
 }
