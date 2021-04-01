@@ -56,7 +56,7 @@ helm upgrade my-k8ssandra k8ssandra/k8ssandra -f k8ssandra-values.yaml
 ```
 
 {{% alert title="Tip" color="success" %}}
-Another way to upgrade your K8ssandra cluster is by passing in a `--set` parameter. Example:
+Another way to upgrade your K8ssandra cluster is by passing in a `--set` parameter. Also include a `--reuse-values` parameter so that Helm will reuse previous values (other than the one you're overriding with each `--set` parameter). Without `--reuse-values` it's easy to make a mistake if you have other, additional properties that you previously set.  
 
 ```bash
 helm upgrade my-k8ssandra k8ssandra/k8ssandra --reuse-values --set cassandra.datacenters\[0\].size=4,cassandra.datacenters\[0\].name=dc1
