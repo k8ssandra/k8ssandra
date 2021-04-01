@@ -26,6 +26,7 @@ When cutting a new release of the parent `k8ssandra` chart update the `main / un
 * [BUGFIX] #475 Fix Cassandra config clobbering when enabling Medusa
 * [BUGIFX] #590 Create cass-operator webhook secret
 * [BUGFIX] #602 Fix indentation error in example backup-restore-values.yaml
+* [BUGFIX] #623 `helm uninstall` can leave CassandraDatacenter behind
 * [ENHANCEMENT] #547 Add support for additionalSeeds in the CassandraDatacenter
 * [ENHANCEMENT] #606 Support installation of operators only, disabling the Cassandra cluster creation
 * [CHANGE] #613 Mount Cassandra pod labels in volume
