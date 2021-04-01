@@ -8,7 +8,7 @@ description: Third-party software licenses.
 
 K8ssandra provides a production-ready platform for running Apache Cassandra&reg; on Kubernetes. This includes automation for operational tasks such as repairs, backup and restores, and monitoring.
 
-The K8ssandra software is licensed under the open-source **Apache-2.0 license agreement**. See https://github.com/k8ssandra/k8ssandra/blob/main/LICENSE.
+The K8ssandra software is licensed under the open-source [**Apache-2.0 license agreement**](https://github.com/k8ssandra/k8ssandra/blob/main/LICENSE).
 
 The following table lists the K8ssandra direct dependencies with 3rd-party software licenses:
 
