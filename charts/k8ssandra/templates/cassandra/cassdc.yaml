@@ -5,6 +5,7 @@
   {{- fail (print .Values.cassandra.version " is not a supported Cassandra version") }}
 {{- end -}}
 
+{{- if .Values.cassandra.enabled -}}
 apiVersion: cassandra.datastax.com/v1beta1
 kind: CassandraDatacenter
 metadata:
@@ -262,4 +263,5 @@ spec:
         secret:
           secretName: {{ .Values.medusa.storageSecret }}
       {{- end }}
+{{- end }}
 {{- end }}
