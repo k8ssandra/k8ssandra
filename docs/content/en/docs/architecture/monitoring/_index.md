@@ -1,9 +1,7 @@
 ---
-title: "Monitoring"
+title: "K8ssandra Architecture - Monitoring"
 linkTitle: "Monitoring"
-weight: 2
-description: > 
-  How do you know if your cluster is healthy?
+description: "How do you know if your K8ssandra-managed Cassandra cluster is healthy? Metrics, of course!"
 ---
 
 When running applications in Kubernetes, observability is key. K8ssandra includes Prometheus and Grafana for the storage and visualization of metrics associated with the Cassandra cluster.
@@ -38,6 +36,6 @@ Ingress or port forwarding can be used to expose access to the Prometheus and Gr
 
 ## Next
 
-Check out the [monitoring tasks](/docs/topics/accessing-services/monitoring) for more detailed instructions.
+Check out the [monitoring tasks](/docs/topics/monitoring) for more detailed instructions.
 
 Next architecture topic: [Repairs with Cassandra Reaper]({{< ref "repairs" >}})

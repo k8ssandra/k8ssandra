@@ -1,9 +1,7 @@
 ---
-title: "Repair"
+title: "Access K8ssandra Repair with Traefik"
 linkTitle: "Repair"
-weight: 2
-description: |
-  Configuring Traefik to expose the K8ssandra repair interface
+description: "Expose access to your Reaper for Apache Cassandra® repair interface using Traefik ingress"
 ---
 
 Follow these steps to configure and install `Traefik Ingress` custom resources for accessing your K8ssandra cluster's repair interface (provided by Reaper for Apache Cassandra® (Reaper)).

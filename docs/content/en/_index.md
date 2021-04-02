@@ -1,5 +1,5 @@
 ---
-title: K8ssandra
+title: K8ssandra, Apache Cassandra on Kubernetes
 linkTitle: K8ssandra
 ---
 

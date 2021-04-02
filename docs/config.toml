@@ -1,5 +1,5 @@
 baseURL = "https://k8ssandra.io/"
-title = "K8ssandra"
+title = "K8ssandra, Apache Cassandra on Kubernetes"
 
 enableRobotsTXT = true
 
@@ -53,8 +53,8 @@ id = "G-33Q63J556P"
 
 [languages]
 [languages.en]
-title = "K8ssandra"
-description = "K8ssandra, Apache Cassandra on Kubernetes"
+title = "K8ssandra, Apache Cassandra on Kubernetes"
+description = "K8ssandra provides a production-ready platform for running Apache Cassandra® on Kubernetes, including automation for repairs, backups, and monitoring."
 languageName ="English"
 # Weight used for sorting.
 weight = 1

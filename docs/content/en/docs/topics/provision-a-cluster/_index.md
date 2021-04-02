@@ -1,8 +1,7 @@
 ---
-title: "Scale your Apache Cassandra nodes"
-linkTitle: "Scale Cassandra nodes"
-weight: 4
-description: Steps to provision Cassandra® nodes in Kubernetes
+title: "Scale your Apache Cassandra® cluster in K8ssandra"
+linkTitle: "Scale Cassandra"
+description: "Steps to provision and scale up or scale down an Apache Cassandra® cluster in Kubernetes"
 ---
 
 This topic explains how to add and remove Cassandra nodes in a Kubernetes cluster, as well as insights into the underlying operations that occur with scaling. 
