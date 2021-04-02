@@ -56,6 +56,15 @@ var _ = Describe("Verify Stargate template", func() {
 			}
 			Expect(renderTemplate(options)).ShouldNot(Succeed())
 		})
+		It("cassandra is explicitly disabled", func() {
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+				SetValues: map[string]string{
+					"cassandra.enabled": "false",
+				},
+			}
+			Expect(renderTemplate(options)).ShouldNot(Succeed())
+		})
 	})
 
 	Context("by confirming it does render when", func() {

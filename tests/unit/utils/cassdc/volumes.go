@@ -12,5 +12,5 @@ func AssertVolumeNamesMatch(cassdc *cassop.CassandraDatacenter, names ...string)
 	podTemplateSpec := cassdc.Spec.PodTemplateSpec
 	actualNames := GetVolumeNames(podTemplateSpec)
 
-	ExpectWithOffset(1, actualNames).To(Equal(names))
+	ExpectWithOffset(1, actualNames).To(ConsistOf(names))
 }

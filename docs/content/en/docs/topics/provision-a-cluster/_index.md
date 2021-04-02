@@ -4,131 +4,187 @@ linkTitle: "Scale Cassandra"
 description: "Steps to provision and scale up or scale down an Apache Cassandra® cluster in Kubernetes"
 ---
 
-## Tools
+This topic explains how to add and remove Cassandra nodes in a Kubernetes cluster, as well as insights into the underlying operations that occur with scaling. 
 
-[helm](https://helm.sh/docs/intro/install/)
+{{% alert title="Note" color="success" %}}
+K8ssandra currently only supports a single-datacenter cluster.
+{{% /alert %}}
 
 ## Prerequisites
 
-* A Kubernetes environment
-* K8ssandra installed and running in Kubernetes - see [Quick start]({{< ref "getting-started" >}})
+* A Kubernetes environment.
+* [Helm](https://helm.sh/docs/intro/install/) is installed.
+* K8ssandra is installed and running in Kubernetes - see the [Quick start]({{< ref "getting-started" >}}).
 
-## Steps
+## Create a cluster
 
-### Use helm to get the running configuration
-
-For many basic configuration options, you may change values in the deployed YAML files. For example, you can scale up or scale down, as needed, by updating the YAML via `helm` command `--set` parameters.
-
-Let's check the currently running values. First get the list of the installed K8ssandra chart. In this example, assume the `releaseName` was defined as `k8ssandra` on the `helm install` command.
+Suppose we install K8ssandra as follows:
 
 ```bash
-helm list
+helm install my-k8ssandra k8ssandra/k8ssandra -f k8ssandra-values.yaml
 ```
 
-**Output**:
-
-```bash
-NAME     	  NAMESPACE	 REVISION   UPDATED                               STATUS  	CHART      APP VERSION
-k8ssandra	  default  	 1          2021-03-04 20:49:32.975090399 +0000   UTC	      deployed	 k8ssandra-1.0.0	              
-```
-
-You can specify the name of the installed cluster's `releaseName` to get the full manifest. 
-
-`helm get manifest k8ssandra`
-
-Helm displays full details of the properties defined in each deployed YAML file. 
-
-### Scale up the cluster
-
-To scale up, focus on the `size` property. Let's find the current value:
-
-```bash
-helm get manifest k8ssandra | grep size
-```
-
-**Output**:
+Assume that `k8ssandra-values.yaml` has these properties:
 
 ```yaml
-.
-.
-.
-    size: 1
-      initial_heap_size: 1G
-      max_heap_size: 1G
-      heap_size_young_generation: 1G
+cassandra:
+  clusterName: my-k8ssandra
+  datacenters:
+  - name: dc1
+    size: 3
 ```
 
-The value of `size: 1` is from cassdc.yaml, which is the CassandraDatacenter definition. 
+The `helm install` command will result in the creation of a `CassandraDatacenter` object with the size set to 3. The cass-operator deployment that's installed by K8ssandra will in turn create the underlying StatefulSet that has 3 Cassandra pods.
 
-To scale up, you could change the `size` to 3. In the following example, we'll also set the name `dc1`:
+## Add nodes
+
+Add nodes by updating the size property of the datacenter. Example values file:
+
+```yaml
+cassandra:
+  clusterName: my-k8ssandra
+  datacenters:
+  - name: dc1
+    size: 4
+```
+
+Apply the changes with `helm upgrade`:
 
 ```bash
-helm upgrade k8ssandra k8ssandra/k8ssandra --set cassandra.datacenters\[0\].size=3,cassandra.datacenters\[0\].name=dc1
+helm upgrade my-k8ssandra k8ssandra/k8ssandra -f k8ssandra-values.yaml
+```
+
+{{% alert title="Tip" color="success" %}}
+Another way to upgrade your K8ssandra cluster is by passing in a `--set` parameter. Also include a `--reuse-values` parameter so that Helm will reuse previous values (other than the one you're overriding with each `--set` parameter). Without `--reuse-values` it's easy to make a mistake if you have other, additional properties that you previously set.  
+
+```bash
+helm upgrade my-k8ssandra k8ssandra/k8ssandra --reuse-values --set cassandra.datacenters\[0\].size=4,cassandra.datacenters\[0\].name=dc1
+```
+
+{{% /alert %}}
+
+By default, cass-operator configures the Cassandra pods so that Kubernetes will not schedule multiple Cassandra pods on the same worker node. If you try to increase the cluster size beyond the number of available worker nodes, you may find that the additional pods do not deploy. 
+
+Look at this example output from `kubectl get pods` with a test cluster whose size was increased to 6. Assume that this value is beyond the number of available worker nodes:
+
+```bash
+kubectl get pods
 ```
 
 **Output:**
 
 ```bash
-Release "k8ssandra" has been upgraded. Happy Helming!
-NAME: k8ssandra
-LAST DEPLOYED: Thu Mar  4 21:12:01 2021
-NAMESPACE: default
-STATUS: deployed
-REVISION: 2
+NAME                                   READY   STATUS      RESTARTS   AGE
+test-dc1-default-sts-0                 2/2     Running     0          87m
+test-dc1-default-sts-1                 2/2     Running     0          87m
+test-dc1-default-sts-2                 2/2     Running     0          87m
+test-dc1-default-sts-3                 2/2     Running     0          87m
+test-dc1-default-sts-4                 2/2     Running     0          87m
+test-dc1-default-sts-5                 2/2     Running     0          87m
+test-dc1-default-sts-6                 0/2     Pending     0          3m6s
 ```
 
-Verify the upgrade:
+Notice that the `test-dc1-default-sts-6` pod has a status of `Pending`. We can use `kubectl describe pod` to get more details about the pod:
 
 ```bash
-helm get manifest k8ssandra | grep size
+kubectl describe pod test-dc1-default-sts-6
 ```
 
-**Output**:
+**Output:**
+
+```bash
+...
+Events:
+  Type     Reason            Age                   From               Message
+  ----     ------            ----                  ----               -------
+  Warning  FailedScheduling  3m22s (x51 over 73m)  default-scheduler  0/6 nodes are available: 6 node(s) didn't match pod affinity/anti-affinity, 6 node(s) didn't satisfy existing pods anti-affinity rules.
+```
+
+The output reveals a `FailedScheduling` event.
+
+To resolve the mismatch between the configured size and the available nodes, consider the following option to set the `allowMultipleNodesPerWorker` property to relax the constraint of only allowing one Cassandra pod per Kubernetes worker node.
+
+Here is an updated k8ssandra-values.yaml with `allowMultipleNodesPerWorker`:
 
 ```yaml
-.
-.
-.
-                   "description": "Total sizes of the data on distinct nodes",
-                   "description": "Maximum JVM Heap Memory size (worst node) and minimum available heap size",
-  size: 3
+cassandra:
+  clusterName: my-k8ssandra
+  allowMultipleWorkersPerNode: true
+  # resources must be set when allowMultipleWorkersPerNode is true.   
+  resources: 
+    requests:
+      cpu: 2
+      memory: 2Gi
+    limits:
+      cpu: 2
+      memory: 2Gi
+  # It is not required to set the heap but is recommended.
+  heap:
+    size: 1024M
+    newGenSize: 512M
+  datacenters:
+  - name: dc1
+    size: 3
 ```
 
-### Scale down the cluster
+When applied to the test cluster, this configuration updates the size property of the `CassandraDatacenter`. Then cass-operator will in turn update the underlying `StatefulSet`.
 
-Similarly, to scale down, lower the current `size` to conserve cloud resource costs, if the new value can support your computing requirements in Kubernetes. For example, this time we'll lower the size to 1, and again set the CassandraDatacenter name `dc1` (currently required each time) with the command:
+If you check the status of the `CassandraDatacenter` object, there should be a `ScalingUp` condition with its status set to `true`. It should look like this:
 
 ```bash
-helm upgrade k8ssandra k8ssandra/k8ssandra --set cassandra.datacenters\[0\].size=1,cassandra.datacenters\[0\].name=dc1
+ kubectl get cassandradatacenter dc1 -o yaml
 ```
 
-**Output**:
+**Output:**
 
 ```bash
-Release "k8ssandra" has been upgraded. Happy Helming!
-NAME: k8ssandra
-LAST DEPLOYED: Thu Mar  4 21:14:05 2021
-NAMESPACE: default
-STATUS: deployed
-REVISION: 3
+...
+status:
+  cassandraOperatorProgress: Updating
+  conditions:
+  - lastTransitionTime: "2021-03-30T22:01:48Z"
+    message: ""
+    reason: ""
+    status: "True"
+    type: ScalingUp
+...
 ```
 
-Again, verify the upgrade:
+After the new nodes are up and running, `nodetool cleanup` should run on all of the nodes except the new ones to remove keys and data that no longer belong to those nodes. There is no need to do this manually. The cass-operator deployment, which again is installed with K8ssandra, automatically runs `nodetool cleanup` for you.
 
-```bash
-helm get manifest k8ssandra | grep size
+## Remove nodes
+
+Just like with adding nodes, removing nodes is simply a matter of changing the configured `size` property. cass-operator does a few things when you decrease the datacenter size.
+
+First, it checks that the remaining nodes have enough capacity to handle the increased storage capacity. If cass-operator determines that there is insufficient capacity, it will log a message. Example:
+
+```text
+Not enough free space available to decommission. my-k8ssandra-dc1-default-sts-3 has 12345 free space, but 67891 is needed.
 ```
 
-**Output**:
+The reported units are in bytes.
+
+The cass-operator deployment will also add a condition to the `CassandraDatacenter` status. Example:
 
 ```yaml
-.
-.
-.
-                   "description": "Total sizes of the data on distinct nodes",
-                   "description": "Maximum JVM Heap Memory size (worst node) and minimum available heap size",
-  size: 1
+status:
+  conditions:
+  - lastTransitionTime: "2021-03-30T22:01:48Z"
+    message: "Not enough free space available to decommission. my-k8ssandra-dc1-default-sts-3 has 12345 free space, but 67891 is needed."
+    reason: "NotEnoughSpaceToScaleDown"
+    status: "False"
+    type: Valid
+...
 ```
+
+Next, cass-operator runs `nodetool decommission` on the node to be removed. This step is done automatically on your behalf.
+
+Lastly, the pod is terminated.
+
+{{% alert title="Note" color="success" %}}
+The StatefulSet controller manages the deletion of Cassandra pods. It deletes one pod at a time, in reverse order with respect to its ordinal index. 
+This means for example that `my-k8ssandra-dc1-default-sts-3` will be deleted before `my-k8ssandra-dc1-default-sts-2`.
+{{% /alert %}}
 
 ## Next
 

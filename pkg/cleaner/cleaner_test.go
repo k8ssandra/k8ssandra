@@ -65,11 +65,10 @@ var _ = Describe("Cleaning CassandraDatacenters", func() {
 			ObjectMeta: metav1.ObjectMeta{
 				Name:      cassdcKeyManaged.Name,
 				Namespace: cassdcKeyManaged.Namespace,
-				Annotations: map[string]string{
-					releaseAnnotation: cleanerTestRelease,
-				},
 				Labels: map[string]string{
 					managedLabel: managedLabelValue,
+					instanceLabel: cleanerTestRelease,
+					nameLabel: nameLabelValue,
 				},
 			},
 			Spec: cassdcapi.CassandraDatacenterSpec{
