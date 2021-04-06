@@ -10,7 +10,7 @@ The strategy to perform this migration to K8ssandra focuses on a datacenter migr
 
 ## The environment
 
-It's assumed that the Cassandra cluster is running in the same Kubernetes cluster in which K8ssandra will run. The Cassandra cluster may have been installed with another operator (such as CassKop), a Helm chart (such as bitnami/cassandra), or by directly creating the YAML manfiests for the StatefulSets and any other objects that were created.
+It's assumed that the Cassandra cluster is running in the same Kubernetes cluster in which K8ssandra will run. The Cassandra cluster may have been installed with another operator (such as [CassKop](https://github.com/Orange-OpenSource/casskop)), a Helm chart (such as [bitnami/cassandra](https://github.com/bitnami/charts/tree/master/bitnami/cassandra)), or by directly creating the YAML manfiests for the StatefulSets and any other objects that were created.
 
 {{% alert title="Tip" color="success" %}}
 See <https://thelastpickle.com/blog/2019/02/26/data-center-switch.html> for a thorough guide on how to migrate to a new datacenter.
@@ -30,7 +30,8 @@ It is generally recommended to use a replicator factor of `3`. If your keyspaces
 ALTER KEYSPACE system_auth WITH replication = {'class': 'NetworkTopologyStrategy', 'dc1': 3}
 ```
 
-`dc1` is the name of the datacenter as defined in `cassandra-rackdc.properties`.
+`dc1` is the name of the datacenter as defined in `cassandra-rackdc.properties`, which you can find in the `/etc/cassandra/` directory of your Cassandra installation.
+
 
 Changing the recommendation may result in a topology change; that is, a token ownership change. 
 
@@ -211,9 +212,7 @@ Decommissioning should be done serially, one node at a time.
 
 ### Remove the old seed nodes
 
-Remove the seeds nodes from the `additionalSeeds` chart property. You can simply remove the `additionaSeeds` property from your chart overrides file; refer to the [Install K8ssandra](#Install-K8ssandra) topic above. 
-
-You need to run a `helm upgrade` for the changes to take effect. Assuming that the edited chart properties are stored in a file named `k8ssandra-values.yaml`:
+Remove the seeds nodes from the `additionalSeeds` chart property. You can simply remove the `additionaSeeds` property from the chart overrides file (see again the sample file shown in the [Install K8ssandra](#install-k8ssandra) section above). Edit your version of the values file, and then run a `helm upgrade` for the changes to take effect. Assuming that the edited chart properties are stored in `k8ssandra-values.yaml`:
 
 ```bash
 helm upgrade <release-name> k8ssandra/k8ssandra -f k8ssandra-values.yaml
