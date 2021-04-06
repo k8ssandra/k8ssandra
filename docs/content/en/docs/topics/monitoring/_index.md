@@ -1,9 +1,7 @@
 ---
 title: "Monitor Cassandra"
 linkTitle: "Monitor Cassandra"
-weight: 2
-description: |
-  Follow these simple steps to access the Prometheus and Grafana monitoring interfaces.
+description: "Access the Prometheus and Grafana interfaces to monitor your Apache Cassandra® cluster running in Kubernetes"
 ---
 
 When you used Helm to install a `k8ssandra` instance in Kubernetes, one of the key features provided was a set of preconfigured Grafana dashboards. They visualize data collected about your environment by the Prometheus Operator, which is also packaged with K8ssandra. Use the Grafana dashboards to monitor your K8ssandra cluster's health and traffic metrics.  
@@ -28,7 +26,7 @@ After you've met the prerequisites identified below, access the preconfigured Gr
 As an alternative to configuring an Ingress, consider port forwarding. It's another way to provide external access to resources that have been deployed by K8ssandra in your Kubernetes environment. Those resources could include Prometheus metrics, pre-configured Grafana dashboards, and the Reaper web interface for repairs of Cassandra&reg; data. The `kubectl port-forward` command does not require an Ingress/Traefik to work. 
 
 * Developers, see [Set up port forwarding]({{< ref "/docs/getting-started/developer/#set-up-port-forwarding" >}}).  
-* Site reliability engineers, see [Configure port forwarding]({{< ref "/docs/getting-started/developer/#set-up-port-forwarding" >}}).
+* Site reliability engineers, see [Configure port forwarding]({{< ref "/docs/getting-started/site-engineer/#port-forwarding" >}}). 
 {{% /alert %}}
 
 ## Access Grafana Interface

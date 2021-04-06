@@ -1,12 +1,10 @@
 ---
-title: "Cassandra"
+title: "K8ssandra Architecture - Cassandra"
 linkTitle: "Cassandra"
-weight: 1
-description: >
-  Apache Cassandra®, the core of K8ssandra.
+description: "The core of K8ssandra is the Apache Cassandra® database, which is managed using cass-operator."
 ---
 
- Apache Cassandra is an open-source, NoSQL database built from the foundation of geographically distributed and fault tolerant data replication. Given the ephemeral nature of containers Cassandra is a logical fit as _the_ cloud-native data plane for Kubernetes. 
+Apache Cassandra is an open-source, NoSQL database built from the foundation of geographically distributed and fault tolerant data replication. Given the ephemeral nature of containers Cassandra is a logical fit as _the_ cloud-native data plane for Kubernetes. 
 
 ## Operations with cass-operator
 

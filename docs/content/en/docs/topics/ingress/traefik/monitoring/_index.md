@@ -1,9 +1,7 @@
 ---
-title: "Monitoring"
+title: "Access K8ssandra Monitoring with Traefik"
 linkTitle: "Monitoring"
-weight: 2
-description: |
-  Configuring Traefik to expose the K8ssandra monitoring interfaces.
+description: "Expose access to your Prometheus and Grafana monitoring interfaces for Apache Cassandra® using Traefik ingress"
 ---
 
 Follow these steps to configure and install `Traefik Ingress` custom resources for accessing your K8ssandra cluster's monitoring interface (provided by Grafana and Prometheus).
