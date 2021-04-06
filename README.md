@@ -62,7 +62,7 @@ environment check out the
 always looking for contributions to the docs, helm charts, and underlying
 components.
 
-If you are a **developer**, and need a [quick start](https://github.com/k8ssandra/k8ssandra/dev-quick-start.md) introduction to:
+If you are a **developer**, and need a [quick start](https://github.com/k8ssandra/k8ssandra/blob/main/dev-quick-start.md) introduction to:
 * Getting up and running with a basic IDE environment
 * Deploying to a local docker-based cluster environment (kind)
 * Understanding the K8ssandra project structure
