@@ -58,7 +58,7 @@ Update Complete. ⎈Happy Helming!⎈
 Before installing the k8ssandra cluster, we need to supply credentials so that Medusa has read/write access to an Amazon S3 bucket, which is where the backup will be stored. 
 
 {{% alert title="Tip" color="success" %}}
-Medusa supports local, Google Cloud Storage (GCS), Azure, and all S3-compatible backends including Amazon S3 and MinIO buckets. At this time, K8ssandra exposes configurations for Amazon S3, MinIO, and GCS. The example in this topic uses an Amazon S3 bucket. For related information, see [Backup and restore Cassandra with MinIO]({{< ref "/docs/topics/restore-a-backup/minio" >}}). Also see the [AWS S3 setup](https://github.com/thelastpickle/cassandra-medusa/blob/master/docs/aws_s3_setup.md) article on the Medusa wiki for more details for configuring S3.
+Medusa supports local, Google Cloud Storage (GCS), Azure, and all S3-compatible backends including Amazon S3 and MinIO buckets. At this time, K8ssandra exposes configurations for Amazon S3 (plus all S3 compatible backends including MinIO) and GCS. The example in this topic uses an Amazon S3 bucket. For related information, see [Backup and restore Cassandra with MinIO]({{< ref "/docs/topics/restore-a-backup/minio" >}}). Also see the [AWS S3 setup](https://github.com/thelastpickle/cassandra-medusa/blob/master/docs/aws_s3_setup.md) article on the Medusa wiki for more details for configuring S3.
 {{% /alert %}}
 
 Start by creating a secret with the credentials for the Amazon S3 bucket.
