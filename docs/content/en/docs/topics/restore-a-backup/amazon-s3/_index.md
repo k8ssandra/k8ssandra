@@ -217,77 +217,49 @@ status:
   ...
 ```
 
-### Add test data and get credentials for Cassandra access
+### Get credentials for Cassandra access
 
-Now let’s create some test data.  The [test_data.cql](test_data.cql) sample file in GitHub contains:
+Before you can launch the CQLSH instance that's deployed by K8ssandra to a Kubernetes cluster, you'll need authentication credentials. The superuser secret name defaults to `<cluster-name>-superuser`. In this example: `demo-superuser`. 
 
-```sql
-CREATE KEYSPACE medusa_test  WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 1};
-USE medusa_test;
-CREATE TABLE users (email text primary key, name text, state text);
-insert into users (email, name, state) values ('alice@example.com', 'Alice Smith', 'TX');
-insert into users (email, name, state) values ('bob@example.com', 'Bob Jones', 'VA');
-insert into users (email, name, state) values ('carol@example.com', 'Carol Jackson', 'CA');
-insert into users (email, name, state) values ('david@example.com', 'David Yang', 'NV');
-```
-
-Copy the cql file to the K8ssandra StatefulSet (sts) pod:
+Extract the username and password to access Cassandra into variables. (The password is different for each installation unless it is explicitly set at install time.) If you used a non-default namespace, include `-n <your-namespace-name>` in the commands.
 
 ```bash
-kubectl cp test_data.cql demo-dc1-default-sts-0:/tmp -c cassandra
+username=$(kubectl get secret demo-superuser -o jsonpath="{.data.username}" | base64 --decode)
+password=$(kubectl get secret demo-superuser -o jsonpath="{.data.password}" | base64 --decode)
 ```
 
-{{% alert title="Tip" color="success" %}}
-Before you can launch the CQLSH instance that's deployed by K8ssandra to a cloud-based Kubernetes cluster (such as Google Kubernetes Engine), you'll need authentication credentials. The superuser secret name defaults to `<cluster-name>-superuser`. 
-{{% /alert %}}
+### Use the credentials and add data to the Cassandra database:
 
-In this example: `demo-superuser`. To verify, you can extract and decode the username secret:
-
- ```bash
- kubectl get secret demo-superuser -o jsonpath="{.data.username}" | base64 --decode ; echo
- ```
-
- **Output:**
-
- ```bash
- demo-superuser
- ```
-
-The output verified that the username to use on a subsequent command is `demo-superuser`.
-
-Next, extract and decode the password secret. For example:
-
- ```bash
- kubectl get secret demo-superuser -o jsonpath="{.data.password}" | base64 --decode ; echo
- ```
-
- **Output:**
-
- ```bash
- ItSCody8Nou2R0vYWd4FPDGi2RPy-Jvtg-mSeOoUlbU5UNsIlDF8QQ
- ```
-
-{{% alert title="Tip" color="success" %}}
-The password above is an example. The value will be different for your environment. In the subsequent examples, don’t forget to replace the sample password with the one extracted in your environment.
-{{% /alert %}}
-
-### Use the credentials and add the data to the Cassandra database:
-
-For example:
+Connect through CQLSH on one of the nodes:
 
 ```bash
-kubectl exec -it demo-dc1-default-sts-0 -c cassandra -- cqlsh -u demo-superuser -p ItSCody8Nou2R0vYWd4FPDGi2RPy-Jvtg-mSeOoUlbU5UNsIlDF8QQ -f /tmp/test_data.cql
+kubectl exec -it demo-dc1-default-sts-0 -c cassandra -- cqlsh -u $username -p $password
 ```
 
-### Exec open CQLSH and enter DML and DDL statements
+With proper credentials, CQLSH starts:
 
-```bash
-kubectl exec -it demo-dc1-default-sts-0 -c cassandra -- cqlsh -u demo-superuser -p ItSCody8Nou2R0vYWd4FPDGi2RPy-Jvtg-mSeOoUlbU5UNsIlDF8QQ
- 
+```cqlsh
 Connected to demo at 127.0.0.1:9042.
 [cqlsh 5.0.1 | Cassandra 3.11.10 | CQL spec 3.4.4 | Native protocol v4]
 Use HELP for help.
-demo-superuser@cqlsh> USE medusa_test;
+demo-superuser@cqlsh>
+```
+
+Copy/paste the following statements into CQLSH:
+
+```cqlsh
+CREATE KEYSPACE medusa_test  WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 1};
+USE medusa_test;
+CREATE TABLE users (email TEXT PRIMARY KEY, name TEXT, state TEXT);
+INSERT INTO users (email, name, state) VALUES ('alice@example.com', 'Alice Smith', 'TX');
+INSERT INTO users (email, name, state) VALUES ('bob@example.com', 'Bob Jones', 'VA');
+INSERT INTO users (email, name, state) VALUES ('carol@example.com', 'Carol Jackson', 'CA');
+INSERT INTO users (email, name, state) VALUES ('david@example.com', 'David Yang', 'NV');
+```
+
+Check that the rows were properly inserted:
+ 
+```cqlsh
 demo-superuser@cqlsh:medusa_test> SELECT * from medusa_test.users;
 
  email             | name          | state
@@ -371,8 +343,12 @@ kubectl logs cassandra-dc1-default-sts-0 -c medusa-restore
 Exec into CQLSH and select the data again, to verify the restore operation.
 
 ```bash
-kubectl exec -it demo-dc1-default-sts-0 -c cassandra -- cqlsh -u demo-superuser -p ItSCody8Nou2R0vYWd4FPDGi2RPy-Jvtg-mSeOoUlbU5UNsIlDF8QQ
- 
+kubectl exec -it demo-dc1-default-sts-0 -c cassandra -- cqlsh -u $username -p $password
+```
+
+With proper credentials, CQLSH starts:
+
+```cqlsh
 Connected to demo at 127.0.0.1:9042.
 [cqlsh 5.0.1 | Cassandra 3.11.10 | CQL spec 3.4.4 | Native protocol v4]
 Use HELP for help.
