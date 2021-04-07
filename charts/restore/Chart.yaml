@@ -4,7 +4,7 @@ description: |
   Creates a CassandraRestore custom resource instance. This chart should be 
   used in conjunction with the k8ssandra/medusa-operator chart.
 type: application
-version: 0.27.0
+version: 0.27.1
 home: https://k8ssandra.io/
 sources:
   - https://github.com/k8ssandra/k8ssandra
