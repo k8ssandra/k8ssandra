@@ -1,7 +1,7 @@
 ---
-title: "DBA to SRE (Developer Newsletter)"
-linkTitle: "DBA to SRE"
-date: 2020-11-18
+title: "DBA to SRE"
+linkTitle: "DBA to SRE (Newsletter)"
+date: 2021-01-30
 description: >
   It’s time to take the next step in your career: from DBA to Site Reliability Engineer (SRE).
 ---
