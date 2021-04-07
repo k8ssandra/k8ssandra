@@ -30,6 +30,7 @@ When cutting a new release of the parent `k8ssandra` chart update the `main / un
 * [ENHANCEMENT] #547 Add support for additionalSeeds in the CassandraDatacenter
 * [ENHANCEMENT] #606 Support installation of operators only, disabling the Cassandra cluster creation
 * [CHANGE] #613 Mount Cassandra pod labels in volume
+* [CHANGE] #611 Shut down cluster by default with in-place restores
 
 ## v1.0.0 - 2021-02-26
 
