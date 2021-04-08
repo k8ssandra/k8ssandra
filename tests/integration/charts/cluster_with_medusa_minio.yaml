@@ -15,9 +15,6 @@ reaper:
   enabled: false
 medusa:
   enabled: true
-  image:
-    repository: docker.io/jsanda/medusa
-    tag: grpc-sigterm-13d70bb2
 
   multiTenant: true
   storage: s3_compatible

@@ -86,7 +86,7 @@ func getKubectlOptions(namespace string) *k8s.KubectlOptions {
 	return k8s.NewKubectlOptions("", "", namespace)
 }
 
-func deployCluster(t *testing.T, namespace, customValues string, helmValues map[string]string) {
+func deployCluster(t *testing.T, namespace, customValues string, helmValues map[string]string, upgrade bool) {
 	clusterChartPath, err := filepath.Abs("../../charts/k8ssandra")
 	g(t).Expect(err).To(BeNil())
 
@@ -98,7 +98,6 @@ func deployCluster(t *testing.T, namespace, customValues string, helmValues map[
 		helmValues["cassandra.version"] = os.Getenv("K8SSANDRA_CASSANDRA_VERSION")
 	}
 
-	helmValues["cassandra.datacenters[0].name"] = datacenterName
 	helmOptions := &helm.Options{
 		// Enable traefik to allow redirections for testing
 		SetValues:      helmValues,
@@ -107,18 +106,25 @@ func deployCluster(t *testing.T, namespace, customValues string, helmValues map[
 	}
 
 	defer timeTrack(time.Now(), "Installing and starting k8ssandra")
-	err = helm.InstallE(t, helmOptions, clusterChartPath, releaseName)
+	if upgrade {
+		err = helm.UpgradeE(t, helmOptions, clusterChartPath, releaseName)
+	} else {
+		err = helm.InstallE(t, helmOptions, clusterChartPath, releaseName)
+	}
 	g(t).Expect(err).To(BeNil(), "Failed installing k8ssandra with Helm")
 	// Wait for cass-operator pod to be ready
 	g(t).Eventually(func() bool {
 		return PodWithLabelIsReady(t, namespace, "app.kubernetes.io/name=cass-operator")
 	}, retryTimeout, retryInterval).Should(BeTrue())
 
+	// Wait for CassandraDatacenter to be udpating..
+	WaitForCassDcToBeUpdating(t, namespace)
+
 	// Wait for CassandraDatacenter to be ready..
 	WaitForCassDcToBeReady(t, namespace)
 }
 
-func DeployClusterWithValues(t *testing.T, namespace, options, customValues string) {
+func DeployClusterWithValues(t *testing.T, namespace, options, customValues string, nodes int, upgrade bool) {
 	log.Printf("Deploying a cluster with %s options using the %s values", options, customValues)
 
 	helmValues := map[string]string{}
@@ -133,43 +139,20 @@ func DeployClusterWithValues(t *testing.T, namespace, options, customValues stri
 			"medusa.storage_properties.host": fmt.Sprintf("%s.minio.svc.cluster.local", serviceName),
 		}
 	}
-	deployCluster(t, namespace, customValues, helmValues)
+	helmValues["cassandra.datacenters[0].size"] = strconv.Itoa(nodes)
+	helmValues["cassandra.datacenters[0].name"] = datacenterName
+	deployCluster(t, namespace, customValues, helmValues, upgrade)
 }
 
-func DeployClusterWithValuesAndHeapSettings(t *testing.T, namespace, options, cassandraHeap, stargateHeap, customValues string) {
-	log.Printf("I can deploy a cluster with %s options, %s Cassandra Heap and %s Stargate heap using the %s values", options, cassandraHeap, stargateHeap, customValues)
-
-	splitOptions := strings.Split(options, "-")
-	medusaEnabled := "true"
-	reaperEnabled := "true"
-	monitoringEnabled := "true"
-
-	if Find(splitOptions, "nomedusa") {
-		medusaEnabled = "false"
-	}
-
-	if Find(splitOptions, "noreaper") {
-		reaperEnabled = "false"
-	}
-
-	if Find(splitOptions, "nomonitoring") {
-		monitoringEnabled = "false"
-	}
-
-	newGenSize, _ := strconv.Atoi(strings.ReplaceAll(strings.ReplaceAll(cassandraHeap, "M", ""), "G", ""))
-	helmValues := map[string]string{
-		"cassandra.heap.size":           cassandraHeap,
-		"cassandra.heap.newGenSize":     strconv.Itoa(newGenSize/2) + "M",
-		"stargate.heapMB":               strings.ReplaceAll(stargateHeap, "M", ""),
-		"medusa.enabled":                medusaEnabled,
-		"reaper.enabled":                reaperEnabled,
-		"reaper-operator.enabled":       reaperEnabled,
-		"kube-prometheus-stack.enabled": monitoringEnabled,
-	}
-	deployCluster(t, namespace, customValues, helmValues)
+func WaitForCassDcToBeUpdating(t *testing.T, namespace string) {
+	waitForCassDcToBe(t, namespace, cassdcapi.ProgressUpdating)
 }
 
 func WaitForCassDcToBeReady(t *testing.T, namespace string) {
+	waitForCassDcToBe(t, namespace, cassdcapi.ProgressReady)
+}
+
+func waitForCassDcToBe(t *testing.T, namespace string, progress cassdcapi.ProgressState) {
 	cassdcKey := types.NamespacedName{
 		Name:      datacenterName,
 		Namespace: namespace,
@@ -186,8 +169,8 @@ func WaitForCassDcToBeReady(t *testing.T, namespace string) {
 			t.Logf("Failed getting cassdc: %s", err.Error())
 			return false
 		}
-		return cassdc.Status.CassandraOperatorProgress == cassdcapi.ProgressReady &&
-			cassdc.GetConditionStatus(cassdcapi.DatacenterReady) == v1.ConditionTrue
+		return cassdc.Status.CassandraOperatorProgress == progress &&
+			(cassdc.GetConditionStatus(cassdcapi.DatacenterReady) == v1.ConditionTrue || progress == cassdcapi.ProgressUpdating)
 	}, retryTimeout, retryInterval).Should(BeTrue())
 }
 
