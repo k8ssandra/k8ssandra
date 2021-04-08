@@ -109,7 +109,7 @@ func TestFullStackScenario(t *testing.T) {
 }
 
 func deployFullStackCluster(t *testing.T, namespace string) {
-	DeployClusterWithValues(t, namespace, "minio", "three_nodes_cluster_full_stack.yaml")
+	DeployClusterWithValues(t, namespace, "minio", "cluster_full_stack.yaml", 3, false)
 	checkResourcePresenceForReaper(t, namespace)
 	waitForReaperPod(t, namespace)
 	checkReaperRegistered(t, namespace)
@@ -141,7 +141,7 @@ func testReaper(t *testing.T, namespace string) {
 
 func deployClusterForReaper(t *testing.T, namespace string) {
 	log.Println(Info("Deploying K8ssandra and waiting for Reaper to be ready"))
-	DeployClusterWithValues(t, namespace, "default", "three_nodes_cluster_with_reaper.yaml")
+	DeployClusterWithValues(t, namespace, "default", "cluster_with_reaper.yaml", 3, false)
 	checkResourcePresenceForReaper(t, namespace)
 	waitForReaperPod(t, namespace)
 	checkReaperRegistered(t, namespace)
@@ -191,8 +191,9 @@ func TestMedusaDeploymentScenario(t *testing.T) {
 			namespace := initializeCluster(t)
 			medusaSuccess := t.Run("Test backup and restore", func(t *testing.T) {
 				createMedusaSecretAndInstallDeps(t, namespace, backend)
-				deployClusterForMedusa(t, namespace, backend)
+				deployClusterForMedusa(t, namespace, backend, 1)
 				testMedusa(t, namespace, backend, backupName)
+				scaleUpCassandra(t, namespace, backend, 2)
 			})
 			cleanupCluster(t, namespace, medusaSuccess)
 		})
@@ -216,10 +217,10 @@ func testMedusa(t *testing.T, namespace, backend, backupName string) {
 	CheckRowCountInTable(t, 10, namespace, medusaTestTable, medusaTestKeyspace)
 }
 
-func deployClusterForMedusa(t *testing.T, namespace, backend string) {
+func deployClusterForMedusa(t *testing.T, namespace, backend string, nodes int) {
 	log.Println(Info(fmt.Sprintf("Deploying K8ssandra with Medusa using %s", backend)))
-	valuesFile := fmt.Sprintf("one_node_cluster_with_medusa_%s.yaml", strings.ToLower(backend))
-	DeployClusterWithValues(t, namespace, strings.ToLower(backend), valuesFile)
+	valuesFile := fmt.Sprintf("cluster_with_medusa_%s.yaml", strings.ToLower(backend))
+	DeployClusterWithValues(t, namespace, strings.ToLower(backend), valuesFile, nodes, false)
 	CheckClusterExpectedResources(t, namespace)
 }
 
@@ -238,6 +239,12 @@ func createMedusaSecretAndInstallDeps(t *testing.T, namespace, backend string) {
 		// S3
 		CreateMedusaSecretWithFile(t, namespace, "~/medusa_secret.yaml")
 	}
+}
+
+func scaleUpCassandra(t *testing.T, namespace, backend string, nodes int) {
+	log.Println(Info("Scaling up Cassandra"))
+	valuesFile := fmt.Sprintf("cluster_with_medusa_%s.yaml", strings.ToLower(backend))
+	DeployClusterWithValues(t, namespace, strings.ToLower(backend), valuesFile, nodes, true)
 }
 
 // Monitoring scenario:
@@ -267,7 +274,7 @@ func TestMonitoringDeploymentScenario(t *testing.T) {
 }
 
 func deployClusterForMonitoring(t *testing.T, namespace string) {
-	DeployClusterWithValues(t, namespace, "default", "three_nodes_cluster_with_stargate_and_monitoring.yaml")
+	DeployClusterWithValues(t, namespace, "default", "cluster_with_stargate_and_monitoring.yaml", 3, false)
 	CheckClusterExpectedResources(t, namespace)
 	WaitForStargatePodReady(t, namespace)
 }
@@ -306,7 +313,7 @@ func TestStargateDeploymentScenario(t *testing.T) {
 }
 
 func deployClusterForStargate(t *testing.T, namespace string) {
-	DeployClusterWithValues(t, namespace, "default", "three_nodes_cluster_with_stargate.yaml")
+	DeployClusterWithValues(t, namespace, "default", "cluster_with_stargate.yaml", 3, false)
 	CheckClusterExpectedResources(t, namespace)
 	WaitForStargatePodReady(t, namespace)
 }
