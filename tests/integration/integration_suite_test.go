@@ -185,7 +185,7 @@ func waitForSegmentDoneAndCancel(t *testing.T, repairId string) {
 // - Terminate the namespace and delete the cluster
 func TestMedusaDeploymentScenario(t *testing.T) {
 	const backupName = "backup1"
-	backends := []string{"Minio", "S3"}
+	backends := []string{"Minio", "S3", "local"}
 	for _, backend := range backends {
 		t.Run(fmt.Sprintf("Medusa on %s", backend), func(t *testing.T) {
 			namespace := initializeCluster(t)
@@ -232,7 +232,9 @@ func loadRowsAndCheckCount(t *testing.T, namespace string, rowsToLoad, rowsExpec
 
 func createMedusaSecretAndInstallDeps(t *testing.T, namespace, backend string) {
 	log.Println(Info("Creating medusa secret to access the backend"))
-	if backend == "Minio" {
+	if backend == "local" {
+		return
+	} else if backend == "Minio" {
 		DeployMinioAndCreateBucket(t, "k8ssandra-medusa")
 		CreateMedusaSecretWithFile(t, namespace, "secret/medusa_minio_secret.yaml")
 	} else {
