@@ -570,7 +570,7 @@ monitoring:
 # deployment could be deleted before the CassandraDatacenter. The cleaner
 # ensures that the CassandraDatacenter is deleted before cass-operator.
 cleaner:
-  image: k8ssandra/k8ssandra-cleaner:618b8ff9d368
+  image: k8ssandra/k8ssandra-cleaner:e6c3702701ca
 
 cass-operator:
   # -- Enables the cass-operator as part of this release. If this setting is
