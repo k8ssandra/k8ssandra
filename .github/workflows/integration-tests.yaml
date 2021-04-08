@@ -2,6 +2,11 @@
 name: Integration Tests
 on: 
   pull_request:
+    paths:
+      - 'pkg/**'
+      - 'cmd/**'
+      - 'charts/**'
+      - 'tests/integration/**'
   push:
     branches:
       - 'main'
