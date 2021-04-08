@@ -202,15 +202,12 @@ An index folder should appear (it is Medusa’s backup index) and then another f
 
 ## Deleting the data and restoring the backup
 
-Delete rows one by one, and check that the table is empty:
+`TRUNCATE` the table and verify it is empty:
 
 ```
 % kubectl exec -it k8ssandra-dc1-default-sts-0 -n k8ssandra -c cassandra -- cqlsh -u $username -p $password
 
-DELETE FROM medusa_test.users where email='alice@example.com';
-DELETE FROM medusa_test.users where email='bob@example.com';
-DELETE FROM medusa_test.users where email='david@example.com';
-DELETE FROM medusa_test.users where email='carol@example.com';
+TRUNCATE medusa_test.users;
 
 SELECT * FROM medusa_test.users;
 
@@ -258,4 +255,4 @@ You’ve successfully restored your lost data in just a few commands!
 
 ## Many backends available
 
-MinIO, while being an obvious choice in the Kubernetes world, is not the only S3 compatible backend that K8ssandra can use. K8ssandra has supported AWS S3 and Google Cloud Storage as Medusa backends since 1.0.0. There is also a wide variety of solutions that can run on-prem (including CEPH, Cloudian, Riak S2, and Dell EMC ECS) or in cloud environments (including IBM Cloud Object Storage, and OVHcloud Object Storage). See the [K8ssandra backup/restore documentation](https://k8ssandra.io/docs/topics/restore-a-backup/) for more detailed instructions and [let us know](mailto:k8ssandra-users@googlegroups.com) if you have questions, we love to help!
+MinIO, while being an obvious choice in the Kubernetes world, is not the only S3 compatible backend that K8ssandra can use. K8ssandra has supported AWS S3 and Google Cloud Storage as Medusa backends since 1.0.0. There are also a wide variety of solutions that can run on-prem (including CEPH, Cloudian, Riak S2, and Dell EMC ECS) or in cloud environments (including IBM Cloud Object Storage, and OVHcloud Object Storage). See the [K8ssandra backup/restore documentation](https://k8ssandra.io/docs/topics/restore-a-backup/) for more detailed instructions and [let us know](mailto:k8ssandra-users@googlegroups.com) if you have questions, we love to help!
