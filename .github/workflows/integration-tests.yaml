@@ -11,11 +11,13 @@ on:
     branches:
       - 'main'
       - '**-run-ci'
+      - '*.*'
     paths:
       - 'pkg/**'
       - 'cmd/**'
       - 'charts/**'
       - 'tests/integration/**'
+      - '.github/workflows/**'
 jobs:
   integration-tests:
     runs-on: ubuntu-20.04
