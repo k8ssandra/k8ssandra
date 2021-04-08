@@ -19,11 +19,17 @@ const (
 )
 
 func TestMain(m *testing.M) {
+	err := InitTestClient()
+	if err != nil {
+		log.Fatalf("failed to initialize test client: %s", err)
+	}
+
 	os.Exit(m.Run())
 }
 
 func initializeCluster(t *testing.T) string {
 	log.Println(Step("Initializing cluster"))
+
 	CheckK8sClusterIsReachable(t)
 	InstallTraefik(t)
 	namespace := CreateNamespace(t)
@@ -148,7 +154,7 @@ func deployClusterForReaper(t *testing.T, namespace string) {
 }
 
 func checkResourcePresenceForReaper(t *testing.T, namespace string) {
-	CheckResourceWithLabelIsPresent(t, namespace, "service", "app.kubernetes.io/managed-by=reaper-operator")
+	CheckResourceWithLabelsIsPresent(t, namespace, "service", map[string]string{"app.kubernetes.io/managed-by": "reaper-operator"})
 	CheckClusterExpectedResources(t, namespace)
 }
 
@@ -282,7 +288,7 @@ func deployClusterForMonitoring(t *testing.T, namespace string) {
 // Prometheus tests
 func testPrometheus(t *testing.T, namespace string) {
 	log.Println(Step("Testing Prometheus..."))
-	PodWithLabelIsReady(t, namespace, "app=prometheus")
+	PodWithLabelsIsReady(t, namespace, map[string]string{"app": "prometheus"})
 	CheckPrometheusMetricExtraction(t)
 	expectedActiveTargets := CountMonitoredItems(t, namespace)
 	CheckPrometheusActiveTargets(t, expectedActiveTargets) // We're monitoring 3 Cassandra nodes and 1 Stargate instance
@@ -291,7 +297,7 @@ func testPrometheus(t *testing.T, namespace string) {
 // Grafana tests
 func testGrafana(t *testing.T, namespace string) {
 	log.Println(Step("Testing Grafana..."))
-	PodWithLabelIsReady(t, namespace, "app.kubernetes.io/name=grafana")
+	PodWithLabelsIsReady(t, namespace, map[string]string{"app.kubernetes.io/name": "grafana"})
 	CheckGrafanaIsReachable(t)
 }
 

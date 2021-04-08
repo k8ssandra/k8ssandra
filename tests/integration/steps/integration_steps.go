@@ -8,21 +8,19 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 	"strconv"
 	"strings"
 	"testing"
 	"time"
 
+	cassdcapi "github.com/datastax/cass-operator/operator/pkg/apis/cassandra/v1beta1"
 	"github.com/gruntwork-io/terratest/modules/helm"
 	"github.com/gruntwork-io/terratest/modules/k8s"
 	. "github.com/onsi/gomega"
 	v1 "k8s.io/api/core/v1"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
-	"sigs.k8s.io/controller-runtime/pkg/client"
-
-	cassdcapi "github.com/datastax/cass-operator/operator/pkg/apis/cassandra/v1beta1"
 )
 
 const (
@@ -113,8 +111,9 @@ func deployCluster(t *testing.T, namespace, customValues string, helmValues map[
 	}
 	g(t).Expect(err).To(BeNil(), "Failed installing k8ssandra with Helm")
 	// Wait for cass-operator pod to be ready
+	labels := map[string]string{"app.kubernetes.io/name": "cass-operator"}
 	g(t).Eventually(func() bool {
-		return PodWithLabelIsReady(t, namespace, "app.kubernetes.io/name=cass-operator")
+		return PodWithLabelsIsReady(t, namespace, labels)
 	}, retryTimeout, retryInterval).Should(BeTrue())
 
 	// Wait for CassandraDatacenter to be udpating..
@@ -158,13 +157,10 @@ func waitForCassDcToBe(t *testing.T, namespace string, progress cassdcapi.Progre
 		Namespace: namespace,
 	}
 
-	k8sClient, err := CassDcClient()
-	g(t).Expect(err).To(BeNil(), "Couldn't instantiate controller-runtime client with cassdc API")
-
 	g(t).Eventually(func() bool {
 		log.Printf("Checking cassandradatacenter %s state in namespace %s...", cassdcKey.Name, cassdcKey.Namespace)
 		cassdc := &cassdcapi.CassandraDatacenter{}
-		err := k8sClient.Get(context.Background(), cassdcKey, cassdc)
+		err := testClient.Get(context.Background(), cassdcKey, cassdc)
 		if err != nil {
 			t.Logf("Failed getting cassdc: %s", err.Error())
 			return false
@@ -174,12 +170,12 @@ func waitForCassDcToBe(t *testing.T, namespace string, progress cassdcapi.Progre
 	}, retryTimeout, retryInterval).Should(BeTrue())
 }
 
-func resourceWithLabelIsPresent(t *testing.T, namespace, resourceType, label string) bool {
+func resourceWithLabelIsPresent(t *testing.T, namespace, resourceType string, labels map[string]string) bool {
 	switch resourceType {
 	case "pod":
-		return CountPodsWithLabel(t, namespace, label) == 1
+		return CountPodsWithLabels(t, namespace, labels) == 1
 	case "service":
-		services := getServicesWithLabel(t, namespace, label)
+		services := getServicesWithLabels(t, namespace, labels)
 		if len(services.Items) == 1 {
 			return true
 		}
@@ -190,40 +186,40 @@ func resourceWithLabelIsPresent(t *testing.T, namespace, resourceType, label str
 	return false
 }
 
-func getPodsWithLabel(t *testing.T, namespace, label string) *v1.PodList {
-	clientset, _ := k8s.GetKubernetesClientFromOptionsE(t, getKubectlOptions(namespace))
-	pods, err := clientset.CoreV1().Pods(namespace).List(context.Background(), metav1.ListOptions{LabelSelector: label})
-	g(t).Expect(err).To(BeNil(), fmt.Sprintf("Failed listing pods with label %s", label))
+func getPodsWithLabels(t *testing.T, namespace string, labels map[string]string) *v1.PodList {
+	pods := &v1.PodList{}
+	err := testClient.List(context.Background(), pods, client.InNamespace(namespace), client.MatchingLabels(labels))
+	g(t).Expect(err).To(BeNil(), fmt.Sprintf("Failed listing pods with labels %s", labels))
 	return pods
 }
 
-func getServicesWithLabel(t *testing.T, namespace, label string) *v1.ServiceList {
-	clientset, _ := k8s.GetKubernetesClientFromOptionsE(t, getKubectlOptions(namespace))
-	services, err := clientset.CoreV1().Services(namespace).List(context.Background(), metav1.ListOptions{LabelSelector: label})
-	g(t).Expect(err).To(BeNil(), fmt.Sprintf("Failed listing services with label %s", label))
+func getServicesWithLabels(t *testing.T, namespace string, labels map[string]string) *v1.ServiceList {
+	services := &v1.ServiceList{}
+	err := testClient.List(context.Background(), services, client.InNamespace(namespace), client.MatchingLabels(labels))
+	g(t).Expect(err).To(BeNil(), fmt.Sprintf("Failed listing services with labels %s", labels))
 	return services
 }
 
-func CountPodsWithLabel(t *testing.T, namespace, label string) int {
-	pods := getPodsWithLabel(t, namespace, label)
+func CountPodsWithLabels(t *testing.T, namespace string, labels map[string]string) int {
+	pods := getPodsWithLabels(t, namespace, labels)
 	return len(pods.Items)
 }
 
-func PodWithLabelIsReady(t *testing.T, namespace string, label string) bool {
+func PodWithLabelsIsReady(t *testing.T, namespace string, label map[string]string) bool {
 	g(t).Eventually(func() bool {
 		return resourceWithLabelIsPresent(t, namespace, "pod", label)
 	}, retryTimeout, retryInterval).Should(BeTrue())
 
-	pods := getPodsWithLabel(t, namespace, label)
+	pods := getPodsWithLabels(t, namespace, label)
 	if len(pods.Items) == 1 {
 		return strings.ToLower(string(pods.Items[0].Status.Phase)) == "running"
 	}
 	return false
 }
 
-func WaitForPodWithLabelToBeReady(t *testing.T, namespace, label string) {
+func WaitForPodWithLabelsToBeReady(t *testing.T, namespace string, labels map[string]string) {
 	g(t).Eventually(func() bool {
-		return PodWithLabelIsReady(t, namespace, label)
+		return PodWithLabelsIsReady(t, namespace, labels)
 	}, retryTimeout, retryInterval).Should(BeTrue())
 }
 
@@ -246,16 +242,20 @@ func MinioServiceName(t *testing.T) string {
 	return minioService
 }
 
-func CheckResourceWithLabelIsPresent(t *testing.T, namespace, resourceType, label string) {
+func CheckResourceWithLabelsIsPresent(t *testing.T, namespace, resourceType string, labels map[string]string) {
 	g(t).Eventually(func() bool {
-		return resourceWithLabelIsPresent(t, namespace, resourceType, label)
+		return resourceWithLabelIsPresent(t, namespace, resourceType, labels)
 	}, retryTimeout, retryInterval).Should(BeTrue())
 }
 
 func checkResourcePresence(t *testing.T, namespace, resourceType, name string) {
 	switch resourceType {
 	case "service":
-		k8s.GetService(t, getKubectlOptions(namespace), name)
+		svc := &v1.Service{}
+		key := types.NamespacedName{Namespace: namespace, Name: name}
+		if err := testClient.Get(context.Background(), key, svc); err != nil {
+			t.Fatalf("failed to get service %s: %s", key, err)
+		}
 	default:
 		t.Logf("Unsupported resource type: %s", resourceType)
 		t.FailNow()
@@ -318,15 +318,9 @@ func CreateNamespace(t *testing.T) string {
 	return namespace
 }
 
-func getCassDcClient(t *testing.T) client.Client {
-	client, err := CassDcClient()
-	g(t).Expect(err).To(BeNil(), "Couldn't instantiate controller-runtime client with cassdc API")
-	return client
-}
-
-func getCassandraDatacenter(t *testing.T, key types.NamespacedName) (*cassdcapi.CassandraDatacenter, error) {
+func getCassandraDatacenter(key types.NamespacedName) (*cassdcapi.CassandraDatacenter, error) {
 	cassdc := &cassdcapi.CassandraDatacenter{}
-	err := getCassDcClient(t).Get(context.Background(), key, cassdc)
+	err := testClient.Get(context.Background(), key, cassdc)
 	return cassdc, err
 }
 
@@ -334,7 +328,7 @@ func WaitForCassandraDatacenterDeletion(t *testing.T, namespace string) {
 	dcKey := types.NamespacedName{Namespace: namespace, Name: datacenterName}
 	// Wait cassandradatacenter object to be actually deleted
 	g(t).Eventually(func() bool {
-		_, err := getCassandraDatacenter(t, dcKey)
+		_, err := getCassandraDatacenter(dcKey)
 		return apierrors.IsNotFound(err)
 	}, retryTimeout, retryInterval).Should(BeTrue(), "cassandradatacenter object wasn't deleted within timeout")
 }
@@ -418,7 +412,7 @@ func CheckKeyspaceExists(t *testing.T, namespace, keyspace string) {
 }
 
 func WaitForReaperPod(t *testing.T, namespace string) {
-	WaitForPodWithLabelToBeReady(t, namespace, "app.kubernetes.io/managed-by=reaper-operator")
+	WaitForPodWithLabelsToBeReady(t, namespace, map[string]string{"app.kubernetes.io/managed-by": "reaper-operator"})
 }
 
 func CheckRowCountInTable(t *testing.T, nbRows int, namespace, tableName, keyspaceName string) {
