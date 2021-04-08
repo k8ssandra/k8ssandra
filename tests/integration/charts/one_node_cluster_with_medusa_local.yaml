@@ -16,8 +16,8 @@ reaper:
 medusa:
   enabled: true
   image:
-    repository: docker.io/jsanda/medusa
-    tag: grpc-sigterm-13d70bb2
+    repository: docker.io/k8ssandra/medusa
+    tag: 0.10.0
 
   multiTenant: true
   storage: local
