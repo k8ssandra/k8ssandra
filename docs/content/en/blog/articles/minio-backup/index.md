@@ -148,9 +148,17 @@ prometheus-k8ssandra-kube-prometheus-prometheus-0     2/2     Running     1     
 
 # Create some data and back it up
 
-Next, create some data in Cassandra by creating a **test_data.cql** file:
-
-```
+Extract the username and password to access Cassandra (the password is different for each installation unless it is explicitly set at install time) into variables:
+\```
+% username=$(kubectl get secret k8ssandra-superuser -n k8ssandra -o jsonpath="{.data.username}" | base64 --decode)
+% password=$(kubectl get secret k8ssandra-superuser -n k8ssandra -o jsonpath="{.data.password}" | base64 --decode)
+\```
+Connect through CQLSH on one of the nodes:
+\```
+% kubectl exec -it k8ssandra-dc1-default-sts-0 -n k8ssandra -c cassandra -- cqlsh -u $username -p $password
+\```
+Copy/paste the following statements into the CQLSH prompt and press enter:
+\```
 CREATE KEYSPACE medusa_test  WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 1};
 USE medusa_test;
 CREATE TABLE users (email TEXT PRIMARY KEY, name TEXT, state TEXT);
@@ -158,28 +166,10 @@ INSERT INTO users (email, name, state) VALUES ('alice@example.com', 'Alice Smith
 INSERT INTO users (email, name, state) VALUES ('bob@example.com', 'Bob Jones', 'VA');
 INSERT INTO users (email, name, state) VALUES ('carol@example.com', 'Carol Jackson', 'CA');
 INSERT INTO users (email, name, state) VALUES ('david@example.com', 'David Yang', 'NV');
-```
-
-And copy it into the Cassandra pod (the StatefulSet one, which contains <code>-<strong>sts</strong>-</code> in its name):
-
-```
-kubectl cp test_data.cql k8ssandra-dc1-default-sts-0:/tmp -n k8ssandra -c cassandra
-```
-
-Now extract the password to access Cassandra with the k8ssandra-superuser (the password is different for each installation unless it is explicitly set at install time): 
-
-```
-% kubectl get secret k8ssandra-superuser -n k8ssandra -o jsonpath="{.data.password}" | base64 --decode ; echo
-
-XHsZ943WBg5RPNhVAT8x
-```
-
-Let’s now run the uploaded cql script and check that you can read the data (don’t forget to replace the password with the one extracted in the previous step):
-
-```
-% kubectl exec -it k8ssandra-dc1-default-sts-0 -n k8ssandra -c cassandra -- cqlsh -u k8ssandra-superuser -p XHsZ943WBg5RPNhVAT8x -f /tmp/test_data.cql
-
-% kubectl exec -it k8ssandra-dc1-default-sts-0 -n k8ssandra -c cassandra -- cqlsh -u k8ssandra-superuser -p XHsZ943WBg5RPNhVAT8x -e "SELECT * FROM medusa_test.users"
+\```
+Check that the rows were properly inserted:
+\```
+SELECT * FROM medusa_test.users;
 
  email             | name          | state
 -------------------+---------------+-------
@@ -189,7 +179,7 @@ Let’s now run the uploaded cql script and check that you can read the data (do
  carol@example.com | Carol Jackson |    CA
 
 (4 rows)
-```
+\```
 
 Now backup this data, and check that files get created in your MinIO bucket. 
 
@@ -215,18 +205,24 @@ An index folder should appear (it is Medusa’s backup index) and then another f
 
 # Deleting the data and restoring the backup
 
-Now delete the data by truncating the table, and check that the table is empty:
+Delete rows one by one, and check that the table is empty:
 
-```
-% kubectl exec -it k8ssandra-dc1-default-sts-0 -n k8ssandra -c cassandra -- cqlsh -u k8ssandra-superuser -p XHsZ943WBg5RPNhVAT8x -e "TRUNCATE medusa_test.users"
+\```
+% kubectl exec -it k8ssandra-dc1-default-sts-0 -n k8ssandra -c cassandra -- cqlsh -u $username -p $password
 
-% kubectl exec -it k8ssandra-dc1-default-sts-0 -n k8ssandra -c cassandra -- cqlsh -u k8ssandra-superuser -p XHsZ943WBg5RPNhVAT8x -e "SELECT * FROM medusa_test.users"
+DELETE FROM medusa_test.users where email='alice@example.com';
+DELETE FROM medusa_test.users where email='bob@example.com';
+DELETE FROM medusa_test.users where email='david@example.com';
+DELETE FROM medusa_test.users where email='carol@example.com';
+
+SELECT * FROM medusa_test.users;
 
  email | name | state
 -------+------+-------
 
+
 (0 rows)
-```
+\```
 
 Now restore the backup taken previously:
 
