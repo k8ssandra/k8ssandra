@@ -1,18 +1,15 @@
 ---
-date: 2021-03-31
+date: 2021-04-09
 title: "Backing up K8ssandra with MinIO"
 linkTitle: "Backing up K8ssandra with MinIO"
 description: >
-Learn how to set up K8ssandra and MinIO to backup Cassandra in just a few steps.
+  Learn how to set up K8ssandra and MinIO to backup Cassandra in just a few steps.
 author: Alexander Dejanovski ([@alexanderDeja](https://twitter.com/alexanderDeja))
-draft: true
 ---
-
-# Backing up K8ssandra with MinIO
 
 K8ssandra includes Medusa for Apache Cassandra™ to handle backup and restore for your Cassandra nodes. Recently Medusa was upgraded to introduce support for all S3 compatible backends, including [MinIO](https://min.io/), the popular k8s-native object storage suite. Let’s see how to set up K8ssandra and MinIO to backup Cassandra in just a few steps.
 
-# Deploy MinIO
+## Deploy MinIO
 
 Similar to K8ssandra, MinIO can be simply deployed through Helm.
 
@@ -68,7 +65,7 @@ Once logged in, you can see that the k8ssandra-medusa bucket was created and is 
 
 ![K8ssandra Medusa Bucket](k8ssandra-medusa-bucket.png)
 
-# Deploy K8ssandra
+## Deploy K8ssandra
 
 Now that MinIO is up and running, you can create a namespace for your K8ssandra installation and create a secret for Medusa to access the bucket. Create a `medusa_secret.yaml` file with the following content:
 
@@ -146,7 +143,7 @@ k8ssandra-reaper-schema-4gshj                         0/1     Completed   0     
 prometheus-k8ssandra-kube-prometheus-prometheus-0     2/2     Running     1          6m32s
 ```
 
-# Create some data and back it up
+## Create some data and back it up
 
 Extract the username and password to access Cassandra (the password is different for each installation unless it is explicitly set at install time) into variables:
 ```
@@ -203,7 +200,7 @@ Now refresh the MinIO UI and you should see some files in the k8ssandra-medusa b
 
 An index folder should appear (it is Medusa’s backup index) and then another folder that is specific to each Cassandra node in the cluster (in this case there is only one node).
 
-# Deleting the data and restoring the backup
+## Deleting the data and restoring the backup
 
 Delete rows one by one, and check that the table is empty:
 
@@ -259,6 +256,6 @@ Check that you can read the data from the previously truncated table:
 
 You’ve successfully restored your lost data in just a few commands!
 
-# Many backends available
+## Many backends available
 
-MinIO, while being an obvious choice in the Kubernetes world, is not the only S3 compatible backend that K8ssandra can use. K8ssandra has supported AWS S3 and Google Cloud Storage as Medusa backends since 1.0.0. There is also a wide variety of solutions that can run on-prem (including CEPH, Cloudian, Riak S2, and Dell EMC ECS) or in cloud environments (including IBM Cloud Object Storage, and OVHcloud Object Storage). See the [K8ssandra backup/restore documentation](https://k8ssandra.io/docs/topics/restore-a-backup/) for more detailed instructions and let us know if you have questions, we love to help!
+MinIO, while being an obvious choice in the Kubernetes world, is not the only S3 compatible backend that K8ssandra can use. K8ssandra has supported AWS S3 and Google Cloud Storage as Medusa backends since 1.0.0. There is also a wide variety of solutions that can run on-prem (including CEPH, Cloudian, Riak S2, and Dell EMC ECS) or in cloud environments (including IBM Cloud Object Storage, and OVHcloud Object Storage). See the [K8ssandra backup/restore documentation](https://k8ssandra.io/docs/topics/restore-a-backup/) for more detailed instructions and [let us know](mailto:k8ssandra-users@googlegroups.com) if you have questions, we love to help!
