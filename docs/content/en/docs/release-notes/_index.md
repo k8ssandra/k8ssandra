@@ -35,15 +35,15 @@ The **K8ssandra 1.1.0** release implements a number of changes, enhancements, an
 
 The K8ssandra helm chart deploys the following components. Some are optional, and depending on the configuration, may not be deployed:
 
-* Apache Cassandra - the deployed version depends on the configured `serverImage` setting:
+* [Apache Cassandra](https://cassandra.apache.org/) - the deployed version depends on the configured `serverImage` setting:
   * 3.11.7
   * 3.11.8
   * 3.11.9
   * 3.11.10 (default)
-* DataStax Kubernetes Operator for Apache Cassandra (cass-operator) 1.6.0
-* Management API for Apache Cassandra (MAAC) 0.1.24
-* Stargate 1.0.11
-* Metric Collector for Apache Cassandra (MCAC) 0.2.0
+* DataStax Kubernetes Operator for Apache Cassandra ([cass-operator](https://github.com/datastax/cass-operator)) 1.6.0
+* Management API for Apache Cassandra ([MAAC](https://github.com/datastax/management-api-for-apache-cassandra)) 0.1.24
+* [Stargate](https://github.com/stargate/stargate) 1.0.11
+* Metric Collector for Apache Cassandra ([MCAC](https://github.com/datastax/metric-collector-for-apache-cassandra)) 0.2.0
 * kube-prometheus-stack 12.11.3 [chart](https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-prometheus-stack)
 * Medusa for Apache Cassandra 0.10.0
 * Reaper for Apache Cassandra 2.2.2
@@ -73,43 +73,33 @@ To manually restart Stargate nodes, on each node:
     ```
 {{% /alert %}}
 
-## K8ssandra 1.1.0 changes
+## K8ssandra 1.1.0 revisions
 
-* Remove Jolokia integration [#533](https://github.com/k8ssandra/k8ssandra/issues/533).
-* Upgrade to medusa-operator 0.2.0 [#630](https://github.com/k8ssandra/k8ssandra/issues/630).
-* Mount Cassandra pod labels in volume [#613](https://github.com/k8ssandra/k8ssandra/issues/613).
+Each of the following sections present a **subset** of key devlopments in K8ssandra 1.1.0. For the complete list, see the [CHANGELOG](https://github.com/k8ssandra/k8ssandra/blob/main/CHANGELOG.md).  
+
+### Changes
+
 * Shut down cluster by default with in-place restores of Medusa backups [#611](https://github.com/k8ssandra/k8ssandra/issues/611). 
   {{% alert title="Important!" color="warning" %}} 
   The new default behavior for in-place restores, which now shut down the whole cluster by default, will require Stargate nodes to be restarted after the Cassandra cluster is back online. See the [Upgrade notice]({{< relref "#upgrade-notice" >}}) above.
   {{% /alert %}} 
+* Update Management API image locations [#637](https://github.com/k8ssandra/k8ssandra/issues/533).
 
-## K8ssandra 1.1.0 enhancements
+### Enhancements
 
 * Add option to disable Cassandra logging sidecar [#576](https://github.com/k8ssandra/k8ssandra/issues/576).
-* Upgrade Reaper to 2.2.2 and Medusa to 0.9.1 [#530](https://github.com/k8ssandra/k8ssandra/issues/530).
-* Split dashboards into separate configmaps [#504](https://github.com/k8ssandra/k8ssandra/issues/504).
-* Upgrade Stargate to 1.0.18 [#658](https://github.com/k8ssandra/k8ssandra/issues/658).
-* Add automation for stable and next release streams [#419](https://github.com/k8ssandra/k8ssandra/issues/419).
+* Developer documentation [#239](https://github.com/k8ssandra/k8ssandra/issues/239).
 * Add support for `additionalSeeds` in the CassandraDatacenter [#547](https://github.com/k8ssandra/k8ssandra/issues/547).
-* Upgrade to Medusa 0.10.0 and add IT for scale up after restore issue [#647](https://github.com/k8ssandra/k8ssandra/issues/547).
-* Documentation updates and additions:
-  * Developer documentation [#239](https://github.com/k8ssandra/k8ssandra/issues/239).
-  * Sample values.yaml explanations and examples [#510](https://github.com/k8ssandra/k8ssandra/issues/510).
-  * S3-compliant MinIO buckets for Medusa backup and restore operations, and related edits for the separate Amazon S3 topic [#556](https://github.com/k8ssandra/k8ssandra/issues/556).
-  * Migrating existing Cassandra to K8ssandra [#377](https://github.com/k8ssandra/k8ssandra/issues/377).
-  * Underlying considerations and impacts of scaling nodes up or down in Kubernetes clusters [#501](https://github.com/k8ssandra/k8ssandra/issues/501).
 
-## K8ssandra 1.1.0 bug fixes
+### Bug fixes
 
-* Cassandra config clobbering when enabling Medusa [#475](https://github.com/k8ssandra/k8ssandra/issues/475).
-* cqlsh commands show warnings [#396](https://github.com/k8ssandra/k8ssandra/issues/396).
-* Fix issue with scripts not being checked out before attempting to run them [#516](https://github.com/k8ssandra/k8ssandra/issues/516).
-* Remove GitHub Actions for pre-releasing off of main [#517](https://github.com/k8ssandra/k8ssandra/issues/517).
-* Fix Cassandra config clobbering when enabling Medusa [#475](https://github.com/k8ssandra/k8ssandra/issues/475).
-* Create cass-operator webhook secret [#590](https://github.com/k8ssandra/k8ssandra/issues/590).
 * Scale up fails if a restore was performed in the past [#616](https://github.com/k8ssandra/k8ssandra/issues/616).
-* helm uninstall can leave CassandraDatacenter behind [#623](https://github.com/k8ssandra/k8ssandra/issues/623).
-* Fix indentation error in backup-restore-values.yaml [#602](https://github.com/k8ssandra/k8ssandra/issues/602).
+
+### Doc updates
+
+* S3-compliant MinIO buckets for Medusa backup and restore operations, and related edits for the separate Amazon S3 topic [#556](https://github.com/k8ssandra/k8ssandra/issues/556).
+* Migrating existing Cassandra to K8ssandra [#377](https://github.com/k8ssandra/k8ssandra/issues/377).
+* Underlying considerations for scaling nodes up/down [#501](https://github.com/k8ssandra/k8ssandra/issues/501).
 
 ## Contributions
 ​
