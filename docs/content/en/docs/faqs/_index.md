@@ -46,6 +46,10 @@ helm install k8ssandra k8ssandra/k8ssandra
 
 For more, see [Getting Started]({{< ref "/docs/getting-started/" >}}).
 
+### What components and versions does K8ssandra deploy?
+
+For the full list of deployed components and latest versions, see the K8ssandra [Release notes]({{< ref "/docs/release-notes" >}}). 
+
 ### When I install K8ssandra, I see a some warning messages, is that a problem?
 
 When installing K8ssandra on newer versions of Kubernetes (v1.19+), some warnings may be visible on the command line
@@ -56,26 +60,6 @@ W0128 11:24:54.792095  27657 warnings.go:70] apiextensions.k8s.io/v1beta1 Custom
 ```
 
 For more information, check out issue [#267](https://github.com/k8ssandra/k8ssandra/issues/267).
-
-### What does K8ssandra install?
-
-The chart installs Kubernetes Operator for Apache Cassandra (cass-operator), Prometheus Operator, Reaper for Apache Cassandra (repairs), Medusa for Apache Cassandra (backup/restore), the Grafana Operator, (optional) Stargate, and launches instances.
-
-After those installs, and all the pods are in a Ready state, from `kubectl get pods` you'll see output similar to:
-
-```bash
-NAME                                                   READY   STATUS      RESTARTS   AGE
-demo-cass-operator-65cc657-fq6bc                       1/1     Running     0          10m
-demo-dc1-default-sts-0                                 3/3     Running     0          10m
-demo-dc1-stargate-bb47877d5-54sdt                      1/1     Running     0          10m
-demo-grafana-7f84d96d47-xd79s                          2/2     Running     0          10m
-demo-kube-prometheus-stack-operator-76b984f9f4-pp745   1/1     Running     0          10m
-demo-medusa-operator-6888946787-qwzsx                  1/1     Running     2          10m
-demo-reaper-k8ssandra-656f5b77cc-nqfzv                 1/1     Running     0          10m
-demo-reaper-k8ssandra-schema-88cpx                     0/1     Completed   0          10m
-demo-reaper-operator-5b8c4c66b8-8cf86                  1/1     Running     2          10m
-prometheus-demo-kube-prometheus-stack-prometheus-0     2/2     Running     1          10m
-```
 
 ### Does K8ssandra have to be installed in a particular namespace?
 
@@ -106,37 +90,6 @@ To solve the issue, install K8ssandra using the following Helm command:
 helm install <cluster-name> k8ssandra/k8ssandra \
    --set cassandra.cassandraLibDirVolume.storageClass=hostpath
 ```
-
-### What components does K8ssandra install?
-
-K8ssandra deploys the following components, some components are optional, and depending on the configuration, may not be deployed:
-
-* [Apache Cassandra](https://cassandra.apache.org/) (version deployed is dependent upon configuration)
-  * 3.11.7
-  * 3.11.8
-  * 3.11.9
-  * 3.11.10 (default)
-* [Cass Operator](https://github.com/datastax/cass-operator)
-  * 1.6.0  
-  * See the Cass Operator [CHANGELOG](https://github.com/datastax/cass-operator/blob/master/CHANGELOG.md) and [documentation](https://docs.datastax.com/en/cass-operator/doc/cass-operator/cassOperatorTOC.html)
-* [Management API for Apache Cassandra](https://github.com/datastax/management-api-for-apache-cassandra)
-  * 0.1.19
-* [Stargate](https://stargate.io/)
-  * 1.0.18
-* [Metric Collector for Apache Cassandra (MCAC)](https://github.com/datastax/metric-collector-for-apache-cassandra)
-  * 0.1.9
-* [Prometheus](https://prometheus.io/)
-  * 2.22.1
-* [Grafana](https://grafana.com/)
-  * 7.3.5
-* [Medusa for Apache Cassandra](https://github.com/thelastpickle/cassandra-medusa)
-  * 0.9.1
-* [Reaper for Apache Cassandra](http://cassandra-reaper.io/)
-  * 2.2.2
-
-{{% alert title="Note" color="primary" %}}
-Throughout these docs, examples are shown to deploy [Traefik](https://traefik.io/) as a means to provide external access to the k8ssandra cluster.  It is deployed separately from K8ssandra, and as such, the version deployed will vary.*
-{{% /alert %}}
 
 ### What is Stargate?
 
