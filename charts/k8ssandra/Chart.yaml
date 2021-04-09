@@ -3,7 +3,7 @@ name: k8ssandra
 description: |
   Provisions and configures an instance of the entire K8ssandra stack. This includes Apache Cassandra, Stargate, Reaper, Medusa, Prometheus, and Grafana.
 type: application
-version: 1.1.0
+version: 1.1.1-SNAPSHOT
 
 dependencies:
   - name: cass-operator
