@@ -41,7 +41,7 @@ The K8ssandra helm chart deploys the following components. Some are optional, an
   * 3.11.9
   * 3.11.10 (default)
 * DataStax Kubernetes Operator for Apache Cassandra (cass-operator) 1.6.0
-* Management API for Apache Cassandra (MAAC) 0.1.19
+* Management API for Apache Cassandra (MAAC) 0.1.24
 * Stargate 1.0.11
 * Metric Collector for Apache Cassandra (MCAC) 0.2.0
 * kube-prometheus-stack 12.11.3 [chart](https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-prometheus-stack)
