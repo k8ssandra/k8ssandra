@@ -51,13 +51,6 @@ jobs:
       - name: Update chart dependencies
         run: |
           scripts/update-helm-deps.sh
-      - name: Check chart version matches tag
-        run: |
-          RELEASE_VERSION=$(yq e '.version' charts/k8ssandra/Chart.yaml)
-          if [[ "v$RELEASE_VERSION" != "${{ needs.setup.output.VERSION }}" ]]; then
-            echo "Tag version ${{ needs.setup.output.VERSION }} does not match Helm chart version $RELEASE_VERSION"
-            exit 1
-          fi
       - name: Create working directory and copy charts
         run: |
           mkdir build
