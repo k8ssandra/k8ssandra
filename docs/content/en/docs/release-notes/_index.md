@@ -35,14 +35,14 @@ The **K8ssandra 1.1.0** release implements a number of changes, enhancements, an
 
 The K8ssandra helm chart deploys the following components. Some are optional, and depending on the configuration, may not be deployed:
 
-* [Apache Cassandra](https://cassandra.apache.org/) - the deployed version depends on the configured `serverImage` setting:
+* [Apache Cassandra](https://cassandra.apache.org/) - the deployed version depends on the configured `cassandra.version` setting:
   * 3.11.7
   * 3.11.8
   * 3.11.9
   * 3.11.10 (default)
 * DataStax Kubernetes Operator for Apache Cassandra ([cass-operator](https://github.com/datastax/cass-operator)) 1.6.0
 * Management API for Apache Cassandra ([MAAC](https://github.com/datastax/management-api-for-apache-cassandra)) 0.1.24
-* [Stargate](https://github.com/stargate/stargate) 1.0.11
+* [Stargate](https://github.com/stargate/stargate) 1.0.18
 * Metric Collector for Apache Cassandra ([MCAC](https://github.com/datastax/metric-collector-for-apache-cassandra)) 0.2.0
 * kube-prometheus-stack 12.11.3 [chart](https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-prometheus-stack)
 * Medusa for Apache Cassandra 0.10.0
@@ -53,7 +53,7 @@ The K8ssandra helm chart deploys the following components. Some are optional, an
 {{% alert title="Important!" color="warning" %}}
 Upgrading from K8ssandra 1.0.0 to 1.1.0 causes a StatefulSet update (due to [#533](https://github.com/k8ssandra/k8ssandra/issues/533) and [#613](https://github.com/k8ssandra/k8ssandra/issues/613)). A StatefulSet update has the effect of a rolling restart. Because of [#411](https://github.com/k8ssandra/k8ssandra/issues/411) this could require you to perform a manual restart of all Stargate nodes after the Cassandra cluster is back online. This behavior also impacts in-place restore operations of Medusa backups [#611](https://github.com/k8ssandra/k8ssandra/issues/611). 
 
-To manually restart Stargate nodes, on each node:
+To manually restart Stargate nodes:
 
 1. Get the Deployment object in your Kubernetes environment:
    ```bash
