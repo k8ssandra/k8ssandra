@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/util/wait"
 	"log"
 	"os"
 	"os/exec"
@@ -18,6 +20,7 @@ import (
 	"github.com/gruntwork-io/terratest/modules/helm"
 	"github.com/gruntwork-io/terratest/modules/k8s"
 	. "github.com/onsi/gomega"
+	appsv1 "k8s.io/api/apps/v1"
 	v1 "k8s.io/api/core/v1"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/types"
@@ -147,6 +150,59 @@ func WaitForCassDcToBeUpdating(t *testing.T, namespace string) {
 	waitForCassDcToBe(t, namespace, cassdcapi.ProgressUpdating)
 }
 
+// RestartStargate scales the Stargate deployment down to zero and then scales it
+// back up to the prior number of replicas. This function blocks until the
+// deployment is ready.
+func RestartStargate(releaseName, dcName, namespace string) error {
+	key := types.NamespacedName{Namespace: namespace, Name: releaseName + "-" + dcName + "-stargate"}
+	retryInterval := 5 * time.Second
+	scaleDownTimeout := 2 * time.Minute
+	scaleUpTimeout := 5 * time.Minute
+
+	if err := WaitForDeploymentReady(key, retryInterval, scaleDownTimeout); err != nil {
+		return fmt.Errorf("timed out waiting for Stargate to scale down: %s", err)
+	}
+
+	deployment := &appsv1.Deployment{}
+	if err := testClient.Get(context.Background(), key, deployment); err != nil {
+		return fmt.Errorf("failed to get Stargate deployment: %s", err)
+	}
+
+	originalCount := *deployment.Spec.Replicas
+
+	patch := client.MergeFromWithOptions(deployment.DeepCopy(), client.MergeFromWithOptimisticLock{})
+	count := int32(0)
+	deployment.Spec.Replicas = &count
+	if err := testClient.Patch(context.Background(), deployment, patch); err != nil {
+		return fmt.Errorf("failed to scale down Stargate: %s", err)
+	}
+
+
+	patch = client.MergeFromWithOptions(deployment.DeepCopy(), client.MergeFromWithOptimisticLock{})
+	deployment.Spec.Replicas = &originalCount
+	if err := testClient.Patch(context.Background(), deployment, patch); err != nil {
+		return fmt.Errorf("failed to scale up Stargate: %s", err)
+	}
+
+	if err := WaitForDeploymentReady(key, retryInterval, scaleUpTimeout); err != nil {
+		return fmt.Errorf("timed out waiting for Stargate to scale up: %s", err)
+	}
+
+	return nil
+}
+
+// WaitForDeploymentReady Polls the deployment status until the Deployment is
+// ready. Readiness is defined as .Status.Replicas == .Status.ReadyReplicas.
+func WaitForDeploymentReady(key types.NamespacedName, retryInterval, timeout time.Duration) error {
+	return wait.Poll(retryInterval, timeout, func() (bool, error) {
+		deployment := &appsv1.Deployment{}
+		if err := testClient.Get(context.Background(), key, deployment); err != nil {
+			return false, err
+		}
+		return deployment.Status.Replicas == deployment.Status.ReadyReplicas, nil
+	})
+}
+
 func WaitForCassDcToBeReady(t *testing.T, namespace string) {
 	waitForCassDcToBe(t, namespace, cassdcapi.ProgressReady)
 }
@@ -227,11 +283,15 @@ func DeployMinioAndCreateBucket(t *testing.T, bucketName string) {
 	helmOptions := &helm.Options{
 		KubectlOptions: getKubectlOptions("default"),
 	}
-	helm.RunHelmCommandAndGetOutputE(t, helmOptions, "repo", "add", "minio", "https://helm.min.io/")
 
-	helm.RunHelmCommandAndGetOutputE(t, helmOptions, "install",
-		"--set", fmt.Sprintf("accessKey=minio_key,secretKey=minio_secret,defaultBucket.enabled=true,defaultBucket.name=%s", bucketName),
-		"minio", "minio/minio", "-n", "minio", "--create-namespace")
+	if _, err := helm.RunHelmCommandAndGetOutputE(t, helmOptions, "repo", "add", "minio", "https://helm.min.io/"); err != nil {
+		t.Fatalf("failed to add minio helm repo: %s", err)
+	}
+
+	values := fmt.Sprintf("accessKey=minio_key,secretKey=minio_secret,defaultBucket.enabled=true,defaultBucket.name=%s", bucketName)
+	if _, err := helm.RunHelmCommandAndGetOutputE(t, helmOptions, "install", "--set", values, "minio", "minio/minio", "-n", "minio", "--create-namespace"); err != nil {
+		t.Fatalf("failed to install the minio helm chart: %s", err)
+	}
 }
 
 func MinioServiceName(t *testing.T) string {
@@ -275,7 +335,7 @@ func CheckK8sClusterIsReachable(t *testing.T) {
 }
 
 func CheckNamespaceWasCreated(t *testing.T, namespace string) {
-	g(t).Expect(namespaceIsAbsent(t, namespace)).To(BeFalse())
+	g(t).Expect(namespaceIsAbsent(namespace)).To(BeFalse())
 }
 
 func CheckSecretIsPresent(t *testing.T, namespace, secret string) {
@@ -285,19 +345,46 @@ func CheckSecretIsPresent(t *testing.T, namespace, secret string) {
 
 func CheckNamespaceIsAbsent(t *testing.T, namespace string) {
 	g(t).Eventually(func() bool {
-		return namespaceIsAbsent(t, namespace) || namespaceIsTerminating(t, namespace)
+		absent, err := namespaceIsAbsent(namespace)
+		if err == nil {
+			if absent {
+				return true
+			}
+		} else {
+			t.Logf("failed to check if namespace %s is absent: %s", namespace, err)
+		}
+
+		terminating, err := namespaceIsTerminating(namespace)
+		if err == nil {
+			if terminating {
+				return true
+			}
+		} else {
+			t.Logf("failed to check if namespace %s is terminating: %s", namespace, err)
+		}
+
+		return false
 	}, retryTimeout, retryInterval).Should(BeTrue())
 }
 
-func namespaceIsAbsent(t *testing.T, namespace string) bool {
-	namespaceObject, _ := k8s.GetNamespaceE(t, getKubectlOptions("default"), namespace)
-	return namespaceObject.Name != namespace
+func namespaceIsAbsent(namespace string) (bool, error) {
+	if _, err := GetNamespace(namespace); err == nil {
+		return false, nil
+	} else {
+		if apierrors.IsNotFound(err) {
+			return true, nil
+		} else {
+			return false, err
+		}
+	}
 }
 
-func namespaceIsTerminating(t *testing.T, namespace string) bool {
-	namespaceObject, _ := k8s.GetNamespaceE(t, getKubectlOptions("default"), namespace)
-
-	return namespaceObject.Status.Phase == v1.NamespaceTerminating
+func namespaceIsTerminating(namespace string) (bool, error) {
+	if ns, err := GetNamespace(namespace); err == nil {
+		return ns.Status.Phase == v1.NamespaceTerminating, nil
+	} else {
+		return false, err
+	}
 }
 
 func CreateNamespace(t *testing.T) string {
@@ -309,7 +396,11 @@ func CreateNamespace(t *testing.T) string {
 			return os.Getenv("K8SSANDRA_NS")
 		}
 	}()
-	if namespaceIsAbsent(t, namespace) {
+	absent, err := namespaceIsAbsent(namespace)
+	if err != nil {
+		t.Fatalf("failed to check if namespace %s is absent: %s", namespace, err)
+	}
+	if absent {
 		log.Println(fmt.Sprintf("Creating namespace %s", namespace))
 		k8s.CreateNamespace(t, getKubectlOptions("default"), namespace)
 	} else {
@@ -341,11 +432,15 @@ func UninstallTraefikHelmRelease(t *testing.T, traefikNamespace string) {
 }
 
 func UninstallMinioHelmRelease(t *testing.T, minioNamespace string) {
-	if !namespaceIsAbsent(t, minioNamespace) {
-		err := RunShellCommand(exec.Command("helm", "uninstall", "minio", "-n", minioNamespace))
-		if err != nil {
-			t.Logf("Failed uninstalling Minio Helm release: %s", err.Error())
+	if absent, err := namespaceIsAbsent(minioNamespace); err == nil {
+		if absent {
+			err := RunShellCommand(exec.Command("helm", "uninstall", "minio", "-n", minioNamespace))
+			if err != nil {
+				t.Logf("Failed uninstalling Minio Helm release: %s", err.Error())
+			}
 		}
+	} else {
+		t.Logf("failed to check if minio namespace %s is absent: %s", minioNamespace, err)
 	}
 }
 
@@ -356,12 +451,26 @@ func UninstallK8ssandraHelmRelease(t *testing.T, namespace string) {
 	}
 }
 
+func GetNamespace(name string) (*v1.Namespace, error) {
+	ns := &v1.Namespace{
+		ObjectMeta: metav1.ObjectMeta{
+			Name: name,
+		},
+	}
+	if err := testClient.Get(context.Background(), types.NamespacedName{Namespace: name, Name: name}, ns); err == nil {
+		return ns, nil
+	} else {
+		return nil, err
+	}
+}
+
 func DeleteNamespace(t *testing.T, namespace string) {
-	if !namespaceIsAbsent(t, namespace) {
-		err := k8s.DeleteNamespaceE(t, getKubectlOptions("default"), namespace)
-		if err != nil {
-			t.Logf("Failed deleting namespace %s: %s", namespace, err.Error())
+	if ns, err := GetNamespace(namespace); err == nil {
+		if err = testClient.Delete(context.Background(), ns); err != nil {
+			t.Logf("failed to delete namespace %s: %s", namespace, err)
 		}
+	} else if apierrors.IsNotFound(err) {
+		t.Logf("failed to delete namespace %s. namespace could not be retrieved: %s", namespace, err)
 	}
 }
 

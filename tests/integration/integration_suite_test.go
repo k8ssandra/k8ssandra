@@ -38,6 +38,7 @@ func initializeCluster(t *testing.T) string {
 }
 
 func cleanupClusterOption() string {
+
 	if os.Getenv("CLUSTER_CLEANUP") != "" {
 		return os.Getenv("CLUSTER_CLEANUP")
 	} else {
@@ -107,7 +108,16 @@ func TestFullStackScenario(t *testing.T) {
 		})
 
 		t.Run("Test Stargate", func(t *testing.T) {
-			testStargate(t, namespace)
+			// The backup/restore test runs before this. Because it shuts down
+			// the Cassandra cluster, we need to restart Stargate. See
+			// https://github.com/k8ssandra/k8ssandra/issues/411 for details.
+			releaseName := "k8ssandra"
+			dcName := "dc1"
+			if err := RestartStargate(releaseName, dcName, namespace); err == nil {
+				testStargate(t, namespace)
+			} else {
+				t.Skipf("failed to restart Stargate: %s", err)
+			}
 		})
 	})
 

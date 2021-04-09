@@ -9,8 +9,8 @@ import (
 
 var testClient client.Client
 
-// Initializes a controller-runtime client. This is a no-op if it has already
-// been called. It should be called prior to any test execution.
+// InitTestClient initializes a controller-runtime client. This is a no-op if
+// it has already been called. It should be called prior to any test execution.
 func InitTestClient() error {
 	err := cassdcapi.AddToScheme(scheme.Scheme)
 	if err != nil {
