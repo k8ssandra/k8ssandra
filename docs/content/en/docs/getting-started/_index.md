@@ -2,6 +2,7 @@
 title: "K8ssandra Quick Start"
 linkTitle: "Quick Start"
 no_list: true
+weight: 2
 description: "Install a Apache Cassandra® database in Kubernetes using K8ssandra, kick the tires and take it for a spin!"
 ---
 

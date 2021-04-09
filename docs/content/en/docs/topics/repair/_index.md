@@ -1,7 +1,7 @@
 ---
-title: "Reaper for Apache Cassandra® web interface for Cassandra repairs"
+title: "Reaper for Apache Cassandra® web interface for repairs"
 linkTitle: "Reaper UI for repairs"
-description: "Use the Reaper for Apache Cassandra (Reaper) web interface for repairs"
+description: "Use the Reaper for Apache Cassandra web interface for repairs."
 ---
 
 Repairs are a critical anti-entropy operation in Apache Cassandra&reg;. In the past, there have been many custom solutions to manage them outside of your main Cassandra installation. K8ssandra provides the Reaper web interface that eliminates the need for a custom solution. Just like K8ssandra makes Cassandra setup easy, Reaper makes configuration of repairs even easier.
@@ -137,3 +137,8 @@ Notice the repair job kicking off.
 * [Running a cluster repair](http://cassandra-reaper.io/docs/usage/single/)
 * [Reaper details](http://cassandra-reaper.io/)
 * [Blog articles](https://thelastpickle.com/blog/)
+
+## Next
+
+Learn how to [scale your Cassandra cluster]({{< ref "/docs/topics/provision-a-cluster" >}}).  
+
