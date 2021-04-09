@@ -1,7 +1,7 @@
 ---
-title: "Scale your Apache Cassandra® cluster in K8ssandra"
+title: "Scale your Cassandra cluster"
 linkTitle: "Scale Cassandra"
-description: "Steps to provision and scale up or scale down an Apache Cassandra® cluster in Kubernetes"
+description: "Steps to provision and scale up/down an Apache Cassandra® cluster in Kubernetes."
 ---
 
 This topic explains how to add and remove Cassandra nodes in a Kubernetes cluster, as well as insights into the underlying operations that occur with scaling. 
@@ -188,4 +188,4 @@ This means for example that `my-k8ssandra-dc1-default-sts-3` will be deleted bef
 
 ## Next
 
-Use Medusa for Apache Cassandra to [backup and restore]({{< ref "/docs/topics/restore-a-backup/" >}}) data from/to a Cassandra database.
+Learn about the K8ssandra deployed [Helm charts]({{< ref "/docs/reference/" >}}) in the reference topics.

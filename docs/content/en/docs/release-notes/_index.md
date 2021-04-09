@@ -11,7 +11,7 @@ K8ssandra provides a production-ready platform for running Apache Cassandra&reg;
 Also deployed is Stargate, an open source data gateway that lets you interact programmatically with your Kubernetes-hosted Cassandra resources via a well-defined API. 
 
 {{% alert title="Note" color="success" %}}
-The **K8ssandra 1.1.0** release implements a number of changes, enhancements, and bug fixes. This Release Notes topic lists a subset of the key updates. For the complete list, see the [CHANGELOG](https://github.com/k8ssandra/k8ssandra/blob/main/CHANGELOG.md).  
+The **K8ssandra 1.1.0** release implements a number of changes, enhancements, and bug fixes. This Release Notes topic lists a subset of the key updates. For the complete list, see the [CHANGELOG](https://github.com/k8ssandra/k8ssandra/blob/main/CHANGELOG-1.1.md).  
 {{% /alert %}}
 
 **Release date:** 09-April-2021.
@@ -75,7 +75,7 @@ To manually restart Stargate nodes:
 
 ## K8ssandra 1.1.0 revisions
 
-Each of the following sections present a **subset** of key devlopments in K8ssandra 1.1.0. For the complete list, see the [CHANGELOG](https://github.com/k8ssandra/k8ssandra/blob/main/CHANGELOG.md).  
+Each of the following sections present a **subset** of key devlopments in K8ssandra 1.1.0. For the complete list, see the [CHANGELOG](https://github.com/k8ssandra/k8ssandra/blob/main/CHANGELOG-1.1.md).  
 
 ### Changes
 
@@ -97,9 +97,9 @@ Each of the following sections present a **subset** of key devlopments in K8ssan
 
 ### Doc updates
 
-* S3-compliant MinIO buckets for Medusa backup and restore operations, and related edits for the separate Amazon S3 topic [#556](https://github.com/k8ssandra/k8ssandra/issues/556).
-* Migrating existing Cassandra to K8ssandra [#377](https://github.com/k8ssandra/k8ssandra/issues/377).
-* Underlying considerations for scaling nodes up/down [#501](https://github.com/k8ssandra/k8ssandra/issues/501).
+* S3-compliant MinIO buckets for Medusa backup and restore operations, and related edits for the separate Amazon S3 topic [#556](https://github.com/k8ssandra/k8ssandra/issues/556). For the updates, start in [Backup and restore Cassandra data]({{< ref "/docs/topics/restore-a-backup/" >}}).
+* Migrating existing Cassandra to K8ssandra [#377](https://github.com/k8ssandra/k8ssandra/issues/377). See [Migrating a Cassandra cluster to K8ssandra]({{< ref "/docs/topics/migration/" >}}).
+* Underlying considerations for scaling nodes up/down [#501](https://github.com/k8ssandra/k8ssandra/issues/501). See [Scale your Cassandra cluster in K8ssandra]({{< ref "/docs/topics/provision-a-cluster/" >}}).
 
 ## Contributions
 ​
@@ -109,5 +109,6 @@ To submit documentation comments or edits, see [Contribution guidelines]({{< ref
 
 ## Next
 
-Read the K8ssandra [FAQs]({{< ref "/docs/faqs/" >}}) - for starters, how to pronounce "K8ssandra."
+Read the K8ssandra [FAQs]({{< ref "/docs/faqs/" >}}) - for starters, how to pronounce "K8ssandra." 
 
+If you're impatient, jump right in with our **[Quick start]({{< ref "getting-started" >}})**.
