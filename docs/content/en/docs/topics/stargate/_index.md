@@ -31,7 +31,9 @@ port exposed by the cluster ingress configuration for access.
 
 The authorization API can be accessed at: <http://STARGATE_AUTH_DOMAIN/v1/auth>
 
-Replace `STARGATE_AUTH_DOMAIN` in the example above with the DNS name and port. For example, when running on your localhost: <http://localhost:8081/v1/auth>
+Replace `STARGATE_AUTH_DOMAIN` in the example above with the DNS name and port. For example, when running on your localhost: 
+
+http://localhost:8081/v1/auth
 
 Detailed information about the Stargate auth API can be found in the [Stargate docs](https://stargate.io/docs/stargate/1.0/developers-guide/auth.html).
 
@@ -107,7 +109,9 @@ curl --location --request POST 'http://STARGATE_REST_DOMAIN/v2/schemas/keyspaces
 }'
 ```
 
-Replace `STARGATE_REST_DOMAIN` in the example above with the DNS name and port. For example, when running on your localhost, specify as part of the `curl` command: <http://localhost:8082/v2/schemas/keyspaces>
+Replace `STARGATE_REST_DOMAIN` in the example above with the DNS name and port. For example, when running on your localhost, specify as part of the `curl` command: 
+
+http://localhost:8082/v2/schemas/keyspaces
 
 The POST request will use the auth token previously generated to request the creation of a keyspace called `mykeyspace`. The server should return a response like:
 
@@ -131,6 +135,8 @@ Stargate's GraphQL service provides an interactive "playground" application that
 
 The playground application can be accessed at <http://STARGATE_GRAPHQL_DOMAIN/playground>.
 
-Replace `STARGATE_GRAPHQL_DOMAIN` in the example above with the DNS name and port. For example, when running on your localhost: <http://localhost:8080/playground>.
+Replace `STARGATE_GRAPHQL_DOMAIN` in the example above with the DNS name and port. For example, when running on your localhost: 
+
+http://localhost:8080/playground
 
 Detailed information related to using the GraphQL playground can be found in the [Stargate docs](https://stargate.io/docs/stargate/1.0/developers-guide/graphql-using.html#_using_the_graphql_playground).
