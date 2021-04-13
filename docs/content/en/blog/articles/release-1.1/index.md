@@ -13,7 +13,7 @@ The K8ssandra 1.1.0 release was published on Friday, 04/09/2021. This release of
 
 To create a new K8ssandra deployment using the latest release, follow the instructions on the [Getting Started]({{< ref "getting-started" >}}) page. 
 
-To update an existing K8ssandra deployment to the 1.1 release, see the instructions in the [Getting started for SRE]({{< ref "site-engineer#upgrade" >}}) page. You can check the version of your current installation by executing the command: `helm show chart k8ssandra/k8ssandra` and searching for the line that begins with `version:`.
+To update an existing K8ssandra deployment to the 1.1 release, see the instructions in the [Upgrading K8ssandra]({{< ref "upgrade" >}}) page. You can check the version of your current installation by executing the command: `helm show chart k8ssandra/k8ssandra` and searching for the line that begins with `version:`.
 
 ## MinIO Storage
 
