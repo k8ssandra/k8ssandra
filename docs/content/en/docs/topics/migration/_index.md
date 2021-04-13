@@ -226,4 +226,4 @@ The steps necessary here will vary depending on how you installed and managed th
 
 ## Next
 
-Learn how to [monitor Cassandra]({{< ref "/docs/topics/monitoring/" >}}) in a Kubernetes cluster.
+Learn how to [upgrade K8ssandra]({{< ref "/docs/topics/upgrade/" >}}) from prior releases or settings.
