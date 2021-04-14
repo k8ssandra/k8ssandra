@@ -14,8 +14,8 @@ You **must** complete the steps in [Quick start]({{< relref "docs/getting-starte
 In this guide, we'll cover:
 
 * [Setting up port forwarding]({{< relref "#set-up-port-forwarding" >}}) to access Stargate services and CQLSH outside your Kubernetes (K8s) cluster.
-* [Accessing K8ssandra using Stargate]({{< relref "#access-k8ssandra-using-the-stargate-api" >}}) by creating an access token, and using Stargates's REST, GraphQL and document interfaces.
-* [Accessing K8ssandra using CQLSH]({{< relref "#access-k8ssandra-using-cqlsh" >}}) including some basic CQL commands.
+* [Accessing Cassandra using Stargate]({{< relref "#access-cassandra-using-the-stargate-apis" >}}) by creating an access token, and using Stargates's REST, GraphQL and document interfaces.
+* [Accessing Cassandra using CQLSH]({{< relref "#access-cassandra-using-cqlsh" >}}) including some basic CQL commands.
 
 ## Set up port forwarding
 
@@ -110,7 +110,7 @@ To terminate the port forwarding service:
 Exiting the terminal instance will terminate the port forwarding service.
 {{% /alert %}}
 
-## Access K8assandra using the Stargate APIs
+## Access Cassandra using the Stargate APIs
 
 [Stargate](https://stargate.io/) provides APIs, data types and access methods that bring new capabilities to existing databases. Currently Stargate adds Document, REST and GraphQL APIs for CRUD access to data stored in Apache Cassandra® and there are many more APIs coming soon. Separating compute and storage also has benefits for maximizing resource consumption in cloud environments. When using Stargate with Cassandra, you can offload the request coordination overhead from your storage instances onto Stargate instances which has shown latency improvements in preliminary testing.
 
