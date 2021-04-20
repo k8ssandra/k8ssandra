@@ -1,4 +1,4 @@
-baseURL = "https://k8ssandra.io/"
+baseURL = "https://docs.k8ssandra.io/"
 title = "K8ssandra, Apache Cassandra on Kubernetes"
 
 enableRobotsTXT = true
@@ -103,7 +103,7 @@ version = "0.0"
 
 # A link to latest version of the docs. Used in the "version-banner" partial to
 # point people to the main doc site.
-url_latest_version = "https://k8ssandra.io"
+url_latest_version = "https://docs.k8ssandra.io"
 
 # Repository configuration (URLs for in-page links to opening issues and suggesting changes)
 github_repo = "https://github.com/k8ssandra/k8ssandra"
@@ -215,39 +215,7 @@ name = "production"
 # URL = "azblob://$web"
 
 # You can use a "prefix=" query parameter to target a subfolder of the bucket:
-URL = "gs://k8ssandra.io"
-
-# Optionally, you can include or exclude specific files.
-# See https://godoc.org/github.com/gobwas/glob#Glob for the glob pattern syntax.
-# If non-empty, the pattern is matched against the local path.
-# All paths are matched against in their filepath.ToSlash form.
-# If exclude is non-empty, and a local or remote file's path matches it, that file is not synced.
-# If include is non-empty, and a local or remote file's path does not match it, that file is not synced.
-# As a result, local files that don't pass the include/exclude filters are not uploaded to remote,
-# and remote files that don't pass the include/exclude filters are not deleted.
-# include = "**.html" # would only include files with ".html" suffix
-# exclude = "**.{jpg, png}" # would exclude files with ".jpg" or ".png" suffix
-
-
-# [[deployment.matchers]] configure behavior for files that match the Pattern.
-# Samples:
-
-[[deployment.targets]]
-# An arbitrary name for this target.
-name = "preview"
-# The Go Cloud Development Kit URL to deploy to. Examples:
-# GCS; see https://gocloud.dev/howto/blob/#gcs
-# URL = "gs://<Bucket Name>"
-
-# S3; see https://gocloud.dev/howto/blob/#s3
-# For S3-compatible endpoints, see https://gocloud.dev/howto/blob/#s3-compatible
-# URL = "s3://<Bucket Name>?region=<AWS region>"
-
-# Azure Blob Storage; see https://gocloud.dev/howto/blob/#azure
-# URL = "azblob://$web"
-
-# You can use a "prefix=" query parameter to target a subfolder of the bucket:
-URL = "gs://preview.k8ssandra.io"
+URL = "gs://docs.k8ssandra.io"
 
 # Optionally, you can include or exclude specific files.
 # See https://godoc.org/github.com/gobwas/glob#Glob for the glob pattern syntax.
