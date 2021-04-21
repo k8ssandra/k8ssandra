@@ -30,10 +30,12 @@ Added in K8ssandra 1.1.0:
 
 ## Backup and restore steps
 
-For detailed walk-throughs of Medusa backup and restore operations with Amazon S3 or MinIO, see the following topics in the K8ssandra documentation:
+For detailed walk-throughs of Medusa backup and restore operations, see:
 
-* [Backup and restore Cassandra with Amazon S3]({{< relref "amazon-s3" >}})
+* Backup and restore Cassandra with S3-compatible [MinIO]({{< ref "/tasks/backup-restore/s3-compatible/" >}}).
 
-* [Backup and restore Cassandra with MinIO]({{< relref "minio" >}})
+* Backup and restore Cassandra with [Amazon S3]({{< ref "/tasks/backup-restore/s3-compatible/amazon-s3.md" >}}).
+
+* Backup and restore Cassandra with [GCS]({{< ref "/tasks/backup-restore/gcs" >}}).
 
 For information about GCS, see the [Google Cloud Storage documentation](https://cloud.google.com/storage).

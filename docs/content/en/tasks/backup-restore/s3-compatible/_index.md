@@ -9,7 +9,7 @@ Medusa recently introduced support for all S3-compatible backends, including Min
 
 [MinIO](https://min.io/) is a popular Kubernetes object storage suite. This topic walks you through the backup and restore steps.
 
-For related information, see [Backup and restore Cassandra with Amazon S3]({{< ref "/topics/restore-a-backup/amazon-s3" >}}).
+For related information, see [Backup and restore Cassandra with Amazon S3]({{< ref "/backup-restore/s3-compatible/amazon-s3.md" >}}).
 
 ## Deploy MinIO
 
@@ -310,4 +310,4 @@ Success! You’ve successfully restored your lost data in just a few commands.
 
 ## Next
 
-Learn how to use the [Reaper web interface]({{< ref "/topics/repair/" >}}).
+Learn how to use the [Reaper web interface]({{< ref "/tasks/repair/" >}}) to perform Cassandra anti-entropy repairs.

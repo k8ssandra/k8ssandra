@@ -14,7 +14,7 @@ K8ssandra currently only supports a single-datacenter cluster.
 
 * A Kubernetes environment.
 * [Helm](https://helm.sh/docs/intro/install/) is installed.
-* K8ssandra is installed and running in Kubernetes - see the [Quick start]({{< ref "getting-started" >}}).
+* K8ssandra is installed and running in Kubernetes - see the [Quick starts]({{< ref "quickstarts" >}}).
 
 ## Create a cluster
 
@@ -62,6 +62,8 @@ helm upgrade my-k8ssandra k8ssandra/k8ssandra --reuse-values --set cassandra.dat
 ```
 
 {{% /alert %}}
+
+## Underlying considerations when increasing size values
 
 By default, cass-operator configures the Cassandra pods so that Kubernetes will not schedule multiple Cassandra pods on the same worker node. If you try to increase the cluster size beyond the number of available worker nodes, you may find that the additional pods do not deploy. 
 
@@ -154,9 +156,11 @@ After the new nodes are up and running, `nodetool cleanup` should run on all of 
 
 ## Remove nodes
 
-Just like with adding nodes, removing nodes is simply a matter of changing the configured `size` property. cass-operator does a few things when you decrease the datacenter size.
+Just like with adding nodes, removing nodes is simply a matter of changing the configured `size` property. The cass-operator does a few things when you decrease the datacenter size.
 
-First, it checks that the remaining nodes have enough capacity to handle the increased storage capacity. If cass-operator determines that there is insufficient capacity, it will log a message. Example:
+## Underlying considerations when lowering size values
+
+First, cass-operator checks that the remaining nodes have enough capacity to handle the increased storage capacity. If cass-operator determines that there is insufficient capacity, it will log a message. Example:
 
 ```text
 Not enough free space available to decommission. my-k8ssandra-dc1-default-sts-3 has 12345 free space, but 67891 is needed.
@@ -188,4 +192,4 @@ This means for example that `my-k8ssandra-dc1-default-sts-3` will be deleted bef
 
 ## Next
 
-Learn about the K8ssandra deployed [Helm charts]({{< ref "/reference/" >}}) in the reference topics.
+Learn about the K8ssandra deployed Helm charts and additional reference resources (such as a Glossary) in the [reference]]({{< ref "/reference/" >}}) topics.

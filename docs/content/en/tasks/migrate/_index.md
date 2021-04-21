@@ -1,6 +1,6 @@
 ---
-title: "Migrating a Cassandra cluster to K8ssandra"
-linkTitle: "Migrating a cluster to K8ssandra"
+title: "Migrate a Cassandra cluster to K8ssandra"
+linkTitle: "Migrate a cluster to K8ssandra"
 no_list: true
 weight: 1
 description: How to migrate an existing Cassandra cluster that's running in Kubernetes to K8ssandra.
@@ -226,4 +226,4 @@ The steps necessary here will vary depending on how you installed and managed th
 
 ## Next
 
-Learn how to [upgrade K8ssandra]({{< ref "/topics/upgrade/" >}}) from prior releases or settings.
+Learn how to [upgrade K8ssandra]({{< ref "/tasks/upgrade/" >}}) from prior releases or settings.
