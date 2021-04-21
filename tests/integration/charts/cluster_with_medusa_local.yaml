@@ -15,9 +15,6 @@ reaper:
   enabled: false
 medusa:
   enabled: true
-  image:
-    repository: docker.io/k8ssandra/medusa
-    tag: 0.10.0
 
   multiTenant: true
   storage: local
