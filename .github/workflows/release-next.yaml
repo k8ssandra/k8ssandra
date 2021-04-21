@@ -1,5 +1,5 @@
 ---
-name: Release Next Charts
+name: Release Prerelease Charts
 on:
   push:
     branches:
@@ -110,17 +110,17 @@ jobs:
       - name: Download current index from Google Cloud
         env:
           GCP_HELM_BUCKET_NAME: ${{ secrets.GCP_HELM_BUCKET_NAME }}
-        run: gsutil cp gs://$GCP_HELM_BUCKET_NAME/next/index.yaml ./
+        run: gsutil cp gs://$GCP_HELM_BUCKET_NAME/stable/index.yaml ./
         working-directory: build
       - name: Regenerate Helm index
         env:
           GCP_HELM_BUCKET_NAME: ${{ secrets.GCP_HELM_BUCKET_NAME }}
-        run: helm repo index . --merge index.yaml --url "https://$GCP_HELM_BUCKET_NAME/next/"
+        run: helm repo index . --merge index.yaml --url "https://$GCP_HELM_BUCKET_NAME/stable/"
         working-directory: build
       - name: Upload packages and index
         env:
           GCP_HELM_BUCKET_NAME: ${{ secrets.GCP_HELM_BUCKET_NAME }}
         run: |
-          gsutil cp ./*.tgz gs://$GCP_HELM_BUCKET_NAME/next/
-          gsutil cp ./index.yaml gs://$GCP_HELM_BUCKET_NAME/next/
+          gsutil cp ./*.tgz gs://$GCP_HELM_BUCKET_NAME/stable/
+          gsutil cp ./index.yaml gs://$GCP_HELM_BUCKET_NAME/stable/
         working-directory: build
