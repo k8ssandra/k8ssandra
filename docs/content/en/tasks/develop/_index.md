@@ -142,4 +142,4 @@ Detailed information related to using the GraphQL playground can be found in the
 
 ## Next
 
-Learn how to [monitor]({{< relref "/tasks/monitor" >}}) an existing Cassandra cluster that’s running in Kubernetes to K8ssandra.
+Learn how to access and use the pre-configured Prometheus and Grafana interfaces to [monitor]({{< relref "/tasks/monitor" >}}) your Cassandra cluster running in Kubernetes.
