@@ -322,9 +322,11 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 		It("enabling only medusa with local storage", func() {
 			options := &helm.Options{
 				SetValues: map[string]string{
-					"medusa.enabled": "true",
-					"medusa.storage": "local",
-					"reaper.enabled": "false",
+					"medusa.enabled":                 "true",
+					"medusa.storage":                 "local",
+					"medusa.podStorage.size":         "30Gi",
+					"medusa.podStorage.storageClass": "slow",
+					"reaper.enabled":                 "false",
 				},
 				KubectlOptions: defaultKubeCtlOptions,
 			}
@@ -337,12 +339,33 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			Expect(len(cassdc.Spec.PodTemplateSpec.Spec.Containers)).To(Equal(2))
 			// Second container should be medusa
 			Expect(cassdc.Spec.PodTemplateSpec.Spec.Containers[1].Name).To(Equal(MedusaContainer))
+			// AdditionalVolumes should have been created
+			Expect(cassdc.Spec.StorageConfig.AdditionalVolumes).To(HaveLen(1))
+			Expect(*cassdc.Spec.StorageConfig.AdditionalVolumes[0].PVCSpec.StorageClassName).To(Equal("slow"))
+			Expect(cassdc.Spec.StorageConfig.AdditionalVolumes[0].Name).To(Equal("medusa-backups"))
 
 			medusaContainer := GetContainer(cassdc, MedusaContainer)
 			medusaConfigMap := HelmReleaseName + "-medusa"
 
-			Expect(kubeapi.GetVolumeMountNames(medusaContainer)).To(ConsistOf(medusaConfigMap, "cassandra-config", "server-data"))
+			Expect(kubeapi.GetVolumeMountNames(medusaContainer)).To(ConsistOf(medusaConfigMap, "cassandra-config", "server-data", "medusa-backups"))
 			Expect(kubeapi.GetVolumeNames(cassdc.Spec.PodTemplateSpec)).To(ConsistOf(medusaConfigMap, "cassandra-config", PodInfoVolumeName))
+
+			medusaRestoreInitContainer := GetInitContainer(cassdc, MedusaInitContainer)
+
+			Expect(kubeapi.GetVolumeMountNames(medusaRestoreInitContainer)).To(ConsistOf(medusaConfigMap, "server-config", "server-data", "medusa-backups", PodInfoVolumeName))
+		})
+
+		It("enabling only medusa with local storage but missing size and storageclass", func() {
+			options := &helm.Options{
+				SetValues: map[string]string{
+					"medusa.enabled": "true",
+					"medusa.storage": "local",
+					"reaper.enabled": "false",
+				},
+				KubectlOptions: defaultKubeCtlOptions,
+			}
+
+			Expect(renderTemplate(options)).To(Not(Succeed()))
 		})
 
 		It("enabling reaper and medusa", func() {

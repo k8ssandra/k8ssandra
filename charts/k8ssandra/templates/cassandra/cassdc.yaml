@@ -5,7 +5,12 @@
   {{- fail (print .Values.cassandra.version " is not a supported Cassandra version") }}
 {{- end -}}
 
+{{- if and (eq .Values.medusa.storage "local") (not (and (.Values.medusa.podStorage.storageClass) (.Values.medusa.podStorage.size))) -}}
+  {{- fail (print "If medusa storage type is set to local, the podStorage storageClass and size must be set") }}
+{{- end -}}
 {{- if .Values.cassandra.enabled -}}
+
+
 apiVersion: cassandra.datastax.com/v1beta1
 kind: CassandraDatacenter
 metadata:
@@ -41,13 +46,25 @@ spec:
       resources:
         requests:
           storage: {{ .Values.cassandra.cassandraLibDirVolume.size | default "5Gi" }}
+    {{- if and (eq .Values.medusa.storage "local") ( .Values.medusa.podStorage ) }}
+    additionalVolumes:
+      - mountPath: /mnt/backups
+        name: medusa-backups
+        pvcSpec:
+          storageClassName: {{ .Values.medusa.podStorage.storageClass }}
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: {{ .Values.medusa.podStorage.size }}
+    {{- end }}
 {{- if .Values.cassandra.additionalSeeds }}
   additionalSeeds:
   {{- range .Values.cassandra.additionalSeeds }}
     - {{ . }}
   {{- end }}
 {{- end }}
-  allowMultipleNodesPerWorker: {{ .Values.cassandra.allowMultipleNodesPerWorker | default false}}  
+  allowMultipleNodesPerWorker: {{ .Values.cassandra.allowMultipleNodesPerWorker | default false}}
 {{- if .Values.cassandra.allowMultipleNodesPerWorker}}
   resources:
     limits:
@@ -195,6 +212,9 @@ spec:
           {{- if not (eq .Values.medusa.storage "local") }}
           - name:  {{ .Values.medusa.storageSecret }}
             mountPath: /etc/medusa-secrets
+          {{- else }}
+          - name:  medusa-backups
+            mountPath: /mnt/backups
           {{- end }}
       {{- end }}
       containers:
@@ -239,6 +259,9 @@ spec:
           {{- if not (eq .Values.medusa.storage "local") }}
           - mountPath: /etc/medusa-secrets
             name: {{ .Values.medusa.storageSecret }}
+          {{- else }}
+          - name:  medusa-backups
+            mountPath: /mnt/backups
           {{- end }}
       {{- end }}
       volumes:

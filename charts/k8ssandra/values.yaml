@@ -518,8 +518,8 @@ medusa:
 
   # -- API interface used by the object store. Supported values include `s3`,
   # 's3_compatible' and `gcs`. For file system storage, i.e., a pod volume
-  # mount, use 'local'. Note that 'local' does not necessarily imply a local
-  # volume. It could also be network attached storage. It is simply accessed
+  # mount, use 'local' and set the podStorage properties. Note that 'local' does not necessarily 
+  # imply a local volume. It could also be network attached storage. It is simply accessed
   # through the file system.
   storage: s3
 
@@ -534,16 +534,28 @@ medusa:
     # For s3_compatible option, port is optional
     # port: 9000
 
-  # Is SSL used or not for s3_compatible connection
-  # secure: false
+    # Is SSL used or not for s3_compatible connection
+    # secure: false
 
-  # -- Name of the remote storage bucket where backups will be stored. If using 'local' storage, set the
-  # path of the local storage here.
+  # -- Name of the remote storage bucket where backups will be stored. If using 'local' storage, this
+  # value is ignored.
   bucketName: awstest
 
   # -- Name of the Kubernetes `Secret` that stores the key file for the
-  # storage provider's API
+  # storage provider's API. If using 'local' storage, this value is ignored.
   storageSecret: medusa-bucket-key
+
+  # -- To use a locally mounted volumes for backups, the Cassandra pods must have a PVC where to write
+  # the backups to.
+  podStorage: {}
+    # Storage class for persistent volume claims (PVCs) used for the medusa backups.
+    # Run `kubectl get storageclass` to identify what is available in your environment.
+    # This storageClass can be different than what is used by the Cassandra itself.
+    # storageClass: standard
+
+    # Size of the provisioned persistent volume per node. The available storage must be enough
+    # to keep new backups as well as retained older backups.
+    # size: 25Gi
 
 monitoring:
   grafana:
