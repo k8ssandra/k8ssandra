@@ -1,6 +1,7 @@
 ---
 title: "Monitor Cassandra"
 linkTitle: "Monitor Cassandra"
+weight: 6
 description: "Access the Prometheus and Grafana interfaces to monitor your Apache Cassandra® cluster running in Kubernetes"
 ---
 
@@ -17,16 +18,16 @@ After you've met the prerequisites identified below, access the preconfigured Gr
 ## Prerequisites
 
 1. Kubernetes cluster with the following elements deployed:
-   * [K8ssandra]({{< ref "getting-started#install-k8ssandra" >}})
-   * [Ingress Controller]({{< ref "ingress" >}})
+   * [K8ssandra]({{< ref "/quickstarts#install-k8ssandra" >}})
+   * [Ingress Controller]({{< ref "/tasks/connect/ingress" >}})
 1. DNS name for the Grafana service 
 1. DNS name for the Prometheus service
 
 {{% alert title="Tip" color="success" %}}
 As an alternative to configuring an Ingress, consider port forwarding. It's another way to provide external access to resources that have been deployed by K8ssandra in your Kubernetes environment. Those resources could include Prometheus metrics, pre-configured Grafana dashboards, and the Reaper web interface for repairs of Cassandra&reg; data. The `kubectl port-forward` command does not require an Ingress/Traefik to work. 
 
-* Developers, see [Set up port forwarding]({{< ref "/getting-started/developer/#set-up-port-forwarding" >}}).  
-* Site reliability engineers, see [Configure port forwarding]({{< ref "/getting-started/site-engineer/#port-forwarding" >}}). 
+* Developers, see [Set up port forwarding]({{< ref "/quickstarts/developer/#set-up-port-forwarding" >}}).  
+* Site reliability engineers, see [Configure port forwarding]({{< ref "/quickstarts/site-engineer/#port-forwarding" >}}). 
 {{% /alert %}}
 
 ## Access Grafana Interface
@@ -83,20 +84,19 @@ kubectl get pods
 **Output**:
 
 ```bash
-NAME                                                        READY   STATUS      RESTARTS   AGE
-k8ssandra-cass-operator-65cc657-fq6bc                       1/1     Running     0          12m
-k8ssandra-dc1-default-sts-0                                 3/3     Running     0          12m
-k8ssandra-dc1-stargate-bb47877d5-54sdt                      1/1     Running     0          10m
-k8ssandra-grafana-7f84d96d47-xd79s                          2/2     Running     0          10m
-k8ssandra-kube-prometheus-stack-operator-76b984f9f4-pp745   1/1     Running     0          10m
-k8ssandra-medusa-operator-6888946787-qwzsx                  1/1     Running     2          10m
-k8ssandra-reaper-k8ssandra-656f5b77cc-nqfzv                 1/1     Running     0          10m
-k8ssandra-reaper-k8ssandra-schema-88cpx                     0/1     Completed   0          10m
-k8ssandra-reaper-operator-5b8c4c66b8-8cf86                  1/1     Running     2          10m
-prometheus-k8ssandra-kube-prometheus-stack-prometheus-0     2/2     Running     1          10m
+NAME                                                READY   STATUS      RESTARTS   AGE
+k8ssandra-cass-operator-766849b497-klgwf            1/1     Running     0          7m33s
+k8ssandra-dc1-default-sts-0                         2/2     Running     0          7m5s
+k8ssandra-dc1-stargate-5c46975f66-pxl84             1/1     Running     0          7m32s
+k8ssandra-grafana-679b4bbd74-wj769                  2/2     Running     0          7m32s
+k8ssandra-kube-prometheus-operator-85695ffb-ft8f8   1/1     Running     0          7m32s
+k8ssandra-reaper-655fc7dfc6-n9svw                   1/1     Running     0          4m52s
+k8ssandra-reaper-operator-79fd5b4655-748rv          1/1     Running     0          7m33s
+k8ssandra-reaper-schema-dxvmm                       0/1     Completed   0          5m3s
+prometheus-k8ssandra-kube-prometheus-prometheus-0   2/2     Running     1          7m27s
 ```
 
-Notice that the Grafana Operator is running, as well as other services such as Prometheus.
+Notice that Grafana is running, as well as other services such as Prometheus.
 
 If you are in a local Kubernetes environment, you can now access the Grafana dashboard with a URL such as:
 
@@ -168,4 +168,4 @@ Prometheus is available at the following address if running locally:
 
 ## Next
 
-Access the [Reaper web interface]({{< ref "/topics/repair/" >}}) to perform periodic repairs of Cassandra data.
+See the [Reaper web interface]({{< ref "/tasks/repair/" >}}) topic for information on performing periodic repairs of Cassandra data.
