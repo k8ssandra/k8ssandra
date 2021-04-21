@@ -8,7 +8,7 @@ description: "Familiarize yourself with K8ssandra utilities and procedures for m
 **Completion time**: **10 minutes**.
 
 {{% alert title="Important" color="warning" %}}
-You **must** complete the steps in [Quick start]({{< relref "/getting-started" >}}) before continuing.
+You **must** complete the steps in [Quick start]({{< relref "/quickstarts" >}}) before continuing.
 {{% /alert %}}
 
 In this quick start we'll cover the following topics:
@@ -21,9 +21,9 @@ In this quick start we'll cover the following topics:
 
 ## Access the Apache Cassandra® nodetool utility {#nodetool}
 
-Cassandra's nodetool utility is commonly used for a variety of monitoring and management tasks. You'll need to run nodetool on your K8ssandra cluster using the `kubectl exec` command, since there's no external stand alone option available.
+Cassandra's nodetool utility is commonly used for a variety of monitoring and management tasks. You'll need to run nodetool on your K8ssandra cluster using the `kubectl exec` command, because there's no external standalone option available.
 
-To run nodetool commands:
+To run `nodetool` commands:
 
 1. Get a list of the running K8ssandra pods using `kubectl get`:
 
@@ -34,16 +34,16 @@ To run nodetool commands:
     **Output**:
 
     ```bash
-    NAME                                                  READY   STATUS      RESTARTS   AGE
-    k8ssandra-cass-operator-6666588dc5-qpvzg              1/1     Running     3          45h
-    k8ssandra-dc1-default-sts-0                           2/2     Running     0          115m
-    k8ssandra-dc1-stargate-6f7f5d6fd6-sblt8               1/1     Running     12         45h
-    k8ssandra-grafana-6c4f6577d8-fxfsd                    2/2     Running     6          45h
-    k8ssandra-kube-prometheus-operator-5556885bd6-st4fp   1/1     Running     3          45h
-    k8ssandra-reaper-k8ssandra-5b6cc959b7-zzlzr           1/1     Running     15         45h
-    k8ssandra-reaper-k8ssandra-schema-47qzk               0/1     Completed   0          45h
-    k8ssandra-reaper-operator-cc46fd5f4-85mk5             1/1     Running     4          45h
-    prometheus-k8ssandra-kube-prometheus-prometheus-0     2/2     Running     7          45h
+    NAME                                                READY   STATUS      RESTARTS   AGE
+    k8ssandra-cass-operator-766849b497-klgwf            1/1     Running     1          45h
+    k8ssandra-dc1-default-sts-0                         2/2     Running     0          115m
+    k8ssandra-dc1-stargate-5c46975f66-pxl84             1/1     Running     5          45h
+    k8ssandra-grafana-679b4bbd74-wj769                  2/2     Running     2          45h
+    k8ssandra-kube-prometheus-operator-85695ffb-ft8f8   1/1     Running     1          45h
+    k8ssandra-reaper-655fc7dfc6-n9svw                   1/1     Running     7          45h
+    k8ssandra-reaper-operator-79fd5b4655-748rv          1/1     Running     0          45h
+    k8ssandra-reaper-schema-dxvmm                       0/1     Completed   1          45h
+    prometheus-k8ssandra-kube-prometheus-prometheus-0   2/2     Running     3          45h
     ```
 
     The K8ssandra pod running Cassandra takes the form `<k8ssandra-cluster-name>-<datacenter-name>-default-sts-<n>` and, in the example above is `k8ssandra-dc1-default-sts-0` which we'll use throughout the following sections.
@@ -52,7 +52,7 @@ To run nodetool commands:
 Although not applicable to this quick start, additional K8ssandra Cassandra nodes will increment the final `<n>` but the rest of the name will remain the same.
     {{% /alert %}}
 
-1. Run [`nodetool status`](https://docs.datastax.com/en/cassandra-oss/3.x/cassandra/tools/toolsStatus.html), using the Cassandra node name `k8ssandra-dc1-default-sts-0`, and replacing `<k8ssandra-username>` and `<k8ssandra-password>` with the values you retrieved in [Retrieve K8ssandra superuser credentials]({{< relref "/getting-started#superuser" >}}):
+1. Run [`nodetool status`](https://docs.datastax.com/en/cassandra-oss/3.x/cassandra/tools/toolsStatus.html), using the Cassandra node name `k8ssandra-dc1-default-sts-0`, and replacing `<k8ssandra-username>` and `<k8ssandra-password>` with the values you retrieved in [Retrieve K8ssandra superuser credentials]({{< relref "/quickstarts#superuser" >}}):
 
     ```bash
     kubectl exec -it k8ssandra-dc1-default-sts-0 -c cassandra -- nodetool -u <k8ssandra-username> -pw <k8ssandra-password> status
@@ -131,7 +131,7 @@ For details on all nodetool commands, see [The nodetool utility](https://docs.da
 
 ## Configure port forwarding {#port-forwarding}
 
-In order to access Cassandra utilities outside of the K8s cluster, if you don't have an Ingress setup as described in [Configure Ingress]({{< relref "/topics/ingress" >}}), you'll need to configure port forwarding.
+In order to access Cassandra utilities outside of the K8s cluster, if you don't have an Ingress setup as described in [Configure Ingress]({{< relref "/connect/ingress" >}}), you'll need to configure port forwarding.
 
 Begin by getting a list of your K8ssandra K8s services and ports:
 
@@ -142,18 +142,18 @@ kubectl get services
 **Output**:
 
 ```bash
-NAME                                        TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)                                                 AGE
-cass-operator-metrics                       ClusterIP   10.99.98.218     <none>        8383/TCP,8686/TCP                                       21h
-k8ssandra-dc1-all-pods-service              ClusterIP   None             <none>        9042/TCP,8080/TCP,9103/TCP                              21h
-k8ssandra-dc1-service                       ClusterIP   None             <none>        9042/TCP,9142/TCP,8080/TCP,9103/TCP,9160/TCP            21h
-k8ssandra-dc1-stargate-service              ClusterIP   10.106.70.148    <none>        8080/TCP,8081/TCP,8082/TCP,8084/TCP,8085/TCP,9042/TCP   21h
-k8ssandra-grafana                           ClusterIP   10.96.120.157    <none>        80/TCP                                                  21h
-k8ssandra-kube-prometheus-operator          ClusterIP   10.97.21.175     <none>        443/TCP                                                 21h
-k8ssandra-kube-prometheus-prometheus        ClusterIP   10.111.184.111   <none>        9090/TCP                                                21h
-k8ssandra-reaper-k8ssandra-reaper-service   ClusterIP   10.104.46.103    <none>        8080/TCP                                                21h
-k8ssandra-seed-service                      ClusterIP   None             <none>        <none>                                                  21h
-kubernetes                                  ClusterIP   10.96.0.1        <none>        443/TCP                                                 21h
-prometheus-operated                         ClusterIP   None             <none>        9090/TCP                                                2
+NAME                                   TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)                                                 AGE
+cass-operator-metrics                  ClusterIP   10.80.3.92     <none>        8383/TCP,8686/TCP                                       24h
+k8ssandra-dc1-all-pods-service         ClusterIP   None           <none>        9042/TCP,8080/TCP,9103/TCP                              24h
+k8ssandra-dc1-service                  ClusterIP   None           <none>        9042/TCP,9142/TCP,8080/TCP,9103/TCP,9160/TCP            24h
+k8ssandra-dc1-stargate-service         ClusterIP   10.80.13.197   <none>        8080/TCP,8081/TCP,8082/TCP,8084/TCP,8085/TCP,9042/TCP   24h
+k8ssandra-grafana                      ClusterIP   10.80.7.168    <none>        80/TCP                                                  24h
+k8ssandra-kube-prometheus-operator     ClusterIP   10.80.8.109    <none>        443/TCP                                                 24h
+k8ssandra-kube-prometheus-prometheus   ClusterIP   10.80.2.44     <none>        9090/TCP                                                24h
+k8ssandra-reaper-reaper-service        ClusterIP   10.80.5.77     <none>        8080/TCP                                                24h
+k8ssandra-seed-service                 ClusterIP   None           <none>        <none>                                                  24h
+kubernetes                             ClusterIP   10.80.0.1      <none>        443/TCP                                                 27h
+prometheus-operated                    ClusterIP   None           <none>        9090/TCP                                                24h
 ```
 
 In the output above, the services of interest are:
@@ -171,7 +171,7 @@ To configure port forwarding:
     ```bash
     kubectl port-forward svc/k8ssandra-grafana 9191:80 &
     kubectl port-forward svc/prometheus-operated 9292:9090 &
-    kubectl port-forward svc/k8ssandra-reaper-k8ssandra-reaper-service 9393:8080 &
+    kubectl port-forward svc/k8ssandra-reaper-reaper-service 9393:8080 &
     ```
 
     **Output**:
@@ -313,4 +313,12 @@ You can easily upgrade your K8ssandra software with the `helm repo update` comma
 
 ## Next
 
-See the K8ssandra [task-based]({{< ref "/topics/" >}}) topics. 
+For details such as sizing recommendations and quota settings that are specific to cloud providers like Google Kubernetes Engine (GKE) and Amazon Elastic Kubernetes Service (EKS), see the [Install]({{< relref "/install" >}}) topics. 
+
+Also see:
+
+* [Tasks]({{< relref "/tasks" >}}).
+* [FAQs]({{< relref "/faqs" >}}).
+* [K8ssandra components and architecture]({{< relref "/components" >}}).
+* [Reference material]({{< relref "/reference" >}}).
+* If you'd like to contribute to K8ssandra code, docs, or both, refer to our [Contribution guidelines]({{< relref "/contribute" >}}).

@@ -1,9 +1,9 @@
 ---
-title: "K8ssandra Quick Start"
-linkTitle: "Quick Start"
+title: "K8ssandra Quick Starts"
+linkTitle: "Quick Starts"
 no_list: true
 weight: 2
-description: "Install a Apache Cassandra® database in Kubernetes using K8ssandra, kick the tires and take it for a spin!"
+description: "Get started **now** by following these steps. Install Apache Cassandra® database in Kubernetes using K8ssandra, kick the tires and take it for a spin!"
 ---
 
 **Completion time**: **10 minutes**.
@@ -298,16 +298,16 @@ kubectl get pods
 **Output**:
 
 ```bash
-NAME                                                  READY   STATUS      RESTARTS   AGE
-k8ssandra-cass-operator-6666588dc5-s4xgc              1/1     Running     0          6m59s
-k8ssandra-dc1-default-sts-0                           2/2     Running     0          6m27s
-k8ssandra-dc1-stargate-6f7f5d6fd6-2dz8f               1/1     Running     0          7m
-k8ssandra-grafana-6c4f6577d8-469qx                    2/2     Running     0          6m59s
-k8ssandra-kube-prometheus-operator-5556885bd6-l5pxz   1/1     Running     0          6m59s
-k8ssandra-reaper-k8ssandra-5b6cc959b7-wt22j           1/1     Running     0          3m20s
-k8ssandra-reaper-k8ssandra-schema-dnrpk               0/1     Completed   0          3m35s
-k8ssandra-reaper-operator-cc46fd5f4-lzq96             1/1     Running     0          7m
-prometheus-k8ssandra-kube-prometheus-prometheus-0     2/2     Running     1          6m32s
+NAME                                                READY   STATUS      RESTARTS   AGE
+k8ssandra-cass-operator-766849b497-klgwf            1/1     Running     0          7m33s
+k8ssandra-dc1-default-sts-0                         2/2     Running     0          7m5s
+k8ssandra-dc1-stargate-5c46975f66-pxl84             1/1     Running     0          7m32s
+k8ssandra-grafana-679b4bbd74-wj769                  2/2     Running     0          7m32s
+k8ssandra-kube-prometheus-operator-85695ffb-ft8f8   1/1     Running     0          7m32s
+k8ssandra-reaper-655fc7dfc6-n9svw                   1/1     Running     0          4m52s
+k8ssandra-reaper-operator-79fd5b4655-748rv          1/1     Running     0          7m33s
+k8ssandra-reaper-schema-dxvmm                       0/1     Completed   0          5m3s
+prometheus-k8ssandra-kube-prometheus-prometheus-0   2/2     Running     1          7m27s
 ```
 
 The K8ssandra pods in the example above have the identifier `k8ssandra` either prefixed or inline, since that's the name that was specified when the cluster was created using Helm. If you choose a different cluster name during installation, your pod names will be different.
@@ -317,7 +317,7 @@ The actual Cassandra node name from the listing above is `k8ssandra-dc1-default-
 Verify the following:
 
 * The K8ssandra pod running Cassandra, `k8ssandra-dc1-default-sts-0` in the example above should show `2/2` as `Ready`.
-* The Stargate pod, `k8ssandra-dc1-stargate-6f7f5d6fd6-2dz8f` in the example above should show `1/1` as `Ready`.
+* The Stargate pod, `k8ssandra-dc1-stargate-5c46975f66-pxl84` in the example above should show `1/1` as `Ready`.
 
 {{% alert title="Important" color="warning" %}}
 
@@ -364,18 +364,18 @@ To check the health of your K8ssandra cluster:
     **Output**:
 
     ```bash
-    NAME                                        TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)                                                 AGE
-    cass-operator-metrics                       ClusterIP   10.99.98.218     <none>        8383/TCP,8686/TCP                                       47m
-    k8ssandra-dc1-all-pods-service              ClusterIP   None             <none>        9042/TCP,8080/TCP,9103/TCP                              47m
-    k8ssandra-dc1-service                       ClusterIP   None             <none>        9042/TCP,9142/TCP,8080/TCP,9103/TCP,9160/TCP            47m
-    k8ssandra-dc1-stargate-service              ClusterIP   10.106.70.148    <none>        8080/TCP,8081/TCP,8082/TCP,8084/TCP,8085/TCP,9042/TCP   47m
-    k8ssandra-grafana                           ClusterIP   10.96.120.157    <none>        80/TCP                                                  47m
-    k8ssandra-kube-prometheus-operator          ClusterIP   10.97.21.175     <none>        443/TCP                                                 47m
-    k8ssandra-kube-prometheus-prometheus        ClusterIP   10.111.184.111   <none>        9090/TCP                                                47m
-    k8ssandra-reaper-k8ssandra-reaper-service   ClusterIP   10.104.46.103    <none>        8080/TCP                                                47m
-    k8ssandra-seed-service                      ClusterIP   None             <none>        <none>                                                  47m
-    kubernetes                                  ClusterIP   10.96.0.1        <none>        443/TCP                                                 53m
-    prometheus-operated                         ClusterIP   None             <none>        9090/TCP                                                47m
+NAME                                   TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)                                                 AGE
+cass-operator-metrics                  ClusterIP   10.80.3.92     <none>        8383/TCP,8686/TCP                                       47m
+k8ssandra-dc1-all-pods-service         ClusterIP   None           <none>        9042/TCP,8080/TCP,9103/TCP                              47m
+k8ssandra-dc1-service                  ClusterIP   None           <none>        9042/TCP,9142/TCP,8080/TCP,9103/TCP,9160/TCP            47m
+k8ssandra-dc1-stargate-service         ClusterIP   10.80.13.197   <none>        8080/TCP,8081/TCP,8082/TCP,8084/TCP,8085/TCP,9042/TCP   47m
+k8ssandra-grafana                      ClusterIP   10.80.7.168    <none>        80/TCP                                                  47m
+k8ssandra-kube-prometheus-operator     ClusterIP   10.80.8.109    <none>        443/TCP                                                 47m
+k8ssandra-kube-prometheus-prometheus   ClusterIP   10.80.2.44     <none>        9090/TCP                                                47m
+k8ssandra-reaper-reaper-service        ClusterIP   10.80.5.77     <none>        8080/TCP                                                47m
+k8ssandra-seed-service                 ClusterIP   None           <none>        <none>                                                  47m
+kubernetes                             ClusterIP   10.80.0.1      <none>        443/TCP                                                 47m
+prometheus-operated                    ClusterIP   None           <none>        9090/TCP                                                47m
     ```
 
     Verify that the following services are present:
@@ -421,5 +421,7 @@ Save the superuser name and password for use in following sections.
 
 ## Next
 
-* If you're a developer, and you'd like to get started coding using CQL or Stargate, see the [K8ssandra developer quick start]({{< relref "/getting-started/developer" >}}).
-* If you're a site reliability engineer, and you'd like to explore the K8ssandra administration environment including monitoring and maintenance utilities, see the [K8ssandra site engineer quick start]({{< relref "/getting-started/site-engineer" >}}).
+* If you're a developer, and you'd like to get started coding using CQL or Stargate, see the [K8ssandra developer quick start]({{< relref "/quickstarts/developer" >}}).
+* If you're a site reliability engineer, and you'd like to explore the K8ssandra administration environment including monitoring and maintenance utilities, see the [K8ssandra site engineer quick start]({{< relref "/quickstarts/sre" >}}).
+
+For details such as sizing recommendations and quota settings that are specific to cloud providers like Google Kubernetes Engine (GKE) and Amazon Elastic Kubernetes Service (EKS), see the [Install]({{< relref "/install" >}}) topics. 

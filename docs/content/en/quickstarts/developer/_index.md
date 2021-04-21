@@ -8,7 +8,7 @@ description: "Get up and coding with K8ssandra by exposing access to Stargate an
 **Completion time**: **10 minutes**.
 
 {{% alert title="Important" color="warning" %}}
-You **must** complete the steps in [Quick start]({{< relref "/getting-started" >}}) before continuing.
+You **must** complete the steps in [Quick start]({{< relref "/quickstarts" >}}) before continuing.
 {{% /alert %}}
 
 In this guide, we'll cover:
@@ -19,7 +19,7 @@ In this guide, we'll cover:
 
 ## Set up port forwarding
 
-In order to access Apache Cassandra® outside of the K8s cluster, you'll need to utilize port forwarding unless ingress is [configured]({{< relref "/topics/ingress" >}}).
+In order to access Apache Cassandra® outside of the K8s cluster, you'll need to utilize port forwarding unless ingress is [configured]({{< relref "/tasks/connect/ingress" >}}).
 
 Begin by getting a list of your K8ssandra K8s services and ports:
 
@@ -30,18 +30,18 @@ kubectl get services
 **Output**:
 
 ```bash
-NAME                                        TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)                                                 AGE
-cass-operator-metrics                       ClusterIP   10.99.98.218     <none>        8383/TCP,8686/TCP                                       21h
-k8ssandra-dc1-all-pods-service              ClusterIP   None             <none>        9042/TCP,8080/TCP,9103/TCP                              21h
-k8ssandra-dc1-service                       ClusterIP   None             <none>        9042/TCP,9142/TCP,8080/TCP,9103/TCP,9160/TCP            21h
-k8ssandra-dc1-stargate-service              ClusterIP   10.106.70.148    <none>        8080/TCP,8081/TCP,8082/TCP,8084/TCP,8085/TCP,9042/TCP   21h
-k8ssandra-grafana                           ClusterIP   10.96.120.157    <none>        80/TCP                                                  21h
-k8ssandra-kube-prometheus-operator          ClusterIP   10.97.21.175     <none>        443/TCP                                                 21h
-k8ssandra-kube-prometheus-prometheus        ClusterIP   10.111.184.111   <none>        9090/TCP                                                21h
-k8ssandra-reaper-k8ssandra-reaper-service   ClusterIP   10.104.46.103    <none>        8080/TCP                                                21h
-k8ssandra-seed-service                      ClusterIP   None             <none>        <none>                                                  21h
-kubernetes                                  ClusterIP   10.96.0.1        <none>        443/TCP                                                 21h
-prometheus-operated                         ClusterIP   None             <none>        9090/TCP                                                2
+NAME                                   TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)                                                 AGE
+cass-operator-metrics                  ClusterIP   10.80.3.92     <none>        8383/TCP,8686/TCP                                       21h
+k8ssandra-dc1-all-pods-service         ClusterIP   None           <none>        9042/TCP,8080/TCP,9103/TCP                              21h
+k8ssandra-dc1-service                  ClusterIP   None           <none>        9042/TCP,9142/TCP,8080/TCP,9103/TCP,9160/TCP            21h
+k8ssandra-dc1-stargate-service         ClusterIP   10.80.13.197   <none>        8080/TCP,8081/TCP,8082/TCP,8084/TCP,8085/TCP,9042/TCP   21h
+k8ssandra-grafana                      ClusterIP   10.80.7.168    <none>        80/TCP                                                  21h
+k8ssandra-kube-prometheus-operator     ClusterIP   10.80.8.109    <none>        443/TCP                                                 21h
+k8ssandra-kube-prometheus-prometheus   ClusterIP   10.80.2.44     <none>        9090/TCP                                                21h
+k8ssandra-reaper-reaper-service        ClusterIP   10.80.5.77     <none>        8080/TCP                                                21h
+k8ssandra-seed-service                 ClusterIP   None           <none>        <none>                                                  21h
+kubernetes                             ClusterIP   10.80.0.1      <none>        443/TCP                                                 23h
+prometheus-operated                    ClusterIP   None           <none>        9090/TCP                                                21h
 ```
 
 In the output above, the service of interest is:
@@ -116,7 +116,7 @@ Exiting the terminal instance will terminate the port forwarding service.
 
 To access K8ssandra using Stargate:
 
-1. Generate a Stargate access token replacing `<k8ssandra-username>` and `<k8ssandra-password>` with the values you retrieved in [Retrieve K8ssandra superuser credentials]({{< relref "/getting-started#superuser" >}}):
+1. Generate a Stargate access token replacing `<k8ssandra-username>` and `<k8ssandra-password>` with the values you retrieved in [Retrieve K8ssandra superuser credentials]({{< relref "/quickstarts#superuser" >}}):
 
     ```bash
     curl -L -X POST 'http://localhost:8081/v1/auth' -H 'Content-Type: application/json' --data-raw '{"username": "<k8ssandra-username>", "password": "<k8ssandra-password>"}'
@@ -132,9 +132,9 @@ To access K8ssandra using Stargate:
 
 Once you've got the access token, take a look at the following Stargate access options:
 
-* [Access Document Data API]({{< relref "/topics/stargate#access-document-data-api" >}})
-* [Access REST Data API]({{< relref "/topics/stargate#access-rest-data-api" >}})
-* [Access GraphQL Data API]({{< relref "/topics/stargate#access-graphql-data-api" >}})
+* [Access Document Data API]({{< relref "/stargate#access-document-data-api" >}})
+* [Access REST Data API]({{< relref "/stargate#access-rest-data-api" >}})
+* [Access GraphQL Data API]({{< relref "/stargate#access-graphql-data-api" >}})
 
 You can access the following interfaces to make development easier as well:
 
@@ -145,7 +145,7 @@ For complete details on Stargate, see the [Stargate documentation](https://starg
 
 ## Access Cassandra using CQLSH
 
-If you're familiar with Cassandra, then you're familiar with CQLSH. You can download a full-featured [stand alone CQLSH utility](https://docs.datastax.com/en/dse/5.1/cql/cql/cql_using/startCqlshStandalone.html) from Datastax and use that to interact with K8ssandra as if you were in a native Cassandra environment.
+If you're familiar with Cassandra, then you're familiar with CQLSH. You can download a full-featured [stand alone CQLSH utility](https://docs.datastax.com/en/dse/6.8/cql/cql/cql_using/startCqlshStandalone.html) from Datastax and use that to interact with K8ssandra as if you were in a native Cassandra environment.
 
 To access K8ssandra using the stand alone CQLSH utility:
 
@@ -153,7 +153,7 @@ To access K8ssandra using the stand alone CQLSH utility:
 
 1. Download CQLSH from the  [DataStax download site](https://downloads.datastax.com/#cqlsh) choosing the version for **DataStax Astra**.
 
-1. Connect to Cassandra replacing `<k8ssandra-username>` and `<k8ssandra-password>` with the values you retrieved in [Retrieve K8ssandra superuser credentials]({{< relref "/getting-started#superuser" >}}):
+1. Connect to Cassandra replacing `<k8ssandra-username>` and `<k8ssandra-password>` with the values you retrieved in [Retrieve K8ssandra superuser credentials]({{< relref "/quickstarts#superuser" >}}):
 
     ```bash
     cqlsh -u <k8ssandra-username> -p <k8ssandra-password>
@@ -224,10 +224,12 @@ For complete details on Cassandra, CQL and CQLSH, see the [Apache Cassandra](htt
 
 ## Next
 
-With a running installation check out some of our other guides and docs.
+For details such as sizing recommendations and quota settings that are specific to cloud providers like Google Kubernetes Engine (GKE) and Amazon Elastic Kubernetes Service (EKS), see the [Install]({{< relref "/install" >}}) topics. 
 
-* [Task Guides]({{< relref "/topics" >}}).
+Also see:
+
+* [Tasks]({{< relref "/tasks" >}}).
 * [FAQs]({{< relref "/faqs" >}}).
-* [K8ssandra Architecture]({{< relref "/architecture" >}}).
-* [Helm chart references]({{< relref "/reference" >}}).
-* If you'd like to contribute to K8ssandra, see [Contribution guidelines]({{< relref "/contribution-guidelines" >}}).
+* [K8ssandra components and architecture]({{< relref "/components" >}}).
+* [Reference material]({{< relref "/reference" >}}).
+* If you'd like to contribute to K8ssandra code, docs, or both, refer to our [Contribution guidelines]({{< relref "/contribute" >}}).
