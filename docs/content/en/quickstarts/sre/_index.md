@@ -131,7 +131,7 @@ For details on all nodetool commands, see [The nodetool utility](https://docs.da
 
 ## Configure port forwarding {#port-forwarding}
 
-In order to access Cassandra utilities outside of the K8s cluster, if you don't have an Ingress setup as described in [Configure Ingress]({{< relref "/connect/ingress" >}}), you'll need to configure port forwarding.
+In order to access Cassandra utilities outside of the K8s cluster, if you don't have an Ingress setup as described in [Configure Ingress]({{< relref "tasks/connect/ingress" >}}), you'll need to configure port forwarding.
 
 Begin by getting a list of your K8ssandra K8s services and ports:
 
@@ -313,12 +313,12 @@ You can easily upgrade your K8ssandra software with the `helm repo update` comma
 
 ## Next
 
-For details such as sizing recommendations and quota settings that are specific to cloud providers like Google Kubernetes Engine (GKE) and Amazon Elastic Kubernetes Service (EKS), see the [Install]({{< relref "/install" >}}) topics. 
+For details such as sizing recommendations and quota settings that are specific to cloud providers like Google Kubernetes Engine (GKE) and Amazon Elastic Kubernetes Service (EKS), see the [Install]({{< relref "install" >}}) topics. 
 
 Also see:
 
-* [Tasks]({{< relref "/tasks" >}}).
-* [FAQs]({{< relref "/faqs" >}}).
-* [K8ssandra components and architecture]({{< relref "/components" >}}).
-* [Reference material]({{< relref "/reference" >}}).
-* If you'd like to contribute to K8ssandra code, docs, or both, relrefer to our [Contribution guidelines]({{< relref "/contribute" >}}).
+* [Tasks]({{< relref "tasks" >}}).
+* [FAQs]({{< relref "faqs" >}}).
+* [K8ssandra components and architecture]({{< relref "components" >}}).
+* [Reference material]({{< relref "reference" >}}).
+* If you'd like to contribute to K8ssandra code, docs, or both, relrefer to our [Contribution guidelines]({{< relref "contribute" >}}).
