@@ -107,7 +107,7 @@ You only need the YAML statements pertinent to the upgrade. You don't need to du
     Notice that the REVISION is now at `2`. It will increment each time you run a `helm upgrade` command. 
 
 {{% alert title="Tip" color="success" %}}
-For insights into the underlying operations that occur with scaling, see [Scale your Cassandra cluster]({{< relref "/tasks/provision-a-cluster/" >}}).
+For insights into the underlying operations that occur with scaling, see [Scale your Cassandra cluster]({{< relref "scale" >}}).
 {{% /alert %}}
 
 

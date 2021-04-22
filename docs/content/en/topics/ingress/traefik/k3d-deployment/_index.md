@@ -62,7 +62,7 @@ kubectl cluster-info
 Note the service type of `NodePort`. It is used here as it is the port _on the
 Docker container running Kind_ which is forwarded to our local machine.
 
-The `traefik.values.yaml` file relreferenced here is located in:
+The `traefik.values.yaml` file referenced here is located in:
 
 https://github.com/k8ssandra/k8ssandra/blob/main/docs/content/en/docs/topics/ingress/traefik/k3d-deployment/traefik.values.yaml
 

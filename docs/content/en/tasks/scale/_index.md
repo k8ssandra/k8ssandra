@@ -192,4 +192,4 @@ This means for example that `my-k8ssandra-dc1-default-sts-3` will be deleted bef
 
 ## Next
 
-Learn about the K8ssandra deployed Helm charts and additional relreference resources (such as a Glossary) in the [reference]]({{< relref "/reference/" >}}) topics.
+Learn about the K8ssandra deployed Helm charts and additional reference resources (such as a Glossary) in the [reference]]({{< relref "/reference/" >}}) topics.

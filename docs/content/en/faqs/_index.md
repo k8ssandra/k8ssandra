@@ -121,7 +121,7 @@ The default configured Grafana username is `admin`, and the password is `secret`
 
 ### What kind of provisioning tasks can I perform with K8ssandra?
 
-Among the tasks are to dynamically scale up or down the size of your cluster. See [Provisioning a cluster]({{< relref "/topics/provision-a-cluster/" >}}).
+Among the tasks are to dynamically scale up or down the size of your cluster. See the [scaling task]({{< relref "scale" >}}).
 
 ### How can I backup and restore my Cassandra data?
 

@@ -115,7 +115,7 @@ File "/usr/local/lib/python3.6/dist-packages/libcloud/storage/drivers/s3.py", li
 libcloud.common.types.LibcloudError: <LibcloudError in <class 'libcloud.storage.drivers.s3.S3StorageDriver'> 'This bucket is located in a different region. Please use the correct driver. Bucket region "us-east-2", used region "us-east-1".'>
 ```
 
-The solution is easy - for Amazon S3 buckets, specify the correct region in a values file that you'll relreference in the K8ssandra install or upgrade; see the section below. If your IT group manages the AWS S3 bucket settings, consult with them to get the correct values. 
+The solution is easy - for Amazon S3 buckets, specify the correct region in a values file that you'll reference in the K8ssandra install or upgrade; see the section below. If your IT group manages the AWS S3 bucket settings, consult with them to get the correct values. 
 
 Here's an example from the AWS S3 dashboard showing a sample bucket name and region:
 
@@ -125,7 +125,7 @@ Notice how in this example, the region defined in the AWS console is `us-east-1`
 
 ### Create or update the k8ssandra cluster
 
-Install the `k8ssandra` chart with the following properties. You can relreference an edited copy of the provided [backup-restore-values.yaml](backup-restore-values.yaml) file; customize the `name` of the Amazon S3 bucket defined for your purposes, and make sure the region value matches the region used by the Amazon S3 bucket. Before edits, this sample values file contains:
+Install the `k8ssandra` chart with the following properties. You can reference an edited copy of the provided [backup-restore-values.yaml](backup-restore-values.yaml) file; customize the `name` of the Amazon S3 bucket defined for your purposes, and make sure the region value matches the region used by the Amazon S3 bucket. Before edits, this sample values file contains:
 
 ```yaml
 cassandra:

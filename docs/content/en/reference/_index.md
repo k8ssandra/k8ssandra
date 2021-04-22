@@ -1,7 +1,7 @@
 ---
-title: "Helm chart relreferences"
-linkTitle: "Helm chart relreferences"
+title: "Helm chart references"
+linkTitle: "Helm chart references"
 weight: 4
 description: >
-  Configuration relreference for all Helm charts available as part of the K8ssandra platform.
+  Configuration reference for all Helm charts available as part of the K8ssandra platform.
 ---

@@ -38,13 +38,13 @@ The `k8ssandra` Helm chart contains templates for the Traefik `IngressRoute` and
 
 For the latest, see the sample [values.yaml](https://github.com/k8ssandra/k8ssandra/blob/main/charts/k8ssandra/values.yaml). 
 
-Note the `host` parameter: this is where the DNS name must be provided. You will relreference this DNS when accessing Reaper in a Web URL.
+Note the `host` parameter: this is where the DNS name must be provided. You will reference this DNS when accessing Reaper in a Web URL.
 
 If you maintain a values.yaml or traefik.values.yaml file, change the `reaper.ingress.enabled` Boolean from `false` to `true`.  Or, specify `--set reaper.ingress.enabled=true` on the helm install command line. 
 
 ## Enabling Traefik Ingress
 
-Traefik ingress may be enabled on the command-line or via a `values.yaml` file. The K8ssandra team recommends storing this information in a `values.yaml` as that may be version controlled and managed in a DevOps friendly manner. Examples of both approaches are provided below as relreference.
+Traefik ingress may be enabled on the command-line or via a `values.yaml` file. The K8ssandra team recommends storing this information in a `values.yaml` as that may be version controlled and managed in a DevOps friendly manner. Examples of both approaches are provided below as reference.
 
 ### `values.yaml`
 

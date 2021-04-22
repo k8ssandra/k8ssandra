@@ -30,7 +30,7 @@
 | image.repository | string | `"docker.io/k8ssandra/medusa-operator"` | Container repository where the medusa-operator resides |
 | image.pullPolicy | string | `"IfNotPresent"` | Pull policy for the operator container |
 | image.tag | string | `"v0.1.0"` | Tag of the medusa-operator image to pull from image.repository |
-| imagePullSecrets | list | `[]` | relreferences to secrets to use when pulling images. relref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/ |
+| imagePullSecrets | list | `[]` | references to secrets to use when pulling images. relref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/ |
 | serviceAccount.annotations | object | `{}` | Annotations for the medusa-operator service account. |
 | podAnnotations | object | `{}` | Annotations for the medusa-operator pod. |
 | podSecurityContext | object | `{}` | PodSecurityContext for the medusa-operator pod. |

@@ -42,7 +42,7 @@ Note the `host` parameters in the values.yaml is where the DNS names must be pro
 
 ## Enabling Traefik Ingress
 
-Traefik ingress may be enabled on the command-line or via a `values.yaml` file. The K8ssandra team recommends storing this information in a `values.yaml` as that may be version controlled and managed in a DevOps friendly manner. Examples of both approaches are provided below as relreference.
+Traefik ingress may be enabled on the command-line or via a `values.yaml` file. The K8ssandra team recommends storing this information in a `values.yaml` as that may be version controlled and managed in a DevOps friendly manner. Examples of both approaches are provided below as reference.
 
 ### `values.yaml`
 

@@ -28,7 +28,7 @@ Kind supports an optional configuration file for configuring specific behaviors 
   
 ### [`kind.config.yaml`](kind.config.yaml)
 
-The `kind.config.yaml` file relreferenced here is located in:
+The `kind.config.yaml` file referenced here is located in:
 
 https://github.com/k8ssandra/k8ssandra/blob/main/docs/content/en/docs/topics/ingress/traefik/kind-deployment/kind.config.yaml
 
@@ -58,7 +58,7 @@ Have a question, bug, or feature request? Let us know! https://kind.sigs.k8s.io/
 Note the service type of `NodePort`. It is used here as it is the port _on the
 Docker container running Kind_ which is forwarded to our local machine.
 
-The `traefik.values.yaml` file relreferenced here is located in:
+The `traefik.values.yaml` file referenced here is located in:
 
 https://github.com/k8ssandra/k8ssandra/blob/main/docs/content/en/docs/topics/ingress/traefik/kind-deployment/traefik.values.yaml
 

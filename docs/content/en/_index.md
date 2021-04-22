@@ -10,7 +10,7 @@ description: "K8ssandra documentation: architecture, configuration, guided tasks
 type: docs
 ---
 
-The K8ssandra documentation covers everything from architecture and configuration relreferences to guided outcome-based tasks. Check out the sections at left based on your needs and be sure to leave us a <a class="github-button" href="https://github.com/k8ssandra/k8ssandra" data-icon="octicon-star" aria-label="Star k8ssandra/k8ssandra on GitHub">star</a> on Github!
+The K8ssandra documentation covers everything from architecture and configuration references to guided outcome-based tasks. Check out the sections at left based on your needs and be sure to leave us a <a class="github-button" href="https://github.com/k8ssandra/k8ssandra" data-icon="octicon-star" aria-label="Star k8ssandra/k8ssandra on GitHub">star</a> on Github!
 
 {{% alert title="Tip" color="primary" %}}
 If you're impatient, jump right in with our **[Quick start]({{< relref "quickstarts" >}})**!
