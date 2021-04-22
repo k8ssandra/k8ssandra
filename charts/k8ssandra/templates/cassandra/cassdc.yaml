@@ -53,7 +53,13 @@ spec:
         pvcSpec:
           storageClassName: {{ .Values.medusa.podStorage.storageClass }}
           accessModes:
+          {{- if .Values.medusa.podStorage.accessModes }}
+          {{- range .Values.medusa.podStorage.accessModes }}
+            - {{ . }}
+          {{- end }}
+          {{- else }}
             - ReadWriteOnce
+          {{- end }}
           resources:
             requests:
               storage: {{ .Values.medusa.podStorage.size }}

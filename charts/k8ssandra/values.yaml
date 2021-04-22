@@ -557,6 +557,10 @@ medusa:
     # to keep new backups as well as retained older backups.
     # size: 25Gi
 
+    # The volume can be mounted to pod with different access modes. The available modes depend on the provider and
+    # how they're exported in the PersistentVolume definition. The default for these mounts is ReadWriteOnce.
+    # accessModes: []
+
 monitoring:
   grafana:
     # -- Enables the creation of configmaps containing Grafana dashboards. If

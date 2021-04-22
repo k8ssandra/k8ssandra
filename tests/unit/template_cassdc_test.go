@@ -342,6 +342,8 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			// AdditionalVolumes should have been created
 			Expect(cassdc.Spec.StorageConfig.AdditionalVolumes).To(HaveLen(1))
 			Expect(*cassdc.Spec.StorageConfig.AdditionalVolumes[0].PVCSpec.StorageClassName).To(Equal("slow"))
+			Expect(len(cassdc.Spec.StorageConfig.AdditionalVolumes[0].PVCSpec.AccessModes)).To(Equal(1))
+			Expect(cassdc.Spec.StorageConfig.AdditionalVolumes[0].PVCSpec.AccessModes[0]).To(Equal(corev1.ReadWriteOnce))
 			Expect(cassdc.Spec.StorageConfig.AdditionalVolumes[0].Name).To(Equal("medusa-backups"))
 
 			medusaContainer := GetContainer(cassdc, MedusaContainer)
@@ -353,6 +355,35 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			medusaRestoreInitContainer := GetInitContainer(cassdc, MedusaInitContainer)
 
 			Expect(kubeapi.GetVolumeMountNames(medusaRestoreInitContainer)).To(ConsistOf(medusaConfigMap, "server-config", "server-data", "medusa-backups", PodInfoVolumeName))
+		})
+
+		It("enabling only medusa with local storage with modified access modes", func() {
+			options := &helm.Options{
+				SetValues: map[string]string{
+					"medusa.enabled":                   "true",
+					"medusa.storage":                   "local",
+					"medusa.podStorage.size":           "30Gi",
+					"medusa.podStorage.storageClass":   "slow",
+					"medusa.podStorage.accessModes[0]": "ReadWriteMany",
+					"reaper.enabled":                   "false",
+				},
+				KubectlOptions: defaultKubeCtlOptions,
+			}
+
+			Expect(renderTemplate(options)).To(Succeed())
+
+			AssertInitContainerNamesMatch(cassdc, BaseConfigInitContainer, ConfigInitContainer, JmxCredentialsInitContainer, MedusaInitContainer)
+
+			// Two containers, medusa and cassandra
+			Expect(len(cassdc.Spec.PodTemplateSpec.Spec.Containers)).To(Equal(2))
+			// Second container should be medusa
+			Expect(cassdc.Spec.PodTemplateSpec.Spec.Containers[1].Name).To(Equal(MedusaContainer))
+			// AdditionalVolumes should have been created
+			Expect(cassdc.Spec.StorageConfig.AdditionalVolumes).To(HaveLen(1))
+			Expect(*cassdc.Spec.StorageConfig.AdditionalVolumes[0].PVCSpec.StorageClassName).To(Equal("slow"))
+			Expect(len(cassdc.Spec.StorageConfig.AdditionalVolumes[0].PVCSpec.AccessModes)).To(Equal(1))
+			Expect(cassdc.Spec.StorageConfig.AdditionalVolumes[0].PVCSpec.AccessModes[0]).To(Equal(corev1.ReadWriteMany))
+			Expect(cassdc.Spec.StorageConfig.AdditionalVolumes[0].Name).To(Equal("medusa-backups"))
 		})
 
 		It("enabling only medusa with local storage but missing size and storageclass", func() {
