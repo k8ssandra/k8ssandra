@@ -38,7 +38,7 @@ This guide will cover provisioning and installing the following resources.
 
 ### Manual
 
-## Retreive `kubeconfig`
+## Retrieve `kubeconfig`
 
 ```console
 gcloud ....

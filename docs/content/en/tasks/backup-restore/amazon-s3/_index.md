@@ -1,13 +1,13 @@
 ---
 title: "Backup and restore Cassandra with Amazon S3"
 linkTitle: "Amazon S3 buckets"
-weight: 3
+weight: 2
 description: Use K8ssandra's Medusa to backup and restore Cassandra® data with Amazon S3 buckets.
 ---
 
 This topic walks you through the steps with Amazon S3 buckets. This feature is included in K8ssandra 1.0.0 and later releases.
 
-For related information, see [Backup and restore Cassandra with MinIO]({{< relref "s3-compatible" >}}).
+For related information, see [Backup and restore Cassandra with MinIO]({{< relref "/tasks/backup-restore/minio/" >}}).
 
 ## Tools
 
@@ -58,7 +58,7 @@ Update Complete. ⎈Happy Helming!⎈
 Before installing the k8ssandra cluster, we need to supply credentials so that Medusa has read/write access to an Amazon S3 bucket, which is where the backup will be stored. 
 
 {{% alert title="Tip" color="success" %}}
-Medusa supports local, Google Cloud Storage (GCS), Azure, and all S3-compatible backends including Amazon S3 and MinIO buckets. At this time, K8ssandra exposes configurations for Amazon S3, MinIO, and GCS. The example in this topic uses an Amazon S3 bucket. For related information, see [Backup and restore Cassandra with MinIO]({{< relref "s3-compatible" >}}). Also see the [AWS S3 setup](https://github.com/thelastpickle/cassandra-medusa/blob/master/docs/aws_s3_setup.md) article on the Medusa wiki for more details for configuring S3.
+Medusa supports local, Google Cloud Storage (GCS), Azure, and all S3-compatible backends including Amazon S3 and MinIO buckets. At this time, K8ssandra exposes configurations for Amazon S3, MinIO, and GCS. The example in this topic uses an Amazon S3 bucket. For related information, see [Backup and restore Cassandra with MinIO]({{< relref "/tasks/backup-restore/minio/" >}}). Also see the [AWS S3 setup](https://github.com/thelastpickle/cassandra-medusa/blob/master/docs/aws_s3_setup.md) article on the Medusa wiki for more details for configuring S3.
 {{% /alert %}}
 
 Start by creating a secret with the credentials for the Amazon S3 bucket.
@@ -281,7 +281,7 @@ Keep the sample `medusa_test.users` keyspace.table data in mind -- we will use s
 
 ### Create the backup
 
-Now create a backup by referencing the backup chart:
+Now create a backup by relreferencing the backup chart:
 
 ```bash
 helm install test k8ssandra/backup --set name=test,cassandraDatacenter.name=dc1
@@ -370,4 +370,4 @@ kubectl get cassadrarestore helm-test -o yaml
 
 ## Next
 
-An alternative to an Amazon S3 bucket is MinIO, which is S3 compatible and also supported by Medusa. See [Backup and restore Cassandra with MinIO]({{< relref "s3-compatible" >}}).
+An alternative to an Amazon S3 bucket is MinIO, which is S3 compatible and also supported by Medusa. See [Backup and restore Cassandra with MinIO]({{< relref "/tasks/backup-restore/minio/" >}}).

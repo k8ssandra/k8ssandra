@@ -1,6 +1,6 @@
 ---
 title: "Connections for K8ssandra"
-linkTitle: "Connect K8ssandra"
+linkTitle: "Connect"
 weight: 1
 description: Learn how to connect K8ssandra deployments with clients and Apache Cassandra® interfaces.
 ---

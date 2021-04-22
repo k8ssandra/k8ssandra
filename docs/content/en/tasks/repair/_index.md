@@ -1,6 +1,6 @@
 ---
 title: "Reaper for Apache Cassandra® web interface for repairs"
-linkTitle: "Reaper UI for repairs"
+linkTitle: "Repair"
 description: "Use the Reaper for Apache Cassandra&reg; web interface for repairs."
 ---
 

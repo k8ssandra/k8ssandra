@@ -1,6 +1,6 @@
 ---
 title: "Migrate a Cassandra cluster to K8ssandra"
-linkTitle: "Migrate a cluster to K8ssandra"
+linkTitle: "Migrate"
 no_list: true
 weight: 1
 description: How to migrate an existing Cassandra cluster that's running in Kubernetes to K8ssandra.

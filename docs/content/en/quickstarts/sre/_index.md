@@ -1,6 +1,6 @@
 ---
 title: "K8ssandra site reliability engineer quick start"
-linkTitle: "Site reliability engineers"
+linkTitle: "SREs"
 weight: 2
 description: "Familiarize yourself with K8ssandra utilities and procedures for monitoring, repair, and upgrading your Apache Cassandra® database!"
 ---

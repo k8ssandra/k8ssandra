@@ -1,6 +1,6 @@
 ---
 title: "Secure K8ssandra managed assets"
-linkTitle: "Secure K8ssandra"
+linkTitle: "Secure"
 no_list: true
 weight: 2
 description: K8ssandra security defaults, secrets, and options for Apache Cassandra&reg; authentication and role-based authorization.

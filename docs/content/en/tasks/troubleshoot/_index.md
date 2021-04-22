@@ -1,6 +1,6 @@
 ---
 title: "Troubleshoot K8ssandra"
-linkTitle: "Troubleshoot K8ssandra"
+linkTitle: "Troubleshoot"
 description: "Troubleshooting tips for K8ssandra users."
 ---
 

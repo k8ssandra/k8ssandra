@@ -1,6 +1,6 @@
 ---
 title: "Monitor Cassandra"
-linkTitle: "Monitor Cassandra"
+linkTitle: "Monitor"
 weight: 6
 description: "Access the Prometheus and Grafana interfaces to monitor your Apache Cassandra® cluster running in Kubernetes"
 ---

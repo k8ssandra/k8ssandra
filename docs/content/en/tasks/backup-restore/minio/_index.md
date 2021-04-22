@@ -1,7 +1,7 @@
 ---
 title: "Backup and restore Cassandra with MinIO"
 linkTitle: "MinIO buckets"
-weight: 5
+weight: 1
 description: Use K8ssandra's Medusa to backup and restore Cassandra® data with MinIO buckets.
 ---
 
@@ -9,7 +9,7 @@ Medusa recently introduced support for all S3-compatible backends, including Min
 
 [MinIO](https://min.io/) is a popular Kubernetes object storage suite. This topic walks you through the backup and restore steps.
 
-For related information, see [Backup and restore Cassandra with Amazon S3]({{< relref "amazon-s3" >}}).
+For related information, see [Backup and restore Cassandra with Amazon S3]({{< relref "/tasks/backup-restore/amazon-s3/" >}}).
 
 ## Deploy MinIO
 

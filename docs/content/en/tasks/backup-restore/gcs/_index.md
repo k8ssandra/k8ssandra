@@ -1,8 +1,8 @@
 ---
-title: "Backup and restore Apache Cassandra data with GCS"
-linkTitle: "Backup and restore Cassandra with GCS"
+title: "Backup and restore with Google Cloud Storage"
+linkTitle: "Google Cloud Storage"
 no_list: true
-weight: 4
+weight: 3
 description: Use Medusa to backup and restore Apache Cassandra® data in Kubernetes to Google Cloud Storage (GCS).
 ---
 

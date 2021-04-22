@@ -1,6 +1,6 @@
 ---
 title: "Scale your Cassandra cluster"
-linkTitle: "Scale Cassandra"
+linkTitle: "Scale"
 description: "Steps to provision and scale up/down an Apache Cassandra® cluster in Kubernetes."
 ---
 
