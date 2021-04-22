@@ -1,7 +1,7 @@
 ---
 title: "Contribution guidelines"
 linkTitle: "Contribute"
-weight: 6
+weight: 9
 description: How to contribute to the K8ssandra open-source documentation and code.
 ---
 

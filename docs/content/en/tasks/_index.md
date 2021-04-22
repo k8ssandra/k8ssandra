@@ -2,7 +2,7 @@
 title: "K8ssandra tasks"
 linkTitle: "Tasks"
 simple_list: true
-weight: 3
+weight: 5
 description: Topics to help you get things done, **now**.
 ---
 

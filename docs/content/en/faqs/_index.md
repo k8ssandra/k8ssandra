@@ -1,7 +1,7 @@
 ---
 title: "K8ssandra FAQs"
 linkTitle: "FAQs"
-weight: 3
+weight: 1
 description: Frequently asked questions about K8ssandra.
 ---
 

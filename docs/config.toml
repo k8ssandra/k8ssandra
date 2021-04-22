@@ -83,6 +83,7 @@ weight = 1
 [params]
 copyright = "The K8ssandra Team and Contributors."
 privacy_policy = "https://www.datastax.com/legal/datastax-website-privacy-policy"
+code_of_conduct = "https://www.datastax.com/legal/codeofconduct"
 
 # First one is picked as the Twitter card image if not set on page.
 # images = ["images/project-illustration.png"]
@@ -185,11 +186,15 @@ enable = false
 # 	icon = "fab fa-slack"
 #   desc = "Chat with other project developers"
 [[params.links.developer]]
-	name = "Developer mailing list"
+	name = "Discord"
 	url = "https://groups.google.com/g/k8ssandra-developers"
-	icon = "fa fa-envelope"
-  desc = "Discuss development issues around the project"
-
+	icon = "fab fa-discord"
+[[params.links.developer]]
+	name ="Twitter"
+	url = "https://twitter.com/k8ssandra"
+	icon = "fab fa-twitter"
+  desc = "Follow us on Twitter to get the latest news!"
+  
 [sitemap]
 changefreq = "daily"
 
@@ -246,3 +251,64 @@ gzip = false
 [[deployment.matchers]]
 pattern = "^.+\\.(html|xml|json)$"
 gzip = true
+
+#  Adding Menu to match K8ssandra.io wp site
+[[menu.main]]
+    name = "About"
+    weight = 10
+    url = "https://www.k8ssandra.io/about"
+
+[[menu.main]]
+  name = "Get Started"
+  weight = 15
+  url = "https://www.k8ssandra.io/get-started"
+
+[[menu.main]]
+  name = "Community"
+  weight = 60
+  url = "https://www.k8ssandra.io/community"
+
+[[menu.main]]
+  name = "Forum"
+  weight = 70
+  url = "https://k8-community.trydiscourse.com/"
+
+[[menu.main]]
+  name = "Blog"
+  weight = 80
+  url = "https://www.k8ssandra.io/blog"
+
+[[menu.main]]
+  name = "Events"
+  weight = 90
+  url = "https://www.k8ssandra.io/blog/category/events/"
+
+[[menu.footer]]
+    name = "About"
+    weight = 10
+    url = "https://www.k8ssandra.io/about"
+
+[[menu.footer]]
+  name = "Get Started"
+  weight = 15
+  url = "https://www.k8ssandra.io/get-started"
+
+[[menu.footer]]
+  name = "Community"
+  weight = 60
+  url = "https://www.k8ssandra.io/community"
+
+[[menu.second]]
+  name = "Forum"
+  weight = 70
+  url = "https://k8-community.trydiscourse.com/"
+
+[[menu.second]]
+  name = "Blog"
+  weight = 80
+  url = "https://www.k8ssandra.io/blog"
+
+[[menu.second]]
+  name = "Events"
+  weight = 90
+  url = "https://www.k8ssandra.io/blog/category/events/"
