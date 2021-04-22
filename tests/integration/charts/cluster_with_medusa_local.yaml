@@ -1,0 +1,30 @@
+cassandra:
+  heap:
+   size: 500M
+   newGenSize: 200M
+  datacenters:
+  - name: dc1
+    size: 1
+  ingress:
+    enabled: false
+  loggingSidecar:
+    enabled: false
+stargate:
+  enabled: false
+reaper:
+  enabled: false
+medusa:
+  enabled: true
+
+  multiTenant: true
+  storage: local
+
+  podStorage:
+    storageClass: standard
+    size: 1Gi
+
+reaper-operator:
+  enabled: false
+
+kube-prometheus-stack:
+  enabled: false

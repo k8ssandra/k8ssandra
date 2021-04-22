@@ -27,7 +27,7 @@ data:
     {{ $key }} = {{ $value }}
   {{- end }}
   {{- if eq "local" .Values.medusa.storage }}
-    base_path = {{ .Values.medusa.bucketName }}
+    base_path = /mnt/backups
     {{- /*
       Medusa requires the bucket_name property to be set even when using local storage.
       See https://github.com/thelastpickle/cassandra-medusa/issues/299.
