@@ -44,11 +44,11 @@ helm repo update
 helm install k8ssandra k8ssandra/k8ssandra
 ```
 
-For more, see [Getting Started]({{< ref "/getting-started/" >}}).
+For more, see [Getting Started]({{< relref "quickstarts" >}}).
 
 ### What components and versions does K8ssandra deploy?
 
-For the full list of deployed components and latest versions, see the K8ssandra [Release notes]({{< ref "/release-notes" >}}). 
+For the full list of deployed components and latest versions, see the K8ssandra [Release notes]({{< relref "/release-notes" >}}). 
 
 ### When I install K8ssandra, I see a some warning messages, is that a problem?
 
@@ -101,35 +101,35 @@ Kubernetes Operator for Apache Cassandra -- [cass-operator](https://github.com/d
 
 ### What is Reaper for Apache Cassandra?
 
-Reaper for Apache Cassandra (Reaper) is a tool that helps manage the critical maintenance task of anti-entropy **repair** in a Cassandra cluster. Originally created by Spotify, later adopted and maintained by The Last Pickle, and one of the features installed by K8ssandra. If you were to sit a group of Cassandra DBAs down to talk about what they do, chances are they would talk a lot about running repairs. It’s an important operation because it keeps data consistent despite inevitable issues that happen like node failures and network partitions. In K8ssandra, Reaper runs it for you automatically! And because this is built for SREs, you can expect a good set of pre-built metrics to verify everything is working great. See the [Reaper web interface]({{< ref "/topics/repair/" >}}).
+Reaper for Apache Cassandra (Reaper) is a tool that helps manage the critical maintenance task of anti-entropy **repair** in a Cassandra cluster. Originally created by Spotify, later adopted and maintained by The Last Pickle, and one of the features installed by K8ssandra. If you were to sit a group of Cassandra DBAs down to talk about what they do, chances are they would talk a lot about running repairs. It’s an important operation because it keeps data consistent despite inevitable issues that happen like node failures and network partitions. In K8ssandra, Reaper runs it for you automatically! And because this is built for SREs, you can expect a good set of pre-built metrics to verify everything is working great. See the [Reaper web interface]({{< relref "tasks/repair" >}}).
 
 ### What is Medusa for Apache Cassandra?
 
-Medusa for Apache Cassandra (Medusa) provides backup/restore functionality for Cassandra data; this project also originated at Spotify. Medusa not only helps coordinate backup &amp; restore tasks, it manages the placement of the data at rest. The initial implementation allows backup sets to be stored and retrieved on cloud object storage (such as AWS S3 buckets) with more options on the way. K8ssandra offers this [backup and restore]({{< ref "/topics/restore-a-backup/" >}}) feature to help you recover Cassandra data when inevitable real-world issues occur.
+Medusa for Apache Cassandra (Medusa) provides backup/restore functionality for Cassandra data; this project also originated at Spotify. Medusa not only helps coordinate backup &amp; restore tasks, it manages the placement of the data at rest. The initial implementation allows backup sets to be stored and retrieved on cloud object storage (such as AWS S3 buckets) with more options on the way. K8ssandra offers this [backup and restore]({{< relref "backup-restore" >}}) feature to help you recover Cassandra data when inevitable real-world issues occur.
 
 ### How can I access Kubernetes resources from outside the environment?
 
-K8ssandra provides [preconfigured]({{< ref "/topics/ingress/traefik/" >}}) Ingress integrations, such as Traefik, which is a modern reverse proxy and load balancer that makes deploying microservices easy. Traefik integrates with your existing infrastructure components and configures itself automatically and dynamically. Traefik handles advanced ingress deployments including mTLS of TCP with SNI and UDP. Operators define rules for routing traffic to downstream systems through Kubernetes Ingress objects or more specific Custom Resource Definitions. K8ssandra supports deploying `IngressRoute objects` as part of a deployment to expose metrics, repair, and Cassandra interfaces. For more, start in the [Traefik]({{< ref "/topics/ingress/traefik/" >}}) topic.
+K8ssandra provides [preconfigured]({{< relref "/topics/ingress/traefik/" >}}) Ingress integrations, such as Traefik, which is a modern reverse proxy and load balancer that makes deploying microservices easy. Traefik integrates with your existing infrastructure components and configures itself automatically and dynamically. Traefik handles advanced ingress deployments including mTLS of TCP with SNI and UDP. Operators define rules for routing traffic to downstream systems through Kubernetes Ingress objects or more specific Custom Resource Definitions. K8ssandra supports deploying `IngressRoute objects` as part of a deployment to expose metrics, repair, and Cassandra interfaces. For more, start in the [Traefik]({{< relref "/topics/ingress/traefik/" >}}) topic.
 
 ### How can I monitor the health of my Kubernetes + Cassandra cluster?
 
-Configure Traefik to expose the K8ssandra monitoring interfaces. See [Monitoring]({{< ref "/topics/ingress/traefik/monitoring/" >}}) for the steps to enable the Traefik Ingress. Then see [Monitoring UI]({{< ref "/topics/monitoring/" >}}) for details about how to access the preconfigured Grafana dashboards that K8ssandra provides. After completing the prerequisites, for example in your local environment, you can open http://grafana.localhost:8080/ in your browser.
+Configure Traefik to expose the K8ssandra monitoring interfaces. See [Monitoring]({{< relref "/topics/ingress/traefik/monitoring/" >}}) for the steps to enable the Traefik Ingress. Then see [Monitoring UI]({{< relref "monitor" >}}) for details about how to access the preconfigured Grafana dashboards that K8ssandra provides. After completing the prerequisites, for example in your local environment, you can open http://grafana.localhost:8080/ in your browser.
 
 ### What is the login for the Grafana dashboards?
 
-The default configured Grafana username is `admin`, and the password is `secret`. See the topic about managing [Grafana credentials]({{< ref "/topics/monitoring/_index.md#grafana-credentials" >}}).
+The default configured Grafana username is `admin`, and the password is `secret`. See the topic about managing [Grafana credentials]({{< relref "monitor#grafana-credentials" >}}).
 
 ### What kind of provisioning tasks can I perform with K8ssandra?
 
-Among the tasks are to dynamically scale up or down the size of your cluster. See [Provisioning a cluster]({{< ref "/topics/provision-a-cluster/" >}}).
+Among the tasks are to dynamically scale up or down the size of your cluster. See [Provisioning a cluster]({{< relref "/topics/provision-a-cluster/" >}}).
 
 ### How can I backup and restore my Cassandra data?
 
-Backup and restore Cassandra data to/from a supported storage object, such as an Amazon S3 bucket or Google Cloud Storage. See [Backup and restore Cassandra]({{< ref "/topics/restore-a-backup/" >}}).
+Backup and restore Cassandra data to/from a supported storage object, such as an Amazon S3 bucket or Google Cloud Storage. See [Backup and restore Cassandra]({{< relref "backup-restore" >}}).
 
 ### How do I schedule and orchestrate repairs of my Cassandra data?
 
-Periodically run anti-entropy operations to repair your Cassandra data. A general recommendation is once every 7-10 days. With the Reaper UI, you can schedule repairs, run repairs, and check the cluster's health. See [Reaper for Apache Cassandra repairs]({{< ref "/topics/repair/" >}}).
+Periodically run anti-entropy operations to repair your Cassandra data. A general recommendation is once every 7-10 days. With the Reaper UI, you can schedule repairs, run repairs, and check the cluster's health. See [Reaper for Apache Cassandra repairs]({{< relref "tasks/repair" >}}).
 
 ### Can you illustrate the steps and sample commands I'll use with K8ssandra?
 
@@ -137,12 +137,12 @@ Yes - here are the steps and commands in a single graphic:
 
 ![K8ssandra steps](k8ssandra-steps2.png)
 
-For command-line and UI details, see K8ssandra [tasks]({{< ref "/topics/" >}}).
+For command-line and UI details, see K8ssandra [tasks]({{< relref "/topics/" >}}).
 
 ### How can I contribute to the K8ssandra docs?
 
-See the documentation [guidelines]({{< ref "/contribution-guidelines/" >}}) topic.
+See the documentation [guidelines]({{< relref "contribute" >}}) topic.
 
 ## Next
 
-Read the documentation [tasks]({{< ref "/topics" >}}) and actively participate in the [community](https://k8ssandra.io/community/) of K8ssandra users.
+Read the documentation [tasks]({{< relref "tasks" >}}) and actively participate in the [community](https://k8ssandra.io/community/) of K8ssandra users.

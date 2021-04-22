@@ -12,4 +12,4 @@ To that end, K8ssandra leverages the excellent [Reaper for Apache Cassandra](htt
 
 ## Next
 
-Explore [Backups with Medusa for Apache Cassandra]({{< ref "backups" >}})
+Explore [Backups with Medusa for Apache Cassandra]({{< relref "backups" >}})

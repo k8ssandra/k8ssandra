@@ -9,7 +9,7 @@ Medusa recently introduced support for all S3-compatible backends, including Min
 
 [MinIO](https://min.io/) is a popular Kubernetes object storage suite. This topic walks you through the backup and restore steps.
 
-For related information, see [Backup and restore Cassandra with Amazon S3]({{< ref "/backup-restore/s3-compatible/amazon-s3.md" >}}).
+For related information, see [Backup and restore Cassandra with Amazon S3]({{< relref "amazon-s3" >}}).
 
 ## Deploy MinIO
 
@@ -242,9 +242,9 @@ kubectl get cassandrabackup backup1 -n k8ssandra -o jsonpath={.status.finishTime
 
 As long as this command doesn’t output a date and time, you know that the backup is still running. With the amount of data present and the fact that you’re using a locally accessible backend, this should complete quickly.
 
-Now refresh the MinIO UI and you should see some files in the `k8ssandra-medusa` bucket:
+Now relrefresh the MinIO UI and you should see some files in the `k8ssandra-medusa` bucket:
 
-![MinIO UI is refreshed and shows data](k8ssandra-minio-with-data.png)
+![MinIO UI is relrefreshed and shows data](k8ssandra-minio-with-data.png)
 
 In the MinIO UI, we now see an index folder, which is the Medusa backup index, and another folder that is specific to each Cassandra node in the cluster. In this example, there is only one node.
 
@@ -310,4 +310,4 @@ Success! You’ve successfully restored your lost data in just a few commands.
 
 ## Next
 
-Learn how to use the [Reaper web interface]({{< ref "/tasks/repair/" >}}) to perform Cassandra anti-entropy repairs.
+Learn how to use the [Reaper web interface]({{< relref "/tasks/repair/" >}}) to perform Cassandra anti-entropy repairs.

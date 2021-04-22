@@ -14,7 +14,7 @@ K8ssandra currently only supports a single-datacenter cluster.
 
 * A Kubernetes environment.
 * [Helm](https://helm.sh/docs/intro/install/) is installed.
-* K8ssandra is installed and running in Kubernetes - see the [Quick starts]({{< ref "quickstarts" >}}).
+* K8ssandra is installed and running in Kubernetes - see the [Quick starts]({{< relref "quickstarts" >}}).
 
 ## Create a cluster
 
@@ -192,4 +192,4 @@ This means for example that `my-k8ssandra-dc1-default-sts-3` will be deleted bef
 
 ## Next
 
-Learn about the K8ssandra deployed Helm charts and additional reference resources (such as a Glossary) in the [reference]]({{< ref "/reference/" >}}) topics.
+Learn about the K8ssandra deployed Helm charts and additional relreference resources (such as a Glossary) in the [reference]]({{< relref "/reference/" >}}) topics.

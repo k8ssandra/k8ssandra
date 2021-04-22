@@ -309,7 +309,7 @@ For more details, see the [Reaper](http://cassandra-reaper.io/) web site.
 
 ## Upgrade K8ssandra {#upgrade}
 
-You can easily upgrade your K8ssandra software with the `helm repo update` command, or apply new settings with the `helm upgrade` command. For details, see [Upgrade K8ssandra]({{< ref "/topics/upgrade/" >}}).
+You can easily upgrade your K8ssandra software with the `helm repo update` command, or apply new settings with the `helm upgrade` command. For details, see [Upgrade K8ssandra]({{< relref "upgrade" >}}).
 
 ## Next
 
@@ -321,4 +321,4 @@ Also see:
 * [FAQs]({{< relref "/faqs" >}}).
 * [K8ssandra components and architecture]({{< relref "/components" >}}).
 * [Reference material]({{< relref "/reference" >}}).
-* If you'd like to contribute to K8ssandra code, docs, or both, refer to our [Contribution guidelines]({{< relref "/contribute" >}}).
+* If you'd like to contribute to K8ssandra code, docs, or both, relrefer to our [Contribution guidelines]({{< relref "/contribute" >}}).

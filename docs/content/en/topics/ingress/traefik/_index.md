@@ -7,5 +7,5 @@ description: "Traefik is a modern reverse proxy and load balancer that makes dep
 It integrates with your existing infrastructure components and configures itself automatically and dynamically. Traefik handles advanced ingress deployments including mTLS of TCP with SNI and UDP. Operators define rules for routing traffic to downstream systems through Kubernetes `Ingress` objects or more specific `Custom Resource Definitions`. K8ssandra supports deploying `IngressRoute` objects as part of a deployment to expose metrics, repair, and Apache Cassandra® interfaces.
 
 {{% alert title="Warning" color="warning" %}}
-The provided Traefik examples, such as the ones in [Minikube deployment]({{< ref "/topics/ingress/traefik/minikube-deployment/" >}}), are not recommended for production deployments. See the notes in the topic.
+The provided Traefik examples, such as the ones in [Minikube deployment]({{< relref "/topics/ingress/traefik/minikube-deployment/" >}}), are not recommended for production deployments. See the notes in the topic.
 {{% /alert %}}

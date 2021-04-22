@@ -9,4 +9,4 @@ Many companies already build applications against Apache Cassandra using the nat
 
 ## Next
 
-Explore the [Reference]({{< ref "reference" >}}) section for an understanding of K8ssandra configuration options.
+Explore the [Reference]({{< relref "reference" >}}) section for an understanding of K8ssandra configuration options.

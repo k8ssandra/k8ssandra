@@ -10,4 +10,4 @@ K8ssandra provides Helm charts for taking backups or triggering the restoration 
 
 ## Next
 
-Dig into accessing your information through [Data APIs via Stargate]({{< ref "/architecture/stargate" >}}).
+Dig into accessing your information through [Data APIs via Stargate]({{< relref "/architecture/stargate" >}}).

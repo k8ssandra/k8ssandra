@@ -13,10 +13,10 @@ Follow these steps to configure and install `Traefik Ingress` custom resources f
 ## Prerequisites
 
 1. Kubernetes cluster with the following elements deployed:
-   * [Traefik]({{< ref "/topics/ingress/traefik" >}})
-   * [K8ssandra]({{< ref "getting-started#install-k8ssandra" >}})
+   * [Traefik]({{< relref "/topics/ingress/traefik" >}})
+   * [K8ssandra]({{< relref "quickstarts#install-k8ssandra" >}})
 
-   See the [Configuring Kind]({{< ref "kind-deployment" >}}) for an example of
+   See the [Configuring Kind]({{< relref "kind-deployment" >}}) for an example of
    how to set up a local installation.
 1. DNS name where the repair service should be listening.
 
@@ -27,8 +27,8 @@ If you do not have a DNS name available, consider using a service like [xip.io](
 {{% alert title="Tip" color="success" %}}
 As an alternative to configuring an Ingress, consider port forwarding. It's another way to provide external access to resources that have been deployed by K8ssandra in your Kubernetes environment. Those resources could include Prometheus metrics, pre-configured Grafana dashboards, and the Reaper web interface for repairs of Cassandra&reg; data. The `kubectl port-forward` command does not require an Ingress/Traefik to work. 
 
-* Developers, see [Set up port forwarding]({{< ref "/getting-started/developer/#set-up-port-forwarding" >}}).  
-* Site reliability engineers, see [Configure port forwarding]({{< ref "/getting-started/site-engineer/#port-forwarding" >}}).
+* Developers, see [Set up port forwarding]({{< relref "/quickstarts/developer/#set-up-port-forwarding" >}}).  
+* Site reliability engineers, see [Configure port forwarding]({{< relref "quickstarts/sre/#port-forwarding" >}}).
 {{% /alert %}}
 
 
@@ -38,13 +38,13 @@ The `k8ssandra` Helm chart contains templates for the Traefik `IngressRoute` and
 
 For the latest, see the sample [values.yaml](https://github.com/k8ssandra/k8ssandra/blob/main/charts/k8ssandra/values.yaml). 
 
-Note the `host` parameter: this is where the DNS name must be provided. You will reference this DNS when accessing Reaper in a Web URL.
+Note the `host` parameter: this is where the DNS name must be provided. You will relreference this DNS when accessing Reaper in a Web URL.
 
 If you maintain a values.yaml or traefik.values.yaml file, change the `reaper.ingress.enabled` Boolean from `false` to `true`.  Or, specify `--set reaper.ingress.enabled=true` on the helm install command line. 
 
 ## Enabling Traefik Ingress
 
-Traefik ingress may be enabled on the command-line or via a `values.yaml` file. The K8ssandra team recommends storing this information in a `values.yaml` as that may be version controlled and managed in a DevOps friendly manner. Examples of both approaches are provided below as reference.
+Traefik ingress may be enabled on the command-line or via a `values.yaml` file. The K8ssandra team recommends storing this information in a `values.yaml` as that may be version controlled and managed in a DevOps friendly manner. Examples of both approaches are provided below as relreference.
 
 ### `values.yaml`
 
@@ -83,7 +83,7 @@ This step is optional. The next step will also prove the configuration is workin
 With the ingress routes configured and deployed to Kubernetes we can access the Traefik dashboard to validate the configuration has been picked up and is detecting the appropriate services:
 
 1. Open your web browser and point it at the Traefik dashboard. This may require
-   `kubectl port-forward` or the steps in our [Configuring Kind]({{< ref
+   `kubectl port-forward` or the steps in our [Configuring Kind]({{< relref
    "kind-deployment" >}}) guide.
 
     ![Traefik Dashboard](traefik-dashboard.png)
@@ -105,4 +105,4 @@ With the ingress routes configured and deployed to Kubernetes we can access the 
 
 ## Next
 
-Check out how to [Access the Reaper web interface]({{< ref "/topics/repair" >}}) for periodic repairs of Cassandra data.
+Check out how to [Access the Reaper web interface]({{< relref "tasks/repair" >}}) for periodic repairs of Cassandra data.

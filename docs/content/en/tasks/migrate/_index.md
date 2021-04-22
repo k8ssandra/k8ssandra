@@ -75,7 +75,7 @@ Before installing K8ssandra, make a note of the IP addresses of the seed nodes o
 #k8ssandra-values.yaml
 #
 # Note this only demonstrates usage of the additionalSeeds property.
-# Refer to the chart documentation for other properties you may want
+# relrefer to the chart documentation for other properties you may want
 # to configure.
 cassandra:
   # The cluster name needs to match the cluster name in the original
@@ -226,4 +226,4 @@ The steps necessary here will vary depending on how you installed and managed th
 
 ## Next
 
-Learn how to [upgrade K8ssandra]({{< ref "/tasks/upgrade/" >}}) from prior releases or settings.
+Learn how to [upgrade K8ssandra]({{< relref "/tasks/upgrade/" >}}) from prior releases or settings.

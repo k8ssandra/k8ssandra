@@ -38,4 +38,4 @@ Ingress or port forwarding can be used to expose access to the Prometheus and Gr
 
 Check out the [monitoring tasks](/topics/monitoring) for more detailed instructions.
 
-Next architecture topic: [Repairs with Cassandra Reaper]({{< ref "repairs" >}})
+Next architecture topic: [Repairs with Cassandra Reaper]({{< relref "repairs" >}})

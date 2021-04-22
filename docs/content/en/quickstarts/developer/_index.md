@@ -8,7 +8,7 @@ description: "Get up and coding with K8ssandra by exposing access to Stargate an
 **Completion time**: **10 minutes**.
 
 {{% alert title="Important" color="warning" %}}
-You **must** complete the steps in [Quick start]({{< relref "/quickstarts" >}}) before continuing.
+You **must** complete the steps in [Quick start]({{< relref "quickstarts" >}}) before continuing.
 {{% /alert %}}
 
 In this guide, we'll cover:
@@ -132,9 +132,9 @@ To access K8ssandra using Stargate:
 
 Once you've got the access token, take a look at the following Stargate access options:
 
-* [Access Document Data API]({{< relref "/stargate#access-document-data-api" >}})
-* [Access REST Data API]({{< relref "/stargate#access-rest-data-api" >}})
-* [Access GraphQL Data API]({{< relref "/stargate#access-graphql-data-api" >}})
+* [Access Document Data API]({{< relref "develop#access-document-data-api" >}})
+* [Access REST Data API]({{< relref "develop#access-rest-data-api" >}})
+* [Access GraphQL Data API]({{< relref "develop#access-graphql-data-api" >}})
 
 You can access the following interfaces to make development easier as well:
 
@@ -228,8 +228,8 @@ For details such as sizing recommendations and quota settings that are specific 
 
 Also see:
 
-* [Tasks]({{< relref "/tasks" >}}).
-* [FAQs]({{< relref "/faqs" >}}).
-* [K8ssandra components and architecture]({{< relref "/components" >}}).
-* [Reference material]({{< relref "/reference" >}}).
-* If you'd like to contribute to K8ssandra code, docs, or both, refer to our [Contribution guidelines]({{< relref "/contribute" >}}).
+* [Tasks]({{< relref "tasks" >}}).
+* [FAQs]({{< relref "faqs" >}}).
+* [K8ssandra components and architecture]({{< relref "components" >}}).
+* [Reference material]({{< relref "reference" >}}).
+* If you'd like to contribute to K8ssandra code, docs, or both, relrefer to our [Contribution guidelines]({{< relref "contribute" >}}).

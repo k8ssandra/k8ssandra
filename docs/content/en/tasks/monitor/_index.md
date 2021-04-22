@@ -18,16 +18,16 @@ After you've met the prerequisites identified below, access the preconfigured Gr
 ## Prerequisites
 
 1. Kubernetes cluster with the following elements deployed:
-   * [K8ssandra]({{< ref "/quickstarts#install-k8ssandra" >}})
-   * [Ingress Controller]({{< ref "/tasks/connect/ingress" >}})
+   * [K8ssandra]({{< relref "/quickstarts#install-k8ssandra" >}})
+   * [Ingress Controller]({{< relref "/tasks/connect/ingress" >}})
 1. DNS name for the Grafana service 
 1. DNS name for the Prometheus service
 
 {{% alert title="Tip" color="success" %}}
 As an alternative to configuring an Ingress, consider port forwarding. It's another way to provide external access to resources that have been deployed by K8ssandra in your Kubernetes environment. Those resources could include Prometheus metrics, pre-configured Grafana dashboards, and the Reaper web interface for repairs of Cassandra&reg; data. The `kubectl port-forward` command does not require an Ingress/Traefik to work. 
 
-* Developers, see [Set up port forwarding]({{< ref "/quickstarts/developer/#set-up-port-forwarding" >}}).  
-* Site reliability engineers, see [Configure port forwarding]({{< ref "/quickstarts/site-engineer/#port-forwarding" >}}). 
+* Developers, see [Set up port forwarding]({{< relref "/quickstarts/developer/#set-up-port-forwarding" >}}).  
+* Site reliability engineers, see [Configure port forwarding]({{< relref "/quickstarts/sre/#port-forwarding" >}}). 
 {{% /alert %}}
 
 ## Access Grafana Interface
@@ -168,4 +168,4 @@ Prometheus is available at the following address if running locally:
 
 ## Next
 
-See the [Reaper web interface]({{< ref "/tasks/repair/" >}}) topic for information on performing periodic repairs of Cassandra data.
+See the [Reaper web interface]({{< relref "/tasks/repair/" >}}) topic for information on performing periodic repairs of Cassandra data.

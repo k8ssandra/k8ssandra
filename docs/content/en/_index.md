@@ -10,10 +10,10 @@ description: "K8ssandra documentation: architecture, configuration, guided tasks
 type: docs
 ---
 
-The K8ssandra documentation covers everything from architecture and configuration references to guided outcome-based tasks. Check out the sections at left based on your needs and be sure to leave us a <a class="github-button" href="https://github.com/k8ssandra/k8ssandra" data-icon="octicon-star" aria-label="Star k8ssandra/k8ssandra on GitHub">star</a> on Github!
+The K8ssandra documentation covers everything from architecture and configuration relreferences to guided outcome-based tasks. Check out the sections at left based on your needs and be sure to leave us a <a class="github-button" href="https://github.com/k8ssandra/k8ssandra" data-icon="octicon-star" aria-label="Star k8ssandra/k8ssandra on GitHub">star</a> on Github!
 
 {{% alert title="Tip" color="primary" %}}
-If you're impatient, jump right in with our **[Quick start]({{< ref "getting-started" >}})**!
+If you're impatient, jump right in with our **[Quick start]({{< relref "quickstarts" >}})**!
 {{% /alert %}}
 
 ## What is K8ssandra?
@@ -43,7 +43,7 @@ K8ssandra is a great fit for operators looking for easy to install and manage Ca
 
 Depending on your needs, see the following:
 
-* [Quick start]({{< ref "getting-started" >}}): Get started with K8ssandra!
-* [Tasks]({{< ref "topics" >}}): Need to get something done? Check out the Tasks section for a helpful collection of outcome-based solutions.
-* [Reference]({{< ref "reference" >}}): Explore the K8ssandra configuration interface and options available.
-* [Architecture]({{< ref "architecture" >}}): Dig in to each operational component of the K8ssandra stack and see how it communicates with the others.
+* [Quick start]({{< relref "quickstarts" >}}): Get started with K8ssandra!
+* [Tasks]({{< relref "topics" >}}): Need to get something done? Check out the Tasks section for a helpful collection of outcome-based solutions.
+* [Reference]({{< relref "reference" >}}): Explore the K8ssandra configuration interface and options available.
+* [Architecture]({{< relref "architecture" >}}): Dig in to each operational component of the K8ssandra stack and see how it communicates with the others.

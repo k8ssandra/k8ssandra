@@ -20,4 +20,4 @@ TBS here.
 
 ## Next 
 
-Learn how to use the [Reaper web interface]({{< ref "/tasks/repair/" >}}) to perform anti-entropy repairs on Cassandra data.
+Learn how to use the [Reaper web interface]({{< relref "/tasks/repair/" >}}) to perform anti-entropy repairs on Cassandra data.

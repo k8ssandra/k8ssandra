@@ -46,4 +46,4 @@ What happens on uninstall...
 
 ## Next
 
-Learn how to [develop client apps]({{< ref "/tasks/develop" >}}) in a Kubernetes cluster that is managed by K8ssandra. 
+Learn how to [develop client apps]({{< relref "/tasks/develop" >}}) in a Kubernetes cluster that is managed by K8ssandra. 

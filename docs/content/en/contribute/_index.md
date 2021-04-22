@@ -66,7 +66,7 @@ If you want to run your own local Hugo server to preview your changes as you wor
     git clone --recurse-submodules --depth 1 https://github.com/k8ssandra/k8ssandra.git
     ```
 
-1. Run `hugo server` in the docs site root directory, such as your `~/github/k8ssandra/docs` directory. By default your site will be available at http://localhost:1313/. Now that you're serving your site locally, Hugo will watch for changes to the content and automatically refresh your site.
+1. Run `hugo server` in the docs site root directory, such as your `~/github/k8ssandra/docs` directory. By default your site will be available at http://localhost:1313/. Now that you're serving your site locally, Hugo will watch for changes to the content and automatically relrefresh your site.
 1. Continue with the usual GitHub workflow to edit files, commit them, push the
   changes up to your fork, and create a pull request.
 
@@ -77,5 +77,5 @@ If you've found a problem in the docs, but you're not sure how to fix it yoursel
 ### Useful resources
 
 * [Docsy user guide](https://www.docsy.dev/docs/): All about Docsy, including how it manages navigation, look and feel, and multi-language support.
-* [Hugo documentation](https://gohugo.io/documentation/): Comprehensive reference for Hugo.
+* [Hugo documentation](https://gohugo.io/documentation/): Comprehensive relreference for Hugo.
 * [Github Hello World!](https://guides.github.com/activities/hello-world/): A basic introduction to GitHub concepts and workflow.

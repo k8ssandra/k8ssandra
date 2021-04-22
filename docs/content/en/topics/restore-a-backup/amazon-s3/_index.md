@@ -7,7 +7,7 @@ description: Use K8ssandra's Medusa to backup and restore Cassandra® data with 
 
 This topic walks you through the steps with Amazon S3 buckets. This feature is included in K8ssandra 1.0.0 and later releases.
 
-For related information, see [Backup and restore Cassandra with MinIO]({{< ref "/topics/restore-a-backup/minio" >}}).
+For related information, see [Backup and restore Cassandra with MinIO]({{< relref "s3-compatible" >}}).
 
 ## Tools
 
@@ -58,7 +58,7 @@ Update Complete. ⎈Happy Helming!⎈
 Before installing the k8ssandra cluster, we need to supply credentials so that Medusa has read/write access to an Amazon S3 bucket, which is where the backup will be stored. 
 
 {{% alert title="Tip" color="success" %}}
-Medusa supports local, Google Cloud Storage (GCS), Azure, and all S3-compatible backends including Amazon S3 and MinIO buckets. At this time, K8ssandra exposes configurations for Amazon S3, MinIO, and GCS. The example in this topic uses an Amazon S3 bucket. For related information, see [Backup and restore Cassandra with MinIO]({{< ref "/topics/restore-a-backup/minio" >}}). Also see the [AWS S3 setup](https://github.com/thelastpickle/cassandra-medusa/blob/master/docs/aws_s3_setup.md) article on the Medusa wiki for more details for configuring S3.
+Medusa supports local, Google Cloud Storage (GCS), Azure, and all S3-compatible backends including Amazon S3 and MinIO buckets. At this time, K8ssandra exposes configurations for Amazon S3, MinIO, and GCS. The example in this topic uses an Amazon S3 bucket. For related information, see [Backup and restore Cassandra with MinIO]({{< relref "s3-compatible" >}}). Also see the [AWS S3 setup](https://github.com/thelastpickle/cassandra-medusa/blob/master/docs/aws_s3_setup.md) article on the Medusa wiki for more details for configuring S3.
 {{% /alert %}}
 
 Start by creating a secret with the credentials for the Amazon S3 bucket.
@@ -115,7 +115,7 @@ File "/usr/local/lib/python3.6/dist-packages/libcloud/storage/drivers/s3.py", li
 libcloud.common.types.LibcloudError: <LibcloudError in <class 'libcloud.storage.drivers.s3.S3StorageDriver'> 'This bucket is located in a different region. Please use the correct driver. Bucket region "us-east-2", used region "us-east-1".'>
 ```
 
-The solution is easy - for Amazon S3 buckets, specify the correct region in a values file that you'll reference in the K8ssandra install or upgrade; see the section below. If your IT group manages the AWS S3 bucket settings, consult with them to get the correct values. 
+The solution is easy - for Amazon S3 buckets, specify the correct region in a values file that you'll relreference in the K8ssandra install or upgrade; see the section below. If your IT group manages the AWS S3 bucket settings, consult with them to get the correct values. 
 
 Here's an example from the AWS S3 dashboard showing a sample bucket name and region:
 
@@ -125,7 +125,7 @@ Notice how in this example, the region defined in the AWS console is `us-east-1`
 
 ### Create or update the k8ssandra cluster
 
-Install the `k8ssandra` chart with the following properties. You can reference an edited copy of the provided [backup-restore-values.yaml](backup-restore-values.yaml) file; customize the `name` of the Amazon S3 bucket defined for your purposes, and make sure the region value matches the region used by the Amazon S3 bucket. Before edits, this sample values file contains:
+Install the `k8ssandra` chart with the following properties. You can relreference an edited copy of the provided [backup-restore-values.yaml](backup-restore-values.yaml) file; customize the `name` of the Amazon S3 bucket defined for your purposes, and make sure the region value matches the region used by the Amazon S3 bucket. Before edits, this sample values file contains:
 
 ```yaml
 cassandra:
@@ -370,4 +370,4 @@ kubectl get cassadrarestore helm-test -o yaml
 
 ## Next
 
-An alternative to an Amazon S3 bucket is MinIO, which is S3 compatible and also supported by Medusa. See [Backup and restore Cassandra with MinIO]({{< ref "/topics/restore-a-backup/minio" >}}).
+An alternative to an Amazon S3 bucket is MinIO, which is S3 compatible and also supported by Medusa. See [Backup and restore Cassandra with MinIO]({{< relref "s3-compatible" >}}).

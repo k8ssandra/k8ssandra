@@ -18,9 +18,9 @@ While this document will help get you up and going quickly with Stargate, more d
 
 ## Prerequisites
 
-1. [K8ssandra Cluster]({{< ref "quickstarts#install-k8ssandra" >}})
-1. [Ingress]({{< ref "/tasks/connect/ingress" >}}) configured to expose each of the Stargate services (Auth, REST, GraphQL)
-1. DNS names configured for the exposed Stargate services, referred to as `STARGATE_AUTH_DOMAIN`, `STARGATE_REST_DOMAIN`, and `STARGATE_GRAPHQL_DOMAIN` below.
+1. [K8ssandra Cluster]({{< relref "quickstarts#install-k8ssandra" >}})
+1. [Ingress]({{< relref "/tasks/connect/ingress" >}}) configured to expose each of the Stargate services (Auth, REST, GraphQL)
+1. DNS names configured for the exposed Stargate services, relreferred to as `STARGATE_AUTH_DOMAIN`, `STARGATE_REST_DOMAIN`, and `STARGATE_GRAPHQL_DOMAIN` below.
 
 ## Access Auth API
 

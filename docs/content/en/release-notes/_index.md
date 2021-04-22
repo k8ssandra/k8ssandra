@@ -97,18 +97,18 @@ Each of the following sections present a **subset** of key devlopments in K8ssan
 
 ### Doc updates
 
-* S3-compliant MinIO buckets for Medusa backup and restore operations, and related edits for the separate Amazon S3 topic [#556](https://github.com/k8ssandra/k8ssandra/issues/556). For the updates, start in [Backup and restore Cassandra data]({{< ref "/topics/restore-a-backup/" >}}).
-* Migrating existing Cassandra to K8ssandra [#377](https://github.com/k8ssandra/k8ssandra/issues/377). See [Migrating a Cassandra cluster to K8ssandra]({{< ref "/topics/migration/" >}}).
-* Underlying considerations for scaling nodes up/down [#501](https://github.com/k8ssandra/k8ssandra/issues/501). See [Scale your Cassandra cluster in K8ssandra]({{< ref "/topics/provision-a-cluster/" >}}).
+* S3-compliant MinIO buckets for Medusa backup and restore operations, and related edits for the separate Amazon S3 topic [#556](https://github.com/k8ssandra/k8ssandra/issues/556). For the updates, start in [Backup and restore Cassandra data]({{< relref "backup-restore" >}}).
+* Migrating existing Cassandra to K8ssandra [#377](https://github.com/k8ssandra/k8ssandra/issues/377). See [Migrating a Cassandra cluster to K8ssandra]({{< relref "migrate" >}}).
+* Underlying considerations for scaling nodes up/down [#501](https://github.com/k8ssandra/k8ssandra/issues/501). See [Scale your Cassandra cluster in K8ssandra]({{< relref "/topics/provision-a-cluster/" >}}).
 
 ## Contributions
 ​
 Your feedback and contributions are welcome! To contribute, fork the [K8ssandra repo](https://github.com/k8ssandra/k8ssandra) and submit Pull Requests (PRs) for review.
 
-To submit documentation comments or edits, see [Contribution guidelines]({{< ref "/contribution-guidelines/" >}}).
+To submit documentation comments or edits, see [Contribution guidelines]({{< relref "contribute" >}}).
 
 ## Next
 
-Read the K8ssandra [FAQs]({{< ref "/faqs/" >}}) - for starters, how to pronounce "K8ssandra." 
+Read the K8ssandra [FAQs]({{< relref "faqs" >}}) - for starters, how to pronounce "K8ssandra." 
 
-If you're impatient, jump right in with our **[Quick start]({{< ref "getting-started" >}})**.
+If you're impatient, jump right in with our **[Quick start]({{< relref "quickstarts" >}})**.

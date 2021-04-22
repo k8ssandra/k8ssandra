@@ -60,11 +60,11 @@ backupRestore:
 
 Also make sure the bucketName matches: `jsmart-k8ssandra-bucket2`, in this example.
 
-For example, referring again to the S3 UI, confirm the bucket name:
+For example, relreferring again to the S3 UI, confirm the bucket name:
 
 ![Confirm the bucket name as shown in the Amazon S3 UI](amazon-s3-confirm-bucket-name.png)
 
-Then for a new or existing K8ssandra installation, reference the values file. 
+Then for a new or existing K8ssandra installation, relreference the values file. 
 
 New install:
 
@@ -118,5 +118,5 @@ kubectl apply -f my-medusa-bucket-key.yaml
 
 ## Next
 
-See the [Reference]({{< ref "/reference" >}}) topics for information about K8ssandra Helm charts, a glossary, and cheat sheets.  
+See the [Reference]({{< relref "/reference" >}}) topics for information about K8ssandra Helm charts, a glossary, and cheat sheets.  
 

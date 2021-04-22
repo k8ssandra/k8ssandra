@@ -47,7 +47,7 @@ For example, because K8ssandra released 1.1.0 on 09-Apr-2021, the `helm repo upd
 
 ## Upgrade notice for K8ssandra 1.1.0
 
-As cited in the K8ssandra [release notes]({{< ref "/release-notes/#upgrade-notice" >}}), upgrading from K8ssandra 1.0.0 to 1.1.0 causes a StatefulSet update, which has the effect of a rolling restart. This situation could require you to perform a manual restart of all Stargate nodes after the Cassandra cluster is back online. 
+As cited in the K8ssandra [release notes]({{< relref "/release-notes/#upgrade-notice" >}}), upgrading from K8ssandra 1.0.0 to 1.1.0 causes a StatefulSet update, which has the effect of a rolling restart. This situation could require you to perform a manual restart of all Stargate nodes after the Cassandra cluster is back online. 
 
 To manually restart Stargate nodes:
 
@@ -107,7 +107,7 @@ You only need the YAML statements pertinent to the upgrade. You don't need to du
     Notice that the REVISION is now at `2`. It will increment each time you run a `helm upgrade` command. 
 
 {{% alert title="Tip" color="success" %}}
-For insights into the underlying operations that occur with scaling, see [Scale your Cassandra cluster]({{< ref "/tasks/provision-a-cluster/" >}}).
+For insights into the underlying operations that occur with scaling, see [Scale your Cassandra cluster]({{< relref "/tasks/provision-a-cluster/" >}}).
 {{% /alert %}}
 
 
@@ -138,4 +138,4 @@ For insights into the underlying operations that occur with scaling, see [Scale 
 
 ## Next
 
-Learn how to [backup and restore Cassandra data]({{< ref "/topics/restore-a-backup/" >}}) in a Kubernetes cluster.
+Learn how to [backup and restore Cassandra data]({{< relref "backup-restore" >}}) in a Kubernetes cluster.

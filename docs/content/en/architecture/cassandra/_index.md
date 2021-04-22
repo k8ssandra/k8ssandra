@@ -42,4 +42,4 @@ In Kubernetes, each Cassandra pod is composed of a number of containers. The fir
 
 ## Next
 
-Check out [Monitoring with Prometheus and Grafana]({{< ref "/architecture/monitoring" >}})
+Check out [Monitoring with Prometheus and Grafana]({{< relref "/architecture/monitoring" >}})
