@@ -7,7 +7,3 @@ description: Components provided by K8ssandra
 ---
 
 When you install K8ssandra via its Helm chart, K8ssandra deploys and starts pods for the following components.
-
-Intro content TBS...
-
-
