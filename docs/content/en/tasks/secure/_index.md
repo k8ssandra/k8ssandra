@@ -1,49 +1,149 @@
 ---
-title: "Secure K8ssandra managed assets"
+title: "K8ssandra security"
 linkTitle: "Secure"
 no_list: true
-weight: 2
+weight: 3
 description: K8ssandra security defaults, secrets, and options for Apache Cassandra&reg; authentication and role-based authorization.
 ---
 
-Intro sentences here. Content is TBS.
+This topic describes how K8ssandra supports Cassandra's authentication and authorization features. Also, how Kubernetes secrets are created and used by the K8ssandra deployed components: Cassandra (via cass-operator), Stargate, Reaper, and Medusa. 
+
+
 
 ## Introduction
 
-Content TBS. 
+K8ssandra enables authentication and authorization by default. It uses the Cassandra default `PasswordAuthenticator` and `CassandraAuthorizer` functionality.  
 
-## Authentication in Cassandra deployed by K8ssandra cass-operator
+{{% alert title="Important" color="success" %}}
+We recommend that you keep auth enabled. Turning on auth for an existing cluster is a non-trivial exercise that may involve downtime.
+{{% /alert %}}
 
-Content TBS. 
+## Cassandra security
 
-By default, cass-operator renmoves the username &amp; password credentials of cassandra cassandra.
+With authentication enabled, K8ssandra configures a new, default superuser. The username defaults to `{cassandra.clusterName}-superuser`. 
 
-## Authorization roles used by K8ssandra deployments
+{{% alert title="Note" color="success" %}}
+K8ssandra disables and does not use the default superuser, `cassandra`.
+{{% /alert %}}
 
-Content TBS. 
+The password is a random alphanumeric string 20 characters long.
 
-K8ssandra provides a `superuser` role that ...
+You can override the default username by setting the `cassandra.auth.superuser.username` property.
 
-Reaper - repairs over JMX authorization (remote enabled). Must provide credentials to run `nodetool`. Note caveat of changed creds not being propagated for JMX superuser.
+Credentials are stored in a secret named `{cassandra.clusterName}-superuser`. If your cluster name is `k8ssandra`, for example, you can retrieve the username and password as follows:
 
-Stargate uses...
+```bash
+kubectl get secret k8ssandra-superuser -o json | jq -r '.data.username | base64 --decode
+```
 
-Medusa uses ... 
+```bash
+kubectl get secret k8ssandra-superuser -o json | jq -r '.data.password' | base64 --decode
+```
+
+You can override both the username and password by providing your own secret and setting `cassandra.auth.superuser.secret` to its name.
+
+If you provide your own secret it will not be managed by Helm. Helm will not do anything with it when you run `helm upgrade` or `helm uninstall`, for example.
+
+For more, see the [secrets]({{< relref "#secrets" >}}) section of this security topic.
+
+If both `cassandra.auth.superuser.username` and `cassandra.auth.superuser.secret` are set, `cassandra.auth.superuser.secret` takes precedence.
+
+## Stargate security
+
+With authentication enabled, K8ssandra creates a default user for Stargate. The default username is `stargate`. 
+
+The password is a random, alphanumeric string 20 characters long.
+
+{{% alert title="Note" color="success" %}}
+The user is created as a superuser because (at this time) K8ssandra does not support configuring authorization.
+{{% /alert %}}
+
+You can override the default username by setting the `stargate.cassandraUser.username` property.
+
+Credentials are stored in a secret named `{cassandra.clusterName}-stargate`. If your cluster name is `k8ssandra`, for example, you can retrieve the username and password as follows:
+
+```bash
+kubectl get secret k8ssandra-stargate -o json | jq -r '.data.username | base64 --decode
+```
+
+```bash
+$ kubectl get secret k8ssandra-stargate -o json | jq -r '.data.password' | base64 --decode
+```
+
+You can override both the username and password by providing your own secret and setting `stargate.cassandraUser.secret` to its name. 
+
+If you provide your own secret it will not be managed by Helm. Helm will not do anything with it when you run `helm upgrade` or `helm uninstall`, for example.
+
+For more, see the [secrets]({{< relref "#secrets" >}}) section of this security topic.
+
+If both `stargate.cassandraUser.username` and `stargate.cassandraUser.superuser.secret` are set, `stargate.cassandraUser.secret` takes precedence.
+
+## Reaper security
+
+With authentication enabled, K8ssandra creates a default user for Reaper. The default username is `reaper`. 
+
+The password is a random, alphanumeric string 20 characters long.
+
+{{% alert title="Note" color="success" %}}
+The user is created as a superuser because (at this time) K8ssandra does not support configuring authorization.
+{{% /alert %}}
+
+You can override the default username by setting the `reaper.cassandraUser.username` property.
+
+Credentials are stored in a secret named `{cassandra.clusterName}-reaper`. If your cluster name is `k8ssandra`, for example, you can retrieve the username and password as follows:
+
+```bash
+kubectl get secret k8ssandra-reaper -o json | jq -r '.data.username | base64 --decode
+```
+
+```bash
+kubectl get secret k8ssandra-reaper -o json | jq -r '.data.password' | base64 --decode
+```
+
+You can override both the username and password by providing your own secret and setting `reaper.cassandraUser.secret` to its name.
+
+If you provide your own secret it will not be managed by Helm. Helm will not do anything with it when you run `helm upgrade` or `helm uninstall`, for example.
+
+For more, see the [secrets]({{< relref "#secrets" >}}) section of this security topic.
+
+If both `reaper.cassandraUser.username` and `reaper.cassandraUser.superuser.secret` are set, `reaper.cassandraUser.secret` takes precedence.
+
+## Mesusa security
+
+With authentication enabled, K8ssandra creates a default user for Medusa. The default username is `medusa`. 
+
+The password is a random, alphanumeric string 20 characters long.
+
+{{% alert title="Note" color="success" %}}
+The user is created as a superuser because (at this time) K8ssandra does not support configuring authorization.
+{{% /alert %}}
+
+You can override the default username by setting the `medusa.cassandraUser.username` property.
+
+Credentials are stored in a secret named `{cassandra.clusterName}-medusa`. If your cluster name is `k8ssandra`, for example, you can retrieve the username and password as follows:
+
+```bash
+kubectl get secret k8ssandra-medusa -o json | jq -r '.data.username | base64 --decode
+```
+
+```bash
+kubectl get secret k8ssandra-medusa -o json | jq -r '.data.password' | base64 --decode
+```
+
+You can override both the username and password by providing your own secret and setting `medusa.cassandraUser.secret` to its name.
+
+If you provide your own secret it will not be managed by Helm. Helm will not do anything with it when you run `helm upgrade` or `helm uninstall`, for example.
+
+For more, see the [secrets]({{< relref "#secrets" >}}) section of this security topic.
+
+If both `medusa.cassandraUser.username` and `medusa.cassandraUser.superuser.secret` are set, `medusa.cassandraUser.secret` takes precedence.
 
 ## Secrets
 
-How we create them...
+Kubernetes secrets let you store and manage sensitive information, such as passwords, OAuth tokens, and ssh keys. Storing confidential information in a Secret is safer and more flexible than putting it verbatim in a Pod definition or in a container image. You can use the secrets generated by K8ssandra components, or create your own secrets.
 
-Where they’re used...
-
-Per user role, can specify the username and K8ssandra generates the secret value. 
-
-How to extract passwords...
-
-Alternatively, you can provide your own secret...
-
-What happens on uninstall...
+TODO: More info about secrets in K8ssandra.
 
 ## Next
 
-Learn how to [develop client apps]({{< relref "/tasks/develop" >}}) in a Kubernetes cluster that is managed by K8ssandra. 
+Learn how to [develop client apps]({{< relref "/tasks/develop" >}}) using the Stargate APIs. 

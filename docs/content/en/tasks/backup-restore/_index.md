@@ -1,5 +1,5 @@
 ---
-title: "Backup and restore Apache Cassandra data"
+title: "Backup and restore Cassandra data"
 linkTitle: "Backup/restore"
 no_list: true
 weight: 4

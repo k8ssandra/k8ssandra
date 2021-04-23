@@ -1,7 +1,7 @@
 ---
-title: "Reaper for Apache Cassandra® web interface for repairs"
+title: "Repair Cassandra with Reaper"
 linkTitle: "Repair"
-description: "Use the Reaper for Apache Cassandra&reg; web interface for repairs."
+description: "Use the Reaper for Apache Cassandra&reg; web interface to perform repairs."
 ---
 
 Repairs are a critical anti-entropy operation in Cassandra. In the past, there have been many custom solutions to manage them outside of your main Cassandra installation. K8ssandra provides the Reaper web interface that eliminates the need for a custom solution. Just like K8ssandra makes Cassandra setup easy, Reaper makes configuration of repairs even easier.
@@ -119,9 +119,9 @@ Users with access to the Reaper web interface can pause or delete scheduled repa
 
 ### Autoschedule repairs
 
-When you enable the autoscheduling feature, Reaper dynamically schedules repairs for all non-system keyspaces in a cluster. A cluster's keyspaces are monitored and any modifications (additions or removals) are detected. When a new keyspace is created, a new repair schedule is created automatically for that keyspace. Conversely, when a keyspace is removed, the corresponding repair schedule is deleted.
+When you enable the autoschedule feature, Reaper dynamically schedules repairs for all non-system keyspaces in a cluster. A cluster's keyspaces are monitored and any modifications (additions or removals) are detected. When a new keyspace is created, a new repair schedule is created automatically for that keyspace. Conversely, when a keyspace is removed, the corresponding repair schedule is deleted.
 
-To enable autoscheduling, set the property `repair.reaper.autoschedule` to `true`. 
+To enable autoschedule in Reaper, set the property `repair.reaper.autoschedule` to `true`. 
 
 ### Run a cluster repair
 
