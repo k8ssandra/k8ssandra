@@ -34,6 +34,12 @@ On this infrastructure the K8ssandra installation will consist of the following 
 
 Feel free to update the parameters used during this guide to match your target deployment. The following should be considered a minimum for production workloads.
 
+### _Note_ Quotas
+
+This installation slightly exceeds the default quotas provided within a new project. Consider requesting the following quota requests to allow for the provisioning of this installation.
+
+TODO identify quota limits that need to be updated
+
 ## Terraform
 
 As a convenience we provide reference [Terraform](https://www.terraform.io/) modules for orchestrating the provisioning of cloud resources necessary to run K8ssandra. If you do not have Terraform available, or prefer to create cloud resources manually, skip over to the [Manual Provisioning](#manual-provisioning) section of this guide.
