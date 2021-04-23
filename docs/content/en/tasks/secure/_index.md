@@ -106,7 +106,7 @@ For more, see the [secrets]({{< relref "#secrets" >}}) section of this security 
 
 If both `reaper.cassandraUser.username` and `reaper.cassandraUser.superuser.secret` are set, `reaper.cassandraUser.secret` takes precedence.
 
-## Mesusa security
+## Medusa security
 
 With authentication enabled, K8ssandra creates a default user for Medusa. The default username is `medusa`. 
 
@@ -144,4 +144,4 @@ TODO: More info about secrets in K8ssandra.
 
 ## Next
 
-Learn how to [develop client apps]({{< relref "/tasks/develop" >}}) using the Stargate APIs. 
+Learn how to [develop client]({{< relref "/tasks/develop" >}}) using the Stargate APIs. 
