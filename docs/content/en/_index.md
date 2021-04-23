@@ -12,7 +12,7 @@ description: "K8ssandra documentation: architecture, configuration, guided tasks
 type: docs
 ---
 
-The K8ssandra documentation covers everything from architecture and configuration references to guided outcome-based tasks. Check out the sections at left based on your needs and be sure to leave us a <a class="github-button" href="https://github.com/k8ssandra/k8ssandra" data-icon="octicon-star" aria-label="Star k8ssandra/k8ssandra on GitHub">star</a> on Github!
+The K8ssandra documentation covers everything from install details, deployed components, configuration references, and guided outcome-based tasks. Check out the sections at left based on your needs and be sure to leave us a <a class="github-button" href="https://github.com/k8ssandra/k8ssandra" data-icon="octicon-star" aria-label="Star k8ssandra/k8ssandra on GitHub">star</a> on Github!
 
 {{% alert title="Tip" color="primary" %}}
 If you're impatient, jump right in with our **[Quick start]({{< relref "quickstarts" >}})**!
@@ -38,14 +38,16 @@ K8ssandra is a great fit for operators looking for easy to install and manage Ca
   * [Metrics Collector for Apache Cassandra](https://github.com/datastax/metric-collector-for-apache-cassandra)
   * [Management API for Apache Cassandra](https://github.com/datastax/management-api-for-apache-cassandra)
 * Prometheus Operator `ServiceMonitor` custom resources complete with metric relabelling.
-* Grafana Operator `Dashboard` custom resources configured with metrics exposed by Prometheus
-* Reaper for Apache Cassandra custom resources connected to the cluster.
+* Grafana Operator `Dashboard` custom resources configured with metrics exposed by Prometheus.
+* Reaper to repair Cassandra data.
+* Medusa for backup/restore operations.
 
 ## Where should I go next?
 
 Depending on your needs, see the following:
 
+* [FAQs]{{< relref "faqs" >}}): If you're new to K8ssandra, these FAQs are for you. 
 * [Quick start]({{< relref "quickstarts" >}}): Get started with K8ssandra!
+* [Components]({{< relref "components" >}}): Dig in to each operational component of the K8ssandra stack and see how it communicates with the others.
 * [Tasks]({{< relref "topics" >}}): Need to get something done? Check out the Tasks section for a helpful collection of outcome-based solutions.
 * [Reference]({{< relref "reference" >}}): Explore the K8ssandra configuration interface and options available.
-* [Architecture]({{< relref "architecture" >}}): Dig in to each operational component of the K8ssandra stack and see how it communicates with the others.
