@@ -34,11 +34,11 @@ On this infrastructure the K8ssandra installation will consist of the following 
 
 Feel free to update the parameters used during this guide to match your target deployment. The following should be considered a minimum for production workloads.
 
-### _Note_ Quotas
-
+{{% alert title="Quotas" color="primary" %}}
 This installation slightly exceeds the default quotas provided within a new project. Consider requesting the following quota requests to allow for the provisioning of this installation.
 
 TODO identify quota limits that need to be updated
+{{% /alert %}}
 
 ## Terraform
 
@@ -52,9 +52,9 @@ As a convenience we provide reference [Terraform](https://www.terraform.io/) mod
 | [Terraform GCP provider](https://registry.terraform.io/providers/hashicorp/google/latest) | ~>3.0 |
 | [Helm](https://helm.sh/) | 3 |
 | [Google Cloud SDK](https://cloud.google.com/sdk)  | 333.0.0 |
-|   bq | 2.0.65 |
-|   core | 2021.03.19 |
-|   gsutil | 4.60 |
+| - bq | 2.0.65 |
+| - core | 2021.03.19 |
+| - gsutil | 4.60 |
 | [kubectl](https://kubernetes.io/docs/tasks/tools/) | 1.17.17 |
 
 ### Checkout the `k8ssandra-terraform` project
