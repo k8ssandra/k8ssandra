@@ -3,7 +3,7 @@
   <div class="container pt-3 pb-5">
     <div class="row">
       <div class="col-12 col-md-2 text-center">
-        <a class="footer-brand" href="{{ .Site.Home.RelPermalink }}">
+        <a class="footer-brand" href="https://k8ssandra.io/">
           <span class="footer-logo">{{ if .Site.Params.ui.navbar_logo }}{{ with resources.Get "icons/logo.svg" }}{{ ( . | minify).Content | safeHTML }}{{ end }}{{ end }}</span><span class="text-uppercase font-weight-bold sr-only">{{ .Site.Title }}</span>
         </a>
         <div class="d-flex justify-content-center mt-3">
@@ -77,3 +77,13 @@
   {{ end }}
 </ul>
 {{ end }}
+
+<script>
+  window.markerConfig = {
+    destination: '605e20699f6ca26f7ea3e436', 
+  };
+</script>
+
+<script>
+  !function(e,r,t){if(e.__Marker)return;e.__Marker={};var n=r.createElement("script");n.async=1,n.src="https://edge.marker.io/latest/shim.js";var s=r.getElementsByTagName("script")[0];s.parentNode.insertBefore(n,s)}(window,document);
+</script>

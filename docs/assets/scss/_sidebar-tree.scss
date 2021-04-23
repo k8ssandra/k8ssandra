@@ -64,6 +64,7 @@
       color: $blue;
       font-family: museo-sans, sans-serif;
       text-decoration:none;
+      margin-top:30px;
       &:hover {
         color: $secondary;
         text-decoration: none;
@@ -77,6 +78,7 @@
       font-family: usual, sans-serif;
       color: $dark;
       text-decoration: underline;
+      margin-top:0;
       &:hover {
         color: $secondary;
         text-decoration: none;
@@ -96,7 +98,7 @@
 
   & > .td-sidebar-nav__section {
     padding-top: 0.5rem;
-    padding-left: 1.5rem;
+    padding-left: .9rem;
   }
 }
 

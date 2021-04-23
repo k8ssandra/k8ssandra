@@ -48,6 +48,11 @@ a {
     background-repeat: repeat-x;
     background-size: contain;
   }
+  @media(min-width:1200px) {
+    max-width: 621px;
+    margin-left: calc((80% - 621px)/2);
+    margin-right: calc((120% - 621px)/2);
+  }
 }
 
 .btn,
@@ -132,14 +137,8 @@ ul.footer-nav {
         color: #fff;
         @media (min-width: 992px) {
           padding: 0;
-          font-size: 14px;
-          line-height: 1.75;
-          color: unset;
-        }
-        @media (min-width: 1200px) {
-          padding: 0;
-          font-size: 18px;
-          line-height: 1.75;
+          font-size: 16px;
+          line-height: 1;
           color: unset;
         }
       }
@@ -199,4 +198,13 @@ body.menu-show .menu-toggler {
   i.fa-bars {
     display:none;
   }
+}
+
+
+#TableOfContents {
+  padding-left:10px;
+}
+
+.feedback--title {
+  margin-top:50px;
 }

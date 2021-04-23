@@ -271,7 +271,7 @@ gzip = true
 [[menu.main]]
   name = "Forum"
   weight = 70
-  url = "https://k8-community.trydiscourse.com/"
+  url = "https://forum.k8ssandra.io/"
 
 [[menu.main]]
   name = "Blog"
@@ -301,7 +301,7 @@ gzip = true
 [[menu.second]]
   name = "Forum"
   weight = 70
-  url = "https://k8-community.trydiscourse.com/"
+  url = "https://forum.k8ssandra.io/"
 
 [[menu.second]]
   name = "Blog"

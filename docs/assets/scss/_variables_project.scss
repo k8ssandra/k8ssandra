@@ -11,7 +11,7 @@ header {
 #home-header {
   .navbar {
     margin-top: 0px;
-    padding: 1.4375rem 0;
+    padding: 1.875rem 0;
   }
 
   .nav-link {
@@ -48,10 +48,10 @@ header {
   background-repeat: no-repeat;
   background-size: 100%;
   position: relative;
-  max-width: 1280px;
+  max-width: 1270px;
   margin: 0 auto;
-  padding-left: 25px;
-  padding-right: 25px;
+  padding-left: 30px;
+  padding-right: 30px;
   justify-content: space-between;
   @media (min-width: 1440px) {
     padding-left: 0;
@@ -65,7 +65,7 @@ header {
     line-height: 24px;
     text-decoration: none;
     @media (min-width: 1200px) {
-      font-size: 18px;
+      font-size: 16px;
     }
     &:hover,
     &.active {
@@ -83,7 +83,7 @@ header {
 
 .td-main {
   .td-sidebar {
-    padding-top: 12px;
+    padding: 12px 25px 0;
   }
 
   main {
@@ -174,17 +174,20 @@ header {
     background: #ffffff;
     background-image: url(/images/search-solid.svg);
     background-repeat: no-repeat;
-    background-size: 18px;
-    background-position: 2% center;
+    background-size: 16px;
+    background-position: 94% center;
     border-radius: 0;
     color: #02070d;
     font-size: 14px;
     max-width: none;
     height: 40px;
-    padding: 9px 0 9px 30px;
+    padding: 9px 30px 9px 15px;
+    box-shadow: 0;
+    border: 0;
   }
 
   .navbar-search .td-search-input {
+    width:216px;
     max-width: 260px;
   }
 

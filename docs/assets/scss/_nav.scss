@@ -29,7 +29,7 @@
     min-height: 6.6876rem;
     margin: 0;
     z-index: 32;
-    padding: 1.4375rem 0;
+    padding: 1.875rem 0;
 
     @include media-breakpoint-up(md) {
         position: fixed;
@@ -39,7 +39,7 @@
 
 
     .navbar-brand {
-        
+        padding:0;
 
         .nav-link {
             display: inline-block;
@@ -48,8 +48,13 @@
 
         svg {
             display: inline-block;
-            margin-right:40px;
-            height: 77px;
+            margin-bottom:1px;
+            margin-right:65px;
+            height: 51px;
+        @include media-breakpoint-up(lg) {
+            height: 76px;
+
+        }
         }
     }
 
