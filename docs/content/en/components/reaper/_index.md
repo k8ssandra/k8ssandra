@@ -63,9 +63,45 @@ Reaper was built to address those issues and make repairs as safe and reliable a
 
 Reaper also supports incremental repair - recommended for use starting with Cassandra 4.0. Since Cassandra 3.0, Reaper can create segments with several token ranges to reduce the overhead of vnodes on repairs. Such ranges will be repaired in a single job by Cassandra as segments will only contain ranges that are replicated on the same set of nodes.
 
+## Reaper concepts
+
+### Segments
+
+Reaper splits repair runs in segments. A segment is a subrange of tokens that fits entirely in one of the cluster token ranges. The minimum number of segments for a repair run is the number of token ranges in the cluster. With a 3 nodes cluster using 256 vnodes per node, a repair run will have at least 768 segments. If necessary, each repair can define a higher number of segments than the number of token ranges.
+
+Token ranges that have the same replicas can be consolidated into a single segment. If the total number of requested segments is lower than the number of vnodes, Reaper will try to group token ranges so that each segment has the appropriate number of tokens. For Cassandra 2.2 tables, one repair session will be started for each subrange of the segment, so the gain will be the reduction of overhead in Reaper. Starting with 3.0, Cassandra will generate a single repair session for all the subranges that share the same replicas, which then further reduces the overhead of vnodes in Cassandra.
+
+### Back-pressure
+
+Reaper associates each segment with its replicas, and run repairs sequentially on only one of the replicas. If a repair is already running on one of the replicas or if there are more than 20 pending compactions, Reaper postpones the segment for future processing and tries to repair the next segment.
+
+### Concurrency and multithreading
+
+As a multi-threaded service, Reaper computes how many concurrent repair sessions can run on the cluster and adjust its thread pool accordingly. To that end, it will check the number of nodes in the cluster and the RF (Replication Factor) of the repaired keyspace. On a three node cluster with RF=3, only one segment can be repaired at a time. On a six node cluster with RF=3, two segments can be repaired at the same time.
+
+The maximum number of concurrent repairs is 15 by default and can be modified in the YAML configuration `cassandra-reaper.yaml` file.
+
+Since Cassandra 2.2, repairs are multithreaded in order to process several token ranges concurrently and speed up the process. No more than four threads are authorized by Cassandra. The number of repair threads can be set differently for each repair run/schedule. This setting is ignored for clusters running an older version of Apache Cassandra.
+
+### Timeout
+
+By default, each segment must complete within 30 minutes. Reaper subscribes to the repair service notifications of Cassandra to monitor completion, and if a segment takes more than 30 minutes it gets canceled and postponed. This means that if a repair job is subject to frequent segment cancellation, it is necessary to either split it up into more segments or raise the timeout over its default value.
+
+### Pause and resume
+
+Pausing a repair will force the termination of all running segments. Once the job is resumed, canceled segments will be fully processed once again from the beginning.
+
+### Intensity
+
+Intensity controls the eagerness by which Reaper triggers repair segments. The Reaper will use the duration of the previous repair segment to compute how much time to wait before triggering the next one. The idea behind this concept is that long segments mean a lot of data mismatch, and thus a lot of streaming and compaction. Intensity allows reaper to adequately back off and give the cluster time to handle the load caused by the repair.
+
+### Scheduling interval
+
+Reaper polls for new segments to process at a fixed interval. By default the interval is set to 30 seconds and this value can be modified in the Reaper configuration YAML file.
+
 ## Reaper features
 
-K8ssandra deploys the Reaper web UI. You can access it here, specifying `$REAPER_HOST` with the configured DNS name in your environment:
+K8ssandra deploys the Reaper web UI. You can access it using the following URL format, specifying `$REAPER_HOST` with the configured DNS name (or localhost) of your environment:
 
 http://$REAPER_HOST:8080/webui/index.html
 

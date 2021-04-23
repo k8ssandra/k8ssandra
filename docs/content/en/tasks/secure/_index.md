@@ -8,14 +8,12 @@ description: K8ssandra security defaults, secrets, and options for Apache Cassan
 
 This topic describes how K8ssandra supports Cassandra's authentication and authorization features. Also, how Kubernetes secrets are created and used by the K8ssandra deployed components: Cassandra (via cass-operator), Stargate, Reaper, and Medusa. 
 
-
-
 ## Introduction
 
 K8ssandra enables authentication and authorization by default. It uses the Cassandra default `PasswordAuthenticator` and `CassandraAuthorizer` functionality.  
 
 {{% alert title="Important" color="success" %}}
-We recommend that you keep auth enabled. Turning on auth for an existing cluster is a non-trivial exercise that may involve downtime.
+We recommend that you keep authentication enabled. Turning on auth for an existing cluster is a non-trivial exercise that may involve downtime.
 {{% /alert %}}
 
 ## Cassandra security
