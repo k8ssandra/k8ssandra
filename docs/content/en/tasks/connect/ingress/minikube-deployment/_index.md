@@ -18,9 +18,7 @@ Traefik can be installed via Helm in conjunction with the below Traefik values f
 
 ### [`Traefik Values`](traefik-values.yaml)
 
-The `traefik-values.yaml` file referenced here is located in:
-
-https://github.com/k8ssandra/k8ssandra/blob/main/docs/content/en/docs/topics/ingress/traefik/minikube-deployment/traefik-values.yaml
+The `traefik.values.yaml` file is [here](traefik-values.yaml).
  
 {{< readfilerel file="traefik-values.yaml"  highlight="yaml" >}}
 
@@ -46,4 +44,9 @@ Minikube offers several options to access a service from the host machine (inclu
 
 ### Note - these settings are not suitable for production.
 
-The steps above will create a NodePort service which will serve the Traefik dashboard to clients outside the k8s cluster. This is not suitable for deployment to cloud platforms (EKS, AKS, GKE etc.) as it will make the dashboard publicly available on any external IPs attached to the node. (Albeit only if access is provided by any security group or firewall on the cluster.) For a cloud-ready configuration, we should ensure that the Traefik dashboard and other internal services are not visible from outside the cluster (except via `port-forward` as above).
+The steps above will create a NodePort service, which will serve the Traefik dashboard to clients outside the k8s cluster. This is not suitable for deployment to cloud platforms (EKS, AKS, GKE etc.) as it will make the dashboard publicly available on any external IPs attached to the node. (Albeit only if access is provided by any security group or firewall on the cluster.) For a cloud-ready configuration, ensure the Traefik dashboard and other internal services are not visible from outside the cluster (except via `port-forward` as above).
+
+## Next
+
+Feel free to explore the other [Traefik ingress]({{< relref "/tasks/connect/ingress/" >}}) topics. Also see the additional K8ssandra [tasks]({{< relref "tasks" >}}).
+

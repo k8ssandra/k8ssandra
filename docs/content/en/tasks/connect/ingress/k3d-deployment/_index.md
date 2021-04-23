@@ -4,20 +4,15 @@ linkTitle: "K3d Deployment"
 description: "Deploy Apache Cassandra® on Kubernetes in a local K3d cluster with Traefik ingress installed and configured."
 ---
 
-K3d automatically deploys the Traefik ingress controller when the cluster is
-started. Unfortunately, it is not configured to accept traffic on ports other
-than 80. For our purposes it is best to _skip_ the automatic Traefik
-installation and install it ourselves via Helm. The following guide walks
-through standing up a K3d cluster with Traefik configured for ingress on ports
-other than the standard `80` and `443`.
+K3d automatically deploys the Traefik ingress controller when the cluster is started. Unfortunately, it is not configured to accept traffic on ports other than 80. 
+
+For our purposes it is best to _skip_ the automatic Traefik installation and install it ourselves via Helm. 
+
+This topic walks through standing up a K3d cluster with Traefik configured for ingress on ports other than the standard `80` and `443`.
 
 ## 1. Bootstrap K3d _without_ Traefik
 
-Beyond simply disabling Traefik, we must also pre-plan the ports that should be
-forwarded into our cluster. K3d spins up a minimum of two containers for a given
-cluster. One of which is a load-balancer that handles routing / proxying
-requests to all other nodes in the cluster. For our purposes the following ports
-will be opened:
+Beyond simply disabling Traefik, we must also pre-plan the ports that should be forwarded into our cluster. K3d spins up a minimum of two containers for a given cluster. One of which is a load-balancer that handles routing / proxying requests to all other nodes in the cluster. For our purposes the following ports will be opened:
 
 * `80` - HTTP traffic - This is used for accessing the metrics and repair user
   interfaces
@@ -62,11 +57,10 @@ kubectl cluster-info
 Note the service type of `NodePort`. It is used here as it is the port _on the
 Docker container running Kind_ which is forwarded to our local machine.
 
-The `traefik.values.yaml` file referenced here is located in:
-
-https://github.com/k8ssandra/k8ssandra/blob/main/docs/content/en/docs/topics/ingress/traefik/k3d-deployment/traefik.values.yaml
-
 ### [`traefik.values.yaml`](traefik.values.yaml)
+
+The `traefik.values.yaml` file is [here](traefik.values.yaml).
+
 {{< readfilerel file="traefik.values.yaml"  highlight="yaml" >}}
 
 ## 3. Install Traefik via Helm
@@ -76,7 +70,7 @@ $ helm repo add traefik https://helm.traefik.io/traefik
 $ helm repo update
 $ helm install traefik traefik/traefik -n traefik --create-namespace -f traefik.values.yaml
 NAME: traefik
-LAST DEPLOYED: Thu Nov 12 16:59:40 2020
+LAST DEPLOYED: Thu Apr 22 16:59:40 2020
 NAMESPACE: default
 STATUS: deployed
 REVISION: 1
@@ -94,11 +88,11 @@ NAME      TYPE           CLUSTER-IP     EXTERNAL-IP   PORT(S)                   
 traefik   LoadBalancer   10.43.75.223   172.22.0.2    9042:32091/TCP,9142:32092/TCP,9000:32090/TCP,80:32080/TCP,443:32443/TCP   4m2s
 ```
 
-Here we see the external IP address is `172.22.0.2`. For this environment the
-Traefik dashboard is at
+Here we see the external IP address is `172.22.0.2`. For this environment the Traefik dashboard is at 
 [http://172.22.0.2:9000/dashboard/](http://172.22.0.2:9000/dashboard/). Example:
 
 ![Traefik dashboard screenshot](traefik-dashboard.png)
 
-Feel free to explore the other [Traefik]({{< relref "/topics/ingress/traefik" >}}) topics now that
-you have a local environment configured.
+## Next
+
+Feel free to explore the other [Traefik ingress]({{< relref "/tasks/connect/ingress/" >}}) topics. Also see the additional K8ssandra [tasks]({{< relref "tasks" >}}).

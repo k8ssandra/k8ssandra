@@ -46,8 +46,8 @@ K8ssandra is a great fit for operators looking for easy to install and manage Ca
 
 Depending on your needs, see the following:
 
-* [FAQs]{{< relref "faqs" >}}): If you're new to K8ssandra, these FAQs are for you. 
+* [FAQs]({{< relref "faqs" >}}): If you're new to K8ssandra, these FAQs are for you. 
 * [Quick start]({{< relref "quickstarts" >}}): Get started with K8ssandra!
 * [Components]({{< relref "components" >}}): Dig in to each operational component of the K8ssandra stack and see how it communicates with the others.
-* [Tasks]({{< relref "topics" >}}): Need to get something done? Check out the Tasks section for a helpful collection of outcome-based solutions.
+* [Tasks]({{< relref "tasks" >}}): Need to get something done? Check out the Tasks section for a helpful collection of outcome-based solutions.
 * [Reference]({{< relref "reference" >}}): Explore the K8ssandra configuration interface and options available.

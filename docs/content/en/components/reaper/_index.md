@@ -1,5 +1,5 @@
 ---
-title: "Reaper for Apache Cassandra repair operations"
+title: "Reaper for Cassandra repairs"
 linkTitle: "Reaper"
 weight: 3
 description: K8ssandra deploys Reaper to enable anti-entropy repair operations on Apache Cassandra&reg; data.

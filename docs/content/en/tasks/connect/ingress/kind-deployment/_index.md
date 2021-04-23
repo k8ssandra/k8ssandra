@@ -4,7 +4,7 @@ linkTitle: "Kind Deployment"
 description: "Deploy Apache Cassandra® on Kubernetes in a local Kind cluster with Traefik ingress installed and configured."
 ---
 
-When configuring Kind to use Traefik additional configuration options are required. The following guide walks through standing up a Kind k8s cluster with Traefik configured for ingress on ports other than the standard `80` and `443`.
+When configuring Kind to use Traefik, additional configuration options are required. The following guide walks through standing up a Kind k8s cluster with Traefik configured for ingress on ports other than the standard `80` and `443`.
 
 ## 1. Create a Kind configuration file
 Kind supports an optional configuration file for configuring specific behaviors of the Docker container which runs the Kubelet process. Here we are adding port forwarding rules for the following ports:
@@ -28,9 +28,7 @@ Kind supports an optional configuration file for configuring specific behaviors 
   
 ### [`kind.config.yaml`](kind.config.yaml)
 
-The `kind.config.yaml` file referenced here is located in:
-
-https://github.com/k8ssandra/k8ssandra/blob/main/docs/content/en/docs/topics/ingress/traefik/kind-deployment/kind.config.yaml
+The `kind.config.yaml` file is [here](kind.config.yaml). 
 
 {{< readfilerel file="kind.config.yaml"  highlight="yaml" >}}
 
@@ -58,11 +56,10 @@ Have a question, bug, or feature request? Let us know! https://kind.sigs.k8s.io/
 Note the service type of `NodePort`. It is used here as it is the port _on the
 Docker container running Kind_ which is forwarded to our local machine.
 
-The `traefik.values.yaml` file referenced here is located in:
-
-https://github.com/k8ssandra/k8ssandra/blob/main/docs/content/en/docs/topics/ingress/traefik/kind-deployment/traefik.values.yaml
-
 ### [`traefik.values.yaml`](traefik.values.yaml)
+
+The `traefik.values.yaml` file is [here](traefik.values.yaml).
+
 {{< readfilerel file="traefik.values.yaml"  highlight="yaml" >}}
 
 ## 4. Install Traefik via Helm
@@ -72,7 +69,7 @@ $ helm repo add traefik https://helm.traefik.io/traefik
 $ helm repo update
 $ helm install traefik traefik/traefik -n traefik --create-namespace -f traefik.values.yaml
 NAME: traefik
-LAST DEPLOYED: Thu Nov 12 16:59:40 2020
+LAST DEPLOYED: Thu Apr 22 16:59:40 2020
 NAMESPACE: traefik
 STATUS: deployed
 REVISION: 1
@@ -85,4 +82,6 @@ With the deployment complete we may now access the Traefik dashboard at [http://
 
 ![Traefik dashboard screenshot](traefik-dashboard.png)
 
-Feel free to explore the other [Traefik]({{< relref "/topics/ingress/traefik" >}}) topics now that you have a local environment configured.
+## Next
+
+Feel free to explore other the [Traefik ingress]({{< relref "/tasks/connect/ingress/" >}}) topics. Also see the additional K8ssandra [tasks]({{< relref "tasks" >}}).

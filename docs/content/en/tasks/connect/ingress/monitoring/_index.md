@@ -13,11 +13,10 @@ Follow these steps to configure and install `Traefik Ingress` custom resources f
 ## Prerequisites
 
 1. Kubernetes cluster with the following elements deployed:
-   * [Traefik]({{< relref "/topics/ingress/traefik" >}})
-   * [K8ssandra]({{< relref "quickstarts#install-k8ssandra" >}})
+   * [Traefik]({{< relref "/tasks/connect/ingress/" >}})
+   * [K8ssandra]({{< relref "/quickstarts#install-k8ssandra" >}})
 
-   See [Configuring Kind]({{< relref "kind-deployment" >}}) for an example of
-   how to set up a local installation.
+   See [Configuring Kind]({{< relref "kind-deployment" >}}) for an example of how to set up a local installation.
 1. DNS name for the Grafana service
 1. DNS name for the Prometheus service
 
@@ -27,7 +26,6 @@ If you do not have a DNS name available, consider using a service like [xip.io](
 
 {{% alert title="Tip" color="success" %}}
 As an alternative to configuring an Ingress, consider port forwarding. It's another way to provide external access to resources that have been deployed by K8ssandra in your Kubernetes environment. Those resources could include Prometheus metrics, pre-configured Grafana dashboards, and the Reaper web interface for repairs of Cassandra&reg; data. The `kubectl port-forward` command does not require an Ingress/Traefik to work. 
-
 * Developers, see [Set up port forwarding]({{< relref "/quickstarts/developer/#set-up-port-forwarding" >}}).  
 * Site reliability engineers, see [Configure port forwarding]({{< relref "quickstarts/sre/#port-forwarding" >}}).
 {{% /alert %}}
@@ -78,10 +76,10 @@ helm upgrade k8ssandra k8ssandra/k8ssandra --set grafana.ingress.enabled=true,gr
 ## Validate Traefik Configuration
 
 {{% alert title="Note" color="primary" %}}
-This step is optional. The next step will also prove the configuration is working.
+This step is optional. The next step will also prove that the configuration is working.
 {{% /alert %}}
 
-With the ingress routes configured and deployed to Kubernetes we can access the Traefik dashboard to validate the configuration has been picked up and is detecting the appropriate services.
+With the ingress routes configured and deployed to Kubernetes, we can access the Traefik dashboard to validate the configuration has been picked up and is detecting the appropriate services.
 
 1. Open your web browser and point it at the Traefik dashboard. This may require
    `kubectl port-forward` or the steps in our [Configuring Kind]({{< relref
@@ -107,4 +105,6 @@ With the ingress routes configured and deployed to Kubernetes we can access the 
 
 ## Next
 
-Check out how to [Access the Monitoring Interface]({{< relref "monitor" >}})
+Feel free to explore the other [Traefik ingress]({{< relref "/tasks/connect/ingress/" >}}) topics. 
+
+Also, learn how the steps to use the [monitoring]({{< relref "tasks/monitor" >}}) features in Grafana, which is preconfigured to visualize the Cassandra and related metrics.

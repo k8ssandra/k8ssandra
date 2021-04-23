@@ -1,10 +1,10 @@
 ---
 title: "Access K8ssandra Repair with Traefik"
 linkTitle: "Repair"
-description: "Expose access to your Reaper for Apache Cassandra® repair interface using Traefik ingress"
+description: "Expose access to your Reaper for Apache Cassandra® repair interface using Traefik ingress."
 ---
 
-Follow these steps to configure and install `Traefik Ingress` custom resources for accessing your K8ssandra cluster's repair interface (provided by Reaper for Apache Cassandra® (Reaper)).
+Follow these steps to configure and install `Traefik Ingress` custom resources for accessing your K8ssandra cluster's repair interface (provided by Reaper for Apache Cassandra®).
 
 ## Tools
 
@@ -13,11 +13,11 @@ Follow these steps to configure and install `Traefik Ingress` custom resources f
 ## Prerequisites
 
 1. Kubernetes cluster with the following elements deployed:
-   * [Traefik]({{< relref "/topics/ingress/traefik" >}})
-   * [K8ssandra]({{< relref "quickstarts#install-k8ssandra" >}})
+   * [Traefik]({{< relref "/tasks/connect/ingress" >}})
+   * [K8ssandra]({{< relref "/quickstarts#install-k8ssandra" >}})
 
-   See the [Configuring Kind]({{< relref "kind-deployment" >}}) for an example of
-   how to set up a local installation.
+   See the [Configuring Kind]({{< relref "kind-deployment" >}}) for an example of how to set up a local installation.
+
 1. DNS name where the repair service should be listening.
 
     {{% alert title="Note" color="success" %}}
@@ -105,4 +105,4 @@ With the ingress routes configured and deployed to Kubernetes we can access the 
 
 ## Next
 
-Check out how to [Access the Reaper web interface]({{< relref "tasks/repair" >}}) for periodic repairs of Cassandra data.
+Feel free to explore the other [Traefik ingress]({{< relref "/tasks/connect/ingress/" >}}) topics. Also see additional K8ssandra [tasks]({{< relref "tasks" >}}).

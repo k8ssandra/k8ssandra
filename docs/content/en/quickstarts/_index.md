@@ -8,7 +8,7 @@ description: "Get started **now** by following these steps. Install Apache Cassa
 
 **Completion time**: **10 minutes**.
 
-Welcome to K8ssandra! This guide gets you up and running with a single-node Apache Cassandra® cluster on Kubernetes (K8s). If you're interested in a more detailed component walkthroughs check out the [tasks]({{< relref "topics">}}) section.
+Welcome to K8ssandra! This guide gets you up and running with a single-node Apache Cassandra® cluster on Kubernetes (K8s). If you're interested in a more detailed component walkthroughs check out the [tasks]({{< relref "tasks">}}) section.
 
 In this quick start, we'll cover the following topics:
 
