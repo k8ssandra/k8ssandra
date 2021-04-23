@@ -5,7 +5,7 @@ weight: 1
 description: Frequently asked questions about K8ssandra.
 ---
 
-If you're new to K8ssandra, this FAQ is for you! Whether you're viewing this page in [GitHub](https://github.com/k8ssandra/k8ssandra/blob/main/content/en/faqs/_index.md) or on the [Web](https://k8ssandra.io/faqs/), you can also propose new or modified FAQs. For this open-source project, contributions are welcome from the community of K8ssandra users.
+If you're new to K8ssandra, this FAQ is for you! 
 
 ### What is K8ssandra?
 
@@ -35,7 +35,7 @@ In addition to the set of components, it's important to emphasize that K8ssandra
 
 ### How do I get started and install K8ssandra?
 
-It's easy! There are several options, but we recommend using [Helm](https://helm.sh/intro/install/) commands. 
+It's easy! Use [Helm](https://helm.sh/docs/intro/install/) v3 commands. 
 
 ```
 helm repo add k8ssandra https://helm.k8ssandra.io/stable/
@@ -44,7 +44,7 @@ helm repo update
 helm install k8ssandra k8ssandra/k8ssandra
 ```
 
-For more, see [Getting Started]({{< relref "quickstarts" >}}).
+For more, see the [quickstarts]({{< relref "quickstarts" >}}) for all users, plus additional tips for developers and site reliability engineers. 
 
 ### What components and versions does K8ssandra deploy?
 
@@ -97,15 +97,15 @@ helm install <cluster-name> k8ssandra/k8ssandra \
 
 ### What is cass-operator?
 
-Kubernetes Operator for Apache Cassandra -- [cass-operator](https://github.com/datastax/cass-operator) -- is the most critical element bridging Kubernetes and Cassandra. The community has been focusing much of its attention on operators over the past two years, as the appropriate starting place. If there is magic happening, it’s all in the operator. The cass-operator serves as the translation layer between the control plane of Kubernetes and actual operation done by the Cassandra cluster. Recently, the Apache Cassandra project agreed on gathering around a single operator: cass-operator. Some great contributions from Orange with CassKop will be merged with the DataStax operator and a final version will be merged into the Apache project. This is the best example of actual production knowledge finding its way into code. Community members contributing to cass-operator are running large amounts of Cassandra in Kubernetes every day. 
+Kubernetes Operator for Apache Cassandra, also known as Cass Operator or cass-operator, is the most critical element bridging Kubernetes and Cassandra. The community has been focusing much of its attention on operators over the past two years, as the appropriate starting place. If there is magic happening, it’s all in the operator. The cass-operator serves as the translation layer between the control plane of Kubernetes and actual operation done by the Cassandra cluster. Recently, the Apache Cassandra project agreed on gathering around a single operator: cass-operator. Some great contributions from Orange with CassKop will be merged with the DataStax operator and a final version will be merged into the Apache project. This is the best example of actual production knowledge finding its way into code. Community members contributing to cass-operator are running large amounts of Cassandra in Kubernetes every day. 
 
 ### What is Reaper for Apache Cassandra?
 
-Reaper for Apache Cassandra (Reaper) is a tool that helps manage the critical maintenance task of anti-entropy **repair** in a Cassandra cluster. Originally created by Spotify, later adopted and maintained by The Last Pickle, and one of the features installed by K8ssandra. If you were to sit a group of Cassandra DBAs down to talk about what they do, chances are they would talk a lot about running repairs. It’s an important operation because it keeps data consistent despite inevitable issues that happen like node failures and network partitions. In K8ssandra, Reaper runs it for you automatically! And because this is built for SREs, you can expect a good set of pre-built metrics to verify everything is working great. See the [Reaper web interface]({{< relref "tasks/repair" >}}).
+Reaper for Apache Cassandra is a tool that helps manage the critical maintenance task of anti-entropy **repairs** in a Cassandra cluster. Originally created by Spotify, later adopted and maintained by The Last Pickle, and one of the features installed by K8ssandra. If you were to sit a group of Cassandra DBAs down to talk about what they do, chances are they would talk a lot about running repairs. It’s an important operation because it keeps data consistent despite inevitable issues that happen like node failures and network partitions. In K8ssandra, Reaper runs it for you automatically! And because this is built for SREs, you can expect a good set of pre-built metrics to verify everything is working great. See the [Reaper web interface]({{< relref "tasks/repair" >}}).
 
 ### What is Medusa for Apache Cassandra?
 
-Medusa for Apache Cassandra (Medusa) provides backup/restore functionality for Cassandra data; this project also originated at Spotify. Medusa not only helps coordinate backup &amp; restore tasks, it manages the placement of the data at rest. The initial implementation allows backup sets to be stored and retrieved on cloud object storage (such as AWS S3 buckets) with more options on the way. K8ssandra offers this [backup and restore]({{< relref "backup-restore" >}}) feature to help you recover Cassandra data when inevitable real-world issues occur.
+Medusa for Apache Cassandra provides backup/restore functionality for Cassandra data; this project also originated at Spotify. Medusa not only helps coordinate backup &amp; restore tasks, it manages the placement of the data at rest. The initial implementation allows backup sets to be stored and retrieved on cloud object storage (such as AWS S3 buckets) with more options on the way. K8ssandra offers this [backup and restore]({{< relref "backup-restore" >}}) feature to help you recover Cassandra data when inevitable real-world issues occur.
 
 ### How can I access Kubernetes resources from outside the environment?
 
