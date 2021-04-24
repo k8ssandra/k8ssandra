@@ -19,18 +19,18 @@ This guide will cover provisioning and installing the following infrastructure r
   * 6x Kubernetes workers
     * 8 vCPUs
     * 64 GB RAM
-* x Load Balancers
-  * x Backend services
+* TODOx Load Balancers
+  * TODOx Backend services
 * x 2TB PD-SSD Volumes (provisioned automatically during installation of K8ssandra)
 * 1x Google Cloud Storage bucket for backups
 
 On this infrastructure the K8ssandra installation will consist of the following workloads.
 
-* 3x node Apache Cassandra cluster
-* 3x node Stargate deployment
-* 1x node Prometheus deployment
-* 1x node Grafana deployment
-* 1x node Reaper deployment
+* 3x instance Apache Cassandra cluster
+* 3x instance Stargate deployment
+* 1x instance Prometheus deployment
+* 1x instance Grafana deployment
+* 1x instance Reaper deployment
 
 Feel free to update the parameters used during this guide to match your target deployment. The following should be considered a minimum for production workloads.
 
@@ -186,11 +186,13 @@ Terraform will perform the following actions:
 Plan: 26 to add, 0 to change, 0 to destroy.
 
 Changes to Outputs:
-  + bucket_name    = "prod-k8ssandra-storage-bucket"
-  + endpoint       = (known after apply)
-  + master_version = (known after apply)
+  + bucket_name     = "prod-k8ssandra-storage-bucket"
+  + service_account = "prod-k8ssandra-sa@k8ssandra-testing.iam.gserviceaccount.com" 
+  + endpoint        = (known after apply)
+  + master_version  = (known after apply)
 
 ```
+TODO validate outputs after k8ssandra/k8ssandra-terraform#17 is resolved
 
 After planning we tell terraform to `apply` the plan. This command kicks off the actual provisioning of resources for this deployment.
 
@@ -212,9 +214,11 @@ Apply complete! Resources: 26 added, 0 changed, 0 destroyed.
 Outputs:
 
 bucket_name = "prod-k8ssandra-storage-bucket"
+service_account = "prod-k8ssandra-sa@k8ssandra-testing.iam.gserviceaccount.com" 
 endpoint = "..."
 master_version = "1.18.16-gke.502"
 ```
+TODO validate outputs after k8ssandra/k8ssandra-terraform#17 is resolved
 
 With the GKE cluster deployed you may now continue with [retrieving the kubeconfig](#retrieve-kubeconfig).
 
@@ -245,10 +249,27 @@ WARNING: version difference between client (1.21) and server (1.18) exceeds the 
 With all of the infrastructure provisioned we can now focus on installing K8ssandra. This will require configuring a service account for the backup and restore service, creating a set of Helm variable overrides, and setting up GKE specific ingress configurations.
 
 ### Create Backup / Restore Service Account Secrets
-In order to allow for backup and restore operations, we must create a service account for the Medusa operator which handles coordinating the movement of data to and from Google Cloud Storage buckets. As part of the provisioning sections a service account was generated for this purposes. Here we will retrieve the authentication JSON file for this account and push it into Kubernetes as a secret.
+In order to allow for backup and restore operations, we must create a service account for the Medusa operator which handles coordinating the movement of data to and from Google Cloud Storage (GCS) buckets. As part of the provisioning sections a service account was generated for this purposes. Here we will retrieve the authentication JSON file for this account and push it into Kubernetes as a secret.
 
-TODO retrieve service account credentials
-TODO push service account credentials to k8s secret
+Looking at the output of `terraform plan` and `terraform apply` we can see the name of the service account which has been provisioned. Here we use the `gcloud` command line tools to retrieve keys for use by Medusa. In our reference implementation this value is `prod-k8ssandra-sa@k8ssandra-testing.iam.gserviceaccount.com`.
+
+```console
+$ gcloud iam service-accounts keys create medusa.key.json --iam-account=prod-k8ssandra-sa@k8ssandra-testing.iam.gserviceaccount.com
+created key [3e5b6e4a02936b20f6ae39bffe7d28f870c94fe6] of type [json] as [medusa.key.json] for [prod-k8ssandra-sa@k8ssandra-testing.iam.gserviceaccount.com]
+```
+
+With the key file on our local machine we can now push this file to Kubernetes as a secret with `kubectl`.
+
+```console
+$ kubectl create secret generic prod-k8ssandra-medusa-key --from-file=medusa_gcp_key.json=./medusa.key.json 
+secret/prod-k8ssandra-medusa-key created
+```
+
+{{% alert title="Important" color="primary" %}}
+The name of the JSON key file within the secret MUST be `medusa_gcp_key.json`. _Any_ other value will result in Medusa not finding the secret and backups failing.
+{{% /alert %}}
+
+This secret, `prod-k8ssandra-medusa-key`, can now be referenced in our K8ssandra configuration to allow for backing up data to GCS with Medusa.
 
 ### Generate `gke.values.yaml`
 
@@ -256,18 +277,17 @@ Here is a reference Helm `values.yaml` file with configuration options for runni
 
 {{< readfilerel file="gke.values.yaml"  highlight="yaml" >}}
 
-Note the storage class defined here, `standard-rwo`, is already created by GCP. This storage class has a `volumeBindingMode` set to `WaitForFirstConsumer`. This tells GKE to provision volumes after Kubernetes has determined which workers will be receiving the pods. This allows for the provisioning of persistent storage volumes in the same Availability Zone (AZ) as the worker.
-
-Additionally review the `datacenters[].racks` parameters and ensure the values align with the AZs where your workers are deployed. Cassandra will strive to replicate data across rack boundaries to account for the loss of an entire rack. In our deployment this means we can tolerate the loss of an entire AZ.
-
+{{% alert title="Important" color="primary" %}}
+Take note of the comments in this file. If you have changed the name of your secret, are deploying in a different region, or have tweaked any other values it is imperative that you update this file before proceeding.
+{{% /alert %}}
 
 ### Deploy K8ssandra with Helm
 
 With a `values.yaml` file generated which details out specific configuration overrides we can now deploy K8ssandra via Helm.
 
 ```console
-$ helm install my-k8ssandra k8ssandra/k8ssandra -f gke.values.yaml
-NAME: my-k8ssandra
+$ helm install prod-k8ssandra k8ssandra/k8ssandra -f gke.values.yaml
+NAME: prod-k8ssandra
 LAST DEPLOYED: Sat Apr 24 01:15:46 2021
 NAMESPACE: default
 STATUS: deployed
@@ -292,8 +312,8 @@ If this cluster is no longer needed you may optionally uninstall K8ssandra or de
 ### Uninstall K8ssandra
 
 ```console
-$ helm uninstall my-k8ssandra
-release "my-k8ssandra" uninstalled
+$ helm uninstall prod-k8ssandra
+release "prod-k8ssandra" uninstalled
 ```
 
 ### Destroy GKE Cluster
