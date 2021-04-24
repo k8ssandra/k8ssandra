@@ -1,0 +1,39 @@
+cassandra:
+  version: "3.11.10"
+
+  cassandraLibDirVolume:
+    storageClass: standard-rwo
+    size: 2048Gi
+
+  heap:
+   size: 31G
+   newGenSize: 31G
+
+  resources:
+    requests:
+      cpu: 7000m
+      memory: 60Gi
+    limits:
+      cpu: 7000m
+      memory: 60Gi
+
+  datacenters:
+  - name: dc1
+    size: 6
+    racks:
+    - name: us-central1-f
+      affinityLabels:
+        topology.kubernetes.io/zone: us-central1-f
+    - name: us-central1-a
+      affinityLabels:
+        topology.kubernetes.io/zone: us-central1-a
+    - name: us-central1-b
+      affinityLabels:
+        topology.kubernetes.io/zone: us-central1-b
+
+stargate:
+  enabled: true
+  replicas: 3
+  heapMB: 1024
+  cpuReqMillicores: 3000
+  cpuLimMillicores: 3000
