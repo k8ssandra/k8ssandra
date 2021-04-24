@@ -56,5 +56,5 @@ medusa:
   # Reference the Terraform output for the correct bucket name to use here.
   bucketName: prod-k8ssandra-storage-bucket
 
-  # The secret here must align with that used when creating
+  # The secret here must align with the value used in the previous section.
   storageSecret: prod-k8ssandra-medusa-key
