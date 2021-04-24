@@ -283,7 +283,7 @@ TODO create ingress targeting services
 
 ## Next Steps
 
-With a freshly provisioned cluster on GKE consider visiting the [developer]({{ relref "developer" }}) and [SRE]({{ relref "developer" }}) quickstarts for a guided experience exploring your cluster. Alternatively if you want to tear down your cluster and / or infrastructure check out the next section on cleaning up resources.
+With a freshly provisioned cluster on GKE consider visiting the [developer]({{< relref "developer" >}}) and [SRE]({{< relref "sre" >}}) quickstarts for a guided experience exploring your cluster. Alternatively if you want to tear down your cluster and / or infrastructure check out the next section on cleaning up resources.
 
 ## Cleanup Resources
 
