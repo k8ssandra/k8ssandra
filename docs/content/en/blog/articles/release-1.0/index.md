@@ -31,6 +31,10 @@ Whether you are looking to take the latest feature for a spin, or validate a
 bugfix before a wider release, you can do so without having to clone the repo
 and build from source.
 
+*Update 4/23/2021:* The Next stream was deprecated in 
+[PR #696](https://github.com/k8ssandra/k8ssandra/pull/696). To get the latest 
+development release, use the `--devel` flag on the `helm install` command.
+
 Since the initial release of K8ssandra at Kubecon NA 2020, there have been 59
 incremental version updates. Let's take a look at how much ground has been
 covered over that time.
