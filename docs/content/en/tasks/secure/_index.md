@@ -160,6 +160,45 @@ Because the secret is created outside of the Helm release, it is not managed by 
 Be consistent in your handling of secrets. Either manage all of them outside of Helm, or let all of them be created by K8ssandra.
 {{% /alert %}}
 
+## JMX configuration and access 
+
+By default, Cassandra restricts JMX access to localhost. The Reaper component that's deployed by K8ssandra requires JMX access for managing repairs. When Reaper is enabled and deployed, K8ssandra enables and configures remote JMX access.
+
+### Remote Access
+
+JMX access is configured in `/etc/cassandra/cassandra-env.sh`. The script checks the environment variable `LOCAL_JMX` to determine whether JMX access should be restricted to localhost. When Reaper is enabled, K8ssandra sets this `LOCAL_JMX` environment variable in the `cassandra` container to a value of `no`, in order to enable remote JMX access.
+
+### JMX authentication
+
+Cassandra turns on JMX authentication by default when remote access is enabled. JMX credentials are stored in `/etc/cassandra/jmxremote.password`. 
+
+K8ssandra creates two sets of credentials - one for Reaper and one for the Cassandra default superuser.
+
+### Reaper
+
+The username of the Reaper JMX user defaults to `reaper`. The password is a random, 20 character alphanumeric string. Credentials are stored in a secret. See the [secrets]({{< relref "#secrets" >}}) section in this topic for an overview of how K8ssandra manages secrets. The username and secret can be overridden with the following properties:
+
+* `reaper.jmx.username`
+* `reaper.jmx.secret`
+
+### Cassandra default superuser
+
+K8ssandra creates JMX credentials for the default superuser. The username and password are the same as those for Cassandra.
+
+If you change the Cassandra superuser credentials through `cqlsh` for example, the JMX credentials are not updated to the new values. You need to update the credentials via `helm upgrade` in order for the change to propagate to JMX. There is an issue [#323](https://github.com/k8ssandra/k8ssandra/issues/323) to address the limitation.
+
+### nodetool
+
+When JMX authentication is enabled, you need to specify the username and password options with `nodetool`, as follows:
+
+```bas\h
+nodetool -u <username> -pw <password> status
+```
+
+### JMX authorization - not supported at this time
+
+K8ssandra currently does not support JMX authorization. This issue is also covered in [#323](https://github.com/k8ssandra/k8ssandra/issues/323).
+
 ## Next
 
 Learn how to [develop client]({{< relref "/tasks/develop" >}}) using the Stargate APIs. 
