@@ -9,7 +9,7 @@ description: Definition of frequently used Kubernetes terms plus the K8ssandra o
 The [Azure Kubernetes Service](https://azure.microsoft.com/en-us/services/kubernetes-service/) from Microsoft. One of the "top 3" major cloud providers supported by K8ssandra, along with EKS from Amazon, and GKE from Google. AKS offers serverless Kubernetes, an integrated continuous integration and continuous delivery (CI/CD) experience, and enterprise-grade security and governance.  
 
 ### anti-entropy
-The process of comparing the data of all replicas and updating each replica to the newest version. Cassandra has two phases to the process: Build a Merkle tree for each replica. Compare the Merkle trees to discover differences. K8ssandra provides Reaper as one of its deployed components, enabling you to perform repair operations. 
+The process of comparing the data of all replicas and updating each replica to the newest version. Cassandra has two phases to the process: Build a Merkle tree for each replica. Compare the Merkle trees to discover differences. K8ssandra provides [Reaper]({{< relref "#reaper" >}}) as one of its deployed components, enabling you to perform Cassandra [repair]({{< relref "#repair" >}}) operations. 
 
 ### Astra
 A [CNDB]({{< relref "#cndb" >}}) product from DataStax that gives you the ability to develop and deploy data-driven applications with a cloud-native service, without the hassles of database and infrastructure administration. By automating tuning and configuration, Astra radically simplifies database and streaming operations.
@@ -30,10 +30,10 @@ Cassandra Query Language is a set of DDL and DML statements designed for communi
 A command-line shell (Cassandra Query Language Shell) for interacting with Cassandra through CQL. CQLSH is included with every Cassandra package, and can be found in the `bin/` directory alongside the cassandra executable. CQLSH utilizes the Python native protocol driver, and connects to the single node specified on the command line.
 
 ### EKS
-Amazon Elastic Kubernetes Service is one of the "top 3" major cloud providers supported by K8ssandra, along with GKE from Google, and AKS from Microsoft. EKS allows you to start, run, and scale Kubernetes applications in the AWS cloud or on-premises. 
+Amazon [Elastic Kubernetes Service](https://aws.amazon.com/eks/) is one of the "top 3" major cloud providers supported by K8ssandra, along with GKE from Google, and AKS from Microsoft. EKS allows you to start, run, and scale Kubernetes applications in the AWS cloud or on-premises. 
 
 ### GKE
-Google Kubernetes Engine is one of the "top 3" major cloud providers supported by K8ssandra, along with EKS from Amazon, and AKS from Microsoft. GKE includes a set of UI-based tools that are part of the Google Cloud Console for GCP environments. 
+[Google Kubernetes Engine](https://cloud.google.com/kubernetes-engine) is one of the "top 3" major cloud providers supported by K8ssandra, along with EKS from Amazon, and AKS from Microsoft. GKE includes a set of UI-based tools that are part of the Google Cloud Console for GCP environments. 
 
 ### gossip
 In Cassandra, a protocol to discover location and state information about the other nodes participating in the cluster. Gossip is a peer-to-peer communication protocol in which nodes periodically exchange state information about themselves and about other known nodes.
@@ -58,7 +58,7 @@ The top-level database object that controls the replication for the object it co
 A command-line tool that allows you to run commands against Kubernetes clusters. You can use `kubectl` (Kubernetes control) to deploy applications, inspect and manage cluster resources, and view logs.
 
 ### Kubernetes
-A portable, extensible, open source platform for managing containerized workloads and services, that facilitates both declarative configuration and automation. It has a large, rapidly growing ecosystem. The name Kubernetes originates from Greek, meaning helmsman or pilot.
+A portable, extensible, [open source platform](https://kubernetes.io/) for managing containerized workloads and services, that facilitates both declarative configuration and automation. It has a large, rapidly growing ecosystem. The name Kubernetes originates from Greek, meaning helmsman or pilot.
 
 ### K8ssandra
 An open source, production-ready platform for running Apache Cassandra® on Kubernetes. This includes automation for operational tasks such as repairs, backups, and monitoring.
@@ -103,7 +103,7 @@ An open source tool deployed by K8ssandra that lets you schedule and orchestrate
 For details, see the K8ssandra documentation topics covering the [Reaper component]({{< relref "/components/reaper" >}}) and [repair tasks]({{< relref "/tasks/repair" >}}).
 
 ### repair
-In the context of Cassandra data, anti-entropy is the process of comparing the data of all replicas, and updating each replica to the newest version. Cassandra has two phases to the process: Build a Merkle tree for each replica, and then compare the Merkle trees to discover differences.
+In the context of Cassandra data, anti-entropy is the process of comparing the data of all replicas, and updating each replica to the newest version. Cassandra has two phases to the process: Build a Merkle tree for each replica, and then compare the Merkle trees to discover differences. K8ssandra deploys Reaper to your Kubernetes environment. See [Repair Cassandra with Reaper]({{< relref "/tasks/repair" >}}).
 
 ### schemaless
 A database in which there is no formal or rigid schema. The work to provide attributes to the data is performed in client apps, rather than by RDBMS-style DDL definitions at database creation time.
