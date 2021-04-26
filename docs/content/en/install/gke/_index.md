@@ -1,6 +1,6 @@
 ---
 title: "Google Kubernetes Engine"
-linkTitle: "Google Kubernetes Engine"
+linkTitle: "Google GKE"
 weight: 1
 description: >
   Complete production ready environment of K8ssandra on Google Kubernetes Engine (GKE).
@@ -19,9 +19,8 @@ This guide will cover provisioning and installing the following infrastructure r
   * 6x Kubernetes workers
     * 8 vCPUs
     * 64 GB RAM
-* TODOx Load Balancers
-  * TODOx Backend services
-* x 2TB PD-SSD Volumes (provisioned automatically during installation of K8ssandra)
+* 2x Load Balancers
+* 3x 2TB PD-SSD Volumes (provisioned automatically during installation of K8ssandra)
 * 1x Google Cloud Storage bucket for backups
 
 On this infrastructure the K8ssandra installation will consist of the following workloads.
@@ -141,20 +140,9 @@ Initializing provider plugins...
 - Installing hashicorp/google-beta v3.65.0...
 - Installed hashicorp/google-beta v3.65.0 (signed by HashiCorp)
 
-Terraform has created a lock file .terraform.lock.hcl to record the provider
-selections it made above. Include this file in your version control repository
-so that Terraform can guarantee to make the same selections by default when
-you run "terraform init" in the future.
+# Output reduced for brevity
 
 Terraform has been successfully initialized!
-
-You may now begin working with Terraform. Try running "terraform plan" to see
-any changes that are required for your infrastructure. All Terraform commands
-should now work.
-
-If you ever set or change modules or backend configuration for Terraform,
-rerun this command to reinitialize your working directory. If you forget, other
-commands will detect it and remind you to do so if necessary.
 ```
 
 Now we configure a workspace to hold our terraform state information.
@@ -187,12 +175,12 @@ Plan: 26 to add, 0 to change, 0 to destroy.
 
 Changes to Outputs:
   + bucket_name     = "prod-k8ssandra-storage-bucket"
-  + service_account = "prod-k8ssandra-sa@k8ssandra-testing.iam.gserviceaccount.com" 
   + endpoint        = (known after apply)
   + master_version  = (known after apply)
+  + service_account = (known after apply)
+
 
 ```
-TODO validate outputs after k8ssandra/k8ssandra-terraform#17 is resolved
 
 After planning we tell terraform to `apply` the plan. This command kicks off the actual provisioning of resources for this deployment.
 
@@ -214,11 +202,10 @@ Apply complete! Resources: 26 added, 0 changed, 0 destroyed.
 Outputs:
 
 bucket_name = "prod-k8ssandra-storage-bucket"
-service_account = "prod-k8ssandra-sa@k8ssandra-testing.iam.gserviceaccount.com" 
-endpoint = "..."
+endpoint = "......"
 master_version = "1.18.16-gke.502"
+service_account = "prod-k8ssandra-sa@k8ssandra-testing.iam.gserviceaccount.com"
 ```
-TODO validate outputs after k8ssandra/k8ssandra-terraform#17 is resolved
 
 With the GKE cluster deployed you may now continue with [retrieving the kubeconfig](#retrieve-kubeconfig).
 
