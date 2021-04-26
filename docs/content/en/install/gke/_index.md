@@ -235,11 +235,6 @@ Changes to Outputs:
   + endpoint        = (known after apply)
   + master_version  = (known after apply)
   + service_account = (known after apply)
-<<<<<<< HEAD
-=======
-
-
->>>>>>> d27f776 (Removed TODO statements around service account output)
 ```
 
 After planning we tell terraform to `apply` the plan. This command kicks off the actual provisioning of resources for this deployment.
