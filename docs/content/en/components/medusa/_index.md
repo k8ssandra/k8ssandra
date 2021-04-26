@@ -1,5 +1,5 @@
 ---
-title: "Medusa for Cassandra repair operations"
+title: "Medusa for Cassandra backup and restore"
 linkTitle: "Medusa"
 weight: 4
 description: K8ssandra deploys Medusa to support backup and restore of Apache Cassandra&reg; tables.
