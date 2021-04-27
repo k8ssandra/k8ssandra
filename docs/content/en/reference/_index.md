@@ -1,7 +1,7 @@
 ---
-title: "Helm chart references"
+title: "K8ssandra reference"
 linkTitle: "Reference"
 weight: 6
 description: >
-  Configuration reference for all Helm charts available as part of the K8ssandra platform.
+  Reference content for K8ssandra users including the YAML properties of each deployed Helm chart, plus a Glossary.
 ---

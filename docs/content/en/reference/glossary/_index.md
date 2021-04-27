@@ -1,8 +1,8 @@
 ---
 title: "K8ssandra glossary"
 linkTitle: "Glossary"
-weight: 6
-description: Definition of frequently used Kubernetes terms plus the K8ssandra or Apache Cassandra context.
+weight: 2
+description: Helpful definitions of common Kubernetes terms along with the K8ssandra or Apache Cassandra context.
 ---
 
 ### AKS

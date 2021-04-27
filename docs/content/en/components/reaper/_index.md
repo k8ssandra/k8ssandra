@@ -5,7 +5,7 @@ weight: 3
 description: K8ssandra deploys Reaper to enable anti-entropy repair operations on Apache Cassandra&reg; data.
 ---
 
-Reaper for Apache Cassandra&reg; is deployed by a K8ssandra install, which includes the Reaper Operator [Helm chart]({{< relref "/reference/reaper-operator/" >}}).
+Reaper for Apache Cassandra&reg; is deployed by a K8ssandra install, which includes the Reaper Operator [Helm chart]({{< relref "/reference/helm-charts/reaper-operator/" >}}).
 
 If you haven't already installed K8ssandra, see the [quickstarts]({{< relref "/quickstarts/" >}}) and [install]({{< relref "/install" >}}) topics.
 
@@ -130,7 +130,7 @@ For the steps to set up repair operations using the Reaper Web UI, see [Repair t
 
 For information about how secrets are created and used with Reaper authentication, see [K8ssandra security]({{< relref "/tasks/secure#reaper-security/" >}}).
 
-For reference details, see the Reaper Operator [Helm chart]({{< relref "/reference/reaper-operator/" >}}).
+For reference details, see the Reaper Operator [Helm chart]({{< relref "/reference/helm-charts/reaper-operator/" >}}).
 
 ## Next
 
