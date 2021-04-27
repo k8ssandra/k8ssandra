@@ -5,7 +5,6 @@ import (
 	"context"
 	"fmt"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/apimachinery/pkg/util/wait"
 	"log"
 	"os"
 	"os/exec"
@@ -153,54 +152,48 @@ func WaitForCassDcToBeUpdating(t *testing.T, namespace string) {
 // RestartStargate scales the Stargate deployment down to zero and then scales it
 // back up to the prior number of replicas. This function blocks until the
 // deployment is ready.
-func RestartStargate(releaseName, dcName, namespace string) error {
+func RestartStargate(t *testing.T, releaseName, dcName, namespace string) {
 	key := types.NamespacedName{Namespace: namespace, Name: releaseName + "-" + dcName + "-stargate"}
 	retryInterval := 5 * time.Second
 	scaleDownTimeout := 2 * time.Minute
 	scaleUpTimeout := 5 * time.Minute
 
-	if err := WaitForDeploymentReady(key, retryInterval, scaleDownTimeout); err != nil {
-		return fmt.Errorf("timed out waiting for Stargate to scale down: %s", err)
-	}
+	g(t).Expect(WaitForDeploymentReady(t, key, retryInterval, scaleDownTimeout)).To(Succeed(), "failed waiting for Stargate to scale down")
 
 	deployment := &appsv1.Deployment{}
-	if err := testClient.Get(context.Background(), key, deployment); err != nil {
-		return fmt.Errorf("failed to get Stargate deployment: %s", err)
-	}
+	err := testClient.Get(context.Background(), key, deployment);
+	g(t).Expect(err).To(BeNil(), fmt.Sprintf("failed to get Stargate deployment: %s", err))
 
 	originalCount := *deployment.Spec.Replicas
 
 	patch := client.MergeFromWithOptions(deployment.DeepCopy(), client.MergeFromWithOptimisticLock{})
 	count := int32(0)
 	deployment.Spec.Replicas = &count
-	if err := testClient.Patch(context.Background(), deployment, patch); err != nil {
-		return fmt.Errorf("failed to scale down Stargate: %s", err)
-	}
+
+	err = testClient.Patch(context.Background(), deployment, patch)
+	g(t).Expect(err).To(BeNil(), fmt.Sprintf("failed to scale down Stargate: %s", err))
 
 
 	patch = client.MergeFromWithOptions(deployment.DeepCopy(), client.MergeFromWithOptimisticLock{})
 	deployment.Spec.Replicas = &originalCount
-	if err := testClient.Patch(context.Background(), deployment, patch); err != nil {
-		return fmt.Errorf("failed to scale up Stargate: %s", err)
-	}
 
-	if err := WaitForDeploymentReady(key, retryInterval, scaleUpTimeout); err != nil {
-		return fmt.Errorf("timed out waiting for Stargate to scale up: %s", err)
-	}
+	err = testClient.Patch(context.Background(), deployment, patch)
+	g(t).Expect(err).To(BeNil(), fmt.Sprintf("failed to scale up Stargate: %s", err))
 
-	return nil
+	g(t).Expect(WaitForDeploymentReady(t, key, retryInterval, scaleUpTimeout)).To(Succeed(), "failed waiting for Stargate to scale up")
 }
 
 // WaitForDeploymentReady Polls the deployment status until the Deployment is
 // ready. Readiness is defined as .Status.Replicas == .Status.ReadyReplicas.
-func WaitForDeploymentReady(key types.NamespacedName, retryInterval, timeout time.Duration) error {
-	return wait.Poll(retryInterval, timeout, func() (bool, error) {
+func WaitForDeploymentReady(t *testing.T, key types.NamespacedName, retryInterval, timeout time.Duration) bool {
+	return g(t).Eventually(func() bool {
 		deployment := &appsv1.Deployment{}
 		if err := testClient.Get(context.Background(), key, deployment); err != nil {
-			return false, err
+			t.Logf("failed to get deployment %s: %s", key, err)
+			return false
 		}
-		return deployment.Status.Replicas == deployment.Status.ReadyReplicas, nil
-	})
+		return deployment.Status.Replicas == deployment.Status.ReadyReplicas
+	}, timeout, retryInterval).Should(BeTrue())
 }
 
 func WaitForCassDcToBeReady(t *testing.T, namespace string) {
@@ -284,14 +277,12 @@ func DeployMinioAndCreateBucket(t *testing.T, bucketName string) {
 		KubectlOptions: getKubectlOptions("default"),
 	}
 
-	if _, err := helm.RunHelmCommandAndGetOutputE(t, helmOptions, "repo", "add", "minio", "https://helm.min.io/"); err != nil {
-		t.Fatalf("failed to add minio helm repo: %s", err)
-	}
+	_, err := helm.RunHelmCommandAndGetOutputE(t, helmOptions, "repo", "add", "minio", "https://helm.min.io/")
+	g(t).Expect(err).To(BeNil(), fmt.Sprintf("failed to add minio helm repo: %s", err))
 
 	values := fmt.Sprintf("accessKey=minio_key,secretKey=minio_secret,defaultBucket.enabled=true,defaultBucket.name=%s", bucketName)
-	if _, err := helm.RunHelmCommandAndGetOutputE(t, helmOptions, "install", "--set", values, "minio", "minio/minio", "-n", "minio", "--create-namespace"); err != nil {
-		t.Fatalf("failed to install the minio helm chart: %s", err)
-	}
+	_, err = helm.RunHelmCommandAndGetOutputE(t, helmOptions, "install", "--set", values, "minio", "minio/minio", "-n", "minio", "--create-namespace");
+	g(t).Expect(err).To(BeNil(), fmt.Sprintf("failed to install the minio helm chart: %s", err))
 }
 
 func MinioServiceName(t *testing.T) string {
@@ -313,9 +304,9 @@ func checkResourcePresence(t *testing.T, namespace, resourceType, name string) {
 	case "service":
 		svc := &v1.Service{}
 		key := types.NamespacedName{Namespace: namespace, Name: name}
-		if err := testClient.Get(context.Background(), key, svc); err != nil {
-			t.Fatalf("failed to get service %s: %s", key, err)
-		}
+
+		err := testClient.Get(context.Background(), key, svc)
+		g(t).Expect(err).To(BeNil(), "failed to get service %s: %s", key, err)
 	default:
 		t.Logf("Unsupported resource type: %s", resourceType)
 		t.FailNow()
@@ -368,14 +359,10 @@ func CheckNamespaceIsAbsent(t *testing.T, namespace string) {
 }
 
 func namespaceIsAbsent(namespace string) (bool, error) {
-	if _, err := GetNamespace(namespace); err == nil {
-		return false, nil
+	if _, err := GetNamespace(namespace); err == nil || !apierrors.IsNotFound(err) {
+		return false, err
 	} else {
-		if apierrors.IsNotFound(err) {
-			return true, nil
-		} else {
-			return false, err
-		}
+		return true, nil
 	}
 }
 
@@ -397,9 +384,8 @@ func CreateNamespace(t *testing.T) string {
 		}
 	}()
 	absent, err := namespaceIsAbsent(namespace)
-	if err != nil {
-		t.Fatalf("failed to check if namespace %s is absent: %s", namespace, err)
-	}
+	g(t).Expect(err).To(BeNil(), fmt.Sprintf("failed to check if namespace %s is absent: %s", namespace, err))
+
 	if absent {
 		log.Println(fmt.Sprintf("Creating namespace %s", namespace))
 		k8s.CreateNamespace(t, getKubectlOptions("default"), namespace)

@@ -113,11 +113,8 @@ func TestFullStackScenario(t *testing.T) {
 			// https://github.com/k8ssandra/k8ssandra/issues/411 for details.
 			releaseName := "k8ssandra"
 			dcName := "dc1"
-			if err := RestartStargate(releaseName, dcName, namespace); err == nil {
-				testStargate(t, namespace)
-			} else {
-				t.Skipf("failed to restart Stargate: %s", err)
-			}
+			RestartStargate(t, releaseName, dcName, namespace)
+			testStargate(t, namespace)
 		})
 	})
 
