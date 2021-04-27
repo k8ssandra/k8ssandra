@@ -12,10 +12,10 @@ The [Azure Kubernetes Service](https://azure.microsoft.com/en-us/services/kubern
 The process of comparing the data of all replicas and updating each replica to the newest version. Cassandra has two phases to the process: Build a Merkle tree for each replica. Compare the Merkle trees to discover differences. K8ssandra provides [Reaper]({{< relref "#reaper" >}}) as one of its deployed components, enabling you to perform Cassandra [repair]({{< relref "#repair" >}}) operations. 
 
 ### Astra
-A [CNDB]({{< relref "#cndb" >}}) product from DataStax that gives you the ability to develop and deploy data-driven applications with a cloud-native service, without the hassles of database and infrastructure administration. By automating tuning and configuration, Astra radically simplifies database and streaming operations.
+A [CNDB]({{< relref "#cndb" >}}) product from DataStax that gives you the ability to develop and deploy data-driven applications with a cloud-native service, without the hassles of database and infrastructure administration. By automating tuning and configuration, [Astra](https://astra.datastax.com/) radically simplifies database and streaming operations.
 
 ### charts
-Helm charts are a YAML-based packaging format to create, version, share, and publish software in Kubernetes. A Helm chart is a collection of templates and settings that describe a set of Kubernetes resources. For details about each Helm chart provided by K8ssandra, start on this [topic]({{< relref "/reference" >}}).
+[Helm charts](https://helm.sh/) are a YAML-based packaging format to create, version, share, and publish software in Kubernetes. A Helm chart is a collection of templates and settings that describe a set of Kubernetes resources. For details about each Helm chart provided by K8ssandra, see this [reference]({{< relref "/reference/helm-charts/" >}}) topic.
 
 ### CNDB
 An acronym for Cloud Native DataBase, which refers to a database that is created and managed in a cloud environment. DataStax Astra is a CNDB, as well as an Apache Cassandra instance that's deployed to a Kubernetes cloud provider (such as GKE, EKS, AKS) by K8ssandra. 
@@ -46,7 +46,7 @@ Commonly used [tool](https://helm.sh/) that helps you manage Kubernetes applicat
 
 ### Helm chart
 Used to define, install, and upgrade Kubernetes applications. See the chart [summary](https://helm.sh/docs/topics/charts/) on the Helm site. Also refer to the K8ssandra 
-[reference]({{< relref "/reference" >}}) topics for details about the Helm charts deployed by K8ssandra.
+[reference]({{< relref "/reference/helm-charts/" >}}) topics for details about the Helm charts deployed by K8ssandra.
 
 ### Helm repository
 The place where charts are collected and shared for Kubernetes packages. For example, you can use `helm repo add k8ssandra https://helm.k8ssandra.io/stable`, and `helm repo update`, to stay current with the latest K8ssandra software. See [configure the K8ssandra Helm repository]({{< relref "/quickstarts/#configure-the-k8ssandra-helm-repository" >}}) in the K8ssandra quickstarts.  
@@ -55,13 +55,13 @@ The place where charts are collected and shared for Kubernetes packages. For exa
 The top-level database object that controls the replication for the object it contains at each datacenter in the cluster. Keyspaces contain tables, materialized views, user-defined types, functions,  and aggregates. 
 
 ### kubectl
-A command-line tool that allows you to run commands against Kubernetes clusters. You can use `kubectl` (Kubernetes control) to deploy applications, inspect and manage cluster resources, and view logs.
+A command-line tool that allows you to run commands against Kubernetes clusters. You can use `kubectl` ([Kubernetes control](https://kubernetes.io/docs/reference/kubectl/cheatsheet/)) to deploy applications, inspect and manage cluster resources, and view logs.
 
 ### Kubernetes
 A portable, extensible, [open source platform](https://kubernetes.io/) for managing containerized workloads and services, that facilitates both declarative configuration and automation. It has a large, rapidly growing ecosystem. The name Kubernetes originates from Greek, meaning helmsman or pilot.
 
 ### K8ssandra
-An open source, production-ready platform for running Apache Cassandra® on Kubernetes. This includes automation for operational tasks such as repairs, backups, and monitoring.
+An open source, production-ready platform for running Apache Cassandra® on Kubernetes. [K8ssandra](https://k8ssandra.io) includes automation for operational tasks such as [repairs]({{< relref "/tasks/repair" >}}), [backup/restore]({{< relref "/tasks/backup-restore" >}}), and [monitoring]({{< relref "/tasks/monitor" >}}).
 
 ### Medusa
 An open source backup and restore tool for Cassandra data, deployed by K8ssandra for Kubernetes environments. For more, see [Medusa component]({{< relref "/components/medusa/" >}}) and [backup and restore tasks]({{< relref "/tasks/backup-restore/" >}}). 
@@ -126,17 +126,42 @@ In Cassandra, the default [snitch]({{< relref "#networktopologystrategy" >}}) ty
 ### SimpleStrategy
 In Cassandra, a data replication strategy that places the first replica on a node determined by the partitioner. This strategy specifies how many replicas you want in each CassandraDatacenter. See also [NetworkTopologyStrategy]({{< relref "#networktopologystrategy" >}}).
 
+### Site Reliability Engineer (SRE)
+See [SRE]({{< relref "#sre" >}}).
+
 ### snitch
 In Cassandra, the mapping from the IP addresses of nodes to physical and virtual locations, such as racks and data centers. There are several types of snitches. The type of snitch affects the request routing mechanism. See also [SimpleSnitch]({{< relref "#simplesnitch" >}}).
+
+### SRE 
+An acronym for Site Reliability Engineer. A computing professional who applies aspects of software engineering to infrastructure and operations problems. The main goal of an SRE is to create scalable and highly reliable software systems. SRE is a more recent term for a discipline that was often called operations. 
 
 ### Stargate
 An open source data gateway that sits between your app and your databases. Stargate brings together an API platform and data request coordination code into one OSS project. See https://stargate.io. 
 
 ### StatefulSet
-The workload API object used to manage stateful applications. Manages the deployment and scaling of a set of Pods, and provides guarantees about the ordering and uniqueness of these Pods. Like a deployment, a StatefulSet manages Pods that are based on an identical container spec.
+The workload API object used to manage stateful applications. Manages the deployment and scaling of a set of [pods]({{< relref "#pod" >}}), and provides guarantees about the ordering and uniqueness of these pods. Like a deployment, a StatefulSet manages pods that are based on an identical container spec. After installing K8ssandra, in the output of subsequent commands like `kubectl get pods`, notice the naming convention of using `-sts-` in the K8ssandra StatefulSet pod name: `k8ssandra-dc1-default-sts-0`. That important pod deployed by K8ssandra includes the cass-operator container. 
+
+```bash
+kubectl get pods
+```
+**Output:**
+```bash
+NAME                                                READY   STATUS      RESTARTS   AGE
+k8ssandra-cass-operator-766849b497-klgwf            1/1     Running     0          7m33s
+k8ssandra-dc1-default-sts-0                         2/2     Running     0          7m5s
+k8ssandra-dc1-stargate-5c46975f66-pxl84             1/1     Running     0          7m32s
+k8ssandra-grafana-679b4bbd74-wj769                  2/2     Running     0          7m32s
+k8ssandra-kube-prometheus-operator-85695ffb-ft8f8   1/1     Running     0          7m32s
+k8ssandra-reaper-655fc7dfc6-n9svw                   1/1     Running     0          4m52s
+k8ssandra-reaper-operator-79fd5b4655-748rv          1/1     Running     0          7m33s
+k8ssandra-reaper-schema-dxvmm                       0/1     Completed   0          5m3s
+prometheus-k8ssandra-kube-prometheus-prometheus-0   2/2     Running     1          7m27s
+```
+
+(In this example, the prior K8ssandra install command was `helm install k8ssandra k8ssandra/k8ssandra`, where the `clusterName` command parameter was `k8ssandra` and the default configured CassandraDatacenter value was `dc1`.) 
 
 ### table
 In a database such as Cassandra, a collection of ordered (by name) columns fetched by row. A row consists of columns and have a primary key. The first part of the key is a column name. Subsequent parts of a compound key are other column names that define the order of columns in the table.
 
 ### Traefik
-An HTTP reverse proxy and load balancer that makes deploying microservices easier. Traefik integrates with your existing infrastructure components and configures itself automatically and dynamically. The K8ssandra GitHub code and documentation include Traefik configuration examples. See the [Ingress]({{< relref "/tasks/connect/ingress" >}}) topics.
+An HTTP reverse proxy and load balancer that makes deploying microservices easier. Traefik (pronounced "Traffic") integrates with your existing infrastructure components and configures itself automatically and dynamically. The K8ssandra GitHub code and documentation include Traefik ingress configuration examples. See the [Traefik ingress]({{< relref "/tasks/connect/ingress" >}}) topics.
