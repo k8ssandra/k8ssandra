@@ -6,8 +6,7 @@ distribution of [Apache Cassandra](https://cassandra.apache.org/) and
 open-source projects covering both the transactional and operational aspects of
 Cassandra deployments. This project is distributed as a collection of
 [Helm](https://helm.sh/) charts. Feel free to fork the repo and contribute. If
-you're looking to install K8ssandra head over to the [Getting
-Started](https://k8ssandra.io/docs/getting-started/) guide.
+you're looking to install K8ssandra head over to the [Quickstarts](https://docs.k8ssandra.io/quickstarts/).
 
 ## Components
 K8ssandra is composed of a number of sub-charts each representing a component in
@@ -57,8 +56,7 @@ and restore of K8ssandra clusters.
 ## Next Steps
 
 If you are looking to run K8ssandra in your [Kubernetes](https://kubernetes.io/) 
-environment check out the
-[getting started](https://k8ssandra.io/docs/getting-started/) guide. We are
+environment check out the [Quickstarts](https://docs.k8ssandra.io/quickstarts/). We are
 always looking for contributions to the docs, helm charts, and underlying
 components.
 
@@ -68,5 +66,3 @@ If you are a **developer**, and need a [quick start](https://github.com/k8ssandr
 * Understanding the K8ssandra project structure
 * Running unit tests
 * Troubleshooting tips
-
-
