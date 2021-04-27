@@ -4,9 +4,17 @@ linkTitle: "Troubleshoot"
 description: "Troubleshooting tips for K8ssandra users."
 ---
 
-## Check quotas in the cloud provider's UI
+Find troubleshooting tips in these sections:
 
-In some cases, pods can become "unhealthy" and the root cause may be an insufficient quota. For example, in the Google Cloud Platform (GCP) console, check for any unhealthy pods in your GKE project. Then in the IAM &amp; Admin section of the GCP console, navigate to Quotas. Look for any reported issues with backend services:
+* [Check quotas]({{< relref "#check-quotas" >}})
+* [Bucket region or name for backups is misconfigured]({{< relref "#bucket-region-or-name-for-backups-is-misconfigured" >}}) 
+* [Incorrect credentials are configured for backups]({{< relref "#incorrect-credentials-are-configured-for-backups" >}}) 
+* [Check dependencies in Helm charts]({{< relref "#check-dependencies-in-helm-charts" >}}) 
+* [Collect useful information]({{< relref "#collect-useful-information" >}})
+
+## Check quotas
+
+In some cases, pods can become "unhealthy" and the root cause may be an insufficient quota. You can check quotas in the cloud provider's UI. For example, in the Google Cloud Platform (GCP) console, check for any unhealthy pods in your GKE project. Then in the IAM &amp; Admin section of the GCP console, navigate to Quotas. Look for any reported issues with backend services:
 
 ![Backend service quota error](gcp-quota-example1.png)
 
@@ -23,7 +31,8 @@ Notice how in the following example the Backend services quota is set to '5', an
 
 ![Quota UI showing change in Backend service quota from 5 to 50](gcp-quota-example2.png)
 
-## Amazon S3 bucket's region or name is misconfigured for backups
+
+## Bucket region or name for backups is misconfigured
 
 Among the operators installed by K8ssandra is Medusa, which provides backup and restore for Cassandra data.
 
@@ -82,9 +91,10 @@ helm upgrade demo k8ssandra/k8ssandra -f my-backup-restore-values.yaml
 If you're using Google Cloud Storage for your backups, you do not need to include the region setting in a values YAML. 
 {{% /alert %}}
 
-## Medusa backup/restore connection to Amazon S3 bucket fails - check credentials
 
-If the Medusa log reports an authentication error, check that you provided the correct S3 credentials in the `aws_access_key_id` and `aws_secret_access_key` settings. 
+## Incorrect credentials are configured for backups
+
+If the Medusa log reports an authentication error, check that you provided the correct credentials. For example, with Amazon S3 buckets, check the credentials in the configured `aws_access_key_id` and `aws_secret_access_key` settings. 
 
 For example, `my-medusa-bucket-key.yaml` contains:
 
@@ -116,7 +126,80 @@ kubectl apply -f my-medusa-bucket-key.yaml
  secret/medusa-bucket-key configured
 ```
 
+## Check dependencies in Helm charts
+
+You may experience a `missing in charts/ directory` error message.  
+
+If so, you can utilize a K8ssandra script: 
+
+[update-helm-deps.sh](https://github.com/k8ssandra/k8ssandra/blob/main/scripts/update-helm-deps.sh)
+
+This script assists with updating dependencies for each chart in an appropriate order.  
+
+Be sure to run this script so the `./charts` folder is properly located.
+
+## Collect useful information
+
+Suppose you have an error after editing a K8ssandra configuration, or you want to inspect some things as you learn.  There are some useful commands that come in handy when needing to dig a bit deeper. The following examples assume you are using a `k8ssandra` namespace, but this can be adjusted as needed.
+
+Issue the following `kubectl` command to view the `Management-api` logs.  Replace *cassandra-pod* with an actual pod instance name:
+
+```bash
+kubectl logs *cassandra-pod* -c cassandra -n k8ssandra
+```
+
+Issue the following `kubectl` command to view the `Cassandra` logs.  Replace *cassandra-pod* with an actual pod instance name:
+
+```bash
+kubectl logs *cassandra-pod* -c server-system-logger -n k8ssandra
+```
+
+Issue the following `kubectl` command to view `Medusa` logs.  Replace *cassandra-pod* with an actual pod instance name:
+
+```bash
+kubectl logs *cassandra-pod* -c medusa -n k8ssandra
+```
+
+Issue the following `kubectl` command to describe the `CassandraDatacenter` resource.  This provides a wealth of information about the resource, which includes `aged events` that assist when trying to troubleshoot an issue:
+
+```bash
+kubectl describe cassandradatacenter/dc1 -n k8ssandra
+```
+
+Gather container specific information for a pod.
+
+ First, list out the pods scoped to the K8ssandra namespace and instance with a target release:
+
+```bash
+kubectl get pods -l app.kubernetes.io/instance=*release-name* -n k8ssandra
+```
+
+{{% alert title="Note" color="success" %}}
+If you don't know the release name, look it up with:
+```bash
+helm list -n k8ssandra
+```
+{{% /alert %}}
+
+Next, targeting a specific pod, filter out `container` specific information. Replace the name of the pod with the pod of interest:
+
+```bash
+kubectl describe pod/*pod-name* -n k8ssandra | grep container -C 3
+```
+
+A slight variation: list out pods having the label for a `cassandra` cluster:
+
+```bash
+kubectl get pods -l cassandra.datastax.com/cluster=*release-name* -n k8ssandra
+```
+
+Now, using a pod-name returned, describe all the details:
+
+```bash
+kubectl describe pod/*pod-name* -n k8ssandra
+```
+
 ## Next
 
-See the [Reference]({{< relref "/reference" >}}) topics for information about K8ssandra Helm charts, a glossary, and cheat sheets.  
+See the [Reference]({{< relref "/reference" >}}) topics for information about K8ssandra Helm charts, and a glossary.  
 

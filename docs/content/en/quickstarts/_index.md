@@ -364,18 +364,18 @@ To check the health of your K8ssandra cluster:
     **Output**:
 
     ```bash
-NAME                                   TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)                                                 AGE
-cass-operator-metrics                  ClusterIP   10.80.3.92     <none>        8383/TCP,8686/TCP                                       47m
-k8ssandra-dc1-all-pods-service         ClusterIP   None           <none>        9042/TCP,8080/TCP,9103/TCP                              47m
-k8ssandra-dc1-service                  ClusterIP   None           <none>        9042/TCP,9142/TCP,8080/TCP,9103/TCP,9160/TCP            47m
-k8ssandra-dc1-stargate-service         ClusterIP   10.80.13.197   <none>        8080/TCP,8081/TCP,8082/TCP,8084/TCP,8085/TCP,9042/TCP   47m
-k8ssandra-grafana                      ClusterIP   10.80.7.168    <none>        80/TCP                                                  47m
-k8ssandra-kube-prometheus-operator     ClusterIP   10.80.8.109    <none>        443/TCP                                                 47m
-k8ssandra-kube-prometheus-prometheus   ClusterIP   10.80.2.44     <none>        9090/TCP                                                47m
-k8ssandra-reaper-reaper-service        ClusterIP   10.80.5.77     <none>        8080/TCP                                                47m
-k8ssandra-seed-service                 ClusterIP   None           <none>        <none>                                                  47m
-kubernetes                             ClusterIP   10.80.0.1      <none>        443/TCP                                                 47m
-prometheus-operated                    ClusterIP   None           <none>        9090/TCP                                                47m
+    NAME                                   TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)                                                 AGE
+    cass-operator-metrics                  ClusterIP   10.80.3.92     <none>        8383/TCP,8686/TCP                                       47m
+    k8ssandra-dc1-all-pods-service         ClusterIP   None           <none>        9042/TCP,8080/TCP,9103/TCP                              47m
+    k8ssandra-dc1-service                  ClusterIP   None           <none>        9042/TCP,9142/TCP,8080/TCP,9103/TCP,9160/TCP            47m
+    k8ssandra-dc1-stargate-service         ClusterIP   10.80.13.197   <none>        8080/TCP,8081/TCP,8082/TCP,8084/TCP,8085/TCP,9042/TCP   47m
+    k8ssandra-grafana                      ClusterIP   10.80.7.168    <none>        80/TCP                                                  47m
+    k8ssandra-kube-prometheus-operator     ClusterIP   10.80.8.109    <none>        443/TCP                                                 47m
+    k8ssandra-kube-prometheus-prometheus   ClusterIP   10.80.2.44     <none>        9090/TCP                                                47m
+    k8ssandra-reaper-reaper-service        ClusterIP   10.80.5.77     <none>        8080/TCP                                                47m
+    k8ssandra-seed-service                 ClusterIP   None           <none>        <none>                                                  47m
+    kubernetes                             ClusterIP   10.80.0.1      <none>        443/TCP                                                 47m
+    prometheus-operated                    ClusterIP   None           <none>        9090/TCP                                                47m
     ```
 
     Verify that the following services are present:
