@@ -83,7 +83,7 @@ weight = 1
 [params]
 copyright = "The K8ssandra Team and Contributors."
 privacy_policy = "https://www.datastax.com/legal/datastax-website-privacy-policy"
-code_of_conduct = "https://www.datastax.com/legal/codeofconduct"
+code_of_conduct = "https://k8ssandra.io/community/code-of-conduct"
 
 # First one is picked as the Twitter card image if not set on page.
 # images = ["images/project-illustration.png"]
