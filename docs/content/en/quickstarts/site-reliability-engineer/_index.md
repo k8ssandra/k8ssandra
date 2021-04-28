@@ -42,7 +42,6 @@ To run `nodetool` commands:
     k8ssandra-kube-prometheus-operator-85695ffb-ft8f8   1/1     Running     1          45h
     k8ssandra-reaper-655fc7dfc6-n9svw                   1/1     Running     7          45h
     k8ssandra-reaper-operator-79fd5b4655-748rv          1/1     Running     0          45h
-    k8ssandra-reaper-schema-dxvmm                       0/1     Completed   1          45h
     prometheus-k8ssandra-kube-prometheus-prometheus-0   2/2     Running     3          45h
     ```
 
@@ -160,7 +159,7 @@ In the output above, the services of interest are:
 
 * **k8ssandra-grafana**: The K8ssandra grafana service where the name is a combination of the K8ssandra cluster name you specified during the Helm install, `k8ssandra`, and the postfix, `-grafana`. This service listens on the internal K8s port `80`.
 * **prometheus-operated**: The K8ssandra Prometheus daemon. This service listens on the internal K8s port `9090`.
-* **k8ssandra-reaper-k8ssandra-reaper-service**: The K8ssandra Reaper service where the name is a combination of the K8ssandra cluster name you specified during the Helm install, `k8ssandra`, `-reaper`, the K8ssandra cluster name again, and the postfix `-reaper-service`. This port listens on the internal K8s port `8080`.
+* **k8ssandra-reaper-reaper-service**: The K8ssandra Reaper service where the name is a combination of the K8ssandra cluster name you specified during the Helm install, `k8ssandra`, `-reaper`, the K8ssandra cluster name again, and the postfix `-reaper-service`. This port listens on the internal K8s port `8080`.
 
 To configure port forwarding:
 

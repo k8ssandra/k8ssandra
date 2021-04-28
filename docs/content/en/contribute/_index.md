@@ -2,7 +2,7 @@
 title: "Contribution guidelines"
 linkTitle: "Contribute"
 weight: 9
-description: How to contribute to the K8ssandra open-source documentation and code.
+description: How to contribute to the K8ssandra open-source code and documentation.
 ---
 
 We welcome contributions from the K8ssandra community! 
@@ -18,7 +18,7 @@ The overall procedure:
 5. If you're not yet ready for a review, add "WIP" to the PR name to indicate it's a work in progress.  
 6. Wait for the automated PR workflow to do some checks. Members of the K8ssandra community will review your PR and decide whether to approve and merge it.
 
-Also, we encourage you to submit Issues, starting from https://github.com/k8ssandra/k8ssandra/issues. Add a label to help categorize the issue, such complexity:<level>, component:<component-name>, and other labels you'll notice in the repo. 
+Also, we encourage you to submit Issues, starting from https://github.com/k8ssandra/k8ssandra/issues. Add a label to help categorize the issue, such as the complexity level, component name, and other labels you'll find in the repo's Issues display. 
 
 ## Documentation contributions and build environment
 
@@ -66,7 +66,7 @@ If you want to run your own local Hugo server to preview your changes as you wor
     git clone --recurse-submodules --depth 1 https://github.com/k8ssandra/k8ssandra.git
     ```
 
-1. Run `hugo server` in the docs site root directory, such as your `~/github/k8ssandra/docs` directory. By default your site will be available at http://localhost:1313/. Now that you're serving your site locally, Hugo will watch for changes to the content and automatically relrefresh your site.
+1. Run `hugo server` in the docs site root directory, such as your `~/github/k8ssandra/docs` directory. By default your site will be available at http://localhost:1313/. Now that you're serving your site locally, Hugo will watch for changes to the content and automatically refresh your site.
 1. Continue with the usual GitHub workflow to edit files, commit them, push the
   changes up to your fork, and create a pull request.
 
