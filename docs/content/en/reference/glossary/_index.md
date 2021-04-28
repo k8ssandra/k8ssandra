@@ -87,7 +87,7 @@ Represents a single instance of a running process in your cluster. Pods contain 
 ### port forwarding
 An application of network address translation that redirects a communication request from one address and port number combination to another, while the packets are traversing a network gateway, such as a router or firewall. For information about using port forwarding with K8ssandra deployments, see:
 * [Set up port forwarding]({{< relref "/quickstarts/developer/#set-up-port-forwarding" >}}).  
-* Site reliability engineers, see [Configure port forwarding]({{< relref "/quickstarts/sre/#port-forwarding" >}}).
+* Site reliability engineers, see [Configure port forwarding]({{< relref "/quickstarts/site-reliability-engineer/#port-forwarding" >}}).
 
 ### Prometheus
 An open source tool deployed by K8ssandra and used for event monitoring and alerting. [Prometheus](https://prometheus.io) records real-time metrics in a time series database built using a HTTP pull model, with flexible queries and real-time alerting. K8ssandra provides preconfigured [Grafana]({{< relref "#grafana" >}}) dashboards that display the cluster, OS, and node metrics collected by Prometheus in your Kubernetes environment.  

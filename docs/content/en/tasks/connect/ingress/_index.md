@@ -14,7 +14,7 @@ Traefik integrates with your existing infrastructure components and configures i
 {{% alert title="Note" color="warning" %}}
 The provided Traefik ingress solutions are not recommended for production environments. As an alternative, consider port forwarding. It's another way to provide external access to  resources that have been deployed by K8ssandra in your Kubernetes environment. The `kubectl port-forward` command does not require an Ingress/Traefik to work. See:
 * Developers, see [Set up port forwarding]({{< relref "/quickstarts/developer/#set-up-port-forwarding" >}}).  
-* Site reliability engineers, see [Configure port forwarding]({{< relref "/quickstarts/sre/#port-forwarding" >}}).
+* Site reliability engineers, see [Configure port forwarding]({{< relref "/quickstarts/site-reliability-engineer/#port-forwarding" >}}).
 {{% /alert %}}
 
 Traefik ingress topics:

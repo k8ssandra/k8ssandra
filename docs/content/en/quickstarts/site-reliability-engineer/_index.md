@@ -1,5 +1,5 @@
 ---
-title: "K8ssandra site reliability engineer quick start"
+title: "Quickstart for Site Reliability Engineers"
 linkTitle: "SREs"
 weight: 2
 description: "Familiarize yourself with K8ssandra utilities and procedures for monitoring, repair, and upgrading your Apache Cassandra® database!"
@@ -7,14 +7,14 @@ description: "Familiarize yourself with K8ssandra utilities and procedures for m
 
 **Completion time**: **10 minutes**.
 
-{{% alert title="Important" color="warning" %}}
-You **must** complete the steps in [Quick start]({{< relref "/quickstarts" >}}) before continuing.
+{{% alert title="Tip" color="success" %}}
+Be sure to first complete one of the [K8ssandra install]({{< relref "/install" >}}) options (locally or on a cloud provider) before performing these post-install steps. 
 {{% /alert %}}
 
-In this quick start we'll cover the following topics:
+In this quickstart for Site Reliability Engineers (SREs), we'll cover:
 
 * [Accessing nodetool commands]({{< relref "#nodetool" >}}) like status, ring, and info.
-* [Configure port forwarding]({{< relref "#port-forwarding" >}}) for the Prometheus and Grafana monitoring utilties as well as Reaper for Apache Cassandra® (Reaper).
+* [Configure port forwarding]({{< relref "#port-forwarding" >}}) for the Prometheus and Grafana monitoring utilities as well as Reaper for Apache Cassandra® (Reaper).
 * [Accessing the K8ssandra monitoring utilities]({{< relref "#monitoring" >}}), Prometheus and Grafana.
 * [Accessing Reaper]({{< relref "#monitoring" >}}), an easy to use repair interface.
 * [Upgrading a K8ssandra cluster]({{< relref "#upgrade" >}}): to ensure you're using the latest K8ssandra software, or to apply new settings.
@@ -230,10 +230,10 @@ Exiting the terminal instance will terminate all port forwarding services.
 
 ## Access K8ssandra monitoring utilities {#monitoring}
 
-K8ssandra includes the following customized monitoring utilties:
+K8ssandra includes the following customized monitoring utilities:
 
 * [Prometheus](https://prometheus.io/) a standard metrics collection and alerting tool.
-* [Grafana](https://grafana.com/) a set of pre-configured dashboards displaying important K8ssandra metrics.
+* [Grafana](https://grafana.com/) a set of preconfigured dashboards displaying important K8ssandra metrics.
 
 ### Prometheus
 
@@ -317,8 +317,8 @@ For details such as sizing recommendations and quota settings that are specific 
 
 Also see:
 
-* [Tasks]({{< relref "tasks" >}}).
-* [FAQs]({{< relref "faqs" >}}).
-* [K8ssandra components and architecture]({{< relref "components" >}}).
-* [Reference material]({{< relref "reference" >}}).
-* If you'd like to contribute to K8ssandra code, docs, or both, relrefer to our [Contribution guidelines]({{< relref "contribute" >}}).
+* [Tasks]({{< relref "tasks" >}})
+* [FAQs]({{< relref "faqs" >}})
+* [K8ssandra components and architecture]({{< relref "components" >}})
+* [Reference material]({{< relref "reference" >}})
+* If you'd like to contribute to K8ssandra code or docs, refer to our [Contribution guidelines]({{< relref "contribute" >}}).

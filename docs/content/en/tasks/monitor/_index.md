@@ -27,7 +27,7 @@ After you've met the prerequisites identified below, access the preconfigured Gr
 As an alternative to configuring an Ingress, consider port forwarding. It's another way to provide external access to resources that have been deployed by K8ssandra in your Kubernetes environment. Those resources could include Prometheus metrics, pre-configured Grafana dashboards, and the Reaper web interface for repairs of Cassandra&reg; data. The `kubectl port-forward` command does not require an Ingress/Traefik to work. 
 
 * Developers, see [Set up port forwarding]({{< relref "/quickstarts/developer/#set-up-port-forwarding" >}}).  
-* Site reliability engineers, see [Configure port forwarding]({{< relref "/quickstarts/sre/#port-forwarding" >}}). 
+* Site reliability engineers, see [Configure port forwarding]({{< relref "/quickstarts/site-reliability-engineer/#port-forwarding" >}}). 
 {{% /alert %}}
 
 ## Access Grafana Interface

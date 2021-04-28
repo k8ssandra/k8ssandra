@@ -1,18 +1,22 @@
 ---
 title: "Google Kubernetes Engine"
 linkTitle: "Google GKE"
-weight: 1
+weight: 2
 description: >
-  Complete production ready environment of K8ssandra on Google Kubernetes Engine (GKE).
+  Complete **production** ready environment of K8ssandra on Google Kubernetes Engine (GKE).
 ---
 
 [Google Kubernetes Engine](https://cloud.google.com/kubernetes-engine) or "GKE" is a managed Kubernetes environment on the [Google Cloud Platform](https://cloud.google.com/) (GCP). GKE is a fully managed experience; it handles the management/upgrading of the Kubernetes cluster master as well as autoscaling of "nodes" through "node pool" templates.
 
 Through GKE, your Kubernetes deployments will have first-class support for GCP IAM identities, built-in configuration of high-availability and secured clusters, as well as native access to GCP's networking features such as load balancers.
 
+{{% alert title="Tip" color="success" %}}
+Also available in followup topics are post-install steps and role-based considerations for [developers]({{< relref "/quickstarts/developer">}}) or [Site Reliability Engineers]({{< relref "/quickstarts/site-reliability-engineer">}}) (SREs).
+{{% /alert %}}
+
 ## Deployment
 
-This guide will cover provisioning and installing the following infrastructure resources.
+This topic covers provisioning and installing the following infrastructure resources.
 
 * 1x _Regional_ GKE cluster with instances spread across multiple Availability Zones.
 * 1x Node Pool
@@ -288,7 +292,7 @@ TODO create ingress targeting services
 
 ## Next Steps
 
-With a freshly provisioned cluster on GKE consider visiting the [developer]({{< relref "developer" >}}) and [SRE]({{< relref "sre" >}}) quickstarts for a guided experience exploring your cluster. Alternatively if you want to tear down your cluster and / or infrastructure check out the next section on cleaning up resources.
+With a freshly provisioned cluster on GKE consider visiting the [developer]({{< relref "/quickstarts/developer" >}}) and [SRE]({{< relref "/quickstarts/site-reliability-engineer" >}}) quickstarts for a guided experience exploring your cluster. Alternatively if you want to tear down your cluster and / or infrastructure check out the next section on cleaning up resources.
 
 ## Cleanup Resources
 

@@ -1,14 +1,16 @@
 ---
 title: "Amazon Elastic Kubernetes Service"
 linkTitle: "Amazon EKS"
-weight: 1
+weight: 3
 description: >
-  Complete production ready environment of K8ssandra on Amazon Elastic Kubernetes Service (EKS).
+  Complete **production** ready environment of K8ssandra on Amazon Elastic Kubernetes Service (EKS).
 ---
 
-Amazon [Elastic Kubernetes Service](https://aws.amazon.com/eks/features/) or "EKS" is a managed Kubernetes service that makes it easy for you to run Kubernetes on AWS and on-premises. EKS is certified Kubernetes conformant, so existing applications that run on upstream Kubernetes are compatible with EKS. 
+Amazon [Elastic Kubernetes Service](https://aws.amazon.com/eks/features/) or "EKS" is a managed Kubernetes service that makes it easy for you to run Kubernetes on AWS and on-premises. EKS is certified Kubernetes conformant, so existing applications that run on upstream Kubernetes are compatible with EKS. This cloud provider automatically manages the availability and scalability of the Kubernetes control plane nodes responsible scheduling containers, managing the availability of applications, storing cluster data, and other key tasks.
 
-EKS automatically manages the availability and scalability of the Kubernetes control plane nodes responsible scheduling containers, managing the availability of applications, storing cluster data, and other key tasks.
+{{% alert title="Tip" color="success" %}}
+Also available in followup topics are post-install steps and role-based considerations for [developers]({{< relref "/quickstarts/developer">}}) or [Site Reliability Engineers]({{< relref "/quickstarts/site-reliability-engineer">}}) (SREs).
+{{% /alert %}}
 
 ## Deployment
 

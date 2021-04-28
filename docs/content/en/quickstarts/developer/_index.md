@@ -1,5 +1,5 @@
 ---
-title: "K8ssandra Quick Start for Developers"
+title: "Quickstart for developers"
 linkTitle: "Developers"
 weight: 1
 description: "Get up and coding with K8ssandra by exposing access to Stargate and CQL APIs!"
@@ -7,11 +7,11 @@ description: "Get up and coding with K8ssandra by exposing access to Stargate an
 
 **Completion time**: **10 minutes**.
 
-{{% alert title="Important" color="warning" %}}
-You **must** complete the steps in [Quick start]({{< relref "quickstarts" >}}) before continuing.
+{{% alert title="Tip" color="success" %}}
+Be sure to first complete one of the [K8ssandra install]({{< relref "/install" >}}) options (locally or on a cloud provider) before performing these post-install steps. 
 {{% /alert %}}
 
-In this guide, we'll cover:
+In this quickstart for developers, we'll cover:
 
 * [Setting up port forwarding]({{< relref "#set-up-port-forwarding" >}}) to access Stargate services and CQLSH outside your Kubernetes (K8s) cluster.
 * [Accessing Cassandra using Stargate]({{< relref "#access-cassandra-using-the-stargate-apis" >}}) by creating an access token, and using Stargates's REST, GraphQL and document interfaces.
@@ -228,8 +228,8 @@ For details such as sizing recommendations and quota settings that are specific 
 
 Also see:
 
-* [Tasks]({{< relref "tasks" >}}).
-* [FAQs]({{< relref "faqs" >}}).
-* [K8ssandra components and architecture]({{< relref "components" >}}).
-* [Reference material]({{< relref "reference" >}}).
-* If you'd like to contribute to K8ssandra code, docs, or both, relrefer to our [Contribution guidelines]({{< relref "contribute" >}}).
+* [Tasks]({{< relref "tasks" >}})
+* [FAQs]({{< relref "faqs" >}})
+* [K8ssandra components and architecture]({{< relref "components" >}})
+* [Reference material]({{< relref "reference" >}})
+* If you'd like to contribute to K8ssandra code or docs, refer to our [Contribution guidelines]({{< relref "contribute" >}}).
