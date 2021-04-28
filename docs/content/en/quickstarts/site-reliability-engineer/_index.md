@@ -229,7 +229,7 @@ Exiting the terminal instance will terminate all port forwarding services.
 
 ## Access K8ssandra monitoring utilities {#monitoring}
 
-K8ssandra includes the following customized monitoring utilities:
+K8ssandra deploys the following customized monitoring utilities:
 
 * [Prometheus](https://prometheus.io/) a standard metrics collection and alerting tool.
 * [Grafana](https://grafana.com/) a set of preconfigured dashboards displaying important K8ssandra metrics.
@@ -298,19 +298,19 @@ To monitor the health and performance of your K8ssandra cluster using the pre-co
 
 For more information see the [Grafana](https://grafana.com/) web site.
 
-## Access Reaper (Reaper) {#reaper}
+## Access Reaper {#reaper}
 
-The [Reaper](http://cassandra-reaper.io/) an easy interface for managing K8ssandra cluster repairs.
+[Reaper](http://cassandra-reaper.io/) is an easy interface for managing K8ssandra cluster repairs.  Reaper is deployed as part of the K8ssandra [install]({{< relref "/install" >}}). 
 
 ![Reaper](cass-reaper.png)
 
-For more details, see the [Reaper](http://cassandra-reaper.io/) web site.
+For details, start in the [Reaper]({{< relref "/components/reaper" >}}) topic. Then read about the [repair]({{< relref "/tasks/repair" >}}) tasks you can perform with Reaper.
 
 ## Upgrade K8ssandra {#upgrade}
 
 You can easily upgrade your K8ssandra software with the `helm repo update` command, or apply new settings with the `helm upgrade` command. For details, see [Upgrade K8ssandra]({{< relref "upgrade" >}}).
 
-## Next
+## Next steps
 
 For details such as sizing recommendations and quota settings that are specific to cloud providers like Google Kubernetes Engine (GKE) and Amazon Elastic Kubernetes Service (EKS), see the [Install]({{< relref "install" >}}) topics. 
 

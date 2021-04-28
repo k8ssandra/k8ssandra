@@ -64,7 +64,6 @@ k8ssandra-grafana-679b4bbd74-wj769                  2/2     Running     0       
 k8ssandra-kube-prometheus-operator-85695ffb-ft8f8   1/1     Running     0          7m32s
 k8ssandra-reaper-655fc7dfc6-n9svw                   1/1     Running     0          4m52s
 k8ssandra-reaper-operator-79fd5b4655-748rv          1/1     Running     0          7m33s
-k8ssandra-reaper-schema-dxvmm                       0/1     Completed   0          5m3s
 prometheus-k8ssandra-kube-prometheus-prometheus-0   2/2     Running     1          7m27s
 ```
 
@@ -137,7 +136,7 @@ Notice the repair job kicking off.
 * [Reaper details](http://cassandra-reaper.io/)
 * [Blog articles](https://thelastpickle.com/blog/)
 
-## Next
+## Next steps
 
-Learn how to [scale your Cassandra cluster]({{< relref "scale" >}}) and understand underlying considerations of scaling nodes up or down in Kubernetes.  
+Learn how to [scale your Cassandra cluster]({{< relref "scale" >}}) and understand the underlying considerations when scaling nodes up or down in Kubernetes.  
 

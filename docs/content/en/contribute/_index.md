@@ -74,7 +74,9 @@ If you want to run your own local Hugo server to preview your changes as you wor
 
 If you've found a problem in the docs, but you're not sure how to fix it yourself, please create an issue in the [K8ssandra repo](https://github.com/k8ssandra/k8ssandra/issues). You can also create an issue about a specific page by clicking the **Create Issue** button in the top right hand corner of the page.
 
-### Useful resources
+## Next steps
+
+Refer to these useful resources:
 
 * [Docsy user guide](https://www.docsy.dev/docs/): All about Docsy, including how it manages navigation, look and feel, and multi-language support.
 * [Hugo documentation](https://gohugo.io/documentation/): Comprehensive reference for Hugo.

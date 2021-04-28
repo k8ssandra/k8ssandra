@@ -423,15 +423,15 @@ To retrieve K8ssandra superuser credentials:
     ```
 
 {{% alert title="Tip" color="success" %}}
-Save the superuser name and password for use in following sections.
+Save the superuser name and password for use in the [Quickstarts]({{< relref "/quickstarts" >}}), if you decide to follow those steps.
 {{% /alert %}}
 
-## Next
+## Next steps
 
-* If you're a developer, and you'd like to get started coding using CQL or Stargate, see the [K8ssandra developer quick start]({{< relref "/quickstarts/developer" >}}).
-* If you're a site reliability engineer, and you'd like to explore the K8ssandra administration environment including monitoring and maintenance utilities, see the [K8ssandra site engineer quick start]({{< relref "/quickstarts/site-reliability-engineer" >}}).
+* If you're a developer, and you'd like to get started coding using CQL or Stargate, see the [Quickstart for developers]({{< relref "/quickstarts/developer" >}}).
+* If you're a Site Reliability Engineer, and you'd like to explore the K8ssandra administration environment including monitoring and maintenance utilities, see the [Quickstart for Site Reliability Engineers]({{< relref "/quickstarts/site-reliability-engineer" >}}).
 
 For details that are specific to cloud providers, see:
 
-* [K8ssandra installs on Google Kubernetes Engine (GKE)]({{< relref "/install/gke" >}})
-* [K8ssandra installs on Amazon Elastic Kubernetes Service (EKS)]({{< relref "/install/eks" >}})
+* K8ssandra installs on [Google Kubernetes Engine]({{< relref "/install/gke" >}}) (GKE)
+* K8ssandra installs on [Amazon Elastic Kubernetes Service]({{< relref "/install/eks" >}}) (EKS)

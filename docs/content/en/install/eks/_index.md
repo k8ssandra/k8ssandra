@@ -285,9 +285,87 @@ With a `values.yaml` file generated which details out specific configuration ove
 $ helm install my-k8ssandra k8ssandra/k8ssandra -f eks.values.yaml
 ```
 
-### Additional Configuration
+### Retrieve K8ssandra superuser credentials {#superuser}
+
+You'll need the K8ssandra superuser name and password in order to access Cassandra utilities and do things like generate a Stargate access token.
+
+To retrieve K8ssandra superuser credentials:
+
+1. Retrieve the K8ssandra superuser name:
+
+    ```bash
+    kubectl get secret k8ssandra-superuser -o jsonpath="{.data.username}" | base64 --decode ; echo
+    ```
+
+    **Output**:
+
+    ```bash
+    k8ssandra-superuser
+    ```
+
+1. Retrieve the K8ssandra superuser password:
+
+    ```bash
+    kubectl get secret k8ssandra-superuser -o jsonpath="{.data.password}" | base64 --decode ; echo
+    ```
+
+    **Output**:
+
+    ```bash
+    PGo8kROUgAJOa8vhjQrE49Lgruw7s32HCPyVvcfVmmACW8oUhfoO9A
+    ```
+
+{{% alert title="Tip" color="success" %}}
+Save the superuser name and password for use in the [Quickstarts]({{< relref "/quickstarts" >}}), if you decide to follow those steps.
+{{% /alert %}}
+
+## Additional Configuration
 
 At this time there are a couple of manual post-installation steps to allow for external access to resources running within the EKS cluster.
 
-TODO create cluster services ingress to target
-TODO create ingress targeting services
+* TODO create cluster services ingress to target
+* TODO create ingress targeting services
+
+## Cleanup Resources
+
+If this cluster is no longer needed you may optionally uninstall K8ssandra or delete all of the infrastructure.
+
+### Uninstall K8ssandra
+
+```console
+$ helm uninstall prod-k8ssandra
+release "prod-k8ssandra" uninstalled
+```
+
+### Destroy EKS Cluster
+
+```console
+$ terraform destroy
+
+# Output omitted for brevity
+
+Plan: 0 to add, 0 to change, 26 to destroy.
+
+Changes to Outputs:
+  - bucket_name    = "prod-k8ssandra-storage-bucket" -> null
+  - endpoint       = "....." -> null
+  - master_version = "1.18.16-gke.502" -> null
+
+Do you really want to destroy all resources in workspace "my-workspace"?
+  Terraform will destroy all your managed infrastructure, as shown above.
+  There is no undo. Only 'yes' will be accepted to confirm.
+
+  Enter a value: yes
+
+# Output omitted for brevity
+
+Releasing state lock. This may take a few moments...
+
+Destroy complete! Resources: 26 destroyed.
+```
+
+## Next steps
+
+With a freshly provisioned cluster on Amazon EKS, consider visiting the [developer]({{< relref "/quickstarts/developer" >}}) and [Site Reliability Engineer]({{< relref "/quickstarts/site-reliability-engineer" >}}) quickstarts for a guided experience exploring your cluster. 
+
+Alternatively, if you want to tear down your Amazon EKS cluster and / or infrastructure, refer to the section above that covers [cleaning up resources]({{< relref "#cleanup-resources" >}}).
