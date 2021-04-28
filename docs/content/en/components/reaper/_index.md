@@ -124,14 +124,10 @@ Reaper can use Postgres and Cassandra itself as a storage backend for its data, 
 In order to make Reaper more efficient, segment orchestration was recently revamped and modernized. It opened for a long awaited feature: fully concurrent repairs for different keyspaces and tables.
 These changes also introduced a long awaited feature by allowing fully concurrent repairs for different keyspaces/tables.
 
-## Using the Reaper Web UI
+## Next steps
 
-For the steps to set up repair operations using the Reaper Web UI, see [Repair tasks]({{< relref "/tasks/repair/" >}}). 
-
-For information about how secrets are created and used with Reaper authentication, see [K8ssandra security]({{< relref "/tasks/secure#reaper-security/" >}}).
-
-For reference details, see the Reaper Operator [Helm chart]({{< relref "/reference/helm-charts/reaper-operator/" >}}).
-
-## Next
-
-See the other [components]({{< relref "/components/" >}}) deployed by K8ssandra. For information on using the deployed components, see the [Tasks]({{< relref "/tasks/" >}}) topics.
+* For the steps to set up repair operations using the Reaper Web UI, see [Repair Cassandra with Reaper]({{< relref "/tasks/repair/" >}}). 
+* For information about using a superuser and secrets with Reaper authentication, see [Reaper security]({{< relref "/tasks/secure/#reaper-security" >}}).
+* For reference details, see the Reaper Operator [Helm chart]({{< relref "/reference/helm-charts/reaper-operator/" >}}).
+* Also see the topics covering other [components]({{< relref "/components/" >}}) deployed by K8ssandra. 
+* For information on using the deployed components, see the [Tasks]({{< relref "/tasks/" >}}) topics.

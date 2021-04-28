@@ -29,14 +29,11 @@ Here's how the modules fit together:
 
 ![How the Stargate modules fit together](stargate-modules3.png)
 
-## Related topics
+## Next steps
 
-Recall that Stargate is automatically [installed]({{< relref "/quickstarts/" >}}) by K8ssandra. For an introduction to using Stargate, see:
-
-* Stargate developer [tasks]({{< relref "/tasks/develop/" >}}).
-
-* And detailed information on the [stargate.io](https://stargate.io/) site, including the [API reference](https://stargate.io/docs/stargate/1.0/developers-guide/api_ref/apiref.html) documentation that describes the API calls.
-
-## Next
-
-See the other [components]({{< relref "/components/" >}}) deployed by K8ssandra. For information on using the deployed components, see the [Tasks]({{< relref "/tasks/" >}}) topics.
+* For comprehensive information about Stargate, visit the [stargate.io](https://stargate.io/) site.
+* For details on the API calls, see the Stargate [API reference](https://stargate.io/docs/stargate/1.0/developers-guide/api_ref/apiref.html).
+* For an introduction to using Stargate with K8ssandra, see [Develop with Stargate APIs]({{< relref "/tasks/develop/" >}}). 
+* For information about using a superuser and secrets with Stargate authentication, see [Stargate security]({{< relref "/tasks/secure/#stargate-security" >}}).
+* Also see the topics covering other [components]({{< relref "/components/" >}}) deployed by K8ssandra. 
+* For information on using the deployed components, see the [Tasks]({{< relref "/tasks/" >}}) topics.

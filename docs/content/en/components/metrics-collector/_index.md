@@ -11,7 +11,7 @@ When running applications in Kubernetes, observability is key. K8ssandra include
 
 ![Monitoring Overview](monitoring-overview.png)
 
-Metrics Collector for Apache Cassandra (MCAC) is the key to providing useful metrics for K8ssandra users. MCAC is deployed to your Kubernetes environment by K8ssandra. If you haven't already installed K8ssandra, see the [quickstart]({{< relref "/quickstarts/" >}}) and [install]({{< relref "/install" >}}) topics.
+Metrics Collector for Apache Cassandra (MCAC) is the key to providing useful metrics for K8ssandra users. MCAC is deployed to your Kubernetes environment by K8ssandra. If you haven't already installed K8ssandra, see the [install]({{< relref "/install" >}}) topics.
 
 MCAC aggregates OS and Cassandra metrics along with diagnostic events to facilitate problem resolution and remediation. K8ssandra provides preconfigured Grafana dashboards to visualize the collected metrics. 
 
@@ -56,13 +56,13 @@ K8ssandra uses the [kube-prometheus-stack](https://github.com/prometheus-communi
 
 Let's walk through this architecture from left to right. We'll provide links to the Kubernetes documentation so you can dig into those concepts more if you'd like to.
 
-The Cassandra nodes in a K8ssandra-managed cluster are organized in one or more datacenters, each of which is composed of one or more racks. Each rack represents a failure domain with replicas being placed across multiple racks (if present). In Kubernetes, racks are represented as [StatefulSets](https://kubernetes.io/concepts/workloads/controllers/statefulset/). (We'll focus here on details of the Cassandra node related to monitoring, you can see other details about Cassandra nodes such as how storage is managed on the [Cassandra architecture](/architecture/cassandra) page.)
+The Cassandra nodes in a K8ssandra-managed cluster are organized in one or more datacenters, each of which is composed of one or more racks. Each rack represents a failure domain with replicas being placed across multiple racks (if present). In Kubernetes, racks are represented as [StatefulSets](https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/). (We'll focus here on details of the Cassandra node related to monitoring. 
 
-Each Cassandra node is deployed as its own [pod](https://kubernetes.io/concepts/workloads/pods/). The pod runs the Cassandra daemon in a Java VM. Each Apache Cassandra pod is configured with the DataStax [Metrics Collector for Apache Cassandra](https://github.com/datastax/metric-collector-for-apache-cassandra), which is implemented as a Java agent running in that same VM. The Metrics Collector is configured to expose metrics on the standard Prometheus port (9103).
+Each Cassandra node is deployed as its own [pod](https://kubernetes.io/docs/concepts/workloads/pods/). The pod runs the Cassandra daemon in a Java VM. Each Apache Cassandra pod is configured with the DataStax [Metrics Collector for Apache Cassandra](https://github.com/datastax/metric-collector-for-apache-cassandra), which is implemented as a Java agent running in that same VM. The Metrics Collector is configured to expose metrics on the standard Prometheus port (9103).
 
 One or more Prometheus instances are deployed in another StatefulSet, with the default configuration starting with a single instance. Using a StatefulSet allows each Prometheus node to connect to a Persistent Volume (PV) for longer term storage. The default K8ssandra chart configuration does not use PVs. By default, metric data collected in the cluster is retained within Prometheus for 24 hours.
 
-An instance of the Prometheus Operator is deployed using a Replica Set. The `kube-prometheus-stack` also defines several useful Kubernetes [custom resources (CRDs)](https://kubernetes.io/concepts/extend-kubernetes/api-extension/custom-resources/) that the Prometheus Operator uses to manage Prometheus. One of these is the `ServiceMonitor`. K8ssandra uses `ServiceMonitor` resources, specifying labels selectors to indicate the Cassandra pods to connect to in each datacenter, and how to relabel each metric as it is stored in Prometheus. K8ssandra provides a `ServiceMonitor` for Stargate when it is enabled. Users may also configure `ServiceMonitors` to pull metrics from the various operators, but pre-configured instances are not provided at this time.
+An instance of the Prometheus Operator is deployed using a Replica Set. The `kube-prometheus-stack` also defines several useful Kubernetes [custom resources (CRDs)](https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/) that the Prometheus Operator uses to manage Prometheus. One of these is the `ServiceMonitor`. K8ssandra uses `ServiceMonitor` resources, specifying labels selectors to indicate the Cassandra pods to connect to in each datacenter, and how to relabel each metric as it is stored in Prometheus. K8ssandra provides a `ServiceMonitor` for Stargate when it is enabled. Users may also configure `ServiceMonitors` to pull metrics from the various operators, but pre-configured instances are not provided at this time.
 
 The `AlertManager` is an additional resource provided by `kube-prometheus-stack` that can be configured to specify thresholds for specific metrics that will trigger alerts. Users may enable, and configure, AlertManager through the `values.yaml` file. See the `kube-prometheus-stack` [example](https://github.com/prometheus-community/helm-charts/blob/main/charts/kube-prometheus-stack/values.yaml#L114-L595) for more information.
   
@@ -92,6 +92,8 @@ Ingress or port forwarding can be used to expose access to the Prometheus and Gr
 
      Alternatively, we offer free support for issues, and these logs can help our support engineers help diagnose your problem.
 
-## Next
+## Next steps
 
-See the other [components]({{< relref "/components/" >}}) deployed by K8ssandra. For information on using the deployed components, see the [Tasks]({{< relref "/tasks/" >}}) topics.
+* For details about viewing the metrics in Grafana dashboards provided by K8ssandra, see [Monitor Cassandra]({{< relref "/tasks/monitor/" >}}).
+* See the topics covering other [components]({{< relref "/components/" >}}) deployed by K8ssandra. 
+* For information on using other deployed components, see the [Tasks]({{< relref "/tasks/" >}}) topics.

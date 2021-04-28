@@ -67,6 +67,9 @@ The smallest unit within the topology of a Cassandra cluster is a single node. A
 
 In Kubernetes, each Cassandra pod is composed of a number of containers. The first container run in any Cassandra pod is the `server-config-init` initContainer. It handles rendering out configurations on a per pod basis with input from the `CassandraDatacenter` custom resource. Then the main, application containers are started. The Cassandra pod always includes two application containers - `cassandra` and `server-system-logger`. The `cassandra` container does not immediately launch Cassandra. Instead the [Management API for Apache Cassandra](https://github.com/datastax/management-api-for-apache-cassandra) is started first. This boots a REST API for lifecycle and operations tasks to be requested by `cass-operator`. For instance all nodes in the cluster may be scheduled and start their management APIs before the operator starts triggering the bootstrap for nodes. The `server-system-logger` container's sole purpose is to `tail` Cassandra's logs at `/var/log/cassandra/system.log`.
 
-## Next
+## Next steps
 
-See the other [components]({{< relref "/components/" >}}) deployed by K8ssandra. For information on using the deployed components, see the [Tasks]({{< relref "/tasks/" >}}) topics.
+* For information about using a superuser and secrets with Cassandra authentication, see [Cassandra security]({{< relref "/tasks/secure/#cassandra-security" >}}).
+* For reference details, see the [K8ssandra]({{< relref "/reference/helm-charts/k8ssandra/" >}}) Helm chart.
+* Also see the topics covering other [components]({{< relref "/components/" >}}) deployed by K8ssandra. 
+* For information on using other deployed components, see the [Tasks]({{< relref "/tasks/" >}}) topics.

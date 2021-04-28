@@ -33,14 +33,11 @@ K8ssandra's Medusa supports:
   * CEPH Object Gateway
   * Others - this list is not exhaustive
 
-## Related topics
+## Next steps
 
-See these topics in the K8ssandra documentation:
-
-* Backup and restore Cassandra with S3-compatible [MinIO]({{< relref "/tasks/backup-restore/minio/" >}}).
-* Backup and restore Cassandra with [Amazon S3]({{< relref "/tasks/backup-restore/amazon-s3/" >}}).
-* Backup and restore Cassandra with [GCS]({{< relref "/tasks/backup-restore/gcs/" >}}).
-
-## Next
-
-See the other [components]({{< relref "/components/" >}}) deployed by K8ssandra. For information on using the deployed components, see the [Tasks]({{< relref "/tasks/" >}}) topics.
+* Backup and restore Cassandra with S3-compatible [MinIO]({{< relref "/tasks/backup-restore/minio/" >}}) buckets.
+* Backup and restore Cassandra with [Amazon S3]({{< relref "/tasks/backup-restore/amazon-s3/" >}}) buckets.
+* For information about using a superuser and secrets with Medusa authentication, see [Medusa security]({{< relref "/tasks/secure/#medusa-security" >}}).
+* For reference details, see the [backup]({{< relref "/reference/helm-charts/backup/" >}}) and [restore]({{< relref "/reference/helm-charts/restore/" >}}) Helm charts.
+* Also see the topics covering other [components]({{< relref "/components/" >}}) deployed by K8ssandra. 
+* For information on using other deployed components, see the [Tasks]({{< relref "/tasks/" >}}) topics.

@@ -34,20 +34,22 @@ Apache Cassandra is _the_ NoSQL database for applications that require resilienc
 
 K8ssandra is a great fit for operators looking for easy to install and manage Cassandra clusters. Even if your environment currently does not run Cassandra on Kubernetes we believe that simple installation and upkeep will win you over. Consider some of the integrations listed below:
 
-* All Cassandra containers are preinstalled with
+* All Cassandra containers are preinstalled with:
   * [Metrics Collector for Apache Cassandra](https://github.com/datastax/metric-collector-for-apache-cassandra)
   * [Management API for Apache Cassandra](https://github.com/datastax/management-api-for-apache-cassandra)
-* Prometheus Operator `ServiceMonitor` custom resources complete with metric relabelling.
+* Cass Operator to support management tasks in Kubernetes. 
+* Prometheus Operator `ServiceMonitor` custom resources complete with metric labeling.
 * Grafana Operator `Dashboard` custom resources configured with metrics exposed by Prometheus.
 * Reaper to repair Cassandra data.
 * Medusa for backup/restore operations.
 
-## Where should I go next?
+## Next steps
 
-Depending on your needs, see the following:
+See the following:
 
 * [FAQs]({{< relref "faqs" >}}): If you're new to K8ssandra, these FAQs are for you. 
-* [Quick start]({{< relref "quickstarts" >}}): Get started with K8ssandra!
-* [Components]({{< relref "components" >}}): Dig in to each operational component of the K8ssandra stack and see how it communicates with the others.
-* [Tasks]({{< relref "tasks" >}}): Need to get something done? Check out the Tasks section for a helpful collection of outcome-based solutions.
-* [Reference]({{< relref "reference" >}}): Explore the K8ssandra configuration interface and options available.
+* [Install]({{< relref "install" >}}): K8ssandra install steps for local development or production-ready cloud platforms.
+* [Quickstarts]({{< relref "quickstarts" >}}): Post-install K8ssandra topics for developers or Site Reliability Engineers.
+* [Components]({{< relref "components" >}}): Dig in to each deployed component of the K8ssandra stack and see how it communicates with the others.
+* [Tasks]({{< relref "tasks" >}}): Need to get something done? Check out the Tasks topics for a helpful collection of outcome-based solutions.
+* [Reference]({{< relref "reference" >}}): Explore the K8ssandra configuration interface and available options.
