@@ -1,7 +1,7 @@
 ---
 title: "Google Kubernetes Engine"
 linkTitle: "Google GKE"
-weight: 1
+weight: 2
 description: >
   Complete **production** ready environment of K8ssandra on Google Kubernetes Engine (GKE).
 ---
