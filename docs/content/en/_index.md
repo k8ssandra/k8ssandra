@@ -15,7 +15,7 @@ type: docs
 The K8ssandra documentation covers everything from install details, deployed components, configuration references, and guided outcome-based tasks. Check out the sections at left based on your needs and be sure to leave us a <a class="github-button" href="https://github.com/k8ssandra/k8ssandra" data-icon="octicon-star" aria-label="Star k8ssandra/k8ssandra on GitHub">star</a> on Github!
 
 {{% alert title="Tip" color="primary" %}}
-If you're impatient, jump right in with our **[Quick start]({{< relref "quickstarts" >}})**!
+If you're impatient, jump right in with our **[install]({{< relref "install" >}})** topics!
 {{% /alert %}}
 
 ## What is K8ssandra?
