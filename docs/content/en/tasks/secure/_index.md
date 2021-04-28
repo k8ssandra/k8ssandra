@@ -199,7 +199,8 @@ nodetool -u <username> -pw <password> status
 
 K8ssandra currently does not support JMX authorization. This issue is also covered in [#323](https://github.com/k8ssandra/k8ssandra/issues/323).
 
-## Next
+## Next steps
 
-Learn how to [develop client]({{< relref "/tasks/develop" >}}) using the Stargate APIs. 
+Explore other K8ssandra [tasks]({{< relref "/tasks" >}}).
 
+See the [Reference]({{< relref "/reference" >}}) topics for information about K8ssandra Helm charts, and a glossary. 

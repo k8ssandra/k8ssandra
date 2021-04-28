@@ -222,14 +222,11 @@ To access K8ssandra using the stand alone CQLSH utility:
 
 For complete details on Cassandra, CQL and CQLSH, see the [Apache Cassandra](https://cassandra.apache.org/) web site.
 
-## Next
+## Next steps
 
-For details such as sizing recommendations and quota settings that are specific to cloud providers like Google Kubernetes Engine (GKE) and Amazon Elastic Kubernetes Service (EKS), see the [Install]({{< relref "/install" >}}) topics. 
+* [FAQs]({{< relref "faqs" >}}): If you're new to K8ssandra, these FAQs are for you. 
+* [Components]({{< relref "components" >}}): Dig in to each deployed component of the K8ssandra stack and see how it communicates with the others.
+* [Tasks]({{< relref "tasks" >}}): Need to get something done? Check out the Tasks topics for a helpful collection of outcome-based solutions.
+* [Reference]({{< relref "reference" >}}): Explore the K8ssandra configuration interface (Helm charts), the available options, and a Glossary.
 
-Also see:
-
-* [Tasks]({{< relref "tasks" >}})
-* [FAQs]({{< relref "faqs" >}})
-* [K8ssandra components and architecture]({{< relref "components" >}})
-* [Reference material]({{< relref "reference" >}})
-* If you'd like to contribute to K8ssandra code or docs, refer to our [Contribution guidelines]({{< relref "contribute" >}}).
+We encourage developers to actively participate in the [K8ssandra community](https://k8ssandra.io/community/).

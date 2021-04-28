@@ -7,7 +7,7 @@ description: K8ssandra deploys Medusa to support backup and restore of Apache Ca
 
 Medusa for Apache Cassandra&reg; is deployed by K8ssandra as part of its Helm chart install. 
 
-If you haven't already installed K8ssandra, see the [quickstarts]({{< relref "/quickstarts/" >}}) and [install]({{< relref "/install" >}}) topics.
+If you haven't already installed K8ssandra, see the [install]({{< relref "/install" >}}) topics.
 
 ## Introduction
 
@@ -35,9 +35,13 @@ K8ssandra's Medusa supports:
 
 ## Next steps
 
-* Backup and restore Cassandra with S3-compatible [MinIO]({{< relref "/tasks/backup-restore/minio/" >}}) buckets.
-* Backup and restore Cassandra with [Amazon S3]({{< relref "/tasks/backup-restore/amazon-s3/" >}}) buckets.
+* Backup and restore Cassandra with S3-compatible [MinIO]({{< relref "/tasks/backup-restore/minio/" >}}).
+* Backup and restore Cassandra with [Amazon S3]({{< relref "/tasks/backup-restore/amazon-s3/" >}}).
+* Backup and restore Cassandra with [Google Cloud Storage]({{< relref "/tasks/backup-restore/gcs/" >}}).
 * For information about using a superuser and secrets with Medusa authentication, see [Medusa security]({{< relref "/tasks/secure/#medusa-security" >}}).
-* For reference details, see the [backup]({{< relref "/reference/helm-charts/backup/" >}}) and [restore]({{< relref "/reference/helm-charts/restore/" >}}) Helm charts.
+* For reference details, see the:
+  * [Medusa Operator Helm Chart]({{< relref "/reference/helm-charts/medusa-operator" >}})
+  * [Backup Helm Chart]({{< relref "/reference/helm-charts/backup/" >}})
+  * [Restore Helm Chart]({{< relref "/reference/helm-charts/restore/" >}})
 * Also see the topics covering other [components]({{< relref "/components/" >}}) deployed by K8ssandra. 
 * For information on using other deployed components, see the [Tasks]({{< relref "/tasks/" >}}) topics.

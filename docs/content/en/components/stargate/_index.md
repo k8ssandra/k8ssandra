@@ -5,7 +5,7 @@ weight: 1
 description: K8ssandra deploys Stargate to provide APIs that interact with Apache Cassandra&reg; databases.
 ---
 
-Stargate provides a data gateway with REST, GraphQL, and Document APIs in front of your K8ssandra-managed Cassandra database. Stargate is deployed by K8ssandra as part of its Helm chart install. If you haven't already, see the [quickstart]({{< relref "/quickstarts/" >}}) and [install]({{< relref "/install" >}}) topics.
+Stargate provides a data gateway with REST, GraphQL, and Document APIs in front of your K8ssandra-managed Cassandra database. Stargate is deployed by K8ssandra as part of its Helm chart install. If you haven't already installed K8ssandra, see the [install]({{< relref "/install" >}}) topics.
 
 ## Introduction
 

@@ -136,6 +136,8 @@ For insights into the underlying operations that occur with scaling, see [Scale 
 
    Eventually you should see two additional K8ssandra pods with the extensions `-sts-1` and `-sts-2` in `RUNNING` status.
 
-## Next
+## Next steps
 
-Learn how to [backup and restore Cassandra data]({{< relref "backup-restore" >}}) in a Kubernetes cluster.
+Explore other K8ssandra [tasks]({{< relref "/tasks" >}}).
+
+See the [Reference]({{< relref "/reference" >}}) topics for information about K8ssandra Helm charts, and a glossary.  

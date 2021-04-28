@@ -33,7 +33,13 @@ Added in K8ssandra 1.1.0:
 For detailed walk-throughs of Medusa backup and restore operations, see:
 
 * Backup and restore Cassandra with S3-compatible [MinIO]({{< relref "/tasks/backup-restore/minio/" >}}).
-
 * Backup and restore Cassandra with [Amazon S3]({{< relref "/tasks/backup-restore/amazon-s3/" >}}).
-
 * Backup and restore Cassandra with [GCS]({{< relref "/tasks/backup-restore/gcs/" >}}).
+
+## Next steps
+
+Also see the following reference topics:
+
+* [Medusa Operator Helm Chart]({{< relref "/reference/helm-charts/medusa-operator" >}})
+* [Backup Helm Chart]({{< relref "/reference/helm-charts/backup" >}})
+* [Restore Helm Chart]({{< relref "/reference/helm-charts/restore" >}})

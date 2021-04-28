@@ -103,6 +103,6 @@ With the ingress routes configured and deployed to Kubernetes we can access the 
     Kubernetes logo to the right of the table indicating it was provisioned via
     a Kubernetes custom resource.
 
-## Next
+## Next steps
 
-Feel free to explore the other [Traefik ingress]({{< relref "/tasks/connect/ingress/" >}}) topics. Also see additional K8ssandra [tasks]({{< relref "tasks" >}}).
+Feel free to explore the other [Traefik ingress]({{< relref "/tasks/connect/ingress/" >}}) topics. Also see [Monitor Cassandra]({{< relref "/tasks/monitor" >}}).

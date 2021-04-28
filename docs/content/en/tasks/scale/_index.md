@@ -190,6 +190,8 @@ The StatefulSet controller manages the deletion of Cassandra pods. It deletes on
 This means for example that `my-k8ssandra-dc1-default-sts-3` will be deleted before `my-k8ssandra-dc1-default-sts-2`.
 {{% /alert %}}
 
-## Next
+## Next steps
 
-Learn about the K8ssandra deployed Helm charts and additional reference resources (such as a Glossary) in the [reference]]({{< relref "/reference/" >}}) topics.
+Explore other K8ssandra [tasks]({{< relref "/tasks" >}}).
+
+See the [Reference]({{< relref "/reference" >}}) topics for information about K8ssandra Helm charts, and a glossary. 

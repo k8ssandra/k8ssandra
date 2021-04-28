@@ -93,6 +93,6 @@ Here we see the external IP address is `172.22.0.2`. For this environment the Tr
 
 ![Traefik dashboard screenshot](traefik-dashboard.png)
 
-## Next
+## Next steps
 
 Feel free to explore the other [Traefik ingress]({{< relref "/tasks/connect/ingress/" >}}) topics. Also see the additional K8ssandra [tasks]({{< relref "tasks" >}}).

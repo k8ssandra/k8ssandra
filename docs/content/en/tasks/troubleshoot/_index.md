@@ -199,7 +199,8 @@ Now, using a pod-name returned, describe all the details:
 kubectl describe pod/*pod-name* -n k8ssandra
 ```
 
-## Next
+## Next steps
 
-See the [Reference]({{< relref "/reference" >}}) topics for information about K8ssandra Helm charts, and a glossary.  
+Explore other K8ssandra [tasks]({{< relref "/tasks" >}}).
 
+See the [Reference]({{< relref "/reference" >}}) topics for information about K8ssandra Helm charts, and a glossary. 

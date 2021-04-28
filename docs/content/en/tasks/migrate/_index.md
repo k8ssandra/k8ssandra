@@ -224,6 +224,8 @@ The command above will trigger a statefulset update, which in effect is a cluste
 
 The steps necessary here will vary depending on how you installed and managed the old datacenter. You want to make sure that the StatefulSets, PersistentVolumeClaims, PersistentVolumes, and any other objects created in association with the old datacenter are deleted in the Kubernetes cluster.
 
-## Next
+## Next steps
 
-Learn how to [upgrade K8ssandra]({{< relref "/tasks/upgrade/" >}}) from prior releases or settings.
+Explore other K8ssandra [tasks]({{< relref "/tasks" >}}).
+
+See the [Reference]({{< relref "/reference" >}}) topics for information about K8ssandra Helm charts, and a glossary. 

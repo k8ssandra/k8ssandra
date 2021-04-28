@@ -82,6 +82,6 @@ With the deployment complete we may now access the Traefik dashboard at [http://
 
 ![Traefik dashboard screenshot](traefik-dashboard.png)
 
-## Next
+## Next steps
 
 Feel free to explore other the [Traefik ingress]({{< relref "/tasks/connect/ingress/" >}}) topics. Also see the additional K8ssandra [tasks]({{< relref "tasks" >}}).

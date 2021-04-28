@@ -14,10 +14,10 @@ Google Cloud Storage (GCS) is a RESTful online file storage web service for stor
 
 For information about GCS, see the [Google Cloud Storage documentation](https://cloud.google.com/storage).
 
-## Steps with K8ssandra
+## Next steps
 
-TBS here.
+See the following reference topics:
 
-## Next 
-
-Learn how to use the [Reaper web interface]({{< relref "/tasks/repair/" >}}) to perform anti-entropy repairs on Cassandra data.
+* [Medusa Operator Helm Chart]({{< relref "/reference/helm-charts/medusa-operator" >}})
+* [Backup Helm Chart]({{< relref "/reference/helm-charts/backup" >}})
+* [Restore Helm Chart]({{< relref "/reference/helm-charts/restore" >}})

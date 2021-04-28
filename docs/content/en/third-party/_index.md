@@ -23,3 +23,13 @@ The following table lists the K8ssandra direct dependencies with 3rd-party softw
 |reaper-operator                                                      |19d15e499171fe712aef3657be3d59b3044b57fa                                  |Apache-2.0                                                                                                                                                                                                                                                                                                                                                                    |
 |terratest                                                            |b13ada22754d4ec78aa0f3a838f9030071fee22b                                  |Apache-2.0; public-domain	                                                                                                                                                                                                                                                                                                                                                       |
 |yaml                                                                |9fc95527decd95bb9d28cc2eab08179b2d0f6971                                   |Multi-license: BSD-3-Clause OR MIT; BSD-3-Clause                                                                                                                                                                                                                                                                                                                                 |
+## Next steps
+
+* [FAQs]({{< relref "faqs" >}}): If you're new to K8ssandra, these FAQs are for you. 
+* [Install]({{< relref "install" >}}): K8ssandra install steps for local development or production-ready cloud platforms.
+* [Quickstarts]({{< relref "quickstarts" >}}): Post-install K8ssandra topics for developers or Site Reliability Engineers.
+* [Components]({{< relref "components" >}}): Dig in to each deployed component of the K8ssandra stack and see how it communicates with the others.
+* [Tasks]({{< relref "tasks" >}}): Need to get something done? Check out the Tasks topics for a helpful collection of outcome-based solutions.
+* [Reference]({{< relref "reference" >}}): Explore the K8ssandra configuration interface (Helm charts), the available options, and a Glossary.
+
+We encourage you to actively participate in the [K8ssandra community](https://k8ssandra.io/community/).

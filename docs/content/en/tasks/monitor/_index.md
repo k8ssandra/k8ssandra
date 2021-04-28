@@ -166,6 +166,9 @@ Prometheus is available at the following address if running locally:
 * Validate servers being scraped
 * Confirm metrics collection
 
-## Next
+## Next steps
 
-See the [Reaper web interface]({{< relref "/tasks/repair/" >}}) topic for information on performing periodic repairs of Cassandra data.
+Explore other K8ssandra [tasks]({{< relref "/tasks" >}}).
+
+See the [Reference]({{< relref "/reference" >}}) topics for information about K8ssandra Helm charts, and a glossary.
+

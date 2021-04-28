@@ -140,6 +140,10 @@ http://localhost:8080/playground
 
 Detailed information related to using the GraphQL playground can be found in the [Stargate docs](https://stargate.io/docs/stargate/1.0/developers-guide/graphql-using.html#_using_the_graphql_playground).
 
-## Next
+## Next steps
 
-Learn how to access and use the preconfigured Prometheus and Grafana interfaces to [monitor]({{< relref "/tasks/monitor" >}}) your Cassandra cluster running in Kubernetes.
+* For comprehensive information about Stargate, visit the [stargate.io](https://stargate.io/) site.
+* For details on the API calls, see the Stargate [API reference](https://stargate.io/docs/stargate/1.0/developers-guide/api_ref/apiref.html).
+* For information about using a superuser and secrets with Stargate authentication, see [Stargate security]({{< relref "/tasks/secure/#stargate-security" >}}).
+* Also see the topics covering other [components]({{< relref "/components/" >}}) deployed by K8ssandra. 
+* For information on using additional deployed components, see the [Tasks]({{< relref "/tasks/" >}}) topics.

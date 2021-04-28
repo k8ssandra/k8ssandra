@@ -7,7 +7,7 @@ description: K8ssandra deploys Kubernetes Operator for Apache Cassandra&reg; to 
 
 Kubernetes Operator for Apache Cassandra&reg;, also known as Cass Operator or cass-operator, is deployed by K8ssandra as part of its Helm chart. 
 
-If you haven't already installed K8ssandra, see the [quickstarts]({{< relref "/quickstarts/" >}}) and [install]({{< relref "/install" >}}) topics.
+If you haven't already installed K8ssandra, see the [install]({{< relref "/install" >}}) topics.
 
 ## Introduction
 
@@ -65,7 +65,11 @@ The smallest unit within the topology of a Cassandra cluster is a single node. A
 
 ![Cassandra Pod](cassandra-pod.png)
 
-In Kubernetes, each Cassandra pod is composed of a number of containers. The first container run in any Cassandra pod is the `server-config-init` initContainer. It handles rendering out configurations on a per pod basis with input from the `CassandraDatacenter` custom resource. Then the main, application containers are started. The Cassandra pod always includes two application containers - `cassandra` and `server-system-logger`. The `cassandra` container does not immediately launch Cassandra. Instead the [Management API for Apache Cassandra](https://github.com/datastax/management-api-for-apache-cassandra) is started first. This boots a REST API for lifecycle and operations tasks to be requested by `cass-operator`. For instance all nodes in the cluster may be scheduled and start their management APIs before the operator starts triggering the bootstrap for nodes. The `server-system-logger` container's sole purpose is to `tail` Cassandra's logs at `/var/log/cassandra/system.log`.
+In Kubernetes, each Cassandra pod is composed of a number of containers. The first container run in any Cassandra pod is the `server-config-init` initContainer. It handles rendering out configurations on a per pod basis with input from the `CassandraDatacenter` custom resource. Then the main, application containers are started. 
+
+The Cassandra pod always includes two application containers - `cassandra` and `server-system-logger`. The `cassandra` container does not immediately launch Cassandra. Instead, the [Management API for Apache Cassandra](https://github.com/datastax/management-api-for-apache-cassandra) is started first. This boots a REST API for lifecycle and operations tasks to be requested by `cass-operator`. 
+
+For instance, all nodes in the cluster may be scheduled and start their management APIs before the operator starts triggering the bootstrap for nodes. The `server-system-logger` container's sole purpose is to `tail` Cassandra's logs at `/var/log/cassandra/system.log`.
 
 ## Next steps
 

@@ -308,6 +308,12 @@ kubectl exec -it k8ssandra-dc1-default-sts-0 -n k8ssandra -c cassandra -- cqlsh 
 
 Success! You’ve successfully restored your lost data in just a few commands.
 
-## Next
+## Next steps
 
-Learn how to use the [Reaper web interface]({{< relref "/tasks/repair/" >}}) to perform Cassandra anti-entropy repairs.
+An alternative to MinIO buckets is Amazon S3. See [Backup and restore Cassandra with Amazon S3]({{< relref "/tasks/backup-restore/amazon-s3" >}}).
+
+Also see the following reference topics:
+
+* [Medusa Operator Helm Chart]({{< relref "/reference/helm-charts/medusa-operator" >}})
+* [Backup Helm Chart]({{< relref "/reference/helm-charts/backup" >}})
+* [Restore Helm Chart]({{< relref "/reference/helm-charts/restore" >}})

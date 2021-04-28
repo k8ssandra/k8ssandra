@@ -7,7 +7,7 @@ description: K8ssandra deploys Reaper to enable anti-entropy repair operations o
 
 Reaper for Apache Cassandra&reg; is deployed by a K8ssandra install, which includes the Reaper Operator [Helm chart]({{< relref "/reference/helm-charts/reaper-operator/" >}}).
 
-If you haven't already installed K8ssandra, see the [quickstarts]({{< relref "/quickstarts/" >}}) and [install]({{< relref "/install" >}}) topics.
+If you haven't already installed K8ssandra, see the [install]({{< relref "/install" >}}) topics.
 
 ## Introduction
 

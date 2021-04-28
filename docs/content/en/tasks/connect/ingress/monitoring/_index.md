@@ -103,7 +103,7 @@ With the ingress routes configured and deployed to Kubernetes, we can access the
     Note the Kubernetes logo to the right of the table indicating that it was
     provisioned via a Kubernetes custom resource.
 
-## Next
+## Next steps
 
 Feel free to explore the other [Traefik ingress]({{< relref "/tasks/connect/ingress/" >}}) topics. 
 

@@ -138,5 +138,6 @@ Notice the repair job kicking off.
 
 ## Next steps
 
-Learn how to [scale your Cassandra cluster]({{< relref "scale" >}}) and understand the underlying considerations when scaling nodes up or down in Kubernetes.  
+Explore other K8ssandra [tasks]({{< relref "/tasks" >}}).
 
+See the [Reaper Operator Helm Chart]({{< relref "/reference/helm-charts/reaper-operator" >}}) reference.

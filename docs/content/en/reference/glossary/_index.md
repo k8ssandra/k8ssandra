@@ -165,3 +165,13 @@ In a database such as Cassandra, a collection of ordered (by name) columns fetch
 
 ### Traefik
 An HTTP reverse proxy and load balancer that makes deploying microservices easier. Traefik (pronounced "Traffic") integrates with your existing infrastructure components and configures itself automatically and dynamically. The K8ssandra GitHub code and documentation include Traefik ingress configuration examples. See the [Traefik ingress]({{< relref "/tasks/connect/ingress" >}}) topics.
+
+## Next steps
+
+* [FAQs]({{< relref "faqs" >}}): If you're new to K8ssandra, these FAQs are for you. 
+* [Install]({{< relref "install" >}}): K8ssandra install steps for local development or production-ready cloud platforms.
+* [Quickstarts]({{< relref "quickstarts" >}}): Post-install K8ssandra topics for developers or Site Reliability Engineers.
+* [Components]({{< relref "components" >}}): Dig in to each deployed component of the K8ssandra stack and see how it communicates with the others.
+* [Tasks]({{< relref "tasks" >}}): Need to get something done? Check out the Tasks topics for a helpful collection of outcome-based solutions.
+* [Reference]({{< relref "reference" >}}): Explore the K8ssandra configuration interface (Helm charts).
+

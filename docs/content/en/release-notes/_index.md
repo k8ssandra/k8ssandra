@@ -106,8 +106,8 @@ Your feedback and contributions are welcome! To contribute, fork the [K8ssandra 
 
 To submit documentation comments or edits, see [Contribution guidelines]({{< relref "contribute" >}}).
 
-## Next
+## Next steps
 
 Read the K8ssandra [FAQs]({{< relref "faqs" >}}) - for starters, how to pronounce "K8ssandra." 
 
-If you're impatient, jump right in with our **[Quick start]({{< relref "quickstarts" >}})**.
+If you're impatient, jump right in with the K8ssandra [install]({{< relref "install" >}}) steps.
