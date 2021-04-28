@@ -14,3 +14,4 @@ When cutting a new release of the parent `k8ssandra` chart update the `unrelease
 ## unreleased
 
 * [ENHANCEMENT] #560 Add the ability to attach additional PVs for medusa backups
+* [BUGFIX] #678 Backup fails after a restore
