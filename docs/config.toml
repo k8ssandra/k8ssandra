@@ -187,7 +187,7 @@ enable = false
 #   desc = "Chat with other project developers"
 [[params.links.developer]]
 	name = "Discord"
-	url = "https://groups.google.com/g/k8ssandra-developers"
+	url = "https://discord.gg/y4s64xC9"
 	icon = "fab fa-discord"
 [[params.links.developer]]
 	name ="Twitter"
