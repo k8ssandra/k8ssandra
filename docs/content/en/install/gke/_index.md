@@ -18,6 +18,10 @@ Also available in followup topics are post-install steps and role-based consider
 
 This topic covers provisioning and installing the following infrastructure resources.
 
+* 1x Google Compute Network (Virtual Private Cloud, or VPC)
+* TODOx Subnet
+* TODOx Router
+* TODOx Compute Router NAT
 * 1x _Regional_ GKE cluster with instances spread across multiple Availability Zones.
 * 1x Node Pool
   * 6x Kubernetes workers
@@ -26,6 +30,7 @@ This topic covers provisioning and installing the following infrastructure resou
 * 2x Load Balancers
 * 3x 2TB PD-SSD Volumes (provisioned automatically during installation of K8ssandra)
 * 1x Google Cloud Storage bucket for backups
+* 1x Google Storage Bucket IAM member
 
 On this infrastructure the K8ssandra installation will consist of the following workloads.
 
@@ -203,10 +208,6 @@ Created and switched to workspace "my-workspace"!
 You're now on a new, empty workspace. Workspaces isolate their state,
 so if you run "terraform plan" Terraform will not see any existing state
 for this configuration.
-```
-
-```bash
-terraform workspace select my-workspace
 ```
 
 With the workspace configured we now instruct terraform to `plan` the required changes to our infrastructure (in this case creation).
@@ -458,8 +459,6 @@ Do you really want to destroy all resources in workspace "my-workspace"?
   Enter a value: yes
 
 # Output omitted for brevity
-
-Releasing state lock. This may take a few moments...
 
 Destroy complete! Resources: 26 destroyed.
 ```
