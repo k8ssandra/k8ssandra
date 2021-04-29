@@ -333,7 +333,7 @@ terraform destroy
 ```console
 # Output omitted for brevity
 
-Plan: 0 to add, 0 to change, 26 to destroy.
+Plan: 0 to add, 0 to change, 48 to destroy.
 
 Do you really want to destroy all resources in workspace "my-workspace"?
   Terraform will destroy all your managed infrastructure, as shown above.
@@ -343,7 +343,7 @@ Do you really want to destroy all resources in workspace "my-workspace"?
 
 # Output omitted for brevity
 
-Destroy complete! Resources: 41 destroyed.
+Destroy complete! Resources: 48 destroyed.
 ```
 
 ## Next steps
