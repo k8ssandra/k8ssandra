@@ -251,7 +251,7 @@ TODO push service account credentials to k8s secret
 
 Here is a reference Helm `values.yaml` file with configuration options for running K8ssandra in GKE.
 
-{{< readfilerel file="gke.values.yaml"  highlight="yaml" >}}
+{{< readfilerel file="eks.values.yaml"  highlight="yaml" >}}
 
 {{% alert title="Important" color="primary" %}}
 Take note of the comments in this file. If you have changed the name of your secret, are deploying in a different region, or have tweaked any other values it is imperative that you update this file before proceeding.
