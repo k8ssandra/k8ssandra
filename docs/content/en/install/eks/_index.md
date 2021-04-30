@@ -17,21 +17,19 @@ Also available in followup topics are post-install steps and role-based consider
 This guide will cover provisioning and installing the following infrastructure resources.
 
 * 1x Virtual Private Cloud
-* TODOx Subnets
-* TODOx Security Groups (& Rules)
+* 10x Subnets
+* 3x Security Groups (& Rules)
 * 1x NAT Gateway
 * 1x Internet Gateway
-* TODOx Elastic IP
-* TODOx Route Table
-* TODOx Route Table Association
+* 3x Elastic IP
+* 6x Route Table
+* 4x Route Table Association
 * 1x EKS cluster with instances spread across multiple Availability Zones.
 * 1x EKS Node Group
   * 6x Kubernetes workers
     * 8 vCPUs
     * 64 GB RAM
-* TODOx Load Balancers
-  * TODOx Backend services
-* x 2TB PD-SSD Volumes (provisioned automatically during installation of K8ssandra)
+* 3x 2TB EBS Volumes (provisioned automatically during installation of K8ssandra)
 * 1x Amazon S3 bucket for K8ssandra Medusa backups
 
 On this infrastructure the K8ssandra installation will consist of the following workloads.
@@ -170,6 +168,12 @@ Terraform will perform the following actions:
 # Output reduced for brevity
 
 Plan: 48 to add, 0 to change, 0 to destroy.
+
+Changes to Outputs:
+  + bucket_id        = (known after apply)
+  + cluster_Endpoint = (known after apply)
+  + cluster_name     = (known after apply)
+  + cluster_version  = "1.19"
 ```
 
 After planning we tell terraform to `apply` the plan. This command kicks off the actual provisioning of resources for this deployment.
@@ -185,6 +189,12 @@ terraform apply
 
 Plan: 48 to add, 0 to change, 0 to destroy.
 
+Changes to Outputs:
+  + bucket_id        = (known after apply)
+  + cluster_Endpoint = (known after apply)
+  + cluster_name     = (known after apply)
+  + cluster_version  = "1.19"
+
 Do you want to perform these actions in workspace "my-workspace"?
   Terraform will perform the actions described above.
   Only 'yes' will be accepted to approve.
@@ -194,23 +204,20 @@ Do you want to perform these actions in workspace "my-workspace"?
 # Output reduced for brevity
 
 Apply complete! Resources: 48 added, 0 changed, 0 destroyed.
+
+Outputs:
+
+bucket_id = "prod-k8ssandra-s3-bucket"
+cluster_Endpoint = "https://....us-east-1.eks.amazonaws.com"
+cluster_name = "prod-k8ssandra-eks-cluster"
+cluster_version = "1.19"
 ```
 
-With the EKS cluster deployed you may now continue with [installing K8ssandra](#install-k8ssandra). The next section covers the manual provisioning of resources which Terraform has handled for you.
+With the EKS cluster deployed you may now continue with [installing K8ssandra](#install-k8ssandra).
 
-## Retrieve `kubeconfig`
+## Validate Kubernetes Cluster Connectivity
 
-After provisioning the EKS cluster we must request a copy of the `kubeconfig`. This provides the `kubectl` command with all connection information including TLS certificates and connection information for Kube API requests.
-
-```console
-aws eks --region us-east-1 update-kubeconfig --name prod-k8ssandra-eks-cluster
-```
-
-**Output**:
-
-```console
-Added new context arn:aws:eks:us-east-1:337811753388:cluster/prod-k8ssandra-eks-cluster to /home/bradfordcp/.kube/config
-```
+After provisioning the EKS cluster with `terraform apply` the local Kubeconfig will automatically be updated with the appropriate entries. Let's test this connectivity with `kubectl`.
 
 ```console
 kubectl cluster-info

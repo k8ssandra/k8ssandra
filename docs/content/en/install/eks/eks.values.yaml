@@ -5,12 +5,13 @@ cassandra:
   # Configuration for the /var/lib/cassandra mount point
   cassandraLibDirVolume:
     # AWS provides this storage class on EKS clusters out of the box. Note we
-    # are using `standard-rwo` here as it has `volumeBindingMode:
-    # WaitForFirstConsumer` which is important during scheduling.
-    storageClass: standard-rwo
+    # are using `gps` here as it has `volumeBindingMode: WaitForFirstConsumer`
+    # which is important during scheduling.
+    storageClass: gp2
 
     # The recommended live data size is 1 - 1.5 TB. A 2 TB volume supports this
-    # much data along with room for compactions.
+    # much data along with room for compactions. Consider increasing this value
+    # as the number of provisioned IOPs is directly related to the volume size.
     size: 2048Gi
 
   heap:
