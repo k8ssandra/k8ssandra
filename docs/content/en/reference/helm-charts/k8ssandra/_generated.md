@@ -1,6 +1,6 @@
 
 
-![Version: 1.0.5](https://img.shields.io/badge/Version-1.0.5-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)
+![Version: 1.2.0-SNAPSHOT](https://img.shields.io/badge/Version-1.2.0--SNAPSHOT-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)
 
 ## Maintainers
 
@@ -17,9 +17,9 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| file://../cass-operator | cass-operator | 0.29.0 |
+| file://../cass-operator | cass-operator | 0.29.1 |
 | file://../k8ssandra-common | k8ssandra-common | 0.28.1 |
-| file://../medusa-operator | medusa-operator | 0.28.0 |
+| file://../medusa-operator | medusa-operator | 0.29.0 |
 | file://../reaper-operator | reaper-operator | 0.30.0 |
 | https://prometheus-community.github.io/helm-charts | kube-prometheus-stack | 12.11.3 |
 
@@ -27,8 +27,9 @@
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
+| cassandra.enabled | bool | `true` | Enables installation of Cassandra cluster. Set to false if you only wish to install operators. |
 | cassandra.version | string | `"3.11.10"` | The Cassandra version to use. The supported versions include the following:    - 3.11.7    - 3.11.8    - 3.11.9    - 3.11.10    - 4.0.0 |
-| cassandra.versionImageMap | object | `{"3.11.10":"datastax/cassandra-mgmtapi-3_11_10:v0.1.23","3.11.7":"datastax/cassandra-mgmtapi-3_11_7:v0.1.23","3.11.8":"datastax/cassandra-mgmtapi-3_11_8:v0.1.23","3.11.9":"datastax/cassandra-mgmtapi-3_11_9:v0.1.23","4.0.0":"datastax/cassandra-mgmtapi-4_0_0:v0.1.23"}` | Specifies the image to use for a particular Cassandra version. Exercise care and caution with changing these values! cass-operator is not designed to work with arbitrary Cassandra images. It expects the cassandra container to be running management-api images. If you do want to change one of these mappings, the new value should be a management-api image. |
+| cassandra.versionImageMap | object | `{"3.11.10":"k8ssandra/cass-management-api:3.11.10-v0.1.24","3.11.7":"k8ssandra/cass-management-api:3.11.7-v0.1.24","3.11.8":"k8ssandra/cass-management-api:3.11.8-v0.1.24","3.11.9":"k8ssandra/cass-management-api:3.11.9-v0.1.24","4.0.0":"k8ssandra/cass-management-api:4.0.0-v0.1.24"}` | Specifies the image to use for a particular Cassandra version. Exercise care and caution with changing these values! cass-operator is not designed to work with arbitrary Cassandra images. It expects the cassandra container to be running management-api images. If you do want to change one of these mappings, the new value should be a management-api image. |
 | cassandra.clusterName | string | `""` | Overrides the default image mappings. This is intended for advanced use cases like development or testing. By default the Cassandra version has to be one that is in versionImageMap. Template rendering will fail if the version is not in the map. When you set the image directly, the version mapping check is skipped. Note that you are still constrained to the versions supported by cass-operator. image: -- Cluster name defaults to release name when not specified. |
 | cassandra.auth | object | `{"cacheUpdateIntervalMillis":3600000,"cacheValidityPeriodMillis":3600000,"enabled":true,"superuser":{"secret":"","username":""}}` | Authentication and authorization related settings. |
 | cassandra.auth.enabled | bool | `true` | Enables or disables authentication and authorization. This also enables/disables JMX authentication. Note that if Reaper is enabled JMX authentication will still be enabled even if auth is disabled here. This is because Reaper requires remote JMX access. |
@@ -38,6 +39,9 @@
 | cassandra.cassandraLibDirVolume.storageClass | string | `"standard"` | Storage class for persistent volume claims (PVCs) used by the underlying cassandra pods. Depending on your Kubernetes distribution this may be named "standard", "hostpath", or "localpath". Run `kubectl get storageclass` to identify what is available in your environment. |
 | cassandra.cassandraLibDirVolume.size | string | `"5Gi"` | Size of the provisioned persistent volume per node. It is recommended to keep the total amount of data per node to approximately 1 TB. With room for compactions this value should max out at ~2 TB. This recommendation is highly dependent on data model and compaction strategies in use. Consider testing with your data model to find an optimal value for your usecase. |
 | cassandra.allowMultipleNodesPerWorker | bool | `false` | Permits running multiple Cassandra pods per Kubernetes worker. If enabled resources.limits and resources.requests **must** be defined. |
+| cassandra.additionalSeeds | list | `[]` | Optional additional contact points for the Cassandra cluster to connect to. |
+| cassandra.loggingSidecar | object | `{"enabled":true}` | The management-api runs as pid 1 in the cassandra container which means its logs are sent to stdout and stderr. To make Cassandra's logs more accessible, cass-operator deploys the server-system-logger container. You can get the logs with `kubectl logs <cassandra pod> -c server-system-logger`. |
+| cassandra.loggingSidecar.enabled | bool | `true` | Set to false if you do not want to deploy the server-system-logger container. |
 | cassandra.heap | object | `{}` | Optional cluster-level heap configuration, can be overridden at `datacenters` level. Options are commented out for reference. Note that k8ssandra does not automatically apply default values for heap size. It instead defers to Cassandra's out of box defaults. |
 | cassandra.gc | object | `{"cms":{},"g1":{}}` | Optional cluster-level garbage collection configuration. It can be overridden at the datacenter level. |
 | cassandra.gc.cms | object | `{}` | GC configuration for the CMS collector. |
@@ -57,7 +61,7 @@
 | cassandra.ingress.host | string | `nil` | Optional hostname used to match requests. Warning: many native Cassandra clients, notably including cqlsh, initialize their connection by querying for the cluster's contactPoints, and thereafter communicate to the cluster using those names/IPs rather than whatever host was specified to the client. In order for clients to work correctly through ingress with a host filter, this means that the host filter must match the hostnames specified in the contactPoints. This value must be a DNS-resolvable hostname and not an IP address. To avoid this issue, leave this setting blank. |
 | cassandra.ingress.traefik.entrypoint | string | `"cassandra"` | Traefik entrypoint where traffic is sourced. See https://doc.traefik.io/traefik/routing/entrypoints/ |
 | stargate.enabled | bool | `true` | Enable Stargate resources as part of this release |
-| stargate.version | string | `"1.0.9"` | version of Stargate to deploy. This is used in conjunction with cassandra.version to select the Stargate container image. If stargate.image is set, this value has no effect. |
+| stargate.version | string | `"1.0.18"` | version of Stargate to deploy. This is used in conjunction with cassandra.version to select the Stargate container image. If stargate.image is set, this value has no effect. |
 | stargate.replicas | int | `1` | Number of Stargate instances to deploy. This value may be scaled independently of Cassandra cluster nodes. Each instance handles API and coordination tasks for inbound queries. |
 | stargate.image | string | `nil` | Sets the Stargate container image. This value must be compatible with the value provided for stargate.clusterVersion. If left blank (recommended), k8ssandra will derive an appropriate image based on cassandra.clusterVersion. |
 | stargate.imagePullPolicy | string | `"IfNotPresent"` | Sets the imagePullPolicy used by the Stargate pods |
@@ -82,7 +86,7 @@
 | reaper.autoschedule | bool | `false` | When enabled, Reaper automatically sets up repair schedules for all non-system keypsaces. Repear monitors the cluster so that as keyspaces are added or removed repair schedules will be added or removed respectively. |
 | reaper.enabled | bool | `true` | Enable Reaper resources as part of this release. Note that Reaper uses Cassandra's JMX APIs to perform repairs. When Reaper is enabled, Cassandra will also be configured to allow remote JMX access. JMX authentication will be configured in Cassandra with credentials only created for Reaper in order to limit access. |
 | reaper.image.repository | string | `"docker.io/thelastpickle/cassandra-reaper"` | Specifies the container repository for cassandra-reaper |
-| reaper.image.tag | string | `"2.2.1"` | Tag of an image within the specified repository |
+| reaper.image.tag | string | `"2.2.2"` | Tag of an image within the specified repository |
 | reaper.cassandraUser | object | `{"secret":"","username":""}` | Configures the Cassandra user used by Reaper when authentication is enabled. If neither cassandraUser.secret nor casandraUser.username are set, then a Cassandra user and a secret with the user's credentials will be created. The username will be reaper. The secret name will be of the form {clusterName}-reaper. The password will be a random 20 character password. If cassandraUser.secret is set, then the Cassandra user will be created from the contents of the secret. If cassandraUser.secret is not set and if cassandraUser.username is set, a secret will be generated using the specified username. The password will be generated as previously described. |
 | reaper.jmx | object | `{"secret":"","username":""}` | Configures JMX access to the Cassandra cluster. Reaper requires remote JMX access to perform repairs. The Cassandra cluster will be configured with remote JMX access enabled when Reaper is deployed. The JMX access will be configured to use authentication. If neither `jmx.secret` nor `jmx.username` are set, then a default user and secret with the user's credentials will be created. |
 | reaper.jmx.username | string | `""` | Username that Reaper will use for JMX access. If left blank a random, alphanumeric string will be generated. |
@@ -92,7 +96,7 @@
 | reaper.ingress.traefik.entrypoint | string | `"web"` | Traefik entrypoint where traffic is sourced. See https://doc.traefik.io/traefik/routing/entrypoints/ |
 | medusa.enabled | bool | `false` | Enable Medusa resources as part of this release. If enabled, `bucketName` and `storageSecret` **must** be defined. |
 | medusa.image.repository | string | `"docker.io/k8ssandra/medusa"` | Specifies the container repository for Medusa |
-| medusa.image.tag | string | `"0.9.0"` | Tag of an image within the specified repository |
+| medusa.image.tag | string | `"0.10.0"` | Tag of an image within the specified repository |
 | medusa.image.pullPolicy | string | `"IfNotPresent"` | The image pull policy |
 | medusa.cassandraUser | object | `{"secret":"","username":""}` | Configures the Cassandra user used by Medusa when authentication is enabled. If neither `cassandraUser.secret` nor `casandraUser.username` are set, then a Cassandra user and a secret will be created. The username will be medusa. The secret name will be of the form {clusterName}-medusa. The password will be a random 20 character password. If `cassandraUser.secret` is set, then the Cassandra user will be created from the contents of the secret. If `cassandraUser.secret` is not set and if `cassandraUser.username` is set, a secret will be generated using the specified username. The password will be generated as previously described. |
 | medusa.multiTenant | bool | `false` | Enables usage of a bucket across multiple clusters. |
@@ -102,7 +106,7 @@
 | medusa.storageSecret | string | `"medusa-bucket-key"` | Name of the Kubernetes `Secret` that stores the key file for the storage provider's API |
 | monitoring.grafana.provision_dashboards | bool | `true` | Enables the creation of configmaps containing Grafana dashboards. If leveraging the kube-prometheus-stack subchart this value should be `true`. See https://helm.sh/docs/chart_template_guide/subcharts_and_globals/ for background on subcharts. |
 | monitoring.prometheus.provision_service_monitors | bool | `true` | Enables the creation of Prometheus Operator ServiceMonitor custom resources. If you are not using the kube-prometheus-stack subchart or do not have the ServiceMonitor CRD installed on your cluster, set this value to `false`. |
-| cleaner | object | `{"image":"k8ssandra/k8ssandra-cleaner:618b8ff9d368"}` | The cleaner is a pre-delete hook that that ensures objects with finalizers get deleted. For example, cass-operator sets a finalizer on the CassandraDatacenter. Kubernetes blocks deletion of an object until all of its finalizers are cleared. In the case of the CassandraDatacenter object, cass-operator removes the finalizer. The problem is that there are no ordering guarantees with helm uninstall which means that the cass-operator deployment could be deleted before the CassandraDatacenter. The cleaner ensures that the CassandraDatacenter is deleted before cass-operator. |
+| cleaner | object | `{"image":"k8ssandra/k8ssandra-cleaner:e6c3702701ca"}` | The cleaner is a pre-delete hook that that ensures objects with finalizers get deleted. For example, cass-operator sets a finalizer on the CassandraDatacenter. Kubernetes blocks deletion of an object until all of its finalizers are cleared. In the case of the CassandraDatacenter object, cass-operator removes the finalizer. The problem is that there are no ordering guarantees with helm uninstall which means that the cass-operator deployment could be deleted before the CassandraDatacenter. The cleaner ensures that the CassandraDatacenter is deleted before cass-operator. |
 | cass-operator.enabled | bool | `true` | Enables the cass-operator as part of this release. If this setting is disabled no Cassandra resources will be deployed. |
 | reaper-operator.enabled | bool | `true` | Enables the reaper-operator as part of this release. If this setting is disabled no repair resources will be deployed. |
 | kube-prometheus-stack.enabled | bool | `true` | Controls whether the kube-prometheus-stack chart is used at all. Disabling this parameter prevents all monitoring components from being installed. |
@@ -128,7 +132,7 @@
 | kube-prometheus-stack.prometheus.ingress.enabled | bool | `false` | Enable templating of ingress resources for external prometheus traffic |
 | kube-prometheus-stack.prometheus.ingress.paths | list | `[]` | Path-based routing rules, `/prometheus` is possible if the appropriate changes are made to `prometheusSpec` |
 | kube-prometheus-stack.prometheus.serviceMonitor.selfMonitor | bool | `false` |  |
-| kube-prometheus-stack.grafana.enabled | bool | `true` | Provisions an instance of Grafana and wires it up with a DataSource relreferencing this Prometheus installation |
+| kube-prometheus-stack.grafana.enabled | bool | `true` | Provisions an instance of Grafana and wires it up with a DataSource referencing this Prometheus installation |
 | kube-prometheus-stack.grafana.ingress.enabled | bool | `false` | Generates ingress resources for the Grafana instance |
 | kube-prometheus-stack.grafana.ingress.path | string | `nil` | Path-based routing rules, '/grafana' is possible if appropriate changes are made to `grafana.ini` |
 | kube-prometheus-stack.grafana.adminUser | string | `"admin"` | Username for accessing the provisioned Grafana instance |

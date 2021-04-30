@@ -13,11 +13,11 @@ cd "$(dirname "$0")/.."
 for directory in charts/*; do
   if [[ -d "$directory" ]]; then
     chartName="$(basename ${directory})"
-    mkdir -p "docs/content/en/docs/reference/${chartName}"
+    mkdir -p "docs/content/en/reference/helm-charts/${chartName}"
     (
       set -x
       helm-docs -c "${directory}" -s file
-      helm-docs -c "${directory}" -s file -t ../../docs/content/en/docs/reference/_generated.md.gotmpl -o "../../docs/content/en/docs/reference/${chartName}/_generated.md"
+      helm-docs -c "${directory}" -s file -t ../../docs/content/en/reference/helm-charts/_generated.md.gotmpl -o "../../docs/content/en/reference/helm-charts/${chartName}/_generated.md"
     )
   fi
 done
