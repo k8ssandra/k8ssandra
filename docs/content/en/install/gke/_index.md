@@ -411,13 +411,6 @@ Save the superuser name and the generated password for your environment. You wil
 [Quickstart for developers]({{< relref "/quickstarts/developer" >}}) or [Quickstart for Site Reliability Engineers]({{< relref "/quickstarts/site-reliability-engineer" >}}) post-install steps.
 {{% /alert %}}
 
-## Additional Configuration
-
-At this time there are a couple of manual post-installation steps to allow for external access to resources running within the GKE cluster.
-
-TODO create cluster services ingress to target
-TODO create ingress targeting services
-
 ## Cleanup Resources
 
 If this cluster is no longer needed you may optionally uninstall K8ssandra or delete all of the infrastructure.

@@ -167,7 +167,7 @@ Terraform will perform the following actions:
 
 # Output reduced for brevity
 
-Plan: 48 to add, 0 to change, 0 to destroy.
+Plan: 50 to add, 0 to change, 0 to destroy.
 
 Changes to Outputs:
   + bucket_id        = (known after apply)
@@ -187,7 +187,7 @@ terraform apply
 ```console
 # Output reduced for brevity
 
-Plan: 48 to add, 0 to change, 0 to destroy.
+Plan: 50 to add, 0 to change, 0 to destroy.
 
 Changes to Outputs:
   + bucket_id        = (known after apply)
@@ -203,7 +203,7 @@ Do you want to perform these actions in workspace "my-workspace"?
 
 # Output reduced for brevity
 
-Apply complete! Resources: 48 added, 0 changed, 0 destroyed.
+Apply complete! Resources: 50 added, 0 changed, 0 destroyed.
 
 Outputs:
 
@@ -249,10 +249,17 @@ WARNING: version difference between client (1.21) and server (1.19) exceeds the 
 With all of the infrastructure provisioned we can now focus on installing K8ssandra. This will require configuring a service account for the backup and restore service, creating a set of Helm variable overrides, and setting up EKS specific ingress configurations.
 
 ### Create Backup / Restore Service Account Secrets
-In order to allow for backup and restore operations, we must create a service account for the Medusa operator which handles coordinating the movement of data to and from Amazon S3 buckets. As part of the provisioning sections a service account was generated for this purposes. Here we will retrieve the authentication JSON file for this account and push it into Kubernetes as a secret.
+As part of deploying infrastructure with Terraform an IAM policy is created allowing the EKS cluster workers to access S3 for backup and restore operations. At this time as part of deploying Medusa we _must_ provide a secret for the pods to successfully get scheduled. In this case we will create an empty secret to bypass this limitation until [k8ssandra/k8ssandra#712](https://github.com/k8ssandra/k8ssandra/issues/712) is resolved.
 
-TODO retrieve service account credentials
-TODO push service account credentials to k8s secret
+```console
+kubectl create secret generic prod-k8ssandra-medusa-key
+```
+
+**Output**:
+
+```console
+secret/prod-k8ssandra-medusa-key created
+```
 
 ### Generate `eks.values.yaml`
 
@@ -310,13 +317,6 @@ To retrieve K8ssandra superuser credentials:
 {{% alert title="Tip" color="success" %}}
 Save the superuser name and password for use in the [Quickstarts]({{< relref "/quickstarts" >}}), if you decide to follow those steps.
 {{% /alert %}}
-
-## Additional Configuration
-
-At this time there are a couple of manual post-installation steps to allow for external access to resources running within the EKS cluster.
-
-* TODO create cluster services ingress to target
-* TODO create ingress targeting services
 
 ## Cleanup Resources
 
