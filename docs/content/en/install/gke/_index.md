@@ -19,9 +19,9 @@ Also available in followup topics are post-install steps and role-based consider
 This topic covers provisioning and installing the following infrastructure resources.
 
 * 1x Google Compute Network (Virtual Private Cloud, or VPC)
-* TODOx Subnet
-* TODOx Router
-* TODOx Compute Router NAT
+* 1x Subnet
+* 1x Router
+* 1x Compute Router NAT
 * 1x _Regional_ GKE cluster with instances spread across multiple Availability Zones.
 * 1x Node Pool
   * 6x Kubernetes workers
@@ -45,7 +45,7 @@ Feel free to update the parameters used during this guide to match your target d
 {{% alert title="Quotas" color="primary" %}}
 This installation slightly exceeds the default quotas provided within a new project. Consider requesting the following quota requests to allow for the provisioning of this installation.
 
-TODO identify quota limits that need to be updated
+* 6x Backend services
 {{% /alert %}}
 
 ## Terraform
