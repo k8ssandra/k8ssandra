@@ -242,9 +242,9 @@ kubectl get cassandrabackup backup1 -n k8ssandra -o jsonpath={.status.finishTime
 
 As long as this command doesn’t output a date and time, you know that the backup is still running. With the amount of data present and the fact that you’re using a locally accessible backend, this should complete quickly.
 
-Now relrefresh the MinIO UI and you should see some files in the `k8ssandra-medusa` bucket:
+Now refresh the MinIO UI and you should see some files in the `k8ssandra-medusa` bucket:
 
-![MinIO UI is relrefreshed and shows data](k8ssandra-minio-with-data.png)
+![MinIO UI is refreshed and shows data](k8ssandra-minio-with-data.png)
 
 In the MinIO UI, we now see an index folder, which is the Medusa backup index, and another folder that is specific to each Cassandra node in the cluster. In this example, there is only one node.
 
