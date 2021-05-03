@@ -5,9 +5,9 @@ cassandra:
   # Configuration for the /var/lib/cassandra mount point
   cassandraLibDirVolume:
     # GCP provides this storage class on GKE clusters out of the box. Note we
-    # are using `premium-rwo` here as it has `volumeBindingMode:
+    # are using `standard-rwo` here as it has `volumeBindingMode:
     # WaitForFirstConsumer` which is important during scheduling.
-    storageClass: premium-rwo
+    storageClass: standard-rwo
 
     # The recommended live data size is 1 - 1.5 TB. A 2 TB volume supports this
     # much data along with room for compactions.
