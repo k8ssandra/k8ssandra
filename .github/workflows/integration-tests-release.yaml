@@ -26,7 +26,7 @@ on:
 
 jobs:
   integration-tests:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
@@ -42,10 +42,25 @@ jobs:
           key: ${{ runner.os }}-k8ssandra-buildx
           restore-keys: |
             ${{ runner.os }}-k8ssandra-buildx
+
       - name: Set up Go 1.15
         uses: actions/setup-go@v1
         with:
           go-version: 1.15
+
+      - name: Install Helm
+        uses: azure/setup-helm@v1
+        with:
+          version: v3.5.3
+
+      - name: Create Kind Cluster
+        uses: helm/kind-action@v1.1.0
+        with: 
+          version: v0.10.0
+          node_image: kindest/node:v1.20.2
+          cluster_name: kind
+          config: tests/integration/kind/kind_config_3_workers.yaml
+
       - name: Install Dependencies
         run: |
           set -x
@@ -54,17 +69,6 @@ jobs:
           # install kubectl
           curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
           sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
-
-          # install kind
-          curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.10.0/kind-linux-amd64
-          chmod +x ./kind
-          sudo install -o root -g root -m 0755 ./kind /usr/local/bin/kind
-
-          # install jq
-          sudo apt-get install jq -y
-          
-          # install Helm
-          ./scripts/install-helm.sh
 
           # Update Helm dependencies
           ./scripts/update-helm-deps.sh
@@ -81,10 +85,8 @@ jobs:
           # Medusa on S3 requires a secret. Skip integration tests if the secret is absent.
           then
             echo "IT_CAN_RUN=yes" >> $GITHUB_ENV
-          else
-            echo "IT_CAN_RUN=no" >> $GITHUB_ENV
           fi
-
+#
       - name: Run Integration Tests
         if: ${{ env.IT_CAN_RUN == 'yes' }}
         env:
@@ -93,7 +95,7 @@ jobs:
         run: |
           # Set a valid name for the artifacts in case of failure
           echo "ARTIFACT_NAME=k8s-artifacts-${K8SSANDRA_CASSANDRA_VERSION}-$(echo $SCENARIO|tr '":/' '___')" >> $GITHUB_ENV
-          make kind-integ-test TESTS="$SCENARIO" GO_FLAGS="-v" CLUSTER_CLEANUP="success"
+          make integ-test TESTS="$SCENARIO" GO_FLAGS="-v" CLUSTER_CLEANUP="success"
 
       - name: Collect artifacts
         if: ${{ failure() }}
@@ -114,14 +116,13 @@ jobs:
         timeout-minutes: 10
   
   release:
+    # Release job should never run on forks and should only trigger on main pushes and published releases
     if: |
-      ${{ (( github.event_name == 'release' && github.event.action == 'published' ) 
-        || ( github.event_name == 'push' && github.ref == 'refs/heads/main' )) }}
+      ( github.event_name == 'release' && github.event.action == 'published' ) 
+        || ( github.event_name == 'push' && github.ref == 'refs/heads/main' && github.repository_owner == 'k8ssandra' )
+        
     runs-on: ubuntu-latest
     needs: integration-tests
-    env:
-      HELM_VERSION: 3.5.3
-      YQ_VERSION: v4.6.3
 
     steps:
       - name: Checkout
@@ -131,10 +132,14 @@ jobs:
         run: |
           echo "$GITHUB_WORKSPACE/bin" >> $GITHUB_PATH
 
+      - name: Install Helm
+        uses: azure/setup-helm@v1
+        with:
+          version: v3.5.3
+
       - name: Install and validate tool versions
         run: |
-          scripts/install-helm.sh $HELM_VERSION
-          scripts/install-yq.sh $YQ_VERSION
+          scripts/install-yq.sh v4.6.3
           helm version
           yq -V
 
@@ -170,39 +175,27 @@ jobs:
           done
         working-directory: build
 
-      - name: Check if Helm release is possible
-        run: |
-          if [[ -n "${{ secrets.GCP_PROJECT_ID }}" ]];
-          # Release requires a secret. Skip release steps if the secret is absent.
-          then
-            echo "CAN_RELEASE=yes" >> $GITHUB_ENV
-          fi
-
       # Helm Release
       - uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
-        if: ${{ env.CAN_RELEASE == 'yes' }}
         with:
           version: '290.0.1'
           project_id: ${{ secrets.GCP_PROJECT_ID }}
           service_account_key: ${{ secrets.GCP_SA_KEY }}
           export_default_credentials: true
-  
+
       - name: Download current index from Google Cloud
-        if: ${{ env.CAN_RELEASE == 'yes' }}
         env:
           GCP_HELM_BUCKET_NAME: ${{ secrets.GCP_HELM_BUCKET_NAME }}
         run: gsutil cp gs://$GCP_HELM_BUCKET_NAME/stable/index.yaml ./
         working-directory: build
-  
+
       - name: Regenerate Helm index
-        if: ${{ env.CAN_RELEASE == 'yes' }}
         env:
           GCP_HELM_BUCKET_NAME: ${{ secrets.GCP_HELM_BUCKET_NAME }}
         run: helm repo index . --merge index.yaml --url "https://$GCP_HELM_BUCKET_NAME/stable/"
         working-directory: build
-  
+
       - name: Upload packages and index
-        if: ${{ env.CAN_RELEASE == 'yes' }}
         env:
           GCP_HELM_BUCKET_NAME: ${{ secrets.GCP_HELM_BUCKET_NAME }}
         run: |
