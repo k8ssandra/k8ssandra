@@ -63,24 +63,23 @@ Select **1.14+** as a version.
 ### Install Git & GitHub
 If you don’t already have Git installed and have a GitHub account, use the references below to get those in-place.
 
-Reference the following to understand and install 
-**Git**.
+Reference the following to understand and install **Git**:
 * [Setup Guide](https://github.com/git-guides/install-git)
 * [Getting started with GitHub](https://github.com/join)
 
 
 ## Kubernetes environment
-A quick session (~10 minutes to complete) is provided below that will guide you through the various steps required to set up a running Kubernetes-based environment for K8ssandra. 
+A quick session (10 minutes to complete) is provided below that will guide you through the various steps required to set up a running Kubernetes-based environment for K8ssandra. 
 
 Once completed, return to this article and finish-up the rest of the activities.
 
-> [K8ssandra Getting Started](https://k8ssandra.io/docs/getting-started/)
+> [K8ssandra Quickstarts](https://docs.k8ssandra.io/quickstarts/)
 
 
 ## Checkpoint
 Before continuing on to next steps, you should have the following configured:
 
-    ✔ VS Code - or something similiar (IDE)
+    ✔ VS Code - or something similar (IDE)
     ✔ Go (the Golang binaries)
     ✔ Git (a version control system)
     ✔ GitHub account (for forking and contributing)
@@ -89,8 +88,6 @@ Before continuing on to next steps, you should have the following configured:
 
 ## Repository
 The K8ssandra GitHub repository resides [here](https://github.com/k8ssandra/k8ssandra).  
-
- 
 
 Once at the K8ssandra repository, click on the **Fork** button (top right corner of screen). This will fork the K8ssandra to your local repository.
 
@@ -107,7 +104,7 @@ The K8ssandra project has a few important folders of interest.
 
 * **Charts** - contains the Helm-based charts categorized by sub-chart.
 * **Docs** - contains the layouts, & content for the [k8ssandra.io](https://k8ssandra.io) site.  
-Checkout the docs readme for more detail.
+Checkout the docs README for more detail.
 * **Scripts** - contains a collection of useful scripts that developers can build upon or just use directory when working on K8ssandra. Also included are documentation scripts for K8ssandra docs management.
 * **Tests** - contains the set of unit, integration, and end-to-end testing for K8ssandra.
 
@@ -232,10 +229,9 @@ Now, using a pod-name returned, describe all the details.
 Now that you have a foundation for using K8ssandra, take a look at some other references to better understand what
  is available and where K8ssandra is headed.
 
-* [Architecture](https://k8ssandra.io/docs/architecture/)
-* [Helm Charts](https://k8ssandra.io/docs/reference/)
+* [Components](https://docs.k8ssandra.io/components/)
+* [Tasks](https://docs.k8ssandra.io/tasks/)
+* [Helm Charts](https://docs.k8ssandra.io/reference/helm-charts/)
 * [K8ssandra Blog](https://k8ssandra.io/blog/)
 * [Community](https://k8ssandra.io/community/)
-* [Roadmap](https://k8ssandra.io/docs/roadmap/)
-
-
+* [Roadmap](https://docs.k8ssandra.io/roadmap/)

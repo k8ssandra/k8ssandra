@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - main
+      - johnsmart-infoarch
     paths:
       - 'docs/**'
   workflow_dispatch:

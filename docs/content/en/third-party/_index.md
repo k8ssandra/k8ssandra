@@ -1,0 +1,35 @@
+
+---
+title: "K8ssandra third-party software licenses"
+linkTitle: "3rd-party licenses"
+weight: 8
+description: Third-party software licenses.
+---
+
+K8ssandra provides a production-ready platform for running Apache Cassandra&reg; on Kubernetes. This includes automation for operational tasks such as repairs, backup and restores, and monitoring.
+
+The K8ssandra software is licensed under the open-source [**Apache-2.0 license agreement**](https://github.com/k8ssandra/k8ssandra/blob/main/LICENSE).
+
+The following table lists the K8ssandra direct dependencies with 3rd-party software licenses:
+
+|Title                                                                |Version                                 |License                                                                                                                                                                                                                                                                                                                                                    |
+|---------------------------------------------------------------------|----------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+|apimachinery                                                         |2456ebdaba229616fab2161a615148884b46644b                                  |Apache-2.0; BSD-3-Clause                                                                                                                                                                                                                                                                                                                                                         |
+|cass-operator	                                                      |879074d346edfc7e03037a3c694dd52ee26cae8c	                                 |Apache-2.0                                                                                                                                                                                                                                                                                                                                                                    |
+|docsy                                                                |e67775a312f1f3ad32137423fe2b311a397f5293                                  |Multi-license: Apache-2.0 OR ISC; Apache-2.0; MIT; ISC                                                                                                                                                                                                                                                                                                                           |
+|ginkgo                                                               |f9457b013219486e50539bf7d8bc6a559ee8b3a6                                  |MIT                                                                                                                                                                                                                                                                                                                                                                           |
+|go                                                                   |e369490fb7db5f2d42bb0e8ee19b48378dee0ebf                                  |BSD-3-Clause; Multi-license: BSD-3-Clause OR GPL-2.0-only; Public-Domain                                                                                                                                                                                                                                                                                              |
+|gomega                                                               |3ed17884e444bb1e28aa146c2716580c2d681ec1                                  |MIT                                                                                                                                                                                                                                                                                                                                                                           |
+|reaper-operator                                                      |19d15e499171fe712aef3657be3d59b3044b57fa                                  |Apache-2.0                                                                                                                                                                                                                                                                                                                                                                    |
+|terratest                                                            |b13ada22754d4ec78aa0f3a838f9030071fee22b                                  |Apache-2.0; public-domain	                                                                                                                                                                                                                                                                                                                                                       |
+|yaml                                                                |9fc95527decd95bb9d28cc2eab08179b2d0f6971                                   |Multi-license: BSD-3-Clause OR MIT; BSD-3-Clause                                                                                                                                                                                                                                                                                                                                 |
+## Next steps
+
+* [FAQs]({{< relref "faqs" >}}): If you're new to K8ssandra, these FAQs are for you. 
+* [Install]({{< relref "install" >}}): K8ssandra install steps for local development or production-ready cloud platforms.
+* [Quickstarts]({{< relref "quickstarts" >}}): Post-install K8ssandra topics for developers or Site Reliability Engineers.
+* [Components]({{< relref "components" >}}): Dig in to each deployed component of the K8ssandra stack and see how it communicates with the others.
+* [Tasks]({{< relref "tasks" >}}): Need to get something done? Check out the Tasks topics for a helpful collection of outcome-based solutions.
+* [Reference]({{< relref "reference" >}}): Explore the K8ssandra configuration interface (Helm charts), the available options, and a Glossary.
+
+We encourage you to actively participate in the [K8ssandra community](https://k8ssandra.io/community/).

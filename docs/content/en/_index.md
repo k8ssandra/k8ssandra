@@ -1,111 +1,55 @@
 ---
-title: K8ssandra, Apache Cassandra on Kubernetes
-linkTitle: K8ssandra
+title: "K8ssandra Documentation"
+linkTitle: "Docs"
+no_list: true
+weight: 20
+menu:
+  main:
+    weight: 20
+  footer:
+    weight: 60
+description: "K8ssandra documentation: architecture, configuration, guided tasks"
+type: docs
 ---
 
-<div id="home-header" class="container-fluid">
-	<header class="row">
-		<div class="col">
-			<div class="container">
-				<nav class="navbar navbar-expand-lg">
-					<a class="navbar-brand" href="/"><img id="logo" src="/images/k8ssandra-stacked.svg" /><span class="sr-only">K8ssandra</span></a>
-					<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#home-navigation-collapsible" aria-controls="home-navigation-collapsible" aria-expanded="false" aria-label="Toggle navigation">
-						<i class="fas fa-bars"></i>
-					</button>
-					<div class="collapse navbar-collapse justify-content-end" id="home-navigation-collapsible">
-						<ul class="navbar-nav">
-							<li class="nav-item">
-								<a class="nav-link" href="/about/">About</a>
-							</li>
-							<li class="nav-item">
-								<a class="nav-link" href="/docs/">Documentation</a>
-							</li>
-							<li class="nav-item">
-								<a class="nav-link" href="/blog/">Blog</a>
-							</li>
-							<li class="nav-item">
-								<a class="nav-link" href="/community/">Community</a>
-							</li>
-						</ul>
-						<form class="form-inline my-2 my-lg-0">
-							<input type="search" class="form-control td-search-input" placeholder="&#xf002 Search this site…" aria-label="Search this site…" autocomplete="off">
-						</form>
-					</div>
-				</nav>
-				<div class="row">
-					<div id="hero" class="col text-align-center">
-						<div class="w-75 mx-auto text">
-							K8ssandra provides a production-ready platform for running Apache Cassandra® on Kubernetes. This includes automation for operational tasks such as repairs, backups, and monitoring.
-						</div>
-						<div class="mx-auto">
-							<a class="btn btn-lg btn-primary" href="{{< relref "docs" >}}">
-								Learn More
-							</a>
-							<a class="btn btn-lg btn-secondary" href="https://github.com/k8ssandra/k8ssandra/releases">
-								Download
-							</a>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-	</header>
-</div>
+The K8ssandra documentation covers everything from install details, deployed components, configuration references, and guided outcome-based tasks. Check out the sections at left based on your needs and be sure to leave us a <a class="github-button" href="https://github.com/k8ssandra/k8ssandra" data-icon="octicon-star" aria-label="Star k8ssandra/k8ssandra on GitHub">star</a> on Github!
 
-<div class="container">
-	<main role="main" class="td-main">
-		<div class="row">
-			<section class="col">
-				<div class="card text-center">
-					<img src="/images/icons/helm.svg" />
-					<h2>Helm</h2>
-					<div class="description">
-						Install the entire K8ssandra stack in <em>seconds</em> with Helm.<br /><br />
-					</div>
-					<div class="action">
-						<a href="{{<relref "getting-started" >}}">Learn More</a>
-					</div>
-				</div>
-			</section>
-			<section class="col">
-				<div class="card text-center">
-					<img src="/images/icons/github.svg" />
-					<h2>Contributions Welcome</h2>
-					<div class="description">
-						We follow the <a href="https://github.com/k8ssandra/k8ssandra/pulls">Pull Request</a> contributions workflow on <strong>GitHub</strong>. New users are always welcome!
-					</div>
-					<div class="action">
-						<a href="https://github.com/k8ssandra/k8ssandra/pulls" target="_blank">Contribute</a>
-					</div>
-				</div>
-			</section>
-			<section class="col">
-				<div class="card text-center">
-					<img src="/images/icons/twitter.svg" />
-					<h2>Follow Us on Twitter</h2>
-					<div class="description">
-						for announcements of latest features and releases.<br /><br />
-					</div>
-					<div class="action">
-						<a href="https://twitter.com/k8ssandra">Follow @k8ssandra</a>
-					</div>
-				</div>
-			</section>
-		</div>
-		<div class="row">
-			<div class="col col-md-10 mx-auto quote">
-				<blockquote>
-					“New Relic is highly supportive of standardizing community-supported tools for operating and managing Cassandra clusters. We are excited about the K8ssandra launch and look forward to actively contributing and collaborating with the broader open source community. This is a great starting point for new and existing users to run Cassandra in Kubernetes and benefit from direct access to the best available Cassandra expertise and practices,”
-				</blockquote>
-				<cite>
-				<strong>Tom Offermann</strong>, Lead Software Engineer at New Relic
-				</cite>
-			</div>
-		</div>
-		<div class="row">
-			<div class="col text-center">
-				<script id="asciicast-392352" src="https://asciinema.org/a/392352.js" async></script>
-			</div>
-		</div>
-	</main>
-</div>
+{{% alert title="Tip" color="primary" %}}
+If you're impatient, jump right in with our **[install]({{< relref "install" >}})** topics!
+{{% /alert %}}
+
+## What is K8ssandra?
+
+K8ssandra is a cloud native distribution of Apache Cassandra® (Cassandra) meant to run on Kubernetes. Accompanying Cassandra is a suite of tools to ease and automate operational tasks. This includes metrics, data anti-entropy services, and backup tooling. As part of K8ssandra's installation process all of these components are installed and wired together freeing your teams from having to perform the tedious plumbing of components.
+
+Cassandra may be deployed in a number of environments. This includes on bare metal hosts, virtual machines, and within container platforms. Each deployment type has its pros and cons, but in all cases it is **_essential_** that automation be leveraged to ensure that all node are configured homogeneously and without failure.
+
+K8ssandra focuses on deploying Cassandra within Kubernetes. Kubernetes was chosen as it allows for the consumption of a common, versioned, set of APIs and tooling across multiple cloud platforms and environments.
+
+## Why do I want K8ssandra?
+
+Apache Cassandra is _the_ NoSQL database for applications that require resilience and scalability. Unfortunately this comes with the same burdens as other distributed systems. There are multiple nodes replicating data all the time. Understanding the health of these systems requires advanced tooling and knowledge of the constituent parts. Users could spend time investigating and building out solutions to ensure operational stability of their Cassandra clusters. K8ssandra looks to provide those integrations from the start in a simple easy to deploy package.
+
+## What is K8ssandra good for?
+
+K8ssandra is a great fit for operators looking for easy to install and manage Cassandra clusters. Even if your environment currently does not run Cassandra on Kubernetes we believe that simple installation and upkeep will win you over. Consider some of the integrations listed below:
+
+* All Cassandra containers are preinstalled with:
+  * [Metrics Collector for Apache Cassandra](https://github.com/datastax/metric-collector-for-apache-cassandra)
+  * [Management API for Apache Cassandra](https://github.com/datastax/management-api-for-apache-cassandra)
+* Cass Operator to support management tasks in Kubernetes. 
+* Prometheus Operator `ServiceMonitor` custom resources complete with metric labeling.
+* Grafana Operator `Dashboard` custom resources configured with metrics exposed by Prometheus.
+* Reaper to repair Cassandra data.
+* Medusa for backup/restore operations.
+
+## Next steps
+
+* [FAQs]({{< relref "faqs" >}}): If you're new to K8ssandra, these FAQs are for you. 
+* [Install]({{< relref "install" >}}): K8ssandra install steps for local development or production-ready cloud platforms.
+* [Quickstarts]({{< relref "quickstarts" >}}): Post-install K8ssandra topics for developers or Site Reliability Engineers.
+* [Components]({{< relref "components" >}}): Dig in to each deployed component of the K8ssandra stack and see how it communicates with the others.
+* [Tasks]({{< relref "tasks" >}}): Need to get something done? Check out the Tasks topics for a helpful collection of outcome-based solutions.
+* [Reference]({{< relref "reference" >}}): Explore the K8ssandra configuration interface (Helm charts), the available options, and a Glossary.
+
+We encourage you to actively participate in the [K8ssandra community](https://k8ssandra.io/community/).

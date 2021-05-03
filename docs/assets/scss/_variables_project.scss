@@ -4,17 +4,18 @@ Add styles or override variables from the theme here.
 
 */
 
-.td-home #home-header{
-  background-image: url(/images/lines.svg), linear-gradient(180deg, #283B52 0%, #005895 100%);
-  background-repeat: no-repeat;
-  background-size: 100%;
-  
+header {
+  background: #0097ff;
+}
+
+#home-header {
   .navbar {
     margin-top: 0px;
+    padding: 1.875rem 0;
   }
-  
+
   .nav-link {
-    color: #FFFFFF;
+    color: #ffffff;
     margin-top: 30px;
     margin-right: 40px;
     font-size: 21px;
@@ -31,6 +32,7 @@ Add styles or override variables from the theme here.
 
   .navbar-brand {
     padding-top: 32px;
+    margin-right: 0;
   }
 
   #logo {
@@ -39,149 +41,39 @@ Add styles or override variables from the theme here.
     left: 156px;
     top: 32px;
   }
-
-  .td-search-input {
-    background: #FFFFFF;
-    border-radius: 20px;
-    width: 220px;
-  }
-
-  .td-search-input::placeholder {
-    color: #596C84;
-  }
-}
-
-.td-home {
-  #hero {
-    text-align: center;
-    color: #FFFFFF;
-
-    .text {
-      font-size: 24px;
-      font-style: normal;
-      font-weight: 500;
-      line-height: 34px;
-      letter-spacing: 0em;
-      padding-top: 50px;
-      padding-bottom: 50px;
-    }
-
-    padding-bottom: 100px;
-
-    .btn-lg {
-      border-radius: 6px;
-      border: none;
-      font-style: normal;
-      font-weight: 500;
-      font-size: 20px;
-      line-height: 130%;
-      padding: 15px 35px;
-      margin: 12px;
-    }
-
-    .btn-primary {
-      background: #FFFFFF;
-      color: #153E71;
-    }
-
-    .btn-secondary {
-      background: #0097FF;
-      color: #FFFFFF;
-    }
-  }
-
-  .td-main {
-    position: relative;
-    top: -25px;
-
-    .card {
-      border-radius: 0;
-      border: none;
-      box-shadow: 0px 14px 32px rgba(0, 0, 0, 0.08);
-      display: block;
-
-      img {
-        margin-top: 31px;
-        margin-bottom: 25px;
-      }
-
-      h2 {
-        font-style: normal;
-        font-weight: 500;
-        font-size: 24px;
-        line-height: 150%;
-
-        color: #153E71;
-      }
-
-      .description {
-        padding: 0px 32px;
-      }
-
-      .action {
-        padding: 15px 35px;
-        margin-bottom: 32px;
-
-        font-style: normal;
-        font-weight: 500;
-        font-size: 20px;
-        line-height: 130%;
-        color: #008AE9;
-      }
-    }
-
-    .quote {
-      margin-top: 80px;
-      background: #FAFAFA;
-      border-top: 12px solid #153E71;
-      padding: 76px 96px;
-
-      blockquote {
-        font-size: 18px;
-        font-style: normal;
-        font-weight: 500;
-        line-height: 27px;
-        letter-spacing: 0em;
-        text-align: left;
-        color: #596C84;
-      }
-
-      cite {
-        font-size: 24px;
-        font-style: normal;
-        font-weight: 400;
-        line-height: 36px;
-        letter-spacing: 0em;
-        text-align: left;
-        color: #153E71;
-
-        strong {
-          font-weight: bold;
-        }
-      }
-    }
-  }
 }
 
 #site-nav {
-  background-image: url(/images/lines.svg), linear-gradient(180deg, #283B52 0%, #005895 100%);
+  // background-image: url(/images/lines.svg), linear-gradient(180deg, #283B52 0%, #005895 100%);
   background-repeat: no-repeat;
   background-size: 100%;
   position: relative;
-
+  max-width: 1270px;
+  margin: 0 auto;
+  padding-left: 30px;
+  padding-right: 30px;
+  justify-content: space-between;
+  @media (min-width: 1440px) {
+    padding-left: 0;
+    padding-right: 0;
+  }
   .nav-link {
-    color: rgba(255, 255, 255, 1.0);
-  }
-
-  .td-search-input {
-    background: #FFFFFF;
-    border-radius: 20px;
-    width: 220px;
-    color: #596C84;
-  }
-
-  .td-search-input::placeholder {
-    color: #596C84;
+    font-family: usual, sans-serif;
+    font-size: 12px;
+    color: #02070d;
+    font-weight: normal;
+    line-height: 24px;
+    text-decoration: none;
+    @media (min-width: 1200px) {
+      font-size: 16px;
+    }
+    &:hover,
+    &.active {
+      @media (min-width: 1024px) {
+        color: white;
+        background-color: #02070d;
+      }
+    }
   }
 }
 
@@ -191,23 +83,23 @@ Add styles or override variables from the theme here.
 
 .td-main {
   .td-sidebar {
-    padding-top: 12px;
+    padding: 12px 25px 0;
   }
 
   main {
-    padding-top: 12px !important;
+    padding-top: 30px !important;
   }
 
   #td-sidebar-menu {
     position: relative;
     top: 0px;
     height: auto;
-  
-    .td-sidebar-nav { 
+
+    .td-sidebar-nav {
       max-height: none;
     }
   }
-  
+
   .td-toc {
     position: relative;
     top: auto;
@@ -216,8 +108,8 @@ Add styles or override variables from the theme here.
 }
 
 #site-footer {
-  background: #153E71;
-  color: #FFFFFF;
+  background: #0097ff;
+  color: #02070d;
   font-style: normal;
   font-weight: 500;
   font-size: 14px;
@@ -225,9 +117,15 @@ Add styles or override variables from the theme here.
   padding-top: 27px;
   padding-bottom: 27px;
   min-height: auto;
-
   p {
     margin-bottom: 0px;
+  }
+
+  .footer-brand {
+    padding: 20px;
+    svg {
+      height: 77px;
+    }
   }
 }
 
@@ -236,12 +134,12 @@ Add styles or override variables from the theme here.
     background: none;
   }
 
-  background-image: url(/images/lines.svg), linear-gradient(180deg, #283B52 0%, #005895 100%);
+  background-image: url(/images/lines.svg),
+    linear-gradient(180deg, #283b52 0%, #005895 100%);
   background-repeat: no-repeat;
   background-size: 100%;
   position: relative;
-
-  color: #FFFFFF;
+  color: #ffffff;
 
   .container {
     padding-top: 128px;
@@ -266,5 +164,44 @@ Add styles or override variables from the theme here.
       margin-left: 0px;
       margin-right: 0px;
     }
+  }
+}
+
+#site-footer,
+.td-main .td-sidebar,
+#site-nav {
+  .td-search-input {
+    background: #ffffff;
+    background-image: url(/images/search-solid.svg);
+    background-repeat: no-repeat;
+    background-size: 16px;
+    background-position: 94% center;
+    border-radius: 0;
+    color: #02070d;
+    font-size: 14px;
+    max-width: none;
+    height: 40px;
+    padding: 9px 30px 9px 15px;
+    box-shadow: 0;
+    border: 0;
+  }
+
+  .navbar-search .td-search-input {
+    width:216px;
+    max-width: 260px;
+  }
+
+  .td-search-input::placeholder {
+    color: #6f7a87;
+  }
+
+  .td-search-input.form-control:focus {
+    border-color: 2px solid #0097ff;
+    border-radius: 3px;
+  }
+}
+#site-nav {
+  .navbar-brand {
+    margin-right: 0;
   }
 }

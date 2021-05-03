@@ -1,4 +1,4 @@
-baseURL = "https://k8ssandra.io/"
+baseURL = "https://docs.k8ssandra.io/"
 title = "K8ssandra, Apache Cassandra on Kubernetes"
 
 enableRobotsTXT = true
@@ -83,6 +83,7 @@ weight = 1
 [params]
 copyright = "The K8ssandra Team and Contributors."
 privacy_policy = "https://www.datastax.com/legal/datastax-website-privacy-policy"
+code_of_conduct = "https://k8ssandra.io/community/code-of-conduct"
 
 # First one is picked as the Twitter card image if not set on page.
 # images = ["images/project-illustration.png"]
@@ -103,7 +104,7 @@ version = "0.0"
 
 # A link to latest version of the docs. Used in the "version-banner" partial to
 # point people to the main doc site.
-url_latest_version = "https://k8ssandra.io"
+url_latest_version = "https://docs.k8ssandra.io"
 
 # Repository configuration (URLs for in-page links to opening issues and suggesting changes)
 github_repo = "https://github.com/k8ssandra/k8ssandra"
@@ -134,7 +135,7 @@ sidebar_menu_compact = false
 #  Set to true to disable breadcrumb navigation.
 breadcrumb_disable = false
 #  Set to true to hide the sidebar search box (the top nav search box will still be displayed if search is enabled)
-sidebar_search_disable = false
+sidebar_search_disable = true
 #  Set to false if you don't want to display a logo (/assets/icons/logo.svg) in the top nav bar
 navbar_logo = true
 # Set to true to disable the About link in the site footer
@@ -185,11 +186,15 @@ enable = false
 # 	icon = "fab fa-slack"
 #   desc = "Chat with other project developers"
 [[params.links.developer]]
-	name = "Developer mailing list"
-	url = "https://groups.google.com/g/k8ssandra-developers"
-	icon = "fa fa-envelope"
-  desc = "Discuss development issues around the project"
-
+	name = "Discord"
+	url = "https://discord.gg/y4s64xC9"
+	icon = "fab fa-discord"
+[[params.links.developer]]
+	name ="Twitter"
+	url = "https://twitter.com/k8ssandra"
+	icon = "fab fa-twitter"
+  desc = "Follow us on Twitter to get the latest news!"
+  
 [sitemap]
 changefreq = "daily"
 
@@ -215,39 +220,7 @@ name = "production"
 # URL = "azblob://$web"
 
 # You can use a "prefix=" query parameter to target a subfolder of the bucket:
-URL = "gs://k8ssandra.io"
-
-# Optionally, you can include or exclude specific files.
-# See https://godoc.org/github.com/gobwas/glob#Glob for the glob pattern syntax.
-# If non-empty, the pattern is matched against the local path.
-# All paths are matched against in their filepath.ToSlash form.
-# If exclude is non-empty, and a local or remote file's path matches it, that file is not synced.
-# If include is non-empty, and a local or remote file's path does not match it, that file is not synced.
-# As a result, local files that don't pass the include/exclude filters are not uploaded to remote,
-# and remote files that don't pass the include/exclude filters are not deleted.
-# include = "**.html" # would only include files with ".html" suffix
-# exclude = "**.{jpg, png}" # would exclude files with ".jpg" or ".png" suffix
-
-
-# [[deployment.matchers]] configure behavior for files that match the Pattern.
-# Samples:
-
-[[deployment.targets]]
-# An arbitrary name for this target.
-name = "preview"
-# The Go Cloud Development Kit URL to deploy to. Examples:
-# GCS; see https://gocloud.dev/howto/blob/#gcs
-# URL = "gs://<Bucket Name>"
-
-# S3; see https://gocloud.dev/howto/blob/#s3
-# For S3-compatible endpoints, see https://gocloud.dev/howto/blob/#s3-compatible
-# URL = "s3://<Bucket Name>?region=<AWS region>"
-
-# Azure Blob Storage; see https://gocloud.dev/howto/blob/#azure
-# URL = "azblob://$web"
-
-# You can use a "prefix=" query parameter to target a subfolder of the bucket:
-URL = "gs://preview.k8ssandra.io"
+URL = "gs://docs.k8ssandra.io"
 
 # Optionally, you can include or exclude specific files.
 # See https://godoc.org/github.com/gobwas/glob#Glob for the glob pattern syntax.
@@ -278,3 +251,64 @@ gzip = false
 [[deployment.matchers]]
 pattern = "^.+\\.(html|xml|json)$"
 gzip = true
+
+#  Adding Menu to match K8ssandra.io wp site
+[[menu.main]]
+    name = "About"
+    weight = 10
+    url = "https://k8ssandra.io/about"
+
+[[menu.main]]
+  name = "Get Started"
+  weight = 15
+  url = "https://k8ssandra.io/get-started"
+
+[[menu.main]]
+  name = "Community"
+  weight = 60
+  url = "https://k8ssandra.io/community"
+
+[[menu.main]]
+  name = "Forum"
+  weight = 70
+  url = "https://forum.k8ssandra.io/"
+
+[[menu.main]]
+  name = "Blog"
+  weight = 80
+  url = "https://k8ssandra.io/blog"
+
+[[menu.main]]
+  name = "Events"
+  weight = 90
+  url = "https://k8ssandra.io/blog/category/events/"
+
+[[menu.footer]]
+    name = "About"
+    weight = 10
+    url = "https://k8ssandra.io/about"
+
+[[menu.footer]]
+  name = "Get Started"
+  weight = 15
+  url = "https://k8ssandra.io/get-started"
+
+[[menu.footer]]
+  name = "Community"
+  weight = 60
+  url = "https://k8ssandra.io/community"
+
+[[menu.second]]
+  name = "Forum"
+  weight = 70
+  url = "https://forum.k8ssandra.io/"
+
+[[menu.second]]
+  name = "Blog"
+  weight = 80
+  url = "https://k8ssandra.io/blog"
+
+[[menu.second]]
+  name = "Events"
+  weight = 90
+  url = "https://k8ssandra.io/blog/category/events/"
