@@ -1,7 +1,7 @@
 ---
 title: "Amazon Elastic Kubernetes Service"
 linkTitle: "Amazon EKS"
-weight: 3
+weight: 2
 description: >
   Complete **production** ready environment of K8ssandra on Amazon Elastic Kubernetes Service (EKS).
 ---
