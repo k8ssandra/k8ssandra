@@ -56,11 +56,16 @@ and restore of K8ssandra clusters.
 ## Next Steps
 
 If you are looking to run K8ssandra in your [Kubernetes](https://kubernetes.io/) 
-environment check out the [Quickstarts](https://docs.k8ssandra.io/quickstarts/). We are
-always looking for contributions to the docs, helm charts, and underlying
-components.
+environment check out the [Getting Started guide](https://k8ssandra.io/get-started/), with follow-up details for 
+[developers](https://docs.k8ssandra.io/quickstarts/developer/) and 
+[site reliability engineers](https://docs.k8ssandra.io/quickstarts/site-reliability-engineer/). 
 
-If you are a **developer**, and need a [quick start](https://github.com/k8ssandra/k8ssandra/blob/main/dev-quick-start.md) introduction to:
+We are always looking for contributions to the docs, helm charts, and underlying
+components. Check out the [code contribution guide](https://k8ssandra.io/community/code-contribution-guidelines/) 
+and [docs contribution guide](https://k8ssandra.io/docs/contribution-guidelines/)
+
+If you are a **developer** interested in working with the K8ssandra code, here is a 
+[quick start](https://github.com/k8ssandra/k8ssandra/blob/main/dev-quick-start.md) introduction to:
 * Getting up and running with a basic IDE environment
 * Deploying to a local docker-based cluster environment (kind)
 * Understanding the K8ssandra project structure
