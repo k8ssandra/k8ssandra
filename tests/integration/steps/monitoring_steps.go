@@ -47,5 +47,6 @@ func CheckGrafanaIsReachable(t *testing.T) {
 }
 
 func CountMonitoredItems(t *testing.T, namespace string) int {
-	return CountPodsWithLabel(t, namespace, "app.kubernetes.io/managed-by=cass-operator") + CountPodsWithLabel(t, namespace, fmt.Sprintf("app=%s-%s-stargate", releaseName, datacenterName))
+	return CountPodsWithLabels(t, namespace, map[string]string{"app.kubernetes.io/managed-by": "cass-operator"}) +
+		CountPodsWithLabels(t, namespace, map[string]string{"app": releaseName + "-" + datacenterName + "-stargate"})
 }

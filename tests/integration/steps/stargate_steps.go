@@ -76,6 +76,7 @@ func GenerateStargateAuthToken(t *testing.T, namespace string) string {
 	stargateResponse := response.Body()
 	var genericJson map[string]interface{}
 	json.Unmarshal(stargateResponse, &genericJson)
+	g(t).Expect(genericJson["authToken"]).ToNot(BeNil(), fmt.Sprintf("Expected response to have authToken property: %#v", genericJson))
 	return genericJson["authToken"].(string)
 }
 

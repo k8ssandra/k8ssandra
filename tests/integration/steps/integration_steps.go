@@ -4,25 +4,25 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"log"
 	"os"
 	"os/exec"
 	"path/filepath"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 	"strconv"
 	"strings"
 	"testing"
 	"time"
 
+	cassdcapi "github.com/datastax/cass-operator/operator/pkg/apis/cassandra/v1beta1"
 	"github.com/gruntwork-io/terratest/modules/helm"
 	"github.com/gruntwork-io/terratest/modules/k8s"
 	. "github.com/onsi/gomega"
+	appsv1 "k8s.io/api/apps/v1"
 	v1 "k8s.io/api/core/v1"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
-	"sigs.k8s.io/controller-runtime/pkg/client"
-
-	cassdcapi "github.com/datastax/cass-operator/operator/pkg/apis/cassandra/v1beta1"
 )
 
 const (
@@ -113,8 +113,9 @@ func deployCluster(t *testing.T, namespace, customValues string, helmValues map[
 	}
 	g(t).Expect(err).To(BeNil(), "Failed installing k8ssandra with Helm")
 	// Wait for cass-operator pod to be ready
+	labels := map[string]string{"app.kubernetes.io/name": "cass-operator"}
 	g(t).Eventually(func() bool {
-		return PodWithLabelIsReady(t, namespace, "app.kubernetes.io/name=cass-operator")
+		return PodWithLabelsIsReady(t, namespace, labels)
 	}, retryTimeout, retryInterval).Should(BeTrue())
 
 	// Wait for CassandraDatacenter to be udpating..
@@ -148,6 +149,53 @@ func WaitForCassDcToBeUpdating(t *testing.T, namespace string) {
 	waitForCassDcToBe(t, namespace, cassdcapi.ProgressUpdating)
 }
 
+// RestartStargate scales the Stargate deployment down to zero and then scales it
+// back up to the prior number of replicas. This function blocks until the
+// deployment is ready.
+func RestartStargate(t *testing.T, releaseName, dcName, namespace string) {
+	key := types.NamespacedName{Namespace: namespace, Name: releaseName + "-" + dcName + "-stargate"}
+	retryInterval := 5 * time.Second
+	scaleDownTimeout := 2 * time.Minute
+	scaleUpTimeout := 5 * time.Minute
+
+	g(t).Expect(WaitForDeploymentReady(t, key, retryInterval, scaleDownTimeout)).To(Succeed(), "failed waiting for Stargate to scale down")
+
+	deployment := &appsv1.Deployment{}
+	err := testClient.Get(context.Background(), key, deployment);
+	g(t).Expect(err).To(BeNil(), fmt.Sprintf("failed to get Stargate deployment: %s", err))
+
+	originalCount := *deployment.Spec.Replicas
+
+	patch := client.MergeFromWithOptions(deployment.DeepCopy(), client.MergeFromWithOptimisticLock{})
+	count := int32(0)
+	deployment.Spec.Replicas = &count
+
+	err = testClient.Patch(context.Background(), deployment, patch)
+	g(t).Expect(err).To(BeNil(), fmt.Sprintf("failed to scale down Stargate: %s", err))
+
+
+	patch = client.MergeFromWithOptions(deployment.DeepCopy(), client.MergeFromWithOptimisticLock{})
+	deployment.Spec.Replicas = &originalCount
+
+	err = testClient.Patch(context.Background(), deployment, patch)
+	g(t).Expect(err).To(BeNil(), fmt.Sprintf("failed to scale up Stargate: %s", err))
+
+	g(t).Expect(WaitForDeploymentReady(t, key, retryInterval, scaleUpTimeout)).To(Succeed(), "failed waiting for Stargate to scale up")
+}
+
+// WaitForDeploymentReady Polls the deployment status until the Deployment is
+// ready. Readiness is defined as .Status.Replicas == .Status.ReadyReplicas.
+func WaitForDeploymentReady(t *testing.T, key types.NamespacedName, retryInterval, timeout time.Duration) bool {
+	return g(t).Eventually(func() bool {
+		deployment := &appsv1.Deployment{}
+		if err := testClient.Get(context.Background(), key, deployment); err != nil {
+			t.Logf("failed to get deployment %s: %s", key, err)
+			return false
+		}
+		return deployment.Status.Replicas == deployment.Status.ReadyReplicas
+	}, timeout, retryInterval).Should(BeTrue())
+}
+
 func WaitForCassDcToBeReady(t *testing.T, namespace string) {
 	waitForCassDcToBe(t, namespace, cassdcapi.ProgressReady)
 }
@@ -158,13 +206,10 @@ func waitForCassDcToBe(t *testing.T, namespace string, progress cassdcapi.Progre
 		Namespace: namespace,
 	}
 
-	k8sClient, err := CassDcClient()
-	g(t).Expect(err).To(BeNil(), "Couldn't instantiate controller-runtime client with cassdc API")
-
 	g(t).Eventually(func() bool {
 		log.Printf("Checking cassandradatacenter %s state in namespace %s...", cassdcKey.Name, cassdcKey.Namespace)
 		cassdc := &cassdcapi.CassandraDatacenter{}
-		err := k8sClient.Get(context.Background(), cassdcKey, cassdc)
+		err := testClient.Get(context.Background(), cassdcKey, cassdc)
 		if err != nil {
 			t.Logf("Failed getting cassdc: %s", err.Error())
 			return false
@@ -174,12 +219,12 @@ func waitForCassDcToBe(t *testing.T, namespace string, progress cassdcapi.Progre
 	}, retryTimeout, retryInterval).Should(BeTrue())
 }
 
-func resourceWithLabelIsPresent(t *testing.T, namespace, resourceType, label string) bool {
+func resourceWithLabelIsPresent(t *testing.T, namespace, resourceType string, labels map[string]string) bool {
 	switch resourceType {
 	case "pod":
-		return CountPodsWithLabel(t, namespace, label) == 1
+		return CountPodsWithLabels(t, namespace, labels) == 1
 	case "service":
-		services := getServicesWithLabel(t, namespace, label)
+		services := getServicesWithLabels(t, namespace, labels)
 		if len(services.Items) == 1 {
 			return true
 		}
@@ -190,40 +235,40 @@ func resourceWithLabelIsPresent(t *testing.T, namespace, resourceType, label str
 	return false
 }
 
-func getPodsWithLabel(t *testing.T, namespace, label string) *v1.PodList {
-	clientset, _ := k8s.GetKubernetesClientFromOptionsE(t, getKubectlOptions(namespace))
-	pods, err := clientset.CoreV1().Pods(namespace).List(context.Background(), metav1.ListOptions{LabelSelector: label})
-	g(t).Expect(err).To(BeNil(), fmt.Sprintf("Failed listing pods with label %s", label))
+func getPodsWithLabels(t *testing.T, namespace string, labels map[string]string) *v1.PodList {
+	pods := &v1.PodList{}
+	err := testClient.List(context.Background(), pods, client.InNamespace(namespace), client.MatchingLabels(labels))
+	g(t).Expect(err).To(BeNil(), fmt.Sprintf("Failed listing pods with labels %s", labels))
 	return pods
 }
 
-func getServicesWithLabel(t *testing.T, namespace, label string) *v1.ServiceList {
-	clientset, _ := k8s.GetKubernetesClientFromOptionsE(t, getKubectlOptions(namespace))
-	services, err := clientset.CoreV1().Services(namespace).List(context.Background(), metav1.ListOptions{LabelSelector: label})
-	g(t).Expect(err).To(BeNil(), fmt.Sprintf("Failed listing services with label %s", label))
+func getServicesWithLabels(t *testing.T, namespace string, labels map[string]string) *v1.ServiceList {
+	services := &v1.ServiceList{}
+	err := testClient.List(context.Background(), services, client.InNamespace(namespace), client.MatchingLabels(labels))
+	g(t).Expect(err).To(BeNil(), fmt.Sprintf("Failed listing services with labels %s", labels))
 	return services
 }
 
-func CountPodsWithLabel(t *testing.T, namespace, label string) int {
-	pods := getPodsWithLabel(t, namespace, label)
+func CountPodsWithLabels(t *testing.T, namespace string, labels map[string]string) int {
+	pods := getPodsWithLabels(t, namespace, labels)
 	return len(pods.Items)
 }
 
-func PodWithLabelIsReady(t *testing.T, namespace string, label string) bool {
+func PodWithLabelsIsReady(t *testing.T, namespace string, label map[string]string) bool {
 	g(t).Eventually(func() bool {
 		return resourceWithLabelIsPresent(t, namespace, "pod", label)
 	}, retryTimeout, retryInterval).Should(BeTrue())
 
-	pods := getPodsWithLabel(t, namespace, label)
+	pods := getPodsWithLabels(t, namespace, label)
 	if len(pods.Items) == 1 {
 		return strings.ToLower(string(pods.Items[0].Status.Phase)) == "running"
 	}
 	return false
 }
 
-func WaitForPodWithLabelToBeReady(t *testing.T, namespace, label string) {
+func WaitForPodWithLabelsToBeReady(t *testing.T, namespace string, labels map[string]string) {
 	g(t).Eventually(func() bool {
-		return PodWithLabelIsReady(t, namespace, label)
+		return PodWithLabelsIsReady(t, namespace, labels)
 	}, retryTimeout, retryInterval).Should(BeTrue())
 }
 
@@ -231,11 +276,13 @@ func DeployMinioAndCreateBucket(t *testing.T, bucketName string) {
 	helmOptions := &helm.Options{
 		KubectlOptions: getKubectlOptions("default"),
 	}
-	helm.RunHelmCommandAndGetOutputE(t, helmOptions, "repo", "add", "minio", "https://helm.min.io/")
 
-	helm.RunHelmCommandAndGetOutputE(t, helmOptions, "install",
-		"--set", fmt.Sprintf("accessKey=minio_key,secretKey=minio_secret,defaultBucket.enabled=true,defaultBucket.name=%s", bucketName),
-		"minio", "minio/minio", "-n", "minio", "--create-namespace")
+	_, err := helm.RunHelmCommandAndGetOutputE(t, helmOptions, "repo", "add", "minio", "https://helm.min.io/")
+	g(t).Expect(err).To(BeNil(), fmt.Sprintf("failed to add minio helm repo: %s", err))
+
+	values := fmt.Sprintf("accessKey=minio_key,secretKey=minio_secret,defaultBucket.enabled=true,defaultBucket.name=%s", bucketName)
+	_, err = helm.RunHelmCommandAndGetOutputE(t, helmOptions, "install", "--set", values, "minio", "minio/minio", "-n", "minio", "--create-namespace");
+	g(t).Expect(err).To(BeNil(), fmt.Sprintf("failed to install the minio helm chart: %s", err))
 }
 
 func MinioServiceName(t *testing.T) string {
@@ -246,16 +293,20 @@ func MinioServiceName(t *testing.T) string {
 	return minioService
 }
 
-func CheckResourceWithLabelIsPresent(t *testing.T, namespace, resourceType, label string) {
+func CheckResourceWithLabelsIsPresent(t *testing.T, namespace, resourceType string, labels map[string]string) {
 	g(t).Eventually(func() bool {
-		return resourceWithLabelIsPresent(t, namespace, resourceType, label)
+		return resourceWithLabelIsPresent(t, namespace, resourceType, labels)
 	}, retryTimeout, retryInterval).Should(BeTrue())
 }
 
 func checkResourcePresence(t *testing.T, namespace, resourceType, name string) {
 	switch resourceType {
 	case "service":
-		k8s.GetService(t, getKubectlOptions(namespace), name)
+		svc := &v1.Service{}
+		key := types.NamespacedName{Namespace: namespace, Name: name}
+
+		err := testClient.Get(context.Background(), key, svc)
+		g(t).Expect(err).To(BeNil(), "failed to get service %s: %s", key, err)
 	default:
 		t.Logf("Unsupported resource type: %s", resourceType)
 		t.FailNow()
@@ -275,7 +326,7 @@ func CheckK8sClusterIsReachable(t *testing.T) {
 }
 
 func CheckNamespaceWasCreated(t *testing.T, namespace string) {
-	g(t).Expect(namespaceIsAbsent(t, namespace)).To(BeFalse())
+	g(t).Expect(namespaceIsAbsent(namespace)).To(BeFalse())
 }
 
 func CheckSecretIsPresent(t *testing.T, namespace, secret string) {
@@ -285,19 +336,42 @@ func CheckSecretIsPresent(t *testing.T, namespace, secret string) {
 
 func CheckNamespaceIsAbsent(t *testing.T, namespace string) {
 	g(t).Eventually(func() bool {
-		return namespaceIsAbsent(t, namespace) || namespaceIsTerminating(t, namespace)
+		absent, err := namespaceIsAbsent(namespace)
+		if err == nil {
+			if absent {
+				return true
+			}
+		} else {
+			t.Logf("failed to check if namespace %s is absent: %s", namespace, err)
+		}
+
+		terminating, err := namespaceIsTerminating(namespace)
+		if err == nil {
+			if terminating {
+				return true
+			}
+		} else {
+			t.Logf("failed to check if namespace %s is terminating: %s", namespace, err)
+		}
+
+		return false
 	}, retryTimeout, retryInterval).Should(BeTrue())
 }
 
-func namespaceIsAbsent(t *testing.T, namespace string) bool {
-	namespaceObject, _ := k8s.GetNamespaceE(t, getKubectlOptions("default"), namespace)
-	return namespaceObject.Name != namespace
+func namespaceIsAbsent(namespace string) (bool, error) {
+	if _, err := GetNamespace(namespace); err == nil || !apierrors.IsNotFound(err) {
+		return false, err
+	} else {
+		return true, nil
+	}
 }
 
-func namespaceIsTerminating(t *testing.T, namespace string) bool {
-	namespaceObject, _ := k8s.GetNamespaceE(t, getKubectlOptions("default"), namespace)
-
-	return namespaceObject.Status.Phase == v1.NamespaceTerminating
+func namespaceIsTerminating(namespace string) (bool, error) {
+	if ns, err := GetNamespace(namespace); err == nil {
+		return ns.Status.Phase == v1.NamespaceTerminating, nil
+	} else {
+		return false, err
+	}
 }
 
 func CreateNamespace(t *testing.T) string {
@@ -309,7 +383,10 @@ func CreateNamespace(t *testing.T) string {
 			return os.Getenv("K8SSANDRA_NS")
 		}
 	}()
-	if namespaceIsAbsent(t, namespace) {
+	absent, err := namespaceIsAbsent(namespace)
+	g(t).Expect(err).To(BeNil(), fmt.Sprintf("failed to check if namespace %s is absent: %s", namespace, err))
+
+	if absent {
 		log.Println(fmt.Sprintf("Creating namespace %s", namespace))
 		k8s.CreateNamespace(t, getKubectlOptions("default"), namespace)
 	} else {
@@ -318,15 +395,9 @@ func CreateNamespace(t *testing.T) string {
 	return namespace
 }
 
-func getCassDcClient(t *testing.T) client.Client {
-	client, err := CassDcClient()
-	g(t).Expect(err).To(BeNil(), "Couldn't instantiate controller-runtime client with cassdc API")
-	return client
-}
-
-func getCassandraDatacenter(t *testing.T, key types.NamespacedName) (*cassdcapi.CassandraDatacenter, error) {
+func getCassandraDatacenter(key types.NamespacedName) (*cassdcapi.CassandraDatacenter, error) {
 	cassdc := &cassdcapi.CassandraDatacenter{}
-	err := getCassDcClient(t).Get(context.Background(), key, cassdc)
+	err := testClient.Get(context.Background(), key, cassdc)
 	return cassdc, err
 }
 
@@ -334,7 +405,7 @@ func WaitForCassandraDatacenterDeletion(t *testing.T, namespace string) {
 	dcKey := types.NamespacedName{Namespace: namespace, Name: datacenterName}
 	// Wait cassandradatacenter object to be actually deleted
 	g(t).Eventually(func() bool {
-		_, err := getCassandraDatacenter(t, dcKey)
+		_, err := getCassandraDatacenter(dcKey)
 		return apierrors.IsNotFound(err)
 	}, retryTimeout, retryInterval).Should(BeTrue(), "cassandradatacenter object wasn't deleted within timeout")
 }
@@ -347,11 +418,15 @@ func UninstallTraefikHelmRelease(t *testing.T, traefikNamespace string) {
 }
 
 func UninstallMinioHelmRelease(t *testing.T, minioNamespace string) {
-	if !namespaceIsAbsent(t, minioNamespace) {
-		err := RunShellCommand(exec.Command("helm", "uninstall", "minio", "-n", minioNamespace))
-		if err != nil {
-			t.Logf("Failed uninstalling Minio Helm release: %s", err.Error())
+	if absent, err := namespaceIsAbsent(minioNamespace); err == nil {
+		if absent {
+			err := RunShellCommand(exec.Command("helm", "uninstall", "minio", "-n", minioNamespace))
+			if err != nil {
+				t.Logf("Failed uninstalling Minio Helm release: %s", err.Error())
+			}
 		}
+	} else {
+		t.Logf("failed to check if minio namespace %s is absent: %s", minioNamespace, err)
 	}
 }
 
@@ -362,12 +437,26 @@ func UninstallK8ssandraHelmRelease(t *testing.T, namespace string) {
 	}
 }
 
+func GetNamespace(name string) (*v1.Namespace, error) {
+	ns := &v1.Namespace{
+		ObjectMeta: metav1.ObjectMeta{
+			Name: name,
+		},
+	}
+	if err := testClient.Get(context.Background(), types.NamespacedName{Namespace: name, Name: name}, ns); err == nil {
+		return ns, nil
+	} else {
+		return nil, err
+	}
+}
+
 func DeleteNamespace(t *testing.T, namespace string) {
-	if !namespaceIsAbsent(t, namespace) {
-		err := k8s.DeleteNamespaceE(t, getKubectlOptions("default"), namespace)
-		if err != nil {
-			t.Logf("Failed deleting namespace %s: %s", namespace, err.Error())
+	if ns, err := GetNamespace(namespace); err == nil {
+		if err = testClient.Delete(context.Background(), ns); err != nil {
+			t.Logf("failed to delete namespace %s: %s", namespace, err)
 		}
+	} else if apierrors.IsNotFound(err) {
+		t.Logf("failed to delete namespace %s. namespace could not be retrieved: %s", namespace, err)
 	}
 }
 
@@ -418,7 +507,7 @@ func CheckKeyspaceExists(t *testing.T, namespace, keyspace string) {
 }
 
 func WaitForReaperPod(t *testing.T, namespace string) {
-	WaitForPodWithLabelToBeReady(t, namespace, "app.kubernetes.io/managed-by=reaper-operator")
+	WaitForPodWithLabelsToBeReady(t, namespace, map[string]string{"app.kubernetes.io/managed-by": "reaper-operator"})
 }
 
 func CheckRowCountInTable(t *testing.T, nbRows int, namespace, tableName, keyspaceName string) {
