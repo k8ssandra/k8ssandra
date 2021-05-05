@@ -343,3 +343,19 @@ func testStargate(t *testing.T, namespace string) {
 	log.Println(fmt.Sprintf("Created document with id: %s", documentId))
 	CheckStargateDocumentExists(t, token, docNamespace, documentId)
 }
+
+func TestUpgradeScenario(t *testing.T) {
+	namespace := initializeCluster(t)
+	// Install first production version
+	InstallK8ssandraFromRepo(t, namespace, "1.0.0")
+	checkResourcePresenceForReaper(t, namespace)
+	waitForReaperPod(t, namespace)
+
+	// Upgrade to current version
+	DeployClusterWithValues(t, namespace, "", "cluster_with_reaper.yaml", 1, true)
+	checkResourcePresenceForReaper(t, namespace)
+	waitForReaperPod(t, namespace)
+	checkReaperRegistered(t, namespace)
+
+	cleanupCluster(t, namespace, t.Failed())
+}

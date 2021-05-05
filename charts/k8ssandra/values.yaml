@@ -618,6 +618,11 @@ monitoring:
 cleaner:
   image: k8ssandra/k8ssandra-cleaner:e6c3702701ca
 
+# k8ssandra-client provides CLI utilities, but also certain functions such as 
+# upgradecrds that allow modifying the running instances
+client:
+  image: burmanm/k8ssandra-client:latest
+
 cass-operator:
   # -- Enables the cass-operator as part of this release. If this setting is
   # disabled no Cassandra resources will be deployed.

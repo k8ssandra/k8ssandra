@@ -460,6 +460,38 @@ func DeleteNamespace(t *testing.T, namespace string) {
 	}
 }
 
+func InstallK8ssandraFromRepo(t *testing.T, namespace, version string) {
+	kubectlOptions := getKubectlOptions(namespace)
+	// Namespace doesn't exist yet, let's create it
+	options := &helm.Options{KubectlOptions: kubectlOptions}
+
+	t.Logf("Installing version %s from helm.k8ssandra.io", version)
+
+	_, err := helm.RunHelmCommandAndGetOutputE(t, options, "repo", "add", "k8ssandra", "https://helm.k8ssandra.io/stable")
+	g(t).Expect(err).To(BeNil())
+	_, err = helm.RunHelmCommandAndGetOutputE(t, options, "repo", "update")
+	g(t).Expect(err).To(BeNil())
+
+	helmOptions := &helm.Options{
+		KubectlOptions: k8s.NewKubectlOptions("", "", namespace),
+		Version:        version,
+	}
+
+	err = helm.InstallE(t, helmOptions, "k8ssandra/k8ssandra", releaseName)
+	g(t).Expect(err).To(BeNil())
+
+	// Wait for cass-operator pod to be ready
+	g(t).Eventually(func() bool {
+		return PodWithLabelIsReady(t, namespace, "app.kubernetes.io/name=cass-operator")
+	}, retryTimeout, retryInterval).Should(BeTrue())
+
+	// Wait for CassandraDatacenter to be udpating..
+	WaitForCassDcToBeUpdating(t, namespace)
+
+	// Wait for CassandraDatacenter to be ready..
+	WaitForCassDcToBeReady(t, namespace)
+}
+
 func InstallTraefik(t *testing.T) {
 	kubectlOptions := getKubectlOptions("default")
 	_, err := k8s.GetNamespaceE(t, kubectlOptions, "traefik")
