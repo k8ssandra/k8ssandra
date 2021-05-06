@@ -40,3 +40,9 @@ for restore in $(kubectl get CassandraRestore -n $k8ssandra_ns|grep -v "NAME"|cu
     kubectl describe CassandraBackup/$restore -n $k8ssandra_ns > $ARTIFACTS_DIR/restore_${restore}_describe.txt
     kubectl get CassandraBackup/$restore -o yaml -n $k8ssandra_ns > $ARTIFACTS_DIR/restore_${restore}.txt
 done
+
+# Extract Reaper logs
+for pod in $(kubectl get pods -n $k8ssandra_ns|grep reaper|cut -d' ' -f1); do
+    echo "Storing reaper log artifacts for pod $pod..."
+    kubectl logs pod/$pod -n $k8ssandra_ns > $ARTIFACTS_DIR/${pod}.log || echo "can't extract reaper log"
+done
