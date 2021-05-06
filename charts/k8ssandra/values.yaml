@@ -621,7 +621,7 @@ cleaner:
 # k8ssandra-client provides CLI utilities, but also certain functions such as 
 # upgradecrds that allow modifying the running instances
 client:
-  image: burmanm/k8ssandra-client:latest
+  image: burmanm/k8ssandra-client:8772293f
 
 cass-operator:
   # -- Enables the cass-operator as part of this release. If this setting is
