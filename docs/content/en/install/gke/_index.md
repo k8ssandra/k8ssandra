@@ -380,24 +380,29 @@ REVISION: 1
 
 You'll need the K8ssandra superuser name and password in order to access Cassandra utilities and do things like generate a Stargate access token.
 
+{{% alert title="Tip" color="success" %}}
+In `kubectl get secret` commands, be sure to prepend the environment name. In this topic's examples, we have used `prod-k8ssandra`. Notice how it's prepended in the examples below. Also, save the displayed superuser name and the generated password for your environment. You will need the credentials when following the 
+[Quickstart for developers]({{< relref "/quickstarts/developer" >}}) or [Quickstart for Site Reliability Engineers]({{< relref "/quickstarts/site-reliability-engineer" >}}) post-install steps.
+{{% /alert %}}
+
 To retrieve K8ssandra superuser credentials:
 
 1. Retrieve the K8ssandra superuser name:
 
     ```bash
-    kubectl get secret k8ssandra-superuser -o jsonpath="{.data.username}" | base64 --decode ; echo
+    kubectl get secret prod-k8ssandra-superuser -o jsonpath="{.data.username}" | base64 --decode ; echo
     ```
 
     **Output**:
 
     ```bash
-    k8ssandra-superuser
+    prod-k8ssandra-superuser
     ```
 
 1. Retrieve the K8ssandra superuser password:
 
     ```bash
-    kubectl get secret k8ssandra-superuser -o jsonpath="{.data.password}" | base64 --decode ; echo
+    kubectl get secret prod-k8ssandra-superuser -o jsonpath="{.data.password}" | base64 --decode ; echo
     ```
 
     **Output**:
@@ -405,11 +410,6 @@ To retrieve K8ssandra superuser credentials:
     ```bash
     PGo8kROUgAJOa8vhjQrE49Lgruw7s32HCPyVvcfVmmACW8oUhfoO9A
     ```
-
-{{% alert title="Tip" color="success" %}}
-Save the superuser name and the generated password for your environment. You will need the credentials when following the 
-[Quickstart for developers]({{< relref "/quickstarts/developer" >}}) or [Quickstart for Site Reliability Engineers]({{< relref "/quickstarts/site-reliability-engineer" >}}) post-install steps.
-{{% /alert %}}
 
 ## Cleanup Resources
 
