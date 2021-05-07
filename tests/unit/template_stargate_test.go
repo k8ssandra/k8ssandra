@@ -104,7 +104,8 @@ var _ = Describe("Verify Stargate template", func() {
 			Expect(string(initContainer.ImagePullPolicy)).To(Equal("IfNotPresent"))
 
 			Expect(initContainer.Args[0]).To(Equal("-c"))
-			Expect(initContainer.Args[1]).To(ContainSubstring(Sprintf("nslookup %s-seed-service.%s.svc.cluster.local;", HelmReleaseName, DefaultTestNamespace)))
+			Expect(initContainer.Args[1]).To(ContainSubstring(
+				Sprintf("nslookup %s-dc1-service.%s.svc.cluster.local", HelmReleaseName, DefaultTestNamespace)))
 
 			Expect(len(templateSpec.Containers)).To(Equal(1))
 			container := templateSpec.Containers[0]
@@ -231,11 +232,13 @@ var _ = Describe("Verify Stargate template", func() {
 
 			initContainer := deployment.Spec.Template.Spec.InitContainers[0]
 			Expect(initContainer.Args[0]).To(Equal("-c"))
-			Expect(initContainer.Args[1]).To(ContainSubstring(Sprintf("nslookup %s-seed-service.%s.svc.cluster.local;", clusterName, DefaultTestNamespace)))
+			Expect(initContainer.Args[1]).To(ContainSubstring(
+				Sprintf("nslookup %s-dc1-service.%s.svc.cluster.local", clusterName, DefaultTestNamespace)))
 
 			container := deployment.Spec.Template.Spec.Containers[0]
 			seed := kubeapi.FindEnvVarByName(container, "SEED")
-			Expect(seed.Value).To(Equal(Sprintf("%s-seed-service.%s.svc.cluster.local", clusterName, DefaultTestNamespace)))
+			Expect(seed.Value).To(Equal(
+				Sprintf("%s-seed-service.%s.svc.cluster.local", clusterName, DefaultTestNamespace)))
 		})
 
 		It("changing datacenter name", func() {
@@ -255,6 +258,13 @@ var _ = Describe("Verify Stargate template", func() {
 			container := deployment.Spec.Template.Spec.Containers[0]
 			datacenterName := kubeapi.FindEnvVarByName(container, "DATACENTER_NAME")
 			Expect(datacenterName.Value).To(Equal(targetDcName))
+
+			clusterName := kubeapi.FindEnvVarByName(container, "CLUSTER_NAME")
+			initContainer := deployment.Spec.Template.Spec.InitContainers[0]
+			Expect(initContainer.Args[0]).To(Equal("-c"))
+			Expect(initContainer.Args[1]).To(ContainSubstring(
+				Sprintf("nslookup %s-%s-service.%s.svc.cluster.local",
+					clusterName.Value, targetDcName, DefaultTestNamespace)))
 		})
 
 		It("changing memory allocation", func() {
