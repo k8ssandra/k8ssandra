@@ -263,7 +263,7 @@ secret/prod-k8ssandra-medusa-key created
 
 ### Generate `eks.values.yaml`
 
-Here is a reference Helm `values.yaml` file with configuration options for running K8ssandra in GKE.
+Here is a reference Helm `values.yaml` file with configuration options for running K8ssandra in EKS.
 
 {{< readfilerel file="eks.values.yaml"  highlight="yaml" >}}
 
