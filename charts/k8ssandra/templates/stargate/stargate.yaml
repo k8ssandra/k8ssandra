@@ -39,8 +39,8 @@ spec:
             args:
               - -c
               - |
-                echo "Waiting for at least one cassandra node to finish bootstrapping..."
-                while ! nslookup {{ include "k8ssandra.clusterName" . }}-seed-service.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain | default "cluster.local" }}; do
+                echo "Waiting for all Cassandra nodes in {{ include "k8ssandra.datacenterName" . }} to finish bootstrapping..."
+                while [ "$(nslookup {{ include "k8ssandra.clusterName" . }}-{{ include "k8ssandra.datacenterName" . }}-service.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain | default "cluster.local" }} | grep Name | wc -l)" != "{{ include "k8ssandra.datacenterSize" . }}" ]; do
                     sleep 5
                 done
                 echo "Cassandra is ready. Starting Stargate..."
