@@ -111,13 +111,13 @@ spec:
               path: /checker/liveness
               port: health
             timeoutSeconds: 10
-            initialDelaySeconds: 30
+            initialDelaySeconds: {{ .Values.stargate.livenessInitialDelaySeconds }}
             failureThreshold: 5
           readinessProbe:
             httpGet:
               path: /checker/readiness
               port: health
             timeoutSeconds: 10
-            initialDelaySeconds: 30
+            initialDelaySeconds: {{ .Values.stargate.readinessInitialDelaySeconds }}
             failureThreshold: 5
 {{- end }}

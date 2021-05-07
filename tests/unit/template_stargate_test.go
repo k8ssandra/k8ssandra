@@ -357,5 +357,21 @@ var _ = Describe("Verify Stargate template", func() {
 			container := deployment.Spec.Template.Spec.Containers[0]
 			Expect(container.Image).To(Equal(alternateImage))
 		})
+
+		It("changing probe initial delay", func() {
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+				SetValues: map[string]string{
+					"stargate.enabled":                      "true",
+					"stargate.livenessInitialDelaySeconds":  "60",
+					"stargate.readinessInitialDelaySeconds": "90",
+				},
+			}
+
+			Expect(renderTemplate(options)).To(Succeed())
+			container := deployment.Spec.Template.Spec.Containers[0]
+			Expect(container.LivenessProbe.InitialDelaySeconds).To(Equal(int32(60)))
+			Expect(container.ReadinessProbe.InitialDelaySeconds).To(Equal(int32(90)))
+		})
 	})
 })
