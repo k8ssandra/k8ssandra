@@ -334,6 +334,12 @@ stargate:
   # -- Sets the CPU limit for the Stargate pod in millicores.
   cpuLimMillicores: 1000
 
+  # -- Sets the initial delay in seconds for the Stargate liveness probe.
+  livenessInitialDelaySeconds: 30
+
+  # -- Sets the initial delay in seconds for the Stargate readiness probe.
+  readinessInitialDelaySeconds: 30
+
   # -- Configures the Cassandra user used by Stargate when authentication is
   # enabled. If neither `cassandraUser.secret` nor `casandraUser.username` are
   # set, then a Cassandra user and a secret will be created. The username will
