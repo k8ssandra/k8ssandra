@@ -9,14 +9,14 @@ dependencies:
   - name: k8ssandra-common
     version: 0.28.1
     repository: file://../k8ssandra-common
-home: https://github.com/datastax/cass-operator
+home: https://github.com/k8ssandra/cass-operator
 sources:
-  - https://github.com/datastax/cass-operator
+  - https://github.com/k8ssandra/cass-operator
   - https://github.com/k8ssandra/k8ssandra/tree/main/charts/cass-operator
 maintainers:
   - name: Cass Operator Team
     email: cass-operator@datastax.com
-    url: https://github.com/datastax/cass-operator
+    url: https://github.com/k8ssandra/cass-operator
   - name: K8ssandra Team
     email: k8ssandra-developers@googlegroups.com
     url: https://github.com/k8ssandra

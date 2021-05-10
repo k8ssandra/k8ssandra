@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	cassdcapi "github.com/datastax/cass-operator/operator/pkg/apis/cassandra/v1beta1"
+	cassdcapi "github.com/k8ssandra/cass-operator/operator/pkg/apis/cassandra/v1beta1"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	corev1 "k8s.io/api/core/v1"
@@ -44,7 +44,7 @@ var _ = Describe("Cleaning CassandraDatacenters", func() {
 			Spec: cassdcapi.CassandraDatacenterSpec{
 				ClusterName:   notManagedName,
 				ServerType:    "cassandra",
-				ServerVersion: "3.11.7",
+				ServerVersion: "3.11.10",
 				Size:          1,
 			},
 		}
@@ -66,9 +66,9 @@ var _ = Describe("Cleaning CassandraDatacenters", func() {
 				Name:      cassdcKeyManaged.Name,
 				Namespace: cassdcKeyManaged.Namespace,
 				Labels: map[string]string{
-					managedLabel: managedLabelValue,
+					managedLabel:  managedLabelValue,
 					instanceLabel: cleanerTestRelease,
-					nameLabel: nameLabelValue,
+					nameLabel:     nameLabelValue,
 				},
 			},
 			Spec: cassdcapi.CassandraDatacenterSpec{

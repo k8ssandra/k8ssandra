@@ -4,20 +4,21 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"log"
 	"os"
 	"os/exec"
 	"path/filepath"
-	"sigs.k8s.io/controller-runtime/pkg/client"
 	"strconv"
 	"strings"
 	"testing"
 	"time"
 
-	cassdcapi "github.com/datastax/cass-operator/operator/pkg/apis/cassandra/v1beta1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"sigs.k8s.io/controller-runtime/pkg/client"
+
 	"github.com/gruntwork-io/terratest/modules/helm"
 	"github.com/gruntwork-io/terratest/modules/k8s"
+	cassdcapi "github.com/k8ssandra/cass-operator/operator/pkg/apis/cassandra/v1beta1"
 	. "github.com/onsi/gomega"
 	appsv1 "k8s.io/api/apps/v1"
 	v1 "k8s.io/api/core/v1"
@@ -161,7 +162,7 @@ func RestartStargate(t *testing.T, releaseName, dcName, namespace string) {
 	g(t).Expect(WaitForDeploymentReady(t, key, retryInterval, scaleDownTimeout)).To(Succeed(), "failed waiting for Stargate to scale down")
 
 	deployment := &appsv1.Deployment{}
-	err := testClient.Get(context.Background(), key, deployment);
+	err := testClient.Get(context.Background(), key, deployment)
 	g(t).Expect(err).To(BeNil(), fmt.Sprintf("failed to get Stargate deployment: %s", err))
 
 	originalCount := *deployment.Spec.Replicas
@@ -172,7 +173,6 @@ func RestartStargate(t *testing.T, releaseName, dcName, namespace string) {
 
 	err = testClient.Patch(context.Background(), deployment, patch)
 	g(t).Expect(err).To(BeNil(), fmt.Sprintf("failed to scale down Stargate: %s", err))
-
 
 	patch = client.MergeFromWithOptions(deployment.DeepCopy(), client.MergeFromWithOptimisticLock{})
 	deployment.Spec.Replicas = &originalCount
@@ -281,7 +281,7 @@ func DeployMinioAndCreateBucket(t *testing.T, bucketName string) {
 	g(t).Expect(err).To(BeNil(), fmt.Sprintf("failed to add minio helm repo: %s", err))
 
 	values := fmt.Sprintf("accessKey=minio_key,secretKey=minio_secret,defaultBucket.enabled=true,defaultBucket.name=%s", bucketName)
-	_, err = helm.RunHelmCommandAndGetOutputE(t, helmOptions, "install", "--set", values, "minio", "minio/minio", "-n", "minio", "--create-namespace");
+	_, err = helm.RunHelmCommandAndGetOutputE(t, helmOptions, "install", "--set", values, "minio", "minio/minio", "-n", "minio", "--create-namespace")
 	g(t).Expect(err).To(BeNil(), fmt.Sprintf("failed to install the minio helm chart: %s", err))
 }
 

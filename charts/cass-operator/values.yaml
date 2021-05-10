@@ -1,10 +1,10 @@
 # -- A name in place of the chart name which is used in the metadata.name of
 # objects created by this chart.
-nameOverride: ""
+nameOverride: ''
 
 # -- A name in place of the value used for metadata.name in objects created by
 # this chart. The default value has the form releaseName-chartName.
-fullnameOverride: ""
+fullnameOverride: ''
 
 # -- Labels to be added to all deployed resources.
 commonLabels: {}
@@ -25,14 +25,14 @@ admissionWebhooks:
 # Sets properties for the cass-operator container
 image:
   # -- Docker repository for cass-operator
-  repository: docker.io/datastax/cass-operator
-  
+  repository: docker.io/k8ssandra/cass-operator
+
   # -- Pull policy for the operator container
   pullPolicy: IfNotPresent
 
   # -- Tag of the cass-operator image to pull from image.repository
-  tag: 1.6.0
-  
+  tag: v1.7.0
+
   # -- Docker registry containing all cass-operator related images. Setting this
   # allows for usage of an internal registry without specifying serverImage,
   # configBuilderImage, and busyboxImage on all CassandraDatacenter objects.
@@ -72,7 +72,7 @@ securityContext:
 # with little resources, such as Minikube. If you want to specify resources, add
 # `requests` and `limits` for `cpu` and `memory` while removing the existing
 # `{}`
-resources: {}  
+resources: {}
 
 # -- Enables specific VMware functionality. If you need this functionality it
 # will automatically be enabled for you.

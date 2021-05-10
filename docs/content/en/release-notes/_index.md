@@ -39,7 +39,7 @@ The K8ssandra helm chart deploys the following components. Some are optional, an
   * 3.11.8
   * 3.11.9
   * 3.11.10 (default)
-* DataStax Kubernetes Operator for Apache Cassandra ([cass-operator](https://github.com/datastax/cass-operator)) 1.6.0
+* DataStax Kubernetes Operator for Apache Cassandra ([cass-operator](https://github.com/k8ssandra/cass-operator)) 1.7.0
 * Management API for Apache Cassandra ([MAAC](https://github.com/datastax/management-api-for-apache-cassandra)) 0.1.24
 * [Stargate](https://github.com/stargate/stargate) 1.0.18
 * Metric Collector for Apache Cassandra ([MCAC](https://github.com/datastax/metric-collector-for-apache-cassandra)) 0.2.0

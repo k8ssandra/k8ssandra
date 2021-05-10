@@ -16,3 +16,4 @@ When cutting a new release of the parent `k8ssandra` chart update the `unrelease
 * [BUGFIX] #678 Upgrade to Medusa 0.10.1 fixing failed backups after a restore
 * [CHANGE] #726 Upgrade to Cassandra 4.0-rc1
 * [ENHANCEMENT] #560 Add the ability to attach additional PVs for medusa backups
+* [ENHANCEMENT] #693 Update cass-operator to v1.7.0

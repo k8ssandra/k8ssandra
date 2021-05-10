@@ -2,13 +2,14 @@ package cleaner
 
 import (
 	"context"
-	apierrors "k8s.io/apimachinery/pkg/api/errors"
-	"k8s.io/apimachinery/pkg/types"
-	"k8s.io/apimachinery/pkg/util/wait"
 	"log"
 	"time"
 
-	cassdcapi "github.com/datastax/cass-operator/operator/pkg/apis/cassandra/v1beta1"
+	apierrors "k8s.io/apimachinery/pkg/api/errors"
+	"k8s.io/apimachinery/pkg/types"
+	"k8s.io/apimachinery/pkg/util/wait"
+
+	cassdcapi "github.com/k8ssandra/cass-operator/operator/pkg/apis/cassandra/v1beta1"
 	"k8s.io/client-go/kubernetes/scheme"
 	"k8s.io/client-go/tools/clientcmd/api"
 	ctrl "sigs.k8s.io/controller-runtime"
@@ -59,9 +60,9 @@ func (a *Agent) RemoveResources(releaseName string) error {
 func (a *Agent) removeCassandraDatacenter(releaseName string) error {
 	log.Printf("Removing CassandraDatacenter(s) managed in release %s from namespace %s\n", releaseName, a.Namespace)
 	releaseLabels := client.MatchingLabels{
-		managedLabel: managedLabelValue,
+		managedLabel:  managedLabelValue,
 		instanceLabel: releaseName,
-		nameLabel: nameLabelValue,
+		nameLabel:     nameLabelValue,
 	}
 	list := &cassdcapi.CassandraDatacenterList{}
 	err := a.Client.List(context.Background(), list, client.InNamespace(a.Namespace), releaseLabels)
@@ -79,7 +80,7 @@ func (a *Agent) removeCassandraDatacenter(releaseName string) error {
 
 	// We need to wait until the CassandraDatacenter is terminated; otherwise, cass-operator could get
 	// deleted before it has a chance to clear the CassandraDatacenter's finalizer.
-	return wait.PollImmediate(10 * time.Second, 10 * time.Minute, func() (bool, error) {
+	return wait.PollImmediate(10*time.Second, 10*time.Minute, func() (bool, error) {
 		list := &cassdcapi.CassandraDatacenterList{}
 		err := a.Client.List(context.Background(), list, client.InNamespace(a.Namespace), releaseLabels)
 		if err != nil {

@@ -24,7 +24,7 @@ This document describes the steps involved to upgrade the steps involves to appl
 medusa-operator uses kustomize to generate manifests for tests and to be used in the k8ssandra Helm charts.
 
 ## cass-operator manifests
-Let's say we are upgrading to cass-operator 1.6.0. The cass-operator manifests should be taken from the v1.6.0 tag in the cass-operator repo. The manifest (for this example upgrade) can be found [here](https://github.com/datastax/cass-operator/tree/v1.6.0/operator/deploy).
+Let's say we are upgrading to cass-operator 1.7.0. The cass-operator manifests should be taken from the v1.7.0 tag in the cass-operator repo. The manifest (for this example upgrade) can be found [here](https://github.com/k8ssandra/cass-operator/tree/v1.6.0/operator/deploy).
 
 In medusa-operator, the cass-operator manifests, minus the CassandraDatacenter CRD, are bundled together in [cass-operator.yaml](https://github.com/k8ssandra/medusa-operator/blob/master/test/config/cass-operator/cass-operator.yaml).
 
@@ -48,7 +48,7 @@ Create a new release of medusa-operator. This is needed for the medusa-operator 
 reaper-operator uses kustomize to generarte manifests for tests and to be used in the k8ssandra Helm charts.
 
 ## cass-operator manifests
-Let's say we are upgrading to cass-operator 1.6.0. The cass-operator maniests should be taken from the v1.6.0 tag. The manifest (for this example upgrade) can be found [here](https://github.com/datastax/cass-operator/tree/v1.6.0/operator/deploy).
+Let's say we are upgrading to cass-operator 1.7.0. The cass-operator maniests should be taken from the v1.6.0 tag. The manifest (for this example upgrade) can be found [here](https://github.com/k8ssandra/cass-operator/tree/v1.7.0/operator/deploy).
 
 In reaper-operator, the cass-operator manifests, minus the CassandraDatacenter CRD, are bundled together in [cass-operator.yaml](https://github.com/k8ssandra/reaper-operator/blob/master/test/config/cass-operator/cass-operator.yaml).
 
@@ -72,9 +72,17 @@ Create a new release of reaper-operator. This is be needed for the reaper-operat
 Several chart updates are needed as well as a Go module dependency update.
 
 ## cass-operator chart
-Update the templates in the cass-operator chart [here](https://github.com/k8ssandra/k8ssandra/tree/main/charts/cass-operator).
+Update the CRD in the cass-operator chart [here](https://github.com/k8ssandra/k8ssandra/tree/main/charts/cass-operator). Assuming checkout directories ``cass-operator`` and ``k8ssandra``):
 
-Update the default image in [k8ssandra/charts/cass-operator/values.yaml](https://github.com/k8ssandra/k8ssandra/blob/main/charts/cass-operator/values.yaml).
+```
+cp cass-operator/charts/cass-operator-chart/templates/customresourcedefinition.yaml k8ssandra/charts/cass-operator/crds/customresourcedefinition.yaml
+```
+
+Update the default image in [k8ssandra/charts/cass-operator/values.yaml](https://github.com/k8ssandra/k8ssandra/blob/main/charts/cass-operator/values.yaml), using the python script:
+
+```
+k8ssandra/scripts/image-update.py --chart cass-operator --tag <new-version-tag>
+```
 
 ## medusa-operator chart
 Update the default image in [k8ssandra/charts/medusa-operator/values.yaml](https://github.com/k8ssandra/k8ssandra/blob/main/charts/medusa-operator/values.yaml).
@@ -84,3 +92,7 @@ Update the default image in [k8ssandra/charts/reaper-operator/values.yaml](https
 
 ## go.mod
 Update the cass-operator version in [k8ssandra/go.mod](https://github.com/k8ssandra/k8ssandra/blob/main/go.mod).
+
+``
+go get github.com/k8ssandra/cass-operator@newtag
+``
