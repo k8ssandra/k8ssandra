@@ -18,7 +18,7 @@ K8ssandra stack with links to the appropriate projects.
 
 ### Apache Cassandra
 K8ssandra packages and deploys [Apache Cassandra](https://cassandra.apache.org/)
-via the [cass-operator](https://github.com/datastax/cass-operator) project. Each
+via the [cass-operator](https://github.com/k8ssandra/cass-operator) project. Each
 Cassandra container has the [Management API for Apache Cassandra
 (MAAC)](https://github.com/datastax/management-api-for-apache-cassandra) and
 [Metrics Collector for Apache

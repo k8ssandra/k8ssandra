@@ -9,8 +9,8 @@ import (
 	helmUtils "github.com/k8ssandra/k8ssandra/tests/unit/utils/helm"
 	"github.com/k8ssandra/k8ssandra/tests/unit/utils/kubeapi"
 
-	cassdcv1beta1 "github.com/datastax/cass-operator/operator/pkg/apis/cassandra/v1beta1"
 	"github.com/gruntwork-io/terratest/modules/helm"
+	cassdcv1beta1 "github.com/k8ssandra/cass-operator/operator/pkg/apis/cassandra/v1beta1"
 	. "github.com/k8ssandra/k8ssandra/tests/unit/utils/cassdc"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/ginkgo/extensions/table"
