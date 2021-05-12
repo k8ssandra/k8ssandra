@@ -10,6 +10,7 @@ require (
 	github.com/onsi/ginkgo v1.14.2
 	github.com/onsi/gomega v1.10.3
 	github.com/traefik/traefik/v2 v2.3.7
+	gopkg.in/yaml.v3 v3.0.0-20200615113413-eeeca48fe776
 	helm.sh/helm/v3 v3.5.4
 	k8s.io/api v0.20.4
 	k8s.io/apimachinery v0.20.4

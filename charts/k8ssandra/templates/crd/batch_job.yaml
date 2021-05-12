@@ -25,5 +25,6 @@ spec:
                 fieldRef:
                   fieldPath: metadata.namespace
           args:
-            - upgradecrds
+            - -upgradecrds
+            - --targetVersion
             - {{ .Chart.Version }}
