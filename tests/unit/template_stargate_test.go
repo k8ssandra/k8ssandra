@@ -2,6 +2,7 @@ package unit_test
 
 import (
 	. "fmt"
+	corev1 "k8s.io/api/core/v1"
 	"path/filepath"
 
 	"github.com/gruntwork-io/terratest/modules/helm"
@@ -372,6 +373,31 @@ var _ = Describe("Verify Stargate template", func() {
 			container := deployment.Spec.Template.Spec.Containers[0]
 			Expect(container.LivenessProbe.InitialDelaySeconds).To(Equal(int32(60)))
 			Expect(container.ReadinessProbe.InitialDelaySeconds).To(Equal(int32(90)))
+		})
+
+		It("using tolerations", func() {
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+				ValuesFiles: []string{"./testdata/tolerations-values.yaml"},
+			}
+
+			Expect(renderTemplate(options)).To(Succeed())
+
+			tolerations := deployment.Spec.Template.Spec.Tolerations
+			Expect(tolerations).To(ConsistOf(
+				corev1.Toleration{
+					Key: "key1",
+					Operator: corev1.TolerationOpEqual,
+					Value: "value1",
+					Effect: corev1.TaintEffectNoSchedule,
+				},
+				corev1.Toleration{
+					Key:      "key2",
+					Operator: corev1.TolerationOpEqual,
+					Value:    "value2",
+					Effect:   corev1.TaintEffectNoSchedule,
+				},
+			))
 		})
 	})
 })

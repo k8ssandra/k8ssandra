@@ -556,6 +556,31 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			Expect(json.Unmarshal(cassdc.Spec.Config, &config)).To(Succeed())
 			Expect(config.CassandraConfig.AllocateTokensForLocalRF).To(Equal(int64(5)))
 		})
+
+		It("using tolerations", func() {
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+				ValuesFiles: []string{"./testdata/tolerations-values.yaml"},
+			}
+
+			Expect(renderTemplate(options)).To(Succeed())
+
+			tolerations := cassdc.Spec.Tolerations
+			Expect(tolerations).To(ConsistOf(
+				corev1.Toleration{
+					Key: "key1",
+					Operator: corev1.TolerationOpEqual,
+					Value: "value1",
+					Effect: corev1.TaintEffectNoSchedule,
+				},
+				corev1.Toleration{
+					Key:      "key2",
+					Operator: corev1.TolerationOpEqual,
+					Value:    "value2",
+					Effect:   corev1.TaintEffectNoSchedule,
+				},
+			))
+		})
 	})
 
 	Context("when configuring the JVM heap for Cassandra 3.11", func() {
