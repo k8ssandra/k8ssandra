@@ -544,7 +544,8 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
 				SetValues: map[string]string{
-					"cassandra.version": "4.0.0",
+					"cassandra.version":                                 "4.0.0",
+					"cassandra.datacenters[0].name":                     "test",
 					"cassandra.datacenters[0].allocateTokensForLocalRF": "5",
 				},
 			}
