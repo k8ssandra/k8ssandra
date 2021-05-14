@@ -295,7 +295,7 @@ gzip = true
 
 [[menu.footer]]
   name = "Community"
-  weight = 60
+  weight = 80
   url = "https://k8ssandra.io/community"
 
 [[menu.second]]

@@ -112,19 +112,22 @@ header {
   color: #02070d;
   font-style: normal;
   font-weight: 500;
-  font-size: 14px;
+  font-size: 16px;
   line-height: 150%;
   padding-top: 27px;
   padding-bottom: 27px;
   min-height: auto;
   p {
     margin-bottom: 0px;
+    font-size:12px;
+    text-align:left;
+    line-height:1.5;
   }
 
   .footer-brand {
     padding: 20px;
     svg {
-      height: 77px;
+      height: 70px;
     }
   }
 }
@@ -199,6 +202,10 @@ header {
     border-color: 2px solid #0097ff;
     border-radius: 3px;
   }
+}
+
+#site-footer .td-search-input {
+  max-width:90%;
 }
 #site-nav {
   .navbar-brand {

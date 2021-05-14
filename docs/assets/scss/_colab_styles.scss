@@ -33,6 +33,9 @@ a {
   & > a {
     text-decoration: underline;
   }
+  span {
+    margin: 0 10px;
+  }
 }
 
 .alert {
@@ -105,8 +108,13 @@ ul.footer-nav {
   li a {
     color: $dark;
     text-decoration: none;
+    text-align:center;
     &:hover {
       color: $secondary;
+      text-decoration:underline;
+    }
+    @media (min-width: 768px) {
+      text-align:left;
     }
   }
 }
