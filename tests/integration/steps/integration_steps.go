@@ -13,9 +13,6 @@ import (
 	"testing"
 	"time"
 
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"sigs.k8s.io/controller-runtime/pkg/client"
-
 	"github.com/gruntwork-io/terratest/modules/helm"
 	"github.com/gruntwork-io/terratest/modules/k8s"
 	cassdcapi "github.com/k8ssandra/cass-operator/operator/pkg/apis/cassandra/v1beta1"
@@ -23,7 +20,9 @@ import (
 	appsv1 "k8s.io/api/apps/v1"
 	v1 "k8s.io/api/core/v1"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 const (
@@ -482,7 +481,7 @@ func InstallK8ssandraFromRepo(t *testing.T, namespace, version string) {
 
 	// Wait for cass-operator pod to be ready
 	g(t).Eventually(func() bool {
-		return PodWithLabelIsReady(t, namespace, "app.kubernetes.io/name=cass-operator")
+		return PodWithLabelsIsReady(t, namespace, map[string]string{"app.kubernetes.io/name": "cass-operator"})
 	}, retryTimeout, retryInterval).Should(BeTrue())
 
 	// Wait for CassandraDatacenter to be udpating..
