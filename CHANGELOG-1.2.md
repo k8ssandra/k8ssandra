@@ -25,3 +25,4 @@ and date `## vX.Y.Z - YYYY-MM-DD` and create a new placeholder section for  `unr
 * [ENHANCEMENT] #693 Update cass-operator to v1.7.0
 * [ENHANCEMENT] #732 Make allocate_tokens_for_replication_factor configurable
 * [BUGFIX] #678 Upgrade to Medusa 0.10.1 fixing failed backups after a restore
+* [FEATURE] #224 Allow defining additional settings for autoscheduling in Reaper, update reaper-operator to v0.3.1

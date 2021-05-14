@@ -73,6 +73,20 @@ var _ = Describe("Verify Reaper template", func() {
 			Expect(reaper.Spec.ServerConfig.AutoScheduling).ToNot(BeNil())
 		})
 
+		It("modifying autoscheduling additional properties", func() {
+			options := &helm.Options{
+				SetStrValues: map[string]string{
+					"reaper.autoschedule":                               "true",
+					"reaper.autoschedule_properties.initialDelayPeriod": "PT10S",
+				},
+				KubectlOptions: defaultKubeCtlOptions,
+			}
+
+			renderTemplate(options)
+			Expect(reaper.Spec.ServerConfig.AutoScheduling).ToNot(BeNil())
+			Expect(reaper.Spec.ServerConfig.AutoScheduling.InitialDelay).To(Equal("PT10S"))
+		})
+
 		It("modifying secret options", func() {
 			options := &helm.Options{
 				SetStrValues: map[string]string{
