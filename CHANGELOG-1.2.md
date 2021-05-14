@@ -19,6 +19,7 @@ and date `## vX.Y.Z - YYYY-MM-DD` and create a new placeholder section for  `unr
 ## unreleased
 
 * [CHANGE] #726 Upgrade to Cassandra 4.0-rc1
+* [FEATURE] #673, #698 Make tolerations configurable
 * [ENHANCEMENT] #654 Reduce initial delay of Stargate readiness probe
 * [ENHANCEMENT] #560 Add the ability to attach additional PVs for medusa backups
 * [ENHANCEMENT] #693 Update cass-operator to v1.7.0
