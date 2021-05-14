@@ -437,9 +437,9 @@ stargate:
         #   # -- Secret containing the TLS certificate and key for the listener
         #   secretName: tls-secret
 
-  # Tolerations to apply to the Stargate pods. See
+  # -- Tolerations to apply to the Stargate pods. See
   # https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/ for background.
-  tolerations: [ ]
+  tolerations: []
 
 reaper:
   # -- When enabled, Reaper automatically sets up repair schedules for all
@@ -505,6 +505,10 @@ reaper:
     traefik:
       # -- Traefik entrypoint where traffic is sourced. See https://doc.traefik.io/traefik/routing/entrypoints/
       entrypoint: web
+
+    # -- Tolerations to apply to the Reaper pods. See
+    # https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/ for background.
+  tolerations: []
 
 medusa:
   # -- Enable Medusa resources as part of this release. If enabled,

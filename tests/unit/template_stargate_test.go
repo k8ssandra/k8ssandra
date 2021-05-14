@@ -378,7 +378,7 @@ var _ = Describe("Verify Stargate template", func() {
 		It("using tolerations", func() {
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
-				ValuesFiles: []string{"./testdata/tolerations-values.yaml"},
+				ValuesFiles:    []string{"./testdata/tolerations-values.yaml"},
 			}
 
 			Expect(renderTemplate(options)).To(Succeed())
@@ -386,10 +386,10 @@ var _ = Describe("Verify Stargate template", func() {
 			tolerations := deployment.Spec.Template.Spec.Tolerations
 			Expect(tolerations).To(ConsistOf(
 				corev1.Toleration{
-					Key: "key1",
+					Key:      "key1",
 					Operator: corev1.TolerationOpEqual,
-					Value: "value1",
-					Effect: corev1.TaintEffectNoSchedule,
+					Value:    "value1",
+					Effect:   corev1.TaintEffectNoSchedule,
 				},
 				corev1.Toleration{
 					Key:      "key2",
