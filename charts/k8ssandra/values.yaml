@@ -177,6 +177,14 @@ cassandra:
     # used, which are 256 tokens for 3.11 releases and 16 tokens for 4.0 releases.
     # num_tokens: 16
 
+    # -- The replication factor for keyspaces in the datacenter. Triggers the
+    # even token distribution algorithm for num_tokens and the replication
+    # factor. Note that this property is for Cassandra 4.0 and later. Setting
+    # this property with Cassandra 3.11.x will result in a chart validation
+    # error. When the Cassandra version is 4.0, this property is enabled by
+    # default with a value of 3.
+    # allocateTokensForLocalRF: 3
+
     # -- Specifies the racks for the data center, if unset the datacenter will
     # be composed of a single rack named `default`. The number of racks should
     # equal the replication factor of your application keyspaces. Cassandra will

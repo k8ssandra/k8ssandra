@@ -103,6 +103,7 @@ spec:
   {{- end }}
   {{- end }}
 {{- end }}
+  configBuilderImage: docker.io/datastax/cass-config-builder:1.0.4
   config:
   {{- /*
     configOverride is an undocumented property that is intended for advanced use cases like
@@ -114,6 +115,13 @@ spec:
   {{- else }}
     cassandra-yaml:
       {{- include "k8ssandra.default_num_tokens" . }}
+      {{- if or $datacenter.allocateTokensForLocalRF (hasPrefix "4" .Values.cassandra.version) }}
+      {{- if (hasPrefix "3" .Values.cassandra.version) }}
+      {{- fail (print "The allocateTokensForLocalRF property cannot be used with Cassandra 3.11.x") }}
+      {{- else }}
+      allocate_tokens_for_local_replication_factor: {{ $datacenter.allocateTokensForLocalRF | default 3 }}
+      {{- end }}
+      {{- end}}
   {{- if .Values.cassandra.auth.enabled }}
       authenticator: PasswordAuthenticator
       authorizer: CassandraAuthorizer

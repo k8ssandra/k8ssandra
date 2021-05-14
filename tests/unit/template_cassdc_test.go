@@ -29,6 +29,8 @@ type CassandraConfig struct {
 	CredentialsValidityMillis int64 `json:"credentials_validity_in_ms"`
 	CredentialsUpdateMillis   int64 `json:"credentials_update_interval_in_ms"`
 	NumTokens                 int64 `json:"num_tokens"`
+	//AllocateTokensForLocalRF  int64 `json:"allocate_tokens_for_local_replication_factor"`
+	AllocateTokensForLocalRF int64 `json:"allocate_tokens_for_local_replication_factor"`
 }
 
 type JvmOptions struct {
@@ -507,6 +509,52 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 				"-Dcassandra.test=true",
 				"-Dcassandra.k8ssandra=true",
 			))
+		})
+
+		It("using allocateTokensForLocalRF with Cassandra 3.11", func() {
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+				SetValues: map[string]string{
+					"cassandra.version": "3.11.10",
+					"cassandra.datacenters[0].allocateTokensForLocalRF": "3",
+				},
+			}
+
+			err := renderTemplate(options)
+
+			Expect(err).ToNot(BeNil(), "Rendering should fail when using allocateTokensForLocalRF with Cassandra 3.11")
+		})
+
+		It("using allocateTokensForLocalRF with Cassandra 4.0 and default value", func() {
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+				SetValues: map[string]string{
+					"cassandra.version": "4.0.0",
+				},
+			}
+
+			Expect(renderTemplate(options)).To(Succeed())
+
+			var config Config
+			Expect(json.Unmarshal(cassdc.Spec.Config, &config)).To(Succeed())
+			Expect(config.CassandraConfig.AllocateTokensForLocalRF).To(Equal(int64(3)))
+		})
+
+		It("using allocateTokensForLocalRF with Cassandra 4.0 and non-default value", func() {
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+				SetValues: map[string]string{
+					"cassandra.version":                                 "4.0.0",
+					"cassandra.datacenters[0].name":                     "test",
+					"cassandra.datacenters[0].allocateTokensForLocalRF": "5",
+				},
+			}
+
+			Expect(renderTemplate(options)).To(Succeed())
+
+			var config Config
+			Expect(json.Unmarshal(cassdc.Spec.Config, &config)).To(Succeed())
+			Expect(config.CassandraConfig.AllocateTokensForLocalRF).To(Equal(int64(5)))
 		})
 	})
 
