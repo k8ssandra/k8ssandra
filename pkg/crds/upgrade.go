@@ -79,8 +79,8 @@ func (u *Upgrader) Upgrade(targetVersion string) ([]unstructured.Unstructured, e
 
 	for _, obj := range crds {
 		existingCrd := obj.DeepCopy()
-		log.Printf("Finding obj.GetName(): %s", obj.GetName())
-		err := u.client.Get(context.TODO(), client.ObjectKey{Name: obj.GetName()}, existingCrd)
+		log.Printf("Finding %s", obj.GetName())
+		err = u.client.Get(context.TODO(), client.ObjectKey{Name: obj.GetName()}, existingCrd)
 		if apierrors.IsNotFound(err) {
 			log.Printf("Creating %v\n", obj.GetName())
 			if err = u.client.Create(context.TODO(), &obj); err != nil {
@@ -93,6 +93,9 @@ func (u *Upgrader) Upgrade(targetVersion string) ([]unstructured.Unstructured, e
 				log.Fatalf("Failed to update %s: %v\n", obj.GetName(), err)
 				return nil, err
 			}
+		} else {
+			log.Fatalf("Failed to Get the object %s: %v\n", obj.GetName(), err)
+			return nil, err
 		}
 	}
 
