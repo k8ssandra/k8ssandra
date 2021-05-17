@@ -1,6 +1,6 @@
 {{ $links := .Site.Params.links }}
 <footer id="site-footer">
-  <div class="container pt-3 pb-5">
+  <div class="container-xl pt-3 pb-5">
     <div class="row">
       <div class="col-12 col-md-2 text-center">
         <a class="footer-brand" href="https://k8ssandra.io/">
@@ -33,7 +33,7 @@
 
 
       </div>
-      <div class="col-6 col-md-2 text-center">
+      <div class="col-6 col-md-2 col-xl-2 text-center">
 
         <ul class="footer-nav">
           {{ $p := . }}
@@ -51,9 +51,10 @@
         </ul>
 
       </div>
-      <div class="col-12 col-md-3 mb-3"></div>
 
-      <div class="col-12 col-md-3 text-center">
+      <div class="col-2 col-md-2 col-xl-3 mb-3"></div>
+
+      <div class="col-8 col-md-4 col-xl-3 text-center">
         <div class=" d-none d-md-block mb-3">{{ partial "search-input.html" . }}</div>
         {{ with .Site.Params.copyright }}<p>&copy; {{ now.Year}} {{ . }} {{ T "footer_all_rights_reserved" }}</p>{{ end }}
         <p class="d-flex subfooter-links">
