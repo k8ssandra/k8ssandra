@@ -64,7 +64,7 @@ func main() {
 			return
 		}
 
-		err = u.Upgrade(targetVersion)
+		_, err = u.Upgrade(targetVersion)
 		if err != nil {
 			log.Fatalf("Failed to update CRDs: %v", err)
 			return
