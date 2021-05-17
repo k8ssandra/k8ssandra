@@ -2,7 +2,6 @@ package crds
 
 import (
 	"context"
-	"path/filepath"
 	"testing"
 	"time"
 
@@ -11,12 +10,11 @@ import (
 	"github.com/onsi/gomega/gexec"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/client-go/kubernetes/scheme"
 	"k8s.io/client-go/rest"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/envtest"
-
-	cassdcapi "github.com/k8ssandra/cass-operator/operator/pkg/apis/cassandra/v1beta1"
 	// +kubebuilder:scaffold:imports
 )
 
@@ -34,7 +32,7 @@ func TestAFunctionality(t *testing.T) {
 
 	By("bootstrapping test environment")
 	testEnv = &envtest.Environment{
-		CRDDirectoryPaths: []string{filepath.Join("..", "..", "charts", "cass-operator", "crds")},
+		// CRDDirectoryPaths: []string{filepath.Join("..", "..", "charts", "cass-operator", "crds")},
 	}
 
 	var err error
@@ -42,7 +40,7 @@ func TestAFunctionality(t *testing.T) {
 	g.Expect(err).ToNot(HaveOccurred())
 	g.Expect(cfg).ToNot(BeNil())
 
-	err = cassdcapi.AddToScheme(scheme.Scheme)
+	// err = cassdcapi.AddToScheme(scheme.Scheme)
 	g.Expect(err).NotTo(HaveOccurred())
 
 	// +kubebuilder:scaffold:scheme
@@ -63,10 +61,44 @@ func TestAFunctionality(t *testing.T) {
 	g.Expect(err).Should(Succeed())
 
 	By("Upgrading / installing 1.0.0")
-	g.Expect(u.Upgrade("1.0.0")).Should(Succeed())
+	crds, err := u.Upgrade("1.0.0")
+	g.Expect(err).Should(Succeed())
+
+	testOptions := envtest.CRDInstallOptions{
+		PollInterval: 100 * time.Millisecond,
+		MaxTime:      10 * time.Second,
+	}
+
+	var objs []runtime.Object
+	for _, crd := range crds {
+		objs = append(objs, &crd)
+	}
+
+	envtest.WaitForCRDs(cfg, objs, testOptions)
 
 	By("Upgrading to 1.1.0")
-	g.Expect(u.Upgrade("1.1.0")).Should(Succeed())
+	crds, err = u.Upgrade("1.1.0")
+	g.Expect(err).Should(Succeed())
+
+	objs = []runtime.Object{}
+	for _, crd := range crds {
+		objs = append(objs, &crd)
+	}
+
+	envtest.WaitForCRDs(cfg, objs, testOptions)
+
+	By("Upgrading to 1.2.0-20210514022645-da7547a5")
+	crds, err = u.Upgrade("1.2.0-20210514022645-da7547a5")
+	g.Expect(err).Should(Succeed())
+
+	objs = []runtime.Object{}
+	for _, crd := range crds {
+		objs = append(objs, &crd)
+	}
+
+	envtest.WaitForCRDs(cfg, objs, testOptions)
+
+	// TODO Check that CassandraDatacenter has new property
 
 	By("tearing down the test environment")
 	gexec.KillAndWait(5 * time.Second)

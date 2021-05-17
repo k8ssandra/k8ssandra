@@ -1,7 +1,6 @@
 package crds
 
 import (
-	"bufio"
 	"bytes"
 	"context"
 	"io/ioutil"
@@ -11,15 +10,16 @@ import (
 	"strings"
 
 	"github.com/k8ssandra/k8ssandra/pkg/helmutil"
-	"gopkg.in/yaml.v3"
 
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
-	"k8s.io/apimachinery/pkg/runtime"
+	deser "k8s.io/apimachinery/pkg/runtime/serializer/yaml"
 	k8syaml "k8s.io/apimachinery/pkg/util/yaml"
 	"k8s.io/client-go/kubernetes/scheme"
 	"k8s.io/client-go/tools/clientcmd/api"
 
+	apiextv1 "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1"
+	apiextv1beta1 "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1beta1"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
@@ -40,6 +40,8 @@ func NewWithClient(c client.Client) (*Upgrader, error) {
 // New returns a new Upgrader client
 func New(namespace string) (*Upgrader, error) {
 	_ = api.AddToScheme(scheme.Scheme)
+	_ = apiextv1.AddToScheme(scheme.Scheme)
+	_ = apiextv1beta1.AddToScheme(scheme.Scheme)
 	c, err := client.New(ctrl.GetConfigOrDie(), client.Options{Scheme: scheme.Scheme})
 	if err != nil {
 		log.Fatal(err)
@@ -53,10 +55,10 @@ func New(namespace string) (*Upgrader, error) {
 }
 
 // Upgrade installs the missing CRDs or updates them if they exists already
-func (u *Upgrader) Upgrade(targetVersion string) error {
+func (u *Upgrader) Upgrade(targetVersion string) ([]unstructured.Unstructured, error) {
 	extractDir, err := helmutil.DownloadChartRelease(targetVersion)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	// reaper and medusa subdirs have the required yaml files
@@ -71,28 +73,30 @@ func (u *Upgrader) Upgrade(targetVersion string) error {
 	for _, path := range paths {
 		err = parseChartCRDs(&crds, path)
 		if err != nil {
-			return err
+			return nil, err
 		}
 	}
 
-	var res []runtime.Object
 	for _, obj := range crds {
-		res = append(res, &obj)
-	}
-
-	for _, obj := range res {
-		if u.client.Create(context.TODO(), obj); err != nil {
-			if apierrors.IsAlreadyExists(err) {
-				if u.client.Update(context.TODO(), obj); err != nil {
-					return err
-				}
-			} else {
-				return err
+		existingCrd := obj.DeepCopy()
+		log.Printf("Finding obj.GetName(): %s", obj.GetName())
+		err := u.client.Get(context.TODO(), client.ObjectKey{Name: obj.GetName()}, existingCrd)
+		if apierrors.IsNotFound(err) {
+			log.Printf("Creating %v\n", obj.GetName())
+			if err = u.client.Create(context.TODO(), &obj); err != nil {
+				log.Fatalf("Failed to create %s: %v\n", obj.GetName(), err)
+			}
+		} else if err == nil {
+			log.Printf("Updating %v\n", obj.GetName())
+			obj.SetResourceVersion(existingCrd.GetResourceVersion())
+			if err = u.client.Update(context.TODO(), &obj); err != nil {
+				log.Fatalf("Failed to update %s: %v\n", obj.GetName(), err)
+				return nil, err
 			}
 		}
 	}
 
-	return err
+	return crds, err
 }
 
 func findCRDDirs(chartDir string) ([]string, error) {
@@ -128,20 +132,55 @@ func parseChartCRDs(crds *[]unstructured.Unstructured, crdDir string) error {
 			return err
 		}
 
-		reader := k8syaml.NewYAMLReader(bufio.NewReader(bytes.NewReader(b)))
-		doc, err := reader.Read()
+		dec := deser.NewDecodingSerializer(unstructured.UnstructuredJSONScheme)
+
+		if len(b) == 0 {
+			log.Printf("Skipping %s\n", path)
+			// TODO Implement skipping this, it's a YAML with "---" starter
+			return nil
+		}
+
+		crd := unstructured.Unstructured{}
+		_, gvk, err := dec.Decode(b, nil, &crd)
 		if err != nil {
 			return err
 		}
 
-		crd := unstructured.Unstructured{}
-
-		if err = yaml.Unmarshal(doc, &crd); err != nil {
-			return err
+		if gvk.Kind != "CustomResourceDefinition" {
+			return nil
 		}
 
 		*crds = append(*crds, crd)
-		return nil
+		// }
+
+		// reader := k8syaml.NewYAMLReader(bufio.NewReader(bytes.NewReader(b)))
+
+		_ = k8syaml.NewYAMLOrJSONDecoder(bytes.NewReader(b), 4096)
+
+		// doc, err := reader.Read()
+		// // log.Printf("Doc read: %s\n", string(doc))
+		// if err != nil {
+		// 	return err
+		// }
+		// var obj runtime.Object
+		// // ext := runtime.RawExtension{}
+
+		// err = decoder.Decode(obj)
+		// if err != nil {
+		// 	return err
+		// }
+
+		// log.Printf("RAW: %s\n", string(ext.Raw))
+
+		// TODO Single crd could include multiple objects.. we need to check if we actually got anything or do we want to move forward
+
+		// if err = yaml.Unmarshal(doc, &crd.Object); err != nil {
+		// 	return err
+		// }
+
+		// log.Printf("Read input: %s\n", crd.GetName())
+
+		return err
 	})
 
 	return errOuter
