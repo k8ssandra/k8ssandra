@@ -39,7 +39,7 @@ jobs:
         with:
           file: cmd/k8ssandra-client/Dockerfile
           push: true
-          tags: k8ssandra/k8ssandra-tools:${{ steps.vars.outputs.tag_name}},k8ssandra/k8ssandra-tools:latest
+          tags: k8ssandra/k8ssandra-tools:${{ steps.vars.outputs.tag_name}}
           platforms: linux/amd64
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache

@@ -55,11 +55,11 @@ vet:
 	go vet ./pkg/...
 	go vet ./tests/...
 
-cleaner-docker-build:
+tools-docker-build:
 	@echo Building ${TOOLS_REV_IMAGE}
 	docker build -t ${TOOLS_REV_IMAGE} -f cmd/k8ssandra-client/Dockerfile .
 	docker tag ${TOOLS_REV_IMAGE} ${TOOLS_LATEST_IMAGE}
 
-cleaner-docker-push:
+tools-docker-push:
 	docker push ${TOOLS_REV_IMAGE}
     docker push ${TOOLS_LATEST_IMAGE}
