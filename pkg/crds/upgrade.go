@@ -79,7 +79,6 @@ func (u *Upgrader) Upgrade(targetVersion string) ([]unstructured.Unstructured, e
 
 	for _, obj := range crds {
 		existingCrd := obj.DeepCopy()
-		log.Printf("Finding %s", obj.GetName())
 		err = u.client.Get(context.TODO(), client.ObjectKey{Name: obj.GetName()}, existingCrd)
 		if apierrors.IsNotFound(err) {
 			log.Printf("Creating %v\n", obj.GetName())

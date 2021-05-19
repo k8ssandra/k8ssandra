@@ -10,6 +10,7 @@ import (
 	"github.com/onsi/gomega/gexec"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/client-go/kubernetes/scheme"
 	"k8s.io/client-go/rest"
@@ -31,9 +32,7 @@ func TestAFunctionality(t *testing.T) {
 	g := NewWithT(t)
 
 	By("bootstrapping test environment")
-	testEnv = &envtest.Environment{
-		// CRDDirectoryPaths: []string{filepath.Join("..", "..", "charts", "cass-operator", "crds")},
-	}
+	testEnv = &envtest.Environment{}
 
 	var err error
 	cfg, err = testEnv.Start()
@@ -56,6 +55,8 @@ func TestAFunctionality(t *testing.T) {
 	}
 	g.Expect(k8sClient.Create(context.Background(), testNamespace)).Should(Succeed())
 
+	var cassdcCRD *unstructured.Unstructured
+
 	By("creating new upgrader")
 	u, err := NewWithClient(k8sClient)
 	g.Expect(err).Should(Succeed())
@@ -71,10 +72,20 @@ func TestAFunctionality(t *testing.T) {
 
 	var objs []runtime.Object
 	for _, crd := range crds {
+		if crd.GetName() == "cassandradatacenters.cassandra.datastax.com" {
+			cassdcCRD = crd.DeepCopy()
+		}
 		objs = append(objs, &crd)
 	}
 
 	envtest.WaitForCRDs(cfg, objs, testOptions)
+	err = k8sClient.Get(context.TODO(), client.ObjectKey{Name: cassdcCRD.GetName()}, cassdcCRD)
+	ver := cassdcCRD.GetResourceVersion()
+	g.Expect(err).Should(Succeed())
+
+	_, found, err := unstructured.NestedFieldNoCopy(cassdcCRD.Object, "spec", "validation", "openAPIV3Schema", "properties", "spec", "properties", "configSecret")
+	g.Expect(err).Should(Succeed())
+	g.Expect(found).To(BeFalse())
 
 	By("Upgrading to 1.1.0")
 	crds, err = u.Upgrade("1.1.0")
@@ -86,6 +97,10 @@ func TestAFunctionality(t *testing.T) {
 	}
 
 	envtest.WaitForCRDs(cfg, objs, testOptions)
+	err = k8sClient.Get(context.TODO(), client.ObjectKey{Name: cassdcCRD.GetName()}, cassdcCRD)
+	g.Expect(err).Should(Succeed())
+	g.Expect(cassdcCRD.GetResourceVersion()).ToNot(Equal(ver))
+	ver = cassdcCRD.GetResourceVersion()
 
 	By("Upgrading to 1.2.0-20210514022645-da7547a5")
 	crds, err = u.Upgrade("1.2.0-20210514022645-da7547a5")
@@ -97,8 +112,13 @@ func TestAFunctionality(t *testing.T) {
 	}
 
 	envtest.WaitForCRDs(cfg, objs, testOptions)
+	err = k8sClient.Get(context.TODO(), client.ObjectKey{Name: cassdcCRD.GetName()}, cassdcCRD)
+	g.Expect(err).Should(Succeed())
+	g.Expect(cassdcCRD.GetResourceVersion()).ToNot(Equal(ver))
 
-	// TODO Check that CassandraDatacenter has new property
+	_, found, err = unstructured.NestedFieldNoCopy(cassdcCRD.Object, "spec", "validation", "openAPIV3Schema", "properties", "spec", "properties", "configSecret")
+	g.Expect(err).Should(Succeed())
+	g.Expect(found).To(BeTrue())
 
 	By("tearing down the test environment")
 	gexec.KillAndWait(5 * time.Second)
