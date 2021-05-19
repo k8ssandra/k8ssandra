@@ -103,6 +103,9 @@ spec:
   {{- end }}
   {{- end }}
 {{- end }}
+{{- if .Values.cassandra.tolerations }}
+  tolerations: {{ toYaml .Values.cassandra.tolerations | nindent 4 }}
+{{- end }}
   configBuilderImage: docker.io/datastax/cass-config-builder:1.0.4
   config:
   {{- /*

@@ -161,6 +161,10 @@ cassandra:
   # for background on managing resources.
   resources: {}
 
+  # Tolerations to apply to the Cassandra pods. See
+  # https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/ for background.
+  tolerations: []
+
   datacenters:
 
   # Note the odd spacing below is to assist with docs generation
@@ -433,6 +437,10 @@ stargate:
         #   # -- Secret containing the TLS certificate and key for the listener
         #   secretName: tls-secret
 
+  # -- Tolerations to apply to the Stargate pods. See
+  # https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/ for background.
+  tolerations: []
+
 reaper:
   # -- When enabled, Reaper automatically sets up repair schedules for all
   # non-system keypsaces. Repear monitors the cluster so that as keyspaces are
@@ -497,6 +505,10 @@ reaper:
     traefik:
       # -- Traefik entrypoint where traffic is sourced. See https://doc.traefik.io/traefik/routing/entrypoints/
       entrypoint: web
+
+    # -- Tolerations to apply to the Reaper pods. See
+    # https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/ for background.
+  tolerations: []
 
 medusa:
   # -- Enable Medusa resources as part of this release. If enabled,

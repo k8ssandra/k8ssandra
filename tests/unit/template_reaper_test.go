@@ -1,6 +1,7 @@
 package unit_test
 
 import (
+	corev1 "k8s.io/api/core/v1"
 	"path/filepath"
 
 	helmUtils "github.com/k8ssandra/k8ssandra/tests/unit/utils/helm"
@@ -96,6 +97,31 @@ var _ = Describe("Verify Reaper template", func() {
 
 			renderTemplate(options)
 			Expect(reaper.Spec.ServerConfig.JmxUserSecretName).To(HavePrefix("nowyouseeme"))
+		})
+
+		It("using tolerations", func() {
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+				ValuesFiles:    []string{"./testdata/tolerations-values.yaml"},
+			}
+
+			Expect(renderTemplate(options)).To(Succeed())
+
+			tolerations := reaper.Spec.Tolerations
+			Expect(tolerations).To(ConsistOf(
+				corev1.Toleration{
+					Key:      "key1",
+					Operator: corev1.TolerationOpEqual,
+					Value:    "value1",
+					Effect:   corev1.TaintEffectNoSchedule,
+				},
+				corev1.Toleration{
+					Key:      "key2",
+					Operator: corev1.TolerationOpEqual,
+					Value:    "value2",
+					Effect:   corev1.TaintEffectNoSchedule,
+				},
+			))
 		})
 	})
 })
