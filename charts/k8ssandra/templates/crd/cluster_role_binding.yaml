@@ -3,6 +3,10 @@ kind: ClusterRoleBinding
 metadata:
   name: {{ .Release.Name }}-crd-upgrader-k8ssandra
   labels: {{ include "k8ssandra.labels" . | indent 4 }}
+  annotations:
+    "helm.sh/hook": pre-upgrade
+    "helm.sh/hook-delete-policy": hook-succeeded
+    "helm.sh/hook-weight": "2"
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
