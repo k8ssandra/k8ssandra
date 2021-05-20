@@ -1,6 +1,12 @@
 name: Regenerate Reference Docs
 on: 
-  - workflow_dispatch
+  push:
+    branches:
+      - main
+    paths:
+      - 'charts/**/Chart.yaml'
+      - 'charts/**/values.yaml'
+  workflow_dispatch:
 jobs:
   regenerate-docs:
     runs-on: ubuntu-latest
