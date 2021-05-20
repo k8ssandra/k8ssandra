@@ -21,6 +21,7 @@ and date `## vX.Y.Z - YYYY-MM-DD` and create a new placeholder section for  `unr
 ## v1.2.0 - 2021-06-02
 
 * [CHANGE] #726 Upgrade to Cassandra 4.0-rc1
+* [CHANGE] #768 Upgrade to medusa-operator v0.3.0
 * [FEATURE] #673, #698 Make tolerations configurable
 * [ENHANCEMENT] #654 Reduce initial delay of Stargate readiness probe
 * [ENHANCEMENT] #560 Add the ability to attach additional PVs for medusa backups
