@@ -3,7 +3,6 @@ package crds
 import (
 	"bytes"
 	"context"
-	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
@@ -39,7 +38,7 @@ func NewWithClient(c client.Client) (*Upgrader, error) {
 }
 
 // New returns a new Upgrader client
-func New(namespace, localPath string) (*Upgrader, error) {
+func New(namespace string) (*Upgrader, error) {
 	_ = api.AddToScheme(scheme.Scheme)
 	_ = apiextv1.AddToScheme(scheme.Scheme)
 	_ = apiextv1beta1.AddToScheme(scheme.Scheme)
@@ -64,7 +63,7 @@ func (u *Upgrader) Upgrade(targetVersion string) ([]unstructured.Unstructured, e
 
 	// If the targetCacheDirectory does not exist, download the chart
 	if _, err := os.Stat(extractDir); os.IsNotExist(err) {
-		fmt.Printf("Downloading release %s from Helm repository", targetVersion)
+		log.Printf("Downloading release %s from Helm repository", targetVersion)
 		extractDir, err = helmutil.DownloadChartRelease(targetVersion)
 		if err != nil {
 			return nil, err
