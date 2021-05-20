@@ -20,7 +20,7 @@ image:
   pullPolicy: IfNotPresent
   
   # -- Tag of the medusa-operator image to pull from image.repository
-  tag: v0.2.0
+  tag: v0.3.0
 
 # -- References to secrets to use when pulling images. ref:
 # https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
