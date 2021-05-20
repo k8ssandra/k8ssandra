@@ -3,6 +3,7 @@ package crds
 import (
 	"bytes"
 	"context"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
@@ -38,7 +39,7 @@ func NewWithClient(c client.Client) (*Upgrader, error) {
 }
 
 // New returns a new Upgrader client
-func New(namespace string) (*Upgrader, error) {
+func New(namespace, localPath string) (*Upgrader, error) {
 	_ = api.AddToScheme(scheme.Scheme)
 	_ = apiextv1.AddToScheme(scheme.Scheme)
 	_ = apiextv1beta1.AddToScheme(scheme.Scheme)
@@ -56,14 +57,24 @@ func New(namespace string) (*Upgrader, error) {
 
 // Upgrade installs the missing CRDs or updates them if they exists already
 func (u *Upgrader) Upgrade(targetVersion string) ([]unstructured.Unstructured, error) {
-	extractDir, err := helmutil.DownloadChartRelease(targetVersion)
+	extractDir, err := helmutil.GetChartTargetDir(targetVersion)
 	if err != nil {
+		return nil, err
+	}
+
+	// If the targetCacheDirectory does not exist, download the chart
+	if _, err := os.Stat(extractDir); os.IsNotExist(err) {
+		fmt.Printf("Downloading release %s from Helm repository", targetVersion)
+		extractDir, err = helmutil.DownloadChartRelease(targetVersion)
+		if err != nil {
+			return nil, err
+		}
+	} else if err != nil {
 		return nil, err
 	}
 
 	// reaper and medusa subdirs have the required yaml files
 	chartPath := filepath.Join(extractDir, helmutil.ChartName)
-	defer os.RemoveAll(chartPath)
 
 	crds := make([]unstructured.Unstructured, 0)
 

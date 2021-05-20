@@ -23,7 +23,7 @@ const (
 	UpgradeTestNamespace = "k8ssandra-upgrade-test"
 )
 
-func TestAFunctionality(t *testing.T) {
+func TestUpgradingCRDs(t *testing.T) {
 	var cfg *rest.Config
 	var k8sClient client.Client
 	var testEnv *envtest.Environment

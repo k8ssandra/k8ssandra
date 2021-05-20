@@ -1,9 +1,9 @@
 package helmutil
 
 import (
-	"fmt"
 	"io/ioutil"
 	"os"
+	"path/filepath"
 	"strings"
 
 	"helm.sh/helm/v3/pkg/chartutil"
@@ -22,6 +22,17 @@ const (
 	// ChartName is the name of k8ssandra's helm repo chart
 	ChartName = "k8ssandra"
 )
+
+func GetChartTargetDir(targetVersion string) (string, error) {
+	// Extract the files
+	subDir := filepath.Join("helm", targetVersion)
+	extractDir, err := GetCacheDir(subDir)
+	if err != nil {
+		return "", err
+	}
+
+	return extractDir, err
+}
 
 // DownloadChartRelease fetches the k8ssandra target version and extracts it to a directory which path is returned
 func DownloadChartRelease(targetVersion string) (string, error) {
@@ -92,14 +103,17 @@ func DownloadChartRelease(targetVersion string) (string, error) {
 		return "", err
 	}
 
-	// Extract the files
-	subDir := fmt.Sprintf("helm-%s", targetVersion)
-	extractDir, err := ioutil.TempDir("", subDir)
+	// extractDir is a target directory
+	extractDir, err := GetChartTargetDir(targetVersion)
 	if err != nil {
-		return "", err
+		return "", nil
 	}
 
-	// extractDir is a target directory
+	_, err = CreateIfNotExistsDir(extractDir)
+	if err != nil {
+		return "", nil
+	}
+
 	err = chartutil.ExpandFile(extractDir, saved)
 	if err != nil {
 		return "", err
