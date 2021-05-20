@@ -447,6 +447,10 @@ reaper:
   # added or removed repair schedules will be added or removed respectively.
   autoschedule: false
 
+  # -- Additional autoscheduling properties. Allows to customize the schedule rules
+  # for autoscheduling. Properties are the same as accepted by the Reaper.
+  autoschedule_properties: {}
+
   # -- Enable Reaper resources as part of this release. Note that Reaper uses
   # Cassandra's JMX APIs to perform repairs. When Reaper is enabled, Cassandra
   # will also be configured to allow remote JMX access. JMX authentication

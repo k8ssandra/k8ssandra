@@ -9,6 +9,11 @@ spec:
   serverConfig:
     autoScheduling:
       enabled: {{ .Values.reaper.autoschedule }}
+      {{- if .Values.reaper.autoschedule }}
+      {{- range $key, $value := .Values.reaper.autoschedule_properties }}
+      {{ $key }}: {{ $value }}
+      {{- end }}
+      {{- end }}
     storageType: cassandra
     jmxUserSecretName: {{ include "k8ssandra.reaperJmxUserSecretName" . }}
     cassandraBackend:
