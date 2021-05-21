@@ -1,6 +1,5 @@
 name: License Scanning
 on:
-  - pull_request
   - push
 jobs:
   build:
@@ -11,4 +10,4 @@ jobs:
       - name: Run FOSSA scan and upload build data
         uses: fossa-contrib/fossa-action@v1
         with:
-          fossa-api-key: 2d869069eb9c6957244ef3d28befb626
+          fossa-api-key: ${{ secrets.FOSSA_API_KEY }}
