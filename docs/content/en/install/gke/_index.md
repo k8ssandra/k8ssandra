@@ -16,7 +16,7 @@ Also available in followup topics are post-install steps and role-based consider
 
 ## Deployment
 
-This topic covers provisioning and installing the following infrastructure resources.
+This topic covers provisioning the following infrastructure resources.
 
 * 1x Google Compute Network (Virtual Private Cloud, or VPC)
 * 1x Subnet
@@ -40,7 +40,7 @@ On this infrastructure the K8ssandra installation will consist of the following 
 * 1x instance Grafana deployment
 * 1x instance Reaper deployment
 
-Feel free to update the parameters used during this guide to match your target deployment. The following should be considered a minimum for production workloads.
+Feel free to update the parameters used during this guide to match your target deployment. This should be considered a minimum for production workloads.
 
 {{% alert title="Quotas" color="primary" %}}
 This installation slightly exceeds the default quotas provided within a new project. Consider requesting the following quota requests to allow for the provisioning of this installation.
@@ -178,9 +178,6 @@ Initializing modules...
 
 Initializing the backend...
 
-Successfully configured the backend "gcs"! Terraform will automatically
-use this backend unless the backend configuration changes.
-
 Initializing provider plugins...
 - Finding hashicorp/google versions matching "~> 3.0"...
 - Finding latest version of hashicorp/google-beta...
@@ -192,22 +189,6 @@ Initializing provider plugins...
 # Output reduced for brevity
 
 Terraform has been successfully initialized!
-```
-
-Now we configure a workspace to hold our terraform state information.
-
-```console
-terraform workspace new my-workspace
-```
-
-**Output**:
-
-```bash
-Created and switched to workspace "my-workspace"!
-
-You're now on a new, empty workspace. Workspaces isolate their state,
-so if you run "terraform plan" Terraform will not see any existing state
-for this configuration.
 ```
 
 With the workspace configured we now instruct terraform to `plan` the required changes to our infrastructure (in this case creation).
@@ -248,7 +229,7 @@ terraform apply
 ```bash
 # Output reduced for brevity
 
-Do you want to perform these actions in workspace "my-workspace"?
+Do you want to perform these actions?
   Terraform will perform the actions described above.
   Only 'yes' will be accepted to approve.
 
@@ -318,22 +299,16 @@ With all of the infrastructure provisioned we can now focus on installing K8ssan
 
 In order to allow for backup and restore operations, we must create a service account for the Medusa operator which handles coordinating the movement of data to and from Google Cloud Storage (GCS) buckets. As part of the provisioning sections a service account was generated for this purposes. Here we will retrieve the authentication JSON file for this account and push it into Kubernetes as a secret.
 
-Looking at the output of `terraform plan` and `terraform apply` we can see the name of the service account which has been provisioned. Here we use the `gcloud` command line tools to retrieve keys for use by Medusa. In our reference implementation this value is `prod-k8ssandra-sa@k8ssandra-testing.iam.gserviceaccount.com`.
+Looking at the output of `terraform plan` and `terraform apply` we can see the name of the service account which has been provisioned. Here we use `terraform output` to retrieve keys for use by Medusa. In our reference implementation this value is `prod-k8ssandra-sa@k8ssandra-testing.iam.gserviceaccount.com`.
 
 ```console
-gcloud iam service-accounts keys create medusa.key.json --iam-account=prod-k8ssandra-sa@k8ssandra-testing.iam.gserviceaccount.com
-```
-
-**Output**:
-
-```bash
-created key [3e5b6e4a02936b20f6ae39bffe7d28f870c94fe6] of type [json] as [medusa.key.json] for [prod-k8ssandra-sa@k8ssandra-testing.iam.gserviceaccount.com]
+terraform output -json service_account_key > medusa_gcp_key.json
 ```
 
 With the key file on our local machine we can now push this file to Kubernetes as a secret with `kubectl`.
 
 ```bash
-kubectl create secret generic prod-k8ssandra-medusa-key --from-file=medusa_gcp_key.json=./medusa.key.json 
+kubectl create secret generic prod-k8ssandra-medusa-key --from-file=medusa_gcp_key.json=./medusa_gcp_key.json
 ```
 
 **Output**:
