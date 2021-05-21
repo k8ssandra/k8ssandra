@@ -5,7 +5,7 @@ metadata:
   labels: {{ include "k8ssandra.labels" . | indent 4 }}
   annotations:
     "helm.sh/hook": pre-upgrade
-    "helm.sh/hook-delete-policy": hook-succeeded
+    "helm.sh/hook-delete-policy": before-hook-creation
     "helm.sh/hook-weight": "10"
 spec:
   backoffLimit: 3

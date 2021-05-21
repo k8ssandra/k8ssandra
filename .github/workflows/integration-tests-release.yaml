@@ -40,11 +40,17 @@ jobs:
           key: ${{ runner.os }}-buildx-integ-${{ github.sha }}
           restore-keys: |
             ${{ runner.os }}-buildx-integ-
+      - name: Create chart release for the upgrader image
+        run: |
+          scripts/install-yq.sh v4.6.3
+          VER=$(yq eval '.version' charts/k8ssandra/Chart.yaml)
+          mkdir -p build/$VER
+          cp -rv charts/* build/$VER/
       - name: Build and push
         id: docker_build
         uses: docker/build-push-action@v2
         with:
-          file: cmd/k8ssandra-client/Dockerfile
+          file: cmd/k8ssandra-client/Dockerfile.it
           push: false
           tags: k8ssandra/k8ssandra-tools:latest
           platforms: linux/amd64
