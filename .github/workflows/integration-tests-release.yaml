@@ -43,7 +43,7 @@ jobs:
       - name: Create chart release for the upgrader image
         run: |
           scripts/install-yq.sh v4.6.3
-          VER=$(yq eval '.version' charts/k8ssandra/Chart.yaml)
+          VER=$(bin/yq eval '.version' charts/k8ssandra/Chart.yaml)
           mkdir -p build/$VER
           cp -rv charts/* build/$VER/
       - name: Build and push
