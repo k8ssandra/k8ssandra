@@ -345,7 +345,7 @@ stargate:
   readinessInitialDelaySeconds: 30
 
   # -- Configures the Cassandra user used by Stargate when authentication is
-  # enabled. If neither `cassandraUser.secret` nor `casandraUser.username` are
+  # enabled. If neither `cassandraUser.secret` nor `cassandraUser.username` are
   # set, then a Cassandra user and a secret will be created. The username will
   # be `stargate`. The secret name will be of the form `{clusterName}-stargate`. The
   # password will be a random 20 character password. If `cassandraUser.secret`
@@ -468,7 +468,7 @@ reaper:
     tag: 2.2.2
 
   # -- Configures the Cassandra user used by Reaper when authentication is
-  # enabled. If neither cassandraUser.secret nor casandraUser.username are
+  # enabled. If neither cassandraUser.secret nor cassandraUser.username are
   # set, then a Cassandra user and a secret with the user's credentials will
   # be created. The username will be reaper. The secret name will be of the
   # form {clusterName}-reaper. The password will be a random 20 character
@@ -530,7 +530,7 @@ medusa:
     pullPolicy: IfNotPresent
 
   # -- Configures the Cassandra user used by Medusa when authentication is
-  # enabled. If neither `cassandraUser.secret` nor `casandraUser.username` are
+  # enabled. If neither `cassandraUser.secret` nor `cassandraUser.username` are
   # set, then a Cassandra user and a secret will be created. The username will
   # be medusa. The secret name will be of the form {clusterName}-medusa. The
   # password will be a random 20 character password. If `cassandraUser.secret`
