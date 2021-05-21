@@ -1,0 +1,16 @@
+name: Dependency and License Scan
+on:
+  push:
+    branches:
+      - main
+  pull-request:
+    branches:
+      - main
+jobs:
+  scan-repo:
+    runs-on: ubuntu-latest
+    env:
+      FOSSA_API_KEY: ${{ secrets.FOSSA_API_KEY }}
+    steps:
+      - name: Scan for dependencies and licenses
+        run: scripts/license-check.sh

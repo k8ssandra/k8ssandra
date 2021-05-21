@@ -63,3 +63,6 @@ cleaner-docker-build:
 cleaner-docker-push:
 	docker push ${CLEANER_REV_IMAGE}
     docker push ${CLEANER_LATEST_IMAGE}
+
+license-check:
+	./scripts/license-check.sh
