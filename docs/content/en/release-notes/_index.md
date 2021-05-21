@@ -144,4 +144,9 @@ To submit documentation comments or edits, see [Contribution guidelines]({{< rel
 
 Read the K8ssandra [FAQs]({{< relref "faqs" >}}) - for starters, how to pronounce "K8ssandra." 
 
-If you're impatient, jump right in with the K8ssandra [install]({{< relref "install" >}}) steps for [local]({{< relref "install/local" >}}), Google Kubernetes Engine ([GKE]({{< relref "install/gke" >}})), and Amazon Elastic Kubernetes Service ([EKS]({{< relref "install/eks" >}})) platforms; plus a signup form for an upcoming install topic detailing K8ssandra on Microsoft Azure Kubernetes Service ([AKS]({{< relref "install/aks" >}})).
+If you're impatient, jump right in with the K8ssandra [install]({{< relref "install" >}}) steps for these platforms:
+
+* [Local]({{< relref "install/local" >}})
+* Google Kubernetes Engine ([GKE]({{< relref "install/gke" >}}))
+* Amazon Elastic Kubernetes Service ([EKS]({{< relref "install/eks" >}}))
+* Microsoft Azure Kubernetes Service ([AKS]({{< relref "install/aks" >}}))
