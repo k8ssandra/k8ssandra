@@ -29,7 +29,7 @@
 | replicaCount | int | `1` | Sets the number of reaper-operator pods. |
 | image.repository | string | `"docker.io/k8ssandra/reaper-operator"` | Container repository where the reaper-operator resides |
 | image.pullPolicy | string | `"IfNotPresent"` | Pull policy for the operator container |
-| image.tag | string | `"v0.1.1"` | Tag of the reaper-operator image to pull from image.repository |
+| image.tag | string | `"v0.3.1"` | Tag of the reaper-operator image to pull from image.repository |
 | imagePullSecrets | list | `[]` | References to secrets to use when pulling images. ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/ |
 | serviceAccount.annotations | object | `{}` | Annotations for the reaper-operator service account. |
 | podAnnotations | object | `{}` | Annotations for the reaper-operator pod. |
