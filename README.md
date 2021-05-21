@@ -62,7 +62,7 @@ environment check out the [Getting Started guide](https://k8ssandra.io/get-start
 
 We are always looking for contributions to the docs, helm charts, and underlying
 components. Check out the [code contribution guide](https://k8ssandra.io/community/code-contribution-guidelines/) 
-and [docs contribution guide](https://k8ssandra.io/docs/contribution-guidelines/)
+and [docs contribution guide](httpshttps://docs.k8ssandra.io/contribute/)
 
 If you are a **developer** interested in working with the K8ssandra code, here is a 
 [quick start](https://github.com/k8ssandra/k8ssandra/blob/main/dev-quick-start.md) introduction to:
