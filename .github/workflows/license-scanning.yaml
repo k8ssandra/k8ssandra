@@ -1,6 +1,8 @@
 name: License Scanning
 on:
-  - push
+  push:
+    branches:
+     - main
 jobs:
   build:
     runs-on: ubuntu-latest
