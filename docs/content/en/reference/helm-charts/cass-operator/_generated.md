@@ -6,12 +6,12 @@
 
 | Name | Email | Url |
 | ---- | ------ | --- |
-| Cass Operator Team | cass-operator@datastax.com | https://github.com/datastax/cass-operator |
+| Cass Operator Team | cass-operator@datastax.com | https://github.com/k8ssandra/cass-operator |
 | K8ssandra Team | k8ssandra-developers@googlegroups.com | https://github.com/k8ssandra |
 
 ## Source Code
 
-* <https://github.com/datastax/cass-operator>
+* <https://github.com/k8ssandra/cass-operator>
 * <https://github.com/k8ssandra/k8ssandra/tree/main/charts/cass-operator>
 
 ## Requirements
@@ -31,9 +31,9 @@
 | clusterScoped | bool | `false` | Determines whether cass-operator only watch and manages CassandraDatacenters in the same namespace in which the operator is deployed or if watches and manages CassandraDatacenters across all namespaces. |
 | admissionWebhooks | object | `{"enabled":false}` | Configures admission webhooks deployed with cass-operator. |
 | admissionWebhooks.enabled | bool | `false` | Turns the admission webhooks on or off |
-| image.repository | string | `"docker.io/datastax/cass-operator"` | Docker repository for cass-operator |
+| image.repository | string | `"docker.io/k8ssandra/cass-operator"` | Docker repository for cass-operator |
 | image.pullPolicy | string | `"IfNotPresent"` | Pull policy for the operator container |
-| image.tag | string | `"1.6.0"` | Tag of the cass-operator image to pull from image.repository |
+| image.tag | string | `"v1.7.0"` | Tag of the cass-operator image to pull from image.repository |
 | image.registryOverride | string | `nil` | Docker registry containing all cass-operator related images. Setting this allows for usage of an internal registry without specifying serverImage, configBuilderImage, and busyboxImage on all CassandraDatacenter objects. |
 | imagePullSecrets | list | `[]` | References to secrets to use when pulling images. See: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/ |
 | serviceAccount.annotations | object | `{}` | Annotations to add to the service account. |
