@@ -92,7 +92,7 @@ Provisions and configures an instance of the entire K8ssandra stack. This includ
 | stargate.ingress.cassandra.traefik.entrypoint | string | `"cassandra"` | Traefik entrypoint where traffic is sourced. See https://doc.traefik.io/traefik/routing/entrypoints/ |
 | stargate.tolerations | list | `[]` | Tolerations to apply to the Stargate pods. See https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/ for background. |
 | reaper.autoschedule | bool | `false` | When enabled, Reaper automatically sets up repair schedules for all non-system keypsaces. Repear monitors the cluster so that as keyspaces are added or removed repair schedules will be added or removed respectively. |
-| reaper.autoschedule_properties | object | `{}` | Additional autoscheduling properties. Allows to customize the schedule rules for autoscheduling. Properties are the same as accepted by the Reaper. |
+| reaper.autoschedule_properties | object | `{}` | Additional autoscheduling properties. Allows you to customize the schedule rules for autoscheduling. Properties are the same as accepted by the Reaper. |
 | reaper.enabled | bool | `true` | Enable Reaper resources as part of this release. Note that Reaper uses Cassandra's JMX APIs to perform repairs. When Reaper is enabled, Cassandra will also be configured to allow remote JMX access. JMX authentication will be configured in Cassandra with credentials only created for Reaper in order to limit access. |
 | reaper.image.repository | string | `"docker.io/thelastpickle/cassandra-reaper"` | Specifies the container repository for cassandra-reaper |
 | reaper.image.tag | string | `"2.2.2"` | Tag of an image within the specified repository |

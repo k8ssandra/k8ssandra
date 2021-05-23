@@ -447,7 +447,7 @@ reaper:
   # added or removed repair schedules will be added or removed respectively.
   autoschedule: false
 
-  # -- Additional autoscheduling properties. Allows to customize the schedule rules
+  # -- Additional autoscheduling properties. Allows you to customize the schedule rules
   # for autoscheduling. Properties are the same as accepted by the Reaper.
   autoschedule_properties: {}
 
