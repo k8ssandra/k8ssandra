@@ -24,7 +24,7 @@ done
 # Extract restore information
 for restore in $(kubectl get CassandraRestore -n $k8ssandra_ns|grep -v "NAME"|cut -d' ' -f1); do
     echo "Storing artifacts for restore $restore..."
-    kubectl describe CassandraBackup/$restore -n $k8ssandra_ns > $ARTIFACTS_DIR/restore_${restore}_describe.txt
-    kubectl get CassandraBackup/$restore -o yaml -n $k8ssandra_ns > $ARTIFACTS_DIR/restore_${restore}.txt
+    kubectl describe CassandraRestore/$restore -n $k8ssandra_ns > $ARTIFACTS_DIR/restore_${restore}_describe.txt
+    kubectl get CassandraRestore/$restore -o yaml -n $k8ssandra_ns > $ARTIFACTS_DIR/restore_${restore}.txt
 done
 
