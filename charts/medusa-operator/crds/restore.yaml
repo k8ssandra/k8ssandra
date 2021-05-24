@@ -1,4 +1,4 @@
-
+---
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
@@ -21,10 +21,14 @@ spec:
           description: CassandraRestore is the Schema for the cassandrarestores API
           properties:
             apiVersion:
-              description: 'APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+              description: 'APIVersion defines the versioned schema of this representation
+              of an object. Servers should convert recognized schemas to the latest
+              internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
               type: string
             kind:
-              description: 'Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+              description: 'Kind is a string value representing the REST resource this
+              object represents. Servers may infer this from the endpoint the client
+              submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
               type: string
             metadata:
               type: object
@@ -47,10 +51,14 @@ spec:
                     - name
                   type: object
                 inPlace:
-                  description: When true the restore will be performed on the source cluster from which the backup was taken. There will be a rolling restart of the source cluster.
+                  description: When true the restore will be performed on the source
+                    cluster from which the backup was taken. There will be a rolling
+                    restart of the source cluster.
                   type: boolean
                 shutdown:
-                  description: When set to true, the cluster is shutdown before the restore is applied. This is necessary process if there are schema changes between the backup and current schema. Recommended.
+                  description: When set to true, the cluster is shutdown before the
+                    restore is applied. This is necessary process if there are schema
+                    changes between the backup and current schema. Recommended.
                   type: boolean
               required:
                 - backup
