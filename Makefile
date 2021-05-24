@@ -6,12 +6,12 @@ REG?=docker.io
 BRANCH=$(shell git rev-parse --abbrev-ref HEAD)
 REV=$(shell git rev-parse --short=12 HEAD)
 
-CLEANER_IMAGE_BASE=$(REG)/$(ORG)/k8ssandra-cleaner
-CLEANER_REV_IMAGE=$(CLEANER_IMAGE_BASE):$(REV)
-CLEANER_LATEST_IMAGE=$(CLEANER_IMAGE_BASE):latest
+TOOLS_IMAGE_BASE=$(REG)/$(ORG)/k8ssandra-tools
+TOOLS_REV_IMAGE=$(TOOLS_IMAGE_BASE):$(REV)
+TOOLS_LATEST_IMAGE=$(TOOLS_IMAGE_BASE):latest
 
 # Image URL to use all building/pushing image targets
-CLEANER_IMG ?= $(CLEANER_LATEST_IMAGE)
+TOOLS_IMG ?= $(TOOLS_LATEST_IMAGE)
 
 TESTS=all
 GO_FLAGS=
@@ -55,11 +55,11 @@ vet:
 	go vet ./pkg/...
 	go vet ./tests/...
 
-cleaner-docker-build:
-	@echo Building ${CLEANER_REV_IMAGE}
-	docker build -t ${CLEANER_REV_IMAGE} -f cmd/k8ssandra-client/Dockerfile .
-	docker tag ${CLEANER_REV_IMAGE} ${CLEANER_LATEST_IMAGE}
+tools-docker-build:
+	@echo Building ${TOOLS_REV_IMAGE}
+	docker build -t ${TOOLS_REV_IMAGE} -f cmd/k8ssandra-client/Dockerfile .
+	docker tag ${TOOLS_REV_IMAGE} ${TOOLS_LATEST_IMAGE}
 
-cleaner-docker-push:
-	docker push ${CLEANER_REV_IMAGE}
-    docker push ${CLEANER_LATEST_IMAGE}
+tools-docker-push:
+	docker push ${TOOLS_REV_IMAGE}
+    docker push ${TOOLS_LATEST_IMAGE}

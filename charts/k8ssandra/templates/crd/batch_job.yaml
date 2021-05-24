@@ -1,11 +1,12 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: {{ .Release.Name }}-cleaner-job-k8ssandra
+  name: {{ .Release.Name }}-crd-upgrader-job-k8ssandra
   labels: {{ include "k8ssandra.labels" . | indent 4 }}
   annotations:
-    "helm.sh/hook": pre-delete
-    "helm.sh/hook-delete-policy": hook-succeeded,before-hook-creation
+    "helm.sh/hook": pre-upgrade
+    "helm.sh/hook-delete-policy": before-hook-creation
+    "helm.sh/hook-weight": "10"
 spec:
   backoffLimit: 3
   template:
@@ -13,10 +14,10 @@ spec:
       labels: {{ include "k8ssandra.labels" . | indent 8 }}
     spec:
       restartPolicy: OnFailure
-      serviceAccountName: {{ .Release.Name }}-cleaner-k8ssandra
+      serviceAccountName: {{ .Release.Name }}-crd-upgrader-k8ssandra
       containers:
-        - name: cleaner-job-k8ssandra
-          image: {{ .Values.cleaner.image }}
+        - name: crd-upgrade-job-k8ssandra
+          image: {{ .Values.client.image }}
           imagePullPolicy: IfNotPresent
           env:
             - name: POD_NAMESPACE
@@ -24,6 +25,6 @@ spec:
                 fieldRef:
                   fieldPath: metadata.namespace
           args:
-            - -clean
-            - --release
-            - {{ .Release.Name }}
+            - -upgradecrds
+            - --targetVersion
+            - {{ .Chart.Version }}

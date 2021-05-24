@@ -13,9 +13,6 @@ import (
 	"testing"
 	"time"
 
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"sigs.k8s.io/controller-runtime/pkg/client"
-
 	"github.com/gruntwork-io/terratest/modules/helm"
 	"github.com/gruntwork-io/terratest/modules/k8s"
 	cassdcapi "github.com/k8ssandra/cass-operator/operator/pkg/apis/cassandra/v1beta1"
@@ -23,7 +20,9 @@ import (
 	appsv1 "k8s.io/api/apps/v1"
 	v1 "k8s.io/api/core/v1"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 const (
@@ -458,6 +457,38 @@ func DeleteNamespace(t *testing.T, namespace string) {
 	} else if apierrors.IsNotFound(err) {
 		t.Logf("failed to delete namespace %s. namespace could not be retrieved: %s", namespace, err)
 	}
+}
+
+func InstallK8ssandraFromRepo(t *testing.T, namespace, version string) {
+	kubectlOptions := getKubectlOptions(namespace)
+	// Namespace doesn't exist yet, let's create it
+	options := &helm.Options{KubectlOptions: kubectlOptions}
+
+	t.Logf("Installing version %s from helm.k8ssandra.io", version)
+
+	_, err := helm.RunHelmCommandAndGetOutputE(t, options, "repo", "add", "k8ssandra", "https://helm.k8ssandra.io/stable")
+	g(t).Expect(err).To(BeNil())
+	_, err = helm.RunHelmCommandAndGetOutputE(t, options, "repo", "update")
+	g(t).Expect(err).To(BeNil())
+
+	helmOptions := &helm.Options{
+		KubectlOptions: k8s.NewKubectlOptions("", "", namespace),
+		Version:        version,
+	}
+
+	err = helm.InstallE(t, helmOptions, "k8ssandra/k8ssandra", releaseName)
+	g(t).Expect(err).To(BeNil())
+
+	// Wait for cass-operator pod to be ready
+	g(t).Eventually(func() bool {
+		return PodWithLabelsIsReady(t, namespace, map[string]string{"app.kubernetes.io/name": "cass-operator"})
+	}, retryTimeout, retryInterval).Should(BeTrue())
+
+	// Wait for CassandraDatacenter to be udpating..
+	WaitForCassDcToBeUpdating(t, namespace)
+
+	// Wait for CassandraDatacenter to be ready..
+	WaitForCassDcToBeReady(t, namespace)
 }
 
 func InstallTraefik(t *testing.T) {

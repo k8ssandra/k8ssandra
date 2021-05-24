@@ -25,8 +25,47 @@ on:
       - published
 
 jobs:
+  build_docker_images:
+    name: Build Docker Images
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code into the Go module directory
+        uses: actions/checkout@v2
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+      - name: Cache Docker layers
+        uses: actions/cache@v2
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-integ-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-integ-
+      - name: Create chart release for the upgrader image
+        run: |
+          scripts/install-yq.sh v4.6.3
+          VER=$(bin/yq eval '.version' charts/k8ssandra/Chart.yaml)
+          mkdir -p build/$VER
+          cp -rv charts/* build/$VER/
+      - name: Build and push
+        id: docker_build
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          file: cmd/k8ssandra-client/Dockerfile.it
+          push: false
+          tags: k8ssandra/k8ssandra-tools:latest
+          platforms: linux/amd64
+          outputs: type=docker,dest=/tmp/k8ssandra-tools.tar
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache
+      - name: Upload k8ssandra-tools image
+        uses: actions/upload-artifact@v2
+        with:
+          name: k8ssandra-tools
+          path: /tmp/k8ssandra-tools.tar
   integration-tests:
     runs-on: ubuntu-latest
+    needs: build_docker_images
     strategy:
       fail-fast: false
       matrix:
@@ -60,6 +99,20 @@ jobs:
           node_image: kindest/node:v1.20.2
           cluster_name: kind
           config: tests/integration/kind/kind_config_3_workers.yaml
+
+      - name: Download k8ssandra-tools image
+        uses: actions/download-artifact@v2
+        with:
+          name: k8ssandra-tools
+          path: /tmp
+
+      - name: Load Docker images
+        run: |
+          docker load --input /tmp/k8ssandra-tools.tar
+
+      - name: Load image on the nodes of the cluster
+        run: |
+          kind load docker-image --name=kind k8ssandra/k8ssandra-tools:latest
 
       - name: Install Dependencies
         run: |
