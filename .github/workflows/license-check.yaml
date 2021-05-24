@@ -16,11 +16,17 @@ jobs:
       FOSSA_API_KEY: ${{ secrets.FOSSA_API_KEY }}
     steps:
       - name: Scan for dependencies and licenses
+        shell: bash
         run: |
+          pwd
+          ls -al
           # Download latest Fossa CLI distribution
+          echo "Downloading fossa-cli tooling..."
           curl -H 'Cache-Control: no-cache' https://raw.githubusercontent.com/fossas/fossa-cli/master/install.sh | bash
           # Init the project (if necessary)
+          echo "Initializing Fossa project..."
           fossa init
           # Analyze the project
           # This requires an environment varaible called FOSSA_API_KEY
+          echo "Analyzing the project..."
           fossa analyze
