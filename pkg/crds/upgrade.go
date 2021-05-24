@@ -1,8 +1,10 @@
 package crds
 
 import (
+	"bufio"
 	"bytes"
 	"context"
+	"io"
 	"io/ioutil"
 	"log"
 	"os"
@@ -144,56 +146,53 @@ func parseChartCRDs(crds *[]unstructured.Unstructured, crdDir string) error {
 			return err
 		}
 
-		dec := deser.NewDecodingSerializer(unstructured.UnstructuredJSONScheme)
-
 		if len(b) == 0 {
-			log.Printf("Skipping %s\n", path)
-			// TODO Implement skipping this, it's a YAML with "---" starter
 			return nil
 		}
 
-		crd := unstructured.Unstructured{}
-		_, gvk, err := dec.Decode(b, nil, &crd)
+		docs, err := parseCRDYamls(b)
 		if err != nil {
 			return err
 		}
+		dec := deser.NewDecodingSerializer(unstructured.UnstructuredJSONScheme)
 
-		if gvk.Kind != "CustomResourceDefinition" {
-			return nil
+		for _, b := range docs {
+			crd := unstructured.Unstructured{}
+
+			_, gvk, err := dec.Decode(b, nil, &crd)
+			if err != nil {
+				continue
+			}
+
+			if gvk.Kind != "CustomResourceDefinition" {
+				continue
+			}
+
+			*crds = append(*crds, crd)
 		}
-
-		*crds = append(*crds, crd)
-		// }
-
-		// reader := k8syaml.NewYAMLReader(bufio.NewReader(bytes.NewReader(b)))
-
-		_ = k8syaml.NewYAMLOrJSONDecoder(bytes.NewReader(b), 4096)
-
-		// doc, err := reader.Read()
-		// // log.Printf("Doc read: %s\n", string(doc))
-		// if err != nil {
-		// 	return err
-		// }
-		// var obj runtime.Object
-		// // ext := runtime.RawExtension{}
-
-		// err = decoder.Decode(obj)
-		// if err != nil {
-		// 	return err
-		// }
-
-		// log.Printf("RAW: %s\n", string(ext.Raw))
-
-		// TODO Single crd could include multiple objects.. we need to check if we actually got anything or do we want to move forward
-
-		// if err = yaml.Unmarshal(doc, &crd.Object); err != nil {
-		// 	return err
-		// }
-
-		// log.Printf("Read input: %s\n", crd.GetName())
 
 		return err
 	})
 
 	return errOuter
+}
+
+func parseCRDYamls(b []byte) ([][]byte, error) {
+	docs := [][]byte{}
+	reader := k8syaml.NewYAMLReader(bufio.NewReader(bytes.NewReader(b)))
+	for {
+		// Read document
+		doc, err := reader.Read()
+		if err != nil {
+			if err == io.EOF {
+				break
+			}
+
+			return nil, err
+		}
+
+		docs = append(docs, doc)
+	}
+
+	return docs, nil
 }
