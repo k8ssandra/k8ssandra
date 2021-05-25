@@ -8,7 +8,7 @@ cassandra:
   ingress:
     enabled: false
   loggingSidecar:
-    enabled: false
+    enabled: true
 stargate:
   enabled: false
 reaper:
