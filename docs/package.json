@@ -16,7 +16,6 @@
     "url": "https://github.com/k8ssandra/k8ssandra-io/issues"
   },
   "homepage": "https://github.com/k8ssandra/k8ssandra-io#readme",
-  "dependencies": {},
   "devDependencies": {
     "autoprefixer": "^9.8.6",
     "postcss-cli": "^7.1.2"
