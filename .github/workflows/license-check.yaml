@@ -24,9 +24,10 @@ jobs:
       - name: Initialize project
         shell: bash
         run: |
+          echo "FOSSA_API_KEY:"
+          ${FOSSA_API_KEY}
           fossa init
-          echo $FOSSA_API_KEY
-          echo ${{ secrets.FOSSA_PUSH_ONLY_API_KEY }}
+          printf "%s" '${{ secrets.FOSSA_PUSH_ONLY_API_KEY }}'
       - name: Scan for dependencies and licenses
         shell: bash
         run: |
