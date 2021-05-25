@@ -21,6 +21,12 @@ jobs:
           pwd
           echo $GITHUB_PATH
           ls
+          cd scripts
+          pwd
+          ls
+          cd..
+          pwd
+          ls
           # Download latest Fossa CLI distribution
           echo "Downloading fossa-cli tooling..."
           curl -H 'Cache-Control: no-cache' https://raw.githubusercontent.com/fossas/fossa-cli/master/install.sh | bash
