@@ -28,4 +28,5 @@ jobs:
       - name: Scan for dependencies and licenses
         shell: bash
         run: |
+          echo $FOSSA_API_KEY
           fossa analyze
