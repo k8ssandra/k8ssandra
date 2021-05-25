@@ -21,4 +21,4 @@ jobs:
       - name: Initialize project
         run: fossa init
       - name: Scan for dependencies and licenses
-        run: FOSSA_API_KEY="${{ secrets.GCP_HELM_BUCKET_NAME }}" fossa analyze
+        run: FOSSA_API_KEY=${{ secrets.FOSSA_PUSH_ONLY_API_KEY }} fossa analyze
