@@ -13,7 +13,7 @@ jobs:
   scan-repo:
     runs-on: ubuntu-latest
     env:
-          FOSSA_API_KEY: ${{ secrets.FOSSA_PUSH_ONLY_API_KEY }}
+      FOSSA_API_KEY: ${{ secrets.FOSSA_PUSH_ONLY_API_KEY }}
     steps:
       - name: Check out code
         uses: actions/checkout@v2
