@@ -25,6 +25,8 @@ jobs:
         shell: bash
         run: |
           fossa init
+          echo $FOSSA_API_KEY
+          echo ${{ secrets.FOSSA_PUSH_ONLY_API_KEY }}
       - name: Scan for dependencies and licenses
         shell: bash
         run: |
