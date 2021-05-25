@@ -20,7 +20,8 @@ jobs:
       - name: Debug
         run: echo "FOSSA_API_KEY $FOSSA_API_KEY"
       - name: Install Fossa CLI
-        run: curl -H 'Cache-Control: no-cache' https://raw.githubusercontent.com/fossas/fossa-cli/master/install.sh | bash
+        run: |
+          curl -H 'Cache-Control: no-cache' https://raw.githubusercontent.com/fossas/fossa-cli/master/install.sh | bash
       - name: Initialize project
         run: fossa init
       - name: Scan for dependencies and licenses
