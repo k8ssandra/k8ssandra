@@ -18,17 +18,15 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v2
       - name: Install Fossa CLI
-        shell: bash
         run: |
           curl -H 'Cache-Control: no-cache' https://raw.githubusercontent.com/fossas/fossa-cli/master/install.sh | bash
       - name: Initialize project
-        shell: bash
         run: |
           echo "FOSSA_API_KEY:"
-          ${FOSSA_API_KEY}
+          echo ${FOSSA_API_KEY}
           fossa init
+          echo "FOSSA_PUSH_ONLY_API_KEY:"
           printf "%s" '${{ secrets.FOSSA_PUSH_ONLY_API_KEY }}'
       - name: Scan for dependencies and licenses
-        shell: bash
         run: |
-          fossa analyze
+          ${FOSSA_API_KEY} fossa analyze
