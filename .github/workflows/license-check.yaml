@@ -15,25 +15,17 @@ jobs:
     env:
       FOSSA_API_KEY: ${{ secrets.FOSSA_API_KEY }}
     steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+      - name: Install Fossa CLI
+        shell: bash
+        run: |
+          curl -H 'Cache-Control: no-cache' https://raw.githubusercontent.com/fossas/fossa-cli/master/install.sh | bash
+      - name: Initialize project
+        shell: bash
+        run: |
+          fossa init
       - name: Scan for dependencies and licenses
         shell: bash
         run: |
-          pwd
-          echo $GITHUB_PATH
-          ls
-          cd scripts
-          pwd
-          ls
-          cd..
-          pwd
-          ls
-          # Download latest Fossa CLI distribution
-          echo "Downloading fossa-cli tooling..."
-          curl -H 'Cache-Control: no-cache' https://raw.githubusercontent.com/fossas/fossa-cli/master/install.sh | bash
-          # Init the project (if necessary)
-          echo "Initializing Fossa project..."
-          fossa init
-          # Analyze the project
-          # This requires an environment varaible called FOSSA_API_KEY
-          echo "Analyzing the project..."
           fossa analyze
