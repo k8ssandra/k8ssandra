@@ -17,12 +17,10 @@ jobs:
     steps:
       - name: Check out code
         uses: actions/checkout@v2
-      - name: Debug
-        run: echo "FOSSA_API_KEY $FOSSA_API_KEY"
       - name: Install Fossa CLI
         run: |
           curl -H 'Cache-Control: no-cache' https://raw.githubusercontent.com/fossas/fossa-cli/master/install.sh | bash
       - name: Initialize project
         run: fossa init
       - name: Scan for dependencies and licenses
-        run: fossa analyze
+        run: FOSSA_API_KEY=47ee159e2eb14860802560a5bd85a750 fossa analyze
