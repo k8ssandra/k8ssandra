@@ -12,8 +12,6 @@ on:
 jobs:
   scan-repo:
     runs-on: ubuntu-latest
-    env:
-      FOSSA_API_KEY: ${{ secrets.FOSSA_PUSH_ONLY_API_KEY }}
     steps:
       - name: Check out code
         uses: actions/checkout@v2
@@ -23,4 +21,4 @@ jobs:
       - name: Initialize project
         run: fossa init
       - name: Scan for dependencies and licenses
-        run: FOSSA_API_KEY=47ee159e2eb14860802560a5bd85a750 fossa analyze
+        run: FOSSA_API_KEY=${{ secrets.FOSSA_PUSH_ONLY_API_KEY }} fossa analyze
