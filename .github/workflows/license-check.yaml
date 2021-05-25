@@ -28,4 +28,4 @@ jobs:
       - name: Scan for dependencies and licenses
         shell: bash
         run: |
-          ${{ secrets.FOSSA_API_KEY }} fossa analyze
+          FOSSA_API_KEY=${{ secrets.FOSSA_API_KEY }} fossa analyze
