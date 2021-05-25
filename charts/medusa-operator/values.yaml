@@ -14,13 +14,13 @@ replicaCount: 1
 
 image:
   # -- Container repository where the medusa-operator resides
-  repository: docker.io/k8ssandra/medusa-operator
+  repository: docker.io/jsanda/medusa-operator
 
   # -- Pull policy for the operator container
-  pullPolicy: IfNotPresent
+  pullPolicy: Always
   
   # -- Tag of the medusa-operator image to pull from image.repository
-  tag: v0.3.2
+  tag: latest
 
 # -- References to secrets to use when pulling images. ref:
 # https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
