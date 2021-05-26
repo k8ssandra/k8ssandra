@@ -68,4 +68,4 @@ tools-docker-build:
 
 tools-docker-kind-load: tools-docker-build
 	@echo Loading tools to kind
-	kind load docker-image k8ssandra/k8ssandra-tools:latest
+	kind load docker-image ${TOOLS_IMG}
