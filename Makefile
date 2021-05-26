@@ -1,17 +1,19 @@
 SHELL := /bin/bash
 
 ORG?=k8ssandra
-REG?=docker.io
 
 BRANCH=$(shell git rev-parse --abbrev-ref HEAD)
 REV=$(shell git rev-parse --short=12 HEAD)
 
-TOOLS_IMAGE_BASE=$(REG)/$(ORG)/k8ssandra-tools
+TOOLS_IMAGE_BASE=$(ORG)/k8ssandra-tools
 TOOLS_REV_IMAGE=$(TOOLS_IMAGE_BASE):$(REV)
 TOOLS_LATEST_IMAGE=$(TOOLS_IMAGE_BASE):latest
 
 # Image URL to use all building/pushing image targets
 TOOLS_IMG ?= $(TOOLS_LATEST_IMAGE)
+
+# Buildx params
+BUILDX_PARAMS=--load
 
 TESTS=all
 GO_FLAGS=
@@ -56,10 +58,12 @@ vet:
 	go vet ./tests/...
 
 tools-docker-build:
-	@echo Building ${TOOLS_REV_IMAGE}
-	docker build -t ${TOOLS_REV_IMAGE} -f cmd/k8ssandra-client/Dockerfile .
-	docker tag ${TOOLS_REV_IMAGE} ${TOOLS_LATEST_IMAGE}
+	@echo Building test version of ${TOOLS_REV_IMAGE}
+	VER=$(bin/yq eval '.version' charts/k8ssandra/Chart.yaml)
+	mkdir -p build/$VER
+	cp -rv charts/* build/$VER/
+	docker buildx build $(BUILDX_PARAMS) -t ${TOOLS_IMG} -f cmd/k8ssandra-client/Dockerfile.it .
 
-tools-docker-push:
-	docker push ${TOOLS_REV_IMAGE}
-    docker push ${TOOLS_LATEST_IMAGE}
+tools-docker-kind-load: tools-docker-build
+	@echo Loading tools to kind
+	kind load docker-image k8ssandra/k8ssandra-tools:latest
