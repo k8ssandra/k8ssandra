@@ -20,9 +20,13 @@ func CreateMedusaSecretWithFile(t *testing.T, namespace, secretFile string) {
 	k8s.KubectlApply(t, getKubectlOptions(namespace), medusaSecretPath)
 }
 
-func PerformBackup(t *testing.T, namespace, backupName string) {
+func PerformBackup(t *testing.T, namespace, backupName string, useLocalCharts bool) {
 	backupChartPath, err := filepath.Abs("../../charts/backup")
 	g(t).Expect(err).To(BeNil())
+
+	if !useLocalCharts {
+		backupChartPath = "k8ssandra/backup"
+	}
 
 	helmOptions := &helm.Options{
 		SetValues: map[string]string{

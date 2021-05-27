@@ -43,7 +43,7 @@ else
 	CLUSTER_CLEANUP=$(CLUSTER_CLEANUP) go test $(GO_FLAGS) -test.timeout=30m ./tests/integration -run=$(TESTS)
 endif
 
-kind-integ-test: create-kind-cluster integ-test
+kind-integ-test: create-kind-cluster tools-docker-kind-load integ-test
 
 create-kind-cluster:
 	kind delete cluster --name $(KIND_CLUSTER)
@@ -68,4 +68,5 @@ tools-docker-build:
 
 tools-docker-kind-load: tools-docker-build
 	@echo Loading tools to kind
-	kind load docker-image ${TOOLS_IMG}
+	kind load docker-image ${TOOLS_IMG} --name $(KIND_CLUSTER)
+

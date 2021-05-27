@@ -86,9 +86,19 @@ func getKubectlOptions(namespace string) *k8s.KubectlOptions {
 	return k8s.NewKubectlOptions("", "", namespace)
 }
 
-func deployCluster(t *testing.T, namespace, customValues string, helmValues map[string]string, upgrade bool) {
+func installK8ssandraHelmRepo(t *testing.T) {
+	helm.RunHelmCommandAndGetOutputE(t, &helm.Options{}, "repo", "add", "k8ssandra", "https://helm.k8ssandra.io/stable")
+	helm.RunHelmCommandAndGetOutputE(t, &helm.Options{}, "repo", "update")
+}
+
+func deployCluster(t *testing.T, namespace, customValues string, helmValues map[string]string, upgrade bool, useLocalCharts bool) {
 	clusterChartPath, err := filepath.Abs("../../charts/k8ssandra")
 	g(t).Expect(err).To(BeNil())
+
+	if !useLocalCharts {
+		installK8ssandraHelmRepo(t)
+		clusterChartPath = "k8ssandra/k8ssandra"
+	}
 
 	customChartPath, err := filepath.Abs("charts/" + customValues)
 	g(t).Expect(err).To(BeNil())
@@ -125,7 +135,7 @@ func deployCluster(t *testing.T, namespace, customValues string, helmValues map[
 	WaitForCassDcToBeReady(t, namespace)
 }
 
-func DeployClusterWithValues(t *testing.T, namespace, options, customValues string, nodes int, upgrade bool) {
+func DeployClusterWithValues(t *testing.T, namespace, options, customValues string, nodes int, upgrade bool, useLocalCharts bool) {
 	log.Printf("Deploying a cluster with %s options using the %s values", options, customValues)
 
 	helmValues := map[string]string{}
@@ -142,7 +152,7 @@ func DeployClusterWithValues(t *testing.T, namespace, options, customValues stri
 	}
 	helmValues["cassandra.datacenters[0].size"] = strconv.Itoa(nodes)
 	helmValues["cassandra.datacenters[0].name"] = datacenterName
-	deployCluster(t, namespace, customValues, helmValues, upgrade)
+	deployCluster(t, namespace, customValues, helmValues, upgrade, useLocalCharts)
 }
 
 func WaitForCassDcToBeUpdating(t *testing.T, namespace string) {
@@ -457,44 +467,6 @@ func DeleteNamespace(t *testing.T, namespace string) {
 	} else if apierrors.IsNotFound(err) {
 		t.Logf("failed to delete namespace %s. namespace could not be retrieved: %s", namespace, err)
 	}
-}
-
-func InstallK8ssandraFromRepo(t *testing.T, namespace, version string) {
-	kubectlOptions := getKubectlOptions(namespace)
-	// Namespace doesn't exist yet, let's create it
-	options := &helm.Options{KubectlOptions: kubectlOptions}
-
-	t.Logf("Installing version %s from helm.k8ssandra.io", version)
-
-	_, err := helm.RunHelmCommandAndGetOutputE(t, options, "repo", "add", "k8ssandra", "https://helm.k8ssandra.io/stable")
-	g(t).Expect(err).To(BeNil())
-	_, err = helm.RunHelmCommandAndGetOutputE(t, options, "repo", "update")
-	g(t).Expect(err).To(BeNil())
-
-	helmOptions := &helm.Options{
-		KubectlOptions: k8s.NewKubectlOptions("", "", namespace),
-		Version:        version,
-		SetValues:      map[string]string{},
-	}
-
-	if os.Getenv("K8SSANDRA_CASSANDRA_VERSION") != "" {
-		log.Println(Info(fmt.Sprintf("Using Cassandra version %s", os.Getenv("K8SSANDRA_CASSANDRA_VERSION"))))
-		helmOptions.SetValues["cassandra.version"] = os.Getenv("K8SSANDRA_CASSANDRA_VERSION")
-	}
-
-	err = helm.InstallE(t, helmOptions, "k8ssandra/k8ssandra", releaseName)
-	g(t).Expect(err).To(BeNil())
-
-	// Wait for cass-operator pod to be ready
-	g(t).Eventually(func() bool {
-		return PodWithLabelsIsReady(t, namespace, map[string]string{"app.kubernetes.io/name": "cass-operator"})
-	}, retryTimeout, retryInterval).Should(BeTrue())
-
-	// Wait for CassandraDatacenter to be updating..
-	WaitForCassDcToBeUpdating(t, namespace)
-
-	// Wait for CassandraDatacenter to be ready..
-	WaitForCassDcToBeReady(t, namespace)
 }
 
 func InstallTraefik(t *testing.T) {

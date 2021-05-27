@@ -89,14 +89,14 @@ func TestFullStackScenario(t *testing.T) {
 
 	success := t.Run("Full Stack Test", func(t *testing.T) {
 		createMedusaSecretAndInstallDeps(t, namespace, medusaBackend)
-		deployFullStackCluster(t, namespace)
+		deployFullStackCluster(t, namespace, true)
 
 		t.Run("Test Reaper", func(t *testing.T) {
 			testReaper(t, namespace)
 		})
 
 		t.Run("Test Medusa", func(t *testing.T) {
-			testMedusa(t, namespace, medusaBackend, backupName)
+			testMedusa(t, namespace, medusaBackend, backupName, true)
 		})
 
 		t.Run("Test Prometheus", func(t *testing.T) {
@@ -121,8 +121,8 @@ func TestFullStackScenario(t *testing.T) {
 	cleanupCluster(t, namespace, success)
 }
 
-func deployFullStackCluster(t *testing.T, namespace string) {
-	DeployClusterWithValues(t, namespace, "minio", "cluster_full_stack.yaml", 3, false)
+func deployFullStackCluster(t *testing.T, namespace string, useLocalCharts bool) {
+	DeployClusterWithValues(t, namespace, "minio", "cluster_full_stack.yaml", 3, false, useLocalCharts)
 	checkResourcePresenceForReaper(t, namespace)
 	waitForReaperPod(t, namespace)
 	checkReaperRegistered(t, namespace)
@@ -140,7 +140,7 @@ func deployFullStackCluster(t *testing.T, namespace string) {
 func TestReaperDeploymentScenario(t *testing.T) {
 	namespace := initializeCluster(t)
 	success := t.Run("Test Reaper", func(t *testing.T) {
-		deployClusterForReaper(t, namespace)
+		deployClusterForReaper(t, namespace, true)
 		testReaper(t, namespace)
 	})
 	cleanupCluster(t, namespace, success)
@@ -152,9 +152,9 @@ func testReaper(t *testing.T, namespace string) {
 	waitForSegmentDoneAndCancel(t, repairId)
 }
 
-func deployClusterForReaper(t *testing.T, namespace string) {
+func deployClusterForReaper(t *testing.T, namespace string, useLocalCharts bool) {
 	log.Println(Info("Deploying K8ssandra and waiting for Reaper to be ready"))
-	DeployClusterWithValues(t, namespace, "default", "cluster_with_reaper.yaml", 3, false)
+	DeployClusterWithValues(t, namespace, "default", "cluster_with_reaper.yaml", 3, false, useLocalCharts)
 	checkResourcePresenceForReaper(t, namespace)
 	waitForReaperPod(t, namespace)
 	checkReaperRegistered(t, namespace)
@@ -204,8 +204,8 @@ func TestMedusaDeploymentScenario(t *testing.T) {
 			namespace := initializeCluster(t)
 			medusaSuccess := t.Run("Test backup and restore", func(t *testing.T) {
 				createMedusaSecretAndInstallDeps(t, namespace, backend)
-				deployClusterForMedusa(t, namespace, backend, 1)
-				testMedusa(t, namespace, backend, backupName)
+				deployClusterForMedusa(t, namespace, backend, 1, true)
+				testMedusa(t, namespace, backend, backupName, true)
 				scaleUpCassandra(t, namespace, backend, 2)
 			})
 			cleanupCluster(t, namespace, medusaSuccess)
@@ -213,7 +213,7 @@ func TestMedusaDeploymentScenario(t *testing.T) {
 	}
 }
 
-func testMedusa(t *testing.T, namespace, backend, backupName string) {
+func testMedusa(t *testing.T, namespace, backend, backupName string, useLocalChartForBackup bool) {
 	log.Println(Step("Testing Medusa..."))
 	log.Println("Creating test keyspace and table")
 	CreateCassandraTable(t, namespace, medusaTestTable, medusaTestKeyspace)
@@ -221,7 +221,12 @@ func testMedusa(t *testing.T, namespace, backend, backupName string) {
 	loadRowsAndCheckCount(t, namespace, 10, 10)
 
 	log.Println(Info("Backing up Cassandra"))
-	PerformBackup(t, namespace, backupName)
+	PerformBackup(t, namespace, backupName, useLocalChartForBackup)
+
+	if !useLocalChartForBackup {
+		// This will upgrade the cluster to the local version if the stable chart was used to perform the backup
+		scaleUpCassandra(t, namespace, backend, 1)
+	}
 
 	loadRowsAndCheckCount(t, namespace, 10, 20)
 
@@ -230,10 +235,10 @@ func testMedusa(t *testing.T, namespace, backend, backupName string) {
 	CheckRowCountInTable(t, 10, namespace, medusaTestTable, medusaTestKeyspace)
 }
 
-func deployClusterForMedusa(t *testing.T, namespace, backend string, nodes int) {
+func deployClusterForMedusa(t *testing.T, namespace, backend string, nodes int, useLocalCharts bool) {
 	log.Println(Info(fmt.Sprintf("Deploying K8ssandra with Medusa using %s", backend)))
 	valuesFile := fmt.Sprintf("cluster_with_medusa_%s.yaml", strings.ToLower(backend))
-	DeployClusterWithValues(t, namespace, strings.ToLower(backend), valuesFile, nodes, false)
+	DeployClusterWithValues(t, namespace, strings.ToLower(backend), valuesFile, nodes, false, useLocalCharts)
 	CheckClusterExpectedResources(t, namespace)
 }
 
@@ -259,7 +264,7 @@ func createMedusaSecretAndInstallDeps(t *testing.T, namespace, backend string) {
 func scaleUpCassandra(t *testing.T, namespace, backend string, nodes int) {
 	log.Println(Info("Scaling up Cassandra"))
 	valuesFile := fmt.Sprintf("cluster_with_medusa_%s.yaml", strings.ToLower(backend))
-	DeployClusterWithValues(t, namespace, strings.ToLower(backend), valuesFile, nodes, true)
+	DeployClusterWithValues(t, namespace, strings.ToLower(backend), valuesFile, nodes, true, true)
 }
 
 // Monitoring scenario:
@@ -289,7 +294,7 @@ func TestMonitoringDeploymentScenario(t *testing.T) {
 }
 
 func deployClusterForMonitoring(t *testing.T, namespace string) {
-	DeployClusterWithValues(t, namespace, "default", "cluster_with_stargate_and_monitoring.yaml", 3, false)
+	DeployClusterWithValues(t, namespace, "default", "cluster_with_stargate_and_monitoring.yaml", 3, false, true)
 	CheckClusterExpectedResources(t, namespace)
 	WaitForStargatePodReady(t, namespace)
 }
@@ -328,7 +333,7 @@ func TestStargateDeploymentScenario(t *testing.T) {
 }
 
 func deployClusterForStargate(t *testing.T, namespace string) {
-	DeployClusterWithValues(t, namespace, "default", "cluster_with_stargate.yaml", 3, false)
+	DeployClusterWithValues(t, namespace, "default", "cluster_with_stargate.yaml", 3, false, true)
 	CheckClusterExpectedResources(t, namespace)
 	WaitForStargatePodReady(t, namespace)
 }
@@ -347,15 +352,40 @@ func testStargate(t *testing.T, namespace string) {
 func TestUpgradeScenario(t *testing.T) {
 	namespace := initializeCluster(t)
 	// Install first production version
-	InstallK8ssandraFromRepo(t, namespace, "1.0.0")
+	DeployClusterWithValues(t, namespace, "default", "cluster_with_reaper.yaml", 1, false, false)
 	checkResourcePresenceForReaper(t, namespace)
 	waitForReaperPod(t, namespace)
 
 	// Upgrade to current version
-	DeployClusterWithValues(t, namespace, "", "cluster_with_reaper.yaml", 1, true)
+	DeployClusterWithValues(t, namespace, "default", "cluster_with_reaper.yaml", 1, true, true)
 	checkResourcePresenceForReaper(t, namespace)
 	waitForReaperPod(t, namespace)
 	checkReaperRegistered(t, namespace)
 
 	cleanupCluster(t, namespace, t.Failed())
+}
+
+// Upgrade scenario:
+// - Install Traefik
+// - Create a namespace
+// - Register a cluster with one Cassandra nodes and one Stargate node using the latest stable
+// - Load data and take a backup using the stable version chart
+// - Upgrade the cluster to the local version
+// - Restore the backup using the local version chart and check that data is here
+func TestRestoreAfterUpgrade(t *testing.T) {
+	const (
+		medusaBackend = "Minio"
+		backupName    = "backup1"
+	)
+
+	namespace := initializeCluster(t)
+
+	success := t.Run("Medusa Upgrade Test", func(t *testing.T) {
+		createMedusaSecretAndInstallDeps(t, namespace, medusaBackend)
+		deployClusterForMedusa(t, namespace, medusaBackend, 1, false)
+		testMedusa(t, namespace, medusaBackend, backupName, false)
+
+	})
+
+	cleanupCluster(t, namespace, success)
 }

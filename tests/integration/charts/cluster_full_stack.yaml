@@ -7,6 +7,8 @@ cassandra:
     size: 3
   ingress:
     enabled: false
+  loggingSidecar:
+    enabled: true
 
 stargate:
   enabled: true
