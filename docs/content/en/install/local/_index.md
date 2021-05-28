@@ -10,8 +10,9 @@ This topic gets you up and running with a single-node Apache Cassandra® cluster
 
 If you want to install K8ssandra on a cloud provider's Kubernetes environment, see:
 
-* [K8ssandra installs on Google Kubernetes Engine (GKE)]({{< relref "/install/gke" >}})
+* [K8ssandra installs on Azure Kubernetes Service (AKS)]({{< relref "/install/aks" >}})
 * [K8ssandra installs on Amazon Elastic Kubernetes Service (EKS)]({{< relref "/install/eks" >}})
+* [K8ssandra installs on Google Kubernetes Engine (GKE)]({{< relref "/install/gke" >}})
 
 {{% alert title="Tip" color="success" %}}
 Also available in followup topics are post-install steps and role-based considerations for [developers]({{< relref "/quickstarts/developer">}}) or [Site Reliability Engineers]({{< relref "/quickstarts/site-reliability-engineer">}}) (SREs).
