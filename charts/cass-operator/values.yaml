@@ -25,13 +25,13 @@ admissionWebhooks:
 # Sets properties for the cass-operator container
 image:
   # -- Docker repository for cass-operator
-  repository: docker.io/k8ssandra/cass-operator
+  repository: k8ssandra/cass-operator
 
   # -- Pull policy for the operator container
   pullPolicy: IfNotPresent
 
   # -- Tag of the cass-operator image to pull from image.repository
-  tag: v1.7.0
+  tag: v1.7.1
 
   # -- Docker registry containing all cass-operator related images. Setting this
   # allows for usage of an internal registry without specifying serverImage,
