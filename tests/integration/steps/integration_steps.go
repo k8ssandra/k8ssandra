@@ -91,7 +91,7 @@ func installK8ssandraHelmRepo(t *testing.T) {
 	helm.RunHelmCommandAndGetOutputE(t, &helm.Options{}, "repo", "update")
 }
 
-func deployCluster(t *testing.T, namespace, customValues string, helmValues map[string]string, upgrade bool, useLocalCharts bool) {
+func deployCluster(t *testing.T, namespace, customValues string, helmValues map[string]string, upgrade bool, useLocalCharts bool, version string) {
 	clusterChartPath, err := filepath.Abs("../../charts/k8ssandra")
 	g(t).Expect(err).To(BeNil())
 
@@ -115,6 +115,11 @@ func deployCluster(t *testing.T, namespace, customValues string, helmValues map[
 		ValuesFiles:    []string{customChartPath},
 	}
 
+	if version != "" {
+		g(t).Expect(useLocalCharts).To(BeFalse(), "K8ssandra version can only be passed when using Helm repo based installs, not local charts.")
+		helmOptions.Version = version
+	}
+
 	defer timeTrack(time.Now(), "Installing and starting k8ssandra")
 	if upgrade {
 		err = helm.UpgradeE(t, helmOptions, clusterChartPath, releaseName)
@@ -135,7 +140,7 @@ func deployCluster(t *testing.T, namespace, customValues string, helmValues map[
 	WaitForCassDcToBeReady(t, namespace)
 }
 
-func DeployClusterWithValues(t *testing.T, namespace, options, customValues string, nodes int, upgrade bool, useLocalCharts bool) {
+func DeployClusterWithValues(t *testing.T, namespace, options, customValues string, nodes int, upgrade bool, useLocalCharts bool, version string) {
 	log.Printf("Deploying a cluster with %s options using the %s values", options, customValues)
 
 	helmValues := map[string]string{}
@@ -152,7 +157,7 @@ func DeployClusterWithValues(t *testing.T, namespace, options, customValues stri
 	}
 	helmValues["cassandra.datacenters[0].size"] = strconv.Itoa(nodes)
 	helmValues["cassandra.datacenters[0].name"] = datacenterName
-	deployCluster(t, namespace, customValues, helmValues, upgrade, useLocalCharts)
+	deployCluster(t, namespace, customValues, helmValues, upgrade, useLocalCharts, version)
 }
 
 func WaitForCassDcToBeUpdating(t *testing.T, namespace string) {

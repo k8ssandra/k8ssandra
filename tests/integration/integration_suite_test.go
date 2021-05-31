@@ -18,6 +18,9 @@ const (
 	minioNamespace     = "minio"
 )
 
+// "" means latest stable version in the Helm repo
+var upgradeStartVersions = []string{"v1.0.0", ""}
+
 func TestMain(m *testing.M) {
 	err := InitTestClient()
 	if err != nil {
@@ -122,7 +125,7 @@ func TestFullStackScenario(t *testing.T) {
 }
 
 func deployFullStackCluster(t *testing.T, namespace string, useLocalCharts bool) {
-	DeployClusterWithValues(t, namespace, "minio", "cluster_full_stack.yaml", 3, false, useLocalCharts)
+	DeployClusterWithValues(t, namespace, "minio", "cluster_full_stack.yaml", 3, false, useLocalCharts, "")
 	checkResourcePresenceForReaper(t, namespace)
 	waitForReaperPod(t, namespace)
 	checkReaperRegistered(t, namespace)
@@ -154,7 +157,7 @@ func testReaper(t *testing.T, namespace string) {
 
 func deployClusterForReaper(t *testing.T, namespace string, useLocalCharts bool) {
 	log.Println(Info("Deploying K8ssandra and waiting for Reaper to be ready"))
-	DeployClusterWithValues(t, namespace, "default", "cluster_with_reaper.yaml", 3, false, useLocalCharts)
+	DeployClusterWithValues(t, namespace, "default", "cluster_with_reaper.yaml", 3, false, useLocalCharts, "")
 	checkResourcePresenceForReaper(t, namespace)
 	waitForReaperPod(t, namespace)
 	checkReaperRegistered(t, namespace)
@@ -204,7 +207,7 @@ func TestMedusaDeploymentScenario(t *testing.T) {
 			namespace := initializeCluster(t)
 			medusaSuccess := t.Run("Test backup and restore", func(t *testing.T) {
 				createMedusaSecretAndInstallDeps(t, namespace, backend)
-				deployClusterForMedusa(t, namespace, backend, 1, true)
+				deployClusterForMedusa(t, namespace, backend, 1, true, "")
 				testMedusa(t, namespace, backend, backupName, true)
 				scaleUpCassandra(t, namespace, backend, 2)
 			})
@@ -235,10 +238,10 @@ func testMedusa(t *testing.T, namespace, backend, backupName string, useLocalCha
 	CheckRowCountInTable(t, 10, namespace, medusaTestTable, medusaTestKeyspace)
 }
 
-func deployClusterForMedusa(t *testing.T, namespace, backend string, nodes int, useLocalCharts bool) {
+func deployClusterForMedusa(t *testing.T, namespace, backend string, nodes int, useLocalCharts bool, version string) {
 	log.Println(Info(fmt.Sprintf("Deploying K8ssandra with Medusa using %s", backend)))
 	valuesFile := fmt.Sprintf("cluster_with_medusa_%s.yaml", strings.ToLower(backend))
-	DeployClusterWithValues(t, namespace, strings.ToLower(backend), valuesFile, nodes, false, useLocalCharts)
+	DeployClusterWithValues(t, namespace, strings.ToLower(backend), valuesFile, nodes, false, useLocalCharts, version)
 	CheckClusterExpectedResources(t, namespace)
 }
 
@@ -264,7 +267,7 @@ func createMedusaSecretAndInstallDeps(t *testing.T, namespace, backend string) {
 func scaleUpCassandra(t *testing.T, namespace, backend string, nodes int) {
 	log.Println(Info("Scaling up Cassandra"))
 	valuesFile := fmt.Sprintf("cluster_with_medusa_%s.yaml", strings.ToLower(backend))
-	DeployClusterWithValues(t, namespace, strings.ToLower(backend), valuesFile, nodes, true, true)
+	DeployClusterWithValues(t, namespace, strings.ToLower(backend), valuesFile, nodes, true, true, "")
 }
 
 // Monitoring scenario:
@@ -294,7 +297,7 @@ func TestMonitoringDeploymentScenario(t *testing.T) {
 }
 
 func deployClusterForMonitoring(t *testing.T, namespace string) {
-	DeployClusterWithValues(t, namespace, "default", "cluster_with_stargate_and_monitoring.yaml", 3, false, true)
+	DeployClusterWithValues(t, namespace, "default", "cluster_with_stargate_and_monitoring.yaml", 3, false, true, "")
 	CheckClusterExpectedResources(t, namespace)
 	WaitForStargatePodReady(t, namespace)
 }
@@ -333,7 +336,7 @@ func TestStargateDeploymentScenario(t *testing.T) {
 }
 
 func deployClusterForStargate(t *testing.T, namespace string) {
-	DeployClusterWithValues(t, namespace, "default", "cluster_with_stargate.yaml", 3, false, true)
+	DeployClusterWithValues(t, namespace, "default", "cluster_with_stargate.yaml", 3, false, true, "")
 	CheckClusterExpectedResources(t, namespace)
 	WaitForStargatePodReady(t, namespace)
 }
@@ -350,19 +353,21 @@ func testStargate(t *testing.T, namespace string) {
 }
 
 func TestUpgradeScenario(t *testing.T) {
-	namespace := initializeCluster(t)
-	// Install first production version
-	DeployClusterWithValues(t, namespace, "default", "cluster_with_reaper.yaml", 1, false, false)
-	checkResourcePresenceForReaper(t, namespace)
-	waitForReaperPod(t, namespace)
+	for _, startVersion := range upgradeStartVersions {
+		namespace := initializeCluster(t)
+		// Install first production version
+		DeployClusterWithValues(t, namespace, "default", "cluster_with_reaper.yaml", 1, false, false, startVersion)
+		checkResourcePresenceForReaper(t, namespace)
+		waitForReaperPod(t, namespace)
 
-	// Upgrade to current version
-	DeployClusterWithValues(t, namespace, "default", "cluster_with_reaper.yaml", 1, true, true)
-	checkResourcePresenceForReaper(t, namespace)
-	waitForReaperPod(t, namespace)
-	checkReaperRegistered(t, namespace)
+		// Upgrade to current version
+		DeployClusterWithValues(t, namespace, "default", "cluster_with_reaper.yaml", 1, true, true, "")
+		checkResourcePresenceForReaper(t, namespace)
+		waitForReaperPod(t, namespace)
+		checkReaperRegistered(t, namespace)
 
-	cleanupCluster(t, namespace, t.Failed())
+		cleanupCluster(t, namespace, t.Failed())
+	}
 }
 
 // Upgrade scenario:
@@ -378,14 +383,16 @@ func TestRestoreAfterUpgrade(t *testing.T) {
 		backupName    = "backup1"
 	)
 
-	namespace := initializeCluster(t)
+	for _, startVersion := range upgradeStartVersions {
+		namespace := initializeCluster(t)
 
-	success := t.Run("Medusa Upgrade Test", func(t *testing.T) {
-		createMedusaSecretAndInstallDeps(t, namespace, medusaBackend)
-		deployClusterForMedusa(t, namespace, medusaBackend, 1, false)
-		testMedusa(t, namespace, medusaBackend, backupName, false)
+		success := t.Run("Medusa Upgrade Test", func(t *testing.T) {
+			createMedusaSecretAndInstallDeps(t, namespace, medusaBackend)
+			deployClusterForMedusa(t, namespace, medusaBackend, 1, false, startVersion)
+			testMedusa(t, namespace, medusaBackend, backupName, false)
 
-	})
+		})
 
-	cleanupCluster(t, namespace, success)
+		cleanupCluster(t, namespace, success)
+	}
 }
