@@ -74,13 +74,10 @@ func (u *Upgrader) Upgrade(targetVersion string) ([]unstructured.Unstructured, e
 		return nil, err
 	}
 
-	// reaper and medusa subdirs have the required yaml files
-	chartPath := filepath.Join(extractDir, helmutil.ChartName)
-
 	crds := make([]unstructured.Unstructured, 0)
 
 	// For each dir under the charts subdir, check the "crds/"
-	paths, _ := findCRDDirs(chartPath)
+	paths, _ := findCRDDirs(extractDir)
 
 	for _, path := range paths {
 		err = parseChartCRDs(&crds, path)
