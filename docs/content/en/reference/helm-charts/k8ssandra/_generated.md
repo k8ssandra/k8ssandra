@@ -17,7 +17,7 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| file://../cass-operator | cass-operator | 0.29.1 |
+| file://../cass-operator | cass-operator | 0.29.2 |
 | file://../k8ssandra-common | k8ssandra-common | 0.28.1 |
 | file://../medusa-operator | medusa-operator | 0.29.0 |
 | file://../reaper-operator | reaper-operator | 0.30.0 |

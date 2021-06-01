@@ -1,6 +1,6 @@
 
 
-![Version: 0.29.1](https://img.shields.io/badge/Version-0.29.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.6.0](https://img.shields.io/badge/AppVersion-1.6.0-informational?style=flat-square)
+![Version: 0.29.2](https://img.shields.io/badge/Version-0.29.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.7.1](https://img.shields.io/badge/AppVersion-1.7.1-informational?style=flat-square)
 
 ## Maintainers
 
@@ -31,9 +31,9 @@
 | clusterScoped | bool | `false` | Determines whether cass-operator only watch and manages CassandraDatacenters in the same namespace in which the operator is deployed or if watches and manages CassandraDatacenters across all namespaces. |
 | admissionWebhooks | object | `{"enabled":false}` | Configures admission webhooks deployed with cass-operator. |
 | admissionWebhooks.enabled | bool | `false` | Turns the admission webhooks on or off |
-| image.repository | string | `"docker.io/k8ssandra/cass-operator"` | Docker repository for cass-operator |
+| image.repository | string | `"k8ssandra/cass-operator"` | Docker repository for cass-operator |
 | image.pullPolicy | string | `"IfNotPresent"` | Pull policy for the operator container |
-| image.tag | string | `"v1.7.0"` | Tag of the cass-operator image to pull from image.repository |
+| image.tag | string | `"v1.7.1"` | Tag of the cass-operator image to pull from image.repository |
 | image.registryOverride | string | `nil` | Docker registry containing all cass-operator related images. Setting this allows for usage of an internal registry without specifying serverImage, configBuilderImage, and busyboxImage on all CassandraDatacenter objects. |
 | imagePullSecrets | list | `[]` | References to secrets to use when pulling images. See: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/ |
 | serviceAccount.annotations | object | `{}` | Annotations to add to the service account. |
