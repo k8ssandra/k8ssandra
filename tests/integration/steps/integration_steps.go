@@ -474,6 +474,12 @@ func InstallK8ssandraFromRepo(t *testing.T, namespace, version string) {
 	helmOptions := &helm.Options{
 		KubectlOptions: k8s.NewKubectlOptions("", "", namespace),
 		Version:        version,
+		SetValues:      map[string]string{},
+	}
+
+	if os.Getenv("K8SSANDRA_CASSANDRA_VERSION") != "" {
+		log.Println(Info(fmt.Sprintf("Using Cassandra version %s", os.Getenv("K8SSANDRA_CASSANDRA_VERSION"))))
+		helmOptions.SetValues["cassandra.version"] = os.Getenv("K8SSANDRA_CASSANDRA_VERSION")
 	}
 
 	err = helm.InstallE(t, helmOptions, "k8ssandra/k8ssandra", releaseName)
@@ -484,7 +490,7 @@ func InstallK8ssandraFromRepo(t *testing.T, namespace, version string) {
 		return PodWithLabelsIsReady(t, namespace, map[string]string{"app.kubernetes.io/name": "cass-operator"})
 	}, retryTimeout, retryInterval).Should(BeTrue())
 
-	// Wait for CassandraDatacenter to be udpating..
+	// Wait for CassandraDatacenter to be updating..
 	WaitForCassDcToBeUpdating(t, namespace)
 
 	// Wait for CassandraDatacenter to be ready..
