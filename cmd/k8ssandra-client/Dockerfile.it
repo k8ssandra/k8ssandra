@@ -22,6 +22,6 @@ FROM gcr.io/distroless/static:nonroot
 WORKDIR /
 COPY --from=builder /workspace/k8ssandra-client .
 USER nonroot:nonroot
-COPY --from=builder /workspace/build/ /home/nonroot/.cache/k8ssandra/helm/
+COPY --from=builder --chown=nonroot:nonroot /workspace/build/ /home/nonroot/.cache/k8ssandra/helm/
 
 ENTRYPOINT ["/k8ssandra-client"]
