@@ -355,18 +355,25 @@ func testStargate(t *testing.T, namespace string) {
 func TestUpgradeScenario(t *testing.T) {
 	for _, startVersion := range upgradeStartVersions {
 		namespace := initializeCluster(t)
-		// Install first production version
-		DeployClusterWithValues(t, namespace, "default", "cluster_with_reaper.yaml", 1, false, false, startVersion)
-		checkResourcePresenceForReaper(t, namespace)
-		waitForReaperPod(t, namespace)
 
-		// Upgrade to current version
-		DeployClusterWithValues(t, namespace, "default", "cluster_with_reaper.yaml", 1, true, true, "")
-		checkResourcePresenceForReaper(t, namespace)
-		waitForReaperPod(t, namespace)
-		checkReaperRegistered(t, namespace)
+		success := t.Run(fmt.Sprintf("Install K8ssandra with Reaper from %s", startVersion), func(t *testing.T) {
 
-		cleanupCluster(t, namespace, t.Failed())
+			// Install first production version
+			DeployClusterWithValues(t, namespace, "default", "cluster_with_reaper.yaml", 1, false, false, startVersion)
+			checkResourcePresenceForReaper(t, namespace)
+			waitForReaperPod(t, namespace)
+
+			// Upgrade to current version
+			DeployClusterWithValues(t, namespace, "default", "cluster_with_reaper.yaml", 1, true, true, "")
+			checkResourcePresenceForReaper(t, namespace)
+			waitForReaperPod(t, namespace)
+			checkReaperRegistered(t, namespace)
+		})
+
+		cleanupCluster(t, namespace, success)
+		if !success {
+			t.FailNow()
+		}
 	}
 }
 
@@ -384,15 +391,18 @@ func TestRestoreAfterUpgrade(t *testing.T) {
 	)
 
 	for _, startVersion := range upgradeStartVersions {
-		namespace := initializeCluster(t)
+		if startVersion != "v1.0.0" {
+			// K8ssandra 1.0.0 didn't support Minio as Medusa backend
+			namespace := initializeCluster(t)
 
-		success := t.Run("Medusa Upgrade Test", func(t *testing.T) {
-			createMedusaSecretAndInstallDeps(t, namespace, medusaBackend)
-			deployClusterForMedusa(t, namespace, medusaBackend, 1, false, startVersion)
-			testMedusa(t, namespace, medusaBackend, backupName, false)
+			success := t.Run("Medusa Upgrade Test", func(t *testing.T) {
+				createMedusaSecretAndInstallDeps(t, namespace, medusaBackend)
+				deployClusterForMedusa(t, namespace, medusaBackend, 1, false, startVersion)
+				testMedusa(t, namespace, medusaBackend, backupName, false)
 
-		})
+			})
 
-		cleanupCluster(t, namespace, success)
+			cleanupCluster(t, namespace, success)
+		}
 	}
 }

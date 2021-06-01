@@ -299,9 +299,22 @@ func DeployMinioAndCreateBucket(t *testing.T, bucketName string) {
 	_, err := helm.RunHelmCommandAndGetOutputE(t, helmOptions, "repo", "add", "minio", "https://helm.min.io/")
 	g(t).Expect(err).To(BeNil(), fmt.Sprintf("failed to add minio helm repo: %s", err))
 
+	uninstallMinioIfPresent(t, helmOptions)
+
 	values := fmt.Sprintf("accessKey=minio_key,secretKey=minio_secret,defaultBucket.enabled=true,defaultBucket.name=%s", bucketName)
 	_, err = helm.RunHelmCommandAndGetOutputE(t, helmOptions, "install", "--set", values, "minio", "minio/minio", "-n", "minio", "--create-namespace")
 	g(t).Expect(err).To(BeNil(), fmt.Sprintf("failed to install the minio helm chart: %s", err))
+}
+
+func uninstallMinioIfPresent(t *testing.T, helmOptions *helm.Options) {
+	out, err := helm.RunHelmCommandAndGetOutputE(t, helmOptions, "list", "-n", "minio")
+	g(t).Expect(err).To(BeNil(), fmt.Sprintf("failed listing Minio installs: %s", err))
+	if strings.Contains(out, "minio") {
+		_, err = helm.RunHelmCommandAndGetOutputE(t, helmOptions, "uninstall", "minio", "-n", "minio")
+		g(t).Expect(err).To(BeNil(), fmt.Sprintf("failed uninstalling Minio: %s", err))
+		DeleteNamespace(t, "minio")
+		CheckNamespaceIsAbsent(t, "minio")
+	}
 }
 
 func MinioServiceName(t *testing.T) string {
