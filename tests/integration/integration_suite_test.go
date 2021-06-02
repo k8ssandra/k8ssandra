@@ -19,7 +19,7 @@ const (
 )
 
 // "" means latest stable version in the Helm repo
-var upgradeStartVersions = []string{"v1.0.0", ""}
+var upgradeStartVersions = []string{"v1.0.0", "latest"}
 
 func TestMain(m *testing.M) {
 	err := InitTestClient()
@@ -67,6 +67,8 @@ func cleanupCluster(t *testing.T, namespace string, success bool) {
 		DeleteNamespace(t, traefikNamespace)
 		DeleteNamespace(t, minioNamespace)
 		CheckNamespaceIsAbsent(t, namespace)
+		CheckNamespaceIsAbsent(t, traefikNamespace)
+		CheckNamespaceIsAbsent(t, minioNamespace)
 	} else {
 		log.Println(Info("Not cleaning up cluster as requested"))
 	}
@@ -355,9 +357,7 @@ func testStargate(t *testing.T, namespace string) {
 func TestUpgradeScenario(t *testing.T) {
 	for _, startVersion := range upgradeStartVersions {
 		namespace := initializeCluster(t)
-
-		success := t.Run(fmt.Sprintf("Install K8ssandra with Reaper from %s", startVersion), func(t *testing.T) {
-
+		success := t.Run(fmt.Sprintf("Upgrade from %s", startVersion), func(t *testing.T) {
 			// Install first production version
 			DeployClusterWithValues(t, namespace, "default", "cluster_with_reaper.yaml", 1, false, false, startVersion)
 			checkResourcePresenceForReaper(t, namespace)
@@ -395,7 +395,7 @@ func TestRestoreAfterUpgrade(t *testing.T) {
 			// K8ssandra 1.0.0 didn't support Minio as Medusa backend
 			namespace := initializeCluster(t)
 
-			success := t.Run("Medusa Upgrade Test", func(t *testing.T) {
+			success := t.Run(fmt.Sprintf("Medusa upgrade from %s", startVersion), func(t *testing.T) {
 				createMedusaSecretAndInstallDeps(t, namespace, medusaBackend)
 				deployClusterForMedusa(t, namespace, medusaBackend, 1, false, startVersion)
 				testMedusa(t, namespace, medusaBackend, backupName, false)

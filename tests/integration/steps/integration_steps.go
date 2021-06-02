@@ -120,7 +120,7 @@ func deployCluster(t *testing.T, namespace, customValues string, helmValues map[
 		ValuesFiles:    []string{customChartPath},
 	}
 
-	if version != "" {
+	if version != "" && version != "latest" {
 		g(t).Expect(useLocalCharts).To(BeFalse(), "K8ssandra version can only be passed when using Helm repo based installs, not local charts.")
 		helmOptions.Version = version
 	}
