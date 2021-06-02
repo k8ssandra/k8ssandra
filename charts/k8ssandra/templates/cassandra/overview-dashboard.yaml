@@ -8,5 +8,9 @@ metadata:
 {{ include "k8ssandra.labels" . | indent 4 }}
 data:
   cassandra-overview.json: |
+{{- if .Values.stargate.enabled }}
+{{ .Files.Get "dashboards/overview-with-stargate.json" | indent 4 }}
+{{- else }}
 {{ .Files.Get "dashboards/overview.json" | indent 4 }}
+{{- end }}
 {{- end }}
