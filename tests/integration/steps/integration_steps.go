@@ -299,21 +299,24 @@ func DeployMinioAndCreateBucket(t *testing.T, bucketName string) {
 	_, err := helm.RunHelmCommandAndGetOutputE(t, helmOptions, "repo", "add", "minio", "https://helm.min.io/")
 	g(t).Expect(err).To(BeNil(), fmt.Sprintf("failed to add minio helm repo: %s", err))
 
-	uninstallMinioIfPresent(t, helmOptions)
+	UninstallHelmRealeaseAndNamespace(t, "minio", "minio")
 
 	values := fmt.Sprintf("accessKey=minio_key,secretKey=minio_secret,defaultBucket.enabled=true,defaultBucket.name=%s", bucketName)
 	_, err = helm.RunHelmCommandAndGetOutputE(t, helmOptions, "install", "--set", values, "minio", "minio/minio", "-n", "minio", "--create-namespace")
 	g(t).Expect(err).To(BeNil(), fmt.Sprintf("failed to install the minio helm chart: %s", err))
 }
 
-func uninstallMinioIfPresent(t *testing.T, helmOptions *helm.Options) {
-	out, err := helm.RunHelmCommandAndGetOutputE(t, helmOptions, "list", "-n", "minio")
-	g(t).Expect(err).To(BeNil(), fmt.Sprintf("failed listing Minio installs: %s", err))
-	if strings.Contains(out, "minio") {
-		_, err = helm.RunHelmCommandAndGetOutputE(t, helmOptions, "uninstall", "minio", "-n", "minio")
-		g(t).Expect(err).To(BeNil(), fmt.Sprintf("failed uninstalling Minio: %s", err))
-		DeleteNamespace(t, "minio")
-		CheckNamespaceIsAbsent(t, "minio")
+func UninstallHelmRealeaseAndNamespace(t *testing.T, helmReleaseName, namespace string) {
+	helmOptions := &helm.Options{
+		KubectlOptions: getKubectlOptions("default"),
+	}
+	out, err := helm.RunHelmCommandAndGetOutputE(t, helmOptions, "list", "-n", namespace)
+	g(t).Expect(err).To(BeNil(), fmt.Sprintf("failed listing %s installs: %s", helmReleaseName, err))
+	if strings.Contains(out, helmReleaseName) {
+		_, err = helm.RunHelmCommandAndGetOutputE(t, helmOptions, "uninstall", helmReleaseName, "-n", namespace)
+		g(t).Expect(err).To(BeNil(), fmt.Sprintf("failed uninstalling %s: %s", helmReleaseName, err))
+		DeleteNamespace(t, namespace)
+		CheckNamespaceIsAbsent(t, namespace)
 	}
 }
 
@@ -377,15 +380,6 @@ func CheckNamespaceIsAbsent(t *testing.T, namespace string) {
 			t.Logf("failed to check if namespace %s is absent: %s", namespace, err)
 		}
 
-		terminating, err := namespaceIsTerminating(namespace)
-		if err == nil {
-			if terminating {
-				return true
-			}
-		} else {
-			t.Logf("failed to check if namespace %s is terminating: %s", namespace, err)
-		}
-
 		return false
 	}, retryTimeout, retryInterval).Should(BeTrue())
 }
@@ -442,33 +436,6 @@ func WaitForCassandraDatacenterDeletion(t *testing.T, namespace string) {
 	}, retryTimeout, retryInterval).Should(BeTrue(), "cassandradatacenter object wasn't deleted within timeout")
 }
 
-func UninstallTraefikHelmRelease(t *testing.T, traefikNamespace string) {
-	err := RunShellCommand(exec.Command("helm", "uninstall", "traefik", "-n", traefikNamespace))
-	if err != nil {
-		t.Logf("Failed uninstalling Traefik Helm release: %s", err.Error())
-	}
-}
-
-func UninstallMinioHelmRelease(t *testing.T, minioNamespace string) {
-	if absent, err := namespaceIsAbsent(minioNamespace); err == nil {
-		if absent {
-			err := RunShellCommand(exec.Command("helm", "uninstall", "minio", "-n", minioNamespace))
-			if err != nil {
-				t.Logf("Failed uninstalling Minio Helm release: %s", err.Error())
-			}
-		}
-	} else {
-		t.Logf("failed to check if minio namespace %s is absent: %s", minioNamespace, err)
-	}
-}
-
-func UninstallK8ssandraHelmRelease(t *testing.T, namespace string) {
-	err := RunShellCommand(exec.Command("helm", "uninstall", releaseName, "-n", namespace))
-	if err != nil {
-		t.Logf("Failed uninstalling K8ssandra Helm release: %s", err.Error())
-	}
-}
-
 func GetNamespace(name string) (*v1.Namespace, error) {
 	ns := &v1.Namespace{
 		ObjectMeta: metav1.ObjectMeta{
@@ -493,22 +460,20 @@ func DeleteNamespace(t *testing.T, namespace string) {
 }
 
 func InstallTraefik(t *testing.T) {
+	UninstallHelmRealeaseAndNamespace(t, "traefik", "traefik")
 	kubectlOptions := getKubectlOptions("default")
-	_, err := k8s.GetNamespaceE(t, kubectlOptions, "traefik")
-	if err != nil {
-		// Namespace doesn't exist yet, let's create it
-		options := &helm.Options{KubectlOptions: kubectlOptions}
+	// Namespace doesn't exist yet, let's create it
+	options := &helm.Options{KubectlOptions: kubectlOptions}
 
-		// Add traefik repo and update repos
-		helm.RunHelmCommandAndGetOutputE(t, options, "repo", "add", "traefik", "https://helm.traefik.io/traefik")
-		helm.RunHelmCommandAndGetOutputE(t, options, "repo", "update")
+	// Add traefik repo and update repos
+	helm.RunHelmCommandAndGetOutputE(t, options, "repo", "add", "traefik", "https://helm.traefik.io/traefik")
+	helm.RunHelmCommandAndGetOutputE(t, options, "repo", "update")
 
-		// Deploy traefik
-		// helm install traefik traefik/traefik -n traefik --create-namespace -f docs/content/en/tasks/connect/ingress/kind-deployment/traefik.values.yaml
-		valuesPath, _ := filepath.Abs("../../docs/content/en/tasks/connect/ingress/kind-deployment/traefik.values.yaml")
-		_, err = helm.RunHelmCommandAndGetOutputE(t, options, "install", "traefik", "traefik/traefik", "-n", "traefik", "--create-namespace", "-f", valuesPath)
-		g(t).Expect(err).To(BeNil())
-	}
+	// Deploy traefik
+	// helm install traefik traefik/traefik -n traefik --create-namespace -f docs/content/en/tasks/connect/ingress/kind-deployment/traefik.values.yaml
+	valuesPath, _ := filepath.Abs("../../docs/content/en/tasks/connect/ingress/kind-deployment/traefik.values.yaml")
+	_, err := helm.RunHelmCommandAndGetOutputE(t, options, "install", "traefik", "traefik/traefik", "-n", "traefik", "--create-namespace", "-f", valuesPath)
+	g(t).Expect(err).To(BeNil())
 }
 
 type credentials struct {
