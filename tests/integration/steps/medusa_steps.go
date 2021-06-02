@@ -70,7 +70,7 @@ func RestoreBackup(t *testing.T, namespace, backupName string) {
 	// Wait for restore to be completed and Cassandra to be available
 	g(t).Eventually(func() bool {
 		return restoreIsFinished(t, namespace, backupName)
-	}, retryTimeout, retryInterval).Should(BeTrue())
+	}, 18 * time.Minute, retryInterval).Should(BeTrue())
 }
 
 func restoreIsFinished(t *testing.T, namespace, backupName string) bool {
