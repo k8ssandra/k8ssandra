@@ -86,16 +86,31 @@ func getKubectlOptions(namespace string) *k8s.KubectlOptions {
 	return k8s.NewKubectlOptions("", "", namespace)
 }
 
-func deployCluster(t *testing.T, namespace, customValues string, helmValues map[string]string, upgrade bool) {
+func installK8ssandraHelmRepo(t *testing.T) {
+	helm.RunHelmCommandAndGetOutputE(t, &helm.Options{}, "repo", "add", "k8ssandra", "https://helm.k8ssandra.io/stable")
+	helm.RunHelmCommandAndGetOutputE(t, &helm.Options{}, "repo", "update")
+}
+
+func deployCluster(t *testing.T, namespace, customValues string, helmValues map[string]string, upgrade bool, useLocalCharts bool, version string) {
 	clusterChartPath, err := filepath.Abs("../../charts/k8ssandra")
 	g(t).Expect(err).To(BeNil())
+
+	if !useLocalCharts {
+		installK8ssandraHelmRepo(t)
+		clusterChartPath = "k8ssandra/k8ssandra"
+	}
 
 	customChartPath, err := filepath.Abs("charts/" + customValues)
 	g(t).Expect(err).To(BeNil())
 
 	if os.Getenv("K8SSANDRA_CASSANDRA_VERSION") != "" {
-		log.Println(Info(fmt.Sprintf("Using Cassandra version %s", os.Getenv("K8SSANDRA_CASSANDRA_VERSION"))))
-		helmValues["cassandra.version"] = os.Getenv("K8SSANDRA_CASSANDRA_VERSION")
+		if !useLocalCharts && strings.HasPrefix(os.Getenv("K8SSANDRA_CASSANDRA_VERSION"), "3.11") {
+			// We should not set the 3.11 version when using the stable repo as we may end up with a patch version that's not available
+			log.Println(Info("Using the default 3.11 Cassandra version available for this K8ssandra release"))
+		} else {
+			log.Println(Info(fmt.Sprintf("Using Cassandra version %s", os.Getenv("K8SSANDRA_CASSANDRA_VERSION"))))
+			helmValues["cassandra.version"] = os.Getenv("K8SSANDRA_CASSANDRA_VERSION")
+		}
 	}
 
 	helmOptions := &helm.Options{
@@ -103,6 +118,11 @@ func deployCluster(t *testing.T, namespace, customValues string, helmValues map[
 		SetValues:      helmValues,
 		KubectlOptions: k8s.NewKubectlOptions("", "", namespace),
 		ValuesFiles:    []string{customChartPath},
+	}
+
+	if version != "" && version != "latest" {
+		g(t).Expect(useLocalCharts).To(BeFalse(), "K8ssandra version can only be passed when using Helm repo based installs, not local charts.")
+		helmOptions.Version = version
 	}
 
 	defer timeTrack(time.Now(), "Installing and starting k8ssandra")
@@ -125,7 +145,7 @@ func deployCluster(t *testing.T, namespace, customValues string, helmValues map[
 	WaitForCassDcToBeReady(t, namespace)
 }
 
-func DeployClusterWithValues(t *testing.T, namespace, options, customValues string, nodes int, upgrade bool) {
+func DeployClusterWithValues(t *testing.T, namespace, options, customValues string, nodes int, upgrade bool, useLocalCharts bool, version string) {
 	log.Printf("Deploying a cluster with %s options using the %s values", options, customValues)
 
 	helmValues := map[string]string{}
@@ -142,7 +162,7 @@ func DeployClusterWithValues(t *testing.T, namespace, options, customValues stri
 	}
 	helmValues["cassandra.datacenters[0].size"] = strconv.Itoa(nodes)
 	helmValues["cassandra.datacenters[0].name"] = datacenterName
-	deployCluster(t, namespace, customValues, helmValues, upgrade)
+	deployCluster(t, namespace, customValues, helmValues, upgrade, useLocalCharts, version)
 }
 
 func WaitForCassDcToBeUpdating(t *testing.T, namespace string) {
@@ -279,9 +299,25 @@ func DeployMinioAndCreateBucket(t *testing.T, bucketName string) {
 	_, err := helm.RunHelmCommandAndGetOutputE(t, helmOptions, "repo", "add", "minio", "https://helm.min.io/")
 	g(t).Expect(err).To(BeNil(), fmt.Sprintf("failed to add minio helm repo: %s", err))
 
+	UninstallHelmRealeaseAndNamespace(t, "minio", "minio")
+
 	values := fmt.Sprintf("accessKey=minio_key,secretKey=minio_secret,defaultBucket.enabled=true,defaultBucket.name=%s", bucketName)
 	_, err = helm.RunHelmCommandAndGetOutputE(t, helmOptions, "install", "--set", values, "minio", "minio/minio", "-n", "minio", "--create-namespace")
 	g(t).Expect(err).To(BeNil(), fmt.Sprintf("failed to install the minio helm chart: %s", err))
+}
+
+func UninstallHelmRealeaseAndNamespace(t *testing.T, helmReleaseName, namespace string) {
+	helmOptions := &helm.Options{
+		KubectlOptions: getKubectlOptions("default"),
+	}
+	out, err := helm.RunHelmCommandAndGetOutputE(t, helmOptions, "list", "-n", namespace)
+	g(t).Expect(err).To(BeNil(), fmt.Sprintf("failed listing %s installs: %s", helmReleaseName, err))
+	if strings.Contains(out, helmReleaseName) {
+		_, err = helm.RunHelmCommandAndGetOutputE(t, helmOptions, "uninstall", helmReleaseName, "-n", namespace)
+		g(t).Expect(err).To(BeNil(), fmt.Sprintf("failed uninstalling %s: %s", helmReleaseName, err))
+		DeleteNamespace(t, namespace)
+		CheckNamespaceIsAbsent(t, namespace)
+	}
 }
 
 func MinioServiceName(t *testing.T) string {
@@ -344,15 +380,6 @@ func CheckNamespaceIsAbsent(t *testing.T, namespace string) {
 			t.Logf("failed to check if namespace %s is absent: %s", namespace, err)
 		}
 
-		terminating, err := namespaceIsTerminating(namespace)
-		if err == nil {
-			if terminating {
-				return true
-			}
-		} else {
-			t.Logf("failed to check if namespace %s is terminating: %s", namespace, err)
-		}
-
 		return false
 	}, retryTimeout, retryInterval).Should(BeTrue())
 }
@@ -409,33 +436,6 @@ func WaitForCassandraDatacenterDeletion(t *testing.T, namespace string) {
 	}, retryTimeout, retryInterval).Should(BeTrue(), "cassandradatacenter object wasn't deleted within timeout")
 }
 
-func UninstallTraefikHelmRelease(t *testing.T, traefikNamespace string) {
-	err := RunShellCommand(exec.Command("helm", "uninstall", "traefik", "-n", traefikNamespace))
-	if err != nil {
-		t.Logf("Failed uninstalling Traefik Helm release: %s", err.Error())
-	}
-}
-
-func UninstallMinioHelmRelease(t *testing.T, minioNamespace string) {
-	if absent, err := namespaceIsAbsent(minioNamespace); err == nil {
-		if absent {
-			err := RunShellCommand(exec.Command("helm", "uninstall", "minio", "-n", minioNamespace))
-			if err != nil {
-				t.Logf("Failed uninstalling Minio Helm release: %s", err.Error())
-			}
-		}
-	} else {
-		t.Logf("failed to check if minio namespace %s is absent: %s", minioNamespace, err)
-	}
-}
-
-func UninstallK8ssandraHelmRelease(t *testing.T, namespace string) {
-	err := RunShellCommand(exec.Command("helm", "uninstall", releaseName, "-n", namespace))
-	if err != nil {
-		t.Logf("Failed uninstalling K8ssandra Helm release: %s", err.Error())
-	}
-}
-
 func GetNamespace(name string) (*v1.Namespace, error) {
 	ns := &v1.Namespace{
 		ObjectMeta: metav1.ObjectMeta{
@@ -459,61 +459,21 @@ func DeleteNamespace(t *testing.T, namespace string) {
 	}
 }
 
-func InstallK8ssandraFromRepo(t *testing.T, namespace, version string) {
-	kubectlOptions := getKubectlOptions(namespace)
+func InstallTraefik(t *testing.T) {
+	UninstallHelmRealeaseAndNamespace(t, "traefik", "traefik")
+	kubectlOptions := getKubectlOptions("default")
 	// Namespace doesn't exist yet, let's create it
 	options := &helm.Options{KubectlOptions: kubectlOptions}
 
-	t.Logf("Installing version %s from helm.k8ssandra.io", version)
+	// Add traefik repo and update repos
+	helm.RunHelmCommandAndGetOutputE(t, options, "repo", "add", "traefik", "https://helm.traefik.io/traefik")
+	helm.RunHelmCommandAndGetOutputE(t, options, "repo", "update")
 
-	_, err := helm.RunHelmCommandAndGetOutputE(t, options, "repo", "add", "k8ssandra", "https://helm.k8ssandra.io/stable")
+	// Deploy traefik
+	// helm install traefik traefik/traefik -n traefik --create-namespace -f docs/content/en/tasks/connect/ingress/kind-deployment/traefik.values.yaml
+	valuesPath, _ := filepath.Abs("../../docs/content/en/tasks/connect/ingress/kind-deployment/traefik.values.yaml")
+	_, err := helm.RunHelmCommandAndGetOutputE(t, options, "install", "traefik", "traefik/traefik", "-n", "traefik", "--create-namespace", "-f", valuesPath)
 	g(t).Expect(err).To(BeNil())
-	_, err = helm.RunHelmCommandAndGetOutputE(t, options, "repo", "update")
-	g(t).Expect(err).To(BeNil())
-
-	helmOptions := &helm.Options{
-		KubectlOptions: k8s.NewKubectlOptions("", "", namespace),
-		Version:        version,
-		SetValues:      map[string]string{},
-	}
-
-	if os.Getenv("K8SSANDRA_CASSANDRA_VERSION") != "" {
-		log.Println(Info(fmt.Sprintf("Using Cassandra version %s", os.Getenv("K8SSANDRA_CASSANDRA_VERSION"))))
-		helmOptions.SetValues["cassandra.version"] = os.Getenv("K8SSANDRA_CASSANDRA_VERSION")
-	}
-
-	err = helm.InstallE(t, helmOptions, "k8ssandra/k8ssandra", releaseName)
-	g(t).Expect(err).To(BeNil())
-
-	// Wait for cass-operator pod to be ready
-	g(t).Eventually(func() bool {
-		return PodWithLabelsIsReady(t, namespace, map[string]string{"app.kubernetes.io/name": "cass-operator"})
-	}, retryTimeout, retryInterval).Should(BeTrue())
-
-	// Wait for CassandraDatacenter to be updating..
-	WaitForCassDcToBeUpdating(t, namespace)
-
-	// Wait for CassandraDatacenter to be ready..
-	WaitForCassDcToBeReady(t, namespace)
-}
-
-func InstallTraefik(t *testing.T) {
-	kubectlOptions := getKubectlOptions("default")
-	_, err := k8s.GetNamespaceE(t, kubectlOptions, "traefik")
-	if err != nil {
-		// Namespace doesn't exist yet, let's create it
-		options := &helm.Options{KubectlOptions: kubectlOptions}
-
-		// Add traefik repo and update repos
-		helm.RunHelmCommandAndGetOutputE(t, options, "repo", "add", "traefik", "https://helm.traefik.io/traefik")
-		helm.RunHelmCommandAndGetOutputE(t, options, "repo", "update")
-
-		// Deploy traefik
-		// helm install traefik traefik/traefik -n traefik --create-namespace -f docs/content/en/tasks/connect/ingress/kind-deployment/traefik.values.yaml
-		valuesPath, _ := filepath.Abs("../../docs/content/en/tasks/connect/ingress/kind-deployment/traefik.values.yaml")
-		_, err = helm.RunHelmCommandAndGetOutputE(t, options, "install", "traefik", "traefik/traefik", "-n", "traefik", "--create-namespace", "-f", valuesPath)
-		g(t).Expect(err).To(BeNil())
-	}
 }
 
 type credentials struct {
