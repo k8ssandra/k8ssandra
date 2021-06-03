@@ -6,13 +6,13 @@ Medusa operator doesn’t yet support remote restores: restoring a backup to ano
 As we implement this feature, we would like to have it support multiple use cases that operators could expect to have working:
 
 - Restoring a medusa-operator based backup to another Cassandra install in the same k8s cluster
-![](img/medusa_k8s-new-restore-design-1.jpg)
-
-- Restoring a medusa-operator based backup to another Cassandra install in a different k8s cluster
 ![](img/medusa_k8s-new-restore-design-2.jpg)
 
-- Restoring a Medusa backup (non k8s) to a k8s Cassandra install
+- Restoring a medusa-operator based backup to another Cassandra install in a different k8s cluster
 ![](img/medusa_k8s-new-restore-design-3.jpg)
+
+- Restoring a Medusa backup (non k8s) to a k8s Cassandra install
+![](img/medusa_k8s-new-restore-design-1.jpg)
 
 
 
