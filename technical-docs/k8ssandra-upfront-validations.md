@@ -503,7 +503,7 @@ rules:
 
 ### config-lint
 
-Pros: Fills in for custom solutions and complements were kube-score leaves off.
+Pros: Fills in for custom solutions and complements where kube-score leaves off.
 Cons: TODO
 
 ### kube-score
@@ -523,5 +523,4 @@ Cons: doesn't support CRDs at this point in time.
 * https://stelligent.github.io/config-lint/#/
 * https://www.patricia-anong.com/blog/2019/2/28/linting-kubernetes-deployments-using-config-lint
 * https://github.com/zegl/kube-score
-
 
