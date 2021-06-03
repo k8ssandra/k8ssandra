@@ -85,7 +85,7 @@ func RestoreBackup(t *testing.T, namespace, backupName string) {
 
 func checkDatacenterUpdates(t *testing.T, namespace string, start time.Time, updates map[time.Time]bool) {
 	dc := &cassdcapi.CassandraDatacenter{}
-	if err := testClient.Get(context.TODO(), types.NamespacedName{Namespace: namespace, Name: datacenterName}, dc); err == nil {
+	if err := testClient.Get(context.TODO(), types.NamespacedName{Namespace: namespace, Name: datacenterName}, dc); err != nil {
 		t.Logf("Failed to get CassandraDatacenter while waiting for restore to finish: %s", err)
 		return
 	}
