@@ -494,28 +494,76 @@ rules:
 
 ## kubeval
 
-    TODO
+Used to validate a Kubernetes YAML file against the relevant schema.
 
+```
+Kubeval --exit-on-error 
+
+Usage
+  kubeval <file> [file...] [flags]
+
+Flags:
+  -d, --directories strings         A comma-separated list of directories to recursively search for YAML documents
+      --exit-on-error               Immediately stop execution when the first error is encountered
+  -f, --filename string             filename to be displayed when testing manifests read from stdin (default "stdin")
+      --force-color                 Force colored output even if stdout is not a TTY
+  -h, --help                        help for kubeval
+      --ignore-missing-schemas      Skip validation for resource definitions without a schema
+  -v, --kubernetes-version string   Version of Kubernetes to validate against (default "master")
+      --openshift                   Use OpenShift schemas instead of upstream Kubernetes
+  -o, --output string               The format of the output of this script. Options are: [stdout json]
+      --schema-location string      Base URL used to download schemas. Can also be specified with the environment variable KUBEVAL_SCHEMA_LOCATION
+      --skip-kinds strings          Comma-separated list of case-sensitive kinds to skip when validating against schemas
+      --strict                      Disallow additional properties not in schema
+      --version                     version for kubeval
+```
+
+### Features:
+
+* Relies on schemas generated from the Kubernetes API, as CRD support is not available.
+* Supports validation of 1..* K8s configuration files by using target directory.  
+* Allows for specific versions of k8s to be specified.
+* Used as part of a development workflow locally or in CI pipelines.
+
+When using Helm, kubeval can utilize source template comments to report the relevant pass or fail output.
+
+```
+PASS - charts/templates/k8ssandra.yaml contains a valid Service.
+```
 
 ## Pros / Cons
 
-    TODO
+Identifying the advantages and disadvantages of each tool.
 
 ### config-lint
 
-Pros: Fills in for custom solutions and complements where kube-score leaves off.
-Cons: TODO
+Pros:
+* Provides customization for non-K8s configurations.
+
+Cons: 
+* TODO
 
 ### kube-score
 
-Pros: TODO
-Cons: TODO
+Pros: 
+* Good for scoring/covering best practices.
+
+Cons: 
+* TODO
+
 
 ### Kubeval
 
-Pros: TODO
-Cons: doesn't support CRDs at this point in time.
+Pros: 
+* Versions of Kubernetes can be specified **Major.Minor.Patch**.
+* Schemas can be targeted offline for efficiency.
 
+Cons: 
+* Doesn't support CRDs with current version, but a flag is available to ignore them.
+
+## Summary ##
+
+* TODO
 
 ## References
 
