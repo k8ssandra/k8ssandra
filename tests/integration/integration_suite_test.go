@@ -1,6 +1,7 @@
 package integration
 
 import (
+	"github.com/google/uuid"
 	"log"
 	"strings"
 
@@ -91,7 +92,7 @@ func TestFullStackScenario(t *testing.T) {
 		deployFullStackCluster(t, namespace, true)
 
 		t.Run("Test Reaper", func(t *testing.T) {
-			testReaper(t, namespace)
+			testReaper(t)
 		})
 
 		t.Run("Test Medusa", func(t *testing.T) {
@@ -140,14 +141,14 @@ func TestReaperDeploymentScenario(t *testing.T) {
 	namespace := initializeCluster(t)
 	success := t.Run("Test Reaper", func(t *testing.T) {
 		deployClusterForReaper(t, namespace, true)
-		testReaper(t, namespace)
+		testReaper(t)
 	})
 	cleanupCluster(t, namespace, success)
 }
 
-func testReaper(t *testing.T, namespace string) {
+func testReaper(t *testing.T) {
 	log.Println(Step("Testing Reaper..."))
-	repairId := triggerRepair(t, namespace)
+	repairId := triggerRepair(t)
 	waitForSegmentDoneAndCancel(t, repairId)
 }
 
@@ -173,12 +174,12 @@ func checkReaperRegistered(t *testing.T, namespace string) {
 	CheckClusterIsRegisteredInReaper(t, "k8ssandra")
 }
 
-func triggerRepair(t *testing.T, namespace string) string {
+func triggerRepair(t *testing.T) uuid.UUID {
 	log.Println(Info("Starting a repair"))
-	return TriggerRepair(t, namespace, "reaper_db")
+	return TriggerRepair(t, "k8ssandra", "reaper_db", "k8ssandra")
 }
 
-func waitForSegmentDoneAndCancel(t *testing.T, repairId string) {
+func waitForSegmentDoneAndCancel(t *testing.T, repairId uuid.UUID) {
 	log.Println(Info("Waiting for one segment to be repaired and canceling run"))
 	WaitForOneSegmentToBeDone(t, repairId)
 	CancelRepair(t, repairId)
