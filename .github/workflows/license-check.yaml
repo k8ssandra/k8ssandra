@@ -2,7 +2,7 @@ name: Dependency and License Scan
 on:
   push:
     branches:
-      - master
+      - main
 jobs:
   scan-repo:
     runs-on: ubuntu-latest
@@ -12,12 +12,6 @@ jobs:
       - name: Install Fossa CLI
         run: |
           curl -H 'Cache-Control: no-cache' https://raw.githubusercontent.com/fossas/fossa-cli/master/install.sh | bash
-      - name: Initialize Fossa
-        run: |
-          fossa init
-      - name: Rename Fossa project
-        run: |
-          sed -i 's/project: .*/project: k8ssandra/g' .fossa.yml
       - name: Scan for dependencies and licenses
         run: |
           FOSSA_API_KEY=${{ secrets.FOSSA_PUSH_ONLY_API_KEY }} fossa analyze
