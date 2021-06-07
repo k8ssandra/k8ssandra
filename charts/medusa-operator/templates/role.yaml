@@ -22,6 +22,14 @@ rules:
       - get
       - list
       - update
+      - patch
+      - watch
+  - apiGroups:
+      - apps
+    resources:
+      - statefulsets
+    verbs:
+      - list
       - watch
   - apiGroups:
       - cassandra.k8ssandra.io

@@ -24,6 +24,7 @@ spec:
               fieldRef:
                 fieldPath: metadata.namespace
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
         name: medusa-operator
         resources: {{- toYaml .Values.resources | nindent 10 }}
       terminationGracePeriodSeconds: 10
