@@ -29,6 +29,10 @@ CI will run on push to any branch of your forked repository. In order to run CI 
 - K8SSANDRA_MEDUSA_BUCKET_SECRET: Region of the S3 bucket.
 - MEDUSA_SECRET: A valid S3 key/secret pair to access the S3 bucket.
 
+## Prevent running CI for a specific commit
+
+CI runs can be disabled for specific commits by adding `[skip ci]` in the commit message. This can be useful when pushing commits on WIP branches for backup purposes.
+
 ## Documentation contributions and build environment
 
 We use [Hugo](https://gohugo.io/) to format and generate this website, the [Docsy](https://github.com/google/docsy) theme for styling and site structure, and [Google Cloud Storage](https://console.cloud.google.com/) to manage the deployment of the site.
