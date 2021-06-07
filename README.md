@@ -71,3 +71,7 @@ If you are a **developer** interested in working with the K8ssandra code, here i
 * Understanding the K8ssandra project structure
 * Running unit tests
 * Troubleshooting tips
+
+## Dependencies
+
+For information on the packaged dependencies of Cass Operator and their licenses, check out our [open source report](https://app.fossa.com/reports/997b0a6e-2a80-497e-b540-d50a83727ac2).

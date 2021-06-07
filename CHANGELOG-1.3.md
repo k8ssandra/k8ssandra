@@ -17,4 +17,6 @@ When cutting a new release of the parent `k8ssandra` chart update the `unrelease
 and date `## vX.Y.Z - YYYY-MM-DD` and create a new placeholder section for  `unreleased` entries.
 
 ## unreleased
+
+* [CHANGE] #812 Integrate Fossa component/license scanning
 * [BUGFIX] #853 Fix property name in scaling docs

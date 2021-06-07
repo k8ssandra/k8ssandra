@@ -14,11 +14,24 @@ The overall procedure:
 1. Start on https://github.com/k8ssandra/k8ssandra.
 2. Fork the repo by clicking the **Fork** button in the GitHub UI.
 3. Make your changes locally on your fork. Git commit and push only to your fork.
-4. Submit a Pull Request (PR) with your forked updates.
-5. If you're not yet ready for a review, add "WIP" to the PR name to indicate it's a work in progress.  
-6. Wait for the automated PR workflow to do some checks. Members of the K8ssandra community will review your PR and decide whether to approve and merge it.
+4. Wait for CI to run successfully in GitHub Actions before submitting a PR.
+5. Submit a Pull Request (PR) with your forked updates.
+6. If you're not yet ready for a review, add "WIP" to the PR name to indicate it's a work in progress.  
+7. Wait for the automated PR workflow to do some checks. Members of the K8ssandra community will review your PR and decide whether to approve and merge it.
 
 Also, we encourage you to submit Issues, starting from https://github.com/k8ssandra/k8ssandra/issues. Add a label to help categorize the issue, such as the complexity level, component name, and other labels you'll find in the repo's Issues display. 
+
+## Setting up CI in GitHub Actions
+
+CI will run on push to any branch of your forked repository. In order to run CI jobs involving S3 buckets (for Medusa), two secrets need to be set up in the fork organization:
+
+- K8SSANDRA_MEDUSA_BUCKET_NAME: Name of the S3 bucket used to store Medusa backups.
+- K8SSANDRA_MEDUSA_BUCKET_SECRET: Region of the S3 bucket.
+- MEDUSA_SECRET: A valid S3 key/secret pair to access the S3 bucket.
+
+## Prevent running CI for a specific commit
+
+CI runs can be disabled for specific commits by adding `[skip ci]` in the commit message. This can be useful when pushing commits on WIP branches for backup purposes.
 
 ## Documentation contributions and build environment
 
