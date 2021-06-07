@@ -67,16 +67,22 @@ We can be rigid about the mapping and expect the same dc and rack names exclusiv
 ![](img/K8ssandra-new-restore-design-1.jpg)  
 The restore operation will assume the CRDs have been synced with the remote storage backend. Backup topology (hostnames and tokens) will be retrieved from the new CRD format.
 
+2. Verify the mapping between backup and restore nodes
 
-2. Set the env variables on the restore containers
-![](img/K8ssandra-new-restore-design-2.jpg)  
-The backup definition will be used to map the backup hosts with the restore hosts and perform checks on whether or not the restore is possible:
+	The backup definition will be used to map the backup hosts with the restore hosts and perform checks on whether or not the restore is possible:
 
   - Same number of DCs
   - Same number of nodes per DC
   - Same rack distribution per DC
   
   Nodes will be mapped 1:1 between the source and destination topologies (sorted alphabetically). If the mapping fails to associate nodes 1:1, the restore operation must fail.
+
+3. Alter the `system_auth` keyspace and repair it for remote restores
+
+	Remote restores will require to keep the existing `system_auth` keyspace so that existing credentials can be retained. As token ownership will change, auth data could become unavailable after the restore. To avoid this and as preliminary step to a remote restore, the `system_auth` keyspace should be altered to be replicated on all nodes in the cluster and it should be repaired.
+
+4. Set the env variables on the restore containers
+![](img/K8ssandra-new-restore-design-2.jpg)  
 
   The init containers will get the following env variables set:
 
@@ -88,12 +94,12 @@ The backup definition will be used to map the backup hosts with the restore host
   These values will then be used to invoke medusa.restore_node in the medusa-restore init container.
 The init-container needs to deal with mapping between source and dest topologies to self determine which backup it needs to restore. Pre-checks in the operator will guarantee that a 1:1 mapping is possible and topologies are compatible.
 
-3. Shutdown Cassandra to trigger the restore
+5. Shutdown Cassandra to trigger the restore
 ![](img/K8ssandra-new-restore-design-3.jpg)  
 
   medusa-operator will patch the cassandradatacenter spec to provoke a shutdown of the Cassandra nodes through cass-operator. The pods will be restarted and the medusa-restore init container will trigger the restore.
 
-4. Restore the backups
+6. Restore the backups
 
 ![](img/K8ssandra-new-restore-design-4.jpg)  
 
