@@ -111,8 +111,8 @@ Here is an updated k8ssandra-values.yaml with `allowMultipleNodesPerWorker`:
 ```yaml
 cassandra:
   clusterName: my-k8ssandra
-  allowMultipleWorkersPerNode: true
-  # resources must be set when allowMultipleWorkersPerNode is true.   
+  allowMultipleNodesPerWorker: true
+  # resources must be set when allowMultipleNodesPerWorker is true.   
   resources: 
     requests:
       cpu: 2
