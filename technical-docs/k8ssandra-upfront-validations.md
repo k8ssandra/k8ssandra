@@ -24,29 +24,149 @@ cassandra:
       size: 1
 ```
 
-In the example, when required values are not specified, a heap property exists without any child properties.
-
-These types of issues could be detected, perhaps as a collection of issues, and reported to be addressed by a K8ssandra monitor.
+In the example, when values are not specified, a heap property is applied without any child properties.  These types of issues could be customized and flagged as invalid settings, based on K8ssandra best-practices or customized as needed.   
 
 
 ## Proposal
 
-Use of a configuration linting tool to assist with catching customized configuration problems in advance of issues discovered when applying Kubernetes objects.
+Use of a configuration linting and static analysis tool set to assist with early detection of configuration problems prior to applying Kubernetes objects.  
 
-Use of complementary static-analysis config tools for Kubernetes standards verification.
+The tool set must include: 
 
-### Tools for consideration
+* Customizable linting rules to support K8ssandra configurations.
+* Identification of unsupported Kubernetes features for scoped versions
+* Application of Kubernetes best-practices and security standards.
+* CI/CD API interoperability.
 
-* kube-score - Kubernetes object analysis with recommendations for improved reliability and security.
+
+### Tool set for consideration
+
 * config-lint  - configuration lint, available as a CLI for CI/CD purposes and can be used as a Golang module in unit and integration tests.
+* kube-score - Kubernetes object analysis with recommendations for improved reliability and security.
 * kubeval - allows for YAML manifest validation against specific versions of API Schemas.
+
+## config-lint
+
+Stelligent config-lint is an open source command line tool to lint configuration files in a variety of formats: JSON, YAML, Terraform, and Kubernetes.  Focuses on the extraction of data elements for a resource and asserting the values.
+
+### Features
+
+* Enables developers with ability to validate configuration files.
+* Provides custom validations and built-in rules to ensure configurations meet best practices.
+* Custom files can be used for other formats.
+* Built-in rules provided for Terraform
+
+### Usage
+
+#### Example Kubernetes
+
+```yaml
+version: 1
+description: Rules for Kubernetes spec files
+type: Kubernetes
+files:
+  - "*.yml"
+rules:
+
+  - id: ALLOW_KIND
+    severity: FAILURE
+    message: Allowed kinds
+    resource: "*"
+    assertions:
+      - key: kind
+        op: in
+        value: Pod,Policy,ServiceAccount,NetworkPolicy
+    tags:
+      - kind
+
+  - id: POD_CONTAINERS
+    severity: FAILURE
+    message: Pod must include containers
+    resource: Pod
+    assertions:
+      - key: spec.containers
+        op: present
+    tags:
+      - pod
+
+  - id: POD_SECURITY_CONTEXT
+    severity: FAILURE
+    message: Pod should set securityContent
+    resource: Pod
+    assertions:
+      - key: spec.securityContext.runAsNonRoot
+        op: eq
+        value: true
+      - key: spec.securityContext.readOnlyRootFilesystem
+        op: eq
+        value: true
+    tags:
+      - pod
+      - security
+
+  - id: DEFAULT_NAMESPACE
+    severity: FAILURE
+    message: Policy should not use default namespace
+    resource: Policy
+    assertions:
+      - key: spec.namespace
+        op: ne
+        value: default
+    tags:
+      - policy
+
+  - id: NETWORK
+    severity: FAILURE
+    message: Network policy should include from pods
+    resource: NetworkPolicy
+    assertions:
+      - key: spec.allowIncoming.from[].pods
+        op: present
+    tags:
+      - network
+  - id: DOCKER_REGISTRY
+    severity: FAILURE
+    message: Pods should pull from one of these docker registries
+    resource: Pod
+    assertions:
+     - every:
+         key: spec.containers
+         expressions:
+           - or:
+             - key: image
+               op: starts-with
+               value: <private docker registry url 1>
+             - key: image
+               op: starts-with
+               value: <private docker registry url 2>
+    tags:
+      - pod
+```
+
+#### Example generic value assertions
+
+```yaml
+
+rules:
+…
+
+- id: REQ_COLOR
+    message: Missing or invalid color
+    severity: FAILURE
+    resource: ui-form
+    assertions:
+      - key: color
+        op: in
+        value: red,blue,green
+
+```
 
 
 ## kube-score
 
 Kubernetes object analysis with recommendations for improved reliability and security.
 
-### Features:
+### Features
 
 * Open-source and available under the MIT-license.
 
@@ -96,21 +216,29 @@ kube-score [action] --flags
 
 ```
 
-### Example kube-score w/ K8ssandra
 
-View the list of score criteria.
+#### View the list of score criteria
 
-```kube-score list```
+```
+kube-score list
+```
 
 This prints a CSV list of all available score checks.
 
-Example:
+#### Example of score checks (27 available at current)
+
 ```
 stable-version, all, Checks if the object is using a deprecated apiVersion, default
 label-values, all, Validates label values, default
+service-targets-pod, Service, Makes sure that all Services targets a Pod, default
+service-type, Service, Makes sure that the Service type is not NodePort, default
+
+...
+
 ```
 
-Generate the target configuration.
+
+#### Generate the target configuration
 
 ```helm template k8ssandra/k8ssandra > kt.yaml```
 
@@ -227,9 +355,12 @@ spec:
         emptyDir: {}
 ```
 
-### Score the target configuration.
+#### Score the target configuration.
 
-```kube-score score kt.yaml > kt.score```
+```
+kube-score score kt.yaml > kt.score
+```
+
 
 #### Example kube-score w/ k8ssandra cass-operator deployment
 
@@ -377,124 +508,19 @@ apps/v1/Deployment RELEASE-NAME-cass-operator                                 �
 ```
 
 
-## config-lint
-
-Stelligent config-lint is an open source command line tool to lint configuration files in a variety of formats: JSON, YAML, Terraform, and Kubernetes.
-
-### Features:
-
-* Enables developers with abiltiy to validate configuration files.
-* Provides custom validations and built-in rules to ensure configurations meet best practices.
-* Custom files can be used for other formats.
-* Built-in rules provided for Terraform
-
-
-#### Example Kubernetes
-
-```yaml
-version: 1
-description: Rules for Kubernetes spec files
-type: Kubernetes
-files:
-  - "*.yml"
-rules:
-
-  - id: ALLOW_KIND
-    severity: FAILURE
-    message: Allowed kinds
-    resource: "*"
-    assertions:
-      - key: kind
-        op: in
-        value: Pod,Policy,ServiceAccount,NetworkPolicy
-    tags:
-      - kind
-
-  - id: POD_CONTAINERS
-    severity: FAILURE
-    message: Pod must include containers
-    resource: Pod
-    assertions:
-      - key: spec.containers
-        op: present
-    tags:
-      - pod
-
-  - id: POD_SECURITY_CONTEXT
-    severity: FAILURE
-    message: Pod should set securityContent
-    resource: Pod
-    assertions:
-      - key: spec.securityContext.runAsNonRoot
-        op: eq
-        value: true
-      - key: spec.securityContext.readOnlyRootFilesystem
-        op: eq
-        value: true
-    tags:
-      - pod
-      - security
-
-  - id: DEFAULT_NAMESPACE
-    severity: FAILURE
-    message: Policy should not use default namespace
-    resource: Policy
-    assertions:
-      - key: spec.namespace
-        op: ne
-        value: default
-    tags:
-      - policy
-
-  - id: NETWORK
-    severity: FAILURE
-    message: Network policy should include from pods
-    resource: NetworkPolicy
-    assertions:
-      - key: spec.allowIncoming.from[].pods
-        op: present
-    tags:
-      - network
-  - id: DOCKER_REGISTRY
-    severity: FAILURE
-    message: Pods should pull from one of these docker registries
-    resource: Pod
-    assertions:
-     - every:
-         key: spec.containers
-         expressions:
-           - or:
-             - key: image
-               op: starts-with
-               value: <private docker registry url 1>
-             - key: image
-               op: starts-with
-               value: <private docker registry url 2>
-    tags:
-      - pod
-```
-Example for generic value assertions
-
-```yaml
-
-rules:
-…
-
-- id: REQ_COLOR
-    message: Missing or invalid color
-    severity: FAILURE
-    resource: ui-form
-    assertions:
-      - key: color
-        op: in
-        value: red,blue,green
-
-```
-
 
 ## kubeval
 
 Used to validate a Kubernetes YAML file against the relevant schema.
+
+### Features
+
+* Relies on schemas generated from the Kubernetes API, as CRD support is not available.
+* Supports validation of 1..* K8s configuration files by using target directory.  
+* Allows for specific versions of k8s to be specified.
+* Used as part of a development workflow locally or in CI pipelines.
+
+### Usage
 
 ```
 Kubeval --exit-on-error 
@@ -518,18 +544,13 @@ Flags:
       --version                     version for kubeval
 ```
 
-### Features:
-
-* Relies on schemas generated from the Kubernetes API, as CRD support is not available.
-* Supports validation of 1..* K8s configuration files by using target directory.  
-* Allows for specific versions of k8s to be specified.
-* Used as part of a development workflow locally or in CI pipelines.
 
 When using Helm, kubeval can utilize source template comments to report the relevant pass or fail output.
 
 ```
 PASS - charts/templates/k8ssandra.yaml contains a valid Service.
 ```
+
 
 ## Pros / Cons
 
@@ -539,31 +560,41 @@ Identifying the advantages and disadvantages of each tool.
 
 Pros:
 * Provides customization for non-K8s configurations.
+* Handles configuration files written in Terraform syntax.
+* Rules can support embedded or decoupled dynamic data (e.g. from S3 objects, HTTP endpoints).
+* Runs in CI/CD environment.
 
 Cons: 
-* TODO
+* Doesn't include automatic remediation or notifications.
 
 ### kube-score
 
 Pros: 
-* Good for scoring/covering best practices.
+* Nice features for scoring & covering Kubernetes best practices.
+* Runs in CI/CD environment.
+* Able to target different versions of Kubernetes.
 
 Cons: 
-* TODO
+* Doesn't include automatic remediation or notifications.
+* Targeting a directory of configurations isn't available.
 
 
-### Kubeval
+### kubeval
 
 Pros: 
 * Versions of Kubernetes can be specified **Major.Minor.Patch**.
 * Schemas can be targeted offline for efficiency.
+* Ability to target collection of configurations in a directory.
 
 Cons: 
-* Doesn't support CRDs with current version, but a flag is available to ignore them.
+* Doesn't support CRDs fully with current version.  However, a flag is available to ignore them.
+* Doesn't include automatic remediation or notifications.
 
 ## Summary ##
 
-* TODO
+Unless better options and features are discovered from other existing Kubernetes linting and validation tools, it is recommended that all three: kube-score, kubeval, and config-lint are include in the K8ssandra validation tool set.  Next steps include creating tickets to support customization and out-of-the-box usage.  
+
+The objective is to make K8ssandra configurations easier to manage and detect difference with Kubernetes best-practices and security policies earlier in deployment.
 
 ## References
 
@@ -571,4 +602,5 @@ Cons:
 * https://stelligent.github.io/config-lint/#/
 * https://www.patricia-anong.com/blog/2019/2/28/linting-kubernetes-deployments-using-config-lint
 * https://github.com/zegl/kube-score
+* https://github.com/instrumenta/kubeval
 
