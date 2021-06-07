@@ -160,6 +160,14 @@ func DeployClusterWithValues(t *testing.T, namespace, options, customValues stri
 			"medusa.storage_properties.host": fmt.Sprintf("%s.minio.svc.cluster.local", serviceName),
 		}
 	}
+
+	if options == "s3" && os.Getenv("K8SSANDRA_MEDUSA_BUCKET_NAME") != "" {
+		helmValues = map[string]string{
+			"medusa.bucketName":                os.Getenv("K8SSANDRA_MEDUSA_BUCKET_NAME"),
+			"medusa.storage_properties.region": os.Getenv("K8SSANDRA_MEDUSA_BUCKET_REGION"),
+		}
+	}
+
 	helmValues["cassandra.datacenters[0].size"] = strconv.Itoa(nodes)
 	helmValues["cassandra.datacenters[0].name"] = datacenterName
 	deployCluster(t, namespace, customValues, helmValues, upgrade, useLocalCharts, version)
