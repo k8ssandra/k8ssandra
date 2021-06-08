@@ -200,6 +200,169 @@ Defined in [grafana-operator](https://github.com/integr8ly/grafana-operator).
 
 Defined in [prometheus-operator](https://github.com/integr8ly/grafana-operator).
 
+## Go Types
+
+### Stargate
+```go
+type Stargate struct {
+	metav1.TypeMeta   `json:",inline"`
+	metav1.ObjectMeta `json:"metadata,omitempty"`
+	
+	Spec StargateSpec     `json:"spec,omitempty"`
+	Status StargateStatus `json:"status,omitempty"`
+}
+
+type StargateSpec struct {
+	// properties to be defined
+}
+
+type StargateStatus struct {
+	// properties to be defined
+}
+```
+
+### Reaper
+
+```go
+type Reaper struct {
+	metav1.TypeMeta   `json:",inline"`
+	metav1.ObjectMeta `json:"metadata,omitempty"`
+	
+	Spec ReaperSpec     `json:"spec,omitempty"`	Status ReaperStatus `json:"status,omitempty"`
+}
+
+type ReaperSpec struct {
+	// properties to be defined
+}
+
+type ReaperStatus struct {
+	// properties to be defined
+}
+```
+
+### Monitoring
+
+```go
+type Monitoring struct {
+	metav1.TypeMeta   `json:",inline"`
+	metav1.ObjectMeta `json:"metadata,omitempty"`
+	
+	Spec MonitoringSpec     `json:"spec,omitempty"`	Status MonitoringStatus `json:"status,omitempty"`		
+}
+
+type MonitoringSpec struct {
+	PrometheusSpec *PrometheusTemplateSpec `json:"prometheus,omitempty"`
+	
+	GrafanaSpec *GrafanaTemplateSpec `json:"prometheus,omitempty"`
+	
+	// Other monitoring solutions could be add here as well
+}
+
+type MonitoringStatus struct {
+}
+
+type PrometheusTemplateSpec struct {
+    metav1.ObjectMeta `json:"metadata,omitempty"`
+
+    // This is the same type defined in prometheus-operator
+    Spec PrometheusSpec `json:"spec,omitempty"`
+}
+
+type GrafanaTemplateSpec struct {
+    metav1.ObjectMeta `json:"metadata,omitempty"`
+
+    // This is the same type defined in grafana-operator
+    Spec GrafanaSpec `json:"spec,omitempty"`
+}
+```
+
+### CassandraCluster
+
+```go
+type CassandraCluster struct {
+	metav1.TypeMeta   `json:",inline"`
+	metav1.ObjectMeta `json:"metadata,omitempty"`
+	
+	Spec CassandraClusterSpec     `json:"spec,omitempty"`
+	Status CassandraClusterStatus `json:"status,omitempty"`
+}
+
+type CassandraClusterSpec struct {
+	DatacenterTemplates []CassandraDatacenterTemplate `json:"datacenters,omitempty"`
+	
+	// The following properties are also defined in CassandraDatacenterTemplatespec.
+	// The idea is to be able to define things at the cluster level and let them be
+	// inherited at the datacenter level with the option of overriding. 
+	
+	StargateTemplate *StargateTemplateSpec `json:"stargate,omitempty"`
+	
+	ReaperTemplate *ReaperTemplateSpec `json:"reaper,omitempty"`
+	
+	MonitoringTemplate *MonitoringTemplateSpec `json:"monitoring,omitempty"`
+}
+
+type CassandraClusterStatus struct {
+}
+
+type CassandraDatacenterTemplateSpec struct {
+	metav1.ObjectMeta `json:"metadata,omitempty"`
+
+	Spec CassandraDatacenterSpec `json:"spec,omitempty"`
+	
+	StargateTemplate *StargateTemplateSpec `json:"stargate,omitempty"`
+	
+	ReaperTemplate *ReaperTemplateSpec `json:"reaper,omitempty"`
+	
+	MonitoringTemplate *MonitoringTemplateSpec `json:"monitoring,omitempty"`
+}
+
+type StargateTemplateSpec struct {
+	metav1.ObjectMeta `json:"metadata,omitempty"`
+	
+	Spec StargateSpec `json:"spec,omitempty"`
+}
+
+type ReaperTemplateSpec struct {
+	metav1.ObjectMeta `json:"metadata,omitempty"`
+	
+	Spec ReaperSpec `json:"spec,omitempty"`
+}
+
+type MonitoringTemplateSpec struct {
+	metav1.ObjectMeta `json:"metadata,omitempty"`
+	
+	Spec MonitoringSpec `json:"spec,omitempty"`
+
+}
+```
+
+### K8ssandra
+
+```go
+type K8ssandraCluster struct {
+	metav1.TypeMeta   `json:",inline"`
+	metav1.ObjectMeta `json:"metadata,omitempty"`
+	
+	Spec K8ssandraClusterSpec     `json:"spec,omitempty"`
+	Status K8ssandraClusterStatus `json:"status,omitempty"`
+}
+
+type K8ssandraClusterSpec struct {
+	CassandraClusterTemplate *CassandraClusterTemplateSpec `json:"cassandra,omitempty"`	
+	
+	// We should define properties here that provide sensible defaults and
+	// that allow users to get up and running quickly. In the k8ssandra 
+	// Helm chart each component has an enabled flag. We could consider doing 
+	// something similar here. 
+}
+
+type CassandraClusterTemplateSpec struct {
+	metav1.ObjectMeta `json:"metadata,omitempty"`
+	
+	Spec CassandraClusterSpec `json:"spec,omitempty"`
+}
+```
+
 ## Scenarios
 
 Each scenario consists of a series of events. Each event lists the steps performed by controllers. Controllers run concurrently. When you see multiple controllers listed for an event assume that the steps are performed concurrently and potentially in parallel.
@@ -405,6 +568,16 @@ With the Helm charts we are prescriptive with what properties and settings of th
 
 Aside from deviating away from the current, prescriptive approach there is something else that we have to consider. Suppose the user decides to add a volume or container that clases with one that K8ssandra adds. cass-operator already deals with this with the PodTemplateSpec property. I am not suggesting that we do one thing or another at this time. I just want to raise awareness.
 
-## Upgrades
+## Installation
 
-Let's assume for the moment that K8ssandra 2.0 is based on the k8ssandra-operator. We need to figure out what the upgrade and migration path looks like. Would it be possible to start incrementally introducing changes in K8ssandra 1.x?
+There are a lot of CRDs and multiple operators covered in this doc. The k8ssandra operator itself should not be responsible for installing and managing all of the operators and CRDs. We will provide Helm charts that manage the installation of the k8ssandra operator and its various dependencies, e.g., prometheus-operator.
+
+We should also provide first class support for kustomize. kustomize is integrated into kubectl as well as operator-sdk and kubebuilder. It therefore makes sense to provide support for kustomize.
+
+Lastly, we should provide integration with Operator Lifecycle Manager (OLM).
+
+## Migrations
+
+We need to provide a migration path for k8ssandra 1.x. This should be external tooling and documentation, not something done within the operator itself.
+
+We also need to provide a migration for people using only cass-operator and not k8ssandra.
