@@ -1,0 +1,58 @@
+cassandra:
+  # Version of Apache Cassandra to deploy
+  version: "3.11.10"
+
+  # Configuration for the /var/lib/cassandra mount point
+  cassandraLibDirVolume:
+    storageClass: do-block-storage-wait
+
+    # The recommended live data size is 1 - 1.5 TB. A 2 TB volume supports this
+    # much data along with room for compactions.
+    size: 2048Gi
+
+  heap:
+   size: 31G
+   newGenSize: 31G
+
+  resources:
+    requests:
+      cpu: 31000m
+      memory: 55Gi
+    limits:
+      cpu: 31000m
+      memory: 55Gi
+
+  # This key defines the logical topology of your cluster. The rack names and
+  # labels should be updated to reflect the Availability Zones where your GKE
+  # cluster is deployed.
+  datacenters:
+  - name: dc1
+    size: 3
+    racks:
+    - name: rack-a
+    - name: rack-b
+    - name: rack-c
+  
+  # Tolerations for Cassandra nodes
+  tolerations:
+    - key: "app"
+      operator: "Equal"
+      value: "cassandra"
+      effect: "NoSchedule"
+
+stargate:
+  enabled: true
+  replicas: 3
+  heapMB: 1024
+  cpuReqMillicores: 1000
+  cpuLimMillicores: 1000
+
+medusa:
+  enabled: true
+  storage: s3_compatible
+  storage_properties:
+      host: nyc3.digitaloceanspaces.com
+      port: 443
+      secure: "True"
+  bucketName: k8ssandra-prod-backups
+  storageSecret: prod-k8ssandra-medusa-key
