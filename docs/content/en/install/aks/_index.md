@@ -259,6 +259,64 @@ WARNING: version difference between client (1.21) and server (1.19) exceeds the 
 
 With all of the infrastructure provisioned we can now focus on installing K8ssandra. This will require configuring a service account for the backup and restore service, creating a set of Helm variable overrides, and setting up AKS specific ingress configurations.
 
+### Create Backup / Restore Service Account Secrets
+
+In order to allow for backup and restore operations, we must provide a storage account to the Medusa operator which
+handles coordinating the movement of data to and from Azure Storage blobs. As part of the provisioning sections, a
+storage account was generated for these purposes. Here we will generate a credentials file for this account and push it
+into Kubernetes as a secret.
+
+Inspect the output of `terraform output` to retrieve the information we need: the resource group, and the storage
+account name. The resource group is displayed as part of the output; the storage account name to use is the last part of
+the `storage_account_id` entry.
+
+In our reference implementation, the resource group is `prod-k8ssandra-resource-group` and the storage account name is
+`prodk8ssandrastorage`.
+
+If in doubt, you can retrieve all the available storage accounts and corresponding resource groups with:
+
+```console
+az storage account list --query '[].{StorageAccountName:name,ResourceGroup:resourceGroup}' -o table
+``` 
+
+Now we are going to retrieve one of the access keys for our target storage account, and use it generate a credentials
+file in your local machine called `credentials.json`:
+
+```console
+az storage account keys list \
+   --account-name prodk8ssandrastorage \
+   --query "[0].value|{storage_account:'prodk8ssandrastorage',key:@}" > credentials.json
+```
+
+The generated file should look like this:
+
+```bash
+{
+    "storage_account": "prodk8ssandrastorage",
+    "key": "<ACCESS KEY>"
+}
+```
+
+We can now push this file to Kubernetes as a secret with `kubectl`:
+
+```bash
+kubectl create secret generic prod-k8ssandra-medusa-key \
+    --from-file=medusa_azure_credentials.json=./credentials.json
+```
+
+**Output**:
+
+```bash
+secret/prod-k8ssandra-medusa-key created
+```
+
+{{% alert title="Important" color="primary" %}} The name of the JSON credentials file within the secret MUST be
+`medusa_azure_credentials.json`. _Any_ other value will result in Medusa not finding the secret and backups failing. {{%
+/alert %}}
+
+This secret, `prod-k8ssandra-medusa-key`, can now be referenced in our K8ssandra configuration to allow for backing up
+data to Azure with Medusa.
+
 ### Generate `aks.values.yaml`
 
 Here is a reference Helm `values.yaml` file with configuration options for running K8ssandra in AKS.

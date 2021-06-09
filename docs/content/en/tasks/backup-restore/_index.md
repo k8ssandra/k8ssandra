@@ -28,6 +28,10 @@ Added in K8ssandra 1.1.0:
   * CEPH Object Gateway
   * Others - this list is not exhaustive
 
+Added in K8ssandra 1.3.0:
+
+* Support in K8ssandra's Medusa for Azure Storage
+
 ## Backup and restore steps
 
 For detailed walk-throughs of Medusa backup and restore operations, see:
@@ -35,6 +39,7 @@ For detailed walk-throughs of Medusa backup and restore operations, see:
 * Backup and restore Cassandra with S3-compatible [MinIO]({{< relref "/tasks/backup-restore/minio/" >}}).
 * Backup and restore Cassandra with [Amazon S3]({{< relref "/tasks/backup-restore/amazon-s3/" >}}).
 * Backup and restore Cassandra with [GCS]({{< relref "/tasks/backup-restore/gcs/" >}}).
+* Backup and restore Cassandra with [Azure]({{< relref "/tasks/backup-restore/azure/" >}}).
 
 ## Next steps
 

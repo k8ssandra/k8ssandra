@@ -79,7 +79,7 @@ jobs:
       matrix:
         k8s_version: ["${{ github.event.inputs.kubernetes_version }}"]
         cassandra_version: ["3.11.10", "4.0.0"]
-        scenario: ["TestMedusaDeploymentScenario/\"S3\"", "TestMedusaDeploymentScenario/\"Minio\"", "TestMedusaDeploymentScenario/\"local\"", "TestReaperDeploymentScenario", "TestMonitoringDeploymentScenario", "TestStargateDeploymentScenario", "TestRestoreAfterUpgrade", "TestUpgradeScenario"]
+        scenario: ["TestMedusaDeploymentScenario/\"S3\"", "TestMedusaDeploymentScenario/\"Minio\"", "TestMedusaDeploymentScenario/\"local\"", "TestMedusaDeploymentScenario/\"azure_blobs\"", "TestReaperDeploymentScenario", "TestMonitoringDeploymentScenario", "TestStargateDeploymentScenario", "TestRestoreAfterUpgrade", "TestUpgradeScenario"]
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -152,18 +152,27 @@ jobs:
 
       - name: Write Secrets
         run: |
-          printf "%s" '${{ secrets.MEDUSA_SECRET }}' > ~/medusa_secret.yaml
+          printf "%s" '${{ secrets.K8SSANDRA_MEDUSA_SECRET_S3 }}' > ~/medusa_secret_s3.yaml
+          printf "%s" '${{ secrets.K8SSANDRA_MEDUSA_SECRET_AZURE }}' > ~/medusa_secret_azure.yaml
 
       - name: Check if integration tests can run
         env:
           SCENARIO: ${{ matrix.scenario }}
         run: |
-          if [[ ( -n "${{ secrets.MEDUSA_SECRET }}" && $SCENARIO == *"S3"* ) || $SCENARIO != *"S3"* ]];
-          # Medusa on S3 requires a secret. Skip integration tests if the secret is absent.
-          then
-            echo "IT_CAN_RUN=yes" >> $GITHUB_ENV
+          if [[ $SCENARIO == *"S3"* ]]; then
+            # Medusa on S3 requires a secret. Skip integration tests if the secret is absent.
+            if [[ -s ~/medusa_secret_s3.yaml ]]; then
+              echo "IT_CAN_RUN=yes" >> $GITHUB_ENV
+            fi
+          elif [[ $SCENARIO == *"azure"* ]]; then
+            # Medusa on Azure requires a secret. Skip integration tests if the secret is absent.
+            if [[ -s ~/medusa_secret_azure.yaml ]]; then
+              echo "IT_CAN_RUN=yes" >> $GITHUB_ENV
+            fi
+          else
+              echo "IT_CAN_RUN=yes" >> $GITHUB_ENV
           fi
-#
+
       - name: Run Integration Tests
         if: ${{ env.IT_CAN_RUN == 'yes' }}
         env:

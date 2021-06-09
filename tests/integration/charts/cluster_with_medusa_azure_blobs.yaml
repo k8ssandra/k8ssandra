@@ -1,0 +1,28 @@
+cassandra:
+  heap:
+   size: 500M
+   newGenSize: 200M
+  datacenters:
+  - name: dc1
+    size: 1
+  ingress:
+    enabled: false
+stargate:
+  enabled: false
+reaper:
+  enabled: false
+medusa:
+  enabled: true
+  multiTenant: true
+  storage: azure_blobs
+  # bucketName should correspond to an existing container inside the storage account referenced by storageSecret
+  bucketName: k8ssandra-medusa
+  # storageSecret will be created as part of the test from a ~/medusa_secret_azure.yaml file; to create this file,
+  # follow the steps in docs/content/en/tasks/backup-restore/azure/_index.md
+  storageSecret: medusa-bucket-key
+
+reaper-operator:
+  enabled: false
+
+kube-prometheus-stack:
+  enabled: false

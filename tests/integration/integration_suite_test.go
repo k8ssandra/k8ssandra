@@ -154,7 +154,7 @@ func testReaper(t *testing.T) {
 
 func deployClusterForReaper(t *testing.T, namespace string, useLocalCharts bool) {
 	log.Println(Info("Deploying K8ssandra and waiting for Reaper to be ready"))
-	DeployClusterWithValues(t, namespace, "default", "cluster_with_reaper.yaml", 3, false, useLocalCharts, "")
+	DeployClusterWithValues(t, namespace, "", "cluster_with_reaper.yaml", 3, false, useLocalCharts, "")
 	checkResourcePresenceForReaper(t, namespace)
 	waitForReaperPod(t, namespace)
 	checkReaperRegistered(t, namespace)
@@ -198,7 +198,7 @@ func waitForSegmentDoneAndCancel(t *testing.T, repairId uuid.UUID) {
 // - Terminate the namespace and delete the cluster
 func TestMedusaDeploymentScenario(t *testing.T) {
 	const backupName = "backup1"
-	backends := []string{"Minio", "S3", "local"}
+	backends := []string{"Minio", "local", "S3", "google_storage", "azure_blobs"}
 	for _, backend := range backends {
 		t.Run(fmt.Sprintf("Medusa on %s", backend), func(t *testing.T) {
 			namespace := initializeCluster(t)
@@ -238,7 +238,7 @@ func testMedusa(t *testing.T, namespace, backend, backupName string, useLocalCha
 func deployClusterForMedusa(t *testing.T, namespace, backend string, nodes int, useLocalCharts bool, version string) {
 	log.Println(Info(fmt.Sprintf("Deploying K8ssandra with Medusa using %s", backend)))
 	valuesFile := fmt.Sprintf("cluster_with_medusa_%s.yaml", strings.ToLower(backend))
-	DeployClusterWithValues(t, namespace, strings.ToLower(backend), valuesFile, nodes, false, useLocalCharts, version)
+	DeployClusterWithValues(t, namespace, backend, valuesFile, nodes, false, useLocalCharts, version)
 	CheckClusterExpectedResources(t, namespace)
 }
 
@@ -250,21 +250,26 @@ func loadRowsAndCheckCount(t *testing.T, namespace string, rowsToLoad, rowsExpec
 
 func createMedusaSecretAndInstallDeps(t *testing.T, namespace, backend string) {
 	log.Println(Info("Creating medusa secret to access the backend"))
-	if backend == "local" {
-		return
-	} else if backend == "Minio" {
+	switch strings.ToLower(backend) {
+	case "minio":
 		DeployMinioAndCreateBucket(t, "k8ssandra-medusa")
 		CreateMedusaSecretWithFile(t, namespace, "secret/medusa_minio_secret.yaml")
-	} else {
-		// S3
-		CreateMedusaSecretWithFile(t, namespace, "~/medusa_secret.yaml")
+	case "s3":
+		CreateMedusaSecretWithFile(t, namespace, "~/medusa_secret_s3.yaml")
+	case "google_storage":
+		CreateMedusaSecretWithFile(t, namespace, "~/medusa_secret_gcs.yaml")
+	case "azure_blobs":
+		// Secret name must be medusa-bucket-key
+		// Secret entry must be medusa_azure_credentials.json
+		// See tests/integration/charts/cluster_with_medusa_azure_blobs.yaml
+		CreateMedusaSecretWithFile(t, namespace, "~/medusa_secret_azure.yaml")
 	}
 }
 
 func scaleUpCassandra(t *testing.T, namespace, backend string, nodes int) {
 	log.Println(Info("Scaling up Cassandra"))
 	valuesFile := fmt.Sprintf("cluster_with_medusa_%s.yaml", strings.ToLower(backend))
-	DeployClusterWithValues(t, namespace, strings.ToLower(backend), valuesFile, nodes, true, true, "")
+	DeployClusterWithValues(t, namespace, backend, valuesFile, nodes, true, true, "")
 }
 
 // Monitoring scenario:
@@ -294,7 +299,7 @@ func TestMonitoringDeploymentScenario(t *testing.T) {
 }
 
 func deployClusterForMonitoring(t *testing.T, namespace string) {
-	DeployClusterWithValues(t, namespace, "default", "cluster_with_stargate_and_monitoring.yaml", 3, false, true, "")
+	DeployClusterWithValues(t, namespace, "", "cluster_with_stargate_and_monitoring.yaml", 3, false, true, "")
 	CheckClusterExpectedResources(t, namespace)
 	WaitForStargatePodReady(t, namespace)
 }
@@ -333,7 +338,7 @@ func TestStargateDeploymentScenario(t *testing.T) {
 }
 
 func deployClusterForStargate(t *testing.T, namespace string) {
-	DeployClusterWithValues(t, namespace, "default", "cluster_with_stargate.yaml", 3, false, true, "")
+	DeployClusterWithValues(t, namespace, "", "cluster_with_stargate.yaml", 3, false, true, "")
 	CheckClusterExpectedResources(t, namespace)
 	WaitForStargatePodReady(t, namespace)
 }
@@ -354,12 +359,12 @@ func TestUpgradeScenario(t *testing.T) {
 		namespace := initializeCluster(t)
 		success := t.Run(fmt.Sprintf("Upgrade from %s", startVersion), func(t *testing.T) {
 			// Install first production version
-			DeployClusterWithValues(t, namespace, "default", "cluster_with_reaper.yaml", 1, false, false, startVersion)
+			DeployClusterWithValues(t, namespace, "", "cluster_with_reaper.yaml", 1, false, false, startVersion)
 			checkResourcePresenceForReaper(t, namespace)
 			waitForReaperPod(t, namespace)
 
 			// Upgrade to current version
-			DeployClusterWithValues(t, namespace, "default", "cluster_with_reaper.yaml", 1, true, true, "")
+			DeployClusterWithValues(t, namespace, "", "cluster_with_reaper.yaml", 1, true, true, "")
 			checkResourcePresenceForReaper(t, namespace)
 			waitForReaperPod(t, namespace)
 			checkReaperRegistered(t, namespace)

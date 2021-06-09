@@ -29,6 +29,7 @@ and date `## vX.Y.Z - YYYY-MM-DD` and create a new placeholder section for  `unr
 * [ENHANCEMENT] #844 Allow configuring the namespace of service monitors
 * [ENHANCEMENT] #29 Detect IEC formatted c* heap.size and heap.newGenSize; return error identifying issue  
 * [ENHANCEMENT] #420 Add support for private registries
+* [ENHANCEMENT] #685 Add support for Medusa backups on Azure
 * [BUGFIX] #853 Fix property name in scaling docs
 * [BUGFIX] #870 Hot replace disallowed characters in generated secret names
 * [BUGFIX] #412 Stargate metrics don't show up in the dashboards

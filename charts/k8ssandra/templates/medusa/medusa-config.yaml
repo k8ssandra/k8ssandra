@@ -1,4 +1,4 @@
-{{- $storageTypes :=  list "s3" "google_storage" "s3_compatible" "local" -}}
+{{- $storageTypes :=  list "s3" "s3_compatible" "google_storage" "azure_blobs" "local" -}}
 
 {{- if .Values.medusa.enabled }}
 apiVersion: v1
@@ -40,6 +40,8 @@ data:
     key_file = /etc/medusa-secrets/medusa_s3_credentials
   {{- else if (eq .Values.medusa.storage "google_storage") }}
     key_file = /etc/medusa-secrets/medusa_gcp_key.json
+  {{- else if (eq .Values.medusa.storage "azure_blobs") }}
+    key_file = /etc/medusa-secrets/medusa_azure_credentials.json
   {{- end }}
 {{- if .Values.medusa.multiTenant }}
     prefix = {{ .Values.clusterName }}.{{ .Release.Namespace }}
