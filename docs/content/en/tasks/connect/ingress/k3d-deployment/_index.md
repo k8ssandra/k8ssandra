@@ -8,11 +8,11 @@ K3d automatically deploys the Traefik ingress controller when the cluster is sta
 
 For our purposes it is best to _skip_ the automatic Traefik installation and install it ourselves via Helm. 
 
-This topic walks through standing up a K3d cluster with Traefik configured for ingress on ports other than the standard `80` and `443`.
+This topic walks through standing up a K3d cluster on MacOS with Traefik configured for ingress on ports other than the standard `80` and `443`.
 
 ## 1. Bootstrap K3d _without_ Traefik
 
-Beyond simply disabling Traefik, we must also pre-plan the ports that should be forwarded into our cluster. K3d spins up a minimum of two containers for a given cluster. One of which is a load-balancer that handles routing / proxying requests to all other nodes in the cluster. For our purposes the following ports will be opened:
+Beyond simply disabling Traefik, we must also pre-plan the ports that should be forwarded into our cluster. K3d spins up a minimum of two containers for a given cluster. One of which is a load-balancer that handles routing / proxying requests to all other nodes in the cluster. Since k3d uses docker to deploy the underlying k3s services, the inbound ports will be mapped from the docker host IP to the load balancer container. For our purposes the following ports will be opened:
 
 * `80` - HTTP traffic - This is used for accessing the metrics and repair user
   interfaces
@@ -40,9 +40,9 @@ $ k3d cluster create \
   --port "9000:32090@loadbalancer" \
   --port "9042:32091@loadbalancer" \
   --port "9142:32092@loadbalancer" \
-  --port "8080:30080@loadbalancer" \
-  --port "8081:30081@loadbalancer" \
-  --port "8082:30082@loadbalancer"
+  --port "8880:30080@loadbalancer" \
+  --port "8881:30081@loadbalancer" \
+  --port "8882:30082@loadbalancer"
 INFO[0000] Created network 'k3d-k3s-default'            
 INFO[0000] Created volume 'k3d-k3s-default-images'      
 INFO[0001] Creating node 'k3d-k3s-default-server-0'     
@@ -51,11 +51,12 @@ INFO[0007] Cluster 'k3s-default' created successfully!
 INFO[0007] You can now use it like this:                
 kubectl cluster-info
 ```
+We now have a Kubernetes cluster running with a load balancer bound to the ports we specified. The next step is creating the service routing inside the Kubernetes cluster. 
 
 ## 2. Create Traefik Helm values file
 
 Note the service type of `NodePort`. It is used here as it is the port _on the
-Docker container running Kind_ which is forwarded to our local machine.
+Docker container running k3d_ which is forwarded to our docker host ip.
 
 ### [`traefik.values.yaml`](traefik.values.yaml)
 
@@ -79,17 +80,17 @@ TEST SUITE: None
 
 ## 4. Access Traefik Dashboard
 
-With the deployment complete we need to retrieve the loadbalancer's IP address.
+With the deployment complete we can verify the service is now running.
 This may be accomplished with:
 
 ```bash
 $ kubectl get services -n traefik
 NAME      TYPE           CLUSTER-IP     EXTERNAL-IP   PORT(S)                                                                   AGE
-traefik   LoadBalancer   10.43.75.223   172.22.0.2    9042:32091/TCP,9142:32092/TCP,9000:32090/TCP,80:32080/TCP,443:32443/TCP   4m2s
+traefik   LoadBalancer   10.43.75.223   <none>        9042:32091/TCP,9142:32092/TCP,9000:32090/TCP,80:32080/TCP,443:32443/TCP   4m2s
 ```
 
-Here we see the external IP address is `172.22.0.2`. For this environment the Traefik dashboard is at 
-[http://172.22.0.2:9000/dashboard/](http://172.22.0.2:9000/dashboard/). Example:
+When k3d creates the cluster, docker takes our port mapping and creates the external port routing to the host ip address. For this environment the Traefik dashboard is at 
+[http://localhost:9000/dashboard/](http://localhost:9000/dashboard/). Example:
 
 ![Traefik dashboard screenshot](traefik-dashboard.png)
 
