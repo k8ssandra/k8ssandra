@@ -208,33 +208,7 @@ This secret, `prod-k8ssandra-medusa-key`, can now be referenced in our K8ssandra
 
 ### Create `WaitForFirstConsumer` Storage Class
 
-K8ssandra requires a Kubernetes Storage Class that has `volumeBindingMode: WaitForFirstConsumer`. The default pre-installed `do-block-storage` storage class has `volumeBindingMode: Immediate`. We will create a new storage class with the required mode based on the existing version. First retrieve the existing storage class:
-
-```console
-kubectl get sc do-block-storage --output yaml | tee do-block-storage-wait.yaml
-```
-
-**Output:**
-
-```console
-allowVolumeExpansion: true
-apiVersion: storage.k8s.io/v1
-kind: StorageClass
-metadata:
-  annotations:
-    kubectl.kubernetes.io/last-applied-configuration: |
-      {"allowVolumeExpansion":true,"apiVersion":"storage.k8s.io/v1","kind":"StorageClass","metadata":{"annotations":{"storageclass.kubernetes.io/is-default-class":"true"},"name":"do-block-storage"},"provisioner":"dobs.csi.digitalocean.com","reclaimPolicy":"Delete"}
-    storageclass.kubernetes.io/is-default-class: "true"
-  creationTimestamp: "2021-06-08T15:24:10Z"
-  name: do-block-storage
-  resourceVersion: "315"
-  uid: 72005420-ae87-4d3a-a3ed-6022bf6cb297
-provisioner: dobs.csi.digitalocean.com
-reclaimPolicy: Delete
-volumeBindingMode: Immediate
-```
-
-Next we edit this file removing all of the metadata (except `name`) and adjust `volumeBindingMode` to `WaitForFirstConsumer`. Your updated storage class should look like the following:
+K8ssandra requires a Kubernetes Storage Class that has `volumeBindingMode: WaitForFirstConsumer`. The default pre-installed `do-block-storage` storage class has `volumeBindingMode: Immediate`. We will create a new storage class with the required mode based on the existing version. 
 
 {{< readfilerel file="do-block-storage-wait.yaml" highlight="yaml" >}}
 
