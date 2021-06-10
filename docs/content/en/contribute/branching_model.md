@@ -29,9 +29,6 @@ The branching model should allow publishing patches for past releases without br
 ![Base branching model](images/base_branching_model.jpg "Base branching model")
 
 
-[Link to full diagram](https://docs.google.com/drawings/d/1ZfwceJF23lIuTZwxMZ_MmoERNxdYuPB4LJSyn-rCLf8/edit?usp=sharing)
-
-
 ## main
 
 The main branch contains the next release and all PRs adding new features or fixes for the upcoming major/minor release should be merged in it.
