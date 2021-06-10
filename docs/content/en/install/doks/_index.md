@@ -28,6 +28,10 @@ This topic covers provisioning the following infrastructure resources.
 * 3x 2TB Block Storage Volumes (provisioned automatically during installation of K8ssandra)
 * 1x DigitalOcean Spaces bucket for backups
 
+{{% alert title="Warning" color="success" %}}
+The instance flavors specified here may not be available to all accounts. If these higher capacity instances are unavailable reach out to Digital Ocean support to increase your limits.
+{{% /alert %}}
+
 On this infrastructure the K8ssandra installation will consist of the following workloads.
 
 * 3x instance Apache Cassandra cluster
@@ -40,14 +44,14 @@ Feel free to update the parameters used during this guide to match your target d
 
 ## Provisioning Infrastructure
 
-At this time the K8ssandra project does not have Terraform modules available to assist with provisioning infrastructure. With that being said the steps required to manually provision the infrastructure our outlined below. If you have already provisioned a cluster skip to the [Install K8ssandra](#install-k8ssandra) section. 
+At this time the K8ssandra project does not have Terraform modules available to assist with provisioning infrastructure. With that being said the steps required to manually provision the infrastructure are outlined below. If you have already provisioned a cluster skip to the [Install K8ssandra](#install-k8ssandra) section. 
 
 ### Tools
 
 | Tool | Version | 
 |------|---------|
 | [kubectl](https://kubernetes.io/docs/tasks/tools/) | 1.17.17 |
-| [doctl](https://github.com/digitalocean/doctl/releases/tag/v1.61.0) | 1.61.0 |
+| [doctl](https://docs.digitalocean.com/reference/doctl/how-to/install/) | 1.61.0 |
 
 Make sure to authenticate `doctl` as we will be using it later.
 
@@ -98,13 +102,19 @@ Note that these nodes do not need to be as large as the C* nodes. For our exampl
 
 ### Spaces
 
-While these droplets spin up we can head over to the `Spaces` section of the sidebar and create a bucket for our Medusa backups. Click the `Create` button to start the process. Make sure to select a region where your DOKS cluster is running to traffic ingress/egress costs.
+While these droplets spin up we can head over to the `Spaces` section of the sidebar and create a bucket for our Medusa backups. Click the `Create` button to start the process. Make sure to select a region where your DOKS cluster is running to minimize traffic ingress/egress costs.
 
 ![Spaces wizard](spaces-create.png)
 
-With a bucket created click the `Spaces` link in the sidebar again and navigate to the `Manage Keys` button. From here we must create a key that Medusa will use to access our Space.
+{{% alert title="Important" color="primary" %}}
+The bucket name must be unique across all of DigitalOcean. Copying the value here will most likely result in a conflict.
+{{% /alert %}}
+
+With a bucket created click the `Spaces` link in the sidebar again and navigate to the `Manage Keys` button. In the `Spaces Access Keys` section create a key that Medusa will use to access our Space.
 
 ![Spaces key](spaces-key.png)
+
+After creating the key note the key id and secret. We will use these values later when configuring Medusa. Failure to do so will require regenerating the secret later.
 
 ## Retrieve `kubeconfig`
 
@@ -121,6 +131,8 @@ doctl kubernetes cluster kubeconfig save REDACTED
 Notice: Adding cluster credentials to kubeconfig file found in "~/.kube/config"
 Notice: Setting current-context to do-nyc3-k8s-1-20-7-do-0-nyc3-1623165482131
 ```
+
+With `kubectl` configured let's check connectivity to the cluster and verify versions.
 
 ```bash
 kubectl cluster-info
@@ -150,8 +162,11 @@ Server Version: version.Info{Major:"1", Minor:"20", GitVersion:"v1.20.7", GitCom
 
 With mixed node types available we should apply taints to each node type in order to facilitate scheduling. The larger instances will be tainted with the value `app=cassandra:NoSchedule` effectively blocking the scheduling of Pods unless they have the taint `app=cassandra`. In our example deployment here Cassandra nodes are part of the pool named `pool-hluacyqq4`.
 
+{{% alert title="Important" color="primary" %}}
+Your node pool names will most likely not match the values above. Make sure you adjust the commands / values appropriately for your environment.
+{{% /alert %}}
+
 ```console
-# Taint Cassandra nodes
 kubectl taint node -l doks.digitalocean.com/node-pool=pool-hluacyqq4 app=cassandra:NoSchedule
 ```
 
@@ -163,9 +178,6 @@ node/pool-hluacyqq4-8edtl tainted
 node/pool-hluacyqq4-8edtt tainted
 ```
 
-{{% alert title="Important" color="primary" %}}
-Your node pool names will most likely not match the values above. Make sure you adjust the commands / values appropriately for your environment.
-{{% /alert %}}
 
 ## Install K8ssandra
 
@@ -173,7 +185,7 @@ With all of the infrastructure provisioned we can now focus on installing K8ssan
 
 ### Create Backup / Restore Service Account Secrets
 
-In order to allow for backup and restore operations, we must create a service account for the Medusa operator which handles coordinating the movement of data to and from DigitalOcean Spaces. As part of the provisioning section a key was generated for this purpose. Plug in the key and secret from the provisioning section in the following file.
+In order to allow for backup and restore operations, we must create a service account for the Medusa operator which handles coordinating the movement of data to and from DigitalOcean Spaces. As part of the provisioning section a key was generated for this purpose. Plug in the key and secret from the provisioning section in the following file and save the file as `medusa_s3_credentials`.
 
 {{< readfilerel file="spaces.secret.yaml" highlight="yaml" >}}
 
@@ -196,7 +208,7 @@ This secret, `prod-k8ssandra-medusa-key`, can now be referenced in our K8ssandra
 
 ### Create `WaitForFirstConsumer` Storage Class
 
-With K8ssandra it is recommended that a Kubernetes Storage Class with `volumeBindingMode: WaitForFirstConsumer`. By default the pre-installed `do-block-storage` storage class uses `Immediate`. We will create a new storage class with this parameter changed for use with K8ssandra. First retrieve the existing storage class:
+K8ssandra requires a Kubernetes Storage Class that has `volumeBindingMode: WaitForFirstConsumer`. The default pre-installed `do-block-storage` storage class has `volumeBindingMode: Immediate`. We will create a new storage class with the required mode based on the existing version. First retrieve the existing storage class:
 
 ```console
 kubectl get sc do-block-storage --output yaml | tee do-block-storage-wait.yaml
@@ -240,7 +252,7 @@ storageclass.storage.k8s.io/do-block-storage-wait created
 
 ### Generate `doks.values.yaml`
 
-Here is a reference Helm `values.yaml` file with configuration options for running K8ssandra in DigitalOcean on DOKS.
+Here is a reference Helm `doks.values.yaml` file with configuration options for running K8ssandra in DigitalOcean on DOKS.
 
 {{< readfilerel file="doks.values.yaml"  highlight="yaml" >}}
 
