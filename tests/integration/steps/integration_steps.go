@@ -127,7 +127,9 @@ func deployCluster(t *testing.T, namespace, customValues string, helmValues map[
 
 	defer timeTrack(time.Now(), "Installing and starting k8ssandra")
 	if upgrade {
+		initResourceVersion := cassDcResourceVersion(t, namespace)
 		err = helm.UpgradeE(t, helmOptions, clusterChartPath, releaseName)
+		waitForCassDcUpgrade(t, namespace, initResourceVersion)
 	} else {
 		err = helm.InstallE(t, helmOptions, clusterChartPath, releaseName)
 	}
@@ -137,9 +139,6 @@ func deployCluster(t *testing.T, namespace, customValues string, helmValues map[
 	g(t).Eventually(func() bool {
 		return PodWithLabelsIsReady(t, namespace, labels)
 	}, retryTimeout, retryInterval).Should(BeTrue())
-
-	// Wait for CassandraDatacenter to be udpating..
-	WaitForCassDcToBeUpdating(t, namespace)
 
 	// Wait for CassandraDatacenter to be ready..
 	WaitForCassDcToBeReady(t, namespace)
@@ -225,6 +224,41 @@ func WaitForDeploymentReady(t *testing.T, key types.NamespacedName, retryInterva
 
 func WaitForCassDcToBeReady(t *testing.T, namespace string) {
 	waitForCassDcToBe(t, namespace, cassdcapi.ProgressReady)
+}
+
+func cassDcResourceVersion(t *testing.T, namespace string) string {
+	cassdcKey := types.NamespacedName{
+		Name:      datacenterName,
+		Namespace: namespace,
+	}
+
+	log.Printf("Checking cassandradatacenter %s resource version in namespace %s...", cassdcKey.Name, cassdcKey.Namespace)
+	cassdc := &cassdcapi.CassandraDatacenter{}
+	err := testClient.Get(context.Background(), cassdcKey, cassdc)
+	if err != nil {
+		t.Errorf("Failed getting cassdc: %s", err.Error())
+		t.FailNow()
+	}
+	return cassdc.ResourceVersion
+
+}
+
+func waitForCassDcUpgrade(t *testing.T, namespace, initialResourceVersion string) {
+	cassdcKey := types.NamespacedName{
+		Name:      datacenterName,
+		Namespace: namespace,
+	}
+
+	g(t).Eventually(func() bool {
+		log.Printf("Checking cassandradatacenter %s resource version in namespace %s...", cassdcKey.Name, cassdcKey.Namespace)
+		cassdc := &cassdcapi.CassandraDatacenter{}
+		err := testClient.Get(context.Background(), cassdcKey, cassdc)
+		if err != nil {
+			t.Logf("Failed getting cassdc: %s", err.Error())
+			return false
+		}
+		return cassdc.ResourceVersion != initialResourceVersion
+	}, retryTimeout, retryInterval).Should(BeTrue())
 }
 
 func waitForCassDcToBe(t *testing.T, namespace string, progress cassdcapi.ProgressState) {
