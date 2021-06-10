@@ -28,8 +28,6 @@ jobs:
           key: ${{ runner.os }}-${{ hashFiles('docs/package-lock.json') }}-${{ env.HUGO_VERSION }}
       - run: scripts/install-hugo.sh
         if: steps.cache.outputs.cache-hit != 'true'
-      - run: scripts/install-npm-tools.sh
-        if: steps.cache.outputs.cache-hit != 'true'
       - run: scripts/install-npm-dependencies.sh
         if: steps.cache.outputs.cache-hit != 'true'
       - name: Update PATH
