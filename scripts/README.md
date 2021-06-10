@@ -50,11 +50,6 @@ Performs installation of `Hugo` (a static site generator) from the [releases](ht
 ### [install-npm-dependencies.sh](https://github.com/k8ssandra/k8ssandra/tree/main/scripts/install-npm-dependencies.sh)
 Performs a directory change to the `docs` directory and issues an `npm install` command.
 
-### [install-npm-tools.sh](https://github.com/k8ssandra/k8ssandra/tree/main/scripts/install-npm-tools.sh)
-Used for document management with installation of the following `nodejs` packages:
-* [autoprefixer](https://www.npmjs.com/package/autoprefixer)
-* [postcss-cli](https://www.npmjs.com/package/postcss-cli)
-
 ## Misc.
 
 ### [open-grafana.sh](https://github.com/k8ssandra/k8ssandra/tree/main/scripts/open-grafana.sh)
