@@ -94,7 +94,56 @@
                "points": false,
                "renderer": "flot",
                "repeat": null,
-               "seriesOverrides": [ ],
+               "seriesOverrides": [
+                    {
+                      "alias": "Stargate write",
+                      "color": "#8F3BB8"
+                    },
+                    {
+                      "alias": "Stargate read",
+                      "color": "#C4162A"
+                    },
+                    {
+                      "alias": "Stargate cas_read",
+                      "color": "#FA6400"
+                    },
+                    {
+                      "alias": "Stargate cas_write",
+                      "color": "#E0B400"
+                    },
+                    {
+                      "alias": "Stargate range_slice",
+                      "color": "#1F60C4"
+                    },
+                    {
+                      "alias": "Stargate view_write",
+                      "color": "#37872D"
+                    },
+                    {
+                      "alias": "write",
+                      "color": "#96D98D"
+                    },
+                    {
+                      "alias": "read",
+                      "color": "#8AB8FF"
+                    },
+                    {
+                      "alias": "cas_read",
+                      "color": "#FFF899"
+                    },
+                    {
+                      "alias": "cas_write",
+                      "color": "#FFB357"
+                    },
+                    {
+                      "alias": "range_slice",
+                      "color": "#FF7383"
+                    },
+                    {
+                      "alias": "view_write",
+                      "color": "#DEB6F2"
+                    }
+               ],
                "spaceLength": 10,
                "stack": false,
                "steppedLine": false,
