@@ -31,7 +31,7 @@ Direct pushes to main should be avoided as much as possible to allow peer review
 
 ### &lt;feature&gt;
 
-Feature branches are branched off the **main** branch. Feature branches should be created **on our personal forks**. 
+Feature branches are branched off the **main** branch. Feature branches should be created **[on our personal forks](https://docs.github.com/en/github/getting-started-with-github/quickstart/fork-a-repo)**. 
 
 ![Branching model - Features](branching-model-for-the-k8ssandra-project-1.png)
 
