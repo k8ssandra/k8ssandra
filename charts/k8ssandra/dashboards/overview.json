@@ -94,7 +94,56 @@
                "points": false,
                "renderer": "flot",
                "repeat": null,
-               "seriesOverrides": [ ],
+               "seriesOverrides": [
+                    {
+                      "alias": "Stargate write",
+                      "color": "#8F3BB8"
+                    },
+                    {
+                      "alias": "Stargate read",
+                      "color": "#C4162A"
+                    },
+                    {
+                      "alias": "Stargate cas_read",
+                      "color": "#FA6400"
+                    },
+                    {
+                      "alias": "Stargate cas_write",
+                      "color": "#E0B400"
+                    },
+                    {
+                      "alias": "Stargate range_slice",
+                      "color": "#1F60C4"
+                    },
+                    {
+                      "alias": "Stargate view_write",
+                      "color": "#37872D"
+                    },
+                    {
+                      "alias": "write",
+                      "color": "#96D98D"
+                    },
+                    {
+                      "alias": "read",
+                      "color": "#8AB8FF"
+                    },
+                    {
+                      "alias": "cas_read",
+                      "color": "#FFF899"
+                    },
+                    {
+                      "alias": "cas_write",
+                      "color": "#FFB357"
+                    },
+                    {
+                      "alias": "range_slice",
+                      "color": "#FF7383"
+                    },
+                    {
+                      "alias": "view_write",
+                      "color": "#DEB6F2"
+                    }
+               ],
                "spaceLength": 10,
                "stack": false,
                "steppedLine": false,
@@ -105,6 +154,13 @@
                      "intervalFactor": 2,
                      "legendFormat": "{{request_type}}",
                      "refId": "A"
+                  },
+                  {
+                     "expr": "sum by (cluster, request_type) (rate(stargate_client_request_latency_total{cluster=~\"$cluster\", dc=~\"$dc\", rack=~\"$rack\", instance=~\"$node\"}[1m:30s]))",
+                     "format": "time_series",
+                     "intervalFactor": 2,
+                     "legendFormat": "Stargate {{request_type}}",
+                     "refId": "B"
                   }
                ],
                "thresholds": [ ],
@@ -224,6 +280,48 @@
                      "intervalFactor": 2,
                      "legendFormat": "{{request_type}} contention histogram errors",
                      "refId": "F"
+                  },
+                  {
+                     "expr": "sum by (cluster, request_type) (rate(stargate_client_request_failures_total{cluster=~\"$cluster\", dc=~\"$dc\", rack=~\"$rack\", instance=~\"$node\"}[1m:30s]))",
+                     "format": "time_series",
+                     "intervalFactor": 2,
+                     "legendFormat": "Stargate {{request_type}} failures",
+                     "refId": "G"
+                  },
+                  {
+                     "expr": "sum by (cluster, request_type) (rate(stargate_client_request_timeouts_total{cluster=~\"$cluster\", dc=~\"$dc\", rack=~\"$rack\", instance=~\"$node\"}[1m:30s]))",
+                     "format": "time_series",
+                     "intervalFactor": 2,
+                     "legendFormat": "Stargate {{request_type}} timeouts",
+                     "refId": "H"
+                  },
+                  {
+                     "expr": "sum by (cluster, request_type) (rate(stargate_client_request_unavailables_total{cluster=~\"$cluster\", dc=~\"$dc\", rack=~\"$rack\", instance=~\"$node\"}[1m:30s]))",
+                     "format": "time_series",
+                     "intervalFactor": 2,
+                     "legendFormat": "Stargate {{request_type}} unavailable errors",
+                     "refId": "I"
+                  },
+                  {
+                     "expr": "sum by (cluster, request_type) (rate(stargate_client_request_unfinished_commit_total{cluster=~\"$cluster\", dc=~\"$dc\", rack=~\"$rack\", instance=~\"$node\"}[1m:30s]))",
+                     "format": "time_series",
+                     "intervalFactor": 2,
+                     "legendFormat": "Stargate {{request_type}} unfinished commit errors",
+                     "refId": "J"
+                  },
+                  {
+                     "expr": "sum by (cluster, request_type) (rate(stargate_client_request_condition_not_met_total{cluster=~\"$cluster\", dc=~\"$dc\", rack=~\"$rack\", instance=~\"$node\"}[1m:30s]))",
+                     "format": "time_series",
+                     "intervalFactor": 2,
+                     "legendFormat": "Stargate {{request_type}} condition not met errors",
+                     "refId": "K"
+                  },
+                  {
+                     "expr": "sum by (cluster, request_type) (rate(stargate_client_request_contention_histogram_total{cluster=~\"$cluster\", dc=~\"$dc\", rack=~\"$rack\", instance=~\"$node\"}[1m:30s]))",
+                     "format": "time_series",
+                     "intervalFactor": 2,
+                     "legendFormat": "Stargate {{request_type}} contention histogram errors",
+                     "refId": "L"
                   }
                ],
                "thresholds": [ ],
@@ -321,7 +419,7 @@
                "tableColumn": "",
                "targets": [
                   {
-                     "expr": "sum by (cluster, request_type) (rate(mcac_client_request_latency_total{cluster=~\"$cluster\", dc=~\"$dc\", rack=~\"$rack\", instance=~\"$node\", request_type=\"read\"}[1m:30s])) / ignoring (request_type) (sum by (cluster, request_type) (rate(mcac_client_request_latency_total{cluster=~\"$cluster\", dc=~\"$dc\", rack=~\"$rack\", instance=~\"$node\", request_type=\"read\"}[1m:30s])) + ignoring (request_type) sum by (cluster, request_type) (rate(mcac_client_request_latency_total{cluster=~\"$cluster\", dc=~\"$dc\", rack=~\"$rack\", instance=~\"$node\", request_type=\"write\"}[1m:30s])))",
+                     "expr": "( sum by (cluster, request_type) (rate(mcac_client_request_latency_total{cluster=~\"$cluster\", dc=~\"$dc\", rack=~\"$rack\", instance=~\"$node\", request_type=\"read\"}[1m:30s])) + sum by (cluster, request_type) (rate(stargate_client_request_latency_total{cluster=~\"$cluster\", dc=~\"$dc\", rack=~\"$rack\", instance=~\"$node\", request_type=\"read\"}[1m:30s])) ) / ignoring (request_type) (sum by (cluster, request_type) (rate(mcac_client_request_latency_total{cluster=~\"$cluster\", dc=~\"$dc\", rack=~\"$rack\", instance=~\"$node\", request_type=\"read\"}[1m:30s])) + ignoring (request_type) sum by (cluster, request_type) (rate(mcac_client_request_latency_total{cluster=~\"$cluster\", dc=~\"$dc\", rack=~\"$rack\", instance=~\"$node\", request_type=\"write\"}[1m:30s])) + ignoring (request_type) sum by (cluster, request_type) (rate(stargate_client_request_latency_total{cluster=~\"$cluster\", dc=~\"$dc\", rack=~\"$rack\", instance=~\"$node\", request_type=\"read\"}[1m:30s])) + ignoring (request_type) sum by (cluster, request_type) (rate(stargate_client_request_latency_total{cluster=~\"$cluster\", dc=~\"$dc\", rack=~\"$rack\", instance=~\"$node\", request_type=\"write\"}[1m:30s])))",
                      "format": "time_series",
                      "intervalFactor": 2,
                      "legendFormat": "",
@@ -386,6 +484,15 @@
                   {
                      "alias": "p98",
                      "lines": false
+                  },
+                  {
+                     "alias": "Stargate p999",
+                     "fillBelowTo": "Stargate p98",
+                     "lines": false
+                  },
+                  {
+                     "alias": "Stargate p98",
+                     "lines": false
                   }
                ],
                "spaceLength": 10,
@@ -412,6 +519,27 @@
                      "intervalFactor": 2,
                      "legendFormat": "p999",
                      "refId": "C"
+                  },
+                  {
+                     "expr": "stargate_client_request_latency_quantile{cluster=~\"$cluster\", dc=~\"$dc\", rack=~\"$rack\", instance=~\"$node\", quantile=~\"0.98\", request_type=\"read\"}*1000000",
+                     "format": "time_series",
+                     "intervalFactor": 2,
+                     "legendFormat": "Stargate p98",
+                     "refId": "D"
+                  },
+                  {
+                     "expr": "stargate_client_request_latency_quantile{cluster=~\"$cluster\", dc=~\"$dc\", rack=~\"$rack\", instance=~\"$node\", quantile=~\"0.99\", request_type=\"read\"}*1000000",
+                     "format": "time_series",
+                     "intervalFactor": 2,
+                     "legendFormat": "Stargate p99",
+                     "refId": "E"
+                  },
+                  {
+                     "expr": "stargate_client_request_latency_quantile{cluster=~\"$cluster\", dc=~\"$dc\", rack=~\"$rack\", instance=~\"$node\", quantile=~\"0.999\", request_type=\"read\"}*1000000",
+                     "format": "time_series",
+                     "intervalFactor": 2,
+                     "legendFormat": "Stargate p999",
+                     "refId": "F"
                   }
                ],
                "thresholds": [ ],
@@ -494,6 +622,15 @@
                   {
                      "alias": "p98",
                      "lines": false
+                  },
+                  {
+                     "alias": "Stargate p999",
+                     "fillBelowTo": "Stargate p98",
+                     "lines": false
+                  },
+                  {
+                     "alias": "Stargate p98",
+                     "lines": false
                   }
                ],
                "spaceLength": 10,
@@ -520,6 +657,27 @@
                      "intervalFactor": 2,
                      "legendFormat": "p999",
                      "refId": "C"
+                  },
+                  {
+                     "expr": "stargate_client_request_latency_quantile{cluster=~\"$cluster\", dc=~\"$dc\", rack=~\"$rack\", instance=~\"$node\", quantile=~\"0.98\", request_type=\"write\"}*1000000",
+                     "format": "time_series",
+                     "intervalFactor": 2,
+                     "legendFormat": "Stargate p98",
+                     "refId": "D"
+                  },
+                  {
+                     "expr": "stargate_client_request_latency_quantile{cluster=~\"$cluster\", dc=~\"$dc\", rack=~\"$rack\", instance=~\"$node\", quantile=~\"0.99\", request_type=\"write\"}*1000000",
+                     "format": "time_series",
+                     "intervalFactor": 2,
+                     "legendFormat": "Stargate p99",
+                     "refId": "E"
+                  },
+                  {
+                     "expr": "stargate_client_request_latency_quantile{cluster=~\"$cluster\", dc=~\"$dc\", rack=~\"$rack\", instance=~\"$node\", quantile=~\"0.999\", request_type=\"write\"}*1000000",
+                     "format": "time_series",
+                     "intervalFactor": 2,
+                     "legendFormat": "Stargate p999",
+                     "refId": "F"
                   }
                ],
                "thresholds": [ ],
@@ -604,6 +762,13 @@
                      "intervalFactor": 2,
                      "legendFormat": "p99 {{request_type}}",
                      "refId": "A"
+                  },
+                  {
+                     "expr": "stargate_client_request_latency_quantile{cluster=~\"$cluster\", dc=~\"$dc\", rack=~\"$rack\", instance=~\"$node\", quantile=~\"0.99\", request_type!~\"write|read|.*-.*\"}*1000000",
+                     "format": "time_series",
+                     "intervalFactor": 2,
+                     "legendFormat": "Stargate p99 {{request_type}}",
+                     "refId": "B"
                   }
                ],
                "thresholds": [ ],
