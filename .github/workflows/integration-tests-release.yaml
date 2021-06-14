@@ -37,9 +37,12 @@ jobs:
           key: ${{ runner.os }}-buildx-integ-${{ github.sha }}
           restore-keys: |
             ${{ runner.os }}-buildx-integ-
+      - name: Create env variables
+        run: ./.github/scripts/env_variables.sh
+
       - name: Create chart release for the upgrader image
         run: |
-          scripts/install-yq.sh v4.6.3
+          scripts/install-yq.sh ${{ env.YQ_VERSION }}
           VER=$(bin/yq eval '.version' charts/k8ssandra/Chart.yaml)
           mkdir -p build/$VER
           cp -rv charts/* build/$VER/
@@ -79,15 +82,18 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-k8ssandra-buildx
 
-      - name: Set up Go 1.15
+      - name: Create env variables
+        run: ./.github/scripts/env_variables.sh
+
+      - name: Set up Go
         uses: actions/setup-go@v1
         with:
-          go-version: 1.15
+          go-version: ${{ env.GO_VERSION }}
 
       - name: Install Helm
         uses: azure/setup-helm@v1
         with:
-          version: v3.5.3
+          version: ${{ env.HELM_VERSION }}
 
       - name: Create Kind Cluster
         uses: helm/kind-action@v1.1.0
@@ -184,14 +190,17 @@ jobs:
         run: |
           echo "$GITHUB_WORKSPACE/bin" >> $GITHUB_PATH
 
+      - name: Create env variables
+        run: ./.github/scripts/env_variables.sh
+
       - name: Install Helm
         uses: azure/setup-helm@v1
         with:
-          version: v3.5.3
+          version: ${{ env.HELM_VERSION }}
 
       - name: Install and validate tool versions
         run: |
-          scripts/install-yq.sh v4.6.3
+          scripts/install-yq.sh ${{ env.YQ_VERSION }}
           helm version
           yq -V
 
