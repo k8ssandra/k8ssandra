@@ -144,8 +144,8 @@ spec:
   {{- else }}
     jvm-server-options:
   {{- end }}
-  {{- include "k8ssandra.configureGc" . -}}
-{{- include "k8ssandra.configureJvmHeap" . }}
+    {{- include "k8ssandra.configureGc" . -}}
+    {{- include "k8ssandra.configureJvmHeap" . }}
       additional-jvm-opts:
 {{- if .Values.cassandra.auth.enabled }}
         - "-Dcassandra.system_distributed_replication_dc_names={{ $datacenter.name }}"

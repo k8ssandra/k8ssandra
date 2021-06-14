@@ -3,11 +3,10 @@ package unit_test
 import (
 	"encoding/json"
 	"fmt"
-	"path/filepath"
-	"strconv"
-
 	helmUtils "github.com/k8ssandra/k8ssandra/tests/unit/utils/helm"
 	"github.com/k8ssandra/k8ssandra/tests/unit/utils/kubeapi"
+	"path/filepath"
+	"strconv"
 
 	"github.com/gruntwork-io/terratest/modules/helm"
 	cassdcv1beta1 "github.com/k8ssandra/cass-operator/operator/pkg/apis/cassandra/v1beta1"
@@ -146,7 +145,6 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 					"cassandra.enabled": "false",
 				},
 			}
-
 			Expect(renderTemplate(options)).ShouldNot(Succeed())
 		})
 
@@ -726,6 +724,186 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			Expect(config.JvmOptions.MaxHeapSize).To(Equal(""))
 			Expect(config.JvmOptions.YoungGenSize).To(Equal("150M"))
 			Expect(config.JvmServerOptions).To(BeNil())
+		})
+	})
+
+	Context("when specifying JVM heap size formatted values at dc or cluster levels", func() {
+		It("detected an invalid IEC formatted value at dc-level heap size", func() {
+			dcName := "dc1"
+			options := &helm.Options{
+				SetValues: map[string]string{
+					"cassandra.heap.size":                      "700M",
+					"cassandra.heap.newGenSize":                "350M",
+					"cassandra.datacenters[0].heap.newGenSize": "150M",
+					"cassandra.datacenters[0].heap.size":       "300MiB",
+					"cassandra.datacenters[0].name":            dcName,
+				},
+				KubectlOptions: defaultKubeCtlOptions,
+			}
+			Expect(options).ToNot(BeNil())
+			err := renderTemplate(options)
+
+			Expect(err).ToNot(BeNil())
+			Expect(err.Error()).To(ContainSubstring("Specify datacenter.heap.size using one of these suffixes"))
+
+		})
+
+		It("detected an invalid IEC formatted value at dc-level heap newGenSize", func() {
+			dcName := "dc1"
+			options := &helm.Options{
+				SetValues: map[string]string{
+					"cassandra.heap.size":                      "700M",
+					"cassandra.heap.newGenSize":                "350M",
+					"cassandra.datacenters[0].heap.newGenSize": "150MiB",
+					"cassandra.datacenters[0].heap.size":       "300M",
+					"cassandra.datacenters[0].name":            dcName,
+				},
+				KubectlOptions: defaultKubeCtlOptions,
+			}
+			Expect(options).ToNot(BeNil())
+			err := renderTemplate(options)
+
+			Expect(err).ToNot(BeNil())
+			Expect(err.Error()).To(ContainSubstring("Specify datacenter.heap.newGenSize using one of these suffixes"))
+		})
+
+		It("detected an invalid IEC formatted value at cluster heap size", func() {
+			dcName := "dc1"
+			options := &helm.Options{
+				SetValues: map[string]string{
+					"cassandra.heap.size":           "700MiB",
+					"cassandra.heap.newGenSize":     "350M",
+					"cassandra.datacenters[0].name": dcName,
+				},
+				KubectlOptions: defaultKubeCtlOptions,
+			}
+			Expect(options).ToNot(BeNil())
+			err := renderTemplate(options)
+
+			Expect(err).ToNot(BeNil())
+			Expect(err.Error()).To(ContainSubstring("Specify cassandra.heap.size using one of these suffixes"))
+		})
+
+		It("detected an invalid IEC formatted value at cluster heap newGenSize", func() {
+			dcName := "dc1"
+			options := &helm.Options{
+				SetValues: map[string]string{
+					"cassandra.heap.size":           "700M",
+					"cassandra.heap.newGenSize":     "350MiB",
+					"cassandra.datacenters[0].name": dcName,
+				},
+				KubectlOptions: defaultKubeCtlOptions,
+			}
+			Expect(options).ToNot(BeNil())
+			err := renderTemplate(options)
+
+			Expect(err).ToNot(BeNil())
+			Expect(err.Error()).To(ContainSubstring("Specify cassandra.heap.newGenSize using one of these suffixes"))
+		})
+
+		It("detected an invalid formatted value at cluster heap newGenSize", func() {
+			dcName := "dc1"
+			options := &helm.Options{
+				SetValues: map[string]string{
+					"cassandra.heap.size": "700M",
+					// No spaces allowed in this format.
+					"cassandra.heap.newGenSize":     "9000 k",
+					"cassandra.datacenters[0].name": dcName,
+				},
+				KubectlOptions: defaultKubeCtlOptions,
+			}
+			Expect(options).ToNot(BeNil())
+			err := renderTemplate(options)
+
+			Expect(err).ToNot(BeNil())
+			Expect(err.Error()).To(ContainSubstring("Specify cassandra.heap.newGenSize using one of these suffixes"))
+		})
+
+		It("detected an invalid formatted value at cluster heap size", func() {
+			dcName := "dc1"
+			options := &helm.Options{
+				SetValues: map[string]string{
+					"cassandra.heap.size": "700X",
+					// No spaces allowed in this format.
+					"cassandra.heap.newGenSize":     "9000k",
+					"cassandra.datacenters[0].name": dcName,
+				},
+				KubectlOptions: defaultKubeCtlOptions,
+			}
+			Expect(options).ToNot(BeNil())
+			err := renderTemplate(options)
+
+			Expect(err).ToNot(BeNil())
+			Expect(err.Error()).To(ContainSubstring("Specify cassandra.heap.size using one of these suffixes"))
+		})
+
+		It("detected a valid formatted value as decimal at cluster heap newGenSize", func() {
+			dcName := "dc1"
+			options := &helm.Options{
+				SetValues: map[string]string{
+					"cassandra.heap.size":           "700M",
+					"cassandra.heap.newGenSize":     "10240.5k",
+					"cassandra.datacenters[0].name": dcName,
+				},
+				KubectlOptions: defaultKubeCtlOptions,
+			}
+			Expect(options).ToNot(BeNil())
+			err := renderTemplate(options)
+
+			Expect(err).To(BeNil())
+		})
+
+		It("detected a valid formatted value as decimal at cluster heap size", func() {
+			dcName := "dc1"
+			options := &helm.Options{
+				SetValues: map[string]string{
+					"cassandra.heap.size":           "4.5G",
+					"cassandra.heap.newGenSize":     "1.5G",
+					"cassandra.datacenters[0].name": dcName,
+					// helmUtils.OPT_RENDER_TEMPLATE:   `{ "dir":"/tmp/foobar","name":"cluster_heap_size_valid.yaml"}`,
+				},
+				KubectlOptions: defaultKubeCtlOptions,
+			}
+			Expect(options).ToNot(BeNil())
+			err := renderTemplate(options)
+
+			Expect(err).To(BeNil())
+		})
+
+		It("detected a valid formatted value as decimal at dc heap size", func() {
+			dcName := "dc1"
+			options := &helm.Options{
+				SetValues: map[string]string{
+					"cassandra.heap.size":                      "700M",
+					"cassandra.heap.newGenSize":                "350M",
+					"cassandra.datacenters[0].heap.newGenSize": "1T",
+					"cassandra.datacenters[0].heap.size":       "4.5T",
+					"cassandra.datacenters[0].name":            dcName,
+				},
+				KubectlOptions: defaultKubeCtlOptions,
+			}
+			Expect(options).ToNot(BeNil())
+			err := renderTemplate(options)
+
+			Expect(err).To(BeNil())
+		})
+
+		It("detected a valid formatted value as decimal at dc heap newGenSize", func() {
+			dcName := "dc1"
+			options := &helm.Options{
+				SetValues: map[string]string{
+					"cassandra.heap.size":                      "700M",
+					"cassandra.heap.newGenSize":                "350M",
+					"cassandra.datacenters[0].heap.newGenSize": "1.202T",
+					"cassandra.datacenters[0].heap.size":       "4.5T",
+					"cassandra.datacenters[0].name":            dcName,
+				},
+				KubectlOptions: defaultKubeCtlOptions,
+			}
+			Expect(options).ToNot(BeNil())
+			err := renderTemplate(options)
+
+			Expect(err).To(BeNil())
 		})
 	})
 
