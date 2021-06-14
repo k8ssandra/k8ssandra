@@ -1,0 +1,72 @@
+---
+name: Dependency Upgrade Check
+
+on:
+  schedule:
+    # Runs daily at noon UTC (I guess)
+    - cron:  '0 12 * * *'
+
+jobs:
+  check-upgrades:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        dependency: ["Stargate", "Medusa", "Reaper"]
+        include:
+          - dependency: Stargate
+            version_path: ".stargate.version"
+            docker_hub_url: "https://registry.hub.docker.com/v2/repositories/stargateio/stargate-3_11/tags?page_size=1"
+          - dependency: Medusa
+            version_path: ".medusa.image.tag"
+            docker_hub_url: "https://registry.hub.docker.com/v2/repositories/k8ssandra/medusa/tags?page_size=25"
+          - dependency: Reaper
+            version_path: ".reaper.image.tag"
+            docker_hub_url: "https://registry.hub.docker.com/v2/repositories/thelastpickle/cassandra-reaper/tags?page_size=25"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Update PATH
+        run: |
+          echo "$GITHUB_WORKSPACE/bin" >> $GITHUB_PATH
+      - name: Install YQ and JQ
+        run: |
+          scripts/install-yq.sh v4.6.3
+          yq -V
+          sudo apt-get update
+          sudo apt-get install jq -y
+          jq --version
+      - name: Get current dependencies versions
+        run: |
+          CURRENT=$(yq e '${{ matrix.version_path }}' charts/k8ssandra/values.yaml)
+          
+          echo "CURRENT_VERSION=${CURRENT}" >> $GITHUB_ENV
+          
+      - name: Get latest released versions
+        run: |
+          LATEST=$(curl -L -s '${{ matrix.docker_hub_url }}'|jq -r '.results[]["name"]'|grep -Ei "^[v]{0,1}[0-9]{1,2}\.[0-9]{1,2}\.[0-9]{1,2}$"|head -1|sed s/v//)
+
+          echo "LATEST_VERSION=${LATEST}" >> $GITHUB_ENV
+          
+      - name: Check if an open PR exists for the latest versions
+        run: |
+          OPEN_UPGRADE_PR=$(curl -L -s "https://api.github.com/repos/k8ssandra/k8ssandra/pulls?state=open"|jq -c '.[] | select( .title == "Upgrade ${{ matrix.dependency }} dependency ${{ env.CURRENT_VERSION }} -> ${{ env.LATEST_VERSION }}" )'|jq -r '.title')
+          
+          if [ -z "$OPEN_UPGRADE_PR" ] && [ "${{ env.CURRENT_VERSION }}" != "${{ env.LATEST_VERSION }}" ]; then
+            echo "PR_EXISTS=no" >> $GITHUB_ENV
+            yq eval "${{ matrix.version_path }} |= \"${{ env.LATEST_VERSION }}\"" charts/k8ssandra/values.yaml -i
+            cat charts/k8ssandra/values.yaml
+          fi
+
+      - name: Send PR for upgrade
+        if: ${{ env.PR_EXISTS == 'no' && env.CURRENT_VERSION != env.LATEST_VERSION }}
+        uses: peter-evans/create-pull-request@v3
+        with:
+          commit-message: Upgrade Stargate dependency from ${{ env.CURRENT_VERSION }} to ${{ env.LATEST_VERSION }}
+          delete-branch: true
+          branch: upgrade-stargate-${{ env.CURRENT_VERSION }}-${{ env.LATEST_VERSION }}
+          base: main
+          title: Upgrade ${{ matrix.dependency }} dependency ${{ env.CURRENT_VERSION }} -> ${{ env.LATEST_VERSION }}
+          body: |
+            This is auto-generated update from the K8ssandra upgrade GHA workflow.
+            Check that CI passes correctly before merging this PR.
