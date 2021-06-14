@@ -10,13 +10,7 @@ jobs:
   setup:
     runs-on: ubuntu-latest
     env:
-      HELM_VERSION: 3.4.0
-      YQ_VERSION: 3.4.1
       GOPATH: /home/runner/go
-      GOROOT: /usr/local/go1.15
-    outputs:
-      HELM_VERSION: ${{ env.HELM_VERSION}}
-      YQ_VERSION: ${{ env.YQ_VERSION }}
     steps:
       - name: Cache bin path
         id: cache
@@ -26,14 +20,25 @@ jobs:
           key: ${{ runner.os }}-${{ env.HELM_VERSION }}-${{ env.YQ_VERSION }}
       - name: Checkout
         uses: actions/checkout@v2
-        if: steps.cache.outputs.cache-hit != 'true'
-      - run: scripts/install-helm.sh $HELM_VERSION
-        if: steps.cache.outputs.cache-hit != 'true'
-      - run: scripts/install-yq.sh $YQ_VERSION
-        if: steps.cache.outputs.cache-hit != 'true'
+
+      - name: Create env variables
+        run: ./.github/scripts/env_variables.sh
+      
       - name: Update PATH
         run: |
           echo "$GITHUB_WORKSPACE/bin" >> $GITHUB_PATH
+
+      - name: Install Helm
+        uses: azure/setup-helm@v1
+        with:
+          version: ${{ env.HELM_VERSION }}
+
+      - name: Install yq and validate tool versions
+        run: |
+          scripts/install-yq.sh ${{ env.YQ_VERSION }}
+          helm version
+          yq -V
+          
   
   lint-check:
     needs:
@@ -48,13 +53,25 @@ jobs:
           key: ${{ runner.os }}-${{ env.HELM_VERSION }}-${{ env.YQ_VERSION }}
       - name: Checkout
         uses: actions/checkout@v2
-      - run: scripts/install-helm.sh $HELM_VERSION
-        if: steps.cache.outputs.cache-hit != 'true'
-      - run: scripts/install-yq.sh $YQ_VERSION
-        if: steps.cache.outputs.cache-hit != 'true'
+      
       - name: Update PATH
         run: |
           echo "$GITHUB_WORKSPACE/bin" >> $GITHUB_PATH
+
+      - name: Create env variables
+        run: ./.github/scripts/env_variables.sh
+
+      - name: Install Helm
+        uses: azure/setup-helm@v1
+        with:
+          version: ${{ env.HELM_VERSION }}
+
+      - name: Install yq and validate tool versions
+        run: |
+          scripts/install-yq.sh ${{ env.YQ_VERSION }}
+          helm version
+          yq -V
+      
       - name: Update chart dependencies
         run: |
           scripts/update-helm-deps.sh
@@ -82,10 +99,14 @@ jobs:
       - setup
     runs-on: ubuntu-latest
     steps:
+      - name: Check out code into the Go module directory
+        uses: actions/checkout@v2
+      - name: Create env variables
+        run: ./.github/scripts/env_variables.sh
       - name: Set up Go 1.x
         uses: actions/setup-go@v2
         with:
-          go-version: ^1.15
+          go-version: ${{ env.GO_VERSION }}
         id: go
       - uses: actions/cache@v2
         with:
@@ -93,8 +114,6 @@ jobs:
           key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
           restore-keys: |
             ${{ runner.os }}-go
-      - name: Check out code into the Go module directory
-        uses: actions/checkout@v2
       - name: Update chart dependencies
         run: |
           scripts/update-helm-deps.sh
