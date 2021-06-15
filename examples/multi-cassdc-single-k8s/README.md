@@ -28,7 +28,7 @@ The instructions guide you through creating two Cassandra datacenters in a singl
     helm install txndc k8ssandra/k8ssandra -f dc1.yaml -n txndc  
     ```
 
-1. After the first datacenter has initialized (you can watch status using `watch kubectl get pods -n txndc`), install the second datacenter in the analytics namespace using the [dc2.yaml](./dc2.yaml) config file. 
+1. After the first datacenter has initialized (you can watch status using `kubectl get pods -w -n txndc`), install the second datacenter in the analytics namespace using the [dc2.yaml](./dc2.yaml) config file. 
 
     ```
     helm install analyticsdc k8ssandra/k8ssandra -f dc2.yaml -n analyticsdc
