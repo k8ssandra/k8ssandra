@@ -116,7 +116,7 @@ Exiting the terminal instance will terminate the port forwarding service.
 
 To access K8ssandra using Stargate:
 
-1. Generate a Stargate access token replacing `<k8ssandra-username>` and `<k8ssandra-password>` with the values you retrieved in [Retrieve K8ssandra superuser credentials]({{< relref "/quickstarts#superuser" >}}):
+1. Generate a Stargate access token replacing `<k8ssandra-username>` and `<k8ssandra-password>` with the values you retrieved in [Retrieve K8ssandra superuser credentials]({{< relref "/install/local#superuser" >}}):
 
     ```bash
     curl -L -X POST 'http://localhost:8081/v1/auth' -H 'Content-Type: application/json' --data-raw '{"username": "<k8ssandra-username>", "password": "<k8ssandra-password>"}'
@@ -153,7 +153,7 @@ To access K8ssandra using the stand alone CQLSH utility:
 
 1. Download CQLSH from the  [DataStax download site](https://downloads.datastax.com/#cqlsh) choosing the version for **DataStax Astra**.
 
-1. Connect to Cassandra replacing `<k8ssandra-username>` and `<k8ssandra-password>` with the values you retrieved in [Retrieve K8ssandra superuser credentials]({{< relref "/quickstarts#superuser" >}}):
+1. Connect to Cassandra replacing `<k8ssandra-username>` and `<k8ssandra-password>` with the values you retrieved in [Retrieve K8ssandra superuser credentials]({{< relref "/install/local#superuser" >}}):
 
     ```bash
     cqlsh -u <k8ssandra-username> -p <k8ssandra-password>
