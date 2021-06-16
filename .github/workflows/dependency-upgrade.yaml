@@ -54,7 +54,7 @@ jobs:
         run: |
           CLOSED_UPGRADE_PR=$(curl -L -s "https://api.github.com/repos/k8ssandra/k8ssandra/pulls?state=closed"|jq -c '.[] | select( .title == "Upgrade ${{ matrix.dependency }} dependency ${{ env.CURRENT_VERSION }} -> ${{ env.LATEST_VERSION }}" )'|jq -r '.title')
           
-          if [ -z "$CLOSED_UPGRADE_PR" ] && [ "${{ env.CURRENT_VERSION }}" != "${{ env.LATEST_VERSION }}" ]; then"
+          if [ -z "$CLOSED_UPGRADE_PR" ] && [ "${{ env.CURRENT_VERSION }}" != "${{ env.LATEST_VERSION }}" ]; then
             echo "PR_EXISTS=no" >> $GITHUB_ENV
             yq eval "${{ matrix.version_path }} |= \"${{ env.LATEST_VERSION }}\"" charts/k8ssandra/values.yaml -i
             cat charts/k8ssandra/values.yaml
