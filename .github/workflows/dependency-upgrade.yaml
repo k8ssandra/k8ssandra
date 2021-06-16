@@ -5,6 +5,7 @@ on:
   schedule:
     # Runs daily at noon UTC (I guess)
     - cron:  '0 12 * * *'
+  workflow_dispatch:
 
 jobs:
   check-upgrades:
