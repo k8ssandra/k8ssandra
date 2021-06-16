@@ -1,7 +1,6 @@
 cassandra:
   # -- Enables installation of Cassandra cluster. Set to false if you only wish to install operators.
   enabled: true
-
   # -- The Cassandra version to use. The supported versions include the following:
   #    - 3.11.7
   #    - 3.11.8
@@ -9,7 +8,6 @@ cassandra:
   #    - 3.11.10
   #    - 4.0.0
   version: "3.11.10"
-
   # -- Specifies the image to use for a particular Cassandra version. Exercise
   # care and caution with changing these values! cass-operator is not designed to work with
   # arbitrary Cassandra images. It expects the cassandra container to be running
@@ -21,7 +19,6 @@ cassandra:
     3.11.9: k8ssandra/cass-management-api:3.11.9-v0.1.25
     3.11.10: k8ssandra/cass-management-api:3.11.10-v0.1.25
     4.0.0: k8ssandra/cass-management-api:4.0.0-v0.1.25
-
   # -- Overrides the default image mappings. This is intended for advanced use cases
   # like development or testing. By default the Cassandra version has to be one that is in
   # versionImageMap. Template rendering will fail if the version is not in the map. When
@@ -32,7 +29,6 @@ cassandra:
 
   # -- Cluster name defaults to release name when not specified.
   clusterName: ""
-
   # -- Authentication and authorization related settings.
   auth:
     # -- Enables or disables authentication and authorization. This also
@@ -40,7 +36,6 @@ cassandra:
     # authentication will still be enabled even if auth is disabled here. This
     # is because Reaper requires remote JMX access.
     enabled: true
-
     # -- Configures the default Cassandra superuser when authentication is
     # enabled. If neither `superuser.secret` nor `superuser.username` are set,
     # then a user and a secret with the user's credentials will be created. The
@@ -60,38 +55,31 @@ cassandra:
     superuser:
       secret: ""
       username: ""
-
     # -- Cache entries validity period in milliseconds. cassandra.yaml has
     # settings for roles, permissions, and credentials caches. This property
     # will configure the validity period for all three.
     cacheValidityPeriodMillis: 3600000
-
     # -- Cache entries update period in milliseconds. cassandra.yaml has
     # settings for roles, permissions, and credentials caches. This property
     # will configure the update interval for all three.
     cacheUpdateIntervalMillis: 3600000
-
   cassandraLibDirVolume:
     # -- Storage class for persistent volume claims (PVCs) used by the
     # underlying cassandra pods. Depending on your Kubernetes distribution this
     # may be named "standard", "hostpath", or "localpath". Run `kubectl get
     # storageclass` to identify what is available in your environment.
     storageClass: standard
-
     # -- Size of the provisioned persistent volume per node. It is recommended
     # to keep the total amount of data per node to approximately 1 TB. With room
     # for compactions this value should max out at ~2 TB. This recommendation is
     # highly dependent on data model and compaction strategies in use. Consider
     # testing with your data model to find an optimal value for your usecase.
     size: 5Gi
-
   # -- Permits running multiple Cassandra pods per Kubernetes worker. If enabled
   # resources.limits and resources.requests **must** be defined.
   allowMultipleNodesPerWorker: false
-
   # -- Optional additional contact points for the Cassandra cluster to connect to.
   additionalSeeds: []
-
   # -- The management-api runs as pid 1 in the cassandra container which means
   # its logs are sent to stdout and stderr. To make Cassandra's logs more
   # accessible, cass-operator deploys the server-system-logger container. You
@@ -101,142 +89,131 @@ cassandra:
     # -- Set to false if you do not want to deploy the server-system-logger
     # container.
     enabled: true
-
   # -- Optional cluster-level heap configuration, can be overridden at `datacenters` level.
   # Options are commented out for reference. Note that k8ssandra does not
   # automatically apply default values for heap size. It instead defers to
   # Cassandra's out of box defaults.
   heap: {}
-   #size:
-   #newGenSize:
+  #size:
+  #newGenSize:
 
   # -- Optional cluster-level garbage collection configuration. It can be overridden at
   # the datacenter level.
   gc:
     # -- GC configuration for the CMS collector.
     cms: {}
-      # -- Enables the CMS garbage collector
-      # enabled: true
+    # -- Enables the CMS garbage collector
+    # enabled: true
 
-      # -- Controls the size of the two survivor spaces in the heap's young
-      # generation.
-      # survivorRatio: 8
+    # -- Controls the size of the two survivor spaces in the heap's young
+    # generation.
+    # survivorRatio: 8
 
-      # -- The number of times an object survives a minor collection before
-      # being promoted to the old generation.
-      # maxTenuringThreshold: 1
+    # -- The number of times an object survives a minor collection before
+    # being promoted to the old generation.
+    # maxTenuringThreshold: 1
 
-      # -- A major collection starts if the occupancy of the old generation
-      # exceeds this percentage.
-      # initiatingOccupancyFraction: 75
+    # -- A major collection starts if the occupancy of the old generation
+    # exceeds this percentage.
+    # initiatingOccupancyFraction: 75
 
-      # -- The time in milliseconds that CMS threads wait for young GC.
-      # waitDuration: 10000
+    # -- The time in milliseconds that CMS threads wait for young GC.
+    # waitDuration: 10000
 
     # -- GC configuration for the G1 collector.
     g1: {}
-      # -- Enabled the G1 garbage collector.
-      # enabled: true
+    # -- Enabled the G1 garbage collector.
+    # enabled: true
+  # -- Determines the percentage of total garbage collection time that
+  # should be spent in the Update RS phase updating any remaining
+  # remembered sets. G1 controls the amount of concurrent remembered set
+  # updates using this setting.
+  # setUpdatingPauseTimePercent: 5
 
-      # -- Determines the percentage of total garbage collection time that
-      # should be spent in the Update RS phase updating any remaining
-      # remembered sets. G1 controls the amount of concurrent remembered set
-      # updates using this setting.
-      # setUpdatingPauseTimePercent: 5
+  # -- Sets a target value for desired maximum pause time.
+  # maxGcPauseMillis: 500
 
-      # -- Sets a target value for desired maximum pause time.
-      # maxGcPauseMillis: 500
+  # -- Sets the heap occupancy threshold that triggers a marking cycle.
+  # initiatingHeapOccupancyPercent: 70
 
-      # -- Sets the heap occupancy threshold that triggers a marking cycle.
-      # initiatingHeapOccupancyPercent: 70
+  # -- Set the number of stop the world (STW) worker threads.
+  # parallelGcThreads: 16
 
-      # -- Set the number of stop the world (STW) worker threads.
-      # parallelGcThreads: 16
-
-      # -- Set the number of stop the world (STW) worker threads.
-      # concurrentGcThreads: 16
+  # -- Set the number of stop the world (STW) worker threads.
+  # concurrentGcThreads: 16
 
   # -- Resource requests for each Cassandra pod. See
   # https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
   # for background on managing resources.
   resources: {}
-
   # Tolerations to apply to the Cassandra pods. See
   # https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/ for background.
   tolerations: []
-
   datacenters:
+    # Note the odd spacing below is to assist with docs generation
+    - # -- Name of the datacenter
+      name: dc1
+      # -- Number of nodes within the datacenter. This value should, at a minimum,
+      # match the number of racks and be no less than 3 for non-development
+      # environments.
+      size: 1
+      # -- Number of tokens within the datacenter. If not defined, the default values will be
+      # used, which are 256 tokens for 3.11 releases and 16 tokens for 4.0 releases.
+      # num_tokens: 16
 
-  # Note the odd spacing below is to assist with docs generation
-  -
-    # -- Name of the datacenter
-    name: dc1
+      # -- The replication factor for keyspaces in the datacenter. Triggers the
+      # even token distribution algorithm for num_tokens and the replication
+      # factor. Note that this property is for Cassandra 4.0 and later. Setting
+      # this property with Cassandra 3.11.x will result in a chart validation
+      # error. When the Cassandra version is 4.0, this property is enabled by
+      # default with a value of 3.
+      # allocateTokensForLocalRF: 3
 
-    # -- Number of nodes within the datacenter. This value should, at a minimum,
-    # match the number of racks and be no less than 3 for non-development
-    # environments.
-    size: 1
-
-    # -- Number of tokens within the datacenter. If not defined, the default values will be
-    # used, which are 256 tokens for 3.11 releases and 16 tokens for 4.0 releases.
-    # num_tokens: 16
-
-    # -- The replication factor for keyspaces in the datacenter. Triggers the
-    # even token distribution algorithm for num_tokens and the replication
-    # factor. Note that this property is for Cassandra 4.0 and later. Setting
-    # this property with Cassandra 3.11.x will result in a chart validation
-    # error. When the Cassandra version is 4.0, this property is enabled by
-    # default with a value of 3.
-    # allocateTokensForLocalRF: 3
-
-    # -- Specifies the racks for the data center, if unset the datacenter will
-    # be composed of a single rack named `default`. The number of racks should
-    # equal the replication factor of your application keyspaces. Cassandra will
-    # ensure that replicas are spread across racks versus having multiple
-    # replicas within the same rack. For example, let's say we are using RF = 3
-    # with a 9 node cluster and 3 racks (and 3 nodes per rack). There will be
-    # one replica of the dataset spread across each rack.
-    racks:
-    -
-      # -- Identifier for the rack, this may align with the labels used to
-      # control where resources are deployed for this rack. For example, if a
-      # rack is limited to a single availability zone the identifier may be the
-      # name of that AZ (eg us-east-1a).
-      name: default
-
-      # -- an optional set of labels that are used to pin Cassandra pods to
-      # specific k8s worker nodes via affinity rules. See
-      # https://kubernetes.io/docs/tasks/configure-pod-container/assign-pods-nodes-using-node-affinity/
-      # for background on using affinity rules.
-      #
-      # topology.kubernetes.io/zone is a well-known k8s label used by cloud providers to
-      # indicate the failure zone in which a k8s worker node is running. The following
-      # example illustrates how you can pin racks to specific failure zones.
-      #
-      # racks:
-      # - name: r1
-      #   affinityLabels:
-      #     topology.kubernetes.io/zone: us-east1-b
-      # - name: r2
-      #   affinityLabels:
-      #     topology.kubernetes.io/zone: us-east1-a
-      # - name: r3
-      #   affinityLabels:
-      #     topology.kubernetes.io/zone: us-east1-c
-      affinityLabels: {}
-
-    # -- Optional datacenter-level heap setting, overrides cluster-level setting
-    # `cassandra.heap`. Options are commented out for reference. Note that
-    # k8ssandra does not automatically apply default values for heap size. It
-    # instead defers to Cassandra's out of box defaults.
-    heap: {}
+      # -- Specifies the racks for the data center, if unset the datacenter will
+      # be composed of a single rack named `default`. The number of racks should
+      # equal the replication factor of your application keyspaces. Cassandra will
+      # ensure that replicas are spread across racks versus having multiple
+      # replicas within the same rack. For example, let's say we are using RF = 3
+      # with a 9 node cluster and 3 racks (and 3 nodes per rack). There will be
+      # one replica of the dataset spread across each rack.
+      racks:
+        - # -- Identifier for the rack, this may align with the labels used to
+          # control where resources are deployed for this rack. For example, if a
+          # rack is limited to a single availability zone the identifier may be the
+          # name of that AZ (eg us-east-1a).
+          name: default
+          # -- an optional set of labels that are used to pin Cassandra pods to
+          # specific k8s worker nodes via affinity rules. See
+          # https://kubernetes.io/docs/tasks/configure-pod-container/assign-pods-nodes-using-node-affinity/
+          # for background on using affinity rules.
+          #
+          # topology.kubernetes.io/zone is a well-known k8s label used by cloud providers to
+          # indicate the failure zone in which a k8s worker node is running. The following
+          # example illustrates how you can pin racks to specific failure zones.
+          #
+          # racks:
+          # - name: r1
+          #   affinityLabels:
+          #     topology.kubernetes.io/zone: us-east1-b
+          # - name: r2
+          #   affinityLabels:
+          #     topology.kubernetes.io/zone: us-east1-a
+          # - name: r3
+          #   affinityLabels:
+          #     topology.kubernetes.io/zone: us-east1-c
+          affinityLabels: {}
+      # -- Optional datacenter-level heap setting, overrides cluster-level setting
+      # `cassandra.heap`. Options are commented out for reference. Note that
+      # k8ssandra does not automatically apply default values for heap size. It
+      # instead defers to Cassandra's out of box defaults.
+      heap: {}
       #size:
       #newGenSize:
 
-    # -- Optional datacenter-level garbage collection configuration.
-    gc:
-      # -- Optional GC configuration for the CMS collector
-      cms: {}
+      # -- Optional datacenter-level garbage collection configuration.
+      gc:
+        # -- Optional GC configuration for the CMS collector
+        cms: {}
         # -- Enables the CMS garbage collector
         # enabled: true
 
@@ -255,44 +232,40 @@ cassandra:
         # -- The time in milliseconds that CMS threads wait for young GC.
         # waitDuration: 10000
 
-      # -- Optional GC configuration for the G1 collector
-      g1: {}
+        # -- Optional GC configuration for the G1 collector
+        g1: {}
         # -- Enabled the G1 garbage collector.
         # enabled: true
+  # -- Determines the percentage of total garbage collection time that
+  # should be spent in the Update RS phase updating any remaining
+  # remembered sets. G1 controls the amount of concurrent remembered set
+  # updates using this setting.
+  # setUpdatingPauseTimePercent: 5
 
-        # -- Determines the percentage of total garbage collection time that
-        # should be spent in the Update RS phase updating any remaining
-        # remembered sets. G1 controls the amount of concurrent remembered set
-        # updates using this setting.
-        # setUpdatingPauseTimePercent: 5
+  # -- Sets a target value for desired maximum pause time.
+  # maxGcPauseMillis: 500
 
-        # -- Sets a target value for desired maximum pause time.
-        # maxGcPauseMillis: 500
+  # -- Sets the heap occupancy threshold that triggers a marking cycle.
+  # initiatingHeapOccupancyPercent: 70
 
-        # -- Sets the heap occupancy threshold that triggers a marking cycle.
-        # initiatingHeapOccupancyPercent: 70
+  # -- Set the number of stop the world (STW) worker threads.
+  # parallelGcThreads: 16
 
-        # -- Set the number of stop the world (STW) worker threads.
-        # parallelGcThreads: 16
-
-        # -- Sets the number of parallel marking threads.
-        # concurrentGcThreads: 16
+  # -- Sets the number of parallel marking threads.
+  # concurrentGcThreads: 16
 
   # Cassandra native transport ingress support
   ingress:
     # -- Enables Cassandra Traefik ingress definitions. Note that
     # this is mutually exclusive with stargate.ingress.cassandra.enabled
     enabled: false
-
     # -- Determines which TCP-based ingress custom resources to template out. Currently only `traefik` is supported
     method: traefik
-
     # -- Optional hostname used to match requests. Warning: many native Cassandra clients, notably including cqlsh, initialize their connection by querying for
     # the cluster's contactPoints, and thereafter communicate to the cluster using those names/IPs rather than whatever host was specified to the client. In
     # order for clients to work correctly through ingress with a host filter, this means that the host filter must match the hostnames specified in the
     # contactPoints. This value must be a DNS-resolvable hostname and not an IP address. To avoid this issue, leave this setting blank.
     host:
-
     traefik:
       # -- Traefik entrypoint where traffic is sourced. See https://doc.traefik.io/traefik/routing/entrypoints/
       entrypoint: cassandra
@@ -306,44 +279,33 @@ cassandra:
       #     - example.com
       #   # -- Secret containing the TLS certificate and key for the listener
       #   secretName: tls-secret
-
 stargate:
   # -- Enable Stargate resources as part of this release
   enabled: true
-
   # -- version of Stargate to deploy. This is used in conjunction with cassandra.version to select the Stargate container image.
   # If stargate.image is set, this value has no effect.
   version: "1.0.18"
-
   # -- Number of Stargate instances to deploy. This value may be scaled independently of
   # Cassandra cluster nodes. Each instance handles API and coordination tasks
   # for inbound queries.
   replicas: 1
-
   # -- Sets the Stargate container image. This value must be compatible
   # with the value provided for stargate.clusterVersion. If left blank (recommended),
   # k8ssandra will derive an appropriate image based on cassandra.clusterVersion.
   image:
-
   # -- Sets the imagePullPolicy used by the Stargate pods
   imagePullPolicy: IfNotPresent
-
   # -- Sets the heap size Stargate will use in megabytes. Memory request and
   # limit for the pod will be set to this value x2 and x4, respectively.
   heapMB: 256
-
   # -- Sets the CPU request for the Stargate pod in millicores.
   cpuReqMillicores: 200
-
   # -- Sets the CPU limit for the Stargate pod in millicores.
   cpuLimMillicores: 1000
-
   # -- Sets the initial delay in seconds for the Stargate liveness probe.
   livenessInitialDelaySeconds: 30
-
   # -- Sets the initial delay in seconds for the Stargate readiness probe.
   readinessInitialDelaySeconds: 30
-
   # -- Configures the Cassandra user used by Stargate when authentication is
   # enabled. If neither `cassandraUser.secret` nor `cassandraUser.username` are
   # set, then a Cassandra user and a secret will be created. The username will
@@ -357,7 +319,6 @@ stargate:
   cassandraUser:
     secret: ""
     username: ""
-
   ingress:
     # -- Optional hostname used to match requests. Warning: many native Cassandra clients, notably including cqlsh, initialize their connection by querying for
     # the cluster's contactPoints, and thereafter communicate to the cluster using those names/IPs rather than whatever host was specified to the client. In
@@ -365,10 +326,8 @@ stargate:
     # contactPoints. This value must be a DNS-resolvable hostname and not an IP address. To avoid this issue, leave this setting blank, or override it to ""
     # (empty string) for stargate.ingress.cassandra.host. This note does not apply to clients of Stargate's auth, REST, or GraphQL APIs.
     host:
-
     # -- Enables all Stargate ingresses. Note: This must be true for any Stargate ingress to function.
     enabled: false
-
     auth:
       # -- Enables Stargate authentication ingress. Note: stargate.ingress.enabled must also be true.
       enabled: true
@@ -380,7 +339,6 @@ stargate:
       #     - example.com
       #   # -- Secret containing the TLS certificate and key for encrypting requests to this endpoint
       #   secretName: my-secret
-
     rest:
       # -- Enables Stargate REST ingress. Note: stargate.ingress.enabled must also be true.
       enabled: true
@@ -392,7 +350,6 @@ stargate:
       #     - example.com
       #   # -- Secret containing the TLS certificate and key for encrypting requests to this endpoint
       #   secretName: my-secret
-
     graphql:
       # -- Enables Stargate GraphQL API ingress. Note: stargate.ingress.enabled must also be true.
       enabled: true
@@ -407,23 +364,19 @@ stargate:
       playground:
         # -- Enables GraphQL playground ingress.  Note: stargate.ingress.enabled and stargate.ingress.graphql.enabled must also be true.
         enabled: true
-
     cassandra:
       # -- Enables C* native protocol ingress with Traefik. Note that this is mutually exclusive with cassandra.ingress.enabled, and stargate.ingress.enabled must also be true.
       enabled: true
       # -- Determines which TCP-based ingress custom resources to template out. Currently only `traefik` is supported
       method: traefik
-
       # -- Optional hostname used to match requests. Warning: many native Cassandra clients, notably including cqlsh, initialize their connection by querying for
       # the cluster's contactPoints, and thereafter communicate to the cluster using those names/IPs rather than whatever host was specified to the client. In
       # order for clients to work correctly through ingress with a host filter, this means that the host filter must match the hostnames specified in the
       # contactPoints. This value must be a DNS-resolvable hostname and not an IP address. To avoid this issue, leave this setting blank, or if
       # stargate.ingress.host is set, override it here to "" (empty string). This note does not apply to clients of Stargate's auth, REST, or GraphQL APIs.
       host:
-
       # -- Parameters used by the Traefik IngressRoute custom resource
       traefik:
-
         # -- Traefik entrypoint where traffic is sourced. See https://doc.traefik.io/traefik/routing/entrypoints/
         entrypoint: cassandra
         # Future parameters
@@ -436,28 +389,23 @@ stargate:
         #     - example.com
         #   # -- Secret containing the TLS certificate and key for the listener
         #   secretName: tls-secret
-
   # -- Tolerations to apply to the Stargate pods. See
   # https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/ for background.
   tolerations: []
-
 reaper:
   # -- When enabled, Reaper automatically sets up repair schedules for all
   # non-system keypsaces. Repear monitors the cluster so that as keyspaces are
   # added or removed repair schedules will be added or removed respectively.
   autoschedule: false
-
   # -- Additional autoscheduling properties. Allows you to customize the schedule rules
   # for autoscheduling. Properties are the same as accepted by the Reaper.
   autoschedule_properties: {}
-
   # -- Enable Reaper resources as part of this release. Note that Reaper uses
   # Cassandra's JMX APIs to perform repairs. When Reaper is enabled, Cassandra
   # will also be configured to allow remote JMX access. JMX authentication
   # will be configured in Cassandra with credentials only created for Reaper
   # in order to limit access.
   enabled: true
-
   # Configures the Reaper container image to use. Exercise care when changing
   # the Reaper image. Reaper is deployed and managed by reaper-operator. You
   # will need to make sure that the image is compatible with reaper-operator.
@@ -465,8 +413,7 @@ reaper:
     # -- Specifies the container repository for cassandra-reaper
     repository: docker.io/thelastpickle/cassandra-reaper
     # -- Tag of an image within the specified repository
-    tag: 2.2.2
-
+    tag: 2.2.5
   # -- Configures the Cassandra user used by Reaper when authentication is
   # enabled. If neither cassandraUser.secret nor cassandraUser.username are
   # set, then a Cassandra user and a secret with the user's credentials will
@@ -480,7 +427,6 @@ reaper:
   cassandraUser:
     secret: ""
     username: ""
-
   # -- Configures JMX access to the Cassandra cluster. Reaper requires remote
   # JMX access to perform repairs. The Cassandra cluster will be configured
   # with remote JMX access enabled when Reaper is deployed. The JMX access
@@ -493,32 +439,25 @@ reaper:
     # -- Username that Reaper will use for JMX access. If left blank a random,
     # alphanumeric string will be generated.
     username: ""
-
   ingress:
     # -- Enables Reaper ingress definitions. When enabled, you must specify a value for reaper.ingress.host.
     enabled: false
-
     # -- Hostname to use for routing requests to the repair UI. If
     # using a local deployment consider leveraging dynamic DNS services like
     # xip.io. Example: `repair.127.0.0.1.xip.io` will return `127.0.0.1` for
     # DNS requests routing requests to your local machine. This is required when reaper.ingress.enabled is true.
     host:
-
     method: traefik
-
     traefik:
       # -- Traefik entrypoint where traffic is sourced. See https://doc.traefik.io/traefik/routing/entrypoints/
       entrypoint: web
-
-    # -- Tolerations to apply to the Reaper pods. See
-    # https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/ for background.
+      # -- Tolerations to apply to the Reaper pods. See
+      # https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/ for background.
   tolerations: []
-
 medusa:
   # -- Enable Medusa resources as part of this release. If enabled,
   # `bucketName` and `storageSecret` **must** be defined.
   enabled: false
-
   # Configures the Medusa image which is built from
   # https://github.com/thelastpickle/cassandra-medusa/tree/master/k8s.
   image:
@@ -528,7 +467,6 @@ medusa:
     tag: 0.10.1
     # -- The image pull policy
     pullPolicy: IfNotPresent
-
   # -- Configures the Cassandra user used by Medusa when authentication is
   # enabled. If neither `cassandraUser.secret` nor `cassandraUser.username` are
   # set, then a Cassandra user and a secret will be created. The username will
@@ -542,54 +480,48 @@ medusa:
   cassandraUser:
     secret: ""
     username: ""
-
   # -- Enables usage of a bucket across multiple clusters.
   multiTenant: false
-
   # -- API interface used by the object store. Supported values include `s3`,
   # 's3_compatible' and `gcs`. For file system storage, i.e., a pod volume
   # mount, use 'local' and set the podStorage properties. Note that 'local' does not necessarily 
   # imply a local volume. It could also be network attached storage. It is simply accessed
   # through the file system.
   storage: s3
-
   # -- Optional properties for storage. Supported values depend on the type of the storage.
   storage_properties: {}
-    # Define region for s3 / s3_compatible
-    # region: eu-west-1
+  # Define region for s3 / s3_compatible
+  # region: eu-west-1
 
-    # For s3_compatible option, one must define target host
-    # host: 192.168.1.201
+  # For s3_compatible option, one must define target host
+  # host: 192.168.1.201
 
-    # For s3_compatible option, port is optional
-    # port: 9000
+  # For s3_compatible option, port is optional
+  # port: 9000
 
-    # Is SSL used or not for s3_compatible connection
-    # secure: false
+  # Is SSL used or not for s3_compatible connection
+  # secure: false
 
   # -- Name of the remote storage bucket where backups will be stored. If using 'local' storage, this
   # value is ignored.
   bucketName: awstest
-
   # -- Name of the Kubernetes `Secret` that stores the key file for the
   # storage provider's API. If using 'local' storage, this value is ignored.
   storageSecret: medusa-bucket-key
-
   # -- To use a locally mounted volumes for backups, the Cassandra pods must have a PVC where to write
   # the backups to.
   podStorage: {}
-    # Storage class for persistent volume claims (PVCs) used for the medusa backups.
-    # Run `kubectl get storageclass` to identify what is available in your environment.
-    # This storageClass can be different than what is used by the Cassandra itself.
-    # storageClass: standard
+  # Storage class for persistent volume claims (PVCs) used for the medusa backups.
+  # Run `kubectl get storageclass` to identify what is available in your environment.
+  # This storageClass can be different than what is used by the Cassandra itself.
+  # storageClass: standard
+# Size of the provisioned persistent volume per node. The available storage must be enough
+# to keep new backups as well as retained older backups.
+# size: 25Gi
 
-    # Size of the provisioned persistent volume per node. The available storage must be enough
-    # to keep new backups as well as retained older backups.
-    # size: 25Gi
-
-    # The volume can be mounted to pod with different access modes. The available modes depend on the provider and
-    # how they're exported in the PersistentVolume definition. The default for these mounts is ReadWriteOnce.
-    # accessModes: []
+# The volume can be mounted to pod with different access modes. The available modes depend on the provider and
+# how they're exported in the PersistentVolume definition. The default for these mounts is ReadWriteOnce.
+# accessModes: []
 
 monitoring:
   grafana:
@@ -599,14 +531,12 @@ monitoring:
     # https://helm.sh/docs/chart_template_guide/subcharts_and_globals/ for
     # background on subcharts.
     provision_dashboards: true
-
   prometheus:
     # -- Enables the creation of Prometheus Operator ServiceMonitor custom
     # resources. If you are not using the kube-prometheus-stack subchart or do
     # not have the ServiceMonitor CRD installed on your cluster, set this value
     # to `false`.
     provision_service_monitors: true
-
 # -- The cleaner is a pre-delete hook that that ensures objects with finalizers
 # get deleted. For example, cass-operator sets a finalizer on the
 # CassandraDatacenter. Kubernetes blocks deletion of an object until all of its
@@ -617,22 +547,18 @@ monitoring:
 # ensures that the CassandraDatacenter is deleted before cass-operator.
 cleaner:
   image: k8ssandra/k8ssandra-tools:latest
-
 # k8ssandra-client provides CLI utilities, but also certain functions such as 
 # upgradecrds that allow modifying the running instances
 client:
   image: k8ssandra/k8ssandra-tools:latest
-
 cass-operator:
   # -- Enables the cass-operator as part of this release. If this setting is
   # disabled no Cassandra resources will be deployed.
   enabled: true
-
 reaper-operator:
   # -- Enables the reaper-operator as part of this release. If this setting is
   # disabled no repair resources will be deployed.
   enabled: true
-
 # Configuration values for the kube-prometheus-stack chart. Not all values are
 # provided here for an exhaustive list see:
 # https://github.com/prometheus-community/helm-charts/blob/main/charts/kube-prometheus-stack/values.yaml
@@ -641,7 +567,6 @@ kube-prometheus-stack:
   # Disabling this parameter prevents all monitoring components from being
   # installed.
   enabled: true
-
   # Disable default service monitors. These service monitors are focused on
   # monitoring Kubernetes components. They are disabled as since the focus is
   # on monitoring k8ssandra components.
@@ -665,32 +590,26 @@ kube-prometheus-stack:
     enabled: false
   nodeExporter:
     enabled: false
-
   alertmanager:
     # Disabled for now while we build out a set of default alerts
     enabled: false
     serviceMonitor:
       selfMonitor: false
-
   prometheusOperator:
     # Installs the Prometheus Operator, omitting this parameter will result in
     # resources not being deployed.
     enabled: true
-
     # -- Locks Prometheus operator to this namespace. Changing this setting may
     # result in a non-namespace scoped deployment.
     namespaces:
       releaseNamespace: true
       additional: []
-
     # -- Monitoring of prometheus operator
     serviceMonitor:
       selfMonitor: false
-
   prometheus:
     # -- Provisions an instance of Prometheus as part of this release
     enabled: true
-
     # -- Allows for tweaking of the Prometheus installation's configuration.
     # Common parameters include `externalUrl: http://localhost:9090/prometheus`
     # and `routePrefix: /prometheus` for running Prometheus resources under a
@@ -699,10 +618,8 @@ kube-prometheus-stack:
       # -- Prefixes all Prometheus routes with the specified value. It is useful
       # for ingresses which do not rewrite URLs.
       routePrefix: /
-
       # -- An external URL at which Prometheus will be reachable.
       externalUrl: ""
-
     ingress:
       # -- Enable templating of ingress resources for external prometheus
       # traffic
@@ -710,11 +627,9 @@ kube-prometheus-stack:
       # -- Path-based routing rules, `/prometheus` is possible if the
       # appropriate changes are made to `prometheusSpec`
       paths: []
-
     serviceMonitor:
       # Disable monitoring the Prometheus instance
       selfMonitor: false
-
   grafana:
     # -- Provisions an instance of Grafana and wires it up with a DataSource
     # referencing this Prometheus installation
@@ -722,29 +637,22 @@ kube-prometheus-stack:
     ingress:
       # -- Generates ingress resources for the Grafana instance
       enabled: false
-
       # -- Path-based routing rules, '/grafana' is possible if appropriate
       # changes are made to `grafana.ini`
       path:
-
     # -- Username for accessing the provisioned Grafana instance
     adminUser: admin
-
     # -- Password for accessing the provisioned Grafana instance
     adminPassword: secret
-
     serviceMonitor:
       # -- Whether the Grafana instance should be monitored
       selfMonitor: false
-
     # -- Default dashboard installation
     defaultDashboardsEnabled: false
-
     # -- Additional plugins to be installed during Grafana startup,
     # `grafana-polystat-panel` is used by the default Cassandra dashboards.
     plugins:
       - grafana-polystat-panel
-
     # -- Customization of the Grafana instance. To listen for Grafana traffic
     # under a different url set `server.root_url: http://localhost:3000/grafana`
     # and `serve_from_sub_path: true`.
