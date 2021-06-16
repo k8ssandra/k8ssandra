@@ -67,6 +67,7 @@ jobs:
         if: ${{ env.PR_EXISTS == 'no' && env.CURRENT_VERSION != env.LATEST_VERSION }}
         uses: peter-evans/create-pull-request@v3
         with:
+          token: ${{ secrets.CREATE_PR_TOKEN }}
           commit-message: Upgrade ${{ matrix.dependency }} dependency from ${{ env.CURRENT_VERSION }} to ${{ env.LATEST_VERSION }}
           delete-branch: true
           branch: upgrade-${{ matrix.dependency }}-${{ env.CURRENT_VERSION }}-${{ env.LATEST_VERSION }}
