@@ -22,6 +22,7 @@ import (
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
+	wait "k8s.io/apimachinery/pkg/util/wait"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
@@ -249,6 +250,13 @@ func waitForCassDcUpgrade(t *testing.T, namespace, initialResourceVersion string
 		Namespace: namespace,
 	}
 
+	// Wait for at most 1 minute, waiting for cassdc to move to Upgrading state.
+	// This may not happen if the upgrade doesn't trigger a rolling restart.
+
+	wait.Poll(10*time.Second, 1*time.Minute, func() (bool, error) {
+		return checkCassDcState(t, namespace, cassdcapi.ProgressUpdating, cassdcKey), nil
+	})
+
 	g(t).Eventually(func() bool {
 		log.Printf("Checking cassandradatacenter %s resource version in namespace %s...", cassdcKey.Name, cassdcKey.Namespace)
 		cassdc := &cassdcapi.CassandraDatacenter{}
@@ -268,16 +276,20 @@ func waitForCassDcToBe(t *testing.T, namespace string, progress cassdcapi.Progre
 	}
 
 	g(t).Eventually(func() bool {
-		log.Printf("Checking cassandradatacenter %s state in namespace %s...", cassdcKey.Name, cassdcKey.Namespace)
-		cassdc := &cassdcapi.CassandraDatacenter{}
-		err := testClient.Get(context.Background(), cassdcKey, cassdc)
-		if err != nil {
-			t.Logf("Failed getting cassdc: %s", err.Error())
-			return false
-		}
-		return cassdc.Status.CassandraOperatorProgress == progress &&
-			(cassdc.GetConditionStatus(cassdcapi.DatacenterReady) == v1.ConditionTrue || progress == cassdcapi.ProgressUpdating)
+		return checkCassDcState(t, namespace, progress, cassdcKey)
 	}, retryTimeout, retryInterval).Should(BeTrue())
+}
+
+func checkCassDcState(t *testing.T, namespace string, progress cassdcapi.ProgressState, cassdcKey types.NamespacedName) bool {
+	log.Printf("Checking cassandradatacenter %s state in namespace %s...", cassdcKey.Name, cassdcKey.Namespace)
+	cassdc := &cassdcapi.CassandraDatacenter{}
+	err := testClient.Get(context.Background(), cassdcKey, cassdc)
+	if err != nil {
+		t.Logf("Failed getting cassdc: %s", err.Error())
+		return false
+	}
+	return cassdc.Status.CassandraOperatorProgress == progress &&
+		(cassdc.GetConditionStatus(cassdcapi.DatacenterReady) == v1.ConditionTrue || progress == cassdcapi.ProgressUpdating)
 }
 
 func resourceWithLabelIsPresent(t *testing.T, namespace, resourceType string, labels map[string]string) bool {
