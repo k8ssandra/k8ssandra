@@ -54,7 +54,7 @@ func WaitForOneSegmentToBeDone(t *testing.T, repairId uuid.UUID) {
 }
 
 func oneSegmentIsDone(t *testing.T, repairId uuid.UUID) bool {
-	segments, err := reaperClient.GetRepairRunSegments(context.Background(), repairId)
+	segments, err := reaperClient.RepairRunSegments(context.Background(), repairId)
 	g(t).Expect(err).To(BeNil(), "Failed to get segments of repair run %s: %s", repairId, err)
 	for _, segment := range segments {
 		if segment.State == reaper.RepairSegmentStateDone {

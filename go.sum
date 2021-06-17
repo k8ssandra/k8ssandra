@@ -824,8 +824,8 @@ github.com/jung-kurt/gofpdf v1.0.3-0.20190309125859-24315acbbda5/go.mod h1:7Id9E
 github.com/k8ssandra/cass-operator v1.7.0 h1:xB6Va/H0rUYFr0Kd2sSTD0d5dVdbCD4IxoHoKKreSCo=
 github.com/k8ssandra/cass-operator v1.7.0/go.mod h1:mUZdlBasktWCgrYeCLiVNJCH0QjFF0bYxXWAdYyv3qg=
 github.com/k8ssandra/reaper-client-go v0.3.0/go.mod h1:1yol6YTcKcLOmPH9CfAdeFnVg/KCCTSbIUXMsF1cKII=
-github.com/k8ssandra/reaper-client-go v0.3.1-0.20210604120135-4249ab61881c h1:jH7FQbA81n/HmZXdW8O9MK6HUFkDgAYWt8jp1A9OsUc=
-github.com/k8ssandra/reaper-client-go v0.3.1-0.20210604120135-4249ab61881c/go.mod h1:WsQymIaVT39xbcstZhdqynUS13AGzP2p6U9Hsk1oy5M=
+github.com/k8ssandra/reaper-client-go v0.3.1-0.20210617111910-fe2ba92f8efb h1:RvFhovAfMgALqozmpVo2F/9gSITPIUubI1153mQNiPA=
+github.com/k8ssandra/reaper-client-go v0.3.1-0.20210617111910-fe2ba92f8efb/go.mod h1:WsQymIaVT39xbcstZhdqynUS13AGzP2p6U9Hsk1oy5M=
 github.com/k8ssandra/reaper-operator v0.3.1 h1:6UuzyFSxE7ur0+LRJYLA6PBXsl0OkkU8Q8Ua9ZQ8jS0=
 github.com/k8ssandra/reaper-operator v0.3.1/go.mod h1:Vf2RsyiWAbGemrhZ4TK8uA0040EeTaoQk+irR/E9zFg=
 github.com/kardianos/osext v0.0.0-20190222173326-2bc1f35cddc0/go.mod h1:1NbS8ALrpOvjt0rHPNLyCIeMtbizbir8U//inJ+zuB8=
