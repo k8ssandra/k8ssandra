@@ -1,108 +1,65 @@
 package steps
 
 import (
-	"encoding/json"
+	"context"
 	"fmt"
+	"github.com/google/uuid"
+	"github.com/k8ssandra/reaper-client-go/reaper"
 	"log"
-	"strings"
+	"net/url"
 	"testing"
 
-	resty "github.com/go-resty/resty/v2"
 	. "github.com/onsi/gomega"
 )
 
 // Reaper related steps
+
+var reaperURL, _ = url.Parse("http://repair.127.0.0.1.nip.io:8080")
+var reaperClient = reaper.NewClient(reaperURL)
+
 func CheckClusterIsRegisteredInReaper(t *testing.T, clusterName string) {
 	g(t).Eventually(func() bool {
-		return clusterIsRegisteredInReaper(t, clusterName)
+		return clusterIsRegisteredInReaper(clusterName)
 	}, retryTimeout, retryInterval).Should(BeTrue(), "Cluster wasn't properly registered in Reaper")
 }
 
-func clusterIsRegisteredInReaper(t *testing.T, clusterName string) bool {
-	restClient := resty.New()
-	response, err := restClient.R().Get("http://repair.127.0.0.1.nip.io:8080/cluster")
-	if err != nil {
-		log.Println(fmt.Sprintf("The HTTP request failed with error %s", err))
-	} else {
-		data := response.Body()
-		log.Println(fmt.Sprintf("Reaper response: %s", data))
-		var clusters []string
-		json.Unmarshal([]byte(data), &clusters)
-		if len(clusters) > 0 {
-			if clusterName == clusters[0] {
-				return true
-			}
-		}
+func clusterIsRegisteredInReaper(clusterName string) bool {
+	if _, err := reaperClient.GetCluster(context.Background(), clusterName); err != nil {
+		log.Println(fmt.Errorf("cluster %s is not registered: %w", clusterName, err))
+		return false
 	}
-	return false
+	return true
 }
 
-func CancelRepair(t *testing.T, repairId string) {
-	restClient := resty.New()
-	// Start the previously created repair run
-	response, err := restClient.R().
-		SetHeader("Content-Type", "application/json").
-		Put(fmt.Sprintf("http://repair.127.0.0.1.nip.io:8080/repair_run/%s/state/ABORTED", repairId))
-
-	log.Println(fmt.Sprintf("Reaper response: %s", response.Body()))
-	log.Println(fmt.Sprintf("Reaper status code: %d", response.StatusCode()))
-
-	errMessage := fmt.Sprintf("Failed aborting repair %s: %s / %s", repairId, err, response.Body())
-	g(t).Expect(err).To(BeNil(), errMessage)
-	g(t).Expect(response.StatusCode()).Should(Equal(200), errMessage)
+func CancelRepair(t *testing.T, repairId uuid.UUID) {
+	err := reaperClient.AbortRepairRun(context.Background(), repairId)
+	g(t).Expect(err).To(BeNil(), "Failed to abort repair run %s: %s", repairId, err)
 }
 
-// Starts a repair on keyspace and return the repair id
-func TriggerRepair(t *testing.T, namespace, keyspace string) string {
-	restClient := resty.New()
-
-	// Create the repair run
-	response, err := restClient.R().
-		SetHeader("Content-Type", "application/json").
-		SetQueryParams(map[string]string{
-			"clusterName":  "k8ssandra",
-			"keyspace":     keyspace,
-			"owner":        "k8ssandra",
-			"segmentCount": "5",
-		}).
-		Post("http://repair.127.0.0.1.nip.io:8080/repair_run")
-
-	data := response.Body()
-	log.Println(fmt.Sprintf("Reaper response: %s", data))
-	var reaperResponse interface{}
-	err2 := json.Unmarshal(data, &reaperResponse)
-
-	errMessageCreateRepair := fmt.Sprintf("The REST request or response parsing failed with error %s %s: %s", err, err2, data)
-	g(t).Expect(err).To(BeNil(), errMessageCreateRepair)
-	g(t).Expect(err2).To(BeNil(), errMessageCreateRepair)
-
-	reaperResponseMap := reaperResponse.(map[string]interface{})
-	repairId := fmt.Sprintf("%s", reaperResponseMap["id"])
+// TriggerRepair starts a repair on keyspace and return the repair id
+func TriggerRepair(t *testing.T, clusterName, keyspace, owner string) uuid.UUID {
+	options := &reaper.RepairRunCreateOptions{SegmentCountPerNode: 5}
+	repairId, err := reaperClient.CreateRepairRun(context.Background(), clusterName, keyspace, owner, options)
+	g(t).Expect(err).To(BeNil(), "Failed to create repair run: %s", err)
 	// Start the previously created repair run
-	response, err = restClient.R().
-		SetHeader("Content-Type", "application/json").
-		Put(fmt.Sprintf("http://repair.127.0.0.1.nip.io:8080/repair_run/%s/state/RUNNING", repairId))
-
-	log.Println(fmt.Sprintf("Reaper response: %s", response.Body()))
-	log.Println(fmt.Sprintf("Reaper status code: %d", response.StatusCode()))
-
-	errMessageStart := fmt.Sprintf("Failed starting repair %s: %s / %s", repairId, err, response.Body())
-	g(t).Expect(err).To(BeNil(), errMessageStart)
-	g(t).Expect(response.StatusCode()).Should(Equal(200), errMessageStart)
-
+	err = reaperClient.StartRepairRun(context.Background(), repairId)
+	g(t).Expect(err).To(BeNil(), "Failed to start repair run %s: %s", repairId, err)
 	return repairId
 }
 
-func WaitForOneSegmentToBeDone(t *testing.T, repairId string) {
-	restClient := resty.New()
+func WaitForOneSegmentToBeDone(t *testing.T, repairId uuid.UUID) {
 	g(t).Eventually(func() bool {
-		return oneSegmentIsDone(t, repairId, restClient)
+		return oneSegmentIsDone(t, repairId)
 	}, retryTimeout, retryInterval).Should(BeTrue(), "No repair segment was fully processed within timeout")
 }
 
-func oneSegmentIsDone(t *testing.T, repairId string, restClient *resty.Client) bool {
-	response, err := restClient.R().Get(fmt.Sprintf("http://repair.127.0.0.1.nip.io:8080/repair_run/%s/segments", repairId))
-	g(t).Expect(err).To(BeNil(), fmt.Sprintf("The HTTP request failed with error %s", err))
-
-	return strings.Contains(fmt.Sprintf("%s", response.Body()), "\"state\":\"DONE\"")
+func oneSegmentIsDone(t *testing.T, repairId uuid.UUID) bool {
+	segments, err := reaperClient.RepairRunSegments(context.Background(), repairId)
+	g(t).Expect(err).To(BeNil(), "Failed to get segments of repair run %s: %s", repairId, err)
+	for _, segment := range segments {
+		if segment.State == reaper.RepairSegmentStateDone {
+			return true
+		}
+	}
+	return false
 }
