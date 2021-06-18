@@ -6,6 +6,9 @@ metadata:
   labels:
     release: {{ .Release.Name }}
 {{ include "k8ssandra.labels" . | indent 4 }}
+{{- if .Values.monitoring.serviceMonitors }}
+  namespace: {{ default .Release.Namespace .Values.monitoring.serviceMonitors.namespace }}
+{{- end }}
 spec:
   selector:
     matchLabels:
@@ -14,6 +17,9 @@ spec:
     matchExpressions:
       - {key: cassandra.datastax.com/cluster, operator: In, values: [{{ include "k8ssandra.clusterName" . }}]}
       - {key: cassandra.datastax.com/datacenter, operator: In, values: [{{ include "k8ssandra.datacenterName" . }}]}
+  namespaceSelector:
+    matchNames:
+      - {{ .Release.Namespace }}
   targetLabels:
   - cassandra.datastax.com/cluster
   - cassandra.datastax.com/datacenter
