@@ -618,6 +618,10 @@ monitoring:
     # not have the ServiceMonitor CRD installed on your cluster, set this value
     # to `false`.
     provision_service_monitors: true
+  # -- Deploy the service monitors on a different namespace than the release namespace.
+  # This should only be set if the kube-prometheus stack isn't installed in the release namespace
+  serviceMonitors:
+     namespace:
 # -- The cleaner is a pre-delete hook that that ensures objects with finalizers
 # get deleted. For example, cass-operator sets a finalizer on the
 # CassandraDatacenter. Kubernetes blocks deletion of an object until all of its

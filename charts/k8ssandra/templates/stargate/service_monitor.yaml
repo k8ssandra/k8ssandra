@@ -7,10 +7,16 @@ metadata:
     release: {{ .Release.Name }}
     app: {{ .Release.Name }}-{{ include "k8ssandra.datacenterName" . }}-stargate
 {{ include "k8ssandra.labels" . | indent 4 }}
+{{- if .Values.monitoring.serviceMonitors }}
+  namespace: {{ default .Release.Namespace .Values.monitoring.serviceMonitors.namespace }}
+{{- end }}
 spec:
   selector:
     matchLabels:
       app: {{ .Release.Name }}-{{ include "k8ssandra.datacenterName" . }}-stargate
+  namespaceSelector:
+    matchNames:
+      - {{ .Release.Namespace }}
   endpoints:
   - port: health
     interval: 15s
