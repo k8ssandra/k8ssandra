@@ -1,5 +1,5 @@
 {{- $datacenter := (index .Values.cassandra.datacenters 0) -}}
-{{- $medusaImage := (printf "%s:%s" .Values.medusa.image.repository .Values.medusa.image.tag) -}}
+{{- $medusaImage := (printf "%s/%s:%s" .Values.cassandra.imageRegistry .Values.medusa.image.repository .Values.medusa.image.tag) -}}
 
 {{- if and (not .Values.cassandra.image)  (not (hasKey .Values.cassandra.versionImageMap .Values.cassandra.version)) -}}
   {{- fail (print .Values.cassandra.version " is not a supported Cassandra version") }}
@@ -26,6 +26,11 @@ spec:
   serverVersion: {{ .Values.cassandra.version | quote }}
   dockerImageRunsAsCassandra: true
   serverImage: {{ include "k8ssandra.cassandraImage" . }}
+  configBuilderImage: {{ .Values.cassandra.imageRegistry }}/{{ .Values.cassandra.configBuilderImage }}
+  systemLoggerImage: {{ .Values.cassandra.imageRegistry }}/{{ .Values.cassandra.systemLoggerImage }}
+  {{- if .Values.cassandra.serviceAccount }}
+  serviceAccount: {{ .Values.cassandra.serviceAccount }}
+  {{- end }}
   managementApiAuth:
     insecure: {}
   size: {{ $datacenter.size }}
@@ -106,7 +111,6 @@ spec:
 {{- if .Values.cassandra.tolerations }}
   tolerations: {{ toYaml .Values.cassandra.tolerations | nindent 4 }}
 {{- end }}
-  configBuilderImage: docker.io/datastax/cass-config-builder:1.0.4
   config:
   {{- /*
     configOverride is an undocumented property that is intended for advanced use cases like
@@ -172,7 +176,7 @@ spec:
       - name: server-config-init
      {{- if (or .Values.cassandra.auth.enabled .Values.reaper.enabled) }}
       - name: jmx-credentials
-        image: busybox
+        image: {{ .Values.cassandra.imageRegistry }}/library/busybox
         imagePullPolicy: IfNotPresent
         env:
         {{- if .Values.reaper.enabled }}

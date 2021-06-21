@@ -27,6 +27,19 @@ cassandra:
   #
   # image:
 
+  # -- The image registry to use for all images deployed as part of the
+  # CassandraDatacenter.
+  imageRegistry: docker.io
+
+  # -- The server-config-init init container image
+  configBuilderImage: datastax/cass-config-builder:1.0.4
+
+  # -- The server-system-logger container image
+  systemLoggerImage: k8ssandra/system-logger:9c4c3692
+
+  # -- The ServiceAccount to use for Cassandra pods
+  serviceAccount: ""
+
   # -- Cluster name defaults to release name when not specified.
   clusterName: ""
   # -- Authentication and authorization related settings.

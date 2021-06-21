@@ -363,5 +363,5 @@ Add garbage collection settings based on the following rules in the order listed
 Cassandra image (Management API image and version tag).
 */}}
 {{- define "k8ssandra.cassandraImage" -}}
-{{- default (get .Values.cassandra.versionImageMap .Values.cassandra.version) .Values.cassandra.image }}
+{{- (printf "%s/%s" .Values.cassandra.imageRegistry (default (get .Values.cassandra.versionImageMap .Values.cassandra.version) .Values.cassandra.image)) }}
 {{- end }}
