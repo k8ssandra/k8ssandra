@@ -220,6 +220,24 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			AssertContainerNamesMatch(cassdc, CassandraContainer)
 		})
 
+		It("using private registry and non-default images", func() {
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+				SetValues: map[string]string{
+					"cassandra.imageRegistry":      "localhost:5000",
+					"cassandra.configBuilderImage": "test/config-builder:5.0",
+					"cassandra.systemLoggerImage":  "test/system-logger:1.0",
+					"cassandra.serviceAccount":     "k8ssandra",
+				},
+			}
+
+			Expect(renderTemplate(options)).To(Succeed())
+			Expect(cassdc.Spec.ServerImage).To(Equal("localhost:5000/k8ssandra/cass-management-api:3.11.10-v0.1.25"))
+			Expect(cassdc.Spec.ConfigBuilderImage).To(Equal("localhost:5000/test/config-builder:5.0"))
+			Expect(cassdc.Spec.SystemLoggerImage).To(Equal("localhost:5000/test/system-logger:1.0"))
+			Expect(cassdc.Spec.ServiceAccount).To(Equal("k8ssandra"))
+		})
+
 		It("using multiple racks with no affinity labels", func() {
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
