@@ -25,5 +25,6 @@ spec:
                 fieldPath: metadata.namespace
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
         name: reaper-operator
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
         resources: {{- toYaml .Values.resources | nindent 10 }}
       terminationGracePeriodSeconds: 10
