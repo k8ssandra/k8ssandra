@@ -312,3 +312,8 @@ gzip = true
   name = "Events"
   weight = 90
   url = "https://k8ssandra.io/blog/category/events/"
+
+[[menu.second]]
+  name = "Brand"
+  weight = 95
+  url = "https://k8ssandra.io/brand-resources/"
