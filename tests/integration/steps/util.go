@@ -1,6 +1,7 @@
 package steps
 
 import (
+	"fmt"
 	cassdcapi "github.com/k8ssandra/cass-operator/operator/pkg/apis/cassandra/v1beta1"
 	"k8s.io/client-go/kubernetes/scheme"
 	ctrl "sigs.k8s.io/controller-runtime"
@@ -16,7 +17,11 @@ func InitTestClient() error {
 	if err != nil {
 		return err
 	}
-	testClient, err = client.New(ctrl.GetConfigOrDie(), client.Options{Scheme: scheme.Scheme})
+	config, err := ctrl.GetConfig()
+	if err != nil {
+		return fmt.Errorf("cannot contact Kind test cluster: %w", err)
+	}
+	testClient, err = client.New(config, client.Options{Scheme: scheme.Scheme})
 
 	return err
 }
