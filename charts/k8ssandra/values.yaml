@@ -308,6 +308,13 @@ stargate:
   image:
   # -- Sets the imagePullPolicy used by the Stargate pods
   imagePullPolicy: IfNotPresent
+
+  # -- The image for the wait-for-cassandra init container in the Stargate Deployment
+  waitForCassandraImage: docker.io/library/alpine:3.12.2
+
+  # -- The service account to use for Stargate pods
+  serviceAccount: default
+
   # -- Sets the heap size Stargate will use in megabytes. Memory request and
   # limit for the pod will be set to this value x2 and x4, respectively.
   heapMB: 256
