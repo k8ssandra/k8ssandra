@@ -555,8 +555,20 @@ func ExtractUsernamePassword(t *testing.T, secretName, namespace string) credent
 
 func runCassandraQueryAndGetOutput(t *testing.T, namespace, query string) string {
 	cqlCredentials := ExtractUsernamePassword(t, "k8ssandra-superuser", namespace)
-	// Get reaper service
-	output, _ := k8s.RunKubectlAndGetOutputE(t, getKubectlOptions(namespace), "exec", "-it", fmt.Sprintf("%s-%s-default-sts-0", releaseName, datacenterName), "--", "/opt/cassandra/bin/cqlsh", "--username", cqlCredentials.username, "--password", cqlCredentials.password, "-e", query)
+	output, _ := k8s.RunKubectlAndGetOutputE(
+		t,
+		getKubectlOptions(namespace),
+		"exec",
+		fmt.Sprintf("%s-%s-default-sts-0", releaseName, datacenterName),
+		"--",
+		"/opt/cassandra/bin/cqlsh",
+		"--username",
+		cqlCredentials.username,
+		"--password",
+		cqlCredentials.password,
+		"-e",
+		query,
+	)
 	return output
 }
 
