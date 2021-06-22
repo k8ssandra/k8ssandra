@@ -60,10 +60,10 @@ func shouldCleanupCluster(success bool) bool {
 func cleanupCluster(t *testing.T, namespace string, success bool) {
 	if shouldCleanupCluster(success) {
 		log.Println(Step("Cleaning up cluster"))
-		UninstallHelmRealeaseAndNamespace(t, "k8ssandra", namespace)
+		UninstallHelmReleaseAndNamespace(t, "k8ssandra", namespace)
 		WaitForCassandraDatacenterDeletion(t, namespace)
-		UninstallHelmRealeaseAndNamespace(t, "traefik", traefikNamespace)
-		UninstallHelmRealeaseAndNamespace(t, "minio", minioNamespace)
+		UninstallHelmReleaseAndNamespace(t, "traefik", traefikNamespace)
+		UninstallHelmReleaseAndNamespace(t, "minio", minioNamespace)
 	} else {
 		log.Println(Info("Not cleaning up cluster as requested"))
 	}
