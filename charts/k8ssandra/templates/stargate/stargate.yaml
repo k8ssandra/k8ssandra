@@ -30,7 +30,6 @@ spec:
       labels:
         app: {{ .Release.Name }}-{{ include "k8ssandra.datacenterName" . }}-stargate
     spec:
-      serviceAccountName: {{ .Values.stargate.serviceAccount }}
       initContainers:
           - name: wait-for-cassandra
             image: {{ .Values.stargate.waitForCassandraImage }}
