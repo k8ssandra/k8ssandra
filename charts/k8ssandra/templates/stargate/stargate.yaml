@@ -120,6 +120,9 @@ spec:
             timeoutSeconds: 10
             initialDelaySeconds: {{ .Values.stargate.readinessInitialDelaySeconds }}
             failureThreshold: 5
+      {{- if .Values.stargate.affinity }}
+      affinity: {{ toYaml .Values.stargate.affinity | nindent 8 }}
+      {{- end }}
       {{- if .Values.stargate.tolerations }}
       tolerations: {{ toYaml .Values.stargate.tolerations | nindent 6 }}
       {{- end }}

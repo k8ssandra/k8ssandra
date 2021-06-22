@@ -20,5 +20,6 @@ and date `## vX.Y.Z - YYYY-MM-DD` and create a new placeholder section for  `unr
 
 * [CHANGE] Upgrade from Reaper 2.2.2 to 2.2.5
 * [CHANGE] #812 Integrate Fossa component/license scanning
+* [FEATURE] #617 Make affinity configurable for Stargate
 * [BUGFIX] #853 Fix property name in scaling docs
 * [BUGFIX] #412 Stargate metrics don't show up in the dashboards

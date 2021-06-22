@@ -389,6 +389,10 @@ stargate:
         #     - example.com
         #   # -- Secret containing the TLS certificate and key for the listener
         #   secretName: tls-secret
+  # -- Affinity to apply to the Stargate pods. See
+  # https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#affinity-and-anti-affinity
+  # for background
+  affinity: {}
   # -- Tolerations to apply to the Stargate pods. See
   # https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/ for background.
   tolerations: []

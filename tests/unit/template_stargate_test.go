@@ -399,5 +399,35 @@ var _ = Describe("Verify Stargate template", func() {
 				},
 			))
 		})
+
+		It("using affinity", func() {
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+				ValuesFiles:    []string{"./testdata/affinity-values.yaml"},
+			}
+
+			Expect(renderTemplate(options)).To(Succeed())
+
+			expected := &corev1.Affinity{
+				NodeAffinity: &corev1.NodeAffinity{
+					RequiredDuringSchedulingIgnoredDuringExecution: &corev1.NodeSelector{
+						NodeSelectorTerms: []corev1.NodeSelectorTerm{
+							{
+								MatchExpressions: []corev1.NodeSelectorRequirement{
+									{
+										Key:      "kubernetes.io/e2e-az-name",
+										Operator: corev1.NodeSelectorOpIn,
+										Values:   []string{"e2e-az1", "e2e-az2"},
+									},
+								},
+							},
+						},
+					},
+				},
+			}
+
+			affinity := deployment.Spec.Template.Spec.Affinity
+			Expect(affinity).To(Equal(expected))
+		})
 	})
 })
