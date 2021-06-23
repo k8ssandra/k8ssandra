@@ -455,8 +455,12 @@ reaper:
     traefik:
       # -- Traefik entrypoint where traffic is sourced. See https://doc.traefik.io/traefik/routing/entrypoints/
       entrypoint: web
-      # -- Tolerations to apply to the Reaper pods. See
-      # https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/ for background.
+  # -- Affinity to apply to the Stargate pods. See
+  # https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#affinity-and-anti-affinity
+  # for background
+  affinity: { }
+  # -- Tolerations to apply to the Reaper pods. See
+  # https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/ for background.
   tolerations: []
 medusa:
   # -- Enable Medusa resources as part of this release. If enabled,
