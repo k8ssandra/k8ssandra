@@ -284,7 +284,7 @@ stargate:
   enabled: true
   # -- version of Stargate to deploy. This is used in conjunction with cassandra.version to select the Stargate container image.
   # If stargate.image is set, this value has no effect.
-  version: "1.0.18"
+  version: ""
   # -- Number of Stargate instances to deploy. This value may be scaled independently of
   # Cassandra cluster nodes. Each instance handles API and coordination tasks
   # for inbound queries.
@@ -522,7 +522,6 @@ medusa:
 # The volume can be mounted to pod with different access modes. The available modes depend on the provider and
 # how they're exported in the PersistentVolume definition. The default for these mounts is ReadWriteOnce.
 # accessModes: []
-
 monitoring:
   grafana:
     # -- Enables the creation of configmaps containing Grafana dashboards. If
