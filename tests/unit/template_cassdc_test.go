@@ -1385,7 +1385,7 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			Expect(renderTemplate(options)).To(Succeed())
 
 			Expect(cassdc.Spec.ServerVersion).To(Equal(version))
-			Expect(cassdc.Spec.ServerImage).To(Equal("docker.io/" + image))
+			Expect(cassdc.Spec.ServerImage).To(Equal(image))
 		})
 	})
 
