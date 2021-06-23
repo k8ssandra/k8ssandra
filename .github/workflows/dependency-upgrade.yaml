@@ -17,7 +17,7 @@ jobs:
         include:
           - dependency: Stargate
             version_path: ".stargate.version"
-            docker_hub_url: "https://registry.hub.docker.com/v2/repositories/stargateio/stargate-3_11/tags?page_size=1"
+            docker_hub_url: "https://registry.hub.docker.com/v2/repositories/stargateio/stargate-3_11/tags?page_size=25"
           - dependency: Medusa
             version_path: ".medusa.image.tag"
             docker_hub_url: "https://registry.hub.docker.com/v2/repositories/k8ssandra/medusa/tags?page_size=25"
