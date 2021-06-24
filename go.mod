@@ -3,6 +3,7 @@ module github.com/k8ssandra/k8ssandra
 go 1.15
 
 require (
+	github.com/Masterminds/sprig/v3 v3.2.2
 	github.com/go-resty/resty/v2 v2.1.1-0.20191201195748-d7b97669fe48
 	github.com/google/uuid v1.2.0
 	github.com/gruntwork-io/terratest v0.30.15

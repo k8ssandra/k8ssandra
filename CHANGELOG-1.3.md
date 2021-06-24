@@ -23,5 +23,6 @@ and date `## vX.Y.Z - YYYY-MM-DD` and create a new placeholder section for  `unr
 * [CHANGE] #905 Upgrade medusa-operator to v0.3.3
 * [FEATURE] #617 Make affinity configurable for Stargate
 * [FEATURE] #847 Make affinity configurable for Reaper
+* [ENHANCEMENT] #29 Detect IEC formatted c* heap.size and heap.newGenSize; return error identifying issue  
 * [BUGFIX] #853 Fix property name in scaling docs
 * [BUGFIX] #412 Stargate metrics don't show up in the dashboards

@@ -117,24 +117,41 @@ Return the ingress host that should be used for Stargate's Cassandra/CQL interfa
 
 {{/*
 Create the jvm options based on heap properties specified.
+Expecting that c* heap.size and heap.newGenSize are NOT in IEC format.
 */}}
 {{- define "k8ssandra.configureJvmHeap" -}}
 {{- $datacenter := (index .Values.cassandra.datacenters 0) -}}
 {{- if $datacenter.heap }}
   {{- if $datacenter.heap.size }}
-      initial_heap_size: {{ $datacenter.heap.size }}
-      max_heap_size: {{ $datacenter.heap.size }}
+      {{- if (regexMatch "^(([0]\\.\\d*)+|(^[1-9]\\d*)+(\\.\\d+)?)(?i)(k|m|g|e|p|t){1}$" (print $datacenter.heap.size) ) }}
+        {{- nindent 6 (print "initial_heap_size: " $datacenter.heap.size) }}
+        {{- nindent 6 (print "max_heap_size: " $datacenter.heap.size) }}
+      {{- else }}
+        {{- fail "Specify datacenter.heap.size using one of these suffixes: E, P, T, G, M, K. Format: <NUMBER>[.<NUMBER>]<SUFFIX>" }}
+      {{- end }}
   {{- end }}
   {{- if $datacenter.heap.newGenSize }}
-      heap_size_young_generation: {{ $datacenter.heap.newGenSize }}
+      {{- if (regexMatch "^(([0]\\.\\d*)+|(^[1-9]\\d*)+(\\.\\d+)?)(?i)(k|m|g|e|p|t){1}$" (print $datacenter.heap.newGenSize) ) }}
+        {{- nindent 6 (print "heap_size_young_generation: " $datacenter.heap.newGenSize) }}
+      {{- else }}
+        {{- fail "Specify datacenter.heap.newGenSize using one of these suffixes: E, P, T, G, M, K. Format: <NUMBER>[.<NUMBER>]<SUFFIX>" }}
+      {{- end }}
   {{- end }}
 {{- else if .Values.cassandra.heap }}
-  {{- if .Values.cassandra.heap.size  }}
-      initial_heap_size: {{ .Values.cassandra.heap.size }}
-      max_heap_size: {{ .Values.cassandra.heap.size }}
+  {{- if .Values.cassandra.heap.size }}
+    {{- if (regexMatch "^(([0]\\.\\d*)+|(^[1-9]\\d*)+(\\.\\d+)?)(?i)(k|m|g|e|p|t){1}$" (print .Values.cassandra.heap.size)) }}
+      {{- nindent 6 (print "initial_heap_size: " .Values.cassandra.heap.size) }}
+      {{- nindent 6 (print "max_heap_size: " .Values.cassandra.heap.size) }}
+    {{- else }}
+      {{- fail "Specify cassandra.heap.size using one of these suffixes: E, P, T, G, M, K. Format: <NUMBER>[.<NUMBER>]<SUFFIX>" }}
+    {{- end }}
   {{- end }}
-  {{- if  .Values.cassandra.heap.newGenSize }}
-      heap_size_young_generation: {{ .Values.cassandra.heap.newGenSize }}
+  {{- if .Values.cassandra.heap.newGenSize }}
+     {{- if (regexMatch "^(([0]\\.\\d*)+|(^[1-9]\\d*)+(\\.\\d+)?)(?i)(k|m|g|e|p|t){1}$" (print .Values.cassandra.heap.newGenSize)) }}
+        {{- nindent 6 (print "heap_size_young_generation: " .Values.cassandra.heap.newGenSize) }}
+     {{- else }}
+        {{- fail "Specify cassandra.heap.newGenSize using one of these suffixes: E, P, T, G, M, K. Format: <NUMBER>[.<NUMBER>]<SUFFIX>" }}
+     {{- end }}
   {{- end }}
 {{- end }}
 {{- end }}
