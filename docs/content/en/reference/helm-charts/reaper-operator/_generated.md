@@ -1,6 +1,6 @@
 
 
-![Version: 0.30.0](https://img.shields.io/badge/Version-0.30.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.1.0](https://img.shields.io/badge/AppVersion-0.1.0-informational?style=flat-square)
+![Version: 0.31.0](https://img.shields.io/badge/Version-0.31.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.1.0](https://img.shields.io/badge/AppVersion-0.1.0-informational?style=flat-square)
 
 ## Maintainers
 
@@ -17,7 +17,7 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| file://../k8ssandra-common | k8ssandra-common | 0.28.1 |
+| file://../k8ssandra-common | k8ssandra-common | 0.28.3 |
 
 ## Values
 
@@ -27,9 +27,10 @@
 | fullnameOverride | string | `""` | Replaces the value used for metadata.name in objects created by this chart. The default value has the form releaseName-chartName. |
 | commonLabels | object | `{}` | Labels to be added to all deployed resources |
 | replicaCount | int | `1` | Sets the number of reaper-operator pods. |
-| image.repository | string | `"docker.io/k8ssandra/reaper-operator"` | Container repository where the reaper-operator resides |
+| image.registry | string | `"docker.io"` |  |
+| image.repository | string | `"k8ssandra/reaper-operator"` | Container repository where the reaper-operator resides |
 | image.pullPolicy | string | `"IfNotPresent"` | Pull policy for the operator container |
-| image.tag | string | `"v0.3.1"` | Tag of the reaper-operator image to pull from image.repository |
+| image.tag | string | `"v0.3.2"` | Tag of the reaper-operator image to pull from image.repository |
 | imagePullSecrets | list | `[]` | References to secrets to use when pulling images. ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/ |
 | serviceAccount.annotations | object | `{}` | Annotations for the reaper-operator service account. |
 | podAnnotations | object | `{}` | Annotations for the reaper-operator pod. |
