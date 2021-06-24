@@ -16,8 +16,8 @@ spec:
       serviceAccountName: {{ .Release.Name }}-cleaner-k8ssandra
       containers:
         - name: cleaner-job-k8ssandra
-          image: {{ .Values.cleaner.image }}
-          imagePullPolicy: IfNotPresent
+          image: {{ include "k8ssandra-common.flattenedImage" .Values.cleaner.image }}
+          imagePullPolicy: {{ .Values.cleaner.image.pullPolicy }}
           env:
             - name: POD_NAMESPACE
               valueFrom:

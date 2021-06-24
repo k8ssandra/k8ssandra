@@ -8,6 +8,7 @@ cassandra:
   #    - 3.11.10
   #    - 4.0.0
   version: "3.11.10"
+
   # -- Specifies the image to use for a particular Cassandra version. Exercise
   # care and caution with changing these values! cass-operator is not designed to work with
   # arbitrary Cassandra images. It expects the cassandra container to be running
@@ -25,17 +26,31 @@ cassandra:
   # you set the image directly, the version mapping check is skipped. Note that you are
   # still constrained to the versions supported by cass-operator.
   #
-  # image:
+  image: {}
+  #   registry:
+  #   repository:
+  #   tag:
+  #   pullPolicy: IfNotPresent
 
   # -- The image registry to use for all images deployed as part of the
   # CassandraDatacenter.
   imageRegistry: docker.io
 
-  # -- The server-config-init init container image
-  configBuilderImage: datastax/cass-config-builder:1.0.4
+  # -- The server-config-init init container
+  configBuilder:
+    image:
+      registry: docker.io
+      repository: datastax/cass-config-builder
+      tag: 1.0.4
+      pullPolicy: IfNotPresent
 
-  # -- The server-system-logger container image
-  systemLoggerImage: k8ssandra/system-logger:9c4c3692
+  # -- The jmx-credential init container that configures JMX credentials.
+  jmxCredentialsConfig:
+    image:
+      registry: docker.io
+      repository: busybox
+      tag: 1.33.1
+      pullPolicy: IfNotPresent
 
   # -- The ServiceAccount to use for Cassandra pods
   serviceAccount: ""
@@ -102,6 +117,12 @@ cassandra:
     # -- Set to false if you do not want to deploy the server-system-logger
     # container.
     enabled: true
+    # -- The server-system-logger container image
+    image:
+      registry: docker.io
+      repository: k8ssandra/system-logger
+      tag: 9c4c3692
+      pullPolicy: IfNotPresent
   # -- Optional cluster-level heap configuration, can be overridden at `datacenters` level.
   # Options are commented out for reference. Note that k8ssandra does not
   # automatically apply default values for heap size. It instead defers to
@@ -298,19 +319,28 @@ stargate:
   # -- version of Stargate to deploy. This is used in conjunction with cassandra.version to select the Stargate container image.
   # If stargate.image is set, this value has no effect.
   version: "1.0.18"
+
+  # -- Sets the Stargate container image. This value must be compatible
+  # with the value provided for stargate.clusterVersion. If left blank (recommended),
+  # k8ssandra will derive an appropriate image based on cassandra.clusterVersion.
+  image: {}
+  #   registry: docker.io
+  #   repository: busybox
+  #   tag: 1.33.1
+  #   pullPolicy: IfNotPresent
+
   # -- Number of Stargate instances to deploy. This value may be scaled independently of
   # Cassandra cluster nodes. Each instance handles API and coordination tasks
   # for inbound queries.
   replicas: 1
-  # -- Sets the Stargate container image. This value must be compatible
-  # with the value provided for stargate.clusterVersion. If left blank (recommended),
-  # k8ssandra will derive an appropriate image based on cassandra.clusterVersion.
-  image:
-  # -- Sets the imagePullPolicy used by the Stargate pods
-  imagePullPolicy: IfNotPresent
 
-  # -- The image for the wait-for-cassandra init container in the Stargate Deployment
-  waitForCassandraImage: docker.io/library/alpine:3.12.2
+  # -- The wait-for-cassandra init container in the Stargate Deployment
+  waitForCassandra:
+    image:
+      registry: docker.io
+      repository: alpine
+      tag: 3.12.2
+      pullPolicy: IfNotPresent
 
   # -- The service account to use for Stargate pods
   serviceAccount: default
@@ -434,10 +464,10 @@ reaper:
   # the Reaper image. Reaper is deployed and managed by reaper-operator. You
   # will need to make sure that the image is compatible with reaper-operator.
   image:
-    # -- Specifies the container repository for cassandra-reaper
-    repository: docker.io/thelastpickle/cassandra-reaper
-    # -- Tag of an image within the specified repository
+    reigistry: docker.io
+    repository: thelastpickle/cassandra-reaper
     tag: 2.2.5
+    pullPolicy: IfNotPresent
   # -- Configures the Cassandra user used by Reaper when authentication is
   # enabled. If neither cassandraUser.secret nor cassandraUser.username are
   # set, then a Cassandra user and a secret with the user's credentials will
@@ -489,11 +519,9 @@ medusa:
   # Configures the Medusa image which is built from
   # https://github.com/thelastpickle/cassandra-medusa/tree/master/k8s.
   image:
-    # -- Specifies the container repository for Medusa
-    repository: docker.io/k8ssandra/medusa
-    # -- Tag of an image within the specified repository
+    registry: docker.io
+    repository: k8ssandra/medusa
     tag: 0.10.1
-    # -- The image pull policy
     pullPolicy: IfNotPresent
   # -- Configures the Cassandra user used by Medusa when authentication is
   # enabled. If neither `cassandraUser.secret` nor `cassandraUser.username` are
@@ -574,11 +602,18 @@ monitoring:
 # deployment could be deleted before the CassandraDatacenter. The cleaner
 # ensures that the CassandraDatacenter is deleted before cass-operator.
 cleaner:
-  image: k8ssandra/k8ssandra-tools:latest
+  image:
+    registry: docker.io
+    repository: k8ssandra/k8ssandra-tools
+    tag: latest
+    pullPolicy: IfNotPresent
 # k8ssandra-client provides CLI utilities, but also certain functions such as 
 # upgradecrds that allow modifying the running instances
 client:
-  image: k8ssandra/k8ssandra-tools:latest
+  image:
+    registry: docker.io
+    repository: k8ssandra/k8ssandra-tools
+    tag: latest
 cass-operator:
   # -- Enables the cass-operator as part of this release. If this setting is
   # disabled no Cassandra resources will be deployed.

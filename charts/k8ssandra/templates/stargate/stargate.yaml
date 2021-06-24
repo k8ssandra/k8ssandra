@@ -9,7 +9,7 @@
     {{- $computedClusterVersion = "4.0" }}
     {{- $computedImage = printf "stargateio/stargate-4_0:v%s" $stargateVersion }}
   {{- end }}
-  {{- $image := default $computedImage .Values.stargate.image -}}
+  {{- $image := default $computedImage (include "k8ssandra-common.flattenedImage" .Values.stargate.image) -}}
   {{- $clusterVersion := default $computedClusterVersion .Values.stargate.clusterVersion -}}
   {{- $heapMB := required "stargate.heapMB is required" .Values.stargate.heapMB -}}
 apiVersion: apps/v1
@@ -32,8 +32,8 @@ spec:
     spec:
       initContainers:
           - name: wait-for-cassandra
-            image: {{ .Values.stargate.waitForCassandraImage }}
-            imagePullPolicy: IfNotPresent
+            image: {{ include "k8ssandra-common.flattenedImage" .Values.stargate.waitForCassandra.image }}
+            imagePullPolicy: {{ .Values.stargate.waitForCassandra.image.pullPolicy }}
             command:
               - sh
             args:
@@ -47,7 +47,7 @@ spec:
       containers:
         - name: {{ .Release.Name }}-{{ include "k8ssandra.datacenterName" . }}-stargate
           image: {{ $image }}
-          imagePullPolicy: {{ .Values.stargate.imagePullPolicy }}
+          imagePullPolicy: {{ default "IfNotPresent" .Values.stargate.image.pullPolicy }}
           ports:
             - name: graphql
               containerPort: 8080

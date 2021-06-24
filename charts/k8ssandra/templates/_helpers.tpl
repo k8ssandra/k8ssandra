@@ -364,8 +364,8 @@ Cassandra image (Management API image and version tag).
 */}}
 {{- define "k8ssandra.cassandraImage" -}}
 {{- if .Values.cassandra.image }}
-{{- .Values.cassandra.image -}}
+{{- include "k8ssandra-common.flattenedImage" .Values.cassandra.image -}}
 {{ else }}
-{{- (printf "%s/%s" .Values.cassandra.imageRegistry (get .Values.cassandra.versionImageMap .Values.cassandra.version)) }}
+{{- (printf (get .Values.cassandra.versionImageMap .Values.cassandra.version)) }}
 {{- end }}
 {{- end }}

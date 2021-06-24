@@ -24,6 +24,7 @@ admissionWebhooks:
 
 # Sets properties for the cass-operator container
 image:
+  registry: docker.io
   # -- Docker repository for cass-operator
   repository: k8ssandra/cass-operator
 

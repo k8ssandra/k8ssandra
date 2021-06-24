@@ -57,6 +57,18 @@ imagePullSecrets:
 {{- end }}
 {{- end }}
 
+{{- define "k8ssandra-common.flattenedImage" -}}
+{{- if (not .repository) }}
+{{- fail (print "The repository property must be defined and in scope for the flattenedImage template.") }}
+{{- end }}
+
+{{- $registry := default "docker.io" .registry }}
+{{- $repository := .repository }}
+{{- $tag := default "latest" .tag }}
+
+{{- printf "%s/%s:%s" $registry $repository $tag }}
+{{- end }}
+
 {{/*
 Generate a password for use in a secret. The password is a random alphanumeric 20 character
 string that is base 64 encoded.

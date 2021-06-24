@@ -5,7 +5,7 @@ metadata:
   name: {{ .Release.Name }}-reaper
   labels: {{ include "k8ssandra.labels" . | indent 4 }}
 spec:
-  image: {{ .Values.reaper.image.repository }}:{{ .Values.reaper.image.tag }}
+  image: {{ include "k8ssandra-common.flattenedImage" .Values.reaper.image }}
   serverConfig:
     autoScheduling:
       enabled: {{ .Values.reaper.autoschedule }}

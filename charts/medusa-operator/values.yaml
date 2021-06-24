@@ -13,8 +13,9 @@ commonLabels: {}
 replicaCount: 1
 
 image:
+  registry: docker.io
   # -- Container repository where the medusa-operator resides
-  repository: docker.io/k8ssandra/medusa-operator
+  repository: k8ssandra/medusa-operator
 
   # -- Pull policy for the operator container
   pullPolicy: IfNotPresent
