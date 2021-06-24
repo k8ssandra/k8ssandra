@@ -25,6 +25,9 @@ spec:
       replication:
         networkTopologyStrategy:
           {{ include "k8ssandra.datacenterName" . }}: {{ min (index .Values.cassandra.datacenters 0).size 3}}
+  {{- if .Values.reaper.affinity }}
+  affinity: {{ toYaml .Values.reaper.affinity | nindent 4 }}
+  {{- end }}
   {{- if .Values.reaper.tolerations }}
   tolerations: {{ toYaml .Values.reaper.tolerations | nindent 4 }}
   {{- end }}
