@@ -143,15 +143,17 @@ var _ = Describe("Verify Stargate template", func() {
 		It("using custom image and clusterVersion", func() {
 			// This combination of values makes no real sense and would not work
 			// but this tests that the defaults are avoided when a specific value is provided
-			image := "stargateio/stargate-4_0:v1.0.5"
+			repo := "stargateio/stargate-4_0"
+			tag := "v1.0.5"
 			clusterVersion := "3.0"
 
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
 				SetValues: map[string]string{
-					"stargate.enabled":        "true",
-					"stargate.image":          image,
-					"stargate.clusterVersion": clusterVersion,
+					"stargate.enabled":          "true",
+					"stargate.image.repository": repo,
+					"stargate.image.tag":        tag,
+					"stargate.clusterVersion":   clusterVersion,
 				},
 			}
 
@@ -159,7 +161,7 @@ var _ = Describe("Verify Stargate template", func() {
 			templateSpec := deployment.Spec.Template.Spec
 			Expect(len(templateSpec.Containers)).To(Equal(1))
 			container := templateSpec.Containers[0]
-			Expect(container.Image).To(Equal(image))
+			Expect(container.Image).To(Equal("docker.io/" + repo + ":" + tag))
 			clusterVersionEnv := kubeapi.FindEnvVarByName(container, "CLUSTER_VERSION")
 			Expect(clusterVersionEnv.Value).To(Equal(clusterVersion))
 		})
@@ -311,20 +313,22 @@ var _ = Describe("Verify Stargate template", func() {
 		})
 
 		It("changing container image and imagePullPolicy", func() {
-			alternateImage := "stargateio/stargate-3_11:v1.0.3"
+			repository := "stargateio/stargate-3_11"
+			tag := "v1.0.3"
 			alternatePullPolicy := "Always"
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
 				SetValues: map[string]string{
-					"stargate.enabled":         "true",
-					"stargate.image":           alternateImage,
-					"stargate.imagePullPolicy": alternatePullPolicy,
+					"stargate.enabled":          "true",
+					"stargate.image.repository": repository,
+					"stargate.image.tag":        tag,
+					"stargate.image.pullPolicy": alternatePullPolicy,
 				},
 			}
 
 			Expect(renderTemplate(options)).To(Succeed())
 			container := deployment.Spec.Template.Spec.Containers[0]
-			Expect(container.Image).To(Equal(alternateImage))
+			Expect(container.Image).To(Equal("docker.io/" + repository + ":" + tag))
 			Expect(string(container.ImagePullPolicy)).To(Equal(alternatePullPolicy))
 		})
 

@@ -58,6 +58,7 @@ imagePullSecrets:
 {{- end }}
 
 {{- define "k8ssandra-common.flattenedImage" -}}
+{{- if (not (empty .)) }}
 {{- if (not .repository) }}
 {{- fail (print "The repository property must be defined and in scope for the flattenedImage template.") }}
 {{- end }}
@@ -67,6 +68,7 @@ imagePullSecrets:
 {{- $tag := default "latest" .tag }}
 
 {{- printf "%s/%s:%s" $registry $repository $tag }}
+{{- end }}
 {{- end }}
 
 {{/*
