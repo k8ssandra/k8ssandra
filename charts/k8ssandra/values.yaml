@@ -455,7 +455,7 @@ reaper:
     traefik:
       # -- Traefik entrypoint where traffic is sourced. See https://doc.traefik.io/traefik/routing/entrypoints/
       entrypoint: web
-  # -- Affinity to apply to the Stargate pods. See
+  # -- Affinity to apply to the Reaper pods. See
   # https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#affinity-and-anti-affinity
   # for background
   affinity: { }
