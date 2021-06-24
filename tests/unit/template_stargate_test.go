@@ -161,7 +161,7 @@ var _ = Describe("Verify Stargate template", func() {
 			templateSpec := deployment.Spec.Template.Spec
 			Expect(len(templateSpec.Containers)).To(Equal(1))
 			container := templateSpec.Containers[0]
-			Expect(container.Image).To(Equal("docker.io/" + repo + ":" + tag))
+			Expect(container.Image).To(Equal(DefaultRegistry + "/" + repo + ":" + tag))
 			clusterVersionEnv := kubeapi.FindEnvVarByName(container, "CLUSTER_VERSION")
 			Expect(clusterVersionEnv.Value).To(Equal(clusterVersion))
 		})
@@ -328,7 +328,7 @@ var _ = Describe("Verify Stargate template", func() {
 
 			Expect(renderTemplate(options)).To(Succeed())
 			container := deployment.Spec.Template.Spec.Containers[0]
-			Expect(container.Image).To(Equal("docker.io/" + repository + ":" + tag))
+			Expect(container.Image).To(Equal(DefaultRegistry + "/" + repository + ":" + tag))
 			Expect(string(container.ImagePullPolicy)).To(Equal(alternatePullPolicy))
 		})
 

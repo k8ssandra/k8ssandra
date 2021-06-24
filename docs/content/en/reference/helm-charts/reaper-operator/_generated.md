@@ -27,7 +27,7 @@
 | fullnameOverride | string | `""` | Replaces the value used for metadata.name in objects created by this chart. The default value has the form releaseName-chartName. |
 | commonLabels | object | `{}` | Labels to be added to all deployed resources |
 | replicaCount | int | `1` | Sets the number of reaper-operator pods. |
-| image.registry | string | `"docker.io"` |  |
+| image.registry | string | `"docker.io"` | Container registry containing the repository where the image resides |
 | image.repository | string | `"k8ssandra/reaper-operator"` | Container repository where the reaper-operator resides |
 | image.pullPolicy | string | `"IfNotPresent"` | Pull policy for the operator container |
 | image.tag | string | `"v0.3.2"` | Tag of the reaper-operator image to pull from image.repository |

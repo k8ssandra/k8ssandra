@@ -13,6 +13,7 @@ commonLabels: {}
 replicaCount: 1
 
 image:
+  # -- Container registry containing the repository where the image resides
   registry: docker.io
   # -- Container repository where the medusa-operator resides
   repository: k8ssandra/medusa-operator

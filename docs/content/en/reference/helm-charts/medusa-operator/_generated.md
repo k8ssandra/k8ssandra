@@ -27,7 +27,7 @@
 | fullnameOverride | string | `""` | Replaces the value used for metadata.name in objects created by this chart. The default value has the form releaseName-chartName. |
 | commonLabels | object | `{}` | Labels to be added to all deployed resources |
 | replicaCount | int | `1` | Sets the number of medusa-operator pods. |
-| image.registry | string | `"docker.io"` |  |
+| image.registry | string | `"docker.io"` | Container registry containing the repository where the image resides |
 | image.repository | string | `"k8ssandra/medusa-operator"` | Container repository where the medusa-operator resides |
 | image.pullPolicy | string | `"IfNotPresent"` | Pull policy for the operator container |
 | image.tag | string | `"v0.3.3"` | Tag of the medusa-operator image to pull from image.repository |
