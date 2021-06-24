@@ -614,6 +614,7 @@ client:
     registry: docker.io
     repository: k8ssandra/k8ssandra-tools
     tag: latest
+    pullPolicy: latest
 cass-operator:
   # -- Enables the cass-operator as part of this release. If this setting is
   # disabled no Cassandra resources will be deployed.
