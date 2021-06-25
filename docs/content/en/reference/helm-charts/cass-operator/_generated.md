@@ -31,7 +31,7 @@
 | clusterScoped | bool | `false` | Determines whether cass-operator only watch and manages CassandraDatacenters in the same namespace in which the operator is deployed or if watches and manages CassandraDatacenters across all namespaces. |
 | admissionWebhooks | object | `{"enabled":false}` | Configures admission webhooks deployed with cass-operator. |
 | admissionWebhooks.enabled | bool | `false` | Turns the admission webhooks on or off |
-| image.registry | string | `"docker.io"` |  |
+| image.registry | string | `"docker.io"` | Container registry containing the repository where the image resides |
 | image.repository | string | `"k8ssandra/cass-operator"` | Docker repository for cass-operator |
 | image.pullPolicy | string | `"IfNotPresent"` | Pull policy for the operator container |
 | image.tag | string | `"v1.7.1"` | Tag of the cass-operator image to pull from image.repository |
