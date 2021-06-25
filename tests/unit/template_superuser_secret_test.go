@@ -1,8 +1,9 @@
 package unit_test
 
 import (
-	helmUtils "github.com/k8ssandra/k8ssandra/tests/unit/utils/helm"
 	"path/filepath"
+
+	helmUtils "github.com/k8ssandra/k8ssandra/tests/unit/utils/helm"
 
 	"github.com/gruntwork-io/terratest/modules/helm"
 	. "github.com/onsi/ginkgo"
@@ -83,5 +84,22 @@ var _ = Describe("Verify superuser secret template", func() {
 			Expect(err.Error()).To(ContainSubstring("could not find template"))
 		})
 
+		Context("generating superuser secret", func() {
+			It("with a cluster name containing disallowed chars", func() {
+				clusterName := "secret_test with_funny_characters"
+				expectedUsername := "secret-test-with-funny-characters-superuser"
+				options := &helm.Options{
+					KubectlOptions: defaultKubeCtlOptions,
+					SetValues: map[string]string{
+						"cassandra.clusterName": clusterName,
+					},
+				}
+
+				Expect(renderTemplate(options)).To(Succeed())
+				Expect(secret.Name).To(Equal(expectedUsername))
+				Expect(string(secret.Data["username"])).To(Equal(expectedUsername))
+				Expect(len(secret.Data["password"])).To(Equal(20))
+			})
+		})
 	})
 })

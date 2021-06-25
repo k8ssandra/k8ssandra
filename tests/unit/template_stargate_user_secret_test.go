@@ -87,5 +87,23 @@ var _ = Describe("Verify stargate user secret template", func() {
 			Expect(err).ToNot(BeNil())
 			Expect(err.Error()).To(ContainSubstring("could not find template"))
 		})
+
+		It("using disallowed chars in cluster name for stargate user secret", func() {
+			clusterName := "secret_test with_funny_chars"
+			expectedSecretName := "secret-test-with-funny-chars-stargate"
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+				SetValues: map[string]string{
+					"cassandra.clusterName":  clusterName,
+					"cassandra.auth.enabled": "true",
+					"stargate.enabled":       "true",
+				},
+			}
+
+			Expect(renderTemplate(options)).To(Succeed())
+			Expect(secret.Name).To(Equal(expectedSecretName))
+			Expect(string(secret.Data["username"])).To(Equal("stargate"))
+			Expect(len(secret.Data["password"])).To(Equal(20))
+		})
 	})
 })

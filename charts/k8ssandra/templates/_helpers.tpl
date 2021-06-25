@@ -190,7 +190,7 @@ Gets the superuser secret name.
 {{- if .Values.cassandra.auth.superuser.secret -}}
 {{ .Values.cassandra.auth.superuser.secret }}
 {{- else }}
-{{- include "k8ssandra.clusterName" . }}-superuser
+{{- include "k8ssandra.clusterName" . | replace " " "-" | replace "_" "-" }}-superuser
 {{- end }}
 {{- end }}
 
@@ -201,7 +201,7 @@ Gets the reaper user secret name.
 {{- if .Values.reaper.cassandraUser.secret -}}
 {{ .Values.reaper.cassandraUser.secret }}
 {{- else }}
-{{- include "k8ssandra.clusterName" . }}-reaper
+{{- include "k8ssandra.clusterName" . | replace " " "-" | replace "_" "-" }}-reaper
 {{- end }}
 {{- end }}
 
@@ -212,7 +212,7 @@ Gets the reaper jmx user secret name.
 {{- if .Values.reaper.jmx.secret -}}
 {{ .Values.reaper.jmx.secret }}
 {{- else }}
-{{- include "k8ssandra.clusterName" . }}-reaper-jmx
+{{- include "k8ssandra.clusterName" . | replace " " "-" | replace "_" "-" }}-reaper-jmx
 {{- end }}
 {{- end }}
 
@@ -223,7 +223,7 @@ Gets the medus user secret name.
 {{- if .Values.medusa.cassandraUser.secret -}}
 {{ .Values.medusa.cassandraUser.secret }}
 {{- else }}
-{{- include "k8ssandra.clusterName" . }}-medusa
+{{- include "k8ssandra.clusterName" . | replace " " "-" | replace "_" "-" }}-medusa
 {{- end }}
 {{- end }}
 
@@ -234,7 +234,7 @@ Gets the stargate user secret name.
 {{- if .Values.stargate.cassandraUser.secret -}}
 {{ .Values.stargate.cassandraUser.secret }}
 {{- else }}
-{{- include "k8ssandra.clusterName" . }}-stargate
+{{- include "k8ssandra.clusterName" . | replace " " "-" | replace "_" "-" }}-stargate
 {{- end }}
 {{- end }}
 
