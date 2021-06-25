@@ -1,0 +1,23 @@
+---
+name: K8s version test
+
+on:
+  schedule:
+    # Runs weekly on sundays at noon UTC (I guess)
+    - cron:  '0 12 * * 6'
+  workflow_dispatch:
+
+jobs:
+  run-integration-tests:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        k8s_version: ["v1.17.17", "v1.18.19", "v1.19.11", "v1.20.7"]
+    steps:
+      - name: Invoke integration tests
+        uses: benc-uk/workflow-dispatch@v1
+        with:
+          workflow: Integration Tests and Release
+          token: ${{ secrets.CREATE_PR_TOKEN }}
+          inputs: '{ "kubernetes_version": "${{ matrix.k8s_version }}" }'
