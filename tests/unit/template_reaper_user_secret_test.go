@@ -1,8 +1,9 @@
 package unit_test
 
 import (
-	helmUtils "github.com/k8ssandra/k8ssandra/tests/unit/utils/helm"
 	"path/filepath"
+
+	helmUtils "github.com/k8ssandra/k8ssandra/tests/unit/utils/helm"
 
 	"github.com/gruntwork-io/terratest/modules/helm"
 	. "github.com/onsi/ginkgo"
@@ -80,6 +81,22 @@ var _ = Describe("Verify reaper user secret template", func() {
 			err := renderTemplate(options)
 			Expect(err).ToNot(BeNil())
 			Expect(err.Error()).To(ContainSubstring("could not find template"))
+		})
+
+		It("using disallowed characters in cluster name for reaper user secret", func() {
+			clusterName := "secret_test with_space"
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+				SetValues: map[string]string{
+					"cassandra.clusterName":  clusterName,
+					"cassandra.auth.enabled": "true",
+				},
+			}
+
+			Expect(renderTemplate(options)).To(Succeed())
+			Expect(secret.Name).To(Equal("secret-test-with-space-reaper"))
+			Expect(string(secret.Data["username"])).To(Equal("reaper"))
+			Expect(len(secret.Data["password"])).To(Equal(20))
 		})
 	})
 })

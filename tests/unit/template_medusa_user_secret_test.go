@@ -1,8 +1,9 @@
 package unit_test
 
 import (
-	helmUtils "github.com/k8ssandra/k8ssandra/tests/unit/utils/helm"
 	"path/filepath"
+
+	helmUtils "github.com/k8ssandra/k8ssandra/tests/unit/utils/helm"
 
 	"github.com/gruntwork-io/terratest/modules/helm"
 	. "github.com/onsi/ginkgo"
@@ -82,6 +83,24 @@ var _ = Describe("Verify medusa user secret template", func() {
 			err := renderTemplate(options)
 			Expect(err).ToNot(BeNil())
 			Expect(err.Error()).To(ContainSubstring("could not find template"))
+		})
+
+		It("using disallowed chars in cluster name for medusa user secret", func() {
+			clusterName := "secret_test with_funny_chars"
+			expectedSecretName := "secret-test-with-funny-chars-medusa"
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+				SetValues: map[string]string{
+					"cassandra.clusterName":  clusterName,
+					"cassandra.auth.enabled": "true",
+					"medusa.enabled":         "true",
+				},
+			}
+
+			Expect(renderTemplate(options)).To(Succeed())
+			Expect(secret.Name).To(Equal(expectedSecretName))
+			Expect(string(secret.Data["username"])).To(Equal("medusa"))
+			Expect(len(secret.Data["password"])).To(Equal(20))
 		})
 	})
 })
