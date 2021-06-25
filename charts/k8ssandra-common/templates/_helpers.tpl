@@ -51,6 +51,24 @@ kind: ServiceAccount
 metadata:
   name: {{ include "k8ssandra-common.serviceAccountName" . }}
   labels: {{ include "k8ssandra-common.labels" . | indent 4 }}
+{{- if .Values.imagePullSecrets }}
+imagePullSecrets:
+{{ toYaml .Values.imagePullSecrets }}
+{{- end }}
+{{- end }}
+
+{{- define "k8ssandra-common.flattenedImage" -}}
+{{- if (not (empty .)) }}
+{{- if (not .repository) }}
+{{- fail (print "The repository property must be defined and in scope for the flattenedImage template.") }}
+{{- end }}
+
+{{- $registry := default "docker.io" .registry }}
+{{- $repository := .repository }}
+{{- $tag := default "latest" .tag }}
+
+{{- printf "%s/%s:%s" $registry $repository $tag }}
+{{- end }}
 {{- end }}
 
 {{/*

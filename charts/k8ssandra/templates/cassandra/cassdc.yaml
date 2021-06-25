@@ -26,6 +26,11 @@ spec:
   serverVersion: {{ .Values.cassandra.version | quote }}
   dockerImageRunsAsCassandra: true
   serverImage: {{ include "k8ssandra.cassandraImage" . }}
+  configBuilderImage: {{ include "k8ssandra-common.flattenedImage" .Values.cassandra.configBuilder.image }}
+  systemLoggerImage: {{ include "k8ssandra-common.flattenedImage" .Values.cassandra.loggingSidecar.image }}
+  {{- if .Values.cassandra.serviceAccount }}
+  serviceAccount: {{ .Values.cassandra.serviceAccount }}
+  {{- end }}
   managementApiAuth:
     insecure: {}
   size: {{ $datacenter.size }}
@@ -106,7 +111,6 @@ spec:
 {{- if .Values.cassandra.tolerations }}
   tolerations: {{ toYaml .Values.cassandra.tolerations | nindent 4 }}
 {{- end }}
-  configBuilderImage: docker.io/datastax/cass-config-builder:1.0.4
   config:
   {{- /*
     configOverride is an undocumented property that is intended for advanced use cases like
@@ -172,8 +176,8 @@ spec:
       - name: server-config-init
      {{- if (or .Values.cassandra.auth.enabled .Values.reaper.enabled) }}
       - name: jmx-credentials
-        image: busybox
-        imagePullPolicy: IfNotPresent
+        image: {{ include "k8ssandra-common.flattenedImage" .Values.cassandra.jmxCredentialsConfig.image }}
+        imagePullPolicy: {{ .Values.cassandra.jmxCredentialsConfig.image.pullPolicy }}
         env:
         {{- if .Values.reaper.enabled }}
           - name: REAPER_JMX_USERNAME
@@ -211,7 +215,7 @@ spec:
       {{- end }}
       {{- if .Values.medusa.enabled }}
       - name: medusa-restore
-        image: {{ $medusaImage }}
+        image: {{ include "k8ssandra-common.flattenedImage" .Values.medusa.image }}
         imagePullPolicy: {{ .Values.medusa.image.pullPolicy }}
         env:
           - name: MEDUSA_MODE
@@ -250,7 +254,7 @@ spec:
         {{- end }}
       {{- if .Values.medusa.enabled }}
       - name: medusa
-        image: {{ $medusaImage }}
+        image: {{ include "k8ssandra-common.flattenedImage" .Values.medusa.image }}
         imagePullPolicy: {{ .Values.medusa.image.pullPolicy }}
         ports:
           - containerPort: 50051

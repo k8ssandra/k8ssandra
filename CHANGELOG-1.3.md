@@ -24,6 +24,7 @@ and date `## vX.Y.Z - YYYY-MM-DD` and create a new placeholder section for  `unr
 * [FEATURE] #617 Make affinity configurable for Stargate
 * [FEATURE] #847 Make affinity configurable for Reaper
 * [ENHANCEMENT] #29 Detect IEC formatted c* heap.size and heap.newGenSize; return error identifying issue  
+* [ENHANCEMENT] #420 Add support for private registries
 * [BUGFIX] #853 Fix property name in scaling docs
 * [BUGFIX] #870 Hot replace disallowed characters in generated secret names
 * [BUGFIX] #412 Stargate metrics don't show up in the dashboards

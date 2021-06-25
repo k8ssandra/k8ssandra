@@ -17,8 +17,8 @@ spec:
       serviceAccountName: {{ .Release.Name }}-crd-upgrader-k8ssandra
       containers:
         - name: crd-upgrade-job-k8ssandra
-          image: {{ .Values.client.image }}
-          imagePullPolicy: IfNotPresent
+          image: {{ include "k8ssandra-common.flattenedImage" .Values.client.image }}
+          imagePullPolicy: {{ .Values.client.image.pullPolicy }}
           env:
             - name: POD_NAMESPACE
               valueFrom:

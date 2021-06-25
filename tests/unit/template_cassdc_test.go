@@ -220,6 +220,31 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			AssertContainerNamesMatch(cassdc, CassandraContainer)
 		})
 
+		It("using private registry and non-default images", func() {
+			registry := "localhost:5000"
+			configBuilderRepo := "test/config-builder"
+			configBuilderTag := "5.0"
+			systemLoggerRepo := "test/system-logger"
+			systemLoggerTag := "1.0"
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+				SetValues: map[string]string{
+					"cassandra.configBuilder.image.registry":    registry,
+					"cassandra.configBuilder.image.repository":  configBuilderRepo,
+					"cassandra.configBuilder.image.tag":         configBuilderTag,
+					"cassandra.loggingSidecar.image.registry":   registry,
+					"cassandra.loggingSidecar.image.repository": systemLoggerRepo,
+					"cassandra.loggingSidecar.image.tag":        systemLoggerTag,
+					"cassandra.serviceAccount":                  "k8ssandra",
+				},
+			}
+
+			Expect(renderTemplate(options)).To(Succeed())
+			Expect(cassdc.Spec.ConfigBuilderImage).To(Equal("localhost:5000/test/config-builder:5.0"))
+			Expect(cassdc.Spec.SystemLoggerImage).To(Equal("localhost:5000/test/system-logger:1.0"))
+			Expect(cassdc.Spec.ServiceAccount).To(Equal("k8ssandra"))
+		})
+
 		It("using multiple racks with no affinity labels", func() {
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
@@ -1355,19 +1380,19 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 
 		It("using 3.11.9 and a custom image", func() {
 			version := "3.11.9"
-			image := "my_cassandra:latest"
+			repository := "my_cassandra"
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
 				SetValues: map[string]string{
-					"cassandra.version": version,
-					"cassandra.image":   image,
+					"cassandra.version":          version,
+					"cassandra.image.repository": repository,
 				},
 			}
 
 			Expect(renderTemplate(options)).To(Succeed())
 
 			Expect(cassdc.Spec.ServerVersion).To(Equal(version))
-			Expect(cassdc.Spec.ServerImage).To(Equal(image))
+			Expect(cassdc.Spec.ServerImage).To(Equal(DefaultRegistry + "/" + repository + ":latest"))
 		})
 	})
 

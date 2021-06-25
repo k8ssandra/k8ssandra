@@ -13,8 +13,10 @@ commonLabels: {}
 replicaCount: 1
 
 image:
+  # -- Container registry containing the repository where the image resides
+  registry: docker.io
   # -- Container repository where the reaper-operator resides
-  repository: docker.io/k8ssandra/reaper-operator
+  repository: k8ssandra/reaper-operator
 
   # -- Pull policy for the operator container
   pullPolicy: IfNotPresent

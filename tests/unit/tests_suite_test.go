@@ -22,6 +22,7 @@ const (
 	HelmHookAnnotation          = "helm.sh/hook"
 	HelmHookPreDeleteAnnotation = "helm.sh/hook-delete-policy"
 	ReaperInstanceAnnotation    = "reaper.cassandra-reaper.io/instance"
+	DefaultRegistry             = "docker.io"
 )
 
 var (
