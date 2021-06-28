@@ -618,6 +618,11 @@ monitoring:
     # not have the ServiceMonitor CRD installed on your cluster, set this value
     # to `false`.
     provision_service_monitors: true
+    # -- Service Monitor Labels is use to add custom labels to Service Monitor.
+    # This would be helpful if you have a centralised Prometheus stack deployed
+    # and also benefitial if some other controller like Istio requires certain
+    # labels.
+    serviceMonitorLabels:
 # -- The cleaner is a pre-delete hook that that ensures objects with finalizers
 # get deleted. For example, cass-operator sets a finalizer on the
 # CassandraDatacenter. Kubernetes blocks deletion of an object until all of its

@@ -7,6 +7,9 @@ metadata:
     release: {{ .Release.Name }}
     app: {{ .Release.Name }}-{{ include "k8ssandra.datacenterName" . }}-stargate
 {{ include "k8ssandra.labels" . | indent 4 }}
+    {{- range $key, $val := .Values.monitoring.prometheus.serviceMonitorLabels }}
+    {{ $key }}: {{ $val }}
+    {{- end }}
 spec:
   selector:
     matchLabels:
