@@ -8,7 +8,6 @@ cassandra:
   #    - 3.11.10
   #    - 4.0.0
   version: "3.11.10"
-
   # -- Specifies the image to use for a particular Cassandra version. Exercise
   # care and caution with changing these values! cass-operator is not designed to work with
   # arbitrary Cassandra images. It expects the cassandra container to be running
@@ -36,7 +35,6 @@ cassandra:
   # -- Pull policy for the cassandra image
   #   pullPolicy: IfNotPresent
 
-
   # -- The server-config-init init container
   configBuilder:
     image:
@@ -48,7 +46,6 @@ cassandra:
       tag: 1.0.4
       # -- Pull policy for the config builder image
       pullPolicy: IfNotPresent
-
   # -- The jmx-credentials init container that configures JMX credentials.
   jmxCredentialsConfig:
     image:
@@ -60,10 +57,8 @@ cassandra:
       tag: 1.33.1
       # -- Pull policy for the jmx-credentials image
       pullPolicy: IfNotPresent
-
   # -- The ServiceAccount to use for Cassandra pods
   serviceAccount: ""
-
   # -- Cluster name defaults to release name when not specified.
   clusterName: ""
   # -- Authentication and authorization related settings.
@@ -332,7 +327,6 @@ stargate:
   # -- version of Stargate to deploy. This is used in conjunction with cassandra.version to select the Stargate container image.
   # If stargate.image is set, this value has no effect.
   version: "1.0.18"
-
   # -- Sets the Stargate container image. This value must be compatible
   # with the value provided for stargate.clusterVersion. If left blank (recommended),
   # k8ssandra will derive an appropriate image based on cassandra.clusterVersion.
@@ -346,7 +340,6 @@ stargate:
   # Cassandra cluster nodes. Each instance handles API and coordination tasks
   # for inbound queries.
   replicas: 1
-
   # -- The wait-for-cassandra init container in the Stargate Deployment
   waitForCassandra:
     image:
@@ -358,10 +351,8 @@ stargate:
       tag: 3.12.2
       # -- Pull policy for the wait-for-cassandra container
       pullPolicy: IfNotPresent
-
   # -- The service account to use for Stargate pods
   serviceAccount: default
-
   # -- Sets the heap size Stargate will use in megabytes. Memory request and
   # limit for the pod will be set to this value x2 and x4, respectively.
   heapMB: 256
@@ -529,7 +520,7 @@ reaper:
   # -- Affinity to apply to the Reaper pods. See
   # https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#affinity-and-anti-affinity
   # for background
-  affinity: { }
+  affinity: {}
   # -- Tolerations to apply to the Reaper pods. See
   # https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/ for background.
   tolerations: []
@@ -545,7 +536,7 @@ medusa:
     # -- Image repository for medusa
     repository: k8ssandra/medusa
     # -- Tag of the medusa image to pull from
-    tag: 0.10.1
+    tag: 0.11.0
     # -- Pull policy for the medusa container
     pullPolicy: IfNotPresent
   # -- Configures the Cassandra user used by Medusa when authentication is
@@ -603,7 +594,6 @@ medusa:
 # The volume can be mounted to pod with different access modes. The available modes depend on the provider and
 # how they're exported in the PersistentVolume definition. The default for these mounts is ReadWriteOnce.
 # accessModes: []
-
 monitoring:
   grafana:
     # -- Enables the creation of configmaps containing Grafana dashboards. If
@@ -621,7 +611,7 @@ monitoring:
   # -- Deploy the service monitors on a different namespace than the release namespace.
   # This should only be set if the kube-prometheus stack isn't installed in the release namespace
   serviceMonitors:
-     namespace:
+    namespace:
 # -- The cleaner is a pre-delete hook that that ensures objects with finalizers
 # get deleted. For example, cass-operator sets a finalizer on the
 # CassandraDatacenter. Kubernetes blocks deletion of an object until all of its
