@@ -18,6 +18,7 @@ and date `## vX.Y.Z - YYYY-MM-DD` and create a new placeholder section for  `unr
 
 ## unreleased
 
+* [CHANGE] Upgrade from Stargate 1.0.18 to 1.0.29
 * [CHANGE] Upgrade from Medusa 0.10.1 to 0.11.0
 * [CHANGE] Upgrade from Reaper 2.2.2 to 2.2.5
 * [CHANGE] #812 Integrate Fossa component/license scanning
