@@ -113,11 +113,13 @@ jobs:
           else
             echo "K8S_VERSION=${{ github.event.inputs.kubernetes_version }}" >> $GITHUB_ENV
           fi
+      - name: Kind kube-proxy issue workaround
+        run: sudo sysctl net/netfilter/nf_conntrack_max=524288
 
       - name: Create Kind Cluster
         uses: helm/kind-action@v1.1.0
         with: 
-          version: v0.10.0
+          version: v0.11.1
           node_image: kindest/node:${{ env.K8S_VERSION }}
           cluster_name: kind
           config: tests/integration/kind/kind_config_3_workers.yaml

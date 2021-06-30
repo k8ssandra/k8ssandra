@@ -2,8 +2,9 @@ package unit_test
 
 import (
 	. "fmt"
-	corev1 "k8s.io/api/core/v1"
 	"path/filepath"
+
+	corev1 "k8s.io/api/core/v1"
 
 	"github.com/gruntwork-io/terratest/modules/helm"
 	helmUtils "github.com/k8ssandra/k8ssandra/tests/unit/utils/helm"
@@ -14,11 +15,11 @@ import (
 )
 
 const (
-	DefaultStargate3Image          = "stargateio/stargate-3_11:v1.0.18"
-	DefaultStargate4Image          = "stargateio/stargate-4_0:v1.0.18"
+	DefaultStargate3ImagePrefix    = "stargateio/stargate-3_11:"
+	DefaultStargate4ImagePrefix    = "stargateio/stargate-4_0:"
 	DefaultStargate3ClusterVersion = "3.11"
 	DefaultStargate4ClusterVersion = "4.0"
-	DefaultStargateImage           = DefaultStargate3Image
+	DefaultStargateImagePrefix     = DefaultStargate3ImagePrefix
 	DefaultStargateClusterVersion  = DefaultStargate3ClusterVersion
 )
 
@@ -110,7 +111,7 @@ var _ = Describe("Verify Stargate template", func() {
 
 			Expect(len(templateSpec.Containers)).To(Equal(1))
 			container := templateSpec.Containers[0]
-			Expect(container.Image).To(Equal(DefaultStargateImage))
+			Expect(container.Image).To(HavePrefix(DefaultStargateImagePrefix))
 			Expect(container.Name).To(Equal(Sprintf("%s-dc1-stargate", HelmReleaseName)))
 			Expect(string(container.ImagePullPolicy)).To(Equal("IfNotPresent"))
 
@@ -179,7 +180,7 @@ var _ = Describe("Verify Stargate template", func() {
 			templateSpec := deployment.Spec.Template.Spec
 			Expect(len(templateSpec.Containers)).To(Equal(1))
 			container := templateSpec.Containers[0]
-			Expect(container.Image).To(Equal(DefaultStargateImage))
+			Expect(container.Image).To(HavePrefix(DefaultStargateImagePrefix))
 			clusterVersionEnv := kubeapi.FindEnvVarByName(container, "CLUSTER_VERSION")
 			Expect(clusterVersionEnv.Value).To(Equal(DefaultStargateClusterVersion))
 		})
@@ -197,7 +198,7 @@ var _ = Describe("Verify Stargate template", func() {
 			templateSpec := deployment.Spec.Template.Spec
 			Expect(len(templateSpec.Containers)).To(Equal(1))
 			container := templateSpec.Containers[0]
-			Expect(container.Image).To(Equal(DefaultStargate4Image))
+			Expect(container.Image).To(HavePrefix(DefaultStargate4ImagePrefix))
 			clusterVersionEnv := kubeapi.FindEnvVarByName(container, "CLUSTER_VERSION")
 			Expect(clusterVersionEnv.Value).To(Equal(DefaultStargate4ClusterVersion))
 		})
@@ -215,7 +216,7 @@ var _ = Describe("Verify Stargate template", func() {
 			templateSpec := deployment.Spec.Template.Spec
 			Expect(len(templateSpec.Containers)).To(Equal(1))
 			container := templateSpec.Containers[0]
-			Expect(container.Image).To(Equal(DefaultStargate3Image))
+			Expect(container.Image).To(HavePrefix(DefaultStargate3ImagePrefix))
 			clusterVersionEnv := kubeapi.FindEnvVarByName(container, "CLUSTER_VERSION")
 			Expect(clusterVersionEnv.Value).To(Equal(DefaultStargate3ClusterVersion))
 		})
