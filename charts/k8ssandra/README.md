@@ -84,7 +84,7 @@ Provisions and configures an instance of the entire K8ssandra stack. This includ
 | cassandra.ingress.host | string | `nil` | Optional hostname used to match requests. Warning: many native Cassandra clients, notably including cqlsh, initialize their connection by querying for the cluster's contactPoints, and thereafter communicate to the cluster using those names/IPs rather than whatever host was specified to the client. In order for clients to work correctly through ingress with a host filter, this means that the host filter must match the hostnames specified in the contactPoints. This value must be a DNS-resolvable hostname and not an IP address. To avoid this issue, leave this setting blank. |
 | cassandra.ingress.traefik.entrypoint | string | `"cassandra"` | Traefik entrypoint where traffic is sourced. See https://doc.traefik.io/traefik/routing/entrypoints/ |
 | stargate.enabled | bool | `true` | Enable Stargate resources as part of this release |
-| stargate.version | string | `"1.0.29"` | version of Stargate to deploy. This is used in conjunction with cassandra.version to select the Stargate container image. If stargate.image is set, this value has no effect. |
+| stargate.version | string | `"1.0.18"` | version of Stargate to deploy. This is used in conjunction with cassandra.version to select the Stargate container image. If stargate.image is set, this value has no effect. |
 | stargate.image | object | `{}` | Sets the Stargate container image. This value must be compatible with the value provided for stargate.clusterVersion. If left blank (recommended), k8ssandra will derive an appropriate image based on cassandra.clusterVersion. |
 | stargate.replicas | int | `1` | Number of Stargate instances to deploy. This value may be scaled independently of Cassandra cluster nodes. Each instance handles API and coordination tasks for inbound queries. |
 | stargate.waitForCassandra | object | `{"image":{"pullPolicy":"IfNotPresent","registry":"docker.io","repository":"alpine","tag":"3.12.2"}}` | The wait-for-cassandra init container in the Stargate Deployment |
@@ -134,7 +134,7 @@ Provisions and configures an instance of the entire K8ssandra stack. This includ
 | medusa.enabled | bool | `false` | Enable Medusa resources as part of this release. If enabled, `bucketName` and `storageSecret` **must** be defined. |
 | medusa.image.registry | string | `"docker.io"` | Image registry for medusa |
 | medusa.image.repository | string | `"k8ssandra/medusa"` | Image repository for medusa |
-| medusa.image.tag | string | `"0.11.0"` | Tag of the medusa image to pull from |
+| medusa.image.tag | string | `"0.10.1"` | Tag of the medusa image to pull from |
 | medusa.image.pullPolicy | string | `"IfNotPresent"` | Pull policy for the medusa container |
 | medusa.cassandraUser | object | `{"secret":"","username":""}` | Configures the Cassandra user used by Medusa when authentication is enabled. If neither `cassandraUser.secret` nor `cassandraUser.username` are set, then a Cassandra user and a secret will be created. The username will be medusa. The secret name will be of the form {clusterName}-medusa. The password will be a random 20 character password. If `cassandraUser.secret` is set, then the Cassandra user will be created from the contents of the secret. If `cassandraUser.secret` is not set and if `cassandraUser.username` is set, a secret will be generated using the specified username. The password will be generated as previously described. |
 | medusa.multiTenant | bool | `false` | Enables usage of a bucket across multiple clusters. |
@@ -145,7 +145,6 @@ Provisions and configures an instance of the entire K8ssandra stack. This includ
 | medusa.podStorage | object | `{}` | To use a locally mounted volumes for backups, the Cassandra pods must have a PVC where to write the backups to. |
 | monitoring.grafana.provision_dashboards | bool | `true` | Enables the creation of configmaps containing Grafana dashboards. If leveraging the kube-prometheus-stack subchart this value should be `true`. See https://helm.sh/docs/chart_template_guide/subcharts_and_globals/ for background on subcharts. |
 | monitoring.prometheus.provision_service_monitors | bool | `true` | Enables the creation of Prometheus Operator ServiceMonitor custom resources. If you are not using the kube-prometheus-stack subchart or do not have the ServiceMonitor CRD installed on your cluster, set this value to `false`. |
-| monitoring.serviceMonitors.namespace | string | `nil` |  |
 | cleaner | object | `{"image":{"pullPolicy":"IfNotPresent","registry":"docker.io","repository":"k8ssandra/k8ssandra-tools","tag":"latest"}}` | The cleaner is a pre-delete hook that that ensures objects with finalizers get deleted. For example, cass-operator sets a finalizer on the CassandraDatacenter. Kubernetes blocks deletion of an object until all of its finalizers are cleared. In the case of the CassandraDatacenter object, cass-operator removes the finalizer. The problem is that there are no ordering guarantees with helm uninstall which means that the cass-operator deployment could be deleted before the CassandraDatacenter. The cleaner ensures that the CassandraDatacenter is deleted before cass-operator. |
 | cleaner.image.registry | string | `"docker.io"` | Image registry for the cleaner |
 | cleaner.image.repository | string | `"k8ssandra/k8ssandra-tools"` | Image repository for the cleaner |
@@ -190,5 +189,3 @@ Provisions and configures an instance of the entire K8ssandra stack. This includ
 | kube-prometheus-stack.grafana.plugins | list | `["grafana-polystat-panel"]` | Additional plugins to be installed during Grafana startup, `grafana-polystat-panel` is used by the default Cassandra dashboards. |
 | kube-prometheus-stack.grafana."grafana.ini" | object | `{}` | Customization of the Grafana instance. To listen for Grafana traffic under a different url set `server.root_url: http://localhost:3000/grafana` and `serve_from_sub_path: true`. |
 
-----------------------------------------------
-Autogenerated from chart metadata using [helm-docs v1.5.0](https://github.com/norwoodj/helm-docs/releases/v1.5.0)
