@@ -52,15 +52,15 @@ For more, see this [troubleshooting tip]({{< relref "tasks/troubleshoot/#check-q
 
 ## Infrastructure and Cassandra recommendations
 
-While the section above includes infrastructure settings for **minimum** production workloads, performance benchmarks reveal a wider range of recommendations that are important to consider. The performance benchmark report, available in this [blog](https://k8ssandra.io/blog/articles/k8ssandra-performance-benchmarks-on-cloud-managed-kubernetes/), compared throughput and latency of:
+While the section above includes infrastructure settings for **minimum** production workloads, performance benchmarks reveal a wider range of recommendations that are important to consider. The performance benchmark report, available in this [blog](https://k8ssandra.io/blog/articles/k8ssandra-performance-benchmarks-on-cloud-managed-kubernetes/), compared the throughput and latency between:
 
 * The baseline performance of a Cassandra cluster running on AWS EC2 instances -- a common setup for enterprises operating Cassandra clusters
-* With the performance of K8ssandra running on AWS EKS, and GCP GKE
+* The performance of K8ssandra running on AWS, EKS, and GCP GKE
 
 It's important to note the following additional infrastructure recommendations from the benchmark:
 
 * 8 to 16 vCPUs 
-  * r5 instances: Intel Xeon Platinum 8000 series
+  * n2 instances: Intel Cascade Lake series
 * 32 GB to 128 GB RAM
 * 2 to 4 TB of disk space
   * In the benchmark, we used 3.4TB volumes to achieve enough power to match high performance production requirements.
@@ -73,7 +73,7 @@ For the disk performance, the benchmark used [Cassandra inspired fio profiles](h
 * GCP GKE e2-highmem-8, pd-ssd disk (`premium-rwo`)
 
 {{% alert title="Disk recommendations" color="success" %}}
-The e2 instance class in GCP is the default in GKE, but proved to be under-powered compared to the AWS r5 instance class with approximately 20% lower [sysbench](https://github.com/akopytov/sysbench) score. The n2 instance class offered much better performance with a score that was approximately 10% higher than the AWS r5 instances. The pd-balanced (standard-rwo) disks provided enough performance for this specific benchmarks; thus we didn’t need to upgrade to the slightly more expensive pd-ssd (premium-rwo) disks.
+The e2 instance class in GCP is the default in GKE, but proved to be under-powered, compared to other cloud vendors' latest generation instances, with approximately 20% lower [sysbench](https://github.com/akopytov/sysbench) score. The n2 instance class offered much better performance with a score that was approximately 10% higher than the benchmark's baseline AWS r5 instances. The pd-balanced (standard-rwo) disks provided enough performance for this specific benchmarks; thus we didn’t need to upgrade to the slightly more expensive pd-ssd (premium-rwo) disks.
 {{% /alert %}}
 
 Regarding the Cassandra version and settings:
@@ -96,7 +96,7 @@ As a convenience we provide reference [Terraform](https://www.terraform.io/) mod
 
 ### Prerequisite tools
 
-Be sure to check that you have the prerequisite tools installed, including the Terraform binary. Links below go to download resources:
+Be sure to check that you have the prerequisite tools installed (or subsequent versions), including the Terraform binary. Links below go to download resources:
 
 | Tool | Version | 
 |------|---------|
