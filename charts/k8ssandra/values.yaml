@@ -14,11 +14,11 @@ cassandra:
   # management-api images. If you do want to change one of these mappings, the new value
   # should be a management-api image.
   versionImageMap:
-    3.11.7: k8ssandra/cass-management-api:3.11.7-v0.1.25
-    3.11.8: k8ssandra/cass-management-api:3.11.8-v0.1.25
-    3.11.9: k8ssandra/cass-management-api:3.11.9-v0.1.25
-    3.11.10: k8ssandra/cass-management-api:3.11.10-v0.1.25
-    4.0.0: k8ssandra/cass-management-api:4.0.0-v0.1.25
+    3.11.7: k8ssandra/cass-management-api:3.11.7-v0.1.26
+    3.11.8: k8ssandra/cass-management-api:3.11.8-v0.1.26
+    3.11.9: k8ssandra/cass-management-api:3.11.9-v0.1.26
+    3.11.10: k8ssandra/cass-management-api:3.11.10-v0.1.26
+    4.0.0: k8ssandra/cass-management-api:4.0.0-v0.1.26
   # -- Overrides the default image mappings. This is intended for advanced use cases
   # like development or testing. By default the Cassandra version has to be one that is in
   # versionImageMap. Template rendering will fail if the version is not in the map. When
