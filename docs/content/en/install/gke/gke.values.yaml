@@ -38,9 +38,9 @@ cassandra:
     - name: us-central1-a
       affinityLabels:
         topology.kubernetes.io/zone: us-central1-a
-    - name: us-central1-b
+    - name: us-central1-c
       affinityLabels:
-        topology.kubernetes.io/zone: us-central1-b
+        topology.kubernetes.io/zone: us-central1-c
 
 stargate:
   enabled: true

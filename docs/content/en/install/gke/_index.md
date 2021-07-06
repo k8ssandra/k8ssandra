@@ -52,12 +52,12 @@ For more, see this [troubleshooting tip]({{< relref "tasks/troubleshoot/#check-q
 
 ## Infrastructure and Cassandra recommendations
 
-While the section above includes infrastructure settings for **minimum** production workloads, performance benchmarks reveal a wider range of recommendations that are important to consider. The performance benchmark report, available in this [blog](https://k8ssandra.io/blog/articles/k8ssandra-performance-benchmarks-on-cloud-managed-kubernetes/), compared the throughput and latency between:
+While the section above includes infrastructure settings for **minimum** production workloads, performance benchmarks reveal a wider range of recommendations that are important to consider. The performance benchmark report, available in this [detailed blog post](https://k8ssandra.io/blog/articles/k8ssandra-performance-benchmarks-on-cloud-managed-kubernetes/), compared the throughput and latency between:
 
 * The baseline performance of a Cassandra cluster running on AWS EC2 instances -- a common setup for enterprises operating Cassandra clusters
 * The performance of K8ssandra running on AWS, EKS, and GCP GKE
 
-It's important to note the following additional infrastructure recommendations from the benchmark:
+It's important to note the following additional GCP infrastructure recommendations from the benchmark:
 
 * 8 to 16 vCPUs 
   * n2 instances: Intel Cascade Lake series
@@ -88,7 +88,7 @@ Regarding the Cassandra version and settings:
   -XX:InitiatingHeapOccupancyPercent=70 -Xms31G -Xmx31G
   ```
 
-To summarize the findings, running Cassandra in Kubernetes using K8ssandra didn't introduce any notable performance impacts in throughput or latency, all while K8ssandra simplified the deployment steps. See the [blog](https://k8ssandra.io/blog/articles/k8ssandra-performance-benchmarks-on-cloud-managed-kubernetes/) for more detailed settings, results, and the measures taken to ensure fair production comparisons.
+To summarize the findings, running Cassandra in Kubernetes using K8ssandra didn't introduce any notable performance impacts in throughput or latency, all while K8ssandra simplified the deployment steps. See the [blog post](https://k8ssandra.io/blog/articles/k8ssandra-performance-benchmarks-on-cloud-managed-kubernetes/) for more detailed settings, results, and the measures taken to ensure fair production comparisons.
 
 ## Terraform
 
@@ -96,12 +96,14 @@ As a convenience we provide reference [Terraform](https://www.terraform.io/) mod
 
 ### Prerequisite tools
 
-Be sure to check that you have the prerequisite tools installed (or subsequent versions), including the Terraform binary. Links below go to download resources:
+First, these steps assume you already have a GCP account and project. If not, see [Creating and managing projects](https://cloud.google.com/resource-manager/docs/creating-managing-projects) in the Google documentation.
+
+Next, ensure you have the prerequisite tools installed (or subsequent versions), including the Terraform binary. Links below go to download resources:
 
 | Tool | Version | 
 |------|---------|
 | [Terraform](https://www.terraform.io/downloads.html) | 0.14 |
-| [Terraform GCP provider](https://registry.terraform.io/providers/hashicorp/google/latest) | ~>3.0 |
+| [Terraform GCP provider](https://registry.terraform.io/providers/hashicorp/google/latest) (installed by `terraform init`, as explained below) | ~>3.0 |
 | [Helm](https://helm.sh/) | 3 |
 | [Google Cloud SDK](https://cloud.google.com/sdk)  | 333.0.0 |
 | - bq | 2.0.65 |
@@ -109,13 +111,119 @@ Be sure to check that you have the prerequisite tools installed (or subsequent v
 | - gsutil | 4.60 |
 | [kubectl](https://kubernetes.io/docs/tasks/tools/) | 1.17.17 |
 
-You must also have an existing GCP GKE project. If you haven't already, see [Creating and managing projects](https://cloud.google.com/resource-manager/docs/creating-managing-projects).
+#### Install the Terraform binary
 
-### Checkout the `k8ssandra-terraform` project
+If you haven't already, install Terraform. Refer to the helpful Terraform installation video on this [hashicorp.com page](https://learn.hashicorp.com/tutorials/terraform/install-cli?in=terraform/gcp-get-started). Follow the instructions for your OS type, then return here.  
+
+Terraform install example for Ubuntu Linux:
+
+```bash
+sudo apt-get update && sudo apt-get install -y gnupg software-properties-common curl
+curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -
+sudo apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
+sudo apt-get update && sudo apt-get install terraform
+```
+
+Verify the installation:
+
+```bash
+terraform version
+```
+
+**Output**:
+
+```bash
+Terraform v1.0.0
+on darwin_amd64
+
+Your version of Terraform is out of date! The latest version
+is 1.0.1. You can update by downloading from https://www.terraform.io/downloads.html
+```
+
+
+#### Install the Google Cloud SDK
+
+If you haven't already, [install the Google Cloud SDK](https://cloud.google.com/sdk/docs/install) on your client where Terraform was installed. 
+
+Example:
+
+```bash
+cd
+curl -LO https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-347.0.0-linux-x86_64.tar.gz
+tar -xzvf google-cloud-sdk-347.0.0-linux-x86_64.tar.gz
+./google-cloud-sdk/install.sh
+```
+
+If you agree, take the defaults when prompted.
+
+Initialize Google Cloud:
+
+```bash
+./google-cloud-sdk/bin/gcloud init
+```
+
+To associate your account with Google Cloud and authenticate, follow the prompts in your Terminal and a browser. Then return to this page.
+
+```bash
+source ~/.bashrc
+```
+
+Now you can use the SDK to install additional components.
+
+#### Install kubectl
+
+If you haven't already, install `kubectl`. You'll use `kubectl` commands to interact with your K8ssandra resources. 
+
+Get `kubectl` from the Google Cloud SDK, and verify the version:
+
+```console
+gcloud components install kubectl
+```
+
+Verify the kubectl install:
+
+```bash
+which kubectl
+```
+
+**Output**:
+
+```bash
+/Users/thats.me/google-cloud-sdk/bin/kubectl
+```
+
+#### Install helm v3
+
+If you haven't already, install Helm v3. On the [Helm site](https://helm.sh/docs/), notice the latest stable version near the top-right menu. For example: 3.6.2. 
+
+Example:
+
+```bash
+cd
+curl -LO https://get.helm.sh/helm-v3.6.2-linux-amd64.tar.gz
+tar -zxvf helm-v3.6.2-linux-amd64.tar.gz
+sudo mv linux-amd64/helm /usr/local/bin/helm
+```
+
+Verify the install:
+
+```bash
+which helm
+```
+
+**Output**:
+
+```bash
+/usr/local/bin/helm
+```
+
+### Checkout the `k8ssandra-terraform` GitHub project
 
 Each of our reference deployment may be found in the GitHub [k8ssandra/k8ssandra-terraform](https://github.com/k8ssandra/k8ssandra-terraform) project. Download the latest release or current `main` branch locally.
 
 ```bash
+mkdir ~/github
+cd github
 git clone git@github.com:k8ssandra/k8ssandra-terraform.git
 ```
 
@@ -132,7 +240,7 @@ Resolving deltas: 100% (145/145), done.
 ```
 
 ```bash
-cd k8ssandra-terraform/gcp
+cd ~/github/k8ssandra-terraform/gcp
 ```
 
 ### Configure `gcloud` CLI
@@ -184,7 +292,7 @@ Updated property [compute/zone].
 Set the project:
 
 ```console
-gcloud config set project "k8ssandra-testing"
+gcloud config set project "your-gcp-project-id"
 ```
 
 **Output**:
@@ -195,12 +303,12 @@ Updated property [core/project].
 
 ### Setup Environment Variables
 
-These values will be used to define where infrastructure is provisioned along with the naming of resources.
+These values will be used to define where infrastructure is provisioned along with the naming of resources. Be sure to specify your GCP project id:
 
 ```bash
 export TF_VAR_environment=prod
 export TF_VAR_name=k8ssandra
-export TF_VAR_project_id=k8ssandra-testing
+export TF_VAR_project_id=your-gcp-project-id
 export TF_VAR_region=us-central1
 ```
 
@@ -213,7 +321,7 @@ GCP limits the total length of resource names. If your deployment fails to plan 
 We begin this process by initializing our environment and configuring a workspace. To start we run `terraform init` which handles pulling down any plugins required and configures the backend.
 
 ```bash
-cd env
+cd ~/github/k8ssandra-terraform/gcp/env
 terraform init
 ```
 
@@ -243,9 +351,25 @@ With the workspace configured we now instruct terraform to `plan` the required c
 terraform plan
 ```
 
-**Output**:
+{{% alert title="Tip" color="warning" %}}
+In certain circumstances, Google Cloud may return the following message after you enter `terraform plan`:
 
 ```bash
+Error: Attempted to load application default credentials 
+since neither `credentials` nor `access_token` was set 
+in the provider block.  No credentials loaded.
+```
+
+If encountered, run this command to use your gcloud credentials:
+
+`gcloud auth application-default login`
+
+Follow the prompts to authenticate. Then run the `terraform plan` command again.
+{{% /alert %}}
+
+**Abbreviated output during successful terraform plan**:
+
+```console
 Acquiring state lock. This may take a few moments...
 
 Terraform used the selected providers to generate the following execution plan. Resource actions are indicated with the following symbols:
@@ -381,7 +505,35 @@ Take note of the comments in this file. If you have changed the name of your sec
 
 ### Deploy K8ssandra with Helm
 
-With a `values.yaml` file generated which details out specific configuration overrides we can now deploy K8ssandra via Helm.
+With a `values.yaml` file generated, which details specific configuration overrides, we can now deploy K8ssandra via Helm.
+
+If you haven't already, add the K8ssandra repo:
+
+```bash
+helm repo add k8ssandra https://helm.k8ssandra.io/stable
+```
+
+**Output**:
+
+```bash
+"k8ssandra" has been added to your repositories
+```
+
+To ensure you have the latest from the repos:
+
+```bash
+helm repo update
+```
+
+**Output**:
+
+```bash
+Hang tight while we grab the latest from your chart repositories...
+...Successfully got an update from the "k8ssandra" chart repository
+Update Complete. ⎈Happy Helming!⎈
+```
+
+Now install K8ssandra and specify the gke.values.yaml file that you customized in a prior step:
 
 ```bash
 helm install prod-k8ssandra k8ssandra/k8ssandra -f gke.values.yaml
@@ -391,7 +543,7 @@ helm install prod-k8ssandra k8ssandra/k8ssandra -f gke.values.yaml
 
 ```bash
 NAME: prod-k8ssandra
-LAST DEPLOYED: Sat Apr 24 01:15:46 2021
+LAST DEPLOYED: Tue Jul  6 18:41:56 2021
 NAMESPACE: default
 STATUS: deployed
 REVISION: 1
