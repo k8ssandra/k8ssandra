@@ -14,9 +14,9 @@ Through GKE, your Kubernetes deployments will have first-class support for GCP I
 Also available in followup topics are post-install steps and role-based considerations for [developers]({{< relref "/quickstarts/developer">}}) or [Site Reliability Engineers]({{< relref "/quickstarts/site-reliability-engineer">}}) (SREs).
 {{% /alert %}}
 
-## Deployment
+## Minimum deployment
 
-This topic covers provisioning the following infrastructure resources.
+This topic covers provisioning the following infrastructure resources as a minimum for production. See the [next section]({{< relref "#infrastructure-and-cassandra-recommendations" >}}) for additional considerations discovered during performance benchmarks.
 
 * 1x Google Compute Network (Virtual Private Cloud, or VPC)
 * 1x Subnet
@@ -43,16 +43,60 @@ On this infrastructure the K8ssandra installation will consist of the following 
 Feel free to update the parameters used during this guide to match your target deployment. This should be considered a minimum for production workloads.
 
 {{% alert title="Quotas" color="primary" %}}
-This installation slightly exceeds the default quotas provided within a new project. Consider requesting the following quota requests to allow for the provisioning of this installation.
+This installation slightly exceeds the default quotas provided within a new project. Consider requesting the following quota requests to allow for the provisioning of this installation:
 
 * 6x Backend services
+
+For more, see this [troubleshooting tip]({{< relref "tasks/troubleshoot/#check-quotas" >}}).
 {{% /alert %}}
+
+## Infrastructure and Cassandra recommendations
+
+While the section above includes infrastructure settings for **minimum** production workloads, performance benchmarks reveal a wider range of recommendations that are important to consider. The performance benchmark report, available in this [blog](https://k8ssandra.io/blog/articles/k8ssandra-performance-benchmarks-on-cloud-managed-kubernetes/), compared the throughput and latency between:
+
+* The baseline performance of a Cassandra cluster running on AWS EC2 instances -- a common setup for enterprises operating Cassandra clusters
+* The performance of K8ssandra running on AWS, EKS, and GCP GKE
+
+It's important to note the following additional infrastructure recommendations from the benchmark:
+
+* 8 to 16 vCPUs 
+  * n2 instances: Intel Cascade Lake series
+* 32 GB to 128 GB RAM
+* 2 to 4 TB of disk space
+  * In the benchmark, we used 3.4TB volumes to achieve enough power to match high performance production requirements.
+* 5k to 10k Input/Output Operations per Second (IOPS)
+
+For the disk performance, the benchmark used [Cassandra inspired fio profiles](https://github.com/ibspoof/cassandra-fio) that attempt to emulate Leveled Compaction Strategy and Size Tiered Compaction Strategy behaviors. In the report, throughput and latency results were measured for three types of GCP disks:
+
+* GCP GKE n2-highmem-8, pd-ssd disk (`premium-rwo`)
+* GCP GKE n2-highmem-8, pd-balanced disk (`standard-rwo`)
+* GCP GKE e2-highmem-8, pd-ssd disk (`premium-rwo`)
+
+{{% alert title="Disk recommendations" color="success" %}}
+The e2 instance class in GCP is the default in GKE, but proved to be under-powered, compared to other cloud vendors' latest generation instances, with approximately 20% lower [sysbench](https://github.com/akopytov/sysbench) score. The n2 instance class offered much better performance with a score that was approximately 10% higher than the benchmark's baseline AWS r5 instances. The pd-balanced (standard-rwo) disks provided enough performance for this specific benchmarks; thus we didn’t need to upgrade to the slightly more expensive pd-ssd (premium-rwo) disks.
+{{% /alert %}}
+
+Regarding the Cassandra version and settings:
+
+* The benchmark used Cassandra 4.0-beta4.
+* Cassandra default settings were applied with the exception of garbage collection (GC) settings. This used G1GC with 31GB of heap size, along with a few GC related JVM flags:
+
+  ``` bash
+  -XX:+UseG1GC
+  -XX:G1RSetUpdatingPauseTimePercent=5
+  -XX:MaxGCPauseMillis=300
+  -XX:InitiatingHeapOccupancyPercent=70 -Xms31G -Xmx31G
+  ```
+
+To summarize the findings, running Cassandra in Kubernetes using K8ssandra didn't introduce any notable performance impacts in throughput or latency, all while K8ssandra simplified the deployment steps. See the [blog](https://k8ssandra.io/blog/articles/k8ssandra-performance-benchmarks-on-cloud-managed-kubernetes/) for more detailed settings, results, and the measures taken to ensure fair production comparisons.
 
 ## Terraform
 
 As a convenience we provide reference [Terraform](https://www.terraform.io/) modules for orchestrating the provisioning of cloud resources necessary to run K8ssandra.
 
-### Tools
+### Prerequisite tools
+
+Be sure to check that you have the prerequisite tools installed (or subsequent versions), including the Terraform binary. Links below go to download resources:
 
 | Tool | Version | 
 |------|---------|
@@ -64,6 +108,8 @@ As a convenience we provide reference [Terraform](https://www.terraform.io/) mod
 | - core | 2021.03.19 |
 | - gsutil | 4.60 |
 | [kubectl](https://kubernetes.io/docs/tasks/tools/) | 1.17.17 |
+
+You must also have an existing GCP GKE project. If you haven't already, see [Creating and managing projects](https://cloud.google.com/resource-manager/docs/creating-managing-projects).
 
 ### Checkout the `k8ssandra-terraform` project
 
