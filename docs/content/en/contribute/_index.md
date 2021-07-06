@@ -23,13 +23,64 @@ Also, we encourage you to submit Issues, starting from https://github.com/k8ssan
 
 ## Setting up CI in GitHub Actions
 
-CI will run on push to any branch of your forked repository. In order to run CI jobs involving S3 buckets (for Medusa), two secrets need to be set up in the fork organization:
+CI will run on push to any branch of your forked repository. In order to run CI jobs involving S3 or
+Azure buckets (for Medusa), the following GitHub secrets need to be set up in the fork's
+organization:
 
-- K8SSANDRA_MEDUSA_BUCKET_NAME: Name of the S3 bucket used to store Medusa backups.
-- K8SSANDRA_MEDUSA_BUCKET_SECRET: Region of the S3 bucket.
-- MEDUSA_SECRET: A valid S3 key/secret pair to access the S3 bucket.
+- `K8SSANDRA_MEDUSA_BUCKET_NAME`: Name of the S3 bucket or Azure container used to store Medusa 
+  backups.
+- `K8SSANDRA_MEDUSA_BUCKET_REGION`: Region of the S3 bucket (for Amazon S3 tests only).
+- `K8SSANDRA_MEDUSA_SECRET_S3`: A valid Kubernetes secret definition to access the S3 bucket (for
+  Amazon S3 tests only). See below for an example.
+- `K8SSANDRA_MEDUSA_SECRET_AZURE`: A valid Kubernetes secret definition to access the Azure storage 
+  account (for Azure tests only). See below for an example.
 
-## Prevent running CI for a specific commit
+### Kubernetes secret definitions for Medusa tests 
+
+When testing Medusa on Amazon S3, the GitHub `K8SSANDRA_MEDUSA_SECRET_S3` secret _must_  contain a
+valid Kubernetes secret definition similar to the one below:
+
+```yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  # The name must be medusa-bucket-key!
+  name: medusa-bucket-key
+type: Opaque
+stringData:
+  # The entry must be named medusa_s3_credentials!
+  medusa_s3_credentials: |-
+    [default]
+    aws_access_key_id = <your key id>
+    aws_secret_access_key = <your key secret>
+```
+
+See [Backup and restore with Amazon S3]({{< relref "/tasks/backup-restore/amazon-s3/" >}}) for
+more information.
+
+When testing Medusa on Azure, the GitHub `K8SSANDRA_MEDUSA_SECRET_AZURE` secret _must_ contain a
+valid Kubernetes secret definition similar to the one below:
+
+```yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  # The name must be medusa-bucket-key!
+  name: medusa-bucket-key
+type: Opaque
+stringData:
+  # The entry must be named medusa_azure_credentials.json!
+  medusa_azure_credentials.json: |-
+    {
+        "storage_account": "<your storage account name>",
+        "key": "<your storage account key>"
+    }
+```
+
+See [Backup and restore with Azure Storage]({{< relref "/tasks/backup-restore/azure/" >}}) for
+more information.
+
+## Prevent CI from running for a specific commit
 
 CI runs can be disabled for specific commits by adding `[skip ci]` in the commit message. This can be useful when pushing commits on WIP branches for backup purposes.
 

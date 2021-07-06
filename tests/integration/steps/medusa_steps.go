@@ -6,18 +6,22 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
-	"time"
 
 	"github.com/gruntwork-io/terratest/modules/helm"
 	"github.com/gruntwork-io/terratest/modules/k8s"
 	. "github.com/onsi/gomega"
 )
 
-// Medusa related functions
+// Medusa-related functions
+
 func CreateMedusaSecretWithFile(t *testing.T, namespace, secretFile string) {
 	home, _ := os.UserHomeDir()
 	medusaSecretPath, _ := filepath.Abs(strings.Replace(secretFile, "~", home, 1))
-	k8s.KubectlApply(t, getKubectlOptions(namespace), medusaSecretPath)
+	if _, err := os.Stat(medusaSecretPath); err != nil {
+		t.Fatalf("Medusa secret file %s does not exist or is not readable: %v", medusaSecretPath, err)
+	} else {
+		k8s.KubectlApply(t, getKubectlOptions(namespace), medusaSecretPath)
+	}
 }
 
 func PerformBackup(t *testing.T, namespace, backupName string, useLocalCharts bool) {
@@ -41,7 +45,7 @@ func PerformBackup(t *testing.T, namespace, backupName string, useLocalCharts bo
 	// Wait for the backup to be finished
 	g(t).Eventually(func() bool {
 		return backupIsFinished(t, namespace, backupName)
-	}, 2*time.Minute, 5*time.Second).Should(BeTrue())
+	}, retryTimeout, retryInterval).Should(BeTrue())
 }
 
 func backupIsFinished(t *testing.T, namespace, backupName string) bool {

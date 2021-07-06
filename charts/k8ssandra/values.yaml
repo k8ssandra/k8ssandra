@@ -554,8 +554,8 @@ medusa:
     username: ""
   # -- Enables usage of a bucket across multiple clusters.
   multiTenant: false
-  # -- API interface used by the object store. Supported values include `s3`,
-  # 's3_compatible' and `gcs`. For file system storage, i.e., a pod volume
+  # -- API interface used by the object store. Supported values include `s3`, 's3_compatible',
+  # `google_storage` and 'azure_blobs'. For file system storage, i.e., a pod volume
   # mount, use 'local' and set the podStorage properties. Note that 'local' does not necessarily 
   # imply a local volume. It could also be network attached storage. It is simply accessed
   # through the file system.

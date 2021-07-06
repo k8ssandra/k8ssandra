@@ -49,6 +49,13 @@ stargate:
   cpuReqMillicores: 3000
   cpuLimMillicores: 3000
 
-# Medusa is not available at this time. Watch https://github.com/k8ssandra/k8ssandra/issues/685 for updates
 medusa:
-  enabled: false
+  enabled: true
+  storage: azure_blobs
+
+  # Reference the correct Azure Storage container name to use here.
+  bucketName: prod-k8ssandra-storage-bucket
+
+  # The secret here must point to a valid JSON credentials file containing the correct
+  # Azure storage account name and resource group.
+  storageSecret: prod-k8ssandra-medusa-key
