@@ -311,13 +311,13 @@ jobs:
         env:
           GCP_HELM_BUCKET_NAME: ${{ secrets.GCP_HELM_BUCKET_NAME }}
         run: gsutil cp gs://$GCP_HELM_BUCKET_NAME/stable/index.yaml ./
-        working-directory: build
+        working-directory: build/${{ steps.compute_next_version.outputs.RELEASE_VERSION }}
 
       - name: Regenerate Helm index
         env:
           GCP_HELM_BUCKET_NAME: ${{ secrets.GCP_HELM_BUCKET_NAME }}
         run: helm repo index . --merge index.yaml --url "https://$GCP_HELM_BUCKET_NAME/stable/"
-        working-directory: build
+        working-directory: build/${{ steps.compute_next_version.outputs.RELEASE_VERSION }}
 
       - name: Upload packages and index
         env:
@@ -325,7 +325,7 @@ jobs:
         run: |
           gsutil cp ./*.tgz gs://$GCP_HELM_BUCKET_NAME/stable/
           gsutil cp ./index.yaml gs://$GCP_HELM_BUCKET_NAME/stable/
-        working-directory: build
+        working-directory: build/${{ steps.compute_next_version.outputs.RELEASE_VERSION }}
 
       # GitHub Release
       - name: Upload chart package to GitHub Release
