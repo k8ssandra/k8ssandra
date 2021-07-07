@@ -285,7 +285,7 @@ jobs:
           context: .
           file: cmd/k8ssandra-client/Dockerfile
           push: true
-          tags: k8ssandra/k8ssandra-tools:latest, k8ssandra/k8ssandra-tools:${{ steps.compute_next_version.RELEASE_VERSION }}
+          tags: k8ssandra/k8ssandra-tools:latest, k8ssandra/k8ssandra-tools:${{ steps.compute_next_version.outputs.RELEASE_VERSION }}
           platforms: linux/amd64
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
@@ -297,7 +297,7 @@ jobs:
               helm package $c
             fi
           done
-        working-directory: build/${{ steps.compute_next_version.RELEASE_VERSION }}
+        working-directory: build/${{ steps.compute_next_version.outputs.RELEASE_VERSION }}
 
       # Helm Release
       - uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
