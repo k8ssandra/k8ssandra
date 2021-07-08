@@ -1,0 +1,6 @@
+cassandra:
+  initContainers:
+    - name: foo
+      image: docker.io/foo:latest
+    - name: bar
+      image: docker.io/bar:latest

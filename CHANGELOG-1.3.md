@@ -26,6 +26,7 @@ and date `## vX.Y.Z - YYYY-MM-DD` and create a new placeholder section for  `unr
 * [CHANGE] #905 Upgrade medusa-operator to v0.3.3
 * [FEATURE] #617 Make affinity configurable for Stargate
 * [FEATURE] #847 Make affinity configurable for Reaper
+* [FEATURE] #952 Experimental support for custom init containers
 * [ENHANCEMENT] #844 Allow configuring the namespace of service monitors
 * [ENHANCEMENT] #29 Detect IEC formatted c* heap.size and heap.newGenSize; return error identifying issue  
 * [ENHANCEMENT] #420 Add support for private registries
