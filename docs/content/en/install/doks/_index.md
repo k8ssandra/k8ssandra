@@ -1,5 +1,5 @@
 ---
-title: "DigitalOcean Kubernetes"
+title: "Install K8ssandra on DOKS"
 linkTitle: "DigitalOcean DOKS"
 weight: 2
 description: >
@@ -208,7 +208,7 @@ This secret, `prod-k8ssandra-medusa-key`, can now be referenced in our K8ssandra
 
 ### Create `WaitForFirstConsumer` Storage Class
 
-K8ssandra requires a Kubernetes Storage Class that has `volumeBindingMode: WaitForFirstConsumer`. The default pre-installed `do-block-storage` storage class has `volumeBindingMode: Immediate`. We will create a new storage class with the required mode based on the existing version. 
+K8ssandra requires a Kubernetes Storage Class that has `volumeBindingMode: WaitForFirstConsumer`. The default preinstalled `do-block-storage` storage class has `volumeBindingMode: Immediate`. We will create a new storage class with the required mode based on the existing version. 
 
 {{< readfilerel file="do-block-storage-wait.yaml" highlight="yaml" >}}
 

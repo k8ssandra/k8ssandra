@@ -1,5 +1,5 @@
 ---
-title: "Azure Kubernetes Service"
+title: "Install K8ssandra on AKS"
 linkTitle: "Azure AKS"
 weight: 2
 description: >
