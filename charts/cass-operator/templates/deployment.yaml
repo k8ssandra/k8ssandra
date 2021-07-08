@@ -29,31 +29,28 @@ spec:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: {{ include "k8ssandra-common.flattenedImage" .Values.image }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          {{- if .Values.admissionWebhooks.enabled }}
+          ports:
+            - containerPort: 9443
+              name: cass-operator-webhook-server
+              protocol: TCP
           volumeMounts:
             - mountPath: /tmp/k8s-webhook-server/serving-certs
               name: cass-operator-certs-volume
-              readOnly: false
-            - mountPath: /tmp/
-              name: tmpconfig-volume
-              readOnly: false
+              readOnly: true
+          {{- end }}
           livenessProbe:
-            exec:
-              command:
-                - pgrep
-                - ".*operator"
-            initialDelaySeconds: 5
-            periodSeconds: 5
-            timeoutSeconds: 5
-            failureThreshold: 3
+            httpGet:
+              path: /healthz
+              port: 8081
+            initialDelaySeconds: 15
+            periodSeconds: 20
           readinessProbe:
-            exec:
-              command:
-                - stat
-                - "/tmp/operator-sdk-ready"
+            httpGet:
+              path: /readyz
+              port: 8081
             initialDelaySeconds: 5
-            periodSeconds: 5
-            timeoutSeconds: 5
-            failureThreshold: 1
+            periodSeconds: 10
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           env:
@@ -80,18 +77,16 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.name
-            - name: OPERATOR_NAME
-              value: "cass-operator"
             - name: SKIP_VALIDATING_WEBHOOK
             {{- if .Values.admissionWebhooks.enabled }}
               value: "FALSE"
             {{- else }}
               value: "TRUE"
             {{- end }}
+      {{- if .Values.admissionWebhooks.enabled }}
       volumes:
-        - name: tmpconfig-volume
-          emptyDir:
-            medium: "Memory"
         - name: cass-operator-certs-volume
           secret:
+            defaultMode: 420
             secretName: {{ .Release.Name }}-webhook
+      {{- end }}
