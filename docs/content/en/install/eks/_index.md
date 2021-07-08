@@ -1,5 +1,5 @@
 ---
-title: "Amazon Elastic Kubernetes Service"
+title: "Install K8ssandra on EKS"
 linkTitle: "Amazon EKS"
 weight: 2
 description: >
