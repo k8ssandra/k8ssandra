@@ -7,42 +7,7 @@ on:
       - main
 
 jobs:
-  setup:
-    runs-on: ubuntu-latest
-    env:
-      GOPATH: /home/runner/go
-    steps:
-      - name: Cache bin path
-        id: cache
-        uses: actions/cache@v2
-        with:
-          path: bin
-          key: ${{ runner.os }}-${{ env.HELM_VERSION }}-${{ env.YQ_VERSION }}
-      - name: Checkout
-        uses: actions/checkout@v2
-
-      - name: Create env variables
-        run: ./.github/scripts/env_variables.sh
-      
-      - name: Update PATH
-        run: |
-          echo "$GITHUB_WORKSPACE/bin" >> $GITHUB_PATH
-
-      - name: Install Helm
-        uses: azure/setup-helm@v1
-        with:
-          version: ${{ env.HELM_VERSION }}
-
-      - name: Install yq and validate tool versions
-        run: |
-          scripts/install-yq.sh ${{ env.YQ_VERSION }}
-          helm version
-          yq -V
-          
-  
   lint-check:
-    needs:
-      - setup
     runs-on: ubuntu-latest
     steps:
       - name: Cache bin path
@@ -95,8 +60,6 @@ jobs:
         working-directory: build
 
   unit-tests:
-    needs:
-      - setup
     runs-on: ubuntu-latest
     steps:
       - name: Check out code into the Go module directory

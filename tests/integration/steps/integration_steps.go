@@ -349,14 +349,14 @@ func DeployMinioAndCreateBucket(t *testing.T, bucketName string) {
 	_, err := helm.RunHelmCommandAndGetOutputE(t, helmOptions, "repo", "add", "minio", "https://helm.min.io/")
 	g(t).Expect(err).To(BeNil(), fmt.Sprintf("failed to add minio helm repo: %s", err))
 
-	UninstallHelmRealeaseAndNamespace(t, "minio", "minio")
+	UninstallHelmReleaseAndNamespace(t, "minio", "minio")
 
 	values := fmt.Sprintf("accessKey=minio_key,secretKey=minio_secret,defaultBucket.enabled=true,defaultBucket.name=%s", bucketName)
 	_, err = helm.RunHelmCommandAndGetOutputE(t, helmOptions, "install", "--set", values, "minio", "minio/minio", "-n", "minio", "--create-namespace")
 	g(t).Expect(err).To(BeNil(), fmt.Sprintf("failed to install the minio helm chart: %s", err))
 }
 
-func UninstallHelmRealeaseAndNamespace(t *testing.T, helmReleaseName, namespace string) {
+func UninstallHelmReleaseAndNamespace(t *testing.T, helmReleaseName, namespace string) {
 	helmOptions := &helm.Options{
 		KubectlOptions: getKubectlOptions("default"),
 	}
@@ -510,7 +510,7 @@ func DeleteNamespace(t *testing.T, namespace string) {
 }
 
 func InstallTraefik(t *testing.T) {
-	UninstallHelmRealeaseAndNamespace(t, "traefik", "traefik")
+	UninstallHelmReleaseAndNamespace(t, "traefik", "traefik")
 	kubectlOptions := getKubectlOptions("default")
 	// Namespace doesn't exist yet, let's create it
 	options := &helm.Options{KubectlOptions: kubectlOptions}
@@ -555,8 +555,20 @@ func ExtractUsernamePassword(t *testing.T, secretName, namespace string) credent
 
 func runCassandraQueryAndGetOutput(t *testing.T, namespace, query string) string {
 	cqlCredentials := ExtractUsernamePassword(t, "k8ssandra-superuser", namespace)
-	// Get reaper service
-	output, _ := k8s.RunKubectlAndGetOutputE(t, getKubectlOptions(namespace), "exec", "-it", fmt.Sprintf("%s-%s-default-sts-0", releaseName, datacenterName), "--", "/opt/cassandra/bin/cqlsh", "--username", cqlCredentials.username, "--password", cqlCredentials.password, "-e", query)
+	output, _ := k8s.RunKubectlAndGetOutputE(
+		t,
+		getKubectlOptions(namespace),
+		"exec",
+		fmt.Sprintf("%s-%s-default-sts-0", releaseName, datacenterName),
+		"--",
+		"/opt/cassandra/bin/cqlsh",
+		"--username",
+		cqlCredentials.username,
+		"--password",
+		cqlCredentials.password,
+		"-e",
+		query,
+	)
 	return output
 }
 
