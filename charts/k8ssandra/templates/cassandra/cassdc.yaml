@@ -238,6 +238,9 @@ spec:
             mountPath: /mnt/backups
           {{- end }}
       {{- end }}
+      {{- if .Values.cassandra.initContainers }}
+      {{- toYaml .Values.cassandra.initContainers | nindent 6 }}
+      {{- end }}
       containers:
       - name: cassandra
         {{- if .Values.reaper.enabled }}
