@@ -245,6 +245,19 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			Expect(cassdc.Spec.ServiceAccount).To(Equal("k8ssandra"))
 		})
 
+		It("using custom init containers", func() {
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+				ValuesFiles:    []string{"./testdata/init-containers-values.yaml"},
+			}
+
+			Expect(renderTemplate(options)).To(Succeed())
+			initContainers := cassdc.Spec.PodTemplateSpec.Spec.InitContainers
+			Expect(len(initContainers)).To(Equal(5))
+			Expect(initContainers[3].Name).To(Equal("foo"))
+			Expect(initContainers[4].Name).To(Equal("bar"))
+		})
+
 		It("using multiple racks with no affinity labels", func() {
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
