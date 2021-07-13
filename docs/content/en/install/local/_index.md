@@ -433,7 +433,9 @@ Save the superuser name and password for use in the [Quickstarts]({{< relref "/q
 * If you're a developer, and you'd like to get started coding using CQL or Stargate, see the [Quickstart for developers]({{< relref "/quickstarts/developer" >}}).
 * If you're a Site Reliability Engineer, and you'd like to explore the K8ssandra administration environment including monitoring and maintenance utilities, see the [Quickstart for Site Reliability Engineers]({{< relref "/quickstarts/site-reliability-engineer" >}}).
 
-For details that are specific to cloud providers, see:
-
-* K8ssandra installs on [Google Kubernetes Engine]({{< relref "/install/gke" >}}) (GKE)
+For K8ssandra installation details that are specific to cloud providers, see:
+    
 * K8ssandra installs on [Amazon Elastic Kubernetes Service]({{< relref "/install/eks" >}}) (EKS)
+* K8ssandra installs on [DigitalOcean Kubernetes]({{< relref "/install/doks" >}}) (DOKS)
+* K8ssandra installs on [Google Kubernetes Engine]({{< relref "/install/gke" >}}) (GKE)
+* K8ssandra installs on [Microsoft Azure Kubernetes Service]({{< relref "/install/aks" >}}) (AKS)
