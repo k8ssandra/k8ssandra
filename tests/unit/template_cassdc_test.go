@@ -102,9 +102,6 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 		It("using only default options", func() {
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
-				SetValues: map[string]string{
-					"--rendertmpl": "{\"dir\":\"/tmp/foo\", \"name\":\"my-test.yaml\"}",
-				},
 			}
 
 			Expect(renderTemplate(options)).To(Succeed())
