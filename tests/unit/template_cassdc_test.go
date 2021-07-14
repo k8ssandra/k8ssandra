@@ -69,7 +69,10 @@ const (
 	CassandraContainer = "cassandra"
 	MedusaContainer    = "medusa"
 
-	CassandraConfigVolumeName = "cassandra-config"
+	CassandraConfigVolumeName            = "cassandra-config"
+	CassandraMetricsCollConfigVolumeName = "cassandra-metrics-coll-config"
+	CassandraTmpVolumeName               = "cassandra-tmp"
+
 	MedusaBucketKeyVolumeName = "medusa-bucket-key"
 	PodInfoVolumeName         = "podinfo"
 )
@@ -99,6 +102,9 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 		It("using only default options", func() {
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
+				SetValues: map[string]string{
+					"--rendertmpl": "{\"dir\":\"/tmp/foo\", \"name\":\"my-test.yaml\"}",
+				},
 			}
 
 			Expect(renderTemplate(options)).To(Succeed())
@@ -136,6 +142,12 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			Expect(config.JvmOptions.InitialHeapSize).To(BeEmpty())
 			Expect(config.JvmOptions.MaxHeapSize).To(BeEmpty())
 			Expect(config.JvmOptions.YoungGenSize).To(BeEmpty())
+
+			// Default set of volume and volume mounts
+			Expect(kubeapi.GetVolumeMountNames(&initContainers[0])).To(ConsistOf(CassandraConfigVolumeName,
+				CassandraMetricsCollConfigVolumeName, CassandraTmpVolumeName))
+			Expect(kubeapi.GetVolumeNames(cassdc.Spec.PodTemplateSpec)).To(ConsistOf(CassandraConfigVolumeName,
+				CassandraMetricsCollConfigVolumeName, CassandraTmpVolumeName))
 		})
 
 		It("is not rendered if disabled", func() {
@@ -353,8 +365,11 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			medusaContainer := GetContainer(cassdc, MedusaContainer)
 			medusaConfigMap := HelmReleaseName + "-medusa"
 
-			Expect(kubeapi.GetVolumeMountNames(medusaContainer)).To(ConsistOf(medusaConfigMap, "cassandra-config", "server-data", storageSecret))
-			Expect(kubeapi.GetVolumeNames(cassdc.Spec.PodTemplateSpec)).To(ConsistOf(medusaConfigMap, "cassandra-config", storageSecret, PodInfoVolumeName))
+			Expect(kubeapi.GetVolumeMountNames(medusaContainer)).To(ConsistOf(medusaConfigMap,
+				CassandraConfigVolumeName, "server-data", storageSecret))
+			Expect(kubeapi.GetVolumeNames(cassdc.Spec.PodTemplateSpec)).To(ConsistOf(medusaConfigMap,
+				CassandraConfigVolumeName, CassandraMetricsCollConfigVolumeName, CassandraTmpVolumeName,
+				storageSecret, PodInfoVolumeName))
 		})
 
 		It("enabling only medusa with local storage", func() {
@@ -387,12 +402,15 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			medusaContainer := GetContainer(cassdc, MedusaContainer)
 			medusaConfigMap := HelmReleaseName + "-medusa"
 
-			Expect(kubeapi.GetVolumeMountNames(medusaContainer)).To(ConsistOf(medusaConfigMap, "cassandra-config", "server-data", "medusa-backups"))
-			Expect(kubeapi.GetVolumeNames(cassdc.Spec.PodTemplateSpec)).To(ConsistOf(medusaConfigMap, "cassandra-config", PodInfoVolumeName))
+			Expect(kubeapi.GetVolumeMountNames(medusaContainer)).To(ConsistOf(medusaConfigMap, CassandraConfigVolumeName,
+				"server-data", "medusa-backups"))
+			Expect(kubeapi.GetVolumeNames(cassdc.Spec.PodTemplateSpec)).To(ConsistOf(medusaConfigMap,
+				CassandraConfigVolumeName, CassandraMetricsCollConfigVolumeName, CassandraTmpVolumeName, PodInfoVolumeName))
 
 			medusaRestoreInitContainer := GetInitContainer(cassdc, MedusaInitContainer)
 
-			Expect(kubeapi.GetVolumeMountNames(medusaRestoreInitContainer)).To(ConsistOf(medusaConfigMap, "server-config", "server-data", "medusa-backups", PodInfoVolumeName))
+			Expect(kubeapi.GetVolumeMountNames(medusaRestoreInitContainer)).To(ConsistOf(medusaConfigMap,
+				"server-config", "server-data", "medusa-backups", PodInfoVolumeName))
 		})
 
 		It("enabling only medusa with local storage with modified access modes", func() {
@@ -1100,9 +1118,9 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 
 			verifyMedusaVolumeMounts(medusaContainer)
 
-			Expect(len(cassdc.Spec.PodTemplateSpec.Spec.Volumes)).To(Equal(4))
-			AssertVolumeNamesMatch(cassdc, CassandraConfigVolumeName, medusaConfigVolumeName, MedusaBucketKeyVolumeName, PodInfoVolumeName)
-
+			Expect(len(cassdc.Spec.PodTemplateSpec.Spec.Volumes)).To(Equal(6))
+			AssertVolumeNamesMatch(cassdc, CassandraConfigVolumeName, CassandraMetricsCollConfigVolumeName,
+				CassandraTmpVolumeName, medusaConfigVolumeName, MedusaBucketKeyVolumeName, PodInfoVolumeName)
 			Expect(cassdc.Spec.Users).To(ContainElement(cassdcv1beta1.CassandraUser{SecretName: secretName, Superuser: true}))
 		})
 
@@ -1179,8 +1197,10 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 
 			verifyMedusaVolumeMounts(medusaContainer)
 
-			Expect(len(cassdc.Spec.PodTemplateSpec.Spec.Volumes)).To(Equal(4))
-			AssertVolumeNamesMatch(cassdc, CassandraConfigVolumeName, medusaConfigVolumeName, MedusaBucketKeyVolumeName, PodInfoVolumeName)
+			Expect(len(cassdc.Spec.PodTemplateSpec.Spec.Volumes)).To(Equal(6))
+
+			AssertVolumeNamesMatch(cassdc, CassandraConfigVolumeName, CassandraTmpVolumeName,
+				CassandraMetricsCollConfigVolumeName, medusaConfigVolumeName, MedusaBucketKeyVolumeName, PodInfoVolumeName)
 
 			Expect(cassdc.Spec.Users).To(ContainElement(cassdcv1beta1.CassandraUser{SecretName: secretName, Superuser: true}))
 		})
