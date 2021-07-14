@@ -245,6 +245,19 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			Expect(cassdc.Spec.ServiceAccount).To(Equal("k8ssandra"))
 		})
 
+		It("using custom init containers", func() {
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+				ValuesFiles:    []string{"./testdata/init-containers-values.yaml"},
+			}
+
+			Expect(renderTemplate(options)).To(Succeed())
+			initContainers := cassdc.Spec.PodTemplateSpec.Spec.InitContainers
+			Expect(len(initContainers)).To(Equal(5))
+			Expect(initContainers[3].Name).To(Equal("foo"))
+			Expect(initContainers[4].Name).To(Equal("bar"))
+		})
+
 		It("using multiple racks with no affinity labels", func() {
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
@@ -1272,11 +1285,11 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 
 	Context("when configuring the Cassandra version and/or image", func() {
 		cassandraVersionImageMap := map[string]string{
-			"3.11.7":  "k8ssandra/cass-management-api:3.11.7-v0.1.25",
-			"3.11.8":  "k8ssandra/cass-management-api:3.11.8-v0.1.25",
-			"3.11.9":  "k8ssandra/cass-management-api:3.11.9-v0.1.25",
-			"3.11.10": "k8ssandra/cass-management-api:3.11.10-v0.1.25",
-			"4.0.0":   "k8ssandra/cass-management-api:4.0.0-v0.1.25",
+			"3.11.7":  "k8ssandra/cass-management-api:3.11.7-v0.1.26",
+			"3.11.8":  "k8ssandra/cass-management-api:3.11.8-v0.1.26",
+			"3.11.9":  "k8ssandra/cass-management-api:3.11.9-v0.1.26",
+			"3.11.10": "k8ssandra/cass-management-api:3.11.10-v0.1.26",
+			"4.0.0":   "k8ssandra/cass-management-api:4.0.0-v0.1.26",
 		}
 
 		It("using the default version", func() {
@@ -1287,7 +1300,7 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			Expect(renderTemplate(options)).To(Succeed())
 
 			Expect(cassdc.Spec.ServerVersion).To(Equal("3.11.10"))
-			Expect(cassdc.Spec.ServerImage).To(Equal("k8ssandra/cass-management-api:3.11.10-v0.1.25"))
+			Expect(cassdc.Spec.ServerImage).To(Equal("k8ssandra/cass-management-api:3.11.10-v0.1.26"))
 		})
 
 		It("using 3.11.7", func() {

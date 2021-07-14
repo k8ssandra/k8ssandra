@@ -1,5 +1,5 @@
 ---
-title: "Local installs"
+title: "Install K8ssandra on your local K8s"
 linkTitle: "Local"
 no_list: true
 weight: 1
@@ -21,7 +21,7 @@ Also available in followup topics are post-install steps and role-based consider
 
 ## Introduction
 
-In this quickstart for installs of K8ssansdra on your local **DEV** environment, we'll cover:
+In this quickstart for installs of K8ssandra on your local **DEV** environment, we'll cover:
 
 * [Prerequisites]({{< relref "#prerequisites" >}}): Required supporting software including resource recommendations.
 * [K8ssandra Helm repository configuration]({{< relref "#configure-the-k8ssandra-helm-repository" >}}): Accessing the Helm charts that install K8ssandra.

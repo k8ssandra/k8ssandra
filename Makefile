@@ -63,7 +63,7 @@ tools-docker-build:
 	VER=$$(yq eval '.version' charts/k8ssandra/Chart.yaml) ;\
 	mkdir -p build/$$VER ;\
 	cp -rv charts/* build/$$VER/ ;\
-	docker buildx build $(BUILDX_PARAMS) -t ${TOOLS_IMG} -f cmd/k8ssandra-client/Dockerfile.it . ;\
+	docker buildx build $(BUILDX_PARAMS) -t ${TOOLS_IMG} -f cmd/k8ssandra-client/Dockerfile . ;\
 	rm -fr build/$$VER ;\
 
 tools-docker-kind-load: tools-docker-build

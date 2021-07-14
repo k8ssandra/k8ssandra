@@ -14,11 +14,11 @@ cassandra:
   # management-api images. If you do want to change one of these mappings, the new value
   # should be a management-api image.
   versionImageMap:
-    3.11.7: k8ssandra/cass-management-api:3.11.7-v0.1.25
-    3.11.8: k8ssandra/cass-management-api:3.11.8-v0.1.25
-    3.11.9: k8ssandra/cass-management-api:3.11.9-v0.1.25
-    3.11.10: k8ssandra/cass-management-api:3.11.10-v0.1.25
-    4.0.0: k8ssandra/cass-management-api:4.0.0-v0.1.25
+    3.11.7: k8ssandra/cass-management-api:3.11.7-v0.1.26
+    3.11.8: k8ssandra/cass-management-api:3.11.8-v0.1.26
+    3.11.9: k8ssandra/cass-management-api:3.11.9-v0.1.26
+    3.11.10: k8ssandra/cass-management-api:3.11.10-v0.1.26
+    4.0.0: k8ssandra/cass-management-api:4.0.0-v0.1.26
   # -- Overrides the default image mappings. This is intended for advanced use cases
   # like development or testing. By default the Cassandra version has to be one that is in
   # versionImageMap. Template rendering will fail if the version is not in the map. When
@@ -477,7 +477,7 @@ reaper:
     # -- Image repository for reaper
     repository: thelastpickle/cassandra-reaper
     # -- Tag of the reaper image to pull from
-    tag: 2.2.5
+    tag: 2.3.1
     # -- Pull policy for the reaper container
     pullPolicy: IfNotPresent
   # -- Configures the Cassandra user used by Reaper when authentication is
@@ -554,8 +554,8 @@ medusa:
     username: ""
   # -- Enables usage of a bucket across multiple clusters.
   multiTenant: false
-  # -- API interface used by the object store. Supported values include `s3`,
-  # 's3_compatible' and `gcs`. For file system storage, i.e., a pod volume
+  # -- API interface used by the object store. Supported values include `s3`, 's3_compatible',
+  # `google_storage` and 'azure_blobs'. For file system storage, i.e., a pod volume
   # mount, use 'local' and set the podStorage properties. Note that 'local' does not necessarily 
   # imply a local volume. It could also be network attached storage. It is simply accessed
   # through the file system.

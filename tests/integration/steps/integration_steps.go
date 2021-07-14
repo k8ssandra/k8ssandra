@@ -128,13 +128,14 @@ func deployCluster(t *testing.T, namespace, customValues string, helmValues map[
 
 	defer timeTrack(time.Now(), "Installing and starting k8ssandra")
 	if upgrade {
-		initResourceVersion := cassDcResourceVersion(t, namespace)
+		initialResourceVersion := cassDcResourceVersion(t, namespace)
 		err = helm.UpgradeE(t, helmOptions, clusterChartPath, releaseName)
-		waitForCassDcUpgrade(t, namespace, initResourceVersion)
+		g(t).Expect(err).To(BeNil(), "Failed installing k8ssandra with Helm: %v", err)
+		waitForCassDcUpgrade(t, namespace, initialResourceVersion)
 	} else {
 		err = helm.InstallE(t, helmOptions, clusterChartPath, releaseName)
+		g(t).Expect(err).To(BeNil(), "Failed installing k8ssandra with Helm: %v", err)
 	}
-	g(t).Expect(err).To(BeNil(), "Failed installing k8ssandra with Helm")
 	// Wait for cass-operator pod to be ready
 	labels := map[string]string{"app.kubernetes.io/name": "cass-operator"}
 	g(t).Eventually(func() bool {
@@ -145,26 +146,21 @@ func deployCluster(t *testing.T, namespace, customValues string, helmValues map[
 	WaitForCassDcToBeReady(t, namespace)
 }
 
-func DeployClusterWithValues(t *testing.T, namespace, options, customValues string, nodes int, upgrade bool, useLocalCharts bool, version string) {
-	log.Printf("Deploying a cluster with %s options using the %s values", options, customValues)
+func DeployClusterWithValues(t *testing.T, namespace, medusaBackend, customValues string, nodes int, upgrade bool, useLocalCharts bool, version string) {
+	log.Printf("Deploying a cluster with %s Medusa backend using the %s values", medusaBackend, customValues)
 
 	helmValues := map[string]string{}
-	if options == "default" {
-		helmValues = map[string]string{
-			"reaper.ingress.host": "repair.127.0.0.1.nip.io",
-		}
-	}
-	if options == "minio" {
-		serviceName := MinioServiceName(t)
-		helmValues = map[string]string{
-			"medusa.storage_properties.host": fmt.Sprintf("%s.minio.svc.cluster.local", serviceName),
-		}
-	}
 
-	if options == "s3" && os.Getenv("K8SSANDRA_MEDUSA_BUCKET_NAME") != "" {
-		helmValues = map[string]string{
-			"medusa.bucketName":                os.Getenv("K8SSANDRA_MEDUSA_BUCKET_NAME"),
-			"medusa.storage_properties.region": os.Getenv("K8SSANDRA_MEDUSA_BUCKET_REGION"),
+	switch strings.ToLower(medusaBackend) {
+	case "minio":
+		serviceName := MinioServiceName(t)
+		helmValues["medusa.storage_properties.host"] = fmt.Sprintf("%s.minio.svc.cluster.local", serviceName)
+	case "s3", "azure_blobs", "google_storage":
+		if os.Getenv("K8SSANDRA_MEDUSA_BUCKET_NAME") != "" {
+			helmValues["medusa.bucketName"] = os.Getenv("K8SSANDRA_MEDUSA_BUCKET_NAME")
+		}
+		if os.Getenv("K8SSANDRA_MEDUSA_BUCKET_REGION") != "" {
+			helmValues["medusa.storage_properties.region"] = os.Getenv("K8SSANDRA_MEDUSA_BUCKET_REGION")
 		}
 	}
 
@@ -353,14 +349,14 @@ func DeployMinioAndCreateBucket(t *testing.T, bucketName string) {
 	_, err := helm.RunHelmCommandAndGetOutputE(t, helmOptions, "repo", "add", "minio", "https://helm.min.io/")
 	g(t).Expect(err).To(BeNil(), fmt.Sprintf("failed to add minio helm repo: %s", err))
 
-	UninstallHelmRealeaseAndNamespace(t, "minio", "minio")
+	UninstallHelmReleaseAndNamespace(t, "minio", "minio")
 
 	values := fmt.Sprintf("accessKey=minio_key,secretKey=minio_secret,defaultBucket.enabled=true,defaultBucket.name=%s", bucketName)
 	_, err = helm.RunHelmCommandAndGetOutputE(t, helmOptions, "install", "--set", values, "minio", "minio/minio", "-n", "minio", "--create-namespace")
 	g(t).Expect(err).To(BeNil(), fmt.Sprintf("failed to install the minio helm chart: %s", err))
 }
 
-func UninstallHelmRealeaseAndNamespace(t *testing.T, helmReleaseName, namespace string) {
+func UninstallHelmReleaseAndNamespace(t *testing.T, helmReleaseName, namespace string) {
 	helmOptions := &helm.Options{
 		KubectlOptions: getKubectlOptions("default"),
 	}
@@ -514,7 +510,7 @@ func DeleteNamespace(t *testing.T, namespace string) {
 }
 
 func InstallTraefik(t *testing.T) {
-	UninstallHelmRealeaseAndNamespace(t, "traefik", "traefik")
+	UninstallHelmReleaseAndNamespace(t, "traefik", "traefik")
 	kubectlOptions := getKubectlOptions("default")
 	// Namespace doesn't exist yet, let's create it
 	options := &helm.Options{KubectlOptions: kubectlOptions}
@@ -524,9 +520,23 @@ func InstallTraefik(t *testing.T) {
 	helm.RunHelmCommandAndGetOutputE(t, options, "repo", "update")
 
 	// Deploy traefik
-	// helm install traefik traefik/traefik -n traefik --create-namespace -f docs/content/en/tasks/connect/ingress/kind-deployment/traefik.values.yaml
 	valuesPath, _ := filepath.Abs("../../docs/content/en/tasks/connect/ingress/kind-deployment/traefik.values.yaml")
-	_, err := helm.RunHelmCommandAndGetOutputE(t, options, "install", "traefik", "traefik/traefik", "-n", "traefik", "--create-namespace", "-f", valuesPath)
+	_, err := helm.RunHelmCommandAndGetOutputE(
+		t,
+		options,
+		"install",
+		"traefik",
+		"traefik/traefik",
+		"-n",
+		"traefik",
+		"--create-namespace",
+		"-f",
+		valuesPath,
+		// FIXME remove version when this issue is fixed:
+		// https://github.com/traefik/traefik-helm-chart/issues/441
+		"--version",
+		"9.19.2",
+	)
 	g(t).Expect(err).To(BeNil())
 }
 
@@ -545,8 +555,20 @@ func ExtractUsernamePassword(t *testing.T, secretName, namespace string) credent
 
 func runCassandraQueryAndGetOutput(t *testing.T, namespace, query string) string {
 	cqlCredentials := ExtractUsernamePassword(t, "k8ssandra-superuser", namespace)
-	// Get reaper service
-	output, _ := k8s.RunKubectlAndGetOutputE(t, getKubectlOptions(namespace), "exec", "-it", fmt.Sprintf("%s-%s-default-sts-0", releaseName, datacenterName), "--", "/opt/cassandra/bin/cqlsh", "--username", cqlCredentials.username, "--password", cqlCredentials.password, "-e", query)
+	output, _ := k8s.RunKubectlAndGetOutputE(
+		t,
+		getKubectlOptions(namespace),
+		"exec",
+		fmt.Sprintf("%s-%s-default-sts-0", releaseName, datacenterName),
+		"--",
+		"/opt/cassandra/bin/cqlsh",
+		"--username",
+		cqlCredentials.username,
+		"--password",
+		cqlCredentials.password,
+		"-e",
+		query,
+	)
 	return output
 }
 
