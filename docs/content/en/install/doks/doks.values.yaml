@@ -12,7 +12,7 @@ cassandra:
 
   heap:
    size: 31G
-   newGenSize: 31G
+   newGenSize: 5G
 
   resources:
     requests:
