@@ -194,7 +194,7 @@ which kubectl
 
 #### Install helm v3
 
-If you haven't already, install Helm v3. On the [Helm site](https://helm.sh/docs/), notice the latest stable version near the top-right menu. For example: 3.6.2. 
+If you haven't already, install Helm v3. On the [Helm site](https://helm.sh/docs/), notice the latest version near the top-right menu. For example: 3.6.2. 
 
 Example:
 
@@ -518,10 +518,10 @@ Take note of the comments in this file. If you have changed the name of your sec
 
 With a `values.yaml` file generated, which details specific configuration overrides, we can now deploy K8ssandra via Helm.
 
-If you haven't already, add the latest stable K8ssandra repo:
+If you haven't already, add the latest K8ssandra repo:
 
 ```bash
-helm repo add k8ssandra https://helm.k8ssandra.io/stable
+helm repo add k8ssandra https://helm.k8ssandra.io
 ```
 
 **Output**:

@@ -389,10 +389,10 @@ Take note of the comments in this file. If you have changed the name of your sec
 
 ### Deploy K8ssandra with Helm
 
-If you haven't already, add the latest stable K8ssandra repo:
+If you haven't already, add the latest K8ssandra repo:
 
 ```bash
-helm repo add k8ssandra https://helm.k8ssandra.io/stable
+helm repo add k8ssandra https://helm.k8ssandra.io
 ```
 
 **Output**:
