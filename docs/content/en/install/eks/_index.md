@@ -12,9 +12,9 @@ Amazon [Elastic Kubernetes Service](https://aws.amazon.com/eks/features/) or "EK
 Also available in followup topics are post-install steps and role-based considerations for [developers]({{< relref "/quickstarts/developer">}}) or [site reliability engineers]({{< relref "/quickstarts/site-reliability-engineer">}}) (SREs).
 {{% /alert %}}
 
-## Deployment
+## Minimum deployment
 
-This guide will cover provisioning and installing the following infrastructure resources.
+This topic covers provisioning the following infrastructure resources as a minimum for production. See the [next section]({{< relref "#infrastructure-and-cassandra-recommendations" >}}) for additional considerations discovered during performance benchmarks.
 
 * 1x Virtual Private Cloud
 * 10x Subnets
@@ -40,23 +40,137 @@ On this infrastructure the K8ssandra installation will consist of the following 
 * 1x node Grafana deployment
 * 1x node Reaper deployment
 
-Feel free to update the parameters used during this guide to match your target deployment. The following should be considered a minimum for production workloads.
+Feel free to update the parameters used during this guide to match your target deployment. This should be considered a minimum for production workloads.
+
+## Infrastructure and Cassandra recommendations
+
+While the section above includes infrastructure settings for **minimum** production workloads, performance benchmarks reveal a wider range of recommendations that are important to consider. The performance benchmark report, available in this [detailed blog post](https://k8ssandra.io/blog/articles/k8ssandra-performance-benchmarks-on-cloud-managed-kubernetes/), compared the throughput and latency between:
+
+* The baseline performance of a Cassandra cluster running on AWS EC2 instances -- a common setup for enterprises operating Cassandra clusters
+* The performance of K8ssandra running on Amazon EKS, Google GCP GKE, and Microsoft Azure AKS. 
+
+It's important to note the following additional AWS infrastructure settings and observations from the benchmark:
+
+* 8 to 16 vCPUs 
+  * r5 instances: Intel Xeon Platinum 8000 series. Cassandra workloads are mostly CPU bound and the core speed made a difference in the throughput benchmarks.
+* 32 GB to 128 GB RAM (we used 64 GB RAM during the benchmark)
+* 2 to 4 TB of disk space
+  * In the benchmark, we used 1x 3.4 TB EBS gp2 volume
+* 10k IOPS (observed)
+
+For the disk performance, the benchmark used [Cassandra inspired fio profiles](https://github.com/ibspoof/cassandra-fio) that attempt to emulate Leveled Compaction Strategy and Size Tiered Compaction Strategy behaviors.  
+
+Regarding the Cassandra version and settings:
+
+* The benchmark used Cassandra 4.0-beta4.
+* Cassandra default settings were applied with the exception of garbage collection (GC) settings. This used G1GC with 31GB of heap size, along with a few GC related JVM flags:
+
+  ```
+  -XX:+UseG1GC
+  -XX:G1RSetUpdatingPauseTimePercent=5
+  -XX:MaxGCPauseMillis=300
+  -XX:InitiatingHeapOccupancyPercent=70 -Xms31G -Xmx31G
+  ```
+
+To summarize the findings, running Cassandra in Kubernetes using K8ssandra didn't introduce any notable performance impacts in throughput or latency, all while K8ssandra simplified the deployment steps. See the [blog post](https://k8ssandra.io/blog/articles/k8ssandra-performance-benchmarks-on-cloud-managed-kubernetes/) for more detailed settings, results, and the measures taken to ensure fair production comparisons.
 
 ## Terraform
 
 As a convenience we provide reference [Terraform](https://www.terraform.io/) modules for orchestrating the provisioning of cloud resources necessary to run K8ssandra.
 
-### Tools
+### Prerequisite tools
+
+First, these steps assume you already have an AWS account. If not, see [Create and activate a new AWS account](https://aws.amazon.com/premiumsupport/knowledge-center/create-and-activate-aws-account/) in the AWS documentation. 
+
+Next, ensure you have the prerequisite tools installed (or subsequent versions), including the Terraform binary. Links below go to download resources:
+
 
 | Tool | Version | 
 |------|---------|
-| [Terraform](https://www.terraform.io/downloads.html) | 0.14 |
+| [Terraform](https://www.terraform.io/downloads.html) | 1.0.0 or higher |
 | [Terraform EKS provider](https://learn.hashicorp.com/collections/terraform/aws-get-started) | ~>N.n |
 | [Helm](https://helm.sh/) | 3 |
 | [Amazon AWS SDK](https://aws.amazon.com/cli/)  | 2.2.0 |
 | [kubectl](https://kubernetes.io/docs/tasks/tools/) | 1.17.17 |
 | [Python](https://www.python.org/) | 3 |
 | [aws-iam-authenticator](https://docs.aws.amazon.com/eks/latest/userguide/install-aws-iam-authenticator.html) | 0.5.0 |
+
+#### Install the Terraform binary
+
+If you haven't already, install Terraform. Refer to the helpful Terraform installation video on this [hashicorp.com page](https://learn.hashicorp.com/tutorials/terraform/infrastructure-as-code?in=terraform/aws-get-started). Follow the instructions for your OS type, then return here.  
+
+Terraform install example for Ubuntu Linux:
+
+```bash
+sudo apt-get update && sudo apt-get install -y gnupg software-properties-common curl
+curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -
+sudo apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
+sudo apt-get update && sudo apt-get install terraform
+```
+
+Verify the installation:
+
+```bash
+terraform version
+```
+
+**Output**:
+
+```bash
+Terraform v1.0.0
+on darwin_amd64
+
+Your version of Terraform is out of date! The latest version
+is 1.0.1. You can update by downloading from https://www.terraform.io/downloads.html
+```
+
+#### Set up the AWS CLI v2
+
+If you haven't already, set up the AWS CLI v2. The steps assume you already have an AWS account. 
+
+Follow the instructions in [Installing, updating, and uninstalling the AWS CLI version 2](https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html).
+
+Next, FYI, refer to [Installing aws-iam-authenticator](https://docs.aws.amazon.com/eks/latest/userguide/install-aws-iam-authenticator.html). As explained on that page, 
+if you're running the AWS CLI version 1.16.156 or later, you don't need to install the authenticator.
+
+#### Install kubectl
+
+If you haven't already, install `kubectl`. You'll use `kubectl` commands to interact with your K8ssandra resources. 
+
+One option to get `kubectl` is described in this AWS topic, [Installing kubectl](https://docs.aws.amazon.com/eks/latest/userguide/install-kubectl.html). See the OS-specific examples. Here's an example on Linux and the 1.17 Kubernetes version:
+
+```bash
+curl -o kubectl https://amazon-eks.s3.us-west-2.amazonaws.com/1.17.12/2020-11-02/bin/linux/amd64/kubectl
+```
+
+Verify the `kubectl` install:
+
+```bash
+kubectl version --short --client
+```
+
+**Output**:
+
+```bash
+Client Version: v1.17.12
+```
+
+#### Install helm v3
+
+If you haven't already, install Helm v3. See this EKS topic, [Using Helm with Amazon EKS](https://docs.aws.amazon.com/eks/latest/userguide/helm.html). Note the  prerequisite: before you can install Helm charts on your Amazon EKS cluster, you must configure `kubectl` to work for Amazon EKS. If you have not already done this, see [Create a kubeconfig for Amazon EKS](https://docs.aws.amazon.com/eks/latest/userguide/create-kubeconfig.html).
+
+Once you've completed the prerequisites, see the [Helm install] steps for your OS. Here's a Linux example:
+
+```bash
+curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 > get_helm.sh
+chmod 700 get_helm.sh
+./get_helm.sh
+```
+
+#### Install Python v3
+
+If you haven't already, install Python version 3.x for your OS. See the [python downloads](https://www.python.org/downloads/) page.
+
 
 ### Checkout the `k8ssandra-terraform` project
 
@@ -95,6 +209,8 @@ Default output format [None]:
 ```
 
 ### Setup Environment Variables
+
+Set up the following environment variables for Terraform's use. Be sure to specify the region you're using in AWS.
 
 ```bash
 export TF_VAR_environment=prod
@@ -273,7 +389,33 @@ Take note of the comments in this file. If you have changed the name of your sec
 
 ### Deploy K8ssandra with Helm
 
-With a `values.yaml` file generated which details out specific configuration overrides we can now deploy K8ssandra via Helm.
+If you haven't already, add the latest K8ssandra repo:
+
+```bash
+helm repo add k8ssandra https://helm.k8ssandra.io
+```
+
+**Output**:
+
+```bash
+"k8ssandra" has been added to your repositories
+```
+
+To ensure you have the latest from all your repos:
+
+```bash
+helm repo update
+```
+
+**Output**:
+
+```bash
+Hang tight while we grab the latest from your chart repositories...
+...Successfully got an update from the "k8ssandra" chart repository
+Update Complete. ⎈Happy Helming!⎈
+```
+
+Now install K8ssandra and specify the `eks.values.yaml` file that you customized in a prior step:
 
 ```console
 helm install prod-k8ssandra k8ssandra/k8ssandra -f eks.values.yaml

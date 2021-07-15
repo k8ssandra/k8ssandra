@@ -55,16 +55,16 @@ For more, see this [troubleshooting tip]({{< relref "tasks/troubleshoot/#check-q
 While the section above includes infrastructure settings for **minimum** production workloads, performance benchmarks reveal a wider range of recommendations that are important to consider. The performance benchmark report, available in this [detailed blog post](https://k8ssandra.io/blog/articles/k8ssandra-performance-benchmarks-on-cloud-managed-kubernetes/), compared the throughput and latency between:
 
 * The baseline performance of a Cassandra cluster running on AWS EC2 instances -- a common setup for enterprises operating Cassandra clusters
-* The performance of K8ssandra running on AWS, EKS, and GCP GKE
+* The performance of K8ssandra running on Amazon EKS, Google GCP GKE, and Microsoft Azure AKS. 
 
-It's important to note the following additional GCP infrastructure recommendations from the benchmark:
+It's important to note the following additional GCP infrastructure recommendations and observations from the benchmark:
 
 * 8 to 16 vCPUs 
   * n2 instances: Intel Cascade Lake series
 * 32 GB to 128 GB RAM
 * 2 to 4 TB of disk space
   * In the benchmark, we used 3.4TB volumes to achieve enough power to match high performance production requirements.
-* 5k to 10k Input/Output Operations per Second (IOPS)
+* 5k to 10k IOPS (observed)
 
 For the disk performance, the benchmark used [Cassandra inspired fio profiles](https://github.com/ibspoof/cassandra-fio) that attempt to emulate Leveled Compaction Strategy and Size Tiered Compaction Strategy behaviors. In the report, throughput and latency results were measured for three types of GCP disks:
 
@@ -81,7 +81,7 @@ Regarding the Cassandra version and settings:
 * The benchmark used Cassandra 4.0-beta4.
 * Cassandra default settings were applied with the exception of garbage collection (GC) settings. This used G1GC with 31GB of heap size, along with a few GC related JVM flags:
 
-  ``` bash
+  ```
   -XX:+UseG1GC
   -XX:G1RSetUpdatingPauseTimePercent=5
   -XX:MaxGCPauseMillis=300
@@ -194,7 +194,7 @@ which kubectl
 
 #### Install helm v3
 
-If you haven't already, install Helm v3. On the [Helm site](https://helm.sh/docs/), notice the latest stable version near the top-right menu. For example: 3.6.2. 
+If you haven't already, install Helm v3. On the [Helm site](https://helm.sh/docs/), notice the latest version near the top-right menu. For example: 3.6.2. 
 
 Example:
 
@@ -518,10 +518,10 @@ Take note of the comments in this file. If you have changed the name of your sec
 
 With a `values.yaml` file generated, which details specific configuration overrides, we can now deploy K8ssandra via Helm.
 
-If you haven't already, add the latest stable K8ssandra repo:
+If you haven't already, add the latest K8ssandra repo:
 
 ```bash
-helm repo add k8ssandra https://helm.k8ssandra.io/stable
+helm repo add k8ssandra https://helm.k8ssandra.io
 ```
 
 **Output**:
