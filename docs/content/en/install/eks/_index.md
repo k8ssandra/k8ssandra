@@ -49,14 +49,14 @@ While the section above includes infrastructure settings for **minimum** product
 * The baseline performance of a Cassandra cluster running on AWS EC2 instances -- a common setup for enterprises operating Cassandra clusters
 * The performance of K8ssandra running on Amazon EKS, Google GCP GKE, and Microsoft Azure AKS. 
 
-It's important to note the following additional AWS infrastructure settings used in the benchmark:
+It's important to note the following additional AWS infrastructure settings and observations from the benchmark:
 
 * 8 to 16 vCPUs 
   * r5 instances: Intel Xeon Platinum 8000 series. Cassandra workloads are mostly CPU bound and the core speed made a difference in the throughput benchmarks.
 * 32 GB to 128 GB RAM (we used 64 GB RAM during the benchmark)
 * 2 to 4 TB of disk space
   * In the benchmark, we used 1x 3.4 TB EBS gp2 volume
-* 10k Input/Output Operations per Second (IOPS)
+* 10k IOPS (observed)
 
 For the disk performance, the benchmark used [Cassandra inspired fio profiles](https://github.com/ibspoof/cassandra-fio) that attempt to emulate Leveled Compaction Strategy and Size Tiered Compaction Strategy behaviors.  
 
@@ -65,7 +65,7 @@ Regarding the Cassandra version and settings:
 * The benchmark used Cassandra 4.0-beta4.
 * Cassandra default settings were applied with the exception of garbage collection (GC) settings. This used G1GC with 31GB of heap size, along with a few GC related JVM flags:
 
-  ``` bash
+  ```
   -XX:+UseG1GC
   -XX:G1RSetUpdatingPauseTimePercent=5
   -XX:MaxGCPauseMillis=300
