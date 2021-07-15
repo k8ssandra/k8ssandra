@@ -55,7 +55,7 @@ For more, see this [troubleshooting tip]({{< relref "tasks/troubleshoot/#check-q
 While the section above includes infrastructure settings for **minimum** production workloads, performance benchmarks reveal a wider range of recommendations that are important to consider. The performance benchmark report, available in this [detailed blog post](https://k8ssandra.io/blog/articles/k8ssandra-performance-benchmarks-on-cloud-managed-kubernetes/), compared the throughput and latency between:
 
 * The baseline performance of a Cassandra cluster running on AWS EC2 instances -- a common setup for enterprises operating Cassandra clusters
-* The performance of K8ssandra running on AWS, EKS, and GCP GKE
+* The performance of K8ssandra running on Amazon EKS, Google GCP GKE, and Microsoft Azure AKS. 
 
 It's important to note the following additional GCP infrastructure recommendations from the benchmark:
 
