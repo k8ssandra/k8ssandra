@@ -1,7 +1,7 @@
 ---
 title: "K8ssandra release notes"
 linkTitle: "Release notes"
-weight: 8
+weight: 2
 description: Release notes for the open-source K8ssandra community project.
 ---
 
