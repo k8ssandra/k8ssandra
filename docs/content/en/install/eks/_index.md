@@ -389,7 +389,33 @@ Take note of the comments in this file. If you have changed the name of your sec
 
 ### Deploy K8ssandra with Helm
 
-With a `values.yaml` file generated which details out specific configuration overrides we can now deploy K8ssandra via Helm.
+If you haven't already, add the latest stable K8ssandra repo:
+
+```bash
+helm repo add k8ssandra https://helm.k8ssandra.io/stable
+```
+
+**Output**:
+
+```bash
+"k8ssandra" has been added to your repositories
+```
+
+To ensure you have the latest from all your repos:
+
+```bash
+helm repo update
+```
+
+**Output**:
+
+```bash
+Hang tight while we grab the latest from your chart repositories...
+...Successfully got an update from the "k8ssandra" chart repository
+Update Complete. ⎈Happy Helming!⎈
+```
+
+Now install K8ssandra and specify the `eks.values.yaml` file that you customized in a prior step:
 
 ```console
 helm install prod-k8ssandra k8ssandra/k8ssandra -f eks.values.yaml
