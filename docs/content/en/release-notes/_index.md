@@ -91,7 +91,7 @@ The following sections briefly summarize and link to key developments in K8ssand
 * Upgrade from Medusa 0.10.1 to 0.11.0.
 * Upgrade from Reaper 2.2.2 to 2.2.5.
 * Integrate Fossa component/license scanning, [#812](https://github.com/k8ssandra/k8ssandra/issues/812).
-* Upgrade medusa-operator to 0.3.3 [#905](https://github.com/k8ssandra/k8ssandra/issues/905).
+* Upgrade medusa-operator to 0.3.3, [#905](https://github.com/k8ssandra/k8ssandra/issues/905).
 
 ### New features
 
@@ -103,7 +103,8 @@ The following sections briefly summarize and link to key developments in K8ssand
 ### Enhancements
 
 * Allow configuring the namespace of service monitors, [#844](https://github.com/k8ssandra/k8ssandra/issues/844).
-* Detect IEC formatted c* heap.size and heap.newGenSize; return error identifying issue, [#29](https://github.com/k8ssandra/cass-operator/issues/29) in the k8ssandra/cass-operator GitHub repo.
+* Detect IEC formatted c* heap.size and heap.newGenSize; return error identifying issue, [#29](https://github.com/k8ssandra/k8ssandra/issues/29). 
+Also see: Add validation check for Cassandra heap size properties, [#701](https://github.com/k8ssandra/k8ssandra/issues/701).
 * Add support for private registries, [#420](https://github.com/k8ssandra/k8ssandra/issues/420).
 * Add support for Medusa backups on Azure, [#685](https://github.com/k8ssandra/k8ssandra/issues/685).
 
