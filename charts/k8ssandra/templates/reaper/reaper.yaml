@@ -6,6 +6,7 @@ metadata:
   labels: {{ include "k8ssandra.labels" . | indent 4 }}
 spec:
   image: {{ include "k8ssandra-common.flattenedImage" .Values.reaper.image }}
+  ServiceAccountName: {{ .Values.reaper.serviceAccount }}
   serverConfig:
     autoScheduling:
       enabled: {{ .Values.reaper.autoschedule }}

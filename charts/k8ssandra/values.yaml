@@ -468,6 +468,8 @@ reaper:
   # will be configured in Cassandra with credentials only created for Reaper
   # in order to limit access.
   enabled: true
+  # -- The name of the service account to use for Reaper pods.
+  serviceAccount: default
   # Configures the Reaper container image to use. Exercise care when changing
   # the Reaper image. Reaper is deployed and managed by reaper-operator. You
   # will need to make sure that the image is compatible with reaper-operator.
@@ -556,7 +558,7 @@ medusa:
   multiTenant: false
   # -- API interface used by the object store. Supported values include `s3`, 's3_compatible',
   # `google_storage` and 'azure_blobs'. For file system storage, i.e., a pod volume
-  # mount, use 'local' and set the podStorage properties. Note that 'local' does not necessarily 
+  # mount, use 'local' and set the podStorage properties. Note that 'local' does not necessarily
   # imply a local volume. It could also be network attached storage. It is simply accessed
   # through the file system.
   storage: s3
@@ -621,6 +623,9 @@ monitoring:
 # deployment could be deleted before the CassandraDatacenter. The cleaner
 # ensures that the CassandraDatacenter is deleted before cass-operator.
 cleaner:
+  # -- Uncomment to specify the name of the service account to use for the
+  # cleaner. Defaults to <release-name>-cleaner-k8ssandra
+  # serviceAccount:
   image:
     # -- Image registry for the cleaner
     registry: docker.io
@@ -630,9 +635,12 @@ cleaner:
     tag: latest
     # -- Pull policy for the cleaner container
     pullPolicy: IfNotPresent
-# k8ssandra-client provides CLI utilities, but also certain functions such as 
+# k8ssandra-client provides CLI utilities, but also certain functions such as
 # upgradecrds that allow modifying the running instances
 client:
+  # -- Uncomment to specify the name of the service account to use for the
+  # client tools image. Defaults to <release-name>-crd-upgrader-k8ssandra.
+  # serviceAccount:
   image:
     # -- Image registry for the client
     registry: docker.io
