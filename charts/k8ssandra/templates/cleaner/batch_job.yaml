@@ -13,7 +13,7 @@ spec:
       labels: {{ include "k8ssandra.labels" . | indent 8 }}
     spec:
       restartPolicy: OnFailure
-      serviceAccountName: {{ .Release.Name }}-cleaner-k8ssandra
+      serviceAccountName: {{ default (print .Release.Name "-cleaner-k8ssandra") .Values.cleaner.serviceAccount }}
       containers:
         - name: cleaner-job-k8ssandra
           image: {{ include "k8ssandra-common.flattenedImage" .Values.cleaner.image }}
