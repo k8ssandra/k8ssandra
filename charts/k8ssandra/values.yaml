@@ -57,8 +57,9 @@ cassandra:
       tag: 1.33.1
       # -- Pull policy for the jmx-credentials image
       pullPolicy: IfNotPresent
-  # -- The ServiceAccount to use for Cassandra pods
-  serviceAccount: ""
+  # -- The ServiceAccount to use for Cassandra pods. If not defined, defaults
+  # to the default account for the namespace.
+  # serviceAccount:
   # -- Cluster name defaults to release name when not specified.
   clusterName: ""
   # -- Authentication and authorization related settings.
@@ -351,8 +352,9 @@ stargate:
       tag: 3.12.2
       # -- Pull policy for the wait-for-cassandra container
       pullPolicy: IfNotPresent
-  # -- The service account to use for Stargate pods
-  serviceAccount: default
+  # -- The service account to use for Stargate pods. Defaults to the default
+  # account for the namespace.
+  # serviceAccount:
   # -- Sets the heap size Stargate will use in megabytes. Memory request and
   # limit for the pod will be set to this value x2 and x4, respectively.
   heapMB: 256
@@ -468,8 +470,9 @@ reaper:
   # will be configured in Cassandra with credentials only created for Reaper
   # in order to limit access.
   enabled: true
-  # -- The name of the service account to use for Reaper pods.
-  serviceAccount: default
+  # -- The name of the service account to use for Reaper pods. Defaults to the
+  # the default account.
+  # serviceAccount:
   # Configures the Reaper container image to use. Exercise care when changing
   # the Reaper image. Reaper is deployed and managed by reaper-operator. You
   # will need to make sure that the image is compatible with reaper-operator.
