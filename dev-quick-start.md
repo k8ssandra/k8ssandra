@@ -1,6 +1,6 @@
 # K8ssandra Chart Development Quick Start
 
-*Before diving into chart development we recommend you start with the broader [K8ssandra Development Guide](dev-guid.md).*
+*Before diving into chart development we recommend you start with the broader [K8ssandra Development Guide](dev-guide.md).*
 
 ## About
 This quick start guide is written for developers wanting to get involved in the development of the helm based packaging of K8ssandra and find out more about:

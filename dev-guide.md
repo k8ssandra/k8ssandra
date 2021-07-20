@@ -35,7 +35,7 @@ There are a lot of great learning resources out there related to all of these to
 * [Kubebuilder Book](https://book.kubebuilder.io/)
 * [Building Operators with Go](https://sdk.operatorframework.io/docs/building-operators/golang/)
 * [Tutorial: Get Started with Go](https://golang.org/doc/tutorial/getting-started)
-* [DataStax Academy](https://www.datastax.com/dev/academy)
+* [Apache Cassandra Operations in Kubernetes](https://www.datastax.com/learn/apache-cassandra-operations-in-kubernetes)
 * [DataStax Developers YouTube Channel](https://www.youtube.com/c/DataStaxDevs/videos)
 * [Medusa for Apache Cassandra Documentation](https://github.com/thelastpickle/cassandra-medusa#documentation)
 * [Reaper for Apache Cassandra Documentation](http://cassandra-reaper.io/docs/)
