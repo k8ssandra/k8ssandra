@@ -30,4 +30,4 @@ For each component deployed by K8ssandra, see the following 3rd-party license re
 * [Tasks]({{< relref "tasks" >}}): Need to get something done? Check out the Tasks topics for a helpful collection of outcome-based solutions.
 * [Reference]({{< relref "reference" >}}): Explore the K8ssandra configuration interface (Helm charts), the available options, and a Glossary.
 
-Also, we encourage you to actively participate in the [K8ssandra community](https://k8ssandra.io/community/).
+Join us as part of the [K8ssandra community](https://k8ssandra.io/community/)!
