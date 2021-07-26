@@ -18,6 +18,7 @@ and date `## vX.Y.Z - YYYY-MM-DD` and create a new placeholder section for  `unr
 
 ## unreleased
 
+* [FEATURE] #949 Upgrade from Management API v0.1.26 to v0.1.27 to provide support for Cassandra 4.0.0 GA, make 4.0.0 the default
 * [CHANGE] Upgrade to reaper-operator 0.3.3 and Reaper 2.3.0
 * [CHANGE] Upgrade from Stargate 1.0.18 to 1.0.29
 * [CHANGE] Upgrade from Medusa 0.10.1 to 0.11.0
