@@ -198,7 +198,7 @@ To access K8ssandra using the stand alone CQLSH utility:
 1. Query the data using [SELECT](https://docs.datastax.com/en/cql-oss/3.x/cql/cql_reference/cqlSelect.html) and validate the return results:
 
     ```sql
-    cqlsh> SELECT * FROM k8ssandra_test.users;
+    SELECT * FROM k8ssandra_test.users;
     ```
 
     **Output**:

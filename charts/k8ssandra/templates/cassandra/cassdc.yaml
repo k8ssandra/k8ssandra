@@ -29,7 +29,7 @@ spec:
   configBuilderImage: {{ include "k8ssandra-common.flattenedImage" .Values.cassandra.configBuilder.image }}
   systemLoggerImage: {{ include "k8ssandra-common.flattenedImage" .Values.cassandra.loggingSidecar.image }}
   {{- if .Values.cassandra.serviceAccount }}
-  serviceAccount: {{ .Values.cassandra.serviceAccount }}
+  serviceAccount: {{ default "default" .Values.cassandra.serviceAccount }}
   {{- end }}
   managementApiAuth:
     insecure: {}
@@ -173,6 +173,10 @@ spec:
         volumeMounts:
           - name: cassandra-config
             mountPath: /cassandra-base-config/
+          - name: cassandra-metrics-coll-config
+            mountPath: /opt/metrics-collector/config/
+          - name: cassandra-tmp
+            mountPath: /tmp/
       - name: server-config-init
      {{- if (or .Values.cassandra.auth.enabled .Values.reaper.enabled) }}
       - name: jmx-credentials
@@ -290,6 +294,10 @@ spec:
       {{- end }}
       volumes:
       - name: cassandra-config
+        emptyDir: {}
+      - name: cassandra-metrics-coll-config
+        emptyDir: {}
+      - name: cassandra-tmp
         emptyDir: {}
       {{- if .Values.medusa.enabled }}
       - name: podinfo
