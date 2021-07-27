@@ -1,4 +1,6 @@
 {{- if .Values.reaper.enabled }}
+{{- $defaultSecurityCtx := (include "k8ssandra.container.security-ctx-defaults" .) -}}
+{{- $defaultPodSecurityCtx := "{}" -}}
 apiVersion: reaper.cassandra-reaper.io/v1alpha1
 kind: Reaper
 metadata:
@@ -32,4 +34,12 @@ spec:
   {{- if .Values.reaper.tolerations }}
   tolerations: {{ toYaml .Values.reaper.tolerations | nindent 4 }}
   {{- end }}
+  schemaInitContainerConfig:
+    {{- if (and .Values.reaper.schemaInitContainerConfig .Values.reaper.schemaInitContainerConfig.securityContext) }}
+    securityContext: {{ toYaml .Values.reaper.schemaInitContainerConfig.securityContext | nindent 6 -}}
+    {{- else }}
+    securityContext: {{ $defaultSecurityCtx | nindent 6 }}
+    {{- end }}
+  podSecurityContext: {{- ternary ($defaultPodSecurityCtx) (.Values.reaper.podSecurityContext | toYaml) (empty .Values.reaper.podSecurityContext) | nindent 4 }}
+  securityContext: {{- ternary ($defaultSecurityCtx) (.Values.reaper.securityContext | toYaml) (empty .Values.reaper.securityContext) | nindent 4 }}
 {{- end }}

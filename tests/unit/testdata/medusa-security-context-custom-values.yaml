@@ -1,0 +1,55 @@
+medusa:
+  enabled: true
+  securityContext:
+    allowPrivilegeEscalation: true
+    capabilities:
+      add:
+        - "a"
+        - "b"
+      drop:
+        - "z"
+    privileged: true
+    procMount: "test-proc-mount"
+    readOnlyRootFilesystem: false
+    runAsGroup: 8675309
+    runAsNonRoot: true
+    runAsUser: 9035768
+    seLinuxOptions:
+      level: "test-level"
+      role: "test-role"
+      type: "test-type"
+      user: "test-user"
+    seccompProfile:
+      localhostProfile: "test-localhost-profile"
+      type: "test-type"
+    windowsOptions:
+      gmsaCredentialSpec: "test-cred-spec"
+      gmsaCredentialSpecName: "test-cred-spec-name"
+      runAsUserName: "test-runas-username"
+  restoreInitContainerConfig:
+    securityContext:
+      allowPrivilegeEscalation: true
+      capabilities:
+        add:
+          - "a"
+          - "b"
+        drop:
+          - "z"
+      privileged: true
+      procMount: "test-proc-mount"
+      readOnlyRootFilesystem: false
+      runAsGroup: 8675309
+      runAsNonRoot: true
+      runAsUser: 9035768
+      seLinuxOptions:
+        level: "test-level"
+        role: "test-role"
+        type: "test-type"
+        user: "test-user"
+      seccompProfile:
+        localhostProfile: "test-localhost-profile"
+        type: "test-type"
+      windowsOptions:
+        gmsaCredentialSpec: "test-cred-spec"
+        gmsaCredentialSpecName: "test-cred-spec-name"
+        runAsUserName: "test-runas-username"
