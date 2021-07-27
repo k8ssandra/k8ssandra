@@ -15,7 +15,7 @@ Also deployed is Stargate, an open source data gateway that lets you interact pr
 **Reminder**: We've migrated the cass-operator GitHub repo from https://github.com/datastax/cass-operator to https://github.com/k8ssandra/cass-operator. Refer to the new repo for the latest Cass Operator developments.
 {{% /alert %}}
 
-**K8ssandra 1.3.0 release date:** 16-July-2021.
+**K8ssandra 1.3.0 release date:** 27-July-2021.
 
 ## Prerequisites
 
