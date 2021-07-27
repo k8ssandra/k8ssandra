@@ -377,6 +377,14 @@ kube-prometheus-stack:
     image:
       repository: myregistry/myrepo/prometheus
 ```
+## Related issues and PRs
+
+From the GitHub repo, here are the related issues and pull requests for your reference:
+
+* https://github.com/k8ssandra/k8ssandra/pull/901
+* https://github.com/k8ssandra/k8ssandra/issues/420
+* https://github.com/k8ssandra/k8ssandra/issues/839
+* https://github.com/k8ssandra/k8ssandra/issues/840
 
 ## Next steps
 
