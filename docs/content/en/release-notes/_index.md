@@ -79,7 +79,7 @@ Upgrading directly from K8ssandra 1.0.0 to 1.3.0 causes a StatefulSet update (du
 
 ## K8ssandra 1.3.0 revisions
 
-Release date: 16-July-2021
+Release date: 27-July-2021
 
 The following sections briefly summarize and link to key developments in K8ssandra 1.3.0. For the latest list, refer to the [CHANGELOG](https://github.com/k8ssandra/k8ssandra/blob/main/CHANGELOG-1.3.md).  
 
