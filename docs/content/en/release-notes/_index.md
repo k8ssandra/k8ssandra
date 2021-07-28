@@ -120,7 +120,9 @@ Also see: Add validation check for Cassandra heap size properties, [#701](https:
 
 ### Doc updates
 
-* See the topic that covers [Backup and restore with Azure Storage]({{< relref "tasks/backup-restore/azure/" >}}). 
+* See the new topics that cover:
+  *  [Backup and restore with Azure Storage]({{< relref "tasks/backup-restore/azure/" >}})
+  *  [Private registries]({{< relref "tasks/manage/private-registries/" >}})
 * [The topics that walk through installing K8ssandra]({{< relref "install" >}}) on AKS, EKS, and GKE include settings and guidelines from the [performance benchmark blog](https://k8ssandra.io/blog/articles/k8ssandra-performance-benchmarks-on-cloud-managed-kubernetes/), which compares throughput and latency between:
   * The baseline performance of a Cassandra cluster running on AWS EC2 instances -- a common setup for enterprises operating Cassandra clusters
   * The performance of K8ssandra running on AKS, EKS, GKE
