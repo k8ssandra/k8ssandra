@@ -54,7 +54,7 @@ The K8ssandra helm chart deploys the following components. Some are optional, an
 * reaper-operator 2.3.0
 
 {{% alert title="Tip" color="success" %}}
-Operators are software extensions to Kubernetes that make use of custom resources to manage applications and their components. Thus, for example, "Reaper Operator" deploys and configures Reaper. "Reaper" itself manages the actual Cassandra repair operations. Similarly, "Prometheus Operator" deploys and configures Prometheus. "Prometheus" itself manages the actual collection of relevant OS / Cassandra metrics. "Medusa Operator" deploys and configures Medusa. "Medusa" itself manages the backup/restore of Cassandra data. 
+Operators are software extensions to Kubernetes that make use of custom resources to manage applications and their components. Thus, for example, "Reaper Operator" deploys and configures Reaper. "Reaper" itself manages the actual Cassandra repair operations. Similarly, "Prometheus Operator" deploys and configures Prometheus. "Prometheus" itself manages the actual collection of relevant OS / Cassandra metrics. "Medusa Operator" configures and orchestrates the backup and restore operations. "Medusa" itself runs the container that performs backups of Cassandra data. 
 {{% /alert %}}
 
 ## Upgrade notice
