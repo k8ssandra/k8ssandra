@@ -93,7 +93,7 @@ Here is a list of chart properties that correspond to K8ssandra deployed contain
 | `reaper` | Run Reaper, which provides repair functionality for Cassandra data |
 | `medusa` | Runs the medusa container that performs backups, and the `medusa-restore` init container that performs restores |
 | `cleaner` | A Helm pre-delete hook that deletes the CassandraDatacenter |
-| `client` | Used in the `crd-upgrader pre-upgrade` to apply Custom Resource Definition (CRD) updates |
+| `client` | Used in the `crd-upgrader` pre-upgrade to apply Custom Resource Definition (CRD) updates |
 | `cass-operator` | Cass Operator |
 | `reaper-operator` | Reaper Operator |
 | `medusa-operator` | Medusa Operator |
@@ -102,7 +102,7 @@ Here is a list of chart properties that correspond to K8ssandra deployed contain
 | `grafana` | Grafana to visualize the metrics collected by Prometheus |
 
 {{% alert title="Tip" color="success" %}}
-A general note: Operators are software extensions to Kubernetes that make use of custom resources to manage applications and their components. Thus, for example, "Reaper Operator" deploys and configures Reaper. "Reaper" itself manages the actual Cassandra repair operations. Similarly, "Prometheus Operator" deploys and configures Prometheus. "Prometheus" itself manages the actual collection of relevant OS / Cassandra metrics. "Medusa Operator" deploys and configures Medusa. "Medusa" itself manages the backup/restore of Cassandra data. 
+Operators are software extensions to Kubernetes that make use of custom resources to manage applications and their components. Thus, for example, "Reaper Operator" deploys and configures Reaper. "Reaper" itself manages the actual Cassandra repair operations. Similarly, "Prometheus Operator" deploys and configures Prometheus. "Prometheus" itself manages the actual collection of relevant OS / Cassandra metrics. "Medusa Operator" configures and orchestrates the backup and restore operations. "Medusa" itself runs the container that performs backups of Cassandra data. 
 {{% /alert %}}
 
 ### Cassandra container defaults
