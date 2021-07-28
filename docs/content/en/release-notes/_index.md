@@ -10,7 +10,7 @@ K8ssandra provides a production-ready platform for running Apache Cassandra&reg;
 Also deployed is Stargate, an open source data gateway that lets you interact programmatically with your Kubernetes-hosted Cassandra resources via a well-defined API. 
 
 {{% alert title="Note" color="success" %}}
-**K8ssandra 1.3.0** implements a number of changes, enhancements, and bug fixes. This Release Notes topic lists a subset of the key updates. For the complete list, see the [CHANGELOG](https://github.com/k8ssandra/k8ssandra/blob/main/CHANGELOG-1.3.md). 
+**K8ssandra 1.3.0** implements a number of changes, enhancements, and bug fixes. This topic summarizes the key revisions in 1.3.0, and provides links to the associated issues in our GitHub repo.
 
 **Reminder**: We've migrated the cass-operator GitHub repo from https://github.com/datastax/cass-operator to https://github.com/k8ssandra/cass-operator. Refer to the new repo for the latest Cass Operator developments.
 {{% /alert %}}
@@ -44,7 +44,7 @@ The K8ssandra helm chart deploys the following components. Some are optional, an
   * 3.11.8
   * 3.11.7
 * DataStax Kubernetes Operator for Apache Cassandra ([cass-operator](https://github.com/k8ssandra/cass-operator)) 1.7.1
-* Management API for Apache Cassandra ([MAAC](https://github.com/datastax/management-api-for-apache-cassandra)) 0.1.26
+* Management API for Apache Cassandra ([MAAC](https://github.com/datastax/management-api-for-apache-cassandra)) 0.1.27
 * [Stargate](https://github.com/stargate/stargate) 1.0.29
 * Metric Collector for Apache Cassandra ([MCAC](https://github.com/datastax/metric-collector-for-apache-cassandra)) 0.2.0
 * kube-prometheus-stack 12.11.3 [chart](https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-prometheus-stack)
@@ -52,6 +52,10 @@ The K8ssandra helm chart deploys the following components. Some are optional, an
 * medusa-operator 0.3.3
 * Reaper for Apache Cassandra 2.2.5
 * reaper-operator 2.3.0
+
+{{% alert title="Tip" color="success" %}}
+Operators are software extensions to Kubernetes that make use of custom resources to manage applications and their components. Thus, for example, "Reaper Operator" deploys and configures Reaper. "Reaper" itself manages the actual Cassandra repair operations. Similarly, "Prometheus Operator" deploys and configures Prometheus. "Prometheus" itself manages the actual collection of relevant OS / Cassandra metrics. "Medusa Operator" deploys and configures Medusa. "Medusa" itself manages the backup/restore of Cassandra data. 
+{{% /alert %}}
 
 ## Upgrade notice
 
@@ -81,21 +85,21 @@ Upgrading directly from K8ssandra 1.0.0 to 1.3.0 causes a StatefulSet update (du
 
 Release date: 27-July-2021
 
-The following sections briefly summarize and link to key developments in K8ssandra 1.3.0. For the latest list, refer to the [CHANGELOG](https://github.com/k8ssandra/k8ssandra/blob/main/CHANGELOG-1.3.md).  
+The following sections summarize and link to key revisions in K8ssandra 1.3.0. For the latest, refer to the [CHANGELOG](https://github.com/k8ssandra/k8ssandra/blob/main/CHANGELOG-1.3.md).  
 
 ### Changes
 
-* Support for the General Availability (GA) official release of Apache Cassandra 4.0.0.
+* Support for the General Availability (GA) official release of [Apache Cassandra 4.0.0](https://cassandra.apache.org/doc/latest/cassandra/new/index.html). 
 * Upgrade to reaper-operator 0.3.3 and Reaper 2.3.0.
 * Upgrade from Stargate 1.0.18 to 1.0.29.
 * Upgrade from Medusa 0.10.1 to 0.11.0.
 * Upgrade from Reaper 2.2.2 to 2.2.5.
 * Integrate Fossa component/license scanning, [#812](https://github.com/k8ssandra/k8ssandra/issues/812).
-* Upgrade medusa-operator to 0.3.3, [#905](https://github.com/k8ssandra/k8ssandra/issues/905).
+* Upgrade medusa-operator to v0.3.3, [#905](https://github.com/k8ssandra/k8ssandra/issues/905).
 
 ### New features
 
-* Upgrade from Management API 0.1.25 to 0.1.26 to provide support for Cassandra 4.0.0-RC2, [#890](https://github.com/k8ssandra/k8ssandra/issues/890).
+* Upgrade the Management API from 0.1.26 to 0.1.27 to provide support for Cassandra 4.0.0 (GA), and make Cassandra 4.0.0 the default release, [#949](https://github.com/k8ssandra/k8ssandra/issues/949).
 * Make affinity configurable for Stargate, [#617](https://github.com/k8ssandra/k8ssandra/issues/617).
 * Make affinity configurable for Reaper, [#847](https://github.com/k8ssandra/k8ssandra/issues/847).
 * Experimental support for custom init containers, [#952](https://github.com/k8ssandra/k8ssandra/issues/952).
