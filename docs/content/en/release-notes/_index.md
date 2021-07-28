@@ -1,7 +1,7 @@
 ---
 title: "K8ssandra release notes"
 linkTitle: "Release notes"
-weight: 8
+weight: 2
 description: Release notes for the open-source K8ssandra community project.
 ---
 
@@ -10,10 +10,12 @@ K8ssandra provides a production-ready platform for running Apache Cassandra&reg;
 Also deployed is Stargate, an open source data gateway that lets you interact programmatically with your Kubernetes-hosted Cassandra resources via a well-defined API. 
 
 {{% alert title="Note" color="success" %}}
-**K8ssandra 1.2.0** implements a number of changes, enhancements, and bug fixes. This Release Notes topic lists a subset of the key updates. For the complete list, see the [CHANGELOG](https://github.com/k8ssandra/k8ssandra/blob/main/CHANGELOG-1.2.md). Reminder: We've migrated the cass-operator GitHub repo from https://github.com/datastax/cass-operator to https://github.com/k8ssandra/cass-operator. Refer to the new repo for the latest Cass Operator developments.
+**K8ssandra 1.3.0** implements a number of changes, enhancements, and bug fixes. This topic summarizes the key revisions in 1.3.0, and provides links to the associated issues in our GitHub repo.
+
+**Reminder**: We've migrated the cass-operator GitHub repo from https://github.com/datastax/cass-operator to https://github.com/k8ssandra/cass-operator. Refer to the new repo for the latest Cass Operator developments.
 {{% /alert %}}
 
-**K8ssandra 1.2.0 release date:** 02-June-2021.
+**K8ssandra 1.3.0 release date:** 27-July-2021.
 
 ## Prerequisites
 
@@ -23,9 +25,10 @@ Also deployed is Stargate, an open source data gateway that lets you interact pr
 ## Supported Kubernetes environments
 
 * Open-source [kubernetes.io](https://kubernetes.io)
+* [Amazon Elastic Kubernetes Service](https://aws.amazon.com/eks/) (EKS)
+* [DigitalOcean Kubernetes](https://www.digitalocean.com/products/kubernetes/) (DOKS)
 * [Google Kubernetes Engine](https://cloud.google.com/kubernetes-engine) (GKE)
 * [Microsoft Azure Kubernetes Service](https://azure.microsoft.com/en-us/services/kubernetes-service/) (AKS)
-* [Amazon Elastic Kubernetes Service](https://aws.amazon.com/eks/) (EKS)
 * [MiniKube](https://minikube.sigs.k8s.io/docs/)
 * [Kind](https://kind.sigs.k8s.io/)
 * [K3D](https://k3d.io/)
@@ -35,25 +38,29 @@ Also deployed is Stargate, an open source data gateway that lets you interact pr
 The K8ssandra helm chart deploys the following components. Some are optional, and depending on the configuration, may not be deployed:
 
 * [Apache Cassandra](https://cassandra.apache.org/) - the deployed version depends on the configured `cassandra.version` setting:
-  * 3.11.7
-  * 3.11.8
+  * 4.0.0 (default)
+  * 3.11.10
   * 3.11.9
-  * 3.11.10 (default)
-  * 4.0 rc1
+  * 3.11.8
+  * 3.11.7
 * DataStax Kubernetes Operator for Apache Cassandra ([cass-operator](https://github.com/k8ssandra/cass-operator)) 1.7.1
-* Management API for Apache Cassandra ([MAAC](https://github.com/datastax/management-api-for-apache-cassandra)) 0.1.25
-* [Stargate](https://github.com/stargate/stargate) 1.0.18
+* Management API for Apache Cassandra ([MAAC](https://github.com/datastax/management-api-for-apache-cassandra)) 0.1.27
+* [Stargate](https://github.com/stargate/stargate) 1.0.29
 * Metric Collector for Apache Cassandra ([MCAC](https://github.com/datastax/metric-collector-for-apache-cassandra)) 0.2.0
 * kube-prometheus-stack 12.11.3 [chart](https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-prometheus-stack)
-* Medusa for Apache Cassandra 0.10.1
-* Reaper for Apache Cassandra 2.2.2
+* Medusa for Apache Cassandra 0.11.0
+* medusa-operator 0.3.3
+* Reaper for Apache Cassandra 2.2.5
+* reaper-operator 2.3.0
+
+{{% alert title="Tip" color="success" %}}
+Operators are software extensions to Kubernetes that make use of custom resources to manage applications and their components. Thus, for example, "Reaper Operator" deploys and configures Reaper. "Reaper" itself manages the actual Cassandra repair operations. Similarly, "Prometheus Operator" deploys and configures Prometheus. "Prometheus" itself manages the actual collection of relevant OS / Cassandra metrics. "Medusa Operator" deploys and configures Medusa. "Medusa" itself manages the backup/restore of Cassandra data. 
+{{% /alert %}}
 
 ## Upgrade notice
 
 {{% alert title="Important!" color="warning" %}}
-Upgrading from K8ssandra 1.0.0 to 1.1.0, or directly from K8ssandra 1.0.0 to 1.2.0 (skipping 1.1.0), causes a StatefulSet update (due to [#533](https://github.com/k8ssandra/k8ssandra/issues/533) and [#613](https://github.com/k8ssandra/k8ssandra/issues/613)). A StatefulSet update has the effect of a rolling restart. Because of [#411](https://github.com/k8ssandra/k8ssandra/issues/411) this could require you to perform a manual restart of all Stargate nodes after the Cassandra cluster is back online. This behavior also impacts in-place restore operations of Medusa backups [#611](https://github.com/k8ssandra/k8ssandra/issues/611). 
-
-To manually restart Stargate nodes:
+Upgrading directly from K8ssandra 1.0.0 to 1.3.0 causes a StatefulSet update (due to [#533](https://github.com/k8ssandra/k8ssandra/issues/533) and [#613](https://github.com/k8ssandra/k8ssandra/issues/613)). A StatefulSet update has the effect of a rolling restart. Because of [#411](https://github.com/k8ssandra/k8ssandra/issues/411) this could require you to perform a manual restart of all Stargate nodes after the Cassandra cluster is back online. This behavior also impacts in-place restore operations of Medusa backups [#611](https://github.com/k8ssandra/k8ssandra/issues/611). To manually restart Stargate nodes:
 
 1. Get the Deployment object in your Kubernetes environment:
    ```bash
@@ -74,7 +81,54 @@ To manually restart Stargate nodes:
 {{% /alert %}}
 
 
+## K8ssandra 1.3.0 revisions
+
+Release date: 27-July-2021
+
+The following sections summarize and link to key revisions in K8ssandra 1.3.0. For the latest, refer to the [CHANGELOG](https://github.com/k8ssandra/k8ssandra/blob/main/CHANGELOG-1.3.md).  
+
+### Changes
+
+* Support for the General Availability (GA) official release of [Apache Cassandra 4.0.0](https://cassandra.apache.org/doc/latest/cassandra/new/index.html). 
+* Upgrade to reaper-operator 0.3.3 and Reaper 2.3.0.
+* Upgrade from Stargate 1.0.18 to 1.0.29.
+* Upgrade from Medusa 0.10.1 to 0.11.0.
+* Upgrade from Reaper 2.2.2 to 2.2.5.
+* Integrate Fossa component/license scanning, [#812](https://github.com/k8ssandra/k8ssandra/issues/812).
+* Upgrade medusa-operator to v0.3.3, [#905](https://github.com/k8ssandra/k8ssandra/issues/905).
+
+### New features
+
+* Upgrade the Management API from 0.1.26 to 0.1.27 to provide support for Cassandra 4.0.0 (GA), and make Cassandra 4.0.0 the default release, [#949](https://github.com/k8ssandra/k8ssandra/issues/949).
+* Make affinity configurable for Stargate, [#617](https://github.com/k8ssandra/k8ssandra/issues/617).
+* Make affinity configurable for Reaper, [#847](https://github.com/k8ssandra/k8ssandra/issues/847).
+* Experimental support for custom init containers, [#952](https://github.com/k8ssandra/k8ssandra/issues/952).
+
+### Enhancements
+
+* Allow configuring the namespace of service monitors, [#844](https://github.com/k8ssandra/k8ssandra/issues/844).
+* Detect IEC formatted c* heap.size and heap.newGenSize; return error identifying issue, [#29](https://github.com/k8ssandra/k8ssandra/issues/29). 
+Also see: Add validation check for Cassandra heap size properties, [#701](https://github.com/k8ssandra/k8ssandra/issues/701).
+* Add support for private registries, [#420](https://github.com/k8ssandra/k8ssandra/issues/420).
+* Add support for Medusa backups on Azure, [#685](https://github.com/k8ssandra/k8ssandra/issues/685).
+
+### Bug fixes
+
+* Fix property name in scaling docs, [#853](https://github.com/k8ssandra/k8ssandra/issues/853).
+* Hot replace disallowed characters in generated secret names, [#870](https://github.com/k8ssandra/k8ssandra/issues/870).
+* Stargate metrics don't show up in the dashboards, [#412](https://github.com/k8ssandra/k8ssandra/issues/412).
+
+### Doc updates
+
+* See the topic that covers [Backup and restore with Azure Storage]({{< relref "tasks/backup-restore/azure/" >}}). 
+* [The topics that walk through installing K8ssandra]({{< relref "install" >}}) on AKS, EKS, and GKE include settings and guidelines from the [performance benchmark blog](https://k8ssandra.io/blog/articles/k8ssandra-performance-benchmarks-on-cloud-managed-kubernetes/), which compares throughput and latency between:
+  * The baseline performance of a Cassandra cluster running on AWS EC2 instances -- a common setup for enterprises operating Cassandra clusters
+  * The performance of K8ssandra running on AKS, EKS, GKE
+* [The reference topics]({{< relref "reference/helm-charts" >}}) for the K8ssandra deployed Helm charts have been updated with the latest descriptions.
+
 ## K8ssandra 1.2.0 revisions
+
+Release date: 02-June-2021
 
 The following sections briefly summarize and link to key developments in K8ssandra 1.2.0. For the latest list, refer to the [CHANGELOG](https://github.com/k8ssandra/k8ssandra/blob/main/CHANGELOG-1.2.md).  
 
