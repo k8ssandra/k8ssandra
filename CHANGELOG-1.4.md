@@ -18,3 +18,4 @@ and date `## vX.Y.Z - YYYY-MM-DD` and create a new placeholder section for  `unr
 
 ## unreleased
 * [ENHANCEMENT] #959 Make root file system in Cassandra pod read only
+* [BUGFIX] #1012 reaper-operator's role.yaml has more data than it should, causing role name conflicts

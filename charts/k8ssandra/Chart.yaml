@@ -12,7 +12,7 @@ dependencies:
     condition: cass-operator.enabled
 
   - name: reaper-operator
-    version: 0.32.0
+    version: 0.32.1
     repository: file://../reaper-operator
     condition: reaper-operator.enabled
 
