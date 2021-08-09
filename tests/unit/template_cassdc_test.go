@@ -566,7 +566,7 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
 				SetValues: map[string]string{
-					"cassandra.version": "3.11.10",
+					"cassandra.version": "3.11.11",
 					"cassandra.datacenters[0].allocateTokensForLocalRF": "3",
 				},
 			}
@@ -1302,11 +1302,10 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 
 	Context("when configuring the Cassandra version and/or image", func() {
 		cassandraVersionImageMap := map[string]string{
-			"3.11.7":  "k8ssandra/cass-management-api:3.11.7-v0.1.26",
-			"3.11.8":  "k8ssandra/cass-management-api:3.11.8-v0.1.26",
-			"3.11.9":  "k8ssandra/cass-management-api:3.11.9-v0.1.26",
-			"3.11.10": "k8ssandra/cass-management-api:3.11.10-v0.1.26",
-			"4.0.0":   "k8ssandra/cass-management-api:4.0.0-v0.1.26",
+			"3.11.7":  "k8ssandra/cass-management-api:3.11.7-v0.1.28",
+			"3.11.8":  "k8ssandra/cass-management-api:3.11.8-v0.1.28",
+			"3.11.11": "k8ssandra/cass-management-api:3.11.11-v0.1.28",
+			"4.0.0":   "k8ssandra/cass-management-api:4.0.0-v0.1.28",
 		}
 
 		It("using the default version", func() {
@@ -1316,8 +1315,8 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 
 			Expect(renderTemplate(options)).To(Succeed())
 
-			Expect(cassdc.Spec.ServerVersion).To(Equal("3.11.10"))
-			Expect(cassdc.Spec.ServerImage).To(Equal("k8ssandra/cass-management-api:3.11.10-v0.1.26"))
+			Expect(cassdc.Spec.ServerVersion).To(Equal("3.11.11"))
+			Expect(cassdc.Spec.ServerImage).To(Equal("k8ssandra/cass-management-api:3.11.11-v0.1.28"))
 		})
 
 		It("using 3.11.7", func() {
@@ -1350,23 +1349,8 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			Expect(cassdc.Spec.ServerImage).To(Equal(cassandraVersionImageMap[version]))
 		})
 
-		It("using 3.11.9", func() {
-			version := "3.11.9"
-			options := &helm.Options{
-				KubectlOptions: defaultKubeCtlOptions,
-				SetValues: map[string]string{
-					"cassandra.version": version,
-				},
-			}
-
-			Expect(renderTemplate(options)).To(Succeed())
-
-			Expect(cassdc.Spec.ServerVersion).To(Equal(version))
-			Expect(cassdc.Spec.ServerImage).To(Equal(cassandraVersionImageMap[version]))
-		})
-
-		It("using 3.11.10", func() {
-			version := "3.11.10"
+		It("using 3.11.11", func() {
+			version := "3.11.11"
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
 				SetValues: map[string]string{
@@ -1476,8 +1460,8 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			Expect(json.Unmarshal(cassdc.Spec.Config, &config)).To(Succeed())
 			Expect(config.CassandraConfig.NumTokens).To(Equal(int64(expectedTokens)))
 		},
-		Entry("3.11.10 default", "3.11.10", "", 256),
-		Entry("3.11.10 custom", "3.11.10", "16", 16),
+		Entry("3.11.11 default", "3.11.11", "", 256),
+		Entry("3.11.11 custom", "3.11.11", "16", 16),
 	)
 })
 
