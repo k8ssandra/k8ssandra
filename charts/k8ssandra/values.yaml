@@ -478,7 +478,7 @@ reaper:
   # will need to make sure that the image is compatible with reaper-operator.
   image:
     # -- Image registry for reaper
-    reigistry: docker.io
+    registry: docker.io
     # -- Image repository for reaper
     repository: thelastpickle/cassandra-reaper
     # -- Tag of the reaper image to pull from
