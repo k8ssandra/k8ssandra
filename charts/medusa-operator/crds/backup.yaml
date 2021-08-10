@@ -194,7 +194,7 @@ spec:
                           a property named config whose value should be a JSON formatted
                           string that should look like this: \n    config: |-      {
                           \       \"cassandra-yaml\": {          \"read_request_timeout_in_ms\":
-                          10000        },        \"jmv-options\": {          \"max_heap_size\":
+                          10000        },        \"jvm-options\": {          \"max_heap_size\":
                           1024M        }      } \n ConfigSecret is mutually exclusive
                           with Config. ConfigSecret takes precedence and will be used
                           exclusively if both properties are set. The operator sets

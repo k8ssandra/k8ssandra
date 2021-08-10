@@ -114,7 +114,7 @@
 | reaper.autoschedule | bool | `false` | When enabled, Reaper automatically sets up repair schedules for all non-system keypsaces. Repear monitors the cluster so that as keyspaces are added or removed repair schedules will be added or removed respectively. |
 | reaper.autoschedule_properties | object | `{}` | Additional autoscheduling properties. Allows you to customize the schedule rules for autoscheduling. Properties are the same as accepted by the Reaper. |
 | reaper.enabled | bool | `true` | Enable Reaper resources as part of this release. Note that Reaper uses Cassandra's JMX APIs to perform repairs. When Reaper is enabled, Cassandra will also be configured to allow remote JMX access. JMX authentication will be configured in Cassandra with credentials only created for Reaper in order to limit access. |
-| reaper.image.reigistry | string | `"docker.io"` | Image registry for reaper |
+| reaper.image.registry | string | `"docker.io"` | Image registry for reaper |
 | reaper.image.repository | string | `"thelastpickle/cassandra-reaper"` | Image repository for reaper |
 | reaper.image.tag | string | `"2.2.5"` | Tag of the reaper image to pull from |
 | reaper.image.pullPolicy | string | `"IfNotPresent"` | Pull policy for the reaper container |
