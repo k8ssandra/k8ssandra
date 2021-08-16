@@ -228,9 +228,11 @@ tags
 .vscode/*
 !.vscode/settings.json
 !.vscode/tasks.json
-!.vscode/launch.json
 !.vscode/extensions.json
 *.code-workspace
+launch*.json
+!recommended-dev.sh
+!recommended-launch.json
 
 ### VisualStudioCode Patch ###
 # Ignore all local history of files
