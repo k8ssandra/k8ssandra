@@ -133,10 +133,10 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			// JVM heap options -- default to settings as defined in cassdc.yaml
 			var config Config
 			Expect(json.Unmarshal(cassdc.Spec.Config, &config)).To(Succeed())
-			Expect(config.JvmOptions).ToNot(BeNil())
-			Expect(config.JvmOptions.InitialHeapSize).To(BeEmpty())
-			Expect(config.JvmOptions.MaxHeapSize).To(BeEmpty())
-			Expect(config.JvmOptions.YoungGenSize).To(BeEmpty())
+			Expect(config.JvmServerOptions).ToNot(BeNil())
+			Expect(config.JvmServerOptions.InitialHeapSize).To(BeEmpty())
+			Expect(config.JvmServerOptions.MaxHeapSize).To(BeEmpty())
+			Expect(config.JvmServerOptions.YoungGenSize).To(BeEmpty())
 		})
 
 		It("is not rendered if disabled", func() {
@@ -626,6 +626,7 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			dcName := "dc1"
 			options := &helm.Options{
 				SetValues: map[string]string{
+					"cassandra.version":             "3.11.10",
 					"cassandra.heap.size":           "700M",
 					"cassandra.heap.newGenSize":     "350M",
 					"cassandra.datacenters[0].name": dcName,
@@ -651,6 +652,7 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			dcName := "dc1"
 			options := &helm.Options{
 				SetValues: map[string]string{
+					"cassandra.version":                        "3.11.10",
 					"cassandra.heap.size":                      "700M",
 					"cassandra.heap.newGenSize":                "350M",
 					"cassandra.datacenters[0].heap.size":       "300M",
@@ -676,6 +678,7 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			dcName := "dc1"
 			options := &helm.Options{
 				SetValues: map[string]string{
+					"cassandra.version":                  "3.11.10",
 					"cassandra.datacenters[0].heap.size": "300M",
 					"cassandra.datacenters[0].name":      dcName,
 					// Note: not setting - "cassandra.datacenters[0].heap.newGenSize": "150M",
@@ -699,6 +702,7 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			dcName := "dc1"
 			options := &helm.Options{
 				SetValues: map[string]string{
+					"cassandra.version": "3.11.10",
 					// Note: not setting "cassandra.datacenters[0].heap.size":       "300M",
 					"cassandra.datacenters[0].name":            dcName,
 					"cassandra.datacenters[0].heap.newGenSize": "150M",
@@ -722,6 +726,7 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			dcName := "dc1"
 			options := &helm.Options{
 				SetValues: map[string]string{
+					"cassandra.version":             "3.11.10",
 					"cassandra.heap.size":           "300M",
 					"cassandra.datacenters[0].name": dcName,
 					// Note: not setting - "cassandra.heap.newGenSize": "150M",
@@ -746,6 +751,7 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			dcName := "dc1"
 			options := &helm.Options{
 				SetValues: map[string]string{
+					"cassandra.version": "3.11.10",
 					// Note: not setting - "cassandra.heap.size": "300M",
 					"cassandra.heap.newGenSize":     "150M",
 					"cassandra.datacenters[0].name": dcName,
@@ -982,7 +988,7 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			Expect(config.CassandraConfig.PermissionsUpdateMillis).To(Equal(cacheUpdateInterval))
 			Expect(config.CassandraConfig.CredentialsValidityMillis).To(Equal(cacheValidityPeriod))
 			Expect(config.CassandraConfig.CredentialsUpdateMillis).To(Equal(cacheUpdateInterval))
-			Expect(config.JvmOptions.AdditionalJvmOptions).To(ConsistOf(
+			Expect(config.JvmServerOptions.AdditionalJvmOptions).To(ConsistOf(
 				"-Dcassandra.system_distributed_replication_dc_names="+dcName,
 				"-Dcassandra.system_distributed_replication_per_dc="+strconv.Itoa(clusterSize),
 			))
@@ -1300,8 +1306,8 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 
 			Expect(renderTemplate(options)).To(Succeed())
 
-			Expect(cassdc.Spec.ServerVersion).To(Equal("3.11.10"))
-			Expect(cassdc.Spec.ServerImage).To(Equal("k8ssandra/cass-management-api:3.11.10-v0.1.27"))
+			Expect(cassdc.Spec.ServerVersion).To(Equal("4.0.0"))
+			Expect(cassdc.Spec.ServerImage).To(Equal("k8ssandra/cass-management-api:4.0.0-v0.1.27"))
 		})
 
 		It("using 3.11.7", func() {
