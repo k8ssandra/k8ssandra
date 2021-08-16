@@ -19,8 +19,8 @@ const (
 	DefaultStargate4ImagePrefix    = "stargateio/stargate-4_0:"
 	DefaultStargate3ClusterVersion = "3.11"
 	DefaultStargate4ClusterVersion = "4.0"
-	DefaultStargateImagePrefix     = DefaultStargate3ImagePrefix
-	DefaultStargateClusterVersion  = DefaultStargate3ClusterVersion
+	DefaultStargateImagePrefix     = DefaultStargate4ImagePrefix
+	DefaultStargateClusterVersion  = DefaultStargate4ClusterVersion
 )
 
 var _ = Describe("Verify Stargate template", func() {
@@ -333,13 +333,14 @@ var _ = Describe("Verify Stargate template", func() {
 			Expect(string(container.ImagePullPolicy)).To(Equal(alternatePullPolicy))
 		})
 
-		It("changing stargate version", func() {
+		It("changing stargate version with Cassandra 3.11", func() {
 			alternateImage := "stargateio/stargate-3_11:v1.0.5"
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
 				SetValues: map[string]string{
-					"stargate.enabled": "true",
-					"stargate.version": "1.0.5",
+					"cassandra.version": "3.11.10",
+					"stargate.enabled":  "true",
+					"stargate.version":  "1.0.5",
 				},
 			}
 
