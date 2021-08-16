@@ -204,10 +204,10 @@ jobs:
         timeout-minutes: 10
   
   release:
-    # Release job should never run on forks and should only trigger on main pushes and published releases
+    # Release job should never run on forks and should only trigger on main-1.x pushes and published releases
     if: |
       ( github.event_name == 'release' && github.event.action == 'published' ) 
-        || ( github.event_name == 'push' && github.ref == 'refs/heads/main' && github.repository_owner == 'k8ssandra' )
+        || ( github.event_name == 'push' && github.ref == 'refs/heads/main-1.x' && github.repository_owner == 'k8ssandra' )
         
     runs-on: ubuntu-latest
     needs: integration-tests

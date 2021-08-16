@@ -2,7 +2,7 @@ name: Dependency and License Scan
 on:
   push:
     branches:
-      - main
+      - main-1.x
     paths:
       - 'pkg/**'
       - 'cmd/**'

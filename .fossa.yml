@@ -5,7 +5,7 @@ version: 2
 cli:
   server: https://app.fossa.com
   fetcher: custom
-  project: k8ssandra
+  project: k8ssandra-1.x
 analyze:
   modules:
   - name: github.com/k8ssandra/k8ssandra/cmd/k8ssandra-client
