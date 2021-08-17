@@ -189,7 +189,6 @@ Set default num_tokens based on the server version
     If num_tokens is not set then we need to lookup the CassandraDatacenter and get current
     value of num_tokens and reuse it.
     */}}
-    {{- (printf "DATACENTER: %+v" $datacenterObj) }}
     {{- if $datacenterObj }}
       {{- $config := $datacenterObj.spec.config }}
       {{- $cassandraYaml := (get $config "cassandra-yaml") }}
