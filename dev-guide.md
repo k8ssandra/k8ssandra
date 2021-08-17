@@ -144,7 +144,7 @@ The majority of the projects developed and contributed to through K8ssandra can 
 
 ### thelastpickle/medusa
 
-`thelastpickle/medusa` is the tool that K8ssandra has chosen to manage backup and restore capabilities for the Apache Cassandra within the stack.  Medusa itself has a vibrate project community that the K8ssandra team regularly contributes to - both to help improve Medusa in general and also to provide features within K8ssandra.
+`thelastpickle/medusa` is the tool that K8ssandra has chosen to manage backup and restore capabilities for the Apache Cassandra within the stack.  Medusa itself has a vibrant project community that the K8ssandra team regularly contributes to - both to help improve Medusa in general and also to provide features within K8ssandra.
 
 [GitHub Respository](https://github.com/thelastpickle/cassandra-medusa)
 
