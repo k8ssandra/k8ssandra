@@ -57,9 +57,92 @@ The K8ssandra helm chart deploys the following components. Some are optional, an
 Operators are software extensions to Kubernetes that make use of custom resources to manage applications and their components. Thus, for example, "Reaper Operator" deploys and configures Reaper. "Reaper" itself manages the actual Cassandra repair operations. Similarly, "Prometheus Operator" deploys and configures Prometheus. "Prometheus" itself manages the actual collection of relevant OS / Cassandra metrics. "Medusa Operator" configures and orchestrates the backup and restore operations. "Medusa" itself runs the container that performs backups of Cassandra data. 
 {{% /alert %}}
 
-## Upgrade notice
+## Upgrade notices
 
 {{% alert title="Important!" color="warning" %}}
+Before upgrading to K8ssandra 1.3.0, be sure to read the sections below.
+{{% /alert %}}
+
+### Upgrading to K8ssandra 1.3.0 and Cassandra 4.0
+
+When you upgrade from a prior K8ssandra release to 1.3.0, the default `cassandra.version` is now `4.0.0`. 
+
+Depending on whether you previously set Cassandra's `num_tokens` property, an issue may occur that prevents Cassandra from starting. This section explains how to avoid the issue. 
+
+First, some background information. The default value for `num_tokens` in Cassandra 3.11 is 256. The default in Cassandra 4.0 is 16. The `num_tokens` setting defines the number of tokens randomly assigned to this node on the ring. The more tokens, relative to other nodes, the larger the proportion of data that this node will store.
+
+The issue: [Upgrading from Cassandra 3.11 to 4.0 fails if num_tokens is not set](https://github.com/k8ssandra/k8ssandra/issues/1029). As noted for this scenario, the Cassandra logs will include the following error, and Cassandra will not start:
+
+```
+org.apache.cassandra.exceptions.ConfigurationException: Cannot change the number of tokens from 256 to 16
+```
+
+How to avoid the issue:
+
+* If you already set the `num_tokens` chart property, nothing needs to be done, other than assuring that you continue to set the desired `num_tokens` value. 
+
+* If you have not previously set `num_tokens` in the deployed Cassandra 3.11.x, explicitly set it prior to doing the `helm upgrade` to K8ssandra 1.3.0.
+
+For example, here's a customized chart where the user specified a `num_tokens` value:
+
+```yaml
+cassandra:
+  version: 3.11.10
+  auth:
+    enabled: true
+  heap:
+    size: 512M
+  datacenters:
+  - name: dc1
+    size: 1
+    num_tokens: 128
+```
+
+(We're using `num_tokens: 128` above just as an example.)
+
+**Before upgrading** to K8ssandra 1.3.0, specify the file that contains the desired settings. Example:
+
+```bash
+helm upgrade my-k8ssandra k8ssandra/k8ssandra -f my-values.yaml
+```
+
+Later, when you're ready to use upgrade to K8ssandra 1.3.0 and Cassandra 4.0, remember to include your desired `num_tokens` value. 
+
+```bash
+helm repo update
+```
+
+**Output**:
+```bash
+Hang tight while we grab the latest from your chart repositories...
+...Successfully got an update from the "k8ssandra" chart repository
+Update Complete. ⎈Happy Helming!⎈
+```
+
+Here's a sample chart or values file to subsequently reference:
+
+```yaml
+cassandra:
+  version: 4.0.0
+  auth:
+    enabled: true
+  heap:
+    size: 512M
+  datacenters:
+  - name: dc1
+    size: 1
+    num_tokens: 128
+```
+
+Run the `helm upgrade`:
+
+```bash
+helm upgrade my-k8ssandra k8ssandra/k8ssandra -f my-values.yaml
+```
+
+
+### Upgrading from K8ssandra 1.0.0 to 1.3.0 
+
 Upgrading directly from K8ssandra 1.0.0 to 1.3.0 causes a StatefulSet update (due to [#533](https://github.com/k8ssandra/k8ssandra/issues/533) and [#613](https://github.com/k8ssandra/k8ssandra/issues/613)). A StatefulSet update has the effect of a rolling restart. Because of [#411](https://github.com/k8ssandra/k8ssandra/issues/411) this could require you to perform a manual restart of all Stargate nodes after the Cassandra cluster is back online. This behavior also impacts in-place restore operations of Medusa backups [#611](https://github.com/k8ssandra/k8ssandra/issues/611). To manually restart Stargate nodes:
 
 1. Get the Deployment object in your Kubernetes environment:
@@ -78,7 +161,6 @@ Upgrading directly from K8ssandra 1.0.0 to 1.3.0 causes a StatefulSet update (du
    ```bash
     kubectl scale deployment <stargate-deployment> --replicas 1
     ```
-{{% /alert %}}
 
 
 ## K8ssandra 1.3.0 revisions
@@ -203,6 +285,8 @@ Read the K8ssandra [FAQs]({{< relref "faqs" >}}) - for starters, how to pronounc
 If you're impatient, jump right in with the K8ssandra [install]({{< relref "install" >}}) steps for these platforms:
 
 * [Local]({{< relref "install/local" >}})
-* Google Kubernetes Engine ([GKE]({{< relref "install/gke" >}}))
 * Amazon Elastic Kubernetes Service ([EKS]({{< relref "install/eks" >}}))
+* DigitalOcean Kubernetes ([DOKS]({{< relref "install/doks" >}}))
+* Google Kubernetes Engine ([GKE]({{< relref "install/gke" >}}))
 * Microsoft Azure Kubernetes Service ([AKS]({{< relref "install/aks" >}}))
+* 
