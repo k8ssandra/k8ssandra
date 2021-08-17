@@ -179,13 +179,15 @@ Set default num_tokens based on the server version
     {{- if $datacenterObj }}
       {{- $config := $datacenterObj.spec.config }}
       {{- $cassandraYaml := (get $config "cassandra-yaml") }}
-      {{- if not $cassandraYaml.num_tokens }}
+      {{- if $cassandraYaml.num_tokens }}
+        {{- nindent 6 (printf "num_tokens: %d" $cassandraYaml.num_tokens) }}
+      {{- else }}
         {{- if hasPrefix "3.11" $datacenterObj.spec.serverVersion }}
           {{- nindent 6 (print "num_tokens: 256") }}
         {{- else }}
           {{- nindent 6 (print "num_tokens: 16") }}
         {{- end }}
-      {{ end }}
+      {{- end }}
     {{- end }}
   {{- end }}
 {{- end }}
