@@ -117,7 +117,7 @@ Provisions and configures an instance of the entire K8ssandra stack. This includ
 | reaper.autoschedule_properties | object | `{}` | Additional autoscheduling properties. Allows you to customize the schedule rules for autoscheduling. Properties are the same as accepted by the Reaper. |
 | reaper.enabled | bool | `true` | Enable Reaper resources as part of this release. Note that Reaper uses Cassandra's JMX APIs to perform repairs. When Reaper is enabled, Cassandra will also be configured to allow remote JMX access. JMX authentication will be configured in Cassandra with credentials only created for Reaper in order to limit access. |
 | reaper.image | object | `{"pullPolicy":"IfNotPresent","reigistry":"docker.io","repository":"thelastpickle/cassandra-reaper","tag":"2.3.1"}` | The name of the service account to use for Reaper pods. Defaults to the the default account. serviceAccount: Configures the Reaper container image to use. Exercise care when changing the Reaper image. Reaper is deployed and managed by reaper-operator. You will need to make sure that the image is compatible with reaper-operator. |
-| reaper.image.reigistry | string | `"docker.io"` | Image registry for reaper |
+| reaper.image.registry | string | `"docker.io"` | Image registry for reaper |
 | reaper.image.repository | string | `"thelastpickle/cassandra-reaper"` | Image repository for reaper |
 | reaper.image.tag | string | `"2.3.1"` | Tag of the reaper image to pull from |
 | reaper.image.pullPolicy | string | `"IfNotPresent"` | Pull policy for the reaper container |
