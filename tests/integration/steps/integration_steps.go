@@ -129,10 +129,8 @@ func deployCluster(t *testing.T, namespace, customValues string, helmValues map[
 	defer timeTrack(time.Now(), "Installing and starting k8ssandra")
 	if upgrade {
 		initialResourceVersion := cassDcResourceVersion(t, namespace)
-		output, err := helm.RunHelmCommandAndGetOutputE(t, helmOptions, "upgrade", releaseName, clusterChartPath, "--install", "--debug")
-		//err = helm.UpgradeE(t, helmOptions, clusterChartPath, releaseName)
+		err = helm.UpgradeE(t, helmOptions, clusterChartPath, releaseName)
 		g(t).Expect(err).To(BeNil(), "Failed installing k8ssandra with Helm: %v", err)
-		t.Logf("helm upgrade output: %s", output)
 		waitForCassDcUpgrade(t, namespace, initialResourceVersion)
 	} else {
 		err = helm.InstallE(t, helmOptions, clusterChartPath, releaseName)
