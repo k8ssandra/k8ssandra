@@ -162,9 +162,15 @@ Set default num_tokens based on the server version
 {{- define "k8ssandra.default_num_tokens" -}}
 {{- $datacenter := (index .Values.cassandra.datacenters 0) -}}
 {{- if .Release.IsInstall }}
+  {{- /*
+  If num_tokens is set we simply use that value.
+  */}}
   {{- if $datacenter.num_tokens }}
     {{- nindent 6 (print "num_tokens: " $datacenter.num_tokens) }}
   {{- else }}
+  {{- /*
+  If num_tokens is not set we calculate the default value based on the C* version.
+  */}}
   {{- if hasPrefix "3.11" .Values.cassandra.version }}
     {{- nindent 6 (print "num_tokens: 256") }}
   {{- else }}
@@ -172,16 +178,28 @@ Set default num_tokens based on the server version
   {{- end }}
 {{- end }}
 {{- else }}
+  {{- /*
+  If upgrading and num_tokens is set simply use that value.
+  */}}
   {{- if $datacenter.num_tokens }}
     {{- nindent 6 (print "num_tokens: " $datacenter.num_tokens) }}
   {{- else }}
     {{ $datacenterObj := (lookup "cassandra.datastax.com/v1beta1" "CassandraDatacenter" .Release.Namespace $datacenter.name) }}
+    {{- /*
+    If num_tokens is not set then we need to lookup the CassandraDatacenter and get current
+    value of num_tokens and reuse it.
+    */}}
     {{- if $datacenterObj }}
       {{- $config := $datacenterObj.spec.config }}
       {{- $cassandraYaml := (get $config "cassandra-yaml") }}
       {{- if $cassandraYaml.num_tokens }}
         {{- nindent 6 (printf "num_tokens: %d" $cassandraYaml.num_tokens) }}
       {{- else }}
+        {{- /*
+        In the event that num_tokens is not set, then we use the default value of the
+        currently installed version. Note that the default value for 3.11 is 256. In 4.0
+        it changed to 16.
+        */}}
         {{- if hasPrefix "3.11" $datacenterObj.spec.serverVersion }}
           {{- nindent 6 (print "num_tokens: 256") }}
         {{- else }}
