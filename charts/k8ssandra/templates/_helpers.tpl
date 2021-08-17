@@ -161,15 +161,26 @@ Set default num_tokens based on the server version
 */}}
 {{- define "k8ssandra.default_num_tokens" -}}
 {{- $datacenter := (index .Values.cassandra.datacenters 0) -}}
-    {{- if $datacenter.num_tokens }}
-      num_tokens: {{ $datacenter.num_tokens }}
-    {{- else }}
-    {{- if hasPrefix "3.11" .Values.cassandra.version }}
+{{- if .Release.IsInstall }}
+  {{- if $datacenter.num_tokens }}
+    num_tokens: {{ $datacenter.num_tokens }}
+  {{- else }}
+  {{- if hasPrefix "3.11" .Values.cassandra.version }}
+    num_tokens: 256
+  {{- else }}
+    num_tokens: 16
+  {{- end }}
+{{- end }}
+{{- else }}
+  {{ $datacenterObj := (lookup "cassandra.datastax.com/v1beta1" "CassandraDatacenter" .Release.Namespace $datacenter.name) }}
+  {{- if $datacenterObj }}
+    {{- if hasPrefix "3.11" $datacenterObj.spec.serverVersion }}
       num_tokens: 256
     {{- else }}
       num_tokens: 16
     {{- end }}
-    {{- end }}
+  {{ end }}
+{{- end }}
 {{- end }}
 
 {{- define "medusa.configMapName" -}}
