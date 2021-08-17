@@ -172,14 +172,22 @@ Set default num_tokens based on the server version
   {{- end }}
 {{- end }}
 {{- else }}
-  {{ $datacenterObj := (lookup "cassandra.datastax.com/v1beta1" "CassandraDatacenter" .Release.Namespace $datacenter.name) }}
-  {{- if $datacenterObj }}
-    {{- if hasPrefix "3.11" $datacenterObj.spec.serverVersion }}
-      {{- nindent 6 (print "num_tokens: 256") }}
-    {{- else }}
-      {{- nindent 6 (print "num_tokens: 16") }}
+  {{- if $datacenter.num_tokens }}
+    {{- nindent 6 (print "num_tokens: " $datacenter.num_tokens) }}
+  {{- else }}
+    {{ $datacenterObj := (lookup "cassandra.datastax.com/v1beta1" "CassandraDatacenter" .Release.Namespace $datacenter.name) }}
+    {{- if $datacenterObj }}
+      {{- $config := $datacenterObj.spec.config }}
+      {{- $cassandraYaml := (get $config "cassandra-yaml") }}
+      {{- if not $cassandraYaml.num_tokens }}
+        {{- if hasPrefix "3.11" $datacenterObj.spec.serverVersion }}
+          {{- nindent 6 (print "num_tokens: 256") }}
+        {{- else }}
+          {{- nindent 6 (print "num_tokens: 16") }}
+        {{- end }}
+      {{ end }}
     {{- end }}
-  {{ end }}
+  {{- end }}
 {{- end }}
 {{- end }}
 
