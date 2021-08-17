@@ -189,7 +189,6 @@ Set default num_tokens based on the server version
     If num_tokens is not set then we need to lookup the CassandraDatacenter and get current
     value of num_tokens and reuse it.
     */}}
-    {{- fail (printf "DATACENTER: %+v" $datacenterObj) }}
     {{- if $datacenterObj }}
       {{- $config := $datacenterObj.spec.config }}
       {{- $cassandraYaml := (get $config "cassandra-yaml") }}
@@ -197,6 +196,7 @@ Set default num_tokens based on the server version
       {{- if $cassandraYaml.num_tokens }}
         {{- nindent 6 (printf "num_tokens: %d" $cassandraYaml.num_tokens) }}
       {{- else }}
+        {{- fail (printf "CONFIG: %+v\n\nVERSION: %s" $config $datacenterObj.spec.serverVersion) }}
         {{- /*
         In the event that num_tokens is not set, then we use the default value of the
         currently installed version. Note that the default value for 3.11 is 256. In 4.0
