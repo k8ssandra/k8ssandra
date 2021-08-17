@@ -1,7 +1,9 @@
-# K8ssandra Developer - Quick Start
+# K8ssandra Chart Development Quick Start
+
+*Before diving into chart development we recommend you start with the broader [K8ssandra Development Guide](dev-guide.md).*
 
 ## About
-This quick start guide is written for developers wanting to find out more about:
+This quick start guide is written for developers wanting to get involved in the development of the helm based packaging of K8ssandra and find out more about:
 * Getting up and running with a basic IDE environment.
 * Deploying to a local docker-based cluster environment (using kind).
 * Understanding the K8ssandra project structure.
@@ -123,7 +125,7 @@ Once complete, you should see something like the following:
 > ok      github.com/k8ssandra/k8ssandra/tests/unit       47.156s
 
 
-### Integration tests
+### Integration tests
 Different integration test scenarios are available to check that all components work as expected.
 When using kind, invoke the full stack scenario with the following command:
 
@@ -223,15 +225,3 @@ A slight variation, list out pods having the label for a `cassandra` cluster.
 Now, using a pod-name returned, describe all the details.
 
 > kubectl describe pod/*pod-name* -n k8ssandra
-
-
-## Next steps
-Now that you have a foundation for using K8ssandra, take a look at some other references to better understand what
- is available and where K8ssandra is headed.
-
-* [Components](https://docs.k8ssandra.io/components/)
-* [Tasks](https://docs.k8ssandra.io/tasks/)
-* [Helm Charts](https://docs.k8ssandra.io/reference/helm-charts/)
-* [K8ssandra Blog](https://k8ssandra.io/blog/)
-* [Community](https://k8ssandra.io/community/)
-* [Roadmap](https://docs.k8ssandra.io/roadmap/)

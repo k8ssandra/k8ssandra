@@ -65,7 +65,11 @@ components. Check out the [code contribution guide](https://k8ssandra.io/communi
 and [docs contribution guide](httpshttps://docs.k8ssandra.io/contribute/)
 
 If you are a **developer** interested in working with the K8ssandra code, here is a 
-[quick start](https://github.com/k8ssandra/k8ssandra/blob/main/dev-quick-start.md) introduction to:
+[guide](https://github.com/k8ssandra/k8ssandra/blob/main/dev-quick-start.md) that will give you an introduction to:
+
+* Important technologies and learning resources
+* Project components
+* Project processes and resources
 * Getting up and running with a basic IDE environment
 * Deploying to a local docker-based cluster environment (kind)
 * Understanding the K8ssandra project structure
