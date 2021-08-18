@@ -67,7 +67,7 @@ Before upgrading to K8ssandra 1.3.0, be sure to read the sections below.
 
 When you upgrade from a prior K8ssandra release to 1.3.0, the default `cassandra.version` is now `4.0.0`. A changed `num_tokens` default may prevent Cassandra 4.0 from starting. This section explains how to avoid the issue. 
 
-First, some background information. The default value for `num_tokens` in Cassandra 3.11 is 256. The default in Cassandra 4.0 is 16. The `num_tokens` setting defines the number of tokens randomly assigned to this node on the ring. The more tokens, relative to other nodes, the larger the proportion of data that this node will store.
+First, some background information. The default value for `num_tokens` in Cassandra 3.11 is 256. The default in Cassandra 4.0 is 16. All nodes are assigned the same number of tokens based on the `num_tokens` setting. More tokens means that the ring is divided up into smaller ranges. A larger number of tokens means that each individual range will be smaller.
 
 The issue: [Upgrading from Cassandra 3.11 to 4.0 fails if num_tokens is not set](https://github.com/k8ssandra/k8ssandra/issues/1029). As noted for this scenario, the Cassandra logs will include the following error, and Cassandra will not start:
 
