@@ -178,33 +178,33 @@ Set default num_tokens based on the server version
   {{- end }}
 {{- end }}
 {{- else }}
+  {{ $numTokens := "" }}
+  {{ $datacenterObj := (lookup "cassandra.datastax.com/v1beta1" "CassandraDatacenter" .Release.Namespace $datacenter.name) }}
+  {{- $config := $datacenterObj.spec.config }}
+  {{- $cassandraYaml := (get $config "cassandra-yaml") }}
+
+  {{- if $cassandraYaml }}
+    {{- if $cassandraYaml.num_tokens }}
+      {{- $numTokens = $cassandraYaml.num_tokens }}
+    {{- end }}
+  {{- end }}
+
   {{- /*
-  If upgrading and num_tokens is set simply use that value.
+    If upgrading and num_tokens is set simply use that value.
   */}}
-  {{- if $datacenter.num_tokens }}
-    {{- nindent 6 (print "num_tokens: " $datacenter.num_tokens) }}
+  {{- if $numTokens }}
+    {{- if and $datacenter.num_tokens (ne (int $datacenter.num_tokens) (int $numTokens)) }}
+      {{- fail (printf "num_tokes cannot be changed once the CassandraDatacenter is created. The actual value is %d, but the specified value is %d" (int $datacenter.num_tokens) $numTokens) }}
+    {{- end }}
+    {{- nindent 6 (print "num_tokens: " $numTokens) }}
   {{- else }}
-    {{ $datacenterObj := (lookup "cassandra.datastax.com/v1beta1" "CassandraDatacenter" .Release.Namespace $datacenter.name) }}
-    {{- /*
-    If num_tokens is not set then we need to lookup the CassandraDatacenter and get current
-    value of num_tokens and reuse it.
-    */}}
-    {{- if $datacenterObj }}
-      {{- $config := $datacenterObj.spec.config }}
-      {{- $cassandraYaml := (get $config "cassandra-yaml") }}
-      {{- if $cassandraYaml.num_tokens }}
-        {{- nindent 6 (printf "num_tokens: %d" $cassandraYaml.num_tokens) }}
+    {{- if $datacenter.num_tokens }}
+      {{- nindent 6 (print "num_tokens: " $numTokens) }}
+    {{- else }}
+      {{- if hasPrefix "3.11" .Values.cassandra.version }}
+        {{- nindent 6 (print "num_tokens: 256") }}
       {{- else }}
-        {{- /*
-        In the event that num_tokens is not set, then we use the default value of the
-        currently installed version. Note that the default value for 3.11 is 256. In 4.0
-        it changed to 16.
-        */}}
-        {{- if hasPrefix "3.11" $datacenterObj.spec.serverVersion }}
-          {{- nindent 6 (print "num_tokens: 256") }}
-        {{- else }}
-          {{- nindent 6 (print "num_tokens: 16") }}
-        {{- end }}
+        {{- nindent 6 (print "num_tokens: 16") }}
       {{- end }}
     {{- end }}
   {{- end }}
