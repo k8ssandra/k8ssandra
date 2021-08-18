@@ -10,7 +10,7 @@ K8ssandra provides a production-ready platform for running Apache Cassandra&reg;
 Also deployed is Stargate, an open source data gateway that lets you interact programmatically with your Kubernetes-hosted Cassandra resources via a well-defined API. 
 
 {{% alert title="Note" color="success" %}}
-**K8ssandra 1.3.0** implements a number of changes, enhancements, and bug fixes. This topic summarizes the key revisions in 1.3.0, and provides links to the associated issues in our GitHub repo.
+**K8ssandra 1.3.0** implements a number of changes, enhancements, and bug fixes. This topic summarizes the key revisions in 1.3.0, provides links to the associated issues in our GitHub repo, and contains important upgrade considerations.
 
 **Reminder**: We've migrated the cass-operator GitHub repo from https://github.com/datastax/cass-operator to https://github.com/k8ssandra/cass-operator. Refer to the new repo for the latest Cass Operator developments.
 {{% /alert %}}
@@ -65,9 +65,7 @@ Before upgrading to K8ssandra 1.3.0, be sure to read the sections below.
 
 ### Upgrading to K8ssandra 1.3.0 and Cassandra 4.0
 
-When you upgrade from a prior K8ssandra release to 1.3.0, the default `cassandra.version` is now `4.0.0`. 
-
-Depending on whether you previously set Cassandra's `num_tokens` property, an issue may occur that prevents Cassandra from starting. This section explains how to avoid the issue. 
+When you upgrade from a prior K8ssandra release to 1.3.0, the default `cassandra.version` is now `4.0.0`. A changed `num_tokens` default may prevent Cassandra 4.0 from starting. This section explains how to avoid the issue. 
 
 First, some background information. The default value for `num_tokens` in Cassandra 3.11 is 256. The default in Cassandra 4.0 is 16. The `num_tokens` setting defines the number of tokens randomly assigned to this node on the ring. The more tokens, relative to other nodes, the larger the proportion of data that this node will store.
 
@@ -77,69 +75,147 @@ The issue: [Upgrading from Cassandra 3.11 to 4.0 fails if num_tokens is not set]
 org.apache.cassandra.exceptions.ConfigurationException: Cannot change the number of tokens from 256 to 16
 ```
 
-How to avoid the issue:
+To avoid the issue, first check the `num_tokens` settings in your K8ssandra-deployed Cassandra 3.11 database. Let's walk through an example.
 
-* If you already set the `num_tokens` chart property, nothing needs to be done, other than assuring that you continue to set the desired `num_tokens` value. 
+#### Initial installation
 
-* If you have not previously set `num_tokens` in the deployed Cassandra 3.11.x, explicitly set it prior to doing the `helm upgrade` to K8ssandra 1.3.0.
+This example starts by installing K8ssandra 1.3.0 with Cassandra 3.11.10 and the latter's default `num_tokens` (256). 
 
-For example, here's a customized chart where the user specified a `num_tokens` value:
+```bash
+helm install k8ssandra -f k8ssandra.values.yml k8ssandra/k8ssandra
+```
+
+k8ssandra.values.yml:
 
 ```yaml
 cassandra:
-  version: 3.11.10
-  auth:
-    enabled: true
-  heap:
-    size: 512M
+  version: "3.11.10"
   datacenters:
-  - name: dc1
-    size: 1
-    num_tokens: 128
+    - 
+      name: dc1
+      size: 1
+stargate:
+  enabled: false
 ```
 
-(We're using `num_tokens: 128` above just as an example.)
+Notice that `stargate` is disabled here just for the sake of quickly starting and testing the full deployment.
 
-**Before upgrading** to K8ssandra 1.3.0, specify the file that contains the desired settings. Example:
+**Resulting deployment:**
 
 ```bash
-helm upgrade my-k8ssandra k8ssandra/k8ssandra -f my-values.yaml
+helm list
 ```
-
-Later, when you're ready to use upgrade to K8ssandra 1.3.0 and Cassandra 4.0, remember to include your desired `num_tokens` value. 
-
-```bash
-helm repo update
-```
-
 **Output**:
-```bash
-Hang tight while we grab the latest from your chart repositories...
-...Successfully got an update from the "k8ssandra" chart repository
-Update Complete. ⎈Happy Helming!⎈
+```
+NAME            NAMESPACE       REVISION        UPDATED                                 STATUS          CHART           APP VERSION
+k8ssandra       default         1               2021-08-17 18:58:03.831212 -0400 EDT    deployed        k8ssandra-1.3.0 
 ```
 
-Here's a sample chart or values file to subsequently reference:
+After about 10 minutes, verify the Cassandra Operator status:
+
+```bash
+kubectl describe cassdc dc1 | grep "Cassandra Operator Progress:"
+```
+**Output**:
+```
+  Cassandra Operator Progress:  Ready
+```
+
+Verify the server version:
+
+```bash
+kubectl describe cassdc dc1 | grep "Server Version:" 
+```
+**Output**:
+```
+  Server Version:  3.11.10
+```
+
+Verify the `num_tokens`, in this case defined by default value:
+
+```bash
+kubectl describe cassdc dc1 | grep "num_tokens:"
+```
+**Output**:
+```
+      num_tokens:                         256
+```
+
+#### Upgrades
+
+Upgrade to Cassandra 4.0.0 and explicitly sets the `num_tokens` to match the previous default (256).
+
+```bash
+helm upgrade k8ssandra -f k8ssandra-upgrade.values.yml k8ssandra/k8ssandra
+```
+
+k8ssandra-upgrade.values.yml:
 
 ```yaml
 cassandra:
-  version: 4.0.0
-  auth:
-    enabled: true
-  heap:
-    size: 512M
+  version: "4.0.0"
   datacenters:
-  - name: dc1
-    size: 1
-    num_tokens: 128
+    - 
+      name: dc1
+      size: 1
+      num_tokens: 256
+stargate:
+  enabled: false
 ```
 
-Run the `helm upgrade`:
+(Again, `stargate` is disabled here just to expedite verification of the deployment. You could subsequently enable `stargate` by editing the values YAML and submitting a follow-up `helm upgrade` command.)
+
+**Resulting deployment:**
+
+After about 10 minutes, verify the Cassandra Operator status:
 
 ```bash
-helm upgrade my-k8ssandra k8ssandra/k8ssandra -f my-values.yaml
+kubectl describe cassdc dc1 | grep "Cassandra Operator Progress:"                              
+```
+**Output**:
+```
+  Cassandra Operator Progress:  Ready
 ```
 
+Check the pods:
+
+```bash
+kubectl get pods
+```
+**Output**:
+```
+NAME                                                READY   STATUS      RESTARTS   AGE
+k8ssandra-cass-operator-5bbf6584b9-pgldj            1/1     Running     0          9m23s
+k8ssandra-crd-upgrader-job-k8ssandra-skrjh          0/1     Completed   0          2m6s
+k8ssandra-dc1-default-sts-0                         2/2     Running     0          106s
+k8ssandra-grafana-679b4bbd74-ngrz2                  2/2     Running     0          9m23s
+k8ssandra-kube-prometheus-operator-85695ffb-qhqc7   1/1     Running     0          9m23s
+k8ssandra-reaper-694cf49b96-jgnvg                   0/1     Running     1          6m12s
+k8ssandra-reaper-operator-5c6cc55869-tdhjw          1/1     Running     0          9m23s
+prometheus-k8ssandra-kube-prometheus-prometheus-0   2/2     Running     1          9m14s
+```
+
+Verify the server version:
+
+```bash
+kubectl describe cassdc dc1 | grep "Server Version:" 
+```
+**Output**:
+```
+  Server Version:  4.0.0
+```
+
+Verify `num_tokens`:
+
+```bash
+kubectl describe cassdc dc1 | grep "num_tokens:"
+```
+**Output**:
+```
+      num_tokens:                         256
+```
+
+Because the explicitly set `num_tokens` value in 4.0 matches the previous `num_tokens` default in 3.11 (256), Cassandra Operator starts. 
 
 ### Upgrading from K8ssandra 1.0.0 to 1.3.0 
 
@@ -289,4 +365,3 @@ If you're impatient, jump right in with the K8ssandra [install]({{< relref "inst
 * DigitalOcean Kubernetes ([DOKS]({{< relref "install/doks" >}}))
 * Google Kubernetes Engine ([GKE]({{< relref "install/gke" >}}))
 * Microsoft Azure Kubernetes Service ([AKS]({{< relref "install/aks" >}}))
-* 
