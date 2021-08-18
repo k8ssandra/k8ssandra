@@ -94,11 +94,7 @@ cassandra:
     - 
       name: dc1
       size: 1
-stargate:
-  enabled: false
 ```
-
-Notice that `stargate` is disabled here just for the sake of quickly starting and testing the full deployment.
 
 **Resulting deployment:**
 
@@ -159,11 +155,7 @@ cassandra:
       name: dc1
       size: 1
       num_tokens: 256
-stargate:
-  enabled: false
 ```
-
-(Again, `stargate` is disabled here just to expedite verification of the deployment. You could subsequently enable `stargate` by editing the values YAML and submitting a follow-up `helm upgrade` command.)
 
 **Resulting deployment:**
 
@@ -215,7 +207,7 @@ kubectl describe cassdc dc1 | grep "num_tokens:"
       num_tokens:                         256
 ```
 
-Because the explicitly set `num_tokens` value in 4.0 matches the previous `num_tokens` default in 3.11 (256), Cassandra Operator starts. 
+Because the explicitly set `num_tokens` value in 4.0 matches the previous `num_tokens` default in 3.11 (256), Cassandra starts. 
 
 ### Upgrading from K8ssandra 1.0.0 to 1.3.0 
 
