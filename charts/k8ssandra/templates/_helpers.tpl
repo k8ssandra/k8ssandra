@@ -180,12 +180,15 @@ Set default num_tokens based on the server version
 {{- else }}
   {{ $numTokens := "" }}
   {{ $datacenterObj := (lookup "cassandra.datastax.com/v1beta1" "CassandraDatacenter" .Release.Namespace $datacenter.name) }}
-  {{- $config := $datacenterObj.spec.config }}
-  {{- $cassandraYaml := (get $config "cassandra-yaml") }}
-
-  {{- if $cassandraYaml }}
-    {{- if $cassandraYaml.num_tokens }}
-      {{- $numTokens = $cassandraYaml.num_tokens }}
+  {{- if $datacenterObj }}
+    {{- if $datacenterObj.spec }}
+      {{- $config := $datacenterObj.spec.config }}
+      {{- $cassandraYaml := (get $config "cassandra-yaml") }}
+      {{- if $cassandraYaml }}
+        {{- if $cassandraYaml.num_tokens }}
+          {{- $numTokens = $cassandraYaml.num_tokens }}
+        {{- end }}
+      {{- end }}
     {{- end }}
   {{- end }}
 
