@@ -197,7 +197,7 @@ Set default num_tokens based on the server version
   */}}
   {{- if $numTokens }}
     {{- if and $datacenter.num_tokens (ne (int $datacenter.num_tokens) (int $numTokens)) }}
-      {{- fail (printf "num_tokes cannot be changed once the CassandraDatacenter is created. The actual value is %d, but the specified value is %d" (int $datacenter.num_tokens) $numTokens) }}
+      {{- fail (printf "num_tokens cannot be changed once the CassandraDatacenter is created. The actual value is %d, but the specified value is %d" (int $datacenter.num_tokens) $numTokens) }}
     {{- end }}
     {{- nindent 6 (print "num_tokens: " $numTokens) }}
   {{- else }}
