@@ -19,7 +19,7 @@ Also deployed is Stargate, an open source data gateway that lets you interact pr
 
 ## Prerequisites
 
-* A Kubernetes v1.16 or later environment - local or via a supported cloud provider
+* A Kubernetes environment, from v1.17 (minimum supported), up to v1.21.1 (current tested upper bound) - local or via a supported cloud provider
 * [Helm](https://helm.sh/) v3
 
 ## Supported Kubernetes environments
