@@ -7,7 +7,7 @@ version: 0.29.4
 appVersion: 1.7.1
 dependencies:
   - name: k8ssandra-common
-    version: 0.28.3
+    version: 0.28.4
     repository: file://../k8ssandra-common
 home: https://github.com/k8ssandra/cass-operator
 sources:

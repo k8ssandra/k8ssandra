@@ -21,6 +21,24 @@ Create chart name and version as used by the chart label.
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
+{{/**
+SecurityContext helpers for pod and container scope.
+*/}}
+
+{{/**
+k8ssandra container securityContext defaults
+**/}}
+{{- define "k8ssandra-common.container.security-ctx-defaults" -}}
+readOnlyRootFilesystem: true
+{{- end }}
+
+{{/**
+k8ssandra Cassandra pod's podSecurityContext defaults
+**/}}
+{{- define "k8ssandra-common.pod.pod-security-ctx-defaults" -}}
+{}
+{{- end }}
+
 {{- define "k8ssandra-common.labels" }}
 {{ include "common.labels.standard" . }}
 app.kubernetes.io/part-of: k8ssandra-{{ .Release.Name }}-{{ .Release.Namespace }}

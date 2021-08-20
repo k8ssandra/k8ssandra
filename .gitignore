@@ -257,6 +257,10 @@ charts/*/charts/*.tgz
 # Local bin
 bin
 
+# script outputs
+scripts/deleted-namespaces.txt
+scripts/namespaces.txt
+
 # Docs
 docs/public/
 docs/resources/

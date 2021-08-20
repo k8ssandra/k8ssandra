@@ -57,16 +57,16 @@ podSecurityContext: {}
 
 securityContext:
   # -- Mark root filesystem as read only
-  readOnlyRootFilesystem: true
+  readOnlyRootFilesystem: false
 
   # -- Run cass-operator container as non-root user
-  runAsNonRoot: true
+  # runAsNonRoot: true
 
   # -- Group for the user running the cass-operator container / process
-  runAsGroup: 65534
+  # runAsGroup: 65534
 
   # -- User for running the cass-operator container / process
-  runAsUser: 65534
+  # runAsUser: 65534
 
 # -- Resources requests and limits for the cass-operator pod. We usually
 # recommend not to specify default resources and to leave this as a conscious

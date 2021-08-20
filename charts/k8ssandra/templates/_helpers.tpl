@@ -411,21 +411,3 @@ Cassandra image (Management API image and version tag).
 {{- (printf (get .Values.cassandra.versionImageMap .Values.cassandra.version)) }}
 {{- end }}
 {{- end }}
-
-{{/**
-SecurityContext helpers for pod and container scope.
-*/}}
-
-{{/**
-k8ssandra container securityContext defaults
-**/}}
-{{- define "k8ssandra.container.security-ctx-defaults" -}}
-readOnlyRootFilesystem: true
-{{- end }}
-
-{{/**
-k8ssandra Cassandra pod's podSecurityContext defaults
-**/}}
-{{- define "k8ssandra.pod.pod-security-ctx-defaults" -}}
-securityContext: {}
-{{- end }}

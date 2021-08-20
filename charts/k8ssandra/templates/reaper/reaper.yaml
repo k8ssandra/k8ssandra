@@ -1,6 +1,6 @@
 {{- if .Values.reaper.enabled }}
-{{- $defaultSecurityCtx := (include "k8ssandra.container.security-ctx-defaults" .) -}}
-{{- $defaultPodSecurityCtx := "{}" -}}
+{{- $defaultSecurityCtx := (include "k8ssandra-common.container.security-ctx-defaults" .) -}}
+{{- $defaultPodSecurityCtx := (include "k8ssandra-common.pod.pod-security-ctx-defaults" .) -}}
 apiVersion: reaper.cassandra-reaper.io/v1alpha1
 kind: Reaper
 metadata:

@@ -1,18 +1,21 @@
+{{- $defaultPodSecurityCtx :=  (include "k8ssandra-common.pod.pod-security-ctx-defaults" .) -}}
+{{- $defaultSecurityCtx := (include "k8ssandra-common.container.security-ctx-defaults" .) -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ include "k8ssandra-common.fullname" . }}
-  labels: {{ include "k8ssandra-common.labels" . | indent 4 }}
+  labels: {{ include "k8ssandra-common.labels" . | nindent 4 }}
 spec:
   replicas: 1
   selector:
-    matchLabels:
-      {{- include "k8ssandra-common.selectorLabels" . | nindent 6 }}
+    matchLabels: {{- include "k8ssandra-common.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       labels: {{- include "k8ssandra-common.labels" . | indent 8 }}
     spec:
-      serviceAccountName:  {{ include "k8ssandra-common.serviceAccountName" . }}
+      serviceAccountName: {{ include "k8ssandra-common.serviceAccountName" . }}
+      securityContext:
+        {{- ternary ($defaultPodSecurityCtx) (.Values.podSecurityContext | toYaml) (empty .Values.podSecurityContext) | nindent 8 }}
       containers:
       - args:
         - --enable-leader-election
@@ -27,4 +30,6 @@ spec:
         name: reaper-operator
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         resources: {{- toYaml .Values.resources | nindent 10 }}
+        securityContext:
+          {{- ternary ($defaultSecurityCtx) (.Values.securityContext | toYaml) (empty .Values.securityContext) | nindent 10 }}
       terminationGracePeriodSeconds: 10

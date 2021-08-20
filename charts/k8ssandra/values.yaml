@@ -44,8 +44,7 @@ cassandra:
     readOnlyRootFilesystem: false
 
   # -- Security context override for pod where Cassandra container resides
-  podSecurityContext:
-    readOnlyRootFilesystem: false
+  podSecurityContext: {}
 
   # -- Cassandra base init container
   baseConfig:
@@ -483,11 +482,15 @@ stargate:
 reaper:
   # -- Security context override for reaper container
   # K8ssandra defaults readOnlyRootFilesystem: true
-  securityContext: {}
+  # TODO - this will be adjusted as we get the Reaper image changes in place.
+  securityContext:
+    readOnlyRootFilesystem: false
 
   # -- Security context override for reaper init container
+  # TODO - this will be adjusted as we get the Reaper image changes in place.
   schemaInitContainerConfig:
-    securityContext: {}
+    securityContext:
+      readOnlyRootFilesystem: false
 
   # -- Security context override for reaper pod
   podSecurityContext: {}
