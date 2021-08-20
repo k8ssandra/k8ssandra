@@ -199,7 +199,7 @@ Alternatively, you can download the individual charts directly from the project'
 
 The K8ssandra helm charts make installation a snap. You can override chart configurations during installation as necessary if you're an advanced user, or make changes after a default installation using `helm upgrade` at a later time.
 
-K8ssandra 1.3.0 and later can install the following versions of Apache Cassandra:
+K8ssandra 1.3.0 can install the following versions of Apache Cassandra:
 
 * 3.11.7
 * 3.11.8
