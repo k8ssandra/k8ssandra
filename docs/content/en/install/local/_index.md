@@ -40,11 +40,11 @@ As K8ssandra deploys on a K8s cluster, one must be available to target for insta
 
 K8ssandra works with the following versions of Kubernetes either standalone or via a cloud provider:
 
-* 1.16
-* 1.17
+* 1.17 (minimum supported version)
 * 1.18
 * 1.19
 * 1.20
+* v1.21.1 (current upper bound of K8ssandra testing)
 
 To verify your K8s server version:
 
@@ -199,13 +199,13 @@ Alternatively, you can download the individual charts directly from the project'
 
 The K8ssandra helm charts make installation a snap. You can override chart configurations during installation as necessary if you're an advanced user, or make changes after a default installation using `helm upgrade` at a later time.
 
-K8ssandra can install the following versions of Apache Cassandra:
+K8ssandra 1.3.0 can install the following versions of Apache Cassandra:
 
 * 3.11.7
 * 3.11.8
 * 3.11.9
 * 3.11.10
-* 4.0-beta4
+* 4.0.0 (default)
 
 {{% alert title="Important" color="warning" %}}
 K8ssandra comes out of the box with a set of [default values](https://github.com/k8ssandra/k8ssandra/blob/main/charts/k8ssandra/values.yaml) tailored to getting up and running quickly.  Those defaults are intended to be a great starting point for smaller-scale local development but are **not** intended for production deployments.
