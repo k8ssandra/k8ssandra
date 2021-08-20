@@ -20,7 +20,7 @@ image:
 
   # -- Pull policy for the operator container
   pullPolicy: IfNotPresent
-  
+
   # -- Tag of the medusa-operator image to pull from image.repository
   tag: v0.3.3
 
@@ -40,16 +40,16 @@ podSecurityContext: {}
 
 securityContext:
   # -- Mark root filesystem as read only
-  readOnlyRootFilesystem: true
+  readOnlyRootFilesystem: false
 
   # -- Run medusa-operator container as non-root user
-  runAsNonRoot: true
+  # runAsNonRoot: false
 
   # -- Group for the user running the medusa-operator container / process
-  runAsGroup: 65534
+  # runAsGroup: 65534
 
   # -- User for running the medusa-operator container / process
-  runAsUser: 65534
+  # runAsUser: 65534
 
 # -- Resources requests and limits for the cass-operator pod. We usually
 # recommend not to specify default resources and to leave this as a conscious

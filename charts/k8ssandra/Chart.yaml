@@ -22,7 +22,7 @@ dependencies:
     condition: medusa.enabled
 
   - name: k8ssandra-common
-    version: 0.28.3
+    version: 0.28.4
     repository: file://../k8ssandra-common
 
   - name: kube-prometheus-stack

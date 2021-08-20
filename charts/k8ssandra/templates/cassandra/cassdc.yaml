@@ -1,6 +1,7 @@
 {{- $datacenter := (index .Values.cassandra.datacenters 0) -}}
 {{- $medusaImage := (printf "%s:%s" .Values.medusa.image.repository .Values.medusa.image.tag) -}}
-{{- $defaultSecurityCtx := (include "k8ssandra.container.security-ctx-defaults" .) -}}
+{{- $defaultSecurityCtx := (include "k8ssandra-common.container.security-ctx-defaults" .) -}}
+{{- $defaultPodSecurityCtx := (include "k8ssandra-common.pod.pod-security-ctx-defaults" .) -}}
 
 {{- if and (not .Values.cassandra.image)  (not (hasKey .Values.cassandra.versionImageMap .Values.cassandra.version)) -}}
   {{- fail (print .Values.cassandra.version " is not a supported Cassandra version") }}
@@ -161,7 +162,7 @@ spec:
 {{- end }}
   podTemplateSpec:
     spec:
-      securityContext: {{- ternary ($defaultSecurityCtx) (.Values.cassandra.podSecurityContext | toYaml) (empty .Values.cassandra.podSecurityContext) | nindent 10 }}
+      securityContext: {{- ternary ($defaultPodSecurityCtx) (.Values.cassandra.podSecurityContext | toYaml) (empty .Values.cassandra.podSecurityContext) | nindent 10 }}
       initContainers:
       - name: base-config-init
         image: {{ include "k8ssandra.cassandraImage" . }}
@@ -179,6 +180,10 @@ spec:
             mountPath: /opt/metrics-collector/config/
           - name: cassandra-tmp
             mountPath: /tmp/
+          {{- if .Values.reaper.enabled }}
+          - name: reaper-config
+            mountPath: /etc/reaper/
+          {{- end }}
       - name: server-config-init
         securityContext: {{- ternary ($defaultSecurityCtx) (.Values.cassandra.configBuilder.securityContext | toYaml) (empty .Values.cassandra.configBuilder.securityContext) | nindent 10 }}
      {{- if (or .Values.cassandra.auth.enabled .Values.reaper.enabled) }}
@@ -227,7 +232,7 @@ spec:
         {{- if (and .Values.medusa.restoreInitContainerConfig .Values.medusa.restoreInitContainerConfig.securityContext) }}
         securityContext: {{ .Values.medusa.restoreInitContainerConfig.securityContext | toYaml | nindent 10 }}
         {{- else }}
-        securityContext: {{ include "k8ssandra.container.security-ctx-defaults" . | nindent 10 }}
+        securityContext: {{ include "k8ssandra-common.container.security-ctx-defaults" . | nindent 10 }}
         {{- end }}
         imagePullPolicy: {{ .Values.medusa.image.pullPolicy }}
         env:
@@ -310,6 +315,10 @@ spec:
         emptyDir: {}
       - name: cassandra-tmp
         emptyDir: {}
+      {{- if .Values.reaper.enabled }}
+      - name: reaper-config
+        emptyDir: {}
+      {{- end }}
       {{- if .Values.medusa.enabled }}
       - name: podinfo
         downwardAPI:

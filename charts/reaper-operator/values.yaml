@@ -21,7 +21,7 @@ image:
   # -- Pull policy for the operator container
   pullPolicy: IfNotPresent
   # -- Tag of the reaper-operator image to pull from image.repository
-  tag: v0.3.3
+  tag: v0.3.4
 
 # -- References to secrets to use when pulling images. ref:
 # https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
@@ -40,16 +40,16 @@ podSecurityContext: {}
 # -- SecurityContext for the reaper-operator container.
 securityContext:
   # -- Mark root filesystem as read only
-  readOnlyRootFilesystem: true
+  readOnlyRootFilesystem: false
 
   # -- Run reaper-operator container as non-root user
-  runAsNonRoot: true
+  # runAsNonRoot: true
 
   # -- Group for the user running the reaper-operator container / process
-  runAsGroup: 65534
+  # runAsGroup: 65534
 
   # -- User for running the reaper-operator container / process
-  runAsUser: 65534
+  # runAsUser: 65534
 
 # -- Resources requests and limits for the cass-operator pod. We usually
 # recommend not to specify default resources and to leave this as a conscious

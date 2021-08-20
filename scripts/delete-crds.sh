@@ -24,3 +24,4 @@ kubectl delete crd thanosrulers.monitoring.coreos.com
 kubectl delete crd tlsoptions.traefik.containo.us
 kubectl delete crd tlsstores.traefik.containo.us
 kubectl delete crd traefikservices.traefik.containo.us
+kubectl delete crd serverstransports.traefik.containo.us
