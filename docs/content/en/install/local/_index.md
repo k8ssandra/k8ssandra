@@ -58,7 +58,7 @@ Client Version: version.Info{Major:"1", Minor:"20", GitVersion:"v1.20.3", GitCom
 Server Version: version.Info{Major:"1", Minor:"18", GitVersion:"v1.18.16", GitCommit:"7a98bb2b7c9112935387825f2fce1b7d40b76236", GitTreeState:"clean", BuildDate:"2021-02-17T11:52:32Z", GoVersion:"go1.13.15", Compiler:"gc", Platform:"linux/amd64"}
 ```
 
-Your K8s server version is a combination of the `Major:` and `Minor:` key/value pairs following `Server Version:`, in the example above, `1.20`.
+Your K8s server version is a combination of the `Major:` and `Minor:` key/value pairs following `Server Version:`, in the example above, `1.18`.
 
 If you don't have a K8s cluster available, you can use [OpenShift CodeReady Containers](https://developers.redhat.com/products/codeready-containers/overview) that run within a VM, or one of the following local versions that run within Docker:
 
