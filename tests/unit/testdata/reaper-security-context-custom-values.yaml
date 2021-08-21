@@ -1,0 +1,72 @@
+reaper:
+  securityContext:
+    allowPrivilegeEscalation: true
+    capabilities:
+      add:
+        - "a"
+        - "b"
+      drop:
+        - "z"
+    privileged: true
+    procMount: "test-proc-mount"
+    readOnlyRootFilesystem: true
+    runAsGroup: 8675309
+    runAsNonRoot: true
+    runAsUser: 9035768
+    seLinuxOptions:
+      level: "test-level"
+      role: "test-role"
+      type: "test-type"
+      user: "test-user"
+    seccompProfile:
+      localhostProfile: "test-localhost-profile"
+      type: "test-type"
+    windowsOptions:
+      gmsaCredentialSpec: "test-cred-spec"
+      gmsaCredentialSpecName: "test-cred-spec-name"
+      runAsUserName: "test-runas-username"
+  schemaInitContainerConfig:
+    securityContext:
+      allowPrivilegeEscalation: true
+      capabilities:
+        add:
+          - "a"
+          - "b"
+        drop:
+          - "z"
+      privileged: true
+      procMount: "test-proc-mount"
+      readOnlyRootFilesystem: true
+      runAsGroup: 8675309
+      runAsNonRoot: true
+      runAsUser: 9035768
+      seLinuxOptions:
+        level: "test-level"
+        role: "test-role"
+        type: "test-type"
+        user: "test-user"
+      seccompProfile:
+        localhostProfile: "test-localhost-profile"
+        type: "test-type"
+      windowsOptions:
+        gmsaCredentialSpec: "test-cred-spec"
+        gmsaCredentialSpecName: "test-cred-spec-name"
+        runAsUserName: "test-runas-username"
+  podSecurityContext:
+    fsGroup: 1
+    fsGroupChangePolicy: "test-group-change-policy"
+    runAsGroup: 8765309
+    runAsNonRoot: true
+    runAsUser: 9035678
+    seLinuxOptions:
+      level: "test-level"
+      role: "test-role"
+      type: "test-type"
+      user: "test-user"
+    seccompProfile:
+      localhostProfile: "test-localhost-profile"
+      type: "test-type"
+    windowsOptions:
+      gmsaCredentialSpec: "test-cred-spec"
+      gmsaCredentialSpecName: "test-cred-spec-name"
+      runAsUserName: "test-runas-username"

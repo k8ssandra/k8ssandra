@@ -17,7 +17,7 @@ When cutting a new release of the parent `k8ssandra` chart update the `unrelease
 and date `## vX.Y.Z - YYYY-MM-DD` and create a new placeholder section for  `unreleased` entries.
 
 ## unreleased
-* [ENHANCEMENT] #959 Make root file system in Cassandra pod read only
+* [ENHANCEMENT] #959 Root file system in Cassandra pod read only; security context for containers.
 * [BUGFIX] #1012 reaper-operator's role.yaml has more data than it should, causing role name conflicts
 * [BUGFIX] #1018 reaper image registry typo and jvm typo fixed
 * [BUGFIX] #1029 Do not change num_tokens when upgrading

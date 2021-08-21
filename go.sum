@@ -830,8 +830,8 @@ github.com/k8ssandra/cass-operator v1.7.0/go.mod h1:mUZdlBasktWCgrYeCLiVNJCH0QjF
 github.com/k8ssandra/reaper-client-go v0.3.0/go.mod h1:1yol6YTcKcLOmPH9CfAdeFnVg/KCCTSbIUXMsF1cKII=
 github.com/k8ssandra/reaper-client-go v0.3.1-0.20210617111910-fe2ba92f8efb h1:RvFhovAfMgALqozmpVo2F/9gSITPIUubI1153mQNiPA=
 github.com/k8ssandra/reaper-client-go v0.3.1-0.20210617111910-fe2ba92f8efb/go.mod h1:WsQymIaVT39xbcstZhdqynUS13AGzP2p6U9Hsk1oy5M=
-github.com/k8ssandra/reaper-operator v0.3.2 h1:o7UOTzB1M5qkrrNvXwEQWizpkybjDvGRGnfljzYXquk=
-github.com/k8ssandra/reaper-operator v0.3.2/go.mod h1:Vf2RsyiWAbGemrhZ4TK8uA0040EeTaoQk+irR/E9zFg=
+github.com/k8ssandra/reaper-operator v0.3.4 h1:EyRy9F/sY/Kd0gZfZZQhe0ME/UmHRIyMjygic3K7bi8=
+github.com/k8ssandra/reaper-operator v0.3.4/go.mod h1:0c+bxmDZTDKtS1DEKvieWAI4lOtGO1Wa5er+A4l/hWA=
 github.com/kardianos/osext v0.0.0-20190222173326-2bc1f35cddc0/go.mod h1:1NbS8ALrpOvjt0rHPNLyCIeMtbizbir8U//inJ+zuB8=
 github.com/karrick/godirwalk v1.7.5/go.mod h1:2c9FRhkDxdIbgkOnCEvnSWs71Bhugbl46shStcFDJ34=
 github.com/karrick/godirwalk v1.10.12/go.mod h1:RoGL9dQei4vP9ilrpETWE8CLOZ1kiN0LhBygSwrAsHA=

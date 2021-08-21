@@ -35,3 +35,43 @@ func AssertContainerNamesMatch(cassdc *cassop.CassandraDatacenter, names ...stri
 
 	ExpectWithOffset(1, actualNames).To(Equal(names))
 }
+
+func AssertContainerSecurityContextExistsAndMatches(cassdc *cassop.CassandraDatacenter, name string, ctx corev1.SecurityContext) {
+
+	var container = GetContainer(cassdc, name)
+	if container == nil {
+		container = GetInitContainer(cassdc, name)
+	}
+
+	Expect(container).ToNot(BeNil())
+	Expect(container.SecurityContext).ToNot(BeNil())
+	Expect(container.SecurityContext).To(BeEquivalentTo(&ctx))
+
+}
+
+func AssertContainerSecurityContextExists(cassdc *cassop.CassandraDatacenter, names ...string) {
+
+	for _, name := range names {
+		var container = GetContainer(cassdc, name)
+		if container == nil {
+			container = GetInitContainer(cassdc, name)
+		}
+
+		Expect(container).ToNot(BeNil())
+		Expect(container.SecurityContext).ToNot(BeNil())
+		Expect(container.SecurityContext.ReadOnlyRootFilesystem).ToNot(BeNil())
+		Expect(*container.SecurityContext.ReadOnlyRootFilesystem).To(BeTrue())
+	}
+}
+
+func AssertContainerSecurityContextNotExists(cassdc *cassop.CassandraDatacenter, names ...string) {
+
+	for _, name := range names {
+		var container = GetContainer(cassdc, name)
+		if container == nil {
+			container = GetInitContainer(cassdc, name)
+		}
+
+		Expect(container).To(BeNil())
+	}
+}

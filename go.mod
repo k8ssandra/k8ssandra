@@ -9,7 +9,7 @@ require (
 	github.com/gruntwork-io/terratest v0.30.15
 	github.com/k8ssandra/cass-operator v1.7.0
 	github.com/k8ssandra/reaper-client-go v0.3.1-0.20210617111910-fe2ba92f8efb
-	github.com/k8ssandra/reaper-operator v0.3.2
+	github.com/k8ssandra/reaper-operator v0.3.4
 	github.com/onsi/ginkgo v1.14.2
 	github.com/onsi/gomega v1.10.3
 	github.com/traefik/traefik/v2 v2.3.7
