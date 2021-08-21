@@ -161,15 +161,57 @@ Set default num_tokens based on the server version
 */}}
 {{- define "k8ssandra.default_num_tokens" -}}
 {{- $datacenter := (index .Values.cassandra.datacenters 0) -}}
+{{- if .Release.IsInstall }}
+  {{- /*
+  If num_tokens is set we simply use that value.
+  */}}
+  {{- if $datacenter.num_tokens }}
+    {{- nindent 6 (print "num_tokens: " $datacenter.num_tokens) }}
+  {{- else }}
+  {{- /*
+  If num_tokens is not set we calculate the default value based on the C* version.
+  */}}
+  {{- if hasPrefix "3.11" .Values.cassandra.version }}
+    {{- nindent 6 (print "num_tokens: 256") }}
+  {{- else }}
+    {{- nindent 6 (print "num_tokens: 16") }}
+  {{- end }}
+{{- end }}
+{{- else }}
+  {{ $numTokens := "" }}
+  {{ $datacenterObj := (lookup "cassandra.datastax.com/v1beta1" "CassandraDatacenter" .Release.Namespace $datacenter.name) }}
+  {{- if $datacenterObj }}
+    {{- if $datacenterObj.spec }}
+      {{- $config := $datacenterObj.spec.config }}
+      {{- $cassandraYaml := (get $config "cassandra-yaml") }}
+      {{- if $cassandraYaml }}
+        {{- if $cassandraYaml.num_tokens }}
+          {{- $numTokens = $cassandraYaml.num_tokens }}
+        {{- end }}
+      {{- end }}
+    {{- end }}
+  {{- end }}
+
+  {{- /*
+    If upgrading and num_tokens is set simply use that value.
+  */}}
+  {{- if $numTokens }}
+    {{- if and $datacenter.num_tokens (ne (int $datacenter.num_tokens) (int $numTokens)) }}
+      {{- fail (printf "num_tokens cannot be changed once the CassandraDatacenter is created. The actual value is %d, but the specified value is %d" (int $datacenter.num_tokens) $numTokens) }}
+    {{- end }}
+    {{- nindent 6 (print "num_tokens: " $numTokens) }}
+  {{- else }}
     {{- if $datacenter.num_tokens }}
-      num_tokens: {{ $datacenter.num_tokens }}
+      {{- nindent 6 (print "num_tokens: " $numTokens) }}
     {{- else }}
-    {{- if hasPrefix "3.11" .Values.cassandra.version }}
-      num_tokens: 256
-    {{- else }}
-      num_tokens: 16
+      {{- if hasPrefix "3.11" .Values.cassandra.version }}
+        {{- nindent 6 (print "num_tokens: 256") }}
+      {{- else }}
+        {{- nindent 6 (print "num_tokens: 16") }}
+      {{- end }}
     {{- end }}
-    {{- end }}
+  {{- end }}
+{{- end }}
 {{- end }}
 
 {{- define "medusa.configMapName" -}}

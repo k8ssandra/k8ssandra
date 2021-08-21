@@ -105,13 +105,8 @@ func deployCluster(t *testing.T, namespace, customValues string, helmValues map[
 	g(t).Expect(err).To(BeNil())
 
 	if os.Getenv("K8SSANDRA_CASSANDRA_VERSION") != "" {
-		if !useLocalCharts && strings.HasPrefix(os.Getenv("K8SSANDRA_CASSANDRA_VERSION"), "3.11") {
-			// We should not set the 3.11 version when using the stable repo as we may end up with a patch version that's not available
-			log.Println(Info("Using the default 3.11 Cassandra version available for this K8ssandra release"))
-		} else {
-			log.Println(Info(fmt.Sprintf("Using Cassandra version %s", os.Getenv("K8SSANDRA_CASSANDRA_VERSION"))))
-			helmValues["cassandra.version"] = os.Getenv("K8SSANDRA_CASSANDRA_VERSION")
-		}
+		log.Println(Info(fmt.Sprintf("Using Cassandra version %s", os.Getenv("K8SSANDRA_CASSANDRA_VERSION"))))
+		helmValues["cassandra.version"] = os.Getenv("K8SSANDRA_CASSANDRA_VERSION")
 	}
 
 	helmOptions := &helm.Options{
