@@ -228,8 +228,9 @@ tags
 .vscode/*
 !.vscode/settings.json
 !.vscode/tasks.json
-!.vscode/launch.json
 !.vscode/extensions.json
+!recommended-dev.sh
+!recommended-launch.json
 *.code-workspace
 
 ### VisualStudioCode Patch ###

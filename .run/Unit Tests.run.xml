@@ -1,0 +1,13 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="All Unit Tests" type="GoTestRunConfiguration" factoryName="Go Test">
+    <module name="k8ssandra" />
+    <working_directory value="$PROJECT_DIR$/tests/unit" />
+    <go_parameters value="-test.timeout=3m" />
+    <framework value="gotest" />
+    <kind value="PACKAGE" />
+    <package value="github.com/k8ssandra/k8ssandra/tests/unit" />
+    <directory value="$PROJECT_DIR$" />
+    <filePath value="$PROJECT_DIR$" />
+    <method v="2" />
+  </configuration>
+</component>
