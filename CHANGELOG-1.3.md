@@ -18,6 +18,8 @@ and date `## vX.Y.Z - YYYY-MM-DD` and create a new placeholder section for  `unr
 
 ## unreleased
 
+[BUGFIX] #1029 Do not change num_tokens when upgrading
+
 ## v1.3.0 - 2021-07-27
 
 * [FEATURE] #949 Upgrade from Management API v0.1.26 to v0.1.27 to provide support for Cassandra 4.0.0 GA, make 4.0.0 the default
