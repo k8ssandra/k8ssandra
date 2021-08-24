@@ -179,6 +179,10 @@ spec:
             mountPath: /opt/metrics-collector/config/
           - name: cassandra-tmp
             mountPath: /tmp/
+          {{- if .Values.reaper.enabled }}
+          - name: reaper-config
+            mountPath: /etc/reaper/
+          {{- end }}
       - name: server-config-init
         securityContext: {{- ternary ($defaultSecurityCtx) (.Values.cassandra.configBuilder.securityContext | toYaml) (empty .Values.cassandra.configBuilder.securityContext) | nindent 10 }}
      {{- if (or .Values.cassandra.auth.enabled .Values.reaper.enabled) }}
@@ -310,6 +314,10 @@ spec:
         emptyDir: {}
       - name: cassandra-tmp
         emptyDir: {}
+      {{- if .Values.reaper.enabled }}
+      - name: reaper-config
+        emptyDir: {}
+      {{- end }}
       {{- if .Values.medusa.enabled }}
       - name: podinfo
         downwardAPI:

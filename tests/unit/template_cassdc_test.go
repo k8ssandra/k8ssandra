@@ -73,6 +73,7 @@ const (
 	CassandraConfigVolumeName            = "cassandra-config"
 	CassandraMetricsCollConfigVolumeName = "cassandra-metrics-coll-config"
 	CassandraTmpVolumeName               = "cassandra-tmp"
+	ReaperConfigVolumeName = "reaper-config"
 
 	MedusaBucketKeyVolumeName = "medusa-bucket-key"
 	PodInfoVolumeName         = "podinfo"
@@ -142,9 +143,9 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 
 			// Default set of volume and volume mounts
 			Expect(kubeapi.GetVolumeMountNames(&initContainers[0])).To(ConsistOf(CassandraConfigVolumeName,
-				CassandraMetricsCollConfigVolumeName, CassandraTmpVolumeName))
+				CassandraMetricsCollConfigVolumeName, CassandraTmpVolumeName, ReaperConfigVolumeName))
 			Expect(kubeapi.GetVolumeNames(cassdc.Spec.PodTemplateSpec)).To(ConsistOf(CassandraConfigVolumeName,
-				CassandraMetricsCollConfigVolumeName, CassandraTmpVolumeName))
+				CassandraMetricsCollConfigVolumeName, CassandraTmpVolumeName, ReaperConfigVolumeName))
 
 			// Default security context for containers
 			AssertContainerSecurityContextExists(cassdc, BaseConfigInitContainer, ConfigInitContainer,
@@ -513,7 +514,7 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 		It("enabling reaper and medusa", func() {
 			// Simple verification that both have properties correctly applied
 			options := &helm.Options{
-				SetValues: map[string]string{"medusa.enabled": "true"},
+				SetValues:      map[string]string{"medusa.enabled": "true"},
 				KubectlOptions: defaultKubeCtlOptions,
 			}
 
