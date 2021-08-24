@@ -4,7 +4,7 @@ description: |
   Configures and installs the Reaper Operator for Apache Cassandra. This tool 
   manages an external repair process for Apache Cassandra clusters.
 type: application
-version: 0.32.0
+version: 0.32.1
 appVersion: 0.1.0
 dependencies:
   - name: k8ssandra-common
