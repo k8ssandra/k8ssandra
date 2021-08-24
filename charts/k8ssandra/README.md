@@ -1,6 +1,6 @@
 # k8ssandra
 
-![Version: 1.3.0](https://img.shields.io/badge/Version-1.3.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)
+![Version: 1.3.1](https://img.shields.io/badge/Version-1.3.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)
 
 Provisions and configures an instance of the entire K8ssandra stack. This includes Apache Cassandra, Stargate, Reaper, Medusa, Prometheus, and Grafana.
 
@@ -24,7 +24,7 @@ Provisions and configures an instance of the entire K8ssandra stack. This includ
 | file://../cass-operator | cass-operator | 0.29.4 |
 | file://../k8ssandra-common | k8ssandra-common | 0.28.3 |
 | file://../medusa-operator | medusa-operator | 0.30.1 |
-| file://../reaper-operator | reaper-operator | 0.32.0 |
+| file://../reaper-operator | reaper-operator | 0.32.1 |
 | https://prometheus-community.github.io/helm-charts | kube-prometheus-stack | 12.11.3 |
 
 ## Values
