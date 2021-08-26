@@ -35,6 +35,7 @@
 | serviceAccount.annotations | object | `{}` | Annotations for the reaper-operator service account. |
 | podAnnotations | object | `{}` | Annotations for the reaper-operator pod. |
 | podSecurityContext | object | `{}` | PodSecurityContext for the reaper-operator pod. |
+| securityContext | object | `{"readOnlyRootFilesystem":true,"runAsGroup":65534,"runAsNonRoot":true,"runAsUser":65534}` | SecurityContext for the reaper-operator container. |
 | securityContext.readOnlyRootFilesystem | bool | `true` | Mark root filesystem as read only |
 | securityContext.runAsNonRoot | bool | `true` | Run reaper-operator container as non-root user |
 | securityContext.runAsGroup | int | `65534` | Group for the user running the reaper-operator container / process |

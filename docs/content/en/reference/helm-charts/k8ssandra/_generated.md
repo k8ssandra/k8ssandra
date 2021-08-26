@@ -28,15 +28,21 @@
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | cassandra.enabled | bool | `true` | Enables installation of Cassandra cluster. Set to false if you only wish to install operators. |
-| cassandra.version | string | `"4.0.0"` | The Cassandra version to use. The supported versions include the following:    - 3.11.7    - 3.11.8    - 3.11.9    - 3.11.10    - 4.0.0 |
-| cassandra.versionImageMap | object | `{"3.11.10":"k8ssandra/cass-management-api:3.11.10-v0.1.27","3.11.7":"k8ssandra/cass-management-api:3.11.7-v0.1.27","3.11.8":"k8ssandra/cass-management-api:3.11.8-v0.1.27","3.11.9":"k8ssandra/cass-management-api:3.11.9-v0.1.27","4.0.0":"k8ssandra/cass-management-api:4.0.0-v0.1.27"}` | Specifies the image to use for a particular Cassandra version. Exercise care and caution with changing these values! cass-operator is not designed to work with arbitrary Cassandra images. It expects the cassandra container to be running management-api images. If you do want to change one of these mappings, the new value should be a management-api image. |
+| cassandra.version | string | `"4.0.0"` | The Cassandra version to use. The supported versions include the following:    - 3.11.7    - 3.11.8    - 3.11.9    - 3.11.10    - 3.11.11    - 4.0.0 |
+| cassandra.versionImageMap | object | `{"3.11.10":"k8ssandra/cass-management-api:3.11.10-v0.1.27","3.11.11":"k8ssandra/cass-management-api:3.11.11-v0.1.28","3.11.7":"k8ssandra/cass-management-api:3.11.7-v0.1.28","3.11.8":"k8ssandra/cass-management-api:3.11.8-v0.1.28","3.11.9":"k8ssandra/cass-management-api:3.11.9-v0.1.27","4.0.0":"k8ssandra/cass-management-api:4.0.0-v0.1.28"}` | Specifies the image to use for a particular Cassandra version. Exercise care and caution with changing these values! cass-operator is not designed to work with arbitrary Cassandra images. It expects the cassandra container to be running management-api images. If you do want to change one of these mappings, the new value should be a management-api image. |
 | cassandra.image | object | `{}` | Overrides the default image mappings. This is intended for advanced use cases like development or testing. By default the Cassandra version has to be one that is in versionImageMap. Template rendering will fail if the version is not in the map. When you set the image directly, the version mapping check is skipped. Note that you are still constrained to the versions supported by cass-operator. |
-| cassandra.configBuilder | object | `{"image":{"pullPolicy":"IfNotPresent","registry":"docker.io","repository":"datastax/cass-config-builder","tag":"1.0.4"}}` | The server-config-init init container |
+| cassandra.securityContext | object | `{"readOnlyRootFilesystem":false}` | Security context override for cassandra container K8ssandra defaults readOnlyRootFilesystem: true TODO - overriding to disable default for now, due to mgmt-api root privs required |
+| cassandra.podSecurityContext | object | `{"readOnlyRootFilesystem":false}` | Security context override for pod where Cassandra container resides |
+| cassandra.baseConfig | object | `{"securityContext":{}}` | Cassandra base init container |
+| cassandra.baseConfig.securityContext | object | `{}` | Security context override for base init container K8ssandra defaults readOnlyRootFilesystem: true |
+| cassandra.configBuilder | object | `{"image":{"pullPolicy":"IfNotPresent","registry":"docker.io","repository":"datastax/cass-config-builder","tag":"1.0.4"},"securityContext":{}}` | The server-config-init init container |
+| cassandra.configBuilder.securityContext | object | `{}` | Security context override for server-config-init container K8ssandra defaults readOnlyRootFilesystem: true |
 | cassandra.configBuilder.image.registry | string | `"docker.io"` | Container registry for the config builder |
 | cassandra.configBuilder.image.repository | string | `"datastax/cass-config-builder"` | Repository for cass-config-builder image |
 | cassandra.configBuilder.image.tag | string | `"1.0.4"` | Tag of the config builder image to pull from image repository |
 | cassandra.configBuilder.image.pullPolicy | string | `"IfNotPresent"` | Pull policy for the config builder image |
-| cassandra.jmxCredentialsConfig | object | `{"image":{"pullPolicy":"IfNotPresent","registry":"docker.io","repository":"busybox","tag":"1.33.1"}}` | The jmx-credentials init container that configures JMX credentials. |
+| cassandra.jmxCredentialsConfig | object | `{"image":{"pullPolicy":"IfNotPresent","registry":"docker.io","repository":"busybox","tag":"1.33.1"},"securityContext":{}}` | The jmx-credentials init container that configures JMX credentials. |
+| cassandra.jmxCredentialsConfig.securityContext | object | `{}` | Security context override for jmx init container K8ssandra defaults readOnlyRootFilesystem: true |
 | cassandra.jmxCredentialsConfig.image.registry | string | `"docker.io"` | Container registry for the jmx-credentials container |
 | cassandra.jmxCredentialsConfig.image.repository | string | `"busybox"` | Repository for jmx-credentials container image |
 | cassandra.jmxCredentialsConfig.image.tag | string | `"1.33.1"` | Tag of the jmx-credentials image to pull from image repository |
@@ -109,6 +115,9 @@
 | stargate.ingress.cassandra.traefik.entrypoint | string | `"cassandra"` | Traefik entrypoint where traffic is sourced. See https://doc.traefik.io/traefik/routing/entrypoints/ |
 | stargate.affinity | object | `{}` | Affinity to apply to the Stargate pods. See https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#affinity-and-anti-affinity for background |
 | stargate.tolerations | list | `[]` | Tolerations to apply to the Stargate pods. See https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/ for background. |
+| reaper.securityContext | object | `{}` | Security context override for reaper container K8ssandra defaults readOnlyRootFilesystem: true |
+| reaper.schemaInitContainerConfig | object | `{"securityContext":{}}` | Security context override for reaper init container |
+| reaper.podSecurityContext | object | `{}` | Security context override for reaper pod |
 | reaper.autoschedule | bool | `false` | When enabled, Reaper automatically sets up repair schedules for all non-system keypsaces. Repear monitors the cluster so that as keyspaces are added or removed repair schedules will be added or removed respectively. |
 | reaper.autoschedule_properties | object | `{}` | Additional autoscheduling properties. Allows you to customize the schedule rules for autoscheduling. Properties are the same as accepted by the Reaper. |
 | reaper.enabled | bool | `true` | Enable Reaper resources as part of this release. Note that Reaper uses Cassandra's JMX APIs to perform repairs. When Reaper is enabled, Cassandra will also be configured to allow remote JMX access. JMX authentication will be configured in Cassandra with credentials only created for Reaper in order to limit access. |
@@ -127,6 +136,8 @@
 | reaper.affinity | object | `{}` | Affinity to apply to the Reaper pods. See https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#affinity-and-anti-affinity for background |
 | reaper.tolerations | list | `[]` | Tolerations to apply to the Reaper pods. See https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/ for background. |
 | medusa.enabled | bool | `false` | Enable Medusa resources as part of this release. If enabled, `bucketName` and `storageSecret` **must** be defined. |
+| medusa.securityContext | object | `{"readOnlyRootFilesystem":false}` | Security context override for Medusa container. K8ssandra defaults readOnlyRootFilesystem: true TODO - overriding to disable default for now, due to medusa write perm needed |
+| medusa.restoreInitContainerConfig | object | `{"securityContext":{"readOnlyRootFilesystem":false}}` | Security context override for Medusa init container. K8ssandra defaults readOnlyRootFilesystem: true |
 | medusa.image.registry | string | `"docker.io"` | Image registry for medusa |
 | medusa.image.repository | string | `"k8ssandra/medusa"` | Image repository for medusa |
 | medusa.image.tag | string | `"0.11.0"` | Tag of the medusa image to pull from |
