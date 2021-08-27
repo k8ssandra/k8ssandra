@@ -332,5 +332,5 @@ jobs:
         uses: fnkr/github-action-ghr@v1
         if: github.event_name == 'release' && github.event.action == 'published'
         env:
-          GHR_PATH: build/k8ssandra-${{ env.RELEASE_VERSION }}.tgz
+          GHR_PATH: build/${{ steps.compute_next_version.outputs.RELEASE_VERSION }}/k8ssandra-${{ env.RELEASE_VERSION }}.tgz
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
