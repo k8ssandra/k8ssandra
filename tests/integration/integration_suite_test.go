@@ -364,7 +364,7 @@ func TestUpgradeScenario(t *testing.T) {
 			waitForReaperPod(t, namespace)
 
 			// Upgrade to current version
-			DeployClusterWithValues(t, namespace, "", "cluster_with_reaper.yaml", 1, true, true, "")
+			DeployClusterWithValues(t, namespace, "", "cluster_with_reaper_upgraded.yaml", 1, true, true, "")
 			checkResourcePresenceForReaper(t, namespace)
 			waitForReaperPod(t, namespace)
 			checkReaperRegistered(t, namespace)

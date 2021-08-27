@@ -1,0 +1,33 @@
+cassandra:
+  heap:
+    size: 505M
+    newGenSize: 201M
+  datacenters:
+    - name: dc1
+      size: 3
+  ingress:
+    enabled: false
+
+stargate:
+  # -- Enable Stargate resources as part of this release
+  enabled: false
+
+reaper:
+  autoschedule: false
+  enabled: true
+  ingress:
+    # -- Enables Reaper ingress definitions. When enabled, you must specify a value for reaper.ingress.host.
+    enabled: true
+    host: repair.127.0.0.1.nip.io
+    method: traefik
+    traefik:
+      entrypoint: web
+
+medusa:
+  enabled: false
+
+kube-prometheus-stack:
+  # -- Controls whether the kube-prometheus-stack chart is used at all.
+  # Disabling this parameter prevents all monitoring components from being
+  # installed.
+  enabled: false
