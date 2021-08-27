@@ -268,7 +268,7 @@ func createMedusaSecretAndInstallDeps(t *testing.T, namespace, backend string) {
 
 func scaleUpCassandra(t *testing.T, namespace, backend string, nodes int) {
 	log.Println(Info("Scaling up Cassandra"))
-	valuesFile := fmt.Sprintf("cluster_with_medusa_%s.yaml", strings.ToLower(backend))
+	valuesFile := fmt.Sprintf("cluster_with_medusa_%s_upgraded.yaml", strings.ToLower(backend))
 	DeployClusterWithValues(t, namespace, backend, valuesFile, nodes, true, true, "")
 }
 
