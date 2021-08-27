@@ -230,6 +230,22 @@ Upgrading directly from K8ssandra 1.0.0 to 1.3.0 causes a StatefulSet update (du
     kubectl scale deployment <stargate-deployment> --replicas 1
     ```
 
+## K8ssandra 1.3.1 revisions
+
+Release date: 27-August-2021
+
+The following sections summarize and link to key revisions in K8ssandra 1.3.1. For the latest, refer to the [CHANGELOG](https://github.com/k8ssandra/k8ssandra/blob/main/CHANGELOG-1.3.md).
+
+### Changes
+
+* Add support for Apache Cassandra 3.11.11 [#1063](https://github.com/k8ssandra/k8ssandra/issues/1063)
+
+### Bug fixes
+
+* Correct Reaper image registry and JVM typos [#1018](https://github.com/k8ssandra/k8ssandra/issues/1018)
+* Correct duplicate roles and rolebindings in reaper-operator [1012](https://github.com/k8ssandra/k8ssandra/issues/1012)
+* Preserve num_tokens when upgrading to prevent failures when upgrading to 4.0.0 [1029](https://github.com/k8ssandra/k8ssandra/issues/1029)
+
 
 ## K8ssandra 1.3.0 revisions
 
