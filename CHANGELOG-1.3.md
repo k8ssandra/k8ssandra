@@ -18,6 +18,8 @@ and date `## vX.Y.Z - YYYY-MM-DD` and create a new placeholder section for  `unr
 
 ## unreleased
 
+## v1.3.1 - 2021-08-27
+
 * [BUGFIX] #1063 Add support for C* 3.11.11
 * [BUGFIX] #1018 reaper image registry typo and jvm typo fixed
 * [BUGFIX] #1012 reaper-operator's role.yaml has more data than it should, causing role name conflicts
