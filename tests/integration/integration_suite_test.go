@@ -268,7 +268,15 @@ func createMedusaSecretAndInstallDeps(t *testing.T, namespace, backend string) {
 
 func scaleUpCassandra(t *testing.T, namespace, backend string, nodes int) {
 	log.Println(Info("Scaling up Cassandra"))
-	valuesFile := fmt.Sprintf("cluster_with_medusa_%s.yaml", strings.ToLower(backend))
+	backend = strings.ToLower(backend)
+	valuesFile := fmt.Sprintf("cluster_with_medusa_%s.yaml", backend)
+	// This is an ugly, short term hack to fix the failing upgrade tests. The tests need to
+	// be refactored. See https://github.com/k8ssandra/k8ssandra/issues/1053. I am adding
+	// an explicit check for minio here because that is the backend used in
+	// TestRestoreAfterUpgrade.
+	if backend == "minio" {
+		valuesFile = fmt.Sprintf("cluster_with_medusa_%s_upgraded.yaml", backend)
+	}
 	DeployClusterWithValues(t, namespace, backend, valuesFile, nodes, true, true, "")
 }
 
@@ -364,7 +372,7 @@ func TestUpgradeScenario(t *testing.T) {
 			waitForReaperPod(t, namespace)
 
 			// Upgrade to current version
-			DeployClusterWithValues(t, namespace, "", "cluster_with_reaper.yaml", 1, true, true, "")
+			DeployClusterWithValues(t, namespace, "", "cluster_with_reaper_upgraded.yaml", 1, true, true, "")
 			checkResourcePresenceForReaper(t, namespace)
 			waitForReaperPod(t, namespace)
 			checkReaperRegistered(t, namespace)
