@@ -42,11 +42,9 @@ cassandra:
   # TODO - overriding to disable default for now, due to mgmt-api root privs required
   securityContext:
     readOnlyRootFilesystem: false
-
   # -- Security context override for pod where Cassandra container resides
   podSecurityContext:
     readOnlyRootFilesystem: false
-
   # -- Cassandra base init container
   baseConfig:
     # -- Security context override for base init container
@@ -350,7 +348,7 @@ stargate:
   enabled: true
   # -- version of Stargate to deploy. This is used in conjunction with cassandra.version to select the Stargate container image.
   # If stargate.image is set, this value has no effect.
-  version: "1.0.29"
+  version: "1.0.31"
   # -- Sets the Stargate container image. This value must be compatible
   # with the value provided for stargate.clusterVersion. If left blank (recommended),
   # k8ssandra will derive an appropriate image based on cassandra.clusterVersion.
@@ -450,7 +448,6 @@ stargate:
     cassandra:
       # -- Enables C* native protocol ingress with Traefik. Note that this is mutually exclusive with cassandra.ingress.enabled, and stargate.ingress.enabled must also be true.
       enabled: true
-
       # -- Determines which TCP-based ingress custom resources to template out. Currently only `traefik` is supported
       method: traefik
       # -- Optional hostname used to match requests. Warning: many native Cassandra clients, notably including cqlsh, initialize their connection by querying for
@@ -484,14 +481,11 @@ reaper:
   # -- Security context override for reaper container
   # K8ssandra defaults readOnlyRootFilesystem: true
   securityContext: {}
-
   # -- Security context override for reaper init container
   schemaInitContainerConfig:
     securityContext: {}
-
   # -- Security context override for reaper pod
   podSecurityContext: {}
-
   # -- When enabled, Reaper automatically sets up repair schedules for all
   # non-system keypsaces. Repear monitors the cluster so that as keyspaces are
   # added or removed repair schedules will be added or removed respectively.
@@ -568,20 +562,17 @@ medusa:
   # -- Enable Medusa resources as part of this release. If enabled,
   # `bucketName` and `storageSecret` **must** be defined.
   enabled: false
-
   # -- Security context override for Medusa container.
   # K8ssandra defaults readOnlyRootFilesystem: true
   # TODO - overriding to disable default for now, due to medusa write perm needed
   securityContext:
     readOnlyRootFilesystem: false
-
   # -- Security context override for Medusa init container.
   # K8ssandra defaults readOnlyRootFilesystem: true
   restoreInitContainerConfig:
     # TODO - overriding to disable default for now, due to medusa write perm needed
     securityContext:
       readOnlyRootFilesystem: false
-
   # Configures the Medusa image which is built from
   # https://github.com/thelastpickle/cassandra-medusa/tree/master/k8s.
   image:
