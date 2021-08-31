@@ -34,11 +34,15 @@ spec:
             - containerPort: 9443
               name: cass-operator-webhook-server
               protocol: TCP
+          {{- end }}
           volumeMounts:
+            {{- if .Values.admissionWebhooks.enabled }}
             - mountPath: /tmp/k8s-webhook-server/serving-certs
               name: cass-operator-certs-volume
               readOnly: true
-          {{- end }}
+            {{- end }}
+            - mountPath: /configs
+              name: manager-config
           livenessProbe:
             httpGet:
               path: /healthz
@@ -58,12 +62,6 @@ spec:
             - name: ENABLE_VMWARE_PSP
               value: "true"
             {{- end }}
-            {{- if .Values.image.registryOverride }}
-            - name: DEFAULT_CONTAINER_REGISTRY_OVERRIDE
-              value: {{ .Values.image.registryOverride }}
-            - name: DEFAULT_CONTAINER_REGISTRY_OVERRIDE_PULL_SECRETS
-              value: cass-operator-registry-override-regcred
-            {{- end }}
             {{- if .Values.clusterScoped }}
             - name: WATCH_NAMESPACE
               value: ""
@@ -73,20 +71,13 @@ spec:
                 fieldRef:
                   fieldPath: metadata.namespace
             {{- end }}
-            - name: POD_NAME
-              valueFrom:
-                fieldRef:
-                  fieldPath: metadata.name
-            - name: SKIP_VALIDATING_WEBHOOK
-            {{- if .Values.admissionWebhooks.enabled }}
-              value: "FALSE"
-            {{- else }}
-              value: "TRUE"
-            {{- end }}
-      {{- if .Values.admissionWebhooks.enabled }}
       volumes:
+      {{- if .Values.admissionWebhooks.enabled }}
         - name: cass-operator-certs-volume
           secret:
             defaultMode: 420
             secretName: {{ .Release.Name }}-webhook
       {{- end }}
+        - configMap:
+            name: {{ .Release.Name }}-manager-config
+          name: manager-config
