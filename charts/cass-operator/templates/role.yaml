@@ -7,12 +7,14 @@ metadata:
 rules:
   - apiGroups:
       - ""
+      - coordination.k8s.io
     resources:
       - pods
       - services
       - endpoints
       - persistentvolumeclaims
       - events
+      - leases
       - configmaps
       - secrets
     verbs:
@@ -93,12 +95,14 @@ metadata:
 rules:
   - apiGroups:
       - ""
+      - coordination.k8s.io
     resources:
       - pods
       - services
       - endpoints
       - persistentvolumeclaims
       - events
+      - leases
       - configmaps
       - secrets
     verbs:
