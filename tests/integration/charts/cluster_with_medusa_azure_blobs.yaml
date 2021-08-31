@@ -20,6 +20,8 @@ medusa:
   # storageSecret will be created as part of the test from a ~/medusa_secret_azure.yaml file; to create this file,
   # follow the steps in docs/content/en/tasks/backup-restore/azure/_index.md
   storageSecret: medusa-bucket-key
+  storage_properties:
+    multi_part_upload_threshold: 1024
 
 reaper-operator:
   enabled: false

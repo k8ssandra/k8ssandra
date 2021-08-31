@@ -20,6 +20,7 @@ medusa:
   storage_properties:
     port: 9000
     secure: "False"
+    multi_part_upload_threshold: 1024
 
   bucketName: k8ssandra-medusa
   storageSecret: medusa-bucket-key

@@ -18,7 +18,8 @@ medusa:
   storage: s3
 
   storage_properties:
-      region: us-east-1
+    region: us-east-1
+    multi_part_upload_threshold: 1024
 
   bucketName: k8ssandra-medusa
   storageSecret: medusa-bucket-key
