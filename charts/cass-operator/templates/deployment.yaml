@@ -25,6 +25,10 @@ spec:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
         - name: {{ .Chart.Name }}
+          args:
+          - --config=/configs/controller_manager_config.yaml
+          command:
+          - /manager
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: {{ include "k8ssandra-common.flattenedImage" .Values.image }}
