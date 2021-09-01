@@ -364,7 +364,6 @@ cassandra:
       #     - example.com
       #   # -- Secret containing the TLS certificate and key for the listener
       #   secretName: tls-secret
-
 stargate:
   # -- Enable Stargate resources as part of this release
   enabled: true
