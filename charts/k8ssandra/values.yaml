@@ -709,7 +709,7 @@ cleaner:
     tag: latest
     # -- Pull policy for the cleaner container
     pullPolicy: IfNotPresent
-# k8ssandra-client provides CLI utilities, but also certain functions such as
+# -- k8ssandra-client provides CLI utilities, but also certain functions such as
 # upgradecrds that allow modifying the running instances
 client:
   # -- Uncomment to specify the name of the service account to use for the
@@ -724,6 +724,10 @@ client:
     tag: latest
     # -- Pull policy for the client container
     pullPolicy: IfNotPresent
+k8ssandra-operator:
+  # -- Enables the k8ssandra-operator as part of this release. This is experimental deployment option, do not
+  # use in production.
+  enabled: false
 cass-operator:
   # -- Enables the cass-operator as part of this release. If this setting is
   # disabled no Cassandra resources will be deployed.
