@@ -551,6 +551,16 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			Expect(cassdc.Spec.AdditionalSeeds).To(HaveLen(1))
 		})
 
+		It("Setting additionaServiceConfig", func() {
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+				ValuesFiles:    []string{"./testdata/additional-service-config-values.yaml"},
+			}
+
+			Expect(renderTemplate(options)).To(Succeed())
+			Expect(cassdc.Spec.AdditionalServiceConfig).ToNot(BeNil())
+		})
+
 		It("setting allowMultipleNodesPerWorker to true", func() {
 			options := &helm.Options{
 				SetValues: map[string]string{
