@@ -75,6 +75,9 @@ spec:
     - {{ . }}
   {{- end }}
 {{- end }}
+{{- if .Values.cassandra.additionalServiceConfig }}
+  additionalServiceConfig: {{ toYaml .Values.cassandra.additionalServiceConfig | indent 4}}
+{{- end }}
   allowMultipleNodesPerWorker: {{ .Values.cassandra.allowMultipleNodesPerWorker | default false}}
 {{- if .Values.cassandra.allowMultipleNodesPerWorker}}
   resources:

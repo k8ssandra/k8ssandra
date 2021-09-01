@@ -136,6 +136,25 @@ cassandra:
   allowMultipleNodesPerWorker: false
   # -- Optional additional contact points for the Cassandra cluster to connect to.
   additionalSeeds: []
+  # -- Optional AdditionalServiceConfig allows to define additional parameters that are included in the created
+  # Services. Note, user can override values set by cass-operator and doing so could break cass-operator functionality.
+  # Avoid label "cass-operator" and anything that starts with "cassandra.datastax.com/"
+  additionalServiceConfig: {}
+    # additionalSeedService:
+    #   additionalAnnotations: {}
+    #   additionalLabels: {}
+    # allpodsService:
+    #   additionalAnnotations: {}
+    #   additionalLabels: {}
+    # dcService:
+    #   additionalAnnotations: {}
+    #   additionalLabels: {}
+    # nodePortService:
+    #   additionalAnnotations: {}
+    #   additionalLabels: {}
+    # seedService:
+    #   additionalAnnotations: {}
+    #   additionalLabels: {}
   # -- The management-api runs as pid 1 in the cassandra container which means
   # its logs are sent to stdout and stderr. To make Cassandra's logs more
   # accessible, cass-operator deploys the server-system-logger container. You
@@ -345,6 +364,7 @@ cassandra:
       #     - example.com
       #   # -- Secret containing the TLS certificate and key for the listener
       #   secretName: tls-secret
+
 stargate:
   # -- Enable Stargate resources as part of this release
   enabled: true
