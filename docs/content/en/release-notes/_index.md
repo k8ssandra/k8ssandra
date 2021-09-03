@@ -5,17 +5,17 @@ weight: 2
 description: Release notes for the open-source K8ssandra community project.
 ---
 
-K8ssandra provides a production-ready platform for running Apache Cassandra&reg; on Kubernetes. This includes automation for operational tasks such as repairs, backup and restores, and monitoring. 
+K8ssandra provides a production-ready platform for running Apache Cassandra&reg; on Kubernetes. This includes automation for operational tasks such as repairs, backup and restores, and monitoring. Also deployed is Stargate, an open source data gateway that lets you interact programmatically with your Kubernetes-hosted Cassandra resources via a well-defined API. 
 
-Also deployed is Stargate, an open source data gateway that lets you interact programmatically with your Kubernetes-hosted Cassandra resources via a well-defined API. 
+**Latest release:** K8ssandra 1.3.1
+
+Release date: 27-August-2021
 
 {{% alert title="Note" color="success" %}}
-**K8ssandra 1.3.0** implements a number of changes, enhancements, and bug fixes. This topic summarizes the key revisions in 1.3.0, provides links to the associated issues in our GitHub repo, and contains important upgrade considerations.
+**K8ssandra 1.3.1** implements a number of changes, enhancements, and bug fixes. This topic summarizes the key revisions in 1.3.1 and prior releases, provides links to the associated issues in our GitHub repo, and contains important upgrade considerations.
 
 **Reminder**: We've migrated the cass-operator GitHub repo from https://github.com/datastax/cass-operator to https://github.com/k8ssandra/cass-operator. Refer to the new repo for the latest Cass Operator developments.
 {{% /alert %}}
-
-**K8ssandra 1.3.0 release date:** 27-July-2021.
 
 ## Prerequisites
 
@@ -39,6 +39,7 @@ The K8ssandra helm chart deploys the following components. Some are optional, an
 
 * [Apache Cassandra](https://cassandra.apache.org/) - the deployed version depends on the configured `cassandra.version` setting:
   * 4.0.0 (default)
+  * 3.11.11
   * 3.11.10
   * 3.11.9
   * 3.11.8
@@ -60,12 +61,12 @@ Operators are software extensions to Kubernetes that make use of custom resource
 ## Upgrade notices
 
 {{% alert title="Important!" color="warning" %}}
-Before upgrading to K8ssandra 1.3.0, be sure to read the sections below.
+Before upgrading to K8ssandra 1.3.1, be sure to read the sections below.
 {{% /alert %}}
 
-### Upgrading to K8ssandra 1.3.0 and Cassandra 4.0
+### Upgrading to K8ssandra 1.3.1 and Cassandra 4.0
 
-When you upgrade from a prior K8ssandra release to 1.3.0, the default `cassandra.version` is now `4.0.0`. A changed `num_tokens` default may prevent Cassandra 4.0 from starting. This section explains how to avoid the issue. 
+When you upgrade from a prior K8ssandra release to 1.3.1, the default `cassandra.version` is `4.0.0`. (The Cassandra 4.0 support began with K8ssandra 1.3.0.) A changed `num_tokens` default may prevent Cassandra 4.0 from starting. This section explains how to avoid the issue. 
 
 First, some background information. The default value for `num_tokens` in Cassandra 3.11 is 256. The default in Cassandra 4.0 is 16. All nodes are assigned the same number of tokens based on the `num_tokens` setting. More tokens means that the ring is divided up into smaller ranges. A larger number of tokens means that each individual range will be smaller.
 
@@ -79,7 +80,7 @@ To avoid the issue, first check the `num_tokens` settings in your K8ssandra-depl
 
 #### Initial installation
 
-This example starts by installing K8ssandra 1.3.0 with Cassandra 3.11.10 and the latter's default `num_tokens` (256). 
+This example starts by installing K8ssandra 1.3.1 with Cassandra 3.11.11 and the latter's default `num_tokens` (256). 
 
 ```bash
 helm install k8ssandra -f k8ssandra.values.yml k8ssandra/k8ssandra
@@ -89,7 +90,7 @@ k8ssandra.values.yml:
 
 ```yaml
 cassandra:
-  version: "3.11.10"
+  version: "3.11.11"
   datacenters:
     - 
       name: dc1
@@ -104,7 +105,7 @@ helm list
 **Output**:
 ```
 NAME            NAMESPACE       REVISION        UPDATED                                 STATUS          CHART           APP VERSION
-k8ssandra       default         1               2021-08-17 18:58:03.831212 -0400 EDT    deployed        k8ssandra-1.3.0 
+k8ssandra       default         1               2021-08-27 18:58:03.831212 -0400 EDT    deployed        k8ssandra-1.3.1 
 ```
 
 After about 10 minutes, verify the Cassandra Operator status:
@@ -124,7 +125,7 @@ kubectl describe cassdc dc1 | grep "Server Version:"
 ```
 **Output**:
 ```
-  Server Version:  3.11.10
+  Server Version:  3.11.11
 ```
 
 Verify the `num_tokens`, in this case defined by default value:
@@ -209,9 +210,11 @@ kubectl describe cassdc dc1 | grep "num_tokens:"
 
 Because the explicitly set `num_tokens` value in 4.0 matches the previous `num_tokens` default in 3.11 (256), Cassandra starts. 
 
-### Upgrading from K8ssandra 1.0.0 to 1.3.0 
+### Upgrading from K8ssandra 1.0.0 to 1.3.1 
 
-Upgrading directly from K8ssandra 1.0.0 to 1.3.0 causes a StatefulSet update (due to [#533](https://github.com/k8ssandra/k8ssandra/issues/533) and [#613](https://github.com/k8ssandra/k8ssandra/issues/613)). A StatefulSet update has the effect of a rolling restart. Because of [#411](https://github.com/k8ssandra/k8ssandra/issues/411) this could require you to perform a manual restart of all Stargate nodes after the Cassandra cluster is back online. This behavior also impacts in-place restore operations of Medusa backups [#611](https://github.com/k8ssandra/k8ssandra/issues/611). To manually restart Stargate nodes:
+Upgrading directly from K8ssandra 1.0.0 to 1.3.1 causes a `StatefulSet` update, due to issues [#533](https://github.com/k8ssandra/k8ssandra/issues/533) and [#613](https://github.com/k8ssandra/k8ssandra/issues/613)). A `StatefulSet` update has the effect of a rolling restart. Because of issue [#411](https://github.com/k8ssandra/k8ssandra/issues/411), this could require you to perform a manual restart of all Stargate nodes after the Cassandra cluster is back online. This behavior also impacts in-place restore operations of Medusa backups - see issue [#611](https://github.com/k8ssandra/k8ssandra/issues/611). 
+
+To manually restart Stargate nodes:
 
 1. Get the Deployment object in your Kubernetes environment:
    ```bash
@@ -230,6 +233,21 @@ Upgrading directly from K8ssandra 1.0.0 to 1.3.0 causes a StatefulSet update (du
     kubectl scale deployment <stargate-deployment> --replicas 1
     ```
 
+## K8ssandra 1.3.1 revisions
+
+Release date: 27-August-2021
+
+The following sections summarize and link to key revisions in K8ssandra 1.3.1. For the latest, refer to the [CHANGELOG](https://github.com/k8ssandra/k8ssandra/blob/main/CHANGELOG-1.3.md).
+
+### Changes
+
+* Add support for Apache Cassandra 3.11.11 [#1063](https://github.com/k8ssandra/k8ssandra/issues/1063)
+
+### Bug fixes
+
+* Correct Reaper image registry and JVM typos [#1018](https://github.com/k8ssandra/k8ssandra/issues/1018)
+* Correct duplicate roles and rolebindings in reaper-operator [1012](https://github.com/k8ssandra/k8ssandra/issues/1012)
+* Preserve num_tokens when upgrading to prevent failures when upgrading to 4.0.0 [1029](https://github.com/k8ssandra/k8ssandra/issues/1029)
 
 ## K8ssandra 1.3.0 revisions
 
