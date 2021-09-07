@@ -31,6 +31,11 @@ spec:
     scrapeTimeout: 15s
     targetPort: 9103
     metricRelabelings:
+    - regex: collectd_mcac_(meter|histogram).*
+      sourceLabels:
+      - __name__
+      replacement: ${1}
+      targetLabel: kind
     - action: drop
       regex: .*rate_(mean|1m|5m|15m)
       sourceLabels:
@@ -79,11 +84,6 @@ spec:
       sourceLabels:
       - mcac
       targetLabel: keyspace
-    - regex: org\.apache\.cassandra\.metrics\.table\.(\w+)\.(\w+)\.(\w+)
-      replacement: mcac_table_${1}
-      sourceLabels:
-      - mcac
-      targetLabel: __name__
     - regex: org\.apache\.cassandra\.metrics\.keyspace\.(\w+)\.(\w+)
       replacement: ${2}
       sourceLabels:

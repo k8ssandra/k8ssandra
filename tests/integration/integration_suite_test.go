@@ -1,9 +1,10 @@
 package integration
 
 import (
-	"github.com/google/uuid"
 	"log"
 	"strings"
+
+	"github.com/google/uuid"
 
 	. "github.com/k8ssandra/k8ssandra/tests/integration/steps"
 
@@ -319,6 +320,7 @@ func testPrometheus(t *testing.T, namespace string) {
 	CheckPrometheusMetricExtraction(t)
 	expectedActiveTargets := CountMonitoredItems(t, namespace)
 	CheckPrometheusActiveTargets(t, expectedActiveTargets) // We're monitoring 3 Cassandra nodes and 1 Stargate instance
+	CheckNoOutOfOrderMetrics(t, namespace)
 }
 
 // Grafana tests
