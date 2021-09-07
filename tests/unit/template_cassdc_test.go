@@ -551,7 +551,7 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			Expect(cassdc.Spec.AdditionalSeeds).To(HaveLen(1))
 		})
 
-		It("Setting additionaServiceConfig", func() {
+		It("Setting additionalServiceConfig", func() {
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
 				ValuesFiles:    []string{"./testdata/additional-service-config-values.yaml"},
@@ -559,6 +559,56 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 
 			Expect(renderTemplate(options)).To(Succeed())
 			Expect(cassdc.Spec.AdditionalServiceConfig).ToNot(BeNil())
+
+			Expect(cassdc.Spec.AdditionalServiceConfig.DatacenterService.Labels).To(Equal(
+				map[string]string{
+					"dc-service-labels": "exists",
+				}))
+
+			Expect(cassdc.Spec.AdditionalServiceConfig.DatacenterService.Annotations).To(Equal(
+				map[string]string{
+					"dc-service-annotations": "exists",
+				}))
+
+			Expect(cassdc.Spec.AdditionalServiceConfig.SeedService.Labels).To(Equal(
+				map[string]string{
+					"seed-service-labels": "exists",
+				}))
+
+			Expect(cassdc.Spec.AdditionalServiceConfig.SeedService.Annotations).To(Equal(
+				map[string]string{
+					"seed-service-annotations": "exists",
+				}))
+
+			Expect(cassdc.Spec.AdditionalServiceConfig.AllPodsService.Labels).To(Equal(
+				map[string]string{
+					"all-pod-labels": "exists",
+				}))
+
+			Expect(cassdc.Spec.AdditionalServiceConfig.AllPodsService.Annotations).To(Equal(
+				map[string]string{
+					"all-pod-annotations": "exists",
+				}))
+
+			Expect(cassdc.Spec.AdditionalServiceConfig.AdditionalSeedService.Labels).To(Equal(
+				map[string]string{
+					"seed-labels": "exists",
+				}))
+
+			Expect(cassdc.Spec.AdditionalServiceConfig.AdditionalSeedService.Annotations).To(Equal(
+				map[string]string{
+					"seed-annotations": "exists",
+				}))
+
+			Expect(cassdc.Spec.AdditionalServiceConfig.NodePortService.Labels).To(Equal(
+				map[string]string{
+					"node-port-labels": "exists",
+				}))
+
+			Expect(cassdc.Spec.AdditionalServiceConfig.NodePortService.Annotations).To(Equal(
+				map[string]string{
+					"node-port-annotations": "exists",
+				}))
 		})
 
 		It("setting allowMultipleNodesPerWorker to true", func() {

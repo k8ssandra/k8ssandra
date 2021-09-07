@@ -2,7 +2,7 @@ cassandra:
   additionalServiceConfig:
     additionalSeedService:
       additionalAnnotations: 
-        seed-annotation: exists
+        seed-annotations: exists
       additionalLabels: 
         seed-labels: exists
     allpodsService:
