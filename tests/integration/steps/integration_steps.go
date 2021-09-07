@@ -299,7 +299,7 @@ func resourceWithLabelIsPresent(t *testing.T, namespace, resourceType string, la
 	return false
 }
 
-func getPodsWithLabels(t *testing.T, namespace string, labels map[string]string) *v1.PodList {
+func GetPodsWithLabels(t *testing.T, namespace string, labels map[string]string) *v1.PodList {
 	pods := &v1.PodList{}
 	err := testClient.List(context.Background(), pods, client.InNamespace(namespace), client.MatchingLabels(labels))
 	g(t).Expect(err).To(BeNil(), fmt.Sprintf("Failed listing pods with labels %s", labels))
@@ -314,7 +314,7 @@ func getServicesWithLabels(t *testing.T, namespace string, labels map[string]str
 }
 
 func CountPodsWithLabels(t *testing.T, namespace string, labels map[string]string) int {
-	pods := getPodsWithLabels(t, namespace, labels)
+	pods := GetPodsWithLabels(t, namespace, labels)
 	return len(pods.Items)
 }
 
@@ -323,7 +323,7 @@ func PodWithLabelsIsReady(t *testing.T, namespace string, label map[string]strin
 		return resourceWithLabelIsPresent(t, namespace, "pod", label)
 	}, retryTimeout, retryInterval).Should(BeTrue())
 
-	pods := getPodsWithLabels(t, namespace, label)
+	pods := GetPodsWithLabels(t, namespace, label)
 	if len(pods.Items) == 1 {
 		return strings.ToLower(string(pods.Items[0].Status.Phase)) == "running"
 	}

@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	resty "github.com/go-resty/resty/v2"
+	"github.com/gruntwork-io/terratest/modules/k8s"
 	. "github.com/onsi/gomega"
 )
 
@@ -49,4 +50,13 @@ func CheckGrafanaIsReachable(t *testing.T) {
 func CountMonitoredItems(t *testing.T, namespace string) int {
 	return CountPodsWithLabels(t, namespace, map[string]string{"app.kubernetes.io/managed-by": "cass-operator"}) +
 		CountPodsWithLabels(t, namespace, map[string]string{"app": releaseName + "-" + datacenterName + "-stargate"})
+}
+
+func CheckNoOutOfOrderMetrics(t *testing.T, namespace string) {
+	kubectlOptions := k8s.NewKubectlOptions("", "", namespace)
+	prometheusPods := GetPodsWithLabels(t, namespace, map[string]string{"app": "prometheus"})
+	g(t).Expect(len(prometheusPods.Items)).To(Equal(1), fmt.Sprintf("Expected one Prometheus pod but found %d", len(prometheusPods.Items)))
+	prometheusLog, err := k8s.RunKubectlAndGetOutputE(t, kubectlOptions, "logs", prometheusPods.Items[0].Name, "-c", "prometheus")
+	g(t).Expect(err).To(BeNil())
+	g(t).Expect(prometheusLog).NotTo(ContainSubstring("Error on ingesting out-of-order samples"))
 }
