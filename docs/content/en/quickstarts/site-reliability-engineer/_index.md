@@ -16,7 +16,7 @@ In this quickstart for Site Reliability Engineers (SREs), we'll cover:
 * [Accessing nodetool commands]({{< relref "#nodetool" >}}) like status, ring, and info.
 * [Configure port forwarding]({{< relref "#port-forwarding" >}}) for the Prometheus and Grafana monitoring utilities as well as Reaper for Apache Cassandra® (Reaper).
 * [Accessing the K8ssandra monitoring utilities]({{< relref "#monitoring" >}}), Prometheus and Grafana.
-* [Accessing Reaper]({{< relref "#monitoring" >}}), an easy to use repair interface.
+* [Accessing Reaper]({{< relref "#reaper" >}}), an easy to use repair interface.
 * [Upgrading a K8ssandra cluster]({{< relref "#upgrade" >}}): to ensure you're using the latest K8ssandra software, or to apply new settings.
 
 ## Access the Apache Cassandra® nodetool utility {#nodetool}
