@@ -1,0 +1,27 @@
+cassandra:
+  additionalServiceConfig:
+    additionalSeedService:
+      additionalAnnotations: 
+        seed-annotations: exists
+      additionalLabels: 
+        seed-labels: exists
+    allpodsService:
+      additionalAnnotations:
+        all-pod-annotations: exists
+      additionalLabels:
+        all-pod-labels: exists
+    dcService:
+      additionalAnnotations: 
+        dc-service-annotations: exists
+      additionalLabels: 
+        dc-service-labels: exists
+    nodePortService:
+      additionalAnnotations: 
+        node-port-annotations: exists
+      additionalLabels: 
+        node-port-labels: exists
+    seedService:
+      additionalAnnotations:
+        seed-service-annotations: exists
+      additionalLabels: 
+        seed-service-labels: exists
