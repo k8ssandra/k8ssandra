@@ -166,7 +166,6 @@ spec:
 {{- end }}
   podTemplateSpec:
     spec:
-      securityContext: {{- ternary ($defaultPodSecurityCtx) (.Values.cassandra.podSecurityContext | toYaml) (empty .Values.cassandra.podSecurityContext) | nindent 10 }}
       initContainers:
       - name: base-config-init
         image: {{ include "k8ssandra.cassandraImage" . }}

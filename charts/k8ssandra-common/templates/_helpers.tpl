@@ -29,7 +29,7 @@ SecurityContext helpers for pod and container scope.
 k8ssandra container securityContext defaults
 **/}}
 {{- define "k8ssandra-common.container.security-ctx-defaults" -}}
-readOnlyRootFilesystem: true
+readOnlyRootFilesystem: false
 {{- end }}
 
 {{/**
