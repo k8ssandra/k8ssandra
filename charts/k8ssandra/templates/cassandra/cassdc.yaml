@@ -151,10 +151,15 @@ spec:
     {{- include "k8ssandra.configureGc" . -}}
     {{- include "k8ssandra.configureJvmHeap" . }}
       additional-jvm-opts:
-{{- if .Values.cassandra.auth.enabled }}
+      {{- if .Values.cassandra.additionalJvmOpts }}
+      {{- range .Values.cassandra.additionalJvmOpts }}
+        - {{ . }}
+      {{- end }}
+      {{- end }}
+      {{- if .Values.cassandra.auth.enabled }}
         - "-Dcassandra.system_distributed_replication_dc_names={{ $datacenter.name }}"
         - "-Dcassandra.system_distributed_replication_per_dc={{ min 5 $datacenter.size }}"
-{{- end }}
+      {{- end }}
 {{- end }}
 {{- if not .Values.cassandra.loggingSidecar.enabled }}
   disableSystemLoggerSidecar: true

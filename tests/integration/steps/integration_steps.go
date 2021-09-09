@@ -141,10 +141,13 @@ func deployCluster(t *testing.T, namespace, customValues string, helmValues map[
 	WaitForCassDcToBeReady(t, namespace)
 }
 
-func DeployClusterWithValues(t *testing.T, namespace, medusaBackend, customValues string, nodes int, upgrade bool, useLocalCharts bool, version string) {
+func DeployClusterWithValues(t *testing.T, namespace, medusaBackend, customValues string, nodes int, upgrade bool, useLocalCharts bool, version string, customHelmValues map[string]string) {
 	log.Printf("Deploying a cluster with %s Medusa backend using the %s values", medusaBackend, customValues)
 
 	helmValues := map[string]string{}
+	if customHelmValues != nil {
+		helmValues = customHelmValues
+	}
 
 	switch strings.ToLower(medusaBackend) {
 	case "minio":
@@ -595,4 +598,10 @@ func LoadRowsInTable(t *testing.T, nbRows int, namespace, tableName, keyspaceNam
 	for i := 0; i < nbRows; i++ {
 		runCassandraQueryAndGetOutput(t, namespace, fmt.Sprintf("INSERT INTO %s.%s(id,val) values(now(), '%d');", keyspaceName, tableName, i))
 	}
+}
+
+func CheckSystemDistributedReplication(t *testing.T, namespace, dc1Rf, dc2Rf string) {
+	queryOutput := runCassandraQueryAndGetOutput(t, namespace, "DESCRIBE KEYSPACE system_distributed")
+	g(t).Expect(queryOutput).To(ContainSubstring(fmt.Sprintf("'dc1': '%s'", dc1Rf)))
+	g(t).Expect(queryOutput).To(ContainSubstring(fmt.Sprintf("'dc2': '%s'", dc2Rf)))
 }

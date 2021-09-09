@@ -1,9 +1,10 @@
 package integration
 
 import (
-	"github.com/google/uuid"
 	"log"
 	"strings"
+
+	"github.com/google/uuid"
 
 	. "github.com/k8ssandra/k8ssandra/tests/integration/steps"
 
@@ -122,7 +123,7 @@ func TestFullStackScenario(t *testing.T) {
 }
 
 func deployFullStackCluster(t *testing.T, namespace string, useLocalCharts bool) {
-	DeployClusterWithValues(t, namespace, "minio", "cluster_full_stack.yaml", 3, false, useLocalCharts, "")
+	DeployClusterWithValues(t, namespace, "minio", "cluster_full_stack.yaml", 3, false, useLocalCharts, "", map[string]string{})
 	checkResourcePresenceForReaper(t, namespace)
 	waitForReaperPod(t, namespace)
 	checkReaperRegistered(t, namespace)
@@ -154,7 +155,7 @@ func testReaper(t *testing.T) {
 
 func deployClusterForReaper(t *testing.T, namespace string, useLocalCharts bool) {
 	log.Println(Info("Deploying K8ssandra and waiting for Reaper to be ready"))
-	DeployClusterWithValues(t, namespace, "", "cluster_with_reaper.yaml", 3, false, useLocalCharts, "")
+	DeployClusterWithValues(t, namespace, "", "cluster_with_reaper.yaml", 3, false, useLocalCharts, "", map[string]string{})
 	checkResourcePresenceForReaper(t, namespace)
 	waitForReaperPod(t, namespace)
 	checkReaperRegistered(t, namespace)
@@ -238,7 +239,7 @@ func testMedusa(t *testing.T, namespace, backend, backupName string, useLocalCha
 func deployClusterForMedusa(t *testing.T, namespace, backend string, nodes int, useLocalCharts bool, version string) {
 	log.Println(Info(fmt.Sprintf("Deploying K8ssandra with Medusa using %s", backend)))
 	valuesFile := fmt.Sprintf("cluster_with_medusa_%s.yaml", strings.ToLower(backend))
-	DeployClusterWithValues(t, namespace, backend, valuesFile, nodes, false, useLocalCharts, version)
+	DeployClusterWithValues(t, namespace, backend, valuesFile, nodes, false, useLocalCharts, version, map[string]string{})
 	CheckClusterExpectedResources(t, namespace)
 }
 
@@ -277,7 +278,7 @@ func scaleUpCassandra(t *testing.T, namespace, backend string, nodes int) {
 	if backend == "minio" {
 		valuesFile = fmt.Sprintf("cluster_with_medusa_%s_upgraded.yaml", backend)
 	}
-	DeployClusterWithValues(t, namespace, backend, valuesFile, nodes, true, true, "")
+	DeployClusterWithValues(t, namespace, backend, valuesFile, nodes, true, true, "", map[string]string{})
 }
 
 // Monitoring scenario:
@@ -307,7 +308,7 @@ func TestMonitoringDeploymentScenario(t *testing.T) {
 }
 
 func deployClusterForMonitoring(t *testing.T, namespace string) {
-	DeployClusterWithValues(t, namespace, "", "cluster_with_stargate_and_monitoring.yaml", 3, false, true, "")
+	DeployClusterWithValues(t, namespace, "", "cluster_with_stargate_and_monitoring.yaml", 3, false, true, "", map[string]string{})
 	CheckClusterExpectedResources(t, namespace)
 	WaitForStargatePodReady(t, namespace)
 }
@@ -346,7 +347,7 @@ func TestStargateDeploymentScenario(t *testing.T) {
 }
 
 func deployClusterForStargate(t *testing.T, namespace string) {
-	DeployClusterWithValues(t, namespace, "", "cluster_with_stargate.yaml", 3, false, true, "")
+	DeployClusterWithValues(t, namespace, "", "cluster_with_stargate.yaml", 3, false, true, "", map[string]string{})
 	CheckClusterExpectedResources(t, namespace)
 	WaitForStargatePodReady(t, namespace)
 }
@@ -367,12 +368,12 @@ func TestUpgradeScenario(t *testing.T) {
 		namespace := initializeCluster(t)
 		success := t.Run(fmt.Sprintf("Upgrade from %s", startVersion), func(t *testing.T) {
 			// Install first production version
-			DeployClusterWithValues(t, namespace, "", "cluster_with_reaper.yaml", 1, false, false, startVersion)
+			DeployClusterWithValues(t, namespace, "", "cluster_with_reaper.yaml", 1, false, false, startVersion, map[string]string{})
 			checkResourcePresenceForReaper(t, namespace)
 			waitForReaperPod(t, namespace)
 
 			// Upgrade to current version
-			DeployClusterWithValues(t, namespace, "", "cluster_with_reaper_upgraded.yaml", 1, true, true, "")
+			DeployClusterWithValues(t, namespace, "", "cluster_with_reaper_upgraded.yaml", 1, true, true, "", map[string]string{})
 			checkResourcePresenceForReaper(t, namespace)
 			waitForReaperPod(t, namespace)
 			checkReaperRegistered(t, namespace)
@@ -413,4 +414,26 @@ func TestRestoreAfterUpgrade(t *testing.T) {
 			cleanupCluster(t, namespace, success)
 		}
 	}
+}
+
+// Test variations around Cassandra deployment settings
+func TestCassandraDeployment(t *testing.T) {
+	const (
+		dc1Rf = "3"
+		dc2Rf = "1"
+	)
+	namespace := initializeCluster(t)
+
+	success := t.Run("Test Cassandra", func(t *testing.T) {
+		deployClusterForCassandra(t, namespace, dc1Rf, dc2Rf)
+		CheckSystemDistributedReplication(t, namespace, dc1Rf, dc2Rf)
+	})
+	cleanupCluster(t, namespace, success)
+}
+
+func deployClusterForCassandra(t *testing.T, namespace, dc1Rf, dc2Rf string) {
+	customHelmValues := map[string]string{}
+	customHelmValues["cassandra.additionalJvmOpts[0]"] = fmt.Sprintf("\"-Dcassandra.system_distributed_replication=dc1:%s\\,dc2:%s\"", dc1Rf, dc2Rf)
+	DeployClusterWithValues(t, namespace, "", "cluster_with_cassandra_only.yaml", 3, false, true, "", customHelmValues)
+	CheckClusterExpectedResources(t, namespace)
 }

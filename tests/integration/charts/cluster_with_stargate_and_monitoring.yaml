@@ -5,6 +5,8 @@ cassandra:
   datacenters:
   - name: dc1
     size: 3
+  additionalJvmOpts:
+  - "-Dcassandra.system_distributed_replication=dc1:3,dc2:1"
   ingress:
     enabled: false
 
