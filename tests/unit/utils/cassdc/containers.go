@@ -60,7 +60,9 @@ func AssertContainerSecurityContextExists(cassdc *cassop.CassandraDatacenter, na
 		Expect(container).ToNot(BeNil())
 		Expect(container.SecurityContext).ToNot(BeNil())
 		Expect(container.SecurityContext.ReadOnlyRootFilesystem).ToNot(BeNil())
-		Expect(*container.SecurityContext.ReadOnlyRootFilesystem).To(BeTrue())
+		// TODO - once images are adjusted that run as apps in these containers,
+		// this will be expecting read-only to be true.
+		Expect(*container.SecurityContext.ReadOnlyRootFilesystem).To(BeFalse())
 	}
 }
 

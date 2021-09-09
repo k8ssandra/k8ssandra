@@ -159,7 +159,9 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			AssertContainerSecurityContextExistsAndMatches(cassdc, CassandraContainer, expectedCtx)
 
 			// Default pod security context for cassdc
-			Expect(cassdc.Spec.PodTemplateSpec.Spec.SecurityContext).ToNot(BeNil())
+			// TODO - revisit as this was potentially causing issues by defaulting to {}
+			// with respect to running in GKE - see k8ssandra #1094
+			Expect(cassdc.Spec.PodTemplateSpec.Spec.SecurityContext).To(BeNil())
 		})
 
 		It("is not rendered if disabled", func() {
@@ -514,7 +516,7 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 		It("enabling reaper and medusa", func() {
 			// Simple verification that both have properties correctly applied
 			options := &helm.Options{
-				SetValues: map[string]string{"medusa.enabled": "true"},
+				SetValues:      map[string]string{"medusa.enabled": "true"},
 				KubectlOptions: defaultKubeCtlOptions,
 			}
 
