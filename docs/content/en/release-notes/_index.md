@@ -60,15 +60,15 @@ Operators are software extensions to Kubernetes that make use of custom resource
 
 ## Upgrade notices
 
-Before upgrading to K8ssandra 1.3.x, be sure to read the sections below.
+Before upgrading to the latest K8ssandra release, be sure to read the sections below.
 
-### Upgrading to K8ssandra 1.3.x and Cassandra 4.0
-
-When you upgrade from a prior K8ssandra release to 1.3.0 or 1.3.1, the default `cassandra.version` is `4.0.0`. Specifically in the case of upgrading from a prior K8ssandra release to **K8ssandra 1.3.0 and Cassandra 4.0.0**, a changed Cassandra `num_tokens` default may prevent Cassandra 4.0 from starting. This section explains how to avoid the issue for 1.3.0 users. 
+### Upgrading to K8ssandra 1.3.0 and Cassandra 4.0
 
 {{% alert title="Tip" color="success" %}}
-The bug described below was fixed in K8ssandra 1.3.1; see resolved issue [1029](https://github.com/k8ssandra/k8ssandra/issues/1029).
+Good news! The issue described in this section was **fixed in K8ssandra 1.3.1**; refer to resolved issue [1029](https://github.com/k8ssandra/k8ssandra/issues/1029).
 {{% /alert %}}
+
+When you upgrade from a prior K8ssandra release to 1.3.0 or 1.3.1, the default `cassandra.version` is `4.0.0`. Specifically in the case of upgrading from a prior K8ssandra release to **K8ssandra 1.3.0 and Cassandra 4.0.0**, a changed Cassandra `num_tokens` default may prevent Cassandra 4.0 from starting. This section explains how to avoid the issue for 1.3.0 users. 
 
 First, some background information. The default value for `num_tokens` in Cassandra 3.11 is 256. The default in Cassandra 4.0 is 16. All nodes are assigned the same number of tokens based on the `num_tokens` setting. More tokens means that the ring is divided up into smaller ranges. A larger number of tokens means that each individual range will be smaller.
 
