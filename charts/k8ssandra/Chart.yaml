@@ -6,6 +6,11 @@ type: application
 version: 1.4.0-SNAPSHOT
 
 dependencies:
+  - name: k8ssandra-operator
+    version: 0.30.0
+    repository: file://../k8ssandra-operator
+    condition: k8ssandra-operator.enabled
+
   - name: cass-operator
     version: 0.29.4
     repository: file://../cass-operator
