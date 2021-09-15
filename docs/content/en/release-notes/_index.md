@@ -60,17 +60,19 @@ Operators are software extensions to Kubernetes that make use of custom resource
 
 ## Upgrade notices
 
-{{% alert title="Important!" color="warning" %}}
-Before upgrading to K8ssandra 1.3.1, be sure to read the sections below.
+Before upgrading to the latest K8ssandra release, be sure to read the sections below.
+
+### Upgrading to K8ssandra 1.3.0 and Cassandra 4.0
+
+{{% alert title="Tip" color="success" %}}
+Good news! The issue described in this section was **fixed in K8ssandra 1.3.1**; refer to resolved issue [1029](https://github.com/k8ssandra/k8ssandra/issues/1029).
 {{% /alert %}}
 
-### Upgrading to K8ssandra 1.3.1 and Cassandra 4.0
-
-When you upgrade from a prior K8ssandra release to 1.3.1, the default `cassandra.version` is `4.0.0`. (The Cassandra 4.0 support began with K8ssandra 1.3.0.) A changed `num_tokens` default may prevent Cassandra 4.0 from starting. This section explains how to avoid the issue. 
+When you upgrade from a prior K8ssandra release to 1.3.0 or 1.3.1, the default `cassandra.version` is `4.0.0`. Specifically in the case of upgrading from a prior K8ssandra release to **K8ssandra 1.3.0 and Cassandra 4.0.0**, a changed Cassandra `num_tokens` default may prevent Cassandra 4.0 from starting. This section explains how to avoid the issue for 1.3.0 users. 
 
 First, some background information. The default value for `num_tokens` in Cassandra 3.11 is 256. The default in Cassandra 4.0 is 16. All nodes are assigned the same number of tokens based on the `num_tokens` setting. More tokens means that the ring is divided up into smaller ranges. A larger number of tokens means that each individual range will be smaller.
 
-The issue: [Upgrading from Cassandra 3.11 to 4.0 fails if num_tokens is not set](https://github.com/k8ssandra/k8ssandra/issues/1029). As noted for this scenario, the Cassandra logs will include the following error, and Cassandra will not start:
+As noted for this K8ssandra 1.3.0 upgrade scenario, in issue [1029](https://github.com/k8ssandra/k8ssandra/issues/1029), the Cassandra logs will include the following error, and Cassandra will not start:
 
 ```
 org.apache.cassandra.exceptions.ConfigurationException: Cannot change the number of tokens from 256 to 16
@@ -80,7 +82,7 @@ To avoid the issue, first check the `num_tokens` settings in your K8ssandra-depl
 
 #### Initial installation
 
-This example starts by installing K8ssandra 1.3.1 with Cassandra 3.11.11 and the latter's default `num_tokens` (256). 
+This example starts by installing K8ssandra 1.3.0 with Cassandra 3.11.11 and the latter's default `num_tokens` (256). 
 
 ```bash
 helm install k8ssandra -f k8ssandra.values.yml k8ssandra/k8ssandra
@@ -105,7 +107,7 @@ helm list
 **Output**:
 ```
 NAME            NAMESPACE       REVISION        UPDATED                                 STATUS          CHART           APP VERSION
-k8ssandra       default         1               2021-08-27 18:58:03.831212 -0400 EDT    deployed        k8ssandra-1.3.1 
+k8ssandra       default         1               2021-07-27 18:58:03.831212 -0400 EDT    deployed        k8ssandra-1.3.0 
 ```
 
 After about 10 minutes, verify the Cassandra Operator status:
