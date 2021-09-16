@@ -17,6 +17,7 @@ When cutting a new release of the parent `k8ssandra` chart update the `unrelease
 and date `## vX.Y.Z - YYYY-MM-DD` and create a new placeholder section for  `unreleased` entries.
 
 ## unreleased
+* [ENHANCEMENT] #1083 Add support for deployment of Cassandra 4.0.1
 * [ENHANCEMENT] #959 Root file system in Cassandra pod read only; security context for containers.
 * [BUGFIX] #969 Prometheus "out-of-order timestamp" error due to metrics relabeling conflict 
 * [BUGFIX] #1066 Azure backups are broken due to missing azure-cli deps
