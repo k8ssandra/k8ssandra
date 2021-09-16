@@ -78,7 +78,7 @@ jobs:
       fail-fast: false
       matrix:
         k8s_version: ["${{ github.event.inputs.kubernetes_version }}"]
-        cassandra_version: ["3.11.10", "4.0.1"]
+        cassandra_version: ["3.11.10", "4.0.0"]
         scenario: ["TestMedusaDeploymentScenario/\"S3\"", "TestMedusaDeploymentScenario/\"Minio\"", "TestMedusaDeploymentScenario/\"local\"", "TestMedusaDeploymentScenario/\"azure_blobs\"", "TestReaperDeploymentScenario", "TestMonitoringDeploymentScenario", "TestStargateDeploymentScenario", "TestRestoreAfterUpgrade", "TestUpgradeScenario"]
     steps:
       - name: Checkout
