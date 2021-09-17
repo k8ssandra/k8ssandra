@@ -716,7 +716,7 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
 				SetValues: map[string]string{
-					"cassandra.version": "4.0.0",
+					"cassandra.version": "4.0.1",
 				},
 			}
 
@@ -731,7 +731,7 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
 				SetValues: map[string]string{
-					"cassandra.version":                                 "4.0.0",
+					"cassandra.version":                                 "4.0.1",
 					"cassandra.datacenters[0].name":                     "test",
 					"cassandra.datacenters[0].allocateTokensForLocalRF": "5",
 				},
@@ -1421,7 +1421,7 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			dcName := "dc1"
 			options := &helm.Options{
 				SetValues: map[string]string{
-					"cassandra.version":             "4.0.0",
+					"cassandra.version":             "4.0.1",
 					"cassandra.heap.size":           "700M",
 					"cassandra.heap.newGenSize":     "350M",
 					"cassandra.datacenters[0].name": dcName,
@@ -1444,12 +1444,13 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 
 	Context("when configuring the Cassandra version and/or image", func() {
 		cassandraVersionImageMap := map[string]string{
-			"3.11.7":  "k8ssandra/cass-management-api:3.11.7-v0.1.28",
-			"3.11.8":  "k8ssandra/cass-management-api:3.11.8-v0.1.28",
+			"3.11.7":  "k8ssandra/cass-management-api:3.11.7-v0.1.29",
+			"3.11.8":  "k8ssandra/cass-management-api:3.11.8-v0.1.29",
 			"3.11.9":  "k8ssandra/cass-management-api:3.11.9-v0.1.27",
 			"3.11.10": "k8ssandra/cass-management-api:3.11.10-v0.1.27",
-			"3.11.11": "k8ssandra/cass-management-api:3.11.11-v0.1.28",
-			"4.0.0":   "k8ssandra/cass-management-api:4.0.0-v0.1.28",
+			"3.11.11": "k8ssandra/cass-management-api:3.11.11-v0.1.29",
+			"4.0.0":   "k8ssandra/cass-management-api:4.0.0-v0.1.29",
+			"4.0.1":   "k8ssandra/cass-management-api:4.0.1-v0.1.29",
 		}
 
 		It("using the default version", func() {
@@ -1459,8 +1460,8 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 
 			Expect(renderTemplate(options)).To(Succeed())
 
-			Expect(cassdc.Spec.ServerVersion).To(Equal("4.0.0"))
-			Expect(cassdc.Spec.ServerImage).To(Equal("k8ssandra/cass-management-api:4.0.0-v0.1.28"))
+			Expect(cassdc.Spec.ServerVersion).To(Equal("4.0.1"))
+			Expect(cassdc.Spec.ServerImage).To(Equal("k8ssandra/cass-management-api:4.0.1-v0.1.29"))
 		})
 
 		It("using 3.11.7", func() {
@@ -1540,6 +1541,21 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 
 		It("using 4.0.0", func() {
 			version := "4.0.0"
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+				SetValues: map[string]string{
+					"cassandra.version": version,
+				},
+			}
+
+			Expect(renderTemplate(options)).To(Succeed())
+
+			Expect(cassdc.Spec.ServerVersion).To(Equal(version))
+			Expect(cassdc.Spec.ServerImage).To(Equal(cassandraVersionImageMap[version]))
+		})
+
+		It("using 4.0.1", func() {
+			version := "4.0.1"
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
 				SetValues: map[string]string{
