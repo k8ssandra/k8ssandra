@@ -9,7 +9,7 @@ cassandra:
   #    - 3.11.11
   #    - 4.0.0
   #    - 4.0.1
-  version: "4.0.0"
+  version: "4.0.1"
   # -- Specifies the image to use for a particular Cassandra version. Exercise
   # care and caution with changing these values! cass-operator is not designed to work with
   # arbitrary Cassandra images. It expects the cassandra container to be running
