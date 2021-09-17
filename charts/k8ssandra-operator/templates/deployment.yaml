@@ -37,7 +37,7 @@ spec:
             fieldRef:
               fieldPath: metadata.namespace
         - name: K8SSANDRA_CONTROL_PLANE
-          value: {{ .Values.controlPlane }}
+          value: {{ .Values.controlPlane | quote }}
         image: {{ include "k8ssandra-common.flattenedImage" .Values.image }}
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         securityContext:
