@@ -72,8 +72,8 @@ you will need to define two other fields in the credentials file, `host` and `co
 ```bash
 {
     "storage_account": "medusabackups",
-    "key": "<YOUR_KEY>"
-    "host": "<YOUR_HOST>"
+    "key": "<YOUR_KEY>",
+    "host": "<YOUR_HOST>",
     "connection_string": "<YOUR_CONNECTION_STRING>"
 }
 ```
