@@ -172,7 +172,7 @@ cassandra:
       # -- Repository for the system-logger image
       repository: k8ssandra/system-logger
       # -- Tag of the system-logger image to pull from image repository
-      tag: 9c4c3692
+      tag: 6c64f9c4
       # -- Pull policy for the system-logger image
       pullPolicy: IfNotPresent
   # -- Optional cluster-level heap configuration, can be overridden at `datacenters` level.
