@@ -36,7 +36,7 @@ spec:
           {{- if .Values.admissionWebhooks.enabled }}
           ports:
             - containerPort: 9443
-              name: cass-operator-webhook-server
+              name: webhook-server
               protocol: TCP
           {{- end }}
           volumeMounts:
