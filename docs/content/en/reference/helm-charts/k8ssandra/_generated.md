@@ -17,8 +17,9 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| file://../cass-operator | cass-operator | 0.29.4 |
-| file://../k8ssandra-common | k8ssandra-common | 0.28.3 |
+| file://../cass-operator | cass-operator | 0.30.0 |
+| file://../k8ssandra-common | k8ssandra-common | 0.28.4 |
+| file://../k8ssandra-operator | k8ssandra-operator | 0.30.1 |
 | file://../medusa-operator | medusa-operator | 0.30.1 |
 | file://../reaper-operator | reaper-operator | 0.32.1 |
 | https://prometheus-community.github.io/helm-charts | kube-prometheus-stack | 12.11.3 |
@@ -28,15 +29,21 @@
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | cassandra.enabled | bool | `true` | Enables installation of Cassandra cluster. Set to false if you only wish to install operators. |
-| cassandra.version | string | `"4.0.0"` | The Cassandra version to use. The supported versions include the following:    - 3.11.7    - 3.11.8    - 3.11.9    - 3.11.10    - 4.0.0 |
-| cassandra.versionImageMap | object | `{"3.11.10":"k8ssandra/cass-management-api:3.11.10-v0.1.27","3.11.7":"k8ssandra/cass-management-api:3.11.7-v0.1.27","3.11.8":"k8ssandra/cass-management-api:3.11.8-v0.1.27","3.11.9":"k8ssandra/cass-management-api:3.11.9-v0.1.27","4.0.0":"k8ssandra/cass-management-api:4.0.0-v0.1.27"}` | Specifies the image to use for a particular Cassandra version. Exercise care and caution with changing these values! cass-operator is not designed to work with arbitrary Cassandra images. It expects the cassandra container to be running management-api images. If you do want to change one of these mappings, the new value should be a management-api image. |
+| cassandra.version | string | `"4.0.1"` | The Cassandra version to use. The supported versions include the following:    - 3.11.7    - 3.11.8    - 3.11.9    - 3.11.10    - 3.11.11    - 4.0.0    - 4.0.1 |
+| cassandra.versionImageMap | object | `{"3.11.10":"k8ssandra/cass-management-api:3.11.10-v0.1.27","3.11.11":"k8ssandra/cass-management-api:3.11.11-v0.1.29","3.11.7":"k8ssandra/cass-management-api:3.11.7-v0.1.29","3.11.8":"k8ssandra/cass-management-api:3.11.8-v0.1.29","3.11.9":"k8ssandra/cass-management-api:3.11.9-v0.1.27","4.0.0":"k8ssandra/cass-management-api:4.0.0-v0.1.29","4.0.1":"k8ssandra/cass-management-api:4.0.1-v0.1.29"}` | Specifies the image to use for a particular Cassandra version. Exercise care and caution with changing these values! cass-operator is not designed to work with arbitrary Cassandra images. It expects the cassandra container to be running management-api images. If you do want to change one of these mappings, the new value should be a management-api image. |
 | cassandra.image | object | `{}` | Overrides the default image mappings. This is intended for advanced use cases like development or testing. By default the Cassandra version has to be one that is in versionImageMap. Template rendering will fail if the version is not in the map. When you set the image directly, the version mapping check is skipped. Note that you are still constrained to the versions supported by cass-operator. |
-| cassandra.configBuilder | object | `{"image":{"pullPolicy":"IfNotPresent","registry":"docker.io","repository":"datastax/cass-config-builder","tag":"1.0.4"}}` | The server-config-init init container |
+| cassandra.securityContext | object | `{"readOnlyRootFilesystem":false}` | Security context override for cassandra container K8ssandra defaults readOnlyRootFilesystem: true TODO - overriding to disable default for now, due to mgmt-api root privs required |
+| cassandra.podSecurityContext | object | `{}` | Security context override for pod where Cassandra container resides |
+| cassandra.baseConfig | object | `{"securityContext":{}}` | Cassandra base init container |
+| cassandra.baseConfig.securityContext | object | `{}` | Security context override for base init container K8ssandra defaults readOnlyRootFilesystem: true |
+| cassandra.configBuilder | object | `{"image":{"pullPolicy":"IfNotPresent","registry":"docker.io","repository":"datastax/cass-config-builder","tag":"1.0.4"},"securityContext":{}}` | The server-config-init init container |
+| cassandra.configBuilder.securityContext | object | `{}` | Security context override for server-config-init container K8ssandra defaults readOnlyRootFilesystem: true |
 | cassandra.configBuilder.image.registry | string | `"docker.io"` | Container registry for the config builder |
 | cassandra.configBuilder.image.repository | string | `"datastax/cass-config-builder"` | Repository for cass-config-builder image |
 | cassandra.configBuilder.image.tag | string | `"1.0.4"` | Tag of the config builder image to pull from image repository |
 | cassandra.configBuilder.image.pullPolicy | string | `"IfNotPresent"` | Pull policy for the config builder image |
-| cassandra.jmxCredentialsConfig | object | `{"image":{"pullPolicy":"IfNotPresent","registry":"docker.io","repository":"busybox","tag":"1.33.1"}}` | The jmx-credentials init container that configures JMX credentials. |
+| cassandra.jmxCredentialsConfig | object | `{"image":{"pullPolicy":"IfNotPresent","registry":"docker.io","repository":"busybox","tag":"1.33.1"},"securityContext":{}}` | The jmx-credentials init container that configures JMX credentials. |
+| cassandra.jmxCredentialsConfig.securityContext | object | `{}` | Security context override for jmx init container K8ssandra defaults readOnlyRootFilesystem: true |
 | cassandra.jmxCredentialsConfig.image.registry | string | `"docker.io"` | Container registry for the jmx-credentials container |
 | cassandra.jmxCredentialsConfig.image.repository | string | `"busybox"` | Repository for jmx-credentials container image |
 | cassandra.jmxCredentialsConfig.image.tag | string | `"1.33.1"` | Tag of the jmx-credentials image to pull from image repository |
@@ -51,12 +58,12 @@
 | cassandra.cassandraLibDirVolume.size | string | `"5Gi"` | Size of the provisioned persistent volume per node. It is recommended to keep the total amount of data per node to approximately 1 TB. With room for compactions this value should max out at ~2 TB. This recommendation is highly dependent on data model and compaction strategies in use. Consider testing with your data model to find an optimal value for your usecase. |
 | cassandra.allowMultipleNodesPerWorker | bool | `false` | Permits running multiple Cassandra pods per Kubernetes worker. If enabled resources.limits and resources.requests **must** be defined. |
 | cassandra.additionalSeeds | list | `[]` | Optional additional contact points for the Cassandra cluster to connect to. |
-| cassandra.loggingSidecar | object | `{"enabled":true,"image":{"pullPolicy":"IfNotPresent","registry":"docker.io","repository":"k8ssandra/system-logger","tag":"9c4c3692"}}` | The management-api runs as pid 1 in the cassandra container which means its logs are sent to stdout and stderr. To make Cassandra's logs more accessible, cass-operator deploys the server-system-logger container. You can get the logs with `kubectl logs <cassandra pod> -c server-system-logger`. |
+| cassandra.additionalServiceConfig | object | `{}` | Optional AdditionalServiceConfig allows to define additional parameters that are included in the created Services. Note, user can override values set by cass-operator and doing so could break cass-operator functionality. Avoid label "cass-operator" and anything that starts with "cassandra.datastax.com/" |
 | cassandra.loggingSidecar.enabled | bool | `true` | Set to false if you do not want to deploy the server-system-logger container. |
-| cassandra.loggingSidecar.image | object | `{"pullPolicy":"IfNotPresent","registry":"docker.io","repository":"k8ssandra/system-logger","tag":"9c4c3692"}` | The server-system-logger container image |
+| cassandra.loggingSidecar.image | object | `{"pullPolicy":"IfNotPresent","registry":"docker.io","repository":"k8ssandra/system-logger","tag":"6c64f9c4"}` | The server-system-logger container image |
 | cassandra.loggingSidecar.image.registry | string | `"docker.io"` | Container registry fo the system logger |
 | cassandra.loggingSidecar.image.repository | string | `"k8ssandra/system-logger"` | Repository for the system-logger image |
-| cassandra.loggingSidecar.image.tag | string | `"9c4c3692"` | Tag of the system-logger image to pull from image repository |
+| cassandra.loggingSidecar.image.tag | string | `"6c64f9c4"` | Tag of the system-logger image to pull from image repository |
 | cassandra.loggingSidecar.image.pullPolicy | string | `"IfNotPresent"` | Pull policy for the system-logger image |
 | cassandra.heap | object | `{}` | Optional cluster-level heap configuration, can be overridden at `datacenters` level. Options are commented out for reference. Note that k8ssandra does not automatically apply default values for heap size. It instead defers to Cassandra's out of box defaults. |
 | cassandra.gc | object | `{"cms":{},"g1":{}}` | Optional cluster-level garbage collection configuration. It can be overridden at the datacenter level. |
@@ -109,6 +116,9 @@
 | stargate.ingress.cassandra.traefik.entrypoint | string | `"cassandra"` | Traefik entrypoint where traffic is sourced. See https://doc.traefik.io/traefik/routing/entrypoints/ |
 | stargate.affinity | object | `{}` | Affinity to apply to the Stargate pods. See https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#affinity-and-anti-affinity for background |
 | stargate.tolerations | list | `[]` | Tolerations to apply to the Stargate pods. See https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/ for background. |
+| reaper.securityContext | object | `{"readOnlyRootFilesystem":false}` | Security context override for reaper container K8ssandra defaults readOnlyRootFilesystem: true TODO - this will be adjusted as we get the Reaper image changes in place. |
+| reaper.schemaInitContainerConfig | object | `{"securityContext":{"readOnlyRootFilesystem":false}}` | Security context override for reaper init container TODO - this will be adjusted as we get the Reaper image changes in place. |
+| reaper.podSecurityContext | object | `{}` | Security context override for reaper pod |
 | reaper.autoschedule | bool | `false` | When enabled, Reaper automatically sets up repair schedules for all non-system keypsaces. Repear monitors the cluster so that as keyspaces are added or removed repair schedules will be added or removed respectively. |
 | reaper.autoschedule_properties | object | `{}` | Additional autoscheduling properties. Allows you to customize the schedule rules for autoscheduling. Properties are the same as accepted by the Reaper. |
 | reaper.enabled | bool | `true` | Enable Reaper resources as part of this release. Note that Reaper uses Cassandra's JMX APIs to perform repairs. When Reaper is enabled, Cassandra will also be configured to allow remote JMX access. JMX authentication will be configured in Cassandra with credentials only created for Reaper in order to limit access. |
@@ -127,9 +137,11 @@
 | reaper.affinity | object | `{}` | Affinity to apply to the Reaper pods. See https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#affinity-and-anti-affinity for background |
 | reaper.tolerations | list | `[]` | Tolerations to apply to the Reaper pods. See https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/ for background. |
 | medusa.enabled | bool | `false` | Enable Medusa resources as part of this release. If enabled, `bucketName` and `storageSecret` **must** be defined. |
+| medusa.securityContext | object | `{"readOnlyRootFilesystem":false}` | Security context override for Medusa container. K8ssandra defaults readOnlyRootFilesystem: true TODO - overriding to disable default for now, due to medusa write perm needed |
+| medusa.restoreInitContainerConfig | object | `{"securityContext":{"readOnlyRootFilesystem":false}}` | Security context override for Medusa init container. K8ssandra defaults readOnlyRootFilesystem: true |
 | medusa.image.registry | string | `"docker.io"` | Image registry for medusa |
 | medusa.image.repository | string | `"k8ssandra/medusa"` | Image repository for medusa |
-| medusa.image.tag | string | `"0.11.0"` | Tag of the medusa image to pull from |
+| medusa.image.tag | string | `"0.11.1"` | Tag of the medusa image to pull from |
 | medusa.image.pullPolicy | string | `"IfNotPresent"` | Pull policy for the medusa container |
 | medusa.cassandraUser | object | `{"secret":"","username":""}` | Configures the Cassandra user used by Medusa when authentication is enabled. If neither `cassandraUser.secret` nor `cassandraUser.username` are set, then a Cassandra user and a secret will be created. The username will be medusa. The secret name will be of the form {clusterName}-medusa. The password will be a random 20 character password. If `cassandraUser.secret` is set, then the Cassandra user will be created from the contents of the secret. If `cassandraUser.secret` is not set and if `cassandraUser.username` is set, a secret will be generated using the specified username. The password will be generated as previously described. |
 | medusa.multiTenant | bool | `false` | Enables usage of a bucket across multiple clusters. |
@@ -147,11 +159,13 @@
 | cleaner.image.repository | string | `"k8ssandra/k8ssandra-tools"` | Image repository for the cleaner |
 | cleaner.image.tag | string | `"latest"` | Tag of the cleaner image to pull from |
 | cleaner.image.pullPolicy | string | `"IfNotPresent"` | Pull policy for the cleaner container |
+| client | object | `{"image":{"pullPolicy":"IfNotPresent","registry":"docker.io","repository":"k8ssandra/k8ssandra-tools","tag":"latest"}}` | k8ssandra-client provides CLI utilities, but also certain functions such as upgradecrds that allow modifying the running instances |
 | client.image | object | `{"pullPolicy":"IfNotPresent","registry":"docker.io","repository":"k8ssandra/k8ssandra-tools","tag":"latest"}` | Uncomment to specify the name of the service account to use for the client tools image. Defaults to <release-name>-crd-upgrader-k8ssandra. serviceAccount: |
 | client.image.registry | string | `"docker.io"` | Image registry for the client |
 | client.image.repository | string | `"k8ssandra/k8ssandra-tools"` | Image repository for the client |
 | client.image.tag | string | `"latest"` | Tag of the client image to pull from |
 | client.image.pullPolicy | string | `"IfNotPresent"` | Pull policy for the client container |
+| k8ssandra-operator.enabled | bool | `false` | Enables the k8ssandra-operator as part of this release. This is experimental deployment option, do not use in production. |
 | cass-operator.enabled | bool | `true` | Enables the cass-operator as part of this release. If this setting is disabled no Cassandra resources will be deployed. |
 | reaper-operator.enabled | bool | `true` | Enables the reaper-operator as part of this release. If this setting is disabled no repair resources will be deployed. |
 | kube-prometheus-stack.enabled | bool | `true` | Controls whether the kube-prometheus-stack chart is used at all. Disabling this parameter prevents all monitoring components from being installed. |
