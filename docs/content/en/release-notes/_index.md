@@ -20,7 +20,7 @@ Release date: 27-August-2021
 ## Prerequisites
 
 * A Kubernetes environment, from v1.17 (minimum supported), up to v1.21.1 (current tested upper bound) - local or via a supported cloud provider
-* [Helm](https://helm.sh/) v3
+* [Helm](https://helm.sh/) v3. Note that K8ssandra 1.3.x has been tested with Helm v3.5.3. Recommendation: specifically avoid Helm 3.6.0 and 3.6.1 due to a known CVE and subsequent regression. Our testing will resume with Helm v3.6.2 and later. Related: see GH issue [1103](https://github.com/k8ssandra/k8ssandra/issues/1103).
 
 ## Supported Kubernetes environments
 
