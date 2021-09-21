@@ -17,7 +17,7 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| file://../k8ssandra-common | k8ssandra-common | 0.28.3 |
+| file://../k8ssandra-common | k8ssandra-common | 0.28.4 |
 
 ## Values
 
@@ -30,13 +30,11 @@
 | image.registry | string | `"docker.io"` | Container registry containing the repository where the image resides |
 | image.repository | string | `"k8ssandra/reaper-operator"` | Container repository where the reaper-operator resides |
 | image.pullPolicy | string | `"IfNotPresent"` | Pull policy for the operator container |
-| image.tag | string | `"v0.3.3"` | Tag of the reaper-operator image to pull from image.repository |
+| image.tag | string | `"v0.3.4"` | Tag of the reaper-operator image to pull from image.repository |
 | imagePullSecrets | list | `[]` | References to secrets to use when pulling images. ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/ |
 | serviceAccount.annotations | object | `{}` | Annotations for the reaper-operator service account. |
 | podAnnotations | object | `{}` | Annotations for the reaper-operator pod. |
 | podSecurityContext | object | `{}` | PodSecurityContext for the reaper-operator pod. |
-| securityContext.readOnlyRootFilesystem | bool | `true` | Mark root filesystem as read only |
-| securityContext.runAsNonRoot | bool | `true` | Run reaper-operator container as non-root user |
-| securityContext.runAsGroup | int | `65534` | Group for the user running the reaper-operator container / process |
-| securityContext.runAsUser | int | `65534` | User for running the reaper-operator container / process |
+| securityContext | object | `{"readOnlyRootFilesystem":false}` | SecurityContext for the reaper-operator container. |
+| securityContext.readOnlyRootFilesystem | bool | `false` | Mark root filesystem as read only |
 | resources | object | `{}` | Resources requests and limits for the cass-operator pod. We usually recommend not to specify default resources and to leave this as a conscious choice for the user. This also increases chances charts run on environments with little resources, such as Minikube. If you do want to specify resources, uncomment the following lines, adjust them as necessary, and remove the curly braces after 'resources:'. limits: cpu: 100m memory: 128Mi requests: cpu: 100m memory: 128Mi |

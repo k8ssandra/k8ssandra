@@ -21,7 +21,7 @@ Installs and configures the Medusa Operator for managing Apache Cassandra backup
 
 | Repository | Name | Version |
 |------------|------|---------|
-| file://../k8ssandra-common | k8ssandra-common | 0.28.3 |
+| file://../k8ssandra-common | k8ssandra-common | 0.28.4 |
 
 ## Values
 
@@ -39,10 +39,7 @@ Installs and configures the Medusa Operator for managing Apache Cassandra backup
 | serviceAccount.annotations | object | `{}` | Annotations for the medusa-operator service account. |
 | podAnnotations | object | `{}` | Annotations for the medusa-operator pod. |
 | podSecurityContext | object | `{}` | PodSecurityContext for the medusa-operator pod. |
-| securityContext.readOnlyRootFilesystem | bool | `true` | Mark root filesystem as read only |
-| securityContext.runAsNonRoot | bool | `true` | Run medusa-operator container as non-root user |
-| securityContext.runAsGroup | int | `65534` | Group for the user running the medusa-operator container / process |
-| securityContext.runAsUser | int | `65534` | User for running the medusa-operator container / process |
+| securityContext.readOnlyRootFilesystem | bool | `false` | Mark root filesystem as read only |
 | resources | object | `{}` | Resources requests and limits for the cass-operator pod. We usually recommend not to specify default resources and to leave this as a conscious choice for the user. This also increases chances charts run on environments with little resources, such as Minikube. If you do want to specify resources, uncomment the following lines, adjust them as necessary, and remove the curly braces after 'resources:'. limits: cpu: 100m memory: 128Mi requests: cpu: 100m memory: 128Mi |
 
 ----------------------------------------------
