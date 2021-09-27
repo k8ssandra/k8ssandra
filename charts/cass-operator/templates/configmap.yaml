@@ -1,6 +1,6 @@
 kind: ConfigMap
 metadata:
-  name: {{ .Release.Name }}-manager-config
+  name: {{ include "k8ssandra-common.fullname" . }}-manager-config
   labels: {{ include "k8ssandra-common.labels" . | indent 4 }}
 apiVersion: v1
 data:
