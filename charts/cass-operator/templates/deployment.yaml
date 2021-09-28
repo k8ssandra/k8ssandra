@@ -83,5 +83,5 @@ spec:
             secretName: {{ .Release.Name }}-webhook
       {{- end }}
         - configMap:
-            name: {{ .Release.Name }}-manager-config
+            name: {{ include "k8ssandra-common.fullname" . }}-manager-config
           name: manager-config
