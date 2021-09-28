@@ -24,7 +24,7 @@ Confirm that the user-defined keyspaces and each of the `system_auth`, `system_d
 The `system_*` keyspaces include `system_auth`, `system_schema`, `system_distributed`, and `system_traces`.
 {{% /alert %}}
 
-It is generally recommended to use a replicator factor of `3`. If your keyspaces currently use `SimpleStrategy` and assuming you have at least 3 Cassandra nodes, then you would change the replication factor for `system_auth` as follows:
+It is generally recommended to use a replication factor of `3`. If your keyspaces currently use `SimpleStrategy` and assuming you have at least 3 Cassandra nodes, then you would change the replication factor for `system_auth` as follows:
 
 ```cql
 ALTER KEYSPACE system_auth WITH replication = {'class': 'NetworkTopologyStrategy', 'dc1': 3}
