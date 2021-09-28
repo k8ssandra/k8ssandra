@@ -24,7 +24,7 @@ Confirm that the user-defined keyspaces and each of the `system_auth`, `system_d
 The `system_*` keyspaces include `system_auth`, `system_schema`, `system_distributed`, and `system_traces`.
 {{% /alert %}}
 
-It is generally recommended to use a replicator factor of `3`. If your keyspaces currently use `SimpleStrategy` and assuming you have at least 3 Cassandra nodes, then you would change the replication factor for `system_auth` as follows:
+It is generally recommended to use a replication factor of `3`. If your keyspaces currently use `SimpleStrategy` and assuming you have at least 3 Cassandra nodes, then you would change the replication factor for `system_auth` as follows:
 
 ```cql
 ALTER KEYSPACE system_auth WITH replication = {'class': 'NetworkTopologyStrategy', 'dc1': 3}
@@ -107,7 +107,7 @@ nodetool status system_auth
 **Output:**
 
 ```bash
-Datacenter: datacenter1
+Datacenter: dc1
 =======================
 Status=Up/Down
 |/ State=Normal/Leaving/Joining/Moving
@@ -115,7 +115,7 @@ Status=Up/Down
 UN  10.40.4.16  236 KiB     256          100.0%            f659967d-07b8-49b8-9ca8-bd02e2a58911  rack1
 UN  10.40.5.2   318.03 KiB  256          100.0%            4b58ef5a-5578-4126-b1b6-4fb9a2d2cd40  rack1
 UN  10.40.2.2   341.91 KiB  256          100.0%            380848f0-297b-47fd-9509-56d70835f410  rack1
-Datacenter: dc1
+Datacenter: dc2
 ===============
 Status=Up/Down
 |/ State=Normal/Leaving/Joining/Moving
