@@ -527,10 +527,6 @@ func InstallTraefik(t *testing.T) {
 		"--create-namespace",
 		"-f",
 		valuesPath,
-		// FIXME remove version when this issue is fixed:
-		// https://github.com/traefik/traefik-helm-chart/issues/441
-		"--version",
-		"9.19.2",
 	)
 	g(t).Expect(err).To(BeNil())
 }
