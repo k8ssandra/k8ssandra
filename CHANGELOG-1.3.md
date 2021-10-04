@@ -18,6 +18,8 @@ and date `## vX.Y.Z - YYYY-MM-DD` and create a new placeholder section for  `unr
 
 ## unreleased
 
+* [BUGFIX] Allow usage of Traefik charts above 10.0.0
+
 ## v1.3.1 - 2021-08-27
 
 * [BUGFIX] #1063 Add support for C* 3.11.11
