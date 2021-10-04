@@ -27,3 +27,4 @@ and date `## vX.Y.Z - YYYY-MM-DD` and create a new placeholder section for  `unr
 * [ENHANCEMENT] #874 expose cass-operator AdditionalServiceConfig in k8ssandra helm chart values.yaml
 * [CHANGE] #1118 Update to Stargate 1.0.35
 * [CHANGE] #950 Update to cass-operator 1.8.0-rc.1
+* [CHANGE] Update to cass-operator v1.8.0
