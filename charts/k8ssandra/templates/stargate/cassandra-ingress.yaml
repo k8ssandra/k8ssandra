@@ -26,7 +26,6 @@ spec:
     - match: HostSNI(`{{ default "*" (include "k8ssandra.stargateIngressCassandraHost" .) }}`)
       services:
         - name: {{ $releaseName }}-{{ $datacenterName }}-stargate-service
-          kind: Service
           port: 9042
       {{- end }}
     {{- end }}
