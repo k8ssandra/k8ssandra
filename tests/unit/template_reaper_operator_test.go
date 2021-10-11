@@ -8,7 +8,16 @@ import (
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	"path/filepath"
-	"reflect"
+)
+
+var (
+	reaperOperatorNonRootFlag            = true
+	reaperOperatorRunAsUser              = int64(65534)
+	reaperOperatorRunAsGroup             = int64(65534)
+	reaperOperatorReadOnlyRootFilesystem = true
+	reaperOperatorDefaultSecurityContext = corev1.SecurityContext{RunAsNonRoot: &reaperOperatorNonRootFlag,
+		RunAsUser: &reaperOperatorRunAsUser, RunAsGroup: &reaperOperatorRunAsGroup,
+		ReadOnlyRootFilesystem: &reaperOperatorReadOnlyRootFilesystem}
 )
 
 var _ = Describe("Verify Reaper operator deployment template", func() {
@@ -45,9 +54,12 @@ var _ = Describe("Verify Reaper operator deployment template", func() {
 			_ = renderTemplate(options)
 
 			Expect(deployment.Kind).To(Equal("Deployment"))
-			Expect(reflect.DeepEqual(*deployment.Spec.Template.Spec.SecurityContext, corev1.PodSecurityContext{})).To(BeTrue())
+
+			// Specific container security context checks
 			Expect(deployment.Spec.Template.Spec.Containers[0].SecurityContext).ToNot(BeNil())
-			Expect(*deployment.Spec.Template.Spec.Containers[0].SecurityContext.ReadOnlyRootFilesystem).To(BeFalse())
+			Expect(deployment.Spec.Template.Spec.Containers[0].SecurityContext).ToNot(BeNil())
+			Expect(deployment.Spec.Template.Spec.Containers[0].SecurityContext).To(BeEquivalentTo(&reaperOperatorDefaultSecurityContext))
+
 		})
 
 		It("using customized securityContext values", func() {
@@ -59,11 +71,13 @@ var _ = Describe("Verify Reaper operator deployment template", func() {
 			_ = renderTemplate(options)
 
 			Expect(deployment.Kind).To(Equal("Deployment"))
+
+			// Specific pod security context values expected
 			Expect(*deployment.Spec.Template.Spec.SecurityContext.FSGroup).To(BeIdenticalTo(int64(1)))
 
+			// Specific container security context checks
 			Expect(deployment.Spec.Template.Spec.Containers[0].SecurityContext).ToNot(BeNil())
-			Expect(*deployment.Spec.Template.Spec.Containers[0].SecurityContext.ReadOnlyRootFilesystem).To(BeTrue())
-			Expect(*deployment.Spec.Template.Spec.Containers[0].SecurityContext.AllowPrivilegeEscalation).To(BeTrue())
+			Expect(*deployment.Spec.Template.Spec.Containers[0].SecurityContext.RunAsNonRoot).To(BeTrue())
 		})
 	})
 })

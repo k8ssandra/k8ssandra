@@ -9,10 +9,10 @@ require (
 	github.com/gruntwork-io/terratest v0.30.15
 	github.com/k8ssandra/cass-operator v1.7.0
 	github.com/k8ssandra/reaper-client-go v0.3.1-0.20210617111910-fe2ba92f8efb
-	github.com/k8ssandra/reaper-operator v0.3.4
+	github.com/k8ssandra/reaper-operator v0.3.2
 	github.com/onsi/ginkgo v1.14.2
 	github.com/onsi/gomega v1.10.3
-	github.com/stretchr/testify v1.7.0 // indirect
+	github.com/stretchr/testify v1.7.0
 	github.com/traefik/traefik/v2 v2.3.7
 	helm.sh/helm/v3 v3.5.4
 	k8s.io/api v0.20.4
@@ -27,6 +27,7 @@ replace (
 	github.com/deislabs/oras => github.com/deislabs/oras v0.10.1-0.20210312002636-75801fef923e
 	github.com/docker/docker => github.com/docker/engine v1.4.2-0.20200204220554-5f6d6f3f2203
 	github.com/go-check/check => github.com/containous/check v0.0.0-20170915194414-ca0bf163426a
+	github.com/k8ssandra/reaper-operator => github.com/jeffbanks/reaper-operator v0.3.5-alpha
 	k8s.io/api => k8s.io/api v0.18.6
 	k8s.io/apiextensions-apiserver => k8s.io/apiextensions-apiserver v0.18.6
 	k8s.io/apimachinery => k8s.io/apimachinery v0.18.6

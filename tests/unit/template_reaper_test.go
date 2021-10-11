@@ -1,11 +1,9 @@
 package unit_test
 
 import (
+	helmUtils "github.com/k8ssandra/k8ssandra/tests/unit/utils/helm"
 	corev1 "k8s.io/api/core/v1"
 	"path/filepath"
-	"reflect"
-
-	helmUtils "github.com/k8ssandra/k8ssandra/tests/unit/utils/helm"
 
 	"github.com/gruntwork-io/terratest/modules/helm"
 	api "github.com/k8ssandra/reaper-operator/api/v1alpha1"
@@ -176,8 +174,6 @@ var _ = Describe("Verify Reaper template", func() {
 			_ = renderTemplate(options)
 
 			Expect(reaper.Spec.SecurityContext).ToNot(BeNil())
-			// TODO - expected false until image is adjusted.
-			Expect(*reaper.Spec.SecurityContext.ReadOnlyRootFilesystem).To(BeFalse())
 		})
 
 		It("has custom container security context", func() {
@@ -199,9 +195,11 @@ var _ = Describe("Verify Reaper template", func() {
 			_ = renderTemplate(options)
 
 			Expect(reaper.Spec.SchemaInitContainerConfig).ToNot(BeNil())
-			Expect(reaper.Spec.SchemaInitContainerConfig.SecurityContext).ToNot(BeNil())
-			// TODO - expected false until image is adjusted.
-			Expect(*reaper.Spec.SchemaInitContainerConfig.SecurityContext.ReadOnlyRootFilesystem).To(BeFalse())
+			Expect(reaper.Spec.SchemaInitContainerConfig.SecurityContext).To(BeNil())
+
+			Expect(reaper.Spec.ConfigInitContainerConfig).ToNot(BeNil())
+			Expect(reaper.Spec.ConfigInitContainerConfig.SecurityContext).To(BeNil())
+
 		})
 
 		It("has custom init-container security context", func() {
@@ -216,6 +214,12 @@ var _ = Describe("Verify Reaper template", func() {
 				ToNot(BeNil())
 			Expect(*reaper.Spec.SchemaInitContainerConfig.SecurityContext.RunAsGroup).
 				To(BeIdenticalTo(int64(8675309)))
+
+			Expect(reaper.Spec.ConfigInitContainerConfig).ToNot(BeNil())
+			Expect(reaper.Spec.ConfigInitContainerConfig.SecurityContext).
+				ToNot(BeNil())
+			Expect(*reaper.Spec.ConfigInitContainerConfig.SecurityContext.RunAsGroup).
+				To(BeIdenticalTo(int64(8675309)))
 		})
 
 		It("has default pod security context", func() {
@@ -225,7 +229,6 @@ var _ = Describe("Verify Reaper template", func() {
 			_ = renderTemplate(options)
 
 			Expect(reaper.Spec.PodSecurityContext).ToNot(BeNil())
-			Expect(reflect.DeepEqual(*reaper.Spec.PodSecurityContext, corev1.PodSecurityContext{})).To(BeTrue())
 		})
 
 		It("has custom pod security context", func() {

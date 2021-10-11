@@ -17,13 +17,13 @@ When cutting a new release of the parent `k8ssandra` chart update the `unrelease
 and date `## vX.Y.Z - YYYY-MM-DD` and create a new placeholder section for  `unreleased` entries.
 
 ## unreleased
-* [BUGFIX] Ensure Cassandra 4x is compatible with Stargate deployments by including `allow_alter_rf_during_range_movement` in config.
+* [ENHANCEMENT] #1140 securityContext defaults for operators and security foundations 
 * [ENHANCEMENT] Apply customizable filters on table level metrics in MCAC
 * [ENHANCEMENT] #1083 Add support for full query logging (Cassandra 4.0.0 feature)
 * [ENHANCEMENT] #1083 Add support for audit logging (Cassandra 4.0.0 feature)
 * [ENHANCEMENT] #1083 Add support for client backpressure (Cassandra 4.0.0 feature)
 * [ENHANCEMENT] #1083 Add support for deployment of Cassandra 4.0.1
-* [ENHANCEMENT] #959 Root file system in Cassandra pod read only; security context for containers.
+* [BUGFIX] Ensure Cassandra 4x is compatible with Stargate deployments by including `allow_alter_rf_during_range_movement` in config.
 * [BUGFIX] #1129 CassOperator kills C* pods with due to incorrect memory
 * [BUGFIX] #1066 Azure backups are broken due to missing azure-cli deps
 * [BUGFIX] #1012 reaper-operator's role.yaml has more data than it should, causing role name conflicts
