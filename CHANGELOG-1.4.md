@@ -19,6 +19,7 @@ and date `## vX.Y.Z - YYYY-MM-DD` and create a new placeholder section for  `unr
 ## unreleased
 * [ENHANCEMENT] #1083 Add support for deployment of Cassandra 4.0.1
 * [ENHANCEMENT] #959 Root file system in Cassandra pod read only; security context for containers.
+* [BUGFIX] #1129 CassOperator kills C* pods with due to incorrect memory
 * [BUGFIX] #969 Prometheus "out-of-order timestamp" error due to metrics relabeling conflict 
 * [BUGFIX] #1066 Azure backups are broken due to missing azure-cli deps
 * [BUGFIX] #1012 reaper-operator's role.yaml has more data than it should, causing role name conflicts
