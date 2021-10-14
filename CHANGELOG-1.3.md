@@ -18,7 +18,10 @@ and date `## vX.Y.Z - YYYY-MM-DD` and create a new placeholder section for  `unr
 
 ## unreleased
 
+## v1.3.2 - 2021-10-14
+
 * [BUGFIX] Allow usage of Traefik charts above 10.0.0
+* [BUGFIX] #969 Prometheus "out-of-order timestamp" error due to metrics relabeling conflict 
 
 ## v1.3.1 - 2021-08-27
 
