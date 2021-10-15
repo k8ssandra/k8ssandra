@@ -18,6 +18,8 @@ and date `## vX.Y.Z - YYYY-MM-DD` and create a new placeholder section for  `unr
 
 ## unreleased
 
+* [BUGFIX] Re-introduce table level metrics that were mistakenly removed in 1.3.2
+
 ## v1.3.2 - 2021-10-14
 
 * [BUGFIX] Allow usage of Traefik charts above 10.0.0
