@@ -321,6 +321,7 @@ func testPrometheus(t *testing.T, namespace string) {
 	expectedActiveTargets := CountMonitoredItems(t, namespace)
 	CheckPrometheusActiveTargets(t, expectedActiveTargets) // We're monitoring 3 Cassandra nodes and 1 Stargate instance
 	CheckNoOutOfOrderMetrics(t, namespace)
+	CheckTableLevelMetricsArePresent(t)
 }
 
 // Grafana tests
