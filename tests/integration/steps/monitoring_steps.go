@@ -9,6 +9,7 @@ import (
 	resty "github.com/go-resty/resty/v2"
 	"github.com/gruntwork-io/terratest/modules/k8s"
 	. "github.com/onsi/gomega"
+	"github.com/stretchr/testify/require"
 )
 
 // Monitoring related functions
@@ -59,4 +60,13 @@ func CheckNoOutOfOrderMetrics(t *testing.T, namespace string) {
 	prometheusLog, err := k8s.RunKubectlAndGetOutputE(t, kubectlOptions, "logs", prometheusPods.Items[0].Name, "-c", "prometheus")
 	g(t).Expect(err).To(BeNil())
 	g(t).Expect(prometheusLog).NotTo(ContainSubstring("Error on ingesting out-of-order samples"))
+}
+
+func CheckTableLevelMetricsArePresent(t *testing.T) {
+	metrics := queryPrometheusMetric(t, "mcac_table_live_disk_space_used_total")
+	require.IsType(t, map[string]interface{}{}, metrics["data"], "Expected field data to be map[string]interface{}")
+	data := metrics["data"].(map[string]interface{})
+	require.IsType(t, []interface{}{}, data["result"], "Expected field result to be []interface{}")
+	result := data["result"].([]interface{})
+	g(t).Expect(len(result)).To(BeNumerically(">", 0), "No table level metric was returned")
 }
