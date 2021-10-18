@@ -17,7 +17,9 @@ When cutting a new release of the parent `k8ssandra` chart update the `unrelease
 and date `## vX.Y.Z - YYYY-MM-DD` and create a new placeholder section for  `unreleased` entries.
 
 ## unreleased
+* [ENHANCEMENT] #1140 SecurityContext foundations for pods and containers.
 * [ENHANCEMENT] #1083 Add support for deployment of Cassandra 4.0.1
+* [ENHANCEMENT] #1049 security explained blog for security roadmap.
 * [ENHANCEMENT] #959 Root file system in Cassandra pod read only; security context for containers.
 * [BUGFIX] #1129 CassOperator kills C* pods with due to incorrect memory
 * [BUGFIX] #1066 Azure backups are broken due to missing azure-cli deps

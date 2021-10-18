@@ -56,8 +56,6 @@ podAnnotations: {}
 podSecurityContext: {}
 
 securityContext:
-  # -- Mark root filesystem as read only
-  readOnlyRootFilesystem: true
 
   # -- Run cass-operator container as non-root user
   runAsNonRoot: true

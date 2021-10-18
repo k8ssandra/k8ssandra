@@ -47,7 +47,6 @@ var _ = Describe("Verify Reaper operator deployment template", func() {
 			Expect(deployment.Kind).To(Equal("Deployment"))
 			Expect(reflect.DeepEqual(*deployment.Spec.Template.Spec.SecurityContext, corev1.PodSecurityContext{})).To(BeTrue())
 			Expect(deployment.Spec.Template.Spec.Containers[0].SecurityContext).ToNot(BeNil())
-			Expect(*deployment.Spec.Template.Spec.Containers[0].SecurityContext.ReadOnlyRootFilesystem).To(BeFalse())
 		})
 
 		It("using customized securityContext values", func() {

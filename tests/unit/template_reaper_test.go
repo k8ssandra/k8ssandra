@@ -176,8 +176,6 @@ var _ = Describe("Verify Reaper template", func() {
 			_ = renderTemplate(options)
 
 			Expect(reaper.Spec.SecurityContext).ToNot(BeNil())
-			// TODO - expected false until image is adjusted.
-			Expect(*reaper.Spec.SecurityContext.ReadOnlyRootFilesystem).To(BeFalse())
 		})
 
 		It("has custom container security context", func() {
@@ -200,8 +198,6 @@ var _ = Describe("Verify Reaper template", func() {
 
 			Expect(reaper.Spec.SchemaInitContainerConfig).ToNot(BeNil())
 			Expect(reaper.Spec.SchemaInitContainerConfig.SecurityContext).ToNot(BeNil())
-			// TODO - expected false until image is adjusted.
-			Expect(*reaper.Spec.SchemaInitContainerConfig.SecurityContext.ReadOnlyRootFilesystem).To(BeFalse())
 		})
 
 		It("has custom init-container security context", func() {

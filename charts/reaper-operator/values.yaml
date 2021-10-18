@@ -39,8 +39,6 @@ podSecurityContext: {}
 
 # -- SecurityContext for the reaper-operator container.
 securityContext:
-  # -- Mark root filesystem as read only
-  readOnlyRootFilesystem: false
 
   # -- Run reaper-operator container as non-root user
   # runAsNonRoot: true
