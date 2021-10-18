@@ -16,7 +16,7 @@ last).
 When cutting a new release of the parent `k8ssandra` chart update the `unreleased` heading to the tag being generated 
 and date `## vX.Y.Z - YYYY-MM-DD` and create a new placeholder section for  `unreleased` entries.
 
-## unreleased
+## v1.3.3 - 2021-10-18
 
 * [BUGFIX] Re-introduce table level metrics that were mistakenly removed in 1.3.2
 
