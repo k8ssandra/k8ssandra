@@ -298,10 +298,16 @@ spec:
       containers:
       - name: cassandra
         securityContext: {{- ternary ($defaultSecurityCtx) (.Values.cassandra.securityContext | toYaml) (empty .Values.cassandra.securityContext) | nindent 10 }}
-        {{- if .Values.reaper.enabled }}
+        {{- if (or .Values.reaper.enabled .Values.cassandra.metric_filters) }}
         env:
+          {{- if .Values.reaper.enabled }}
           - name: LOCAL_JMX
             value: "no"
+          {{- end }}
+          {{- if .Values.cassandra.metric_filters }}
+          - name: METRIC_FILTERS
+            value: {{ printf "%s" (join " " .Values.cassandra.metric_filters) }}
+          {{- end }}
         {{- end }}
        {{- if .Values.medusa.enabled }}
         volumeMounts:

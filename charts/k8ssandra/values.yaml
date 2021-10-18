@@ -16,13 +16,13 @@ cassandra:
   # management-api images. If you do want to change one of these mappings, the new value
   # should be a management-api image.
   versionImageMap:
-    3.11.7: k8ssandra/cass-management-api:3.11.7-v0.1.31
-    3.11.8: k8ssandra/cass-management-api:3.11.8-v0.1.31
+    3.11.7: k8ssandra/cass-management-api:3.11.7-v0.1.32
+    3.11.8: k8ssandra/cass-management-api:3.11.8-v0.1.32
     3.11.9: k8ssandra/cass-management-api:3.11.9-v0.1.27
     3.11.10: k8ssandra/cass-management-api:3.11.10-v0.1.27
-    3.11.11: k8ssandra/cass-management-api:3.11.11-v0.1.31
-    4.0.0: k8ssandra/cass-management-api:4.0.0-v0.1.31
-    4.0.1: k8ssandra/cass-management-api:4.0.1-v0.1.31
+    3.11.11: k8ssandra/cass-management-api:3.11.11-v0.1.32
+    4.0.0: k8ssandra/cass-management-api:4.0.0-v0.1.32
+    4.0.1: k8ssandra/cass-management-api:4.0.1-v0.1.32
   # -- Overrides the default image mappings. This is intended for advanced use cases
   # like development or testing. By default the Cassandra version has to be one that is in
   # versionImageMap. Template rendering will fail if the version is not in the map. When
@@ -373,6 +373,23 @@ cassandra:
       #     - example.com
       #   # -- Secret containing the TLS certificate and key for the listener
       #   secretName: tls-secret
+  metric_filters:
+  - "deny:org.apache.cassandra.metrics.Table"
+  - "deny:org.apache.cassandra.metrics.table"
+  - "allow:org.apache.cassandra.metrics.table.live_ss_table_count"
+  - "allow:org.apache.cassandra.metrics.Table.LiveSSTableCount"
+  - "allow:org.apache.cassandra.metrics.table.live_disk_space_used"
+  - "allow:org.apache.cassandra.metrics.table.LiveDiskSpaceUsed"
+  - "allow:org.apache.cassandra.metrics.Table.Pending"
+  - "allow:org.apache.cassandra.metrics.Table.Memtable"
+  - "allow:org.apache.cassandra.metrics.Table.Compaction"
+  - "allow:org.apache.cassandra.metrics.table.read"
+  - "allow:org.apache.cassandra.metrics.table.write"
+  - "allow:org.apache.cassandra.metrics.table.range"
+  - "allow:org.apache.cassandra.metrics.table.coordinator"
+  - "allow:org.apache.cassandra.metrics.table.dropped_mutations"
+
+
 stargate:
   # -- Enable Stargate resources as part of this release
   enabled: true

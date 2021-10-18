@@ -123,7 +123,7 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			Expect(initContainers[2].Name).To(Equal(JmxCredentialsInitContainer))
 			// Verify LOCAL_JMX value
 			Expect(len(cassdc.Spec.PodTemplateSpec.Spec.Containers)).To(Equal(1))
-			Expect(len(cassdc.Spec.PodTemplateSpec.Spec.Containers[0].Env)).To(Equal(1))
+			Expect(len(cassdc.Spec.PodTemplateSpec.Spec.Containers[0].Env)).To(Equal(2))
 			Expect(cassdc.Spec.PodTemplateSpec.Spec.Containers[0].Env[0].Name).To(Equal("LOCAL_JMX"))
 			Expect(cassdc.Spec.PodTemplateSpec.Spec.Containers[0].Env[0].Value).To(Equal("no"))
 			Expect(cassdc.Spec.AllowMultipleNodesPerWorker).To(Equal(false))
@@ -345,8 +345,8 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			Expect(cassdc.Annotations).ShouldNot(HaveKeyWithValue(ReaperInstanceAnnotation, reaperInstanceValue))
 
 			Expect(len(cassdc.Spec.PodTemplateSpec.Spec.Containers)).To(Equal(1))
-			// No env slice should be present
-			Expect(cassdc.Spec.PodTemplateSpec.Spec.Containers[0].Env).To(BeNil())
+			// The metrics filter env should be set
+			Expect(Expect(len(cassdc.Spec.PodTemplateSpec.Spec.Containers[0].Env)).To(Equal(1)))
 
 			AssertInitContainerNamesMatch(cassdc, BaseConfigInitContainer, ConfigInitContainer,
 				JmxCredentialsInitContainer)
@@ -1444,13 +1444,13 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 
 	Context("when configuring the Cassandra version and/or image", func() {
 		cassandraVersionImageMap := map[string]string{
-			"3.11.7":  "k8ssandra/cass-management-api:3.11.7-v0.1.31",
-			"3.11.8":  "k8ssandra/cass-management-api:3.11.8-v0.1.31",
+			"3.11.7":  "k8ssandra/cass-management-api:3.11.7-v0.1.32",
+			"3.11.8":  "k8ssandra/cass-management-api:3.11.8-v0.1.32",
 			"3.11.9":  "k8ssandra/cass-management-api:3.11.9-v0.1.27",
 			"3.11.10": "k8ssandra/cass-management-api:3.11.10-v0.1.27",
-			"3.11.11": "k8ssandra/cass-management-api:3.11.11-v0.1.31",
-			"4.0.0":   "k8ssandra/cass-management-api:4.0.0-v0.1.31",
-			"4.0.1":   "k8ssandra/cass-management-api:4.0.1-v0.1.31",
+			"3.11.11": "k8ssandra/cass-management-api:3.11.11-v0.1.32",
+			"4.0.0":   "k8ssandra/cass-management-api:4.0.0-v0.1.32",
+			"4.0.1":   "k8ssandra/cass-management-api:4.0.1-v0.1.32",
 		}
 
 		It("using the default version", func() {
@@ -1461,7 +1461,7 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			Expect(renderTemplate(options)).To(Succeed())
 
 			Expect(cassdc.Spec.ServerVersion).To(Equal("4.0.1"))
-			Expect(cassdc.Spec.ServerImage).To(Equal("k8ssandra/cass-management-api:4.0.1-v0.1.31"))
+			Expect(cassdc.Spec.ServerImage).To(Equal("k8ssandra/cass-management-api:4.0.1-v0.1.32"))
 		})
 
 		It("using 3.11.7", func() {
