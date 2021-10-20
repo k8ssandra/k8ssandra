@@ -148,10 +148,11 @@ spec:
       permissions_update_interval_in_ms: {{ .Values.cassandra.auth.cacheUpdateIntervalMillis }}
       credentials_validity_in_ms: {{ .Values.cassandra.auth.cacheValidityPeriodMillis }}
       credentials_update_interval_in_ms: {{ .Values.cassandra.auth.cacheUpdateIntervalMillis }}
-  {{- if $datacenter.fql.enable }}
-    {{- if (hasPrefix "3" .Values.cassandra.version) }}
-      {{- fail (print .Values.cassandra.version " does not support FQL, use OSS Cassandra 4x or greater.") }}
-    {{- end }}
+  {{- if $datacenter.fql }}
+    {{- if $datacenter.fql.enable }}
+      {{- if (hasPrefix "3" .Values.cassandra.version) }}
+        {{- fail (print .Values.cassandra.version " does not support FQL, use OSS Cassandra 4x or greater.") }}
+      {{- end }}
       full_query_logging_options:
         log_dir: /var/log/cassandra/fql
         roll_cycle: HOURLY
@@ -159,17 +160,20 @@ spec:
         max_queue_weight: 268435456 # 256 MiB
         max_log_size: 17179869184 # 16 GiB
         max_archive_retries: 10
-  {{- end }}
-  {{- if $datacenter.audit_logging.enable }}
-    {{- if (hasPrefix "3" .Values.cassandra.version) }}
-      {{- fail (print .Values.cassandra.version " does not support audit logging, use OSS Cassandra 4x or greater.") }}
     {{- end }}
+  {{- end }}
+  {{- if $datacenter.audit_logging}}
+    {{- if $datacenter.audit_logging.enable }}
+      {{- if (hasPrefix "3" .Values.cassandra.version) }}
+        {{- fail (print .Values.cassandra.version " does not support audit logging, use OSS Cassandra 4x or greater.") }}
+      {{- end }}
       audit_logging_options:
         enabled: true
         logger:
           - class_name: BinAuditLogger
+    {{- end }}
   {{- end }}
-  {{- if or ( $datacenter.client_backpressure ) }}
+  {{- if $datacenter.client_backpressure }}
     {{- if (hasPrefix "3" .Values.cassandra.version) }}
       {{- fail (print .Values.cassandra.version " does not support client backpressure configuration, use OSS Cassandra 4x or greater.") }}
     {{- end }}

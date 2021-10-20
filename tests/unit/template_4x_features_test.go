@@ -124,9 +124,9 @@ var _ = Describe("Verify 4x features are created in template", func() {
 			}
 			auditEnabled, ok := auditOpts.(map[string]interface{})["enabled"]
 			if !ok {
-				Fail("couldn't audit_logging_options.enabled in dc config")
+				Fail("couldn't find audit_logging_options.enabled in dc config")
 			}
-			if auditEnabled != "true" {
+			if auditEnabled != true {
 				Fail("audit logging was not enabled and should have been")
 			}
 		})
@@ -153,12 +153,12 @@ var _ = Describe("Verify 4x features are created in template", func() {
 			if !ok {
 				Fail("couldn't index native_transport_max_concurrent_requests_in_bytes_per_ip in cassandra yaml")
 			}
-			Expect(clPressPerIP).To(Equal(1))
+			Expect(clPressPerIP).To(Equal(1.0)) // When read back in, the ints in the yaml seem to get interpreted as float64s.
 			clPress, ok := cassYaml.(map[string]interface{})["native_transport_max_concurrent_requests_in_bytes"]
 			if !ok {
 				Fail("couldn't index native_transport_max_concurrent_requests_in_bytes in dc config")
 			}
-			Expect(clPress).To(Equal(2))
+			Expect(clPress).To(Equal(2.0)) // When read back in, the ints in the yaml seem to get interpreted as float64s.
 		})
 	})
 })
