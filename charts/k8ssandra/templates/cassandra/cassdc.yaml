@@ -149,9 +149,9 @@ spec:
       credentials_validity_in_ms: {{ .Values.cassandra.auth.cacheValidityPeriodMillis }}
       credentials_update_interval_in_ms: {{ .Values.cassandra.auth.cacheUpdateIntervalMillis }}
   {{- if $datacenter.fql }}
-    {{- if $datacenter.fql.enable }}
+    {{- if $datacenter.fql.enabled }}
       {{- if (hasPrefix "3" .Values.cassandra.version) }}
-        {{- fail (print .Values.cassandra.version " does not support FQL, use OSS Cassandra 4x or greater.") }}
+        {{- fail (print .Values.cassandra.version " does not support FQL, use Cassandra 4x or greater.") }}
       {{- end }}
       full_query_logging_options:
         log_dir: /var/log/cassandra/fql
@@ -163,9 +163,9 @@ spec:
     {{- end }}
   {{- end }}
   {{- if $datacenter.audit_logging}}
-    {{- if $datacenter.audit_logging.enable }}
+    {{- if $datacenter.audit_logging.enabled }}
       {{- if (hasPrefix "3" .Values.cassandra.version) }}
-        {{- fail (print .Values.cassandra.version " does not support audit logging, use OSS Cassandra 4x or greater.") }}
+        {{- fail (print .Values.cassandra.version " does not support audit logging, use Cassandra 4x or greater.") }}
       {{- end }}
       audit_logging_options:
         enabled: true
@@ -175,7 +175,7 @@ spec:
   {{- end }}
   {{- if $datacenter.client_backpressure }}
     {{- if (hasPrefix "3" .Values.cassandra.version) }}
-      {{- fail (print .Values.cassandra.version " does not support client backpressure configuration, use OSS Cassandra 4x or greater.") }}
+      {{- fail (print .Values.cassandra.version " does not support client backpressure configuration, use Cassandra 4x or greater.") }}
     {{- end }}
     {{- range $key, $val := $datacenter.client_backpressure }}
       {{ $key }}: {{ $val }}      

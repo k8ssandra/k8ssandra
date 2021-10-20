@@ -40,9 +40,9 @@ var _ = Describe("Verify 4x features are created in template", func() {
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
 				SetValues: map[string]string{
-					"cassandra.version":                   "3.11.11",
-					"cassandra.datacenters[0].fql.enable": "true",
-					"cassandra.datacenters[0].name":       "testdc",
+					"cassandra.version":                    "3.11.11",
+					"cassandra.datacenters[0].fql.enabled": "true",
+					"cassandra.datacenters[0].name":        "testdc",
 				},
 			}
 			Expect(renderTemplate(options)).ShouldNot(Succeed())
@@ -51,9 +51,9 @@ var _ = Describe("Verify 4x features are created in template", func() {
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
 				SetValues: map[string]string{
-					"cassandra.version":                             "3.11.11",
-					"cassandra.datacenters[0].audit_logging.enable": "true",
-					"cassandra.datacenters[0].name":                 "testdc",
+					"cassandra.version": "3.11.11",
+					"cassandra.datacenters[0].audit_logging.enabled": "true",
+					"cassandra.datacenters[0].name":                  "testdc",
 				},
 			}
 			Expect(renderTemplate(options)).ShouldNot(Succeed())
@@ -63,8 +63,8 @@ var _ = Describe("Verify 4x features are created in template", func() {
 				KubectlOptions: defaultKubeCtlOptions,
 				SetValues: map[string]string{
 					"cassandra.version": "3.11.11",
-					"cassandra.datacenters[0].client_backpressure.enable": "true",
-					"cassandra.datacenters[0].name":                       "testdc",
+					"cassandra.datacenters[0].client_backpressure.enabled": "true",
+					"cassandra.datacenters[0].name":                        "testdc",
 				},
 			}
 			Expect(renderTemplate(options)).ShouldNot(Succeed())
@@ -76,9 +76,9 @@ var _ = Describe("Verify 4x features are created in template", func() {
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
 				SetValues: map[string]string{
-					"cassandra.version":                   "4.0.1",
-					"cassandra.datacenters[0].fql.enable": "true",
-					"cassandra.datacenters[0].name":       "testdc",
+					"cassandra.version":                    "4.0.1",
+					"cassandra.datacenters[0].fql.enabled": "true",
+					"cassandra.datacenters[0].name":        "testdc",
 				},
 			}
 			Expect(renderTemplate(options)).To(Succeed())
@@ -105,9 +105,9 @@ var _ = Describe("Verify 4x features are created in template", func() {
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
 				SetValues: map[string]string{
-					"cassandra.version":                             "4.0.1",
-					"cassandra.datacenters[0].audit_logging.enable": "true",
-					"cassandra.datacenters[0].name":                 "testdc",
+					"cassandra.version": "4.0.1",
+					"cassandra.datacenters[0].audit_logging.enabled": "true",
+					"cassandra.datacenters[0].name":                  "testdc",
 				},
 			}
 			Expect(renderTemplate(options)).To(Succeed())

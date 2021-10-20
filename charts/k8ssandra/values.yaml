@@ -288,10 +288,10 @@ cassandra:
           affinityLabels: {}
       # -- Optionally enable full query logging facility for this DC.
       fql: {}
-        # enable: true
+        # enabled: true
       # -- Optionally enable audit logging for this DC.
       audit_logging: {}
-        # enable: true
+        # enabled: true
       # -- Optionally enable client backpressure for this DC.
       client_backpressure: {}
         # native_transport_max_concurrent_requests_in_bytes_per_ip: 1
