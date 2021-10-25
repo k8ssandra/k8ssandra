@@ -1444,13 +1444,13 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 
 	Context("when configuring the Cassandra version and/or image", func() {
 		cassandraVersionImageMap := map[string]string{
-			"3.11.7":  "k8ssandra/cass-management-api:3.11.7-v0.1.30",
-			"3.11.8":  "k8ssandra/cass-management-api:3.11.8-v0.1.30",
+			"3.11.7":  "k8ssandra/cass-management-api:3.11.7-v0.1.31",
+			"3.11.8":  "k8ssandra/cass-management-api:3.11.8-v0.1.31",
 			"3.11.9":  "k8ssandra/cass-management-api:3.11.9-v0.1.27",
 			"3.11.10": "k8ssandra/cass-management-api:3.11.10-v0.1.27",
-			"3.11.11": "k8ssandra/cass-management-api:3.11.11-v0.1.30",
-			"4.0.0":   "k8ssandra/cass-management-api:4.0.0-v0.1.30",
-			"4.0.1":   "k8ssandra/cass-management-api:4.0.1-v0.1.30",
+			"3.11.11": "k8ssandra/cass-management-api:3.11.11-v0.1.31",
+			"4.0.0":   "k8ssandra/cass-management-api:4.0.0-v0.1.31",
+			"4.0.1":   "k8ssandra/cass-management-api:4.0.1-v0.1.31",
 		}
 
 		It("using the default version", func() {
@@ -1461,7 +1461,7 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			Expect(renderTemplate(options)).To(Succeed())
 
 			Expect(cassdc.Spec.ServerVersion).To(Equal("4.0.1"))
-			Expect(cassdc.Spec.ServerImage).To(Equal("k8ssandra/cass-management-api:4.0.1-v0.1.30"))
+			Expect(cassdc.Spec.ServerImage).To(Equal("k8ssandra/cass-management-api:4.0.1-v0.1.31"))
 		})
 
 		It("using 3.11.7", func() {
