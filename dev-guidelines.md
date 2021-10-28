@@ -40,6 +40,35 @@ It becomes a historical record for our future selves, so it's not only about sha
 
 The review process one of the biggest touch points that project maintainers have both with each other and with other contributors.  This process is an opportunity each time to improve our communication skills and help invite others into the community.
 
+### Before the pull request
+
+While much of this content is focused on the way we interact and our roles in the code review process, the overall process starts well before that, and that early communication and understanding hugely impacts the review process and ultimately it's success.
+
+As a team we should strive to do the following before we ever start work on an issue:
+
+1. Establish sufficient and communicated success criteria for an issue
+
+	As a team we're working towards including an increasing amount of detail in the issues that we plan for work.  This will never be perfect, we will never know every unknown or even every evolving requirement, but we will do our best.  We also need to be flexible and understand those simple facts of software development.
+	
+	This could include different aspects, such as:
+	
+	* Basic documentation of requirements to be included (or excluded)
+	* Edge cases to be considered (or ignored)
+	* Complicating factors and risks that can be forseen and should be considered
+	* Testing that should be added to insure the quality of the change (Unit, Integration, and braoder End-to-End considerations)
+
+	If these elements are not sufficiently known, establish them before you write code, get buy in from the project maintainers and expected reviewer(s).
+
+2. Identify and get commitment from a reviewer(s)
+
+	We will discuss identifying reviewers more specifically later in this document, but know that this should happen before work starts.  Yes, this may change as priorities shift or team members aren't available for whatever reason, but it's important to identify partnership and sponsorship oppportunities as you work an issue.
+
+3. Establish basic designs and assumptions
+
+	Much like requirements may evolve as our understanding of a problem does, so shall designs.  It is still a worthy effort to establish an understanding between authors and reviewers about the approach that is expected.  Perhaps the author doesn't know how to do something or perhaps they have a new idea for how to do something differently - these are team discussions and shouldn't happen in a silo.  
+	
+	Establishing an understanding of the approach to be taken can save many headaches from both sides of the fence later in the review process.  **These conversations are also a great opportunity to connect with other members of the team and get to know them and learn from each other.**
+
 ### Roles and responsibilities
 
 There are multiple roles involved in the process of taking code from development to acceptance into the project:
@@ -136,7 +165,9 @@ Having a bias towards forward progress doesn't have to sacrifice quality.  It do
 
 **Reject Early (If Necessary)** *[Value time, Openness]*
 
-There will be times where as the reviewer you have to make a difficult decision that a request should be rejected.  This may happen for many reasons, when it does, try to do it early in the process and be clear about the reasons for that.  Actively work to avoid situations where many rounds of changes have been made and yet the mark has still not be hit.  When that happens, the mark maybe not have been properly set or communicated.  Also seek to be thankful for the time an author has committed to the work, even if it ends in an unsuccessful state, it can still be a positive experience for that contributor to learn from if handled well.
+A bias towards action (in this case approval) does not mean that every PR should automatically be granted passage.  The underlying message in these guidelines is **not** that we have lowered standards in any way, but that we are mindful about how we work together to achieve the desired standard.
+
+There will be times where as the reviewer you have to make a difficult decision that a request should be rejected or needs significant changes before it meets the standard of having a positive impat on the codebase.  This may happen for many reasons, when it does, try to do it early in the process and be clear about the reasons for that.  Actively work to avoid situations where many rounds of changes have been made and yet the mark has still not be hit.  When that happens, the mark maybe not have been properly set or communicated.  Also seek to be thankful for the time an author has committed to the work, even if it ends in an unsuccessful state, it can still be a positive experience for that contributor to learn from if handled well.
 
 **Ask Questions** *[Beginner's mind, Openness, Positivity]*
 
@@ -150,13 +181,13 @@ In all of our interactions as reviewers we should strive to be both respectful a
 
 * Resist feedback stated as a demand or accusation -- instead, seek to start discussion, ask questions
 
-* Be direct and explain the "why" -- it's not enough to simply say a change isn't acceptable, explain your thought process and concerns, guide the author to the place that a change set needs to be for acceptance
+* Be direct and explain the "why" -- it's not enough to simply say a change isn't acceptable, explain your thought process and concerns, **guide the author to the place that a change set needs to be for acceptance**
 
 * Give examples -- provide examples, documentation, or in-review suggestions about how you think something could be improved, teach don't criticize
 
 **Stay Focused** *[Value time, Plan]*
 
-Focus on the changes proposed and resist the urge to comment on other pieces of the surrounding code.  That feedback is also important to the project, but its place is likely to be found in the creation of a new issue.
+Focus on the changes proposed and resist the urge to comment on other pieces of the surrounding code.  That feedback is also important to the project, but its place may be found in the creation of a new issue.
 
 ## Finding reviewers
 
@@ -164,15 +195,21 @@ Every change within our projects require the review of at least one maintainer -
 
 Identifying a reviewer is a shared responsibility of the author and the team.  The author should identify potential members of the community that are a good match for the type of change being planned and when that knowledge isn't immediately available to the author personally, the team should help find those people.  Reach out and engage people -- ask for help, it's a good thing. 
 
-If you're an author in need of such help, reach out to the team on [discord](https://discord.gg/af82SnxzTm) in the #k8ssandra-dev channel.
+Often within our team's planning we make these assignments ahead of time, based on the person that is the best fit for the area of the codebase.  This requires a bit of tribal knowledge that we will work over time to formalize and establish general areas of ownership/sponsorship that can be relied upon.  There is however a balance to be struck between experienced review and bottlenecking.
+
+If you're an author in need of help finding the right reviewer, reach out to the team on [discord](https://discord.gg/af82SnxzTm) in the #k8ssandra-dev channel.
 
 ### How many reviewers?
 
-But, how many reviewers are needed on a pull request?  ***Generally speaking, the answer is one (1)***.  It's important for the maintainers of the project to trust each other to make good decisions for the project and also to ask for help when they feel that they are not equipped in a particular scenario to do so.
+But, how many reviewers are needed on a pull request?  ***Generally speaking, the answer is one (1)***.  That however doesn't mean that one is always enough.
 
-The specific answer is certainly always more complicated than that, but we should try to avoid situations where reviewers "pile on" and inject complication late in the process, often without context.  
+It's important for the maintainers of the project to trust each other to make good decisions for the project and also to ask for help when they feel that they are not equipped in a particular scenario to do so.
 
-We should, as much as possible, respect a chain of review.  This is a process where initial reviewers are empowered to approve a pull request or to seek additional review from others, others who might have more experience with a particular aspect of the code.  The subsequent reviews do not always have to be comprehensive in nature, but can be supplementary to the initial review.  Again, the initial reviewer is empowered to approve.  If the initial reviewer doesn't believe that they can do that they should ask for help and potentially even shadow another reviewer simply to gain some insight into a new area of code and functionality.
+The specific answer here is certainly always more complicated and dependent upon the nature of the changes, but we should try to avoid situations where reviewers "pile on" and inject complication late in the process, often without context.  
+
+We should, as much as possible, respect a chain of review.  This is a process where initial reviewers are empowered to approve a pull request **or to seek additional review from others, others who might have more experience with a particular aspect of the code**.  The subsequent reviews do not always have to be comprehensive in nature, but can be supplementary to the initial review.  Again, the initial reviewer is empowered to approve.  If the initial reviewer doesn't believe that they can do that they should ask for help and potentially even shadow another reviewer simply to gain some insight into a new area of code and functionality.
+
+This is the trust that we place within the team of maintainers, not that they always are the best person to approve a change, but that they will always be capable of knowing when they are not.
 
 ## Pull request creation
 
