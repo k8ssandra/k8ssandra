@@ -92,7 +92,7 @@ Pull requests take planning, invest in that aspect early in the process.  This p
 
 * Stage commits to help guide reviewers through a request where possible
 
-* Take advantage of the project's pull request template, it should serves as a guide to adding context to a request
+* Take advantage of the project's pull request template, it should serve as a guide to adding context to a request
 
 * Leave comments within the review to mark particular areas of focus for reviewers and share other code-level specific context that might be useful before others begin review
 
