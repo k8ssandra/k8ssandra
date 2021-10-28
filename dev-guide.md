@@ -13,7 +13,7 @@ This guide is aimed at introducing developers to the various technologies and su
 
 ## Community Guidelines
 
-Before getting involved in the project, please take a bit of time to review our materials related to how we aim to promote and sustain a health and positive [community](https://k8ssandra.io/community/).
+Before getting involved in the project, please take a bit of time to review our materials related to how we aim to promote and sustain a healthy and positive [community](https://k8ssandra.io/community/).
 
 You'll learn about our [values](https://k8ssandra.io/community/values/) and [code of conduct](https://k8ssandra.io/community/code-of-conduct/) as well as more technical bits from our [code contribution guidelines](https://k8ssandra.io/community/code-contribution-guidelines/).
 
