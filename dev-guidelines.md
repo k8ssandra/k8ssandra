@@ -38,7 +38,7 @@ It becomes a historical record for our future selves, so it's not only about sha
 
 #### Communication and community building
 
-The review process is the single biggest touch point that project maintainers have both with each other and with other contributors.  This process is an opportunity each time to improve our communication skills and help invite others into the community.
+The review process one of the biggest touch points that project maintainers have both with each other and with other contributors.  This process is an opportunity each time to improve our communication skills and help invite others into the community.
 
 ### Roles and responsibilities
 
@@ -58,6 +58,8 @@ In order for individuals to be successful in the process, the team and community
 
 * Keep a positive tone -- it's totally OK to use emojis :wink:
 
+* Assume the best in others -- asynchronous communication is hard (that's much of the reason for these guidelines), assume first that no matter the potentially undesired tone used, others are trying to help not harm in this process
+
 * Default to questions, not demands or accusations -- this is how we learn, together
 
 * Have empathy -- you've been on the other side before, remember that, neither role is easy
@@ -76,17 +78,21 @@ Getting the most out of our time means learning from the observations and outcom
 
 Remember that this process is iterative, we will repeat it many-many...many times in the lifetime of the project and each of those is a chance to do it in a better way.  When you find those better ways, come back here and update this guide :wink:.
 
+**Speak Up** *[Openness]*
+
+If you feel like something isn't right in this process, ask, clarify, speak up, help us fix it.
+
 #### Author
 
 **Early Engagement** *[Value time, Openness]*
 
-Find and involve reviewers early in the design/development process.  Even quick conversations about requirements or tradeoffs can give a reviewer a great bit more context during review later.
+This is a responsibility that really begins before the PR itself has ever been created.  Seek to find and involve reviewers early in the design/development process.  We'll discuss the process of identifying reviewers more later, just keep in mind that even quick conversations about requirements or tradeoffs can give a reviewer a great bit more context during review later.
 
 **Curate Requests** *[Value time, Plans]*
 
 Pull requests take planning, invest in that aspect early in the process.  This piece is so important that we'll discuss it again later, but keep a few key concepts in mind when building a request:
 
-* Smaller pull requests are easier to review, discuss, and get merged
+* Focused and smaller pull requests are easier to review, discuss, and get merged
 
 * Take opportunities to separate large requests into staged evolutions where possible
 
@@ -118,11 +124,19 @@ This can extend to time needed to pull and test the code being contributed and i
 
 Much like the same reponsiblity shared by the author, you the reviewer are expected to be patient with an author as they too juggle priorities to respond to your questions and feedback and then hear out their point of view when they do.  Support a two way conversation and keep in mind that you too can learn from this process.
 
+**Decline The Role (If Necessary)** *[Openness, Value time]*
+
+If you do not believe that you are the right person to review a particular request, you are empowered to politley decline and offer alteratives.  This might happen because you don't currently have time or perhaps you don't believe you have the background and knowledge necessary to make productive decisions about a proposed set of changes.
+
 **Favor Approval Over Perfection** *[Value time, Positivity]*
 
 Having a bias towards forward progress doesn't have to sacrifice quality.  It does mean acknowledging that code is rarely perfect and does not have to be in order to push the project in a positive direction.
 
 ***Reviewers should favor approval when a pull request has reached a state where it is a positive improvement on the overall codebase, even if there is room for further improvement.***  Reviewers should keep in mind that a contribution doesn't need to be done in the exact form and fashion that they would have done it to positively impact our project.
+
+**Reject Early (If Necessary)** *[Value time, Openness]*
+
+There will be times where as the reviewer you have to make a difficult decision that a request should be rejected.  This may happen for many reasons, when it does, try to do it early in the process and be clear about the reasons for that.  Actively work to avoid situations where many rounds of changes have been made and yet the mark has still not be hit.  When that happens, the mark maybe not have been properly set or communicated.  Also seek to be thankful for the time an author has committed to the work, even if it ends in an unsuccessful state, it can still be a positive experience for that contributor to learn from if handled well.
 
 **Ask Questions** *[Beginner's mind, Openness, Positivity]*
 
@@ -136,7 +150,7 @@ In all of our interactions as reviewers we should strive to be both respectful a
 
 * Resist feedback stated as a demand or accusation -- instead, seek to start discussion, ask questions
 
-* Be direct and explain the "why" -- it's not enough to simply say a change isn't acceptable, explain your thought process and concerns
+* Be direct and explain the "why" -- it's not enough to simply say a change isn't acceptable, explain your thought process and concerns, guide the author to the place that a change set needs to be for acceptance
 
 * Give examples -- provide examples, documentation, or in-review suggestions about how you think something could be improved, teach don't criticize
 
