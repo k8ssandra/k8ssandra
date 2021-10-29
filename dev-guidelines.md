@@ -165,9 +165,11 @@ Having a bias towards forward progress doesn't have to sacrifice quality.  It do
 
 **Reject Early (If Necessary)** *[Value time, Openness]*
 
-A bias towards action (in this case approval) does not mean that every PR should automatically be granted passage.  The underlying message in these guidelines is **not** that we have lowered standards in any way, but that we are mindful about how we work together to achieve the desired standard.
+A bias towards action (in this case approval) does not mean that every PR should automatically be granted passage.  The underlying message in these guidelines is **not** that we have lowered standards in any way, but rather that we are mindful about how we work together to meet the desired standard.
 
-There will be times where as the reviewer you have to make a difficult decision that a request should be rejected or needs significant changes before it meets the standard of having a positive impat on the codebase.  This may happen for many reasons, when it does, try to do it early in the process and be clear about the reasons for that.  Actively work to avoid situations where many rounds of changes have been made and yet the mark has still not be hit.  When that happens, the mark maybe not have been properly set or communicated.  Also seek to be thankful for the time an author has committed to the work, even if it ends in an unsuccessful state, it can still be a positive experience for that contributor to learn from if handled well.
+There will be times where as the reviewer you have to make a difficult decision that a request should be rejected or needs significant changes before it meets the standard of having a positive impact on the codebase.  
+
+This may happen for many reasons, when it does, try to do it early in the process and be clear about the reasons for that.  Actively work to avoid situations where many rounds of changes have been made and yet the mark has still not been hit.  When that happens, the mark maybe not have been properly set or communicated.  Also seek to be thankful for the time an author has committed to the work, even if it ends in an unsuccessful state, it can still be a positive experience for that contributor to learn from if handled well.
 
 **Ask Questions** *[Beginner's mind, Openness, Positivity]*
 
