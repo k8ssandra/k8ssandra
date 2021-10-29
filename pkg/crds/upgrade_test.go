@@ -115,10 +115,32 @@ func TestUpgradingCRDs(t *testing.T) {
 	err = k8sClient.Get(context.TODO(), client.ObjectKey{Name: cassdcCRD.GetName()}, cassdcCRD)
 	g.Expect(err).Should(Succeed())
 	g.Expect(cassdcCRD.GetResourceVersion()).ToNot(Equal(ver))
+	ver = cassdcCRD.GetResourceVersion()
+
+	// 1.2.0 shipped with v1beta1 CRD version
+	g.Expect("v1beta1", cassdcCRD.GetAPIVersion())
 
 	_, found, err = unstructured.NestedFieldNoCopy(cassdcCRD.Object, "spec", "validation", "openAPIV3Schema", "properties", "spec", "properties", "configSecret")
 	g.Expect(err).Should(Succeed())
 	g.Expect(found).To(BeTrue())
+
+	// TODO We want to update to the newest one here
+	By("Upgrading to current head")
+	crds, err = u.Upgrade("1.4.0-20211018063502-085ddce7")
+	g.Expect(err).Should(Succeed())
+
+	objs = []runtime.Object{}
+	for _, crd := range crds {
+		objs = append(objs, &crd)
+	}
+
+	envtest.WaitForCRDs(cfg, objs, testOptions)
+	err = k8sClient.Get(context.TODO(), client.ObjectKey{Name: cassdcCRD.GetName()}, cassdcCRD)
+	g.Expect(err).Should(Succeed())
+	g.Expect(cassdcCRD.GetResourceVersion()).ToNot(Equal(ver))
+
+	// Newest version should have v1 instead of v1beta1
+	g.Expect("v1", cassdcCRD.GetAPIVersion())
 
 	By("tearing down the test environment")
 	gexec.KillAndWait(5 * time.Second)

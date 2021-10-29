@@ -22,6 +22,7 @@ import (
 
 	apiextv1 "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1"
 	apiextv1beta1 "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1beta1"
+	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
@@ -96,6 +97,24 @@ func (u *Upgrader) Upgrade(targetVersion string) ([]unstructured.Unstructured, e
 			}
 		} else if err == nil {
 			log.Printf("Updating %v\n", obj.GetName())
+			if obj.GetName() == "CassandraDatacenter" {
+				// We might need to patch the CRD before upgrade from the server.. only if it's v1beta1!
+				if existingCrd.GetAPIVersion() == "v1beta1" {
+					var crd apiextv1beta1.CustomResourceDefinition
+					if err = runtime.DefaultUnstructuredConverter.FromUnstructured(existingCrd.UnstructuredContent(), crd); err != nil {
+						log.Fatalf("Failed to cast CRD to CustomResourceDefinition (v1beta1): %v", err)
+						return nil, err
+					}
+
+					// We don't care if err != nil, we shouldn't try to update v1 CRDs
+					*crd.Spec.PreserveUnknownFields = false
+					if err = u.client.Update(context.TODO(), existingCrd); err != nil {
+						log.Fatalf("Failed to set preserveUnknownFields to false: %v", err)
+						return nil, err
+					}
+				}
+			}
+
 			obj.SetResourceVersion(existingCrd.GetResourceVersion())
 			if err = u.client.Update(context.TODO(), &obj); err != nil {
 				log.Fatalf("Failed to update %s: %v\n", obj.GetName(), err)
