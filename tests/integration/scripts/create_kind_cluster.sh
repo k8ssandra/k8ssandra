@@ -14,7 +14,7 @@ fi
 
 # create a cluster with the local registry enabled in containerd
 # also add necessary ingress for traefik (for the integration testing)
-cat <<EOF | kind create cluster --name $kind_cluster --image kindest/node:v1.17.11 --config=-
+cat <<EOF | kind create cluster --name $kind_cluster --image kindest/node:v1.22.2 --config=-
 kind: Cluster
 apiVersion: kind.x-k8s.io/v1alpha4
 containerdConfigPatches:
