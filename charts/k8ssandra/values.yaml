@@ -288,14 +288,14 @@ cassandra:
           affinityLabels: {}
       # -- Optionally enable full query logging facility for this DC.
       fql: {}
-        # enabled: true
+      # enabled: true
       # -- Optionally enable audit logging for this DC.
       audit_logging: {}
-        # enabled: true
+      # enabled: true
       # -- Optionally enable client backpressure for this DC.
       client_backpressure: {}
-        # native_transport_max_concurrent_requests_in_bytes_per_ip: 1
-        # native_transport_max_concurrent_requests_in_bytes: 1
+      # native_transport_max_concurrent_requests_in_bytes_per_ip: 1
+      # native_transport_max_concurrent_requests_in_bytes: 1
       # -- Optional datacenter-level heap setting, overrides cluster-level setting
       # `cassandra.heap`. Options are commented out for reference. Note that
       # k8ssandra does not automatically apply default values for heap size. It
@@ -374,28 +374,26 @@ cassandra:
       #   # -- Secret containing the TLS certificate and key for the listener
       #   secretName: tls-secret
   metric_filters:
-  - "deny:org.apache.cassandra.metrics.Table"
-  - "deny:org.apache.cassandra.metrics.table"
-  - "allow:org.apache.cassandra.metrics.table.live_ss_table_count"
-  - "allow:org.apache.cassandra.metrics.Table.LiveSSTableCount"
-  - "allow:org.apache.cassandra.metrics.table.live_disk_space_used"
-  - "allow:org.apache.cassandra.metrics.table.LiveDiskSpaceUsed"
-  - "allow:org.apache.cassandra.metrics.Table.Pending"
-  - "allow:org.apache.cassandra.metrics.Table.Memtable"
-  - "allow:org.apache.cassandra.metrics.Table.Compaction"
-  - "allow:org.apache.cassandra.metrics.table.read"
-  - "allow:org.apache.cassandra.metrics.table.write"
-  - "allow:org.apache.cassandra.metrics.table.range"
-  - "allow:org.apache.cassandra.metrics.table.coordinator"
-  - "allow:org.apache.cassandra.metrics.table.dropped_mutations"
-
-
+    - "deny:org.apache.cassandra.metrics.Table"
+    - "deny:org.apache.cassandra.metrics.table"
+    - "allow:org.apache.cassandra.metrics.table.live_ss_table_count"
+    - "allow:org.apache.cassandra.metrics.Table.LiveSSTableCount"
+    - "allow:org.apache.cassandra.metrics.table.live_disk_space_used"
+    - "allow:org.apache.cassandra.metrics.table.LiveDiskSpaceUsed"
+    - "allow:org.apache.cassandra.metrics.Table.Pending"
+    - "allow:org.apache.cassandra.metrics.Table.Memtable"
+    - "allow:org.apache.cassandra.metrics.Table.Compaction"
+    - "allow:org.apache.cassandra.metrics.table.read"
+    - "allow:org.apache.cassandra.metrics.table.write"
+    - "allow:org.apache.cassandra.metrics.table.range"
+    - "allow:org.apache.cassandra.metrics.table.coordinator"
+    - "allow:org.apache.cassandra.metrics.table.dropped_mutations"
 stargate:
   # -- Enable Stargate resources as part of this release
   enabled: true
   # -- version of Stargate to deploy. This is used in conjunction with cassandra.version to select the Stargate container image.
   # If stargate.image is set, this value has no effect.
-  version: "1.0.35"
+  version: "1.0.40"
   # -- Sets the Stargate container image. This value must be compatible
   # with the value provided for stargate.clusterVersion. If left blank (recommended),
   # k8ssandra will derive an appropriate image based on cassandra.clusterVersion.
