@@ -24,6 +24,8 @@ and date `## vX.Y.Z - YYYY-MM-DD` and create a new placeholder section for  `unr
 * [ENHANCEMENT] #1179 Make `JAVA_OPTS` configurable for Stargate
 * [ENHANCEMENT] Apply customizable filters on table level metrics in MCAC
 * [ENHANCEMENT] #1140 securityContext defaults for operators and security foundations 
+* [ENHANCEMENT] #1150 Bring reaper resources and CRDs up to date with main reaper-operator repo; operator-sdk 1.6.1/controller-runtime 0.9.2.
+* [ENHANCEMENT] #1150 Update CRD versions to v1 from v1beta1 allowing compatibility with k8s 1.22.
 * [ENHANCEMENT] #1083 Add support for full query logging (Cassandra 4.0.0 feature)
 * [ENHANCEMENT] #1083 Add support for audit logging (Cassandra 4.0.0 feature)
 * [ENHANCEMENT] #1083 Add support for client backpressure (Cassandra 4.0.0 feature)
