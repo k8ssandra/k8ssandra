@@ -29,6 +29,7 @@ and date `## vX.Y.Z - YYYY-MM-DD` and create a new placeholder section for  `unr
 * [BUGFIX] #1018 reaper image registry typo and jvm typo fixed
 * [BUGFIX] #1029 Do not change num_tokens when upgrading
 * [ENHANCEMENT] #874 expose cass-operator AdditionalServiceConfig in k8ssandra helm chart values.yaml
+* [CHANGE] Update to Reaper 3.0.0
 * [CHANGE] #1118 Update to Stargate 1.0.35
 * [CHANGE] #950 Update to cass-operator 1.8.0-rc.1
 * [CHANGE] Update to cass-operator v1.8.0
