@@ -237,6 +237,7 @@ func testMedusa(t *testing.T, namespace, backend, backupName string, useLocalCha
 	log.Println(Info("Restoring backup and checking row count"))
 	RestoreBackup(t, namespace, backupName)
 	CheckRowCountInTable(t, 10, namespace, medusaTestTable, medusaTestKeyspace)
+	CheckLastRestoreFilePresence(t, namespace)
 }
 
 func deployClusterForMedusa(t *testing.T, namespace, backend string, nodes int, useLocalCharts bool, version string) {
