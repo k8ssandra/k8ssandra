@@ -660,9 +660,9 @@ medusa:
     # -- Image registry for medusa
     registry: docker.io
     # -- Image repository for medusa
-    repository: k8ssandra/medusa
+    repository: adejanovski/medusa
     # -- Tag of the medusa image to pull from
-    tag: 0.11.1
+    tag: k8s-restore-fix
     # -- Pull policy for the medusa container
     pullPolicy: IfNotPresent
   # -- Configures the Cassandra user used by Medusa when authentication is
