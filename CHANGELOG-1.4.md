@@ -18,6 +18,7 @@ and date `## vX.Y.Z - YYYY-MM-DD` and create a new placeholder section for  `unr
 
 ## unreleased
 * [CHANGE] Update to Managment API v0.1.33
+* [CHANGE] Update to Medusa 0.11.3
 * [CHANGE] Update to kube-prometheus-stack v20.0.1 with Prometheus 2.28.1 and Grafana 7.5.1
 * [CHANGE] Update to medusa-operator 0.4.0
 * [CHANGE] Update to Reaper 3.0.0
@@ -38,6 +39,7 @@ and date `## vX.Y.Z - YYYY-MM-DD` and create a new placeholder section for  `unr
 * [ENHANCEMENT] #959 Root file system in Cassandra pod read only; security context for containers.
 * [ENHANCEMENT] #874 expose cass-operator AdditionalServiceConfig in k8ssandra helm chart values.yaml
 * [BUGFIX] Ensure Cassandra 4x is compatible with Stargate deployments by including `allow_alter_rf_during_range_movement` in config.
+* [BUGFIX] Fix restore operation triggering on each pod restart after the initial restore
 * [BUGFIX] #1129 CassOperator kills C* pods with due to incorrect memory
 * [BUGFIX] #1066 Azure backups are broken due to missing azure-cli deps
 * [BUGFIX] #1012 reaper-operator's role.yaml has more data than it should, causing role name conflicts
