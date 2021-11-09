@@ -11,6 +11,16 @@ K8ssandra is a series of projects orchestrated to deliver a cloud-native Apache 
 
 This guide is aimed at introducing developers to the various technologies and sub-projects involved in K8ssanrdra as well as some of the processes that the project uses to plan and prioritize our work.
 
+## Community Guidelines
+
+Before getting involved in the project, please take a bit of time to review our materials related to how we aim to promote and sustain a healthy and positive [community](https://k8ssandra.io/community/).
+
+You'll learn about our [values](https://k8ssandra.io/community/values/) and [code of conduct](https://k8ssandra.io/community/code-of-conduct/) as well as more technical bits from our [code contribution guidelines](https://k8ssandra.io/community/code-contribution-guidelines/).
+
+### Developer Guidelines
+
+To learn about our projects' approach to both authoring and reviewing pull requests, check out our [developer guidelines](dev-guidelines.md).
+
 ## Learning Resources
 
 To develop within the K8ssandra ecosystem there are some high-level topics that you'll want to gain experience with:
