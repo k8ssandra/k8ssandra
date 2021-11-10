@@ -17,7 +17,7 @@ dependencies:
     condition: reaper-operator.enabled
 
   - name: medusa-operator
-    version: 0.31.1
+    version: 0.31.2
     repository: file://../medusa-operator
     condition: medusa.enabled
 
