@@ -193,6 +193,7 @@ spec:
         - "-Dcassandra.system_distributed_replication_dc_names={{ $datacenter.name }}"
         - "-Dcassandra.system_distributed_replication_per_dc={{ min 5 $datacenter.size }}"
 {{- end }}
+        - "-Dcassandra.allow_alter_rf_during_range_movement=true"
 {{- end }}
 {{- if not .Values.cassandra.loggingSidecar.enabled }}
   disableSystemLoggerSidecar: true

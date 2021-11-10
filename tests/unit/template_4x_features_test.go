@@ -2,6 +2,7 @@ package unit_test
 
 import (
 	"encoding/json"
+	"fmt"
 	"path/filepath"
 
 	"github.com/gruntwork-io/terratest/modules/helm"
@@ -159,6 +160,38 @@ var _ = Describe("Verify 4x features are created in template", func() {
 				Fail("couldn't index native_transport_max_concurrent_requests_in_bytes in dc config")
 			}
 			Expect(clPress).To(Equal(2.0)) // When read back in, the ints in the yaml seem to get interpreted as float64s.
+		})
+	})
+	Context("by adding allow_alter_rf_during_range_movement", func() {
+		It("cassandra version is 4x", func() {
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+				SetValues: map[string]string{
+					"cassandra.version": "4.0.1",
+				},
+			}
+			Expect(renderTemplate(options)).To(Succeed())
+
+			var dcCfg map[string]interface{}
+			json.Unmarshal(cassDC.Spec.Config, &dcCfg)
+
+			jvmOpts, ok := dcCfg["jvm-server-options"]
+			if !ok {
+				Fail("couldn't index jvm-server-options in dc config")
+			}
+
+			additionalOpts, ok := jvmOpts.(map[string]interface{})["additional-jvm-opts"]
+			if !ok {
+				Fail("couldn't index additional-jvm-opts in jvm-server-options")
+			}
+			fmt.Println(additionalOpts)
+			for _, i := range additionalOpts.([]interface{}) {
+				if i.(string) == "-Dcassandra.allow_alter_rf_during_range_movement=true" {
+					Succeed()
+					return
+				}
+			}
+			Fail("Never found the required string Dcassandra.allow_alter_rf_during_range_movement in additional-jvm-opts")
 		})
 	})
 })
