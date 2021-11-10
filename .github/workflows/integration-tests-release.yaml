@@ -25,7 +25,7 @@ on:
       kubernetes_version:
         description: 'Kubernetes version'     
         required: true
-        default: 'v1.20.2'
+        default: 'v1.22.2'
       tags:
         description: 'Run integration tests with different versions of K8s' 
 

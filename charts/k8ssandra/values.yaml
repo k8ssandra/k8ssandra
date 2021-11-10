@@ -880,3 +880,8 @@ kube-prometheus-stack:
     # under a different url set `server.root_url: http://localhost:3000/grafana`
     # and `serve_from_sub_path: true`.
     grafana.ini: {}
+    image:
+      repository: grafana/grafana
+      tag: 7.5.11
+      sha: ""
+      pullPolicy: IfNotPresent
