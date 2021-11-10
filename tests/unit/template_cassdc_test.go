@@ -30,7 +30,26 @@ type CassandraConfig struct {
 	CredentialsUpdateMillis   int64 `json:"credentials_update_interval_in_ms"`
 	NumTokens                 int64 `json:"num_tokens"`
 	//AllocateTokensForLocalRF  int64 `json:"allocate_tokens_for_local_replication_factor"`
-	AllocateTokensForLocalRF int64 `json:"allocate_tokens_for_local_replication_factor"`
+	AllocateTokensForLocalRF                   int64  `json:"allocate_tokens_for_local_replication_factor"`
+	ConcurrentReads                            int32  `json:"concurrent_reads"`
+	ConcurrentWrites                           int32  `json:"concurrent_writes"`
+	ConcurrentCounterWrites                    int32  `json:"concurrent_counter_writes"`
+	RowCacheSizeMb                             int32  `json:"row_cache_size_in_mb"`
+	MemtableAllocationType                     string `json:"memtable_allocation_type"`
+	MemtableFlushWriters                       int32  `json:"memtable_flush_writers"`
+	AutoSnapshot                               bool   `json:"auto_snapshot"`
+	ConcurrentCompactors                       int32  `json:"concurrent_compactors"`
+	SlowQueryLogTimeoutMillis                  int64  `json:"slow_query_log_timeout_in_ms"`
+	BatchSizeWarnThresholdKb                   int64  `json:"batch_size_warn_threshold_in_kb"`
+	UnloggedBatchAcrossPartitionsWarnThreshold int64  `json:"unlogged_batch_across_partitions_warn_threshold"`
+	CompactionLargePartitionWarningThresholdMb int64  `json:"compaction_large_partition_warning_threshold_mb"`
+	ReadRequestTimeoutMillis                   int64  `json:"read_request_timeout_in_ms"`
+	RangeRequestTimeoutMillis                  int64  `json:"range_request_timeout_in_ms"`
+	CounterWriteRequestTimeoutMillis           int64  `json:"counter_write_request_timeout_in_ms"`
+	CasContentionTimeoutMillis                 int64  `json:"cas_contention_timeout_in_ms"`
+	TruncateRequestTimeoutMillis               int64  `json:"truncate_request_timeout_in_ms"`
+	RequestTimeoutMillis                       int64  `json:"request_timeout_in_ms"`
+	FileCacheSizeMb                            int64  `json:"file_cache_size_in_mb"`
 }
 
 type JvmOptions struct {
@@ -1412,6 +1431,59 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			Expect(config.CassandraConfig.Authorizer).To(Equal("AllowAllAuthorizer"))
 
 			AssertInitContainerNamesMatch(cassdc, BaseConfigInitContainer, ConfigInitContainer)
+		})
+	})
+
+	Context("when configuring cassandra.yaml", func() {
+		It("override default settings", func() {
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+				SetValues: map[string]string{
+					"cassandra.cassandraYaml.concurrent_reads":                                "16",
+					"cassandra.cassandraYaml.concurrent_writes":                               "64",
+					"cassandra.cassandraYaml.concurrent_counter_writes":                       "64",
+					"cassandra.cassandraYaml.row_cache_size_in_mb":                            "150",
+					"cassandra.cassandraYaml.memtable_allocation_type":                        "offheap_buffers",
+					"cassandra.cassandraYaml.memtable_flush_writers":                          "10",
+					"cassandra.cassandraYaml.auto_snapshot":                                   "true",
+					"cassandra.cassandraYaml.concurrent_compactors":                           "12",
+					"cassandra.cassandraYaml.slow_query_log_timeout_in_ms":                    "15000",
+					"cassandra.cassandraYaml.batch_size_warn_threshold_in_kb":                 "32",
+					"cassandra.cassandraYaml.unlogged_batch_across_partitions_warn_threshold": "500",
+					"cassandra.cassandraYaml.compaction_large_partition_warning_threshold_mb": "50",
+					"cassandra.cassandraYaml.read_request_timeout_in_ms":                      "3000",
+					"cassandra.cassandraYaml.range_request_timeout_in_ms":                     "3000",
+					"cassandra.cassandraYaml.counter_write_request_timeout_in_ms":             "3000",
+					"cassandra.cassandraYaml.cas_contention_timeout_in_ms":                    "3000",
+					"cassandra.cassandraYaml.truncate_request_timeout_in_ms":                  "7500",
+					"cassandra.cassandraYaml.request_timeout_in_ms":                           "3000",
+					"cassandra.cassandraYaml.file_cache_size_in_mb":                           "300",
+				},
+			}
+
+			Expect(renderTemplate(options)).To(Succeed())
+
+			var config Config
+			Expect(json.Unmarshal(cassdc.Spec.Config, &config)).To(Succeed())
+			Expect(16).To(BeEquivalentTo(config.CassandraConfig.ConcurrentReads))
+			Expect(64).To(BeEquivalentTo(config.CassandraConfig.ConcurrentWrites))
+			Expect(64).To(BeEquivalentTo(config.CassandraConfig.ConcurrentCounterWrites))
+			Expect(150).To(BeEquivalentTo(config.CassandraConfig.RowCacheSizeMb))
+			Expect("offheap_buffers").To(Equal(config.CassandraConfig.MemtableAllocationType))
+			Expect(10).To(BeEquivalentTo(config.CassandraConfig.MemtableFlushWriters))
+			Expect(config.CassandraConfig.AutoSnapshot).To(BeTrue())
+			Expect(12).To(BeEquivalentTo(config.CassandraConfig.ConcurrentCompactors))
+			Expect(15000).To(BeEquivalentTo(config.CassandraConfig.SlowQueryLogTimeoutMillis))
+			Expect(32).To(BeEquivalentTo(config.CassandraConfig.BatchSizeWarnThresholdKb))
+			Expect(500).To(BeEquivalentTo(config.CassandraConfig.UnloggedBatchAcrossPartitionsWarnThreshold))
+			Expect(50).To(BeEquivalentTo(config.CassandraConfig.CompactionLargePartitionWarningThresholdMb))
+			Expect(3000).To(BeEquivalentTo(config.CassandraConfig.ReadRequestTimeoutMillis))
+			Expect(3000).To(BeEquivalentTo(config.CassandraConfig.RangeRequestTimeoutMillis))
+			Expect(3000).To(BeEquivalentTo(config.CassandraConfig.CounterWriteRequestTimeoutMillis))
+			Expect(3000).To(BeEquivalentTo(config.CassandraConfig.CasContentionTimeoutMillis))
+			Expect(7500).To(BeEquivalentTo(config.CassandraConfig.TruncateRequestTimeoutMillis))
+			Expect(3000).To(BeEquivalentTo(config.CassandraConfig.RequestTimeoutMillis))
+			Expect(300).To(BeEquivalentTo(config.CassandraConfig.FileCacheSizeMb))
 		})
 	})
 

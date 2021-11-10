@@ -173,6 +173,27 @@ cassandra:
       tag: 6c64f9c4
       # -- Pull policy for the system-logger image
       pullPolicy: IfNotPresent
+  # -- cassandraYaml directly configures properties in cassandra.yaml.
+  cassandraYaml:
+    # concurrent_reads:
+    # concurrent_writes:
+    # concurrent_counter_writes:
+    # row_cache_size_in_mb:
+    # memtable_allocation_type:
+    # memtable_flush_writers:
+    # auto_snapshot:
+    # concurrent_compactors:
+    # slow_query_log_timeout_in_ms:
+    # batch_size_warn_threshold_in_kb:
+    # unlogged_batch_across_partitions_warn_threshold:
+    # compaction_large_partition_warning_threshold_mb:
+    # read_request_timeout_in_ms:
+    # range_request_timeout_in_ms:
+    # counter_write_request_timeout_in_ms:
+    # cas_contention_timeout_in_ms:
+    # truncate_request_timeout_in_ms:
+    # request_timeout_in_ms:
+    # file_cache_size_in_mb:
   # -- Optional cluster-level heap configuration, can be overridden at `datacenters` level.
   # Options are commented out for reference. Note that k8ssandra does not
   # automatically apply default values for heap size. It instead defers to

@@ -22,6 +22,7 @@ and date `## vX.Y.Z - YYYY-MM-DD` and create a new placeholder section for  `unr
 * [ENHANCEMENT] #1083 Add support for client backpressure (Cassandra 4.0.0 feature)
 * [ENHANCEMENT] #1083 Add support for deployment of Cassandra 4.0.1
 * [ENHANCEMENT] #959 Root file system in Cassandra pod read only; security context for containers.
+* [ENHANCEMENT] #1023 Expose more properties from casssandra.yaml
 * [BUGFIX] #1129 CassOperator kills C* pods with due to incorrect memory
 * [BUGFIX] #1066 Azure backups are broken due to missing azure-cli deps
 * [BUGFIX] #1012 reaper-operator's role.yaml has more data than it should, causing role name conflicts

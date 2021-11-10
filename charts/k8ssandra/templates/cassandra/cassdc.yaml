@@ -148,6 +148,69 @@ spec:
       permissions_update_interval_in_ms: {{ .Values.cassandra.auth.cacheUpdateIntervalMillis }}
       credentials_validity_in_ms: {{ .Values.cassandra.auth.cacheValidityPeriodMillis }}
       credentials_update_interval_in_ms: {{ .Values.cassandra.auth.cacheUpdateIntervalMillis }}
+    {{- if .Values.cassandra.cassandraYaml.concurrent_reads }}
+      concurrent_reads: {{ .Values.cassandra.cassandraYaml.concurrent_reads }}
+    {{- end }}
+    {{- if .Values.cassandra.cassandraYaml.concurrent_writes }}
+      concurrent_writes: {{ .Values.cassandra.cassandraYaml.concurrent_writes }}
+    {{- end }}
+    {{- if .Values.cassandra.cassandraYaml.concurrent_counter_writes }}
+      concurrent_counter_writes: {{ .Values.cassandra.cassandraYaml.concurrent_counter_writes }}
+    {{- end }}
+    {{- if .Values.cassandra.cassandraYaml.row_cache_size_in_mb }}
+      row_cache_size_in_mb: {{ .Values.cassandra.cassandraYaml.row_cache_size_in_mb }}
+    {{- end }}
+    {{- if .Values.cassandra.cassandraYaml.memtable_allocation_type }}
+      memtable_allocation_type: {{ .Values.cassandra.cassandraYaml.memtable_allocation_type }}
+    {{- end }}
+    {{- if .Values.cassandra.cassandraYaml.memtable_flush_writers }}
+      memtable_flush_writers: {{ .Values.cassandra.cassandraYaml.memtable_flush_writers }}
+    {{- end }}
+    {{- if .Values.cassandra.cassandraYaml.auto_snapshot }}
+      auto_snapshot: {{ .Values.cassandra.cassandraYaml.auto_snapshot }}
+    {{- end }}
+    {{- if .Values.cassandra.cassandraYaml.concurrent_compactors }}
+      concurrent_compactors: {{ .Values.cassandra.cassandraYaml.concurrent_compactors }}
+    {{- end }}
+    {{- if .Values.cassandra.cassandraYaml.slow_query_log_timeout_in_ms }}
+      slow_query_log_timeout_in_ms: {{ .Values.cassandra.cassandraYaml.slow_query_log_timeout_in_ms }}
+    {{- end }}
+    {{- if .Values.cassandra.cassandraYaml.batch_size_warn_threshold_in_kb }}
+      batch_size_warn_threshold_in_kb: {{ .Values.cassandra.cassandraYaml.batch_size_warn_threshold_in_kb }}
+    {{- end }}
+    {{- if .Values.cassandra.cassandraYaml.batch_size_fail_threshold_in_kb }}
+      batch_size_fail_threshold_in_kb: {{ .Values.cassandra.cassandraYaml.batch_size_fail_threshold_in_kb }}
+    {{- end }}
+    {{- if .Values.cassandra.cassandraYaml.unlogged_batch_across_partitions_warn_threshold }}
+      unlogged_batch_across_partitions_warn_threshold: {{ .Values.cassandra.cassandraYaml.unlogged_batch_across_partitions_warn_threshold }}
+    {{- end }}
+    {{- if .Values.cassandra.cassandraYaml.compaction_large_partition_warning_threshold_mb }}
+      compaction_large_partition_warning_threshold_mb: {{ .Values.cassandra.cassandraYaml.compaction_large_partition_warning_threshold_mb }}
+    {{- end }}
+    {{- if .Values.cassandra.cassandraYaml.read_request_timeout_in_ms }}
+      read_request_timeout_in_ms: {{ .Values.cassandra.cassandraYaml.read_request_timeout_in_ms }}
+    {{- end }}
+    {{- if .Values.cassandra.cassandraYaml.range_request_timeout_in_ms }}
+      range_request_timeout_in_ms: {{ .Values.cassandra.cassandraYaml.range_request_timeout_in_ms }}
+    {{- end }}
+    {{- if .Values.cassandra.cassandraYaml.write_request_timeout_in_ms }}
+      write_request_timeout_in_ms: {{ .Values.cassandra.cassandraYaml.write_request_timeout_in_ms }}
+    {{- end }}
+    {{- if .Values.cassandra.cassandraYaml.counter_write_request_timeout_in_ms }}
+      counter_write_request_timeout_in_ms: {{ .Values.cassandra.cassandraYaml.counter_write_request_timeout_in_ms }}
+    {{- end }}
+    {{- if .Values.cassandra.cassandraYaml.cas_contention_timeout_in_ms }}
+      cas_contention_timeout_in_ms: {{ .Values.cassandra.cassandraYaml.cas_contention_timeout_in_ms }}
+    {{- end }}
+    {{- if .Values.cassandra.cassandraYaml.truncate_request_timeout_in_ms }}
+      truncate_request_timeout_in_ms: {{ .Values.cassandra.cassandraYaml.truncate_request_timeout_in_ms }}
+    {{- end }}
+    {{- if .Values.cassandra.cassandraYaml.request_timeout_in_ms }}
+      request_timeout_in_ms: {{ .Values.cassandra.cassandraYaml.request_timeout_in_ms }}
+    {{- end }}
+    {{- if .Values.cassandra.cassandraYaml.file_cache_size_in_mb }}
+      file_cache_size_in_mb: {{ .Values.cassandra.cassandraYaml.file_cache_size_in_mb }}
+    {{- end }}
   {{- if $datacenter.fql }}
     {{- if $datacenter.fql.enabled }}
       {{- if (hasPrefix "3" .Values.cassandra.version) }}
