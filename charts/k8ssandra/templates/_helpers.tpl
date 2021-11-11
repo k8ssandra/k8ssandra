@@ -411,3 +411,74 @@ Cassandra image (Management API image and version tag).
 {{- (printf (get .Values.cassandra.versionImageMap .Values.cassandra.version)) }}
 {{- end }}
 {{- end }}
+
+{{/*
+Generates properties specified in the .Values.cassandra.cassandraYaml properties.
+*/}}
+{{- define "k8ssandra.cassandraYaml" -}}
+{{- if . }}
+{{- if .concurrent_reads }}
+  {{ indent 4 (cat "concurrent_reads:" .concurrent_reads) }}
+{{- end }}
+{{- if .concurrent_writes }}
+  {{ indent 4 (cat "concurrent_writes:" .concurrent_writes) }}
+{{- end }}
+{{- if .concurrent_counter_writes }}
+  {{ indent 4 (cat "concurrent_counter_writes:" .concurrent_counter_writes) }}
+{{- end }}
+{{- if .row_cache_size_in_mb }}
+  {{ indent 4 (cat "row_cache_size_in_mb:" .row_cache_size_in_mb) }}
+{{- end }}
+{{- if .memtable_allocation_type }}
+  {{ indent 4 (cat "memtable_allocation_type:" .memtable_allocation_type) }}
+{{- end }}
+{{- if .memtable_flush_writers }}
+  {{ indent 4 (cat "memtable_flush_writers:" .memtable_flush_writers) }}
+{{- end }}
+{{- if .auto_snapshot }}
+  {{ indent 4 (cat "auto_snapshot:" .auto_snapshot) }}
+{{- end }}
+{{- if .concurrent_compactors }}
+  {{ indent 4 (cat "concurrent_compactors:" .concurrent_compactors) }}
+{{- end }}
+{{- if .slow_query_log_timeout_in_ms }}
+  {{ indent 4 (cat "slow_query_log_timeout_in_ms:" .slow_query_log_timeout_in_ms) }}
+{{- end }}
+{{- if .batch_size_warn_threshold_in_kb }}
+  {{ indent 4 (cat "batch_size_warn_threshold_in_kb:" .batch_size_warn_threshold_in_kb) }}
+{{- end }}
+{{- if .batch_size_fail_threshold_in_kb }}
+  {{ indent 4 (cat "batch_size_fail_threshold_in_kb:" .batch_size_fail_threshold_in_kb) }}
+{{- end }}
+{{- if .unlogged_batch_across_partitions_warn_threshold }}
+  {{ indent 4 (cat "unlogged_batch_across_partitions_warn_threshold:" .unlogged_batch_across_partitions_warn_threshold) }}
+{{- end }}
+{{- if .compaction_large_partition_warning_threshold_mb }}
+  {{ indent 4 (cat "compaction_large_partition_warning_threshold_mb:" .compaction_large_partition_warning_threshold_mb) }}
+{{- end }}
+{{- if .read_request_timeout_in_ms }}
+  {{ indent 4 (cat "read_request_timeout_in_ms:" .read_request_timeout_in_ms) }}
+{{- end }}
+{{- if .range_request_timeout_in_ms }}
+  {{ indent 4 (cat "range_request_timeout_in_ms:" .range_request_timeout_in_ms) }}
+{{- end }}
+{{- if .write_request_timeout_in_ms }}
+  {{ indent 4 (cat "write_request_timeout_in_ms:" .write_request_timeout_in_ms) }}
+{{- end }}
+{{- if .counter_write_request_timeout_in_ms }}
+  {{ indent 4 (cat "counter_write_request_timeout_in_ms:" .counter_write_request_timeout_in_ms) }}
+{{- end }}
+{{- if .cas_contention_timeout_in_ms }}
+  {{ indent 4 (cat "cas_contention_timeout_in_ms:" .cas_contention_timeout_in_ms) }}
+{{- end }}
+{{- if .truncate_request_timeout_in_ms }}
+  {{ indent 4 (cat "truncate_request_timeout_in_ms:" .truncate_request_timeout_in_ms) }}
+{{- end }}
+{{- if .request_timeout_in_ms }}
+  {{ indent 4 (cat "request_timeout_in_ms:" .request_timeout_in_ms) }}
+{{- end }}
+{{- if .file_cache_size_in_mb }}
+  {{ indent 4 (cat "file_cache_size_in_mb:" .file_cache_size_in_mb) }}
+{{- end }}
+{{- end }}
+{{- end }}
