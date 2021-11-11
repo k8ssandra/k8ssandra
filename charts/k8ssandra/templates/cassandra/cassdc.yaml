@@ -222,6 +222,21 @@ spec:
           {{- end }}
       - name: server-config-init
         securityContext: {{- toYaml .Values.cassandra.configBuilder.securityContext | nindent 10 }}
+    {{- if .Values.cassandra.cassandraYamlConfigMap }}
+      - name: apply-custom-config
+        image: {{ include "k8ssandra-common.flattenedImage" .Values.cassandra.applyCustomConfig.image }}
+        imagePullPolicy: {{ .Values.cassandra.applyCustomConfig.image.pullPolicy }}
+        command:
+          - /bin/sh
+          - -c
+        args:
+          - yq eval-all 'select(fileIndex == 0) * select(fileIndex == 1)' /config/cassandra.yaml /cassandra-custom-config/cassandra.yaml > /config/merged-cassandra.yaml && mv /config/merged-cassandra.yaml /config/cassandra.yaml
+        volumeMounts:
+          - name: cassandra-custom-config
+            mountPath: /cassandra-custom-config
+          - name: server-config
+            mountPath: /config
+    {{- end }}
      {{- if (or .Values.cassandra.auth.enabled .Values.reaper.enabled) }}
       - name: jmx-credentials
         image: {{ include "k8ssandra-common.flattenedImage" .Values.cassandra.jmxCredentialsConfig.image }}
@@ -355,6 +370,11 @@ spec:
         emptyDir: {}
       - name: cassandra-tmp
         emptyDir: {}
+      {{- if .Values.cassandra.cassandraYamlConfigMap }}
+      - name: cassandra-custom-config
+        configMap:
+          name: {{ .Values.cassandra.cassandraYamlConfigMap }}
+      {{- end }}
       {{- if .Values.reaper.enabled }}
       - name: reaper-config
         emptyDir: {}

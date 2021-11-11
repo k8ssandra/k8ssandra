@@ -61,6 +61,18 @@ cassandra:
       tag: 1.0.4
       # -- Pull policy for the config builder image
       pullPolicy: IfNotPresent
+  # -- The apply-custom-config init container that is deployed when the cassandraYaml
+  # property is set.
+  applyCustomConfig:
+    image:
+      # -- Container registry for the apply-custom-config container
+      registry: docker.io
+      # -- Repository for the apply-custom-config image
+      repository: mikefarah/yq
+      # -- Tag of the apply-custom-config image to pull from
+      tag: 4.14.1
+      # -- Pull policy for the apply-custom-config image
+      pullPolicy: IfNotPresent
   # -- The jmx-credentials init container that configures JMX credentials.
   jmxCredentialsConfig:
     # -- Security context override for jmx init container
@@ -125,6 +137,22 @@ cassandra:
     # highly dependent on data model and compaction strategies in use. Consider
     # testing with your data model to find an optimal value for your usecase.
     size: 5Gi
+  # -- Specifies the name of a ConfigMap that contains a custom cassandra.yaml. The
+  # ConfigMap should have a key named cassandra.yaml. The values will be merged with the
+  # base configuration. The following properties should NOT be specified in the ConfigMap:
+  #
+  #    * cluster_name
+  #    * seed_provider
+  #    * authenticator
+  #    * authorizer
+  #    * commitlog_directory
+  #    * data_file_directories
+  #    * saved_caches_directory
+  #    * hints_directory
+  #    * endpoint_snitch
+  #    * server_encryption_options
+  #    * client_encryption_options
+  cassandraYamlConfigMap:
   # -- Permits running multiple Cassandra pods per Kubernetes worker. If enabled
   # resources.limits and resources.requests **must** be defined.
   allowMultipleNodesPerWorker: false

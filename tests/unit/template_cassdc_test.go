@@ -66,14 +66,17 @@ const (
 	BaseConfigInitContainer     = "base-config-init"
 	MedusaInitContainer         = "medusa-restore"
 	JmxCredentialsInitContainer = "jmx-credentials"
+	CustomConfigInitContainer   = "apply-custom-config"
 
 	CassandraContainer = "cassandra"
 	MedusaContainer    = "medusa"
 
+	ServerConfigVolumeName               = "server-config"
 	CassandraConfigVolumeName            = "cassandra-config"
 	CassandraMetricsCollConfigVolumeName = "cassandra-metrics-coll-config"
 	CassandraTmpVolumeName               = "cassandra-tmp"
 	ReaperConfigVolumeName               = "reaper-config"
+	CassandraCustomConfigVolumeName      = "cassandra-custom-config"
 
 	MedusaBucketKeyVolumeName = "medusa-bucket-key"
 	PodInfoVolumeName         = "podinfo"
@@ -1373,6 +1376,33 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			Expect(config.JvmServerOptions.MaxHeapSize).To(Equal("700M"))
 			Expect(config.JvmServerOptions.YoungGenSize).To(Equal("350M"))
 			Expect(config.JvmOptions).To(BeNil())
+		})
+	})
+
+	Context("when using a cassandraYamlConfigMap", func() {
+		configMapName := "my-custom-config"
+
+		BeforeEach(func() {
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+				SetValues: map[string]string{
+					"cassandra.cassandraYamlConfigMap": configMapName,
+				},
+			}
+			Expect(renderTemplate(options)).To(Succeed())
+		})
+
+		It("create init container to apply custom config", func() {
+			AssertInitContainerNamesMatch(cassdc, BaseConfigInitContainer, ConfigInitContainer, CustomConfigInitContainer, JmxCredentialsInitContainer)
+
+			initContainer := GetInitContainer(cassdc, CustomConfigInitContainer)
+
+			Expect(kubeapi.GetVolumeMountNames(initContainer)).To(ConsistOf(ServerConfigVolumeName, CassandraCustomConfigVolumeName))
+		})
+
+		It("create the custom config volume", func() {
+			volumeNames := kubeapi.GetVolumeNames(cassdc.Spec.PodTemplateSpec)
+			Expect(volumeNames).To(ContainElement(CassandraCustomConfigVolumeName))
 		})
 	})
 
