@@ -430,6 +430,9 @@ stargate:
   # Cassandra cluster nodes. Each instance handles API and coordination tasks
   # for inbound queries.
   replicas: 1
+    # -- Specifies the name of a ConfigMap that contains a custom cassandra.yaml. The
+  # ConfigMap should have a key named cassandra.yaml.  
+  cassandraYamlConfigMap:
   # -- The wait-for-cassandra init container in the Stargate Deployment
   waitForCassandra:
     image:

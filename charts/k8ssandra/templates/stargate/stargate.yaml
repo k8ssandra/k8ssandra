@@ -93,6 +93,9 @@ spec:
                 -XX:+CrashOnOutOfMemoryError
                 -Xms{{ $heapMB }}M
                 -Xmx{{ $heapMB }}M
+                {{- if .Values.stargate.cassandraYamlConfigMap }}
+                -Dstargate.unsafe.cassandra_config_path=/config/cassandra.yaml
+                {{- end}}
                 {{- range .Values.stargate.javaOpts }}
                 {{ . }}
                 {{- end }}
@@ -124,10 +127,19 @@ spec:
             timeoutSeconds: 10
             initialDelaySeconds: {{ .Values.stargate.readinessInitialDelaySeconds }}
             failureThreshold: 5
+          volumeMounts:
+            - mountPath: /config
+              name: cassandra-config
       {{- if .Values.stargate.affinity }}
       affinity: {{ toYaml .Values.stargate.affinity | nindent 8 }}
       {{- end }}
       {{- if .Values.stargate.tolerations }}
       tolerations: {{ toYaml .Values.stargate.tolerations | nindent 6 }}
+      {{- end }}
+      {{- if .Values.stargate.cassandraYamlConfigMap }}
+      volumes:
+        - name: cassandra-config
+          configMap:
+            name: {{ .Values.stargate.cassandraYamlConfigMap }}
       {{- end }}
 {{- end }}
