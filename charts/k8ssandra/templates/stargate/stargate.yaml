@@ -127,9 +127,11 @@ spec:
             timeoutSeconds: 10
             initialDelaySeconds: {{ .Values.stargate.readinessInitialDelaySeconds }}
             failureThreshold: 5
+          {{- if .Values.stargate.cassandraYamlConfigMap }}
           volumeMounts:
             - mountPath: /config
               name: cassandra-config
+          {{- end }}
       {{- if .Values.stargate.affinity }}
       affinity: {{ toYaml .Values.stargate.affinity | nindent 8 }}
       {{- end }}
