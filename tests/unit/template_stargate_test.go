@@ -294,6 +294,23 @@ var _ = Describe("Verify Stargate template", func() {
 			Expect(javaOpts.Value).To(ContainSubstring("-Xmx512M"))
 		})
 
+		It("add Java system properties", func() {
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+				SetValues: map[string]string{
+					"stargate.enabled":  "true",
+					"stargate.javaOpts": "{-Dfoo=1,-Dbar=2}",
+				},
+			}
+
+			Expect(renderTemplate(options)).To(Succeed())
+
+			container := deployment.Spec.Template.Spec.Containers[0]
+			javaOpts := kubeapi.FindEnvVarByName(container, "JAVA_OPTS")
+			Expect(javaOpts.Value).To(ContainSubstring("-Dfoo=1"))
+			Expect(javaOpts.Value).To(ContainSubstring("-Dbar=2"))
+		})
+
 		It("changing CPU allocation", func() {
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,

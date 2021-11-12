@@ -424,6 +424,8 @@ stargate:
   # -- Sets the heap size Stargate will use in megabytes. Memory request and
   # limit for the pod will be set to this value x2 and x4, respectively.
   heapMB: 256
+  # -- A list options to pass to the JAVA_OPTS env var
+  javaOpts:
   # -- Sets the CPU request for the Stargate pod in millicores.
   cpuReqMillicores: 200
   # -- Sets the CPU limit for the Stargate pod in millicores.
