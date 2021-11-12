@@ -150,9 +150,21 @@ cassandra:
   #    * saved_caches_directory
   #    * hints_directory
   #    * endpoint_snitch
-  #    * server_encryption_options
-  #    * client_encryption_options
   cassandraYamlConfigMap:
+  # -- Specifies properties for configuring internode and client encryption. Specifically,
+  # secrets are specified for which volumes and volume mounts are created. Internode
+  # and client encryption should otherwise be configured through the cassandraYamlConfigMap
+  # property.
+  encryption:
+    # -- A secret that contains the keystore.
+    keystoreSecret:
+    # -- Path in the cassandra container at which the keystore secret should be mounted.
+    keystoreMountPath:
+    # -- A secret that contains the truststore.
+    truststoreSecret:
+    # truststoreKey:
+    # -- Path in the cassandra container at which the truststore secret should be mounted.
+    truststoreMountPath:
   # -- Permits running multiple Cassandra pods per Kubernetes worker. If enabled
   # resources.limits and resources.requests **must** be defined.
   allowMultipleNodesPerWorker: false

@@ -322,13 +322,28 @@ spec:
             value: {{ printf "%s" (join " " .Values.cassandra.metric_filters) }}
           {{- end }}
         {{- end }}
-       {{- if .Values.medusa.enabled }}
+
         volumeMounts:
+          {{- if .Values.medusa.enabled }}
           - name: cassandra-config
             mountPath: /etc/cassandra
           - name: podinfo
             mountPath: /etc/podinfo
-        {{- end }}
+          {{- end }}
+          {{- if .Values.cassandra.encryption.keystoreSecret }}
+          {{- if not .Values.cassandra.encryption.keystoreMountPath }}
+            {{- (fail (print "keystoreMountPath must be set when keystoreSecret is set")) }}
+          {{- end }}
+          - name: keystore-secret
+            mountPath: {{ .Values.cassandra.encryption.keystoreMountPath }}
+          {{- end}}
+          {{- if .Values.cassandra.encryption.truststoreSecret }}
+          {{- if not .Values.cassandra.encryption.truststoreMountPath }}
+          {{- (fail (print "truststoreMountPath must be set when keystoreSecret is set")) }}
+          {{- end }}
+          - name: truststore-secret
+            mountPath: {{ .Values.cassandra.encryption.truststoreMountPath }}
+        {{- end}}
       {{- if .Values.medusa.enabled }}
       - name: medusa
         image: {{ include "k8ssandra-common.flattenedImage" .Values.medusa.image }}
@@ -378,6 +393,16 @@ spec:
       {{- if .Values.reaper.enabled }}
       - name: reaper-config
         emptyDir: {}
+      {{- end }}
+      {{- if .Values.cassandra.encryption.keystoreSecret }}
+      - name: keystore-secret
+        secret:
+          secretName: {{ .Values.cassandra.encryption.keystoreSecret }}
+      {{- end }}
+      {{- if .Values.cassandra.encryption.truststoreSecret }}
+      - name: truststore-secret
+        secret:
+          secretName: {{ .Values.cassandra.encryption.truststoreSecret }}
       {{- end }}
       {{- if .Values.medusa.enabled }}
       - name: podinfo

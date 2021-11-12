@@ -1406,6 +1406,28 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 		})
 	})
 
+	Context("when using encryption", func() {
+		It("configure volumes and volume mounts", func() {
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+				SetValues: map[string]string{
+					"cassandra.encryption.keystoreSecret":      "keystore",
+					"cassandra.encryption.keystoreMountPath":   "/keystore",
+					"cassandra.encryption.truststoreSecret":    "truststore",
+					"cassandra.encryption.truststoreMountPath": "/truststore",
+				},
+			}
+
+			Expect(renderTemplate(options)).To(Succeed())
+
+			volumeNames := kubeapi.GetVolumeNames(cassdc.Spec.PodTemplateSpec)
+			Expect(volumeNames).To(ContainElements("keystore-secret", "truststore-secret"))
+
+			container := GetContainer(cassdc, CassandraContainer)
+			Expect(kubeapi.GetVolumeMountNames(container)).To(ContainElements("keystore-secret", "truststore-secret"))
+		})
+	})
+
 	Context("when configuring the Cassandra version and/or image", func() {
 		cassandraVersionImageMap := map[string]string{
 			"3.11.7":  "k8ssandra/cass-management-api:3.11.7-v0.1.32",
