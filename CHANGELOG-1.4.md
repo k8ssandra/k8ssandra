@@ -21,6 +21,7 @@ and date `## vX.Y.Z - YYYY-MM-DD` and create a new placeholder section for  `unr
 * [CHANGE] #1118 Update to Stargate 1.0.40
 * [CHANGE] #950 Update to cass-operator 1.8.0-rc.1
 * [CHANGE] Update to cass-operator v1.8.0
+* [ENHANCEMENT] #1179 Make `JAVA_OPTS` configurable for Stargate
 * [ENHANCEMENT] Apply customizable filters on table level metrics in MCAC
 * [ENHANCEMENT] #1083 Add support for full query logging (Cassandra 4.0.0 feature)
 * [ENHANCEMENT] #1083 Add support for audit logging (Cassandra 4.0.0 feature)

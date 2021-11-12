@@ -93,6 +93,9 @@ spec:
                 -XX:+CrashOnOutOfMemoryError
                 -Xms{{ $heapMB }}M
                 -Xmx{{ $heapMB }}M
+                {{- range .Values.stargate.javaOpts }}
+                {{ . }}
+                {{- end }}
             - name: CLUSTER_NAME
               value: {{ include "k8ssandra.clusterName" . | quote }}
             - name: CLUSTER_VERSION
