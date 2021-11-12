@@ -25,7 +25,7 @@ Provisions and configures an instance of the entire K8ssandra stack. This includ
 | file://../k8ssandra-common | k8ssandra-common | 0.28.4 |
 | file://../k8ssandra-operator | k8ssandra-operator | 0.30.1 |
 | file://../medusa-operator | medusa-operator | 0.30.1 |
-| file://../reaper-operator | reaper-operator | 0.32.1 |
+| file://../reaper-operator | reaper-operator | 0.32.2|
 | https://prometheus-community.github.io/helm-charts | kube-prometheus-stack | 12.11.3 |
 
 ## Values
