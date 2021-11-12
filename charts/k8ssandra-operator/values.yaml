@@ -56,15 +56,10 @@ podAnnotations: {}
 podSecurityContext: {}
 
 securityContext:
-  # -- Mark root filesystem as read only
-  readOnlyRootFilesystem: true
-
   # -- Run cass-operator container as non-root user
   runAsNonRoot: true
-
   # -- Group for the user running the k8ssandra-operator container / process
   runAsGroup: 65534
-
   # -- User for running the k8ssandra-operator container / process
   runAsUser: 65534
 

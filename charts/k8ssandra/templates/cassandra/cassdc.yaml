@@ -1,7 +1,5 @@
 {{- $datacenter := (index .Values.cassandra.datacenters 0) -}}
 {{- $medusaImage := (printf "%s:%s" .Values.medusa.image.repository .Values.medusa.image.tag) -}}
-{{- $defaultSecurityCtx := (include "k8ssandra-common.container.security-ctx-defaults" .) -}}
-{{- $defaultPodSecurityCtx := (include "k8ssandra-common.pod.pod-security-ctx-defaults" .) -}}
 
 {{- if and (not .Values.cassandra.image)  (not (hasKey .Values.cassandra.versionImageMap .Values.cassandra.version)) -}}
   {{- fail (print .Values.cassandra.version " is not a supported Cassandra version") }}
@@ -200,11 +198,12 @@ spec:
 {{- end }}
   podTemplateSpec:
     spec:
+      securityContext: {{- toYaml .Values.cassandra.podSecurityContext | nindent 8 }}
       initContainers:
       - name: base-config-init
         image: {{ include "k8ssandra.cassandraImage" . }}
         imagePullPolicy: IfNotPresent
-        securityContext: {{- ternary ($defaultSecurityCtx) (.Values.cassandra.baseConfig.securityContext | toYaml) (empty .Values.cassandra.baseConfig.securityContext) | nindent 10 }}
+        securityContext: {{- toYaml .Values.cassandra.baseConfig.securityContext | nindent 10 }}
         command:
           - /bin/sh
         args:
@@ -222,12 +221,12 @@ spec:
             mountPath: /etc/reaper/
           {{- end }}
       - name: server-config-init
-        securityContext: {{- ternary ($defaultSecurityCtx) (.Values.cassandra.configBuilder.securityContext | toYaml) (empty .Values.cassandra.configBuilder.securityContext) | nindent 10 }}
+        securityContext: {{- toYaml .Values.cassandra.configBuilder.securityContext | nindent 10 }}
      {{- if (or .Values.cassandra.auth.enabled .Values.reaper.enabled) }}
       - name: jmx-credentials
         image: {{ include "k8ssandra-common.flattenedImage" .Values.cassandra.jmxCredentialsConfig.image }}
         imagePullPolicy: {{ .Values.cassandra.jmxCredentialsConfig.image.pullPolicy }}
-        securityContext: {{- ternary ($defaultSecurityCtx) (.Values.cassandra.jmxCredentialsConfig.securityContext | toYaml) (empty .Values.cassandra.jmxCredentialsConfig.securityContext) | nindent 10 }}
+        securityContext: {{- toYaml .Values.cassandra.jmxCredentialsConfig.securityContext | nindent 10 }}
         env:
         {{- if .Values.reaper.enabled }}
           - name: REAPER_JMX_USERNAME
@@ -267,9 +266,7 @@ spec:
       - name: medusa-restore
         image: {{ include "k8ssandra-common.flattenedImage" .Values.medusa.image }}
         {{- if (and .Values.medusa.restoreInitContainerConfig .Values.medusa.restoreInitContainerConfig.securityContext) }}
-        securityContext: {{ .Values.medusa.restoreInitContainerConfig.securityContext | toYaml | nindent 10 }}
-        {{- else }}
-        securityContext: {{ include "k8ssandra-common.container.security-ctx-defaults" . | nindent 10 }}
+        securityContext: {{ toYaml .Values.medusa.restoreInitContainerConfig.securityContext | nindent 10 }}
         {{- end }}
         imagePullPolicy: {{ .Values.medusa.image.pullPolicy }}
         env:
@@ -298,7 +295,7 @@ spec:
       {{- end }}
       containers:
       - name: cassandra
-        securityContext: {{- ternary ($defaultSecurityCtx) (.Values.cassandra.securityContext | toYaml) (empty .Values.cassandra.securityContext) | nindent 10 }}
+        securityContext: {{- toYaml .Values.cassandra.securityContext | nindent 10 }}
         {{- if (or .Values.reaper.enabled .Values.cassandra.metric_filters) }}
         env:
           {{- if .Values.reaper.enabled }}
@@ -320,7 +317,7 @@ spec:
       {{- if .Values.medusa.enabled }}
       - name: medusa
         image: {{ include "k8ssandra-common.flattenedImage" .Values.medusa.image }}
-        securityContext: {{- ternary ($defaultSecurityCtx) (.Values.medusa.securityContext | toYaml) (empty .Values.medusa.securityContext) | nindent 10 }}
+        securityContext: {{- toYaml .Values.medusa.securityContext | nindent 10 }}
         imagePullPolicy: {{ .Values.medusa.image.pullPolicy }}
         ports:
           - containerPort: 50051

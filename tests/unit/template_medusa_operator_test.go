@@ -8,7 +8,6 @@ import (
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	"path/filepath"
-	"reflect"
 )
 
 var _ = Describe("Verify Medusa operator deployment template", func() {
@@ -16,6 +15,13 @@ var _ = Describe("Verify Medusa operator deployment template", func() {
 		helmChartPath string
 		err           error
 		deployment    *appsv1.Deployment
+
+		medusaOperatorNonRootFlag            = true
+		medusaOperatorRunAsUser              = int64(65534)
+		medusaOperatorRunAsGroup             = int64(65534)
+		medusaOperatorReadOnlyRootFilesystem = true
+		medusaOperatorDefaultSecurityContext = corev1.SecurityContext{RunAsNonRoot: &medusaOperatorNonRootFlag, RunAsUser: &medusaOperatorRunAsUser,
+			RunAsGroup: &medusaOperatorRunAsGroup, ReadOnlyRootFilesystem: &medusaOperatorReadOnlyRootFilesystem}
 	)
 
 	BeforeEach(func() {
@@ -45,9 +51,8 @@ var _ = Describe("Verify Medusa operator deployment template", func() {
 			_ = renderTemplate(options)
 
 			Expect(deployment.Kind).To(Equal("Deployment"))
-			Expect(reflect.DeepEqual(*deployment.Spec.Template.Spec.SecurityContext, corev1.PodSecurityContext{})).To(BeTrue())
 			Expect(deployment.Spec.Template.Spec.Containers[0].SecurityContext).ToNot(BeNil())
-			Expect(*deployment.Spec.Template.Spec.Containers[0].SecurityContext.ReadOnlyRootFilesystem).To(BeFalse())
+			Expect(deployment.Spec.Template.Spec.Containers[0].SecurityContext).To(BeEquivalentTo(&medusaOperatorDefaultSecurityContext))
 		})
 
 		It("using customized securityContext values", func() {
@@ -60,7 +65,6 @@ var _ = Describe("Verify Medusa operator deployment template", func() {
 
 			Expect(deployment.Kind).To(Equal("Deployment"))
 			Expect(*deployment.Spec.Template.Spec.SecurityContext.FSGroup).To(BeIdenticalTo(int64(1)))
-
 			Expect(deployment.Spec.Template.Spec.Containers[0].SecurityContext).ToNot(BeNil())
 			Expect(*deployment.Spec.Template.Spec.Containers[0].SecurityContext.ReadOnlyRootFilesystem).To(BeTrue())
 			Expect(*deployment.Spec.Template.Spec.Containers[0].SecurityContext.AllowPrivilegeEscalation).To(BeTrue())
