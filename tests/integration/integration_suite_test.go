@@ -319,7 +319,7 @@ func deployClusterForMonitoring(t *testing.T, namespace string) {
 // Prometheus tests
 func testPrometheus(t *testing.T, namespace string) {
 	log.Println(Step("Testing Prometheus..."))
-	PodWithLabelsIsReady(t, namespace, map[string]string{"app": "prometheus"})
+	PodWithLabelsIsReady(t, namespace, map[string]string{"app.kubernetes.io/name": "prometheus"})
 	CheckPrometheusMetricExtraction(t)
 	expectedActiveTargets := CountMonitoredItems(t, namespace)
 	CheckPrometheusActiveTargets(t, expectedActiveTargets) // We're monitoring 3 Cassandra nodes and 1 Stargate instance
