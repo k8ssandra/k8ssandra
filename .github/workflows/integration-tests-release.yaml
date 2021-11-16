@@ -116,7 +116,7 @@ jobs:
 
       - name: Get k8s version
         env:
-          DEFAULT_K8S_VERSION: v1.20.7
+          DEFAULT_K8S_VERSION: v1.22.2
         run: |
           if [[ -z "${{ github.event.inputs.kubernetes_version }}" ]]; then
             echo "K8S_VERSION=$DEFAULT_K8S_VERSION" >> $GITHUB_ENV
