@@ -17,6 +17,7 @@ When cutting a new release of the parent `k8ssandra` chart update the `unrelease
 and date `## vX.Y.Z - YYYY-MM-DD` and create a new placeholder section for  `unreleased` entries.
 
 ## unreleased
+* [CHANGE] Update to Managment API v0.1.33
 * [CHANGE] Update to kube-prometheus-stack v20.0.1 with Prometheus 2.28.1 and Grafana 7.5.1
 * [CHANGE] Update to medusa-operator 0.4.0
 * [CHANGE] Update to Reaper 3.0.0
