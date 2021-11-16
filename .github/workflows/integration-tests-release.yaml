@@ -30,6 +30,18 @@ on:
         description: 'Run integration tests with different versions of K8s' 
 
 jobs:
+  set_k8s_version:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set Kubernetes version
+        env:
+          DEFAULT_K8S_VERSION: v1.22.2
+        run: |
+          if [[ -z "${{ github.event.inputs.kubernetes_version }}" ]]; then
+            echo "K8S_VERSION=$DEFAULT_K8S_VERSION" >> $GITHUB_ENV
+          else
+            echo "K8S_VERSION=${{ github.event.inputs.kubernetes_version }}" >> $GITHUB_ENV
+          fi
   build_docker_images:
     name: Build Docker Images
     runs-on: ubuntu-latest
@@ -77,7 +89,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        k8s_version: ["${{ github.event.inputs.kubernetes_version }}"]
+        k8s_version: ["${{ env.K8S_VERSION }}"]
         cassandra_version: ["3.11.10", "4.0.0"]
         scenario:
           - "TestMedusaDeploymentScenario/\"S3\""
@@ -90,6 +102,12 @@ jobs:
           - "TestRestoreAfterUpgrade"
           - "TestUpgradeScenario"
           - "TestCustomCassandraConfiguration"
+        exclude:
+          - scenario: "TestUpgradeScenario"
+            k8s_version: "v1.22.2"
+          - scenario: "TestRestoreAfterUpgrade"
+            k8s_version: "v1.22.2"
+
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -114,15 +132,6 @@ jobs:
         with:
           version: ${{ env.HELM_VERSION }}
 
-      - name: Get k8s version
-        env:
-          DEFAULT_K8S_VERSION: v1.22.2
-        run: |
-          if [[ -z "${{ github.event.inputs.kubernetes_version }}" ]]; then
-            echo "K8S_VERSION=$DEFAULT_K8S_VERSION" >> $GITHUB_ENV
-          else
-            echo "K8S_VERSION=${{ github.event.inputs.kubernetes_version }}" >> $GITHUB_ENV
-          fi
       - name: Kind kube-proxy issue workaround
         run: sudo sysctl net/netfilter/nf_conntrack_max=524288
 
