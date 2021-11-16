@@ -17,10 +17,14 @@ When cutting a new release of the parent `k8ssandra` chart update the `unrelease
 and date `## vX.Y.Z - YYYY-MM-DD` and create a new placeholder section for  `unreleased` entries.
 
 ## unreleased
+* [CHANGE] Update to kube-prometheus-stack v20.0.1 with Prometheus 2.28.1 and Grafana 7.5.1
+* [CHANGE] Update to medusa-operator 0.4.0
 * [CHANGE] Update to Reaper 3.0.0
 * [CHANGE] #1118 Update to Stargate 1.0.40
 * [CHANGE] #1119 Update to cass-operator v1.8.0
 * [FEATURE] #1023, #1166, #1169, #1177 Allow custom cassandra.yaml ConfigMap for Cassandra and Stargate
+* [ENHANCEMENT] Support both v1beta1 and v1 ingress formats for k8s 1.22 compatibility
+* [ENHANCEMENT] #1179 Make `JAVA_OPTS` configurable for Stargate
 * [ENHANCEMENT] Apply customizable filters on table level metrics in MCAC
 * [ENHANCEMENT] #1140 securityContext defaults for operators and security foundations 
 * [ENHANCEMENT] #1150 Bring reaper resources and CRDs up to date with main reaper-operator repo; operator-sdk 1.6.1/controller-runtime 0.9.2.
