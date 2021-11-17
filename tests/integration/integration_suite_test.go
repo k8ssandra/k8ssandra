@@ -1,7 +1,9 @@
 package integration
 
 import (
+	"github.com/gruntwork-io/terratest/modules/k8s"
 	"log"
+	"path/filepath"
 	"strings"
 
 	"github.com/google/uuid"
@@ -11,6 +13,7 @@ import (
 	"fmt"
 	"os"
 	"testing"
+	. "github.com/onsi/gomega"
 )
 
 const (
@@ -416,4 +419,32 @@ func TestRestoreAfterUpgrade(t *testing.T) {
 			cleanupCluster(t, namespace, success)
 		}
 	}
+}
+
+// TestCustomCassandraConfiguration creates a ConfigMap with a custom cassandra.yaml,
+// then installs k8ssandra configured to use the custom cassandra.yaml. The test verifies
+// that that settings in the custom cassandra.yaml are applied to the in-container
+// cassandra.yaml.
+func TestCustomCassandraConfiguration(t *testing.T) {
+	g := NewWithT(t)
+
+	namespace := initializeCluster(t)
+
+	configPath, err := filepath.Abs("./testdata/cassandra-config.yaml")
+	g.Expect(err).To(BeNil())
+
+	opts := &k8s.KubectlOptions{Namespace: namespace}
+	k8s.KubectlApply(t, opts, configPath)
+
+	DeployClusterWithValues(t, namespace, "", "cluster_with_custom_config.yaml", 1, false, true, "")
+	WaitForCassDcToBeReady(t, namespace)
+
+	podName := "k8ssandra-dc1-default-sts-0"
+
+	output, err := k8s.RunKubectlAndGetOutputE(t, opts, "exec", podName, "--", "cat", "/etc/cassandra/cassandra.yaml")
+	g.Expect(err).To(BeNil())
+
+	g.Expect(output).To(ContainSubstring("read_request_timeout_in_ms: 90000"))
+	g.Expect(output).To(ContainSubstring("range_request_timeout_in_ms: 90000"))
+	g.Expect(output).To(ContainSubstring("write_request_timeout_in_ms: 90000"))
 }

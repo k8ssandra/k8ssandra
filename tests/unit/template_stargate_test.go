@@ -167,6 +167,27 @@ var _ = Describe("Verify Stargate template", func() {
 			Expect(clusterVersionEnv.Value).To(Equal(clusterVersion))
 		})
 
+		It("using a cassandraYamlConfigMap", func() {
+			configMapName := "my-custom-config"
+
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+				SetValues: map[string]string{
+					"stargate.enabled":                "true",
+					"stargate.cassandraYamlConfigMap": configMapName,
+				},
+			}
+
+			Expect(renderTemplate(options)).To(Succeed())
+
+			container := deployment.Spec.Template.Spec.Containers[0]
+			envVar := kubeapi.FindEnvVarByName(container, "JAVA_OPTS")
+			Expect(envVar.Value).To(ContainSubstring("-Dstargate.unsafe.cassandra_config_path=/config/cassandra.yaml"))
+
+			Expect(kubeapi.GetVolumeMountNames(&container)).To(ContainElements("cassandra-config"))
+			Expect(kubeapi.GetVolumeNames(&deployment.Spec.Template)).To(ContainElements("cassandra-config"))
+		})
+
 		It("using defaults and empty clusterVersion", func() {
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
