@@ -12,8 +12,8 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
-      matrix:
-        k8s_version: ["v1.17.17", "v1.18.20", "v1.19.16", "v1.20.12", "v1.21.6", "v1.22.3"]
+      matrix:        
+        k8s_version: ["v1.17.17", "v1.18.19", "v1.19.11", "v1.20.7", "v1.21.1", "v1.22.2"]
     steps:
       - name: Invoke integration tests
         uses: benc-uk/workflow-dispatch@v1
