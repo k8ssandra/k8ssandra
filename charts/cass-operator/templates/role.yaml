@@ -6,19 +6,71 @@ metadata:
   labels: {{ include "k8ssandra-common.labels" . | indent 4 }}
 rules:
   - apiGroups:
-      - ""
-      - coordination.k8s.io
+      - apps
     resources:
-      - pods
-      - services
-      - endpoints
-      - persistentvolumeclaims
-      - events
-      - leases
-      - configmaps
-      - secrets
+      - daemonsets
+      - deployments
+      - replicasets
+      - statefulsets
     verbs:
-      - '*'
+      - create
+      - delete
+      - get
+      - list
+      - patch
+      - update
+      - watch
+  - apiGroups:
+      - apps
+    resources:
+      - deployments/finalizers
+    verbs:
+      - update
+  - apiGroups:
+      - cassandra.datastax.com
+    resources:
+      - cassandradatacenters
+    verbs:
+      - create
+      - delete
+      - get
+      - list
+      - patch
+      - update
+      - watch
+  - apiGroups:
+      - cassandra.datastax.com
+    resources:
+      - cassandradatacenters/finalizers
+    verbs:
+      - delete
+      - update
+  - apiGroups:
+      - cassandra.datastax.com
+    resources:
+      - cassandradatacenters/status
+    verbs:
+      - get
+      - patch
+      - update
+  - apiGroups:
+      - ""
+    resources:
+      - configmaps
+      - endpoints
+      - events
+      - persistentvolumeclaims
+      - pods
+      - secrets
+      - services
+    verbs:
+      - create
+      - delete
+      - get
+      - list
+      - patch
+      - update
+      - watch
   - apiGroups:
       - ""
     resources:
@@ -26,53 +78,17 @@ rules:
     verbs:
       - get
   - apiGroups:
-      - apps
-    resources:
-      - deployments
-      - daemonsets
-      - replicasets
-      - statefulsets
-    verbs:
-      - '*'
-  - apiGroups:
-      - monitoring.coreos.com
-    resources:
-      - servicemonitors
-    verbs:
-      - get
-      - create
-  - apiGroups:
-      - apps
-    resourceNames:
-      - cass-operator
-    resources:
-      - deployments/finalizers
-    verbs:
-      - update
-  - apiGroups:
-      - datastax.com
-    resources:
-      - '*'
-    verbs:
-      - '*'
-  - apiGroups:
       - policy
     resources:
       - poddisruptionbudgets
     verbs:
-      - '*'
-  - apiGroups:
-      - cassandra.datastax.com
-    resources:
-      - '*'
-    verbs:
-      - '*'
-  - apiGroups:
-      - batch
-    resources:
-      - '*'
-    verbs:
-      - '*'
+      - create
+      - delete
+      - get
+      - list
+      - patch
+      - update
+      - watch
   {{- if .Values.vmwarePSPEnabled }}
   - apiGroups:
       - "networking.k8s.io"
@@ -94,19 +110,71 @@ metadata:
   labels: {{ include "k8ssandra-common.labels" . | indent 4 }}
 rules:
   - apiGroups:
-      - ""
-      - coordination.k8s.io
+      - apps
     resources:
-      - pods
-      - services
-      - endpoints
-      - persistentvolumeclaims
-      - events
-      - leases
-      - configmaps
-      - secrets
+      - daemonsets
+      - deployments
+      - replicasets
+      - statefulsets
     verbs:
-      - '*'
+      - create
+      - delete
+      - get
+      - list
+      - patch
+      - update
+      - watch
+  - apiGroups:
+      - apps
+    resources:
+      - deployments/finalizers
+    verbs:
+      - update
+  - apiGroups:
+      - cassandra.datastax.com
+    resources:
+      - cassandradatacenters
+    verbs:
+      - create
+      - delete
+      - get
+      - list
+      - patch
+      - update
+      - watch
+  - apiGroups:
+      - cassandra.datastax.com
+    resources:
+      - cassandradatacenters/finalizers
+    verbs:
+      - delete
+      - update
+  - apiGroups:
+      - cassandra.datastax.com
+    resources:
+      - cassandradatacenters/status
+    verbs:
+      - get
+      - patch
+      - update
+  - apiGroups:
+      - ""
+    resources:
+      - configmaps
+      - endpoints
+      - events
+      - persistentvolumeclaims
+      - pods
+      - secrets
+      - services
+    verbs:
+      - create
+      - delete
+      - get
+      - list
+      - patch
+      - update
+      - watch
   - apiGroups:
       - ""
     resources:
@@ -114,53 +182,17 @@ rules:
     verbs:
       - get
   - apiGroups:
-      - apps
-    resources:
-      - deployments
-      - daemonsets
-      - replicasets
-      - statefulsets
-    verbs:
-      - '*'
-  - apiGroups:
-      - monitoring.coreos.com
-    resources:
-      - servicemonitors
-    verbs:
-      - get
-      - create
-  - apiGroups:
-      - apps
-    resourceNames:
-      - cass-operator
-    resources:
-      - deployments/finalizers
-    verbs:
-      - update
-  - apiGroups:
-      - datastax.com
-    resources:
-      - '*'
-    verbs:
-      - '*'
-  - apiGroups:
       - policy
     resources:
       - poddisruptionbudgets
     verbs:
-      - '*'
-  - apiGroups:
-      - cassandra.datastax.com
-    resources:
-      - '*'
-    verbs:
-      - '*'
-  - apiGroups:
-      - batch
-    resources:
-      - '*'
-    verbs:
-      - '*'
+      - create
+      - delete
+      - get
+      - list
+      - patch
+      - update
+      - watch
   {{- if .Values.vmwarePSPEnabled }}
   - apiGroups:
       - "networking.k8s.io"

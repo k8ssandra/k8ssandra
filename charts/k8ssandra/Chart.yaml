@@ -7,7 +7,7 @@ version: 1.4.0-SNAPSHOT
 
 dependencies:
   - name: cass-operator
-    version: 0.31.1
+    version: 0.32.0
     repository: file://../cass-operator
     condition: cass-operator.enabled
 
