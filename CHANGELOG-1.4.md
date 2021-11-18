@@ -38,6 +38,7 @@ and date `## vX.Y.Z - YYYY-MM-DD` and create a new placeholder section for  `unr
 * [ENHANCEMENT] #874 expose cass-operator AdditionalServiceConfig in k8ssandra helm chart values.yaml
 * [ENHANCEMENT] #959 Root file system in Cassandra pod read only; security context for containers.
 * [ENHANCEMENT] #874 expose cass-operator AdditionalServiceConfig in k8ssandra helm chart values.yaml
+* [EHANCEMENT] #1193 Upgrade to cass-operator v1.9.0
 * [BUGFIX] Ensure Cassandra 4x is compatible with Stargate deployments by including `allow_alter_rf_during_range_movement` in config.
 * [BUGFIX] Fix restore operation triggering on each pod restart after the initial restore
 * [BUGFIX] #1129 CassOperator kills C* pods with due to incorrect memory
