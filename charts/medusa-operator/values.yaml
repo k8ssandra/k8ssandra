@@ -22,7 +22,7 @@ image:
   pullPolicy: IfNotPresent
 
   # -- Tag of the medusa-operator image to pull from image.repository
-  tag: v0.3.3
+  tag: v0.4.0
 
 # -- References to secrets to use when pulling images. ref:
 # https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
@@ -35,21 +35,15 @@ serviceAccount:
 # -- Annotations for the medusa-operator pod.
 podAnnotations: {}
 
-# -- PodSecurityContext for the medusa-operator pod.
+# -- SecurityContext for the medusa-operator pod.
 podSecurityContext: {}
 
+# -- SecurityContext for the medusa-operator container.
 securityContext:
-  # -- Mark root filesystem as read only
-  readOnlyRootFilesystem: false
-
-  # -- Run medusa-operator container as non-root user
-  # runAsNonRoot: false
-
-  # -- Group for the user running the medusa-operator container / process
-  # runAsGroup: 65534
-
-  # -- User for running the medusa-operator container / process
-  # runAsUser: 65534
+  runAsNonRoot: true
+  runAsUser: 65534
+  runAsGroup: 65534
+  readOnlyRootFilesystem: true
 
 # -- Resources requests and limits for the cass-operator pod. We usually
 # recommend not to specify default resources and to leave this as a conscious

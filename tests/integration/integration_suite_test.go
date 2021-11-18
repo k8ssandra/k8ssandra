@@ -2,7 +2,10 @@ package integration
 
 import (
 	"log"
+	"path/filepath"
 	"strings"
+
+	"github.com/gruntwork-io/terratest/modules/k8s"
 
 	"github.com/google/uuid"
 
@@ -11,6 +14,8 @@ import (
 	"fmt"
 	"os"
 	"testing"
+
+	. "github.com/onsi/gomega"
 )
 
 const (
@@ -234,6 +239,8 @@ func testMedusa(t *testing.T, namespace, backend, backupName string, useLocalCha
 	log.Println(Info("Restoring backup and checking row count"))
 	RestoreBackup(t, namespace, backupName)
 	CheckRowCountInTable(t, 10, namespace, medusaTestTable, medusaTestKeyspace)
+	CheckLastRestoreFilePresence(t, namespace)
+	CheckLastRestoreFileContainsKey(t, namespace)
 }
 
 func deployClusterForMedusa(t *testing.T, namespace, backend string, nodes int, useLocalCharts bool, version string) {
@@ -316,7 +323,7 @@ func deployClusterForMonitoring(t *testing.T, namespace string) {
 // Prometheus tests
 func testPrometheus(t *testing.T, namespace string) {
 	log.Println(Step("Testing Prometheus..."))
-	PodWithLabelsIsReady(t, namespace, map[string]string{"app": "prometheus"})
+	PodWithLabelsIsReady(t, namespace, map[string]string{"app.kubernetes.io/name": "prometheus"})
 	CheckPrometheusMetricExtraction(t)
 	expectedActiveTargets := CountMonitoredItems(t, namespace)
 	CheckPrometheusActiveTargets(t, expectedActiveTargets) // We're monitoring 3 Cassandra nodes and 1 Stargate instance
@@ -416,4 +423,32 @@ func TestRestoreAfterUpgrade(t *testing.T) {
 			cleanupCluster(t, namespace, success)
 		}
 	}
+}
+
+// TestCustomCassandraConfiguration creates a ConfigMap with a custom cassandra.yaml,
+// then installs k8ssandra configured to use the custom cassandra.yaml. The test verifies
+// that that settings in the custom cassandra.yaml are applied to the in-container
+// cassandra.yaml.
+func TestCustomCassandraConfiguration(t *testing.T) {
+	g := NewWithT(t)
+
+	namespace := initializeCluster(t)
+
+	configPath, err := filepath.Abs("./testdata/cassandra-config.yaml")
+	g.Expect(err).To(BeNil())
+
+	opts := &k8s.KubectlOptions{Namespace: namespace}
+	k8s.KubectlApply(t, opts, configPath)
+
+	DeployClusterWithValues(t, namespace, "", "cluster_with_custom_config.yaml", 1, false, true, "")
+	WaitForCassDcToBeReady(t, namespace)
+
+	podName := "k8ssandra-dc1-default-sts-0"
+
+	output, err := k8s.RunKubectlAndGetOutputE(t, opts, "exec", podName, "--", "cat", "/etc/cassandra/cassandra.yaml")
+	g.Expect(err).To(BeNil())
+
+	g.Expect(output).To(ContainSubstring("read_request_timeout_in_ms: 90000"))
+	g.Expect(output).To(ContainSubstring("range_request_timeout_in_ms: 90000"))
+	g.Expect(output).To(ContainSubstring("write_request_timeout_in_ms: 90000"))
 }

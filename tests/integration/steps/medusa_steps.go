@@ -1,6 +1,7 @@
 package steps
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"path/filepath"
@@ -84,4 +85,55 @@ func restoreIsFinished(t *testing.T, namespace, backupName string) bool {
 		return true
 	}
 	return false
+}
+
+func CheckLastRestoreFilePresence(t *testing.T, namespace string) {
+	g(t).Expect(lastRestoreFileIsPresent(t, namespace)).Should(BeTrue())
+}
+
+func lastRestoreFileIsPresent(t *testing.T, namespace string) bool {
+	_, err := getRestoreFileContent(t, namespace)
+
+	return err == nil
+}
+
+func getRestoreFileContent(t *testing.T, namespace string) (string, error) {
+	return k8s.RunKubectlAndGetOutputE(
+		t,
+		getKubectlOptions(namespace),
+		"exec",
+		fmt.Sprintf("%s-%s-default-sts-0", releaseName, datacenterName),
+		"--",
+		"cat",
+		"/var/lib/cassandra/.last-restore",
+	)
+}
+
+func CheckLastRestoreFileContainsKey(t *testing.T, namespace string) {
+	g(t).Expect(lastRestoreFileContainsKey(t, namespace)).Should(BeTrue())
+}
+
+func lastRestoreFileContainsKey(t *testing.T, namespace string) bool {
+	content, err := getRestoreFileContent(t, namespace)
+	if err != nil {
+		return false
+	}
+
+	return strings.Contains(content, getLastRestoreKey(t, namespace))
+}
+
+func getLastRestoreKey(t *testing.T, namespace string) string {
+	var restoreKey string
+	cassandraPods := GetPodsWithLabels(t, namespace, map[string]string{"app.kubernetes.io/managed-by": "cass-operator"})
+	initContainers := cassandraPods.Items[0].Spec.InitContainers
+	for _, container := range initContainers {
+		if container.Name == "medusa-restore" {
+			for _, envVariable := range container.Env {
+				if envVariable.Name == "RESTORE_KEY" {
+					restoreKey = envVariable.Value
+				}
+			}
+		}
+	}
+	return restoreKey
 }

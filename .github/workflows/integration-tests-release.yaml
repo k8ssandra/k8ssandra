@@ -25,13 +25,30 @@ on:
       kubernetes_version:
         description: 'Kubernetes version'     
         required: true
-        default: 'v1.20.2'
+        default: 'v1.21.1'
       tags:
         description: 'Run integration tests with different versions of K8s' 
 
 jobs:
+  set_k8s_version:
+    runs-on: ubuntu-latest
+    outputs:
+      kubernetes_version: ${{ steps.k8s-version.outputs.kubernetes_version }}
+    steps:
+      - id: k8s-version
+        name: Set Kubernetes version
+        env:
+          DEFAULT_K8S_VERSION: v1.21.1
+        run: |
+          if [[ -z "${{ github.event.inputs.kubernetes_version }}" ]]; then
+            echo '::set-output name=kubernetes_version::${{ env.DEFAULT_K8S_VERSION }}'
+          else
+            echo '::set-output name=kubernetes_version::${{ github.event.inputs.kubernetes_version }}'
+          fi
+
   build_docker_images:
     name: Build Docker Images
+    needs: [set_k8s_version]
     runs-on: ubuntu-latest
     steps:
       - name: Check out code into the Go module directory
@@ -73,13 +90,29 @@ jobs:
           path: /tmp/k8ssandra-tools.tar
   integration-tests:
     runs-on: ubuntu-latest
-    needs: build_docker_images
+    needs: [set_k8s_version, build_docker_images]
     strategy:
       fail-fast: false
       matrix:
-        k8s_version: ["${{ github.event.inputs.kubernetes_version }}"]
+        k8s_version: ["${{ needs.set_k8s_version.outputs.kubernetes_version }}"]
         cassandra_version: ["3.11.10", "4.0.0"]
-        scenario: ["TestMedusaDeploymentScenario/\"S3\"", "TestMedusaDeploymentScenario/\"Minio\"", "TestMedusaDeploymentScenario/\"local\"", "TestMedusaDeploymentScenario/\"azure_blobs\"", "TestReaperDeploymentScenario", "TestMonitoringDeploymentScenario", "TestStargateDeploymentScenario", "TestRestoreAfterUpgrade", "TestUpgradeScenario"]
+        scenario:
+          - "TestMedusaDeploymentScenario/\"S3\""
+          - "TestMedusaDeploymentScenario/\"Minio\""
+          - "TestMedusaDeploymentScenario/\"local\""
+          - "TestMedusaDeploymentScenario/\"azure_blobs\""
+          - "TestReaperDeploymentScenario"
+          - "TestMonitoringDeploymentScenario"
+          - "TestStargateDeploymentScenario"
+          - "TestRestoreAfterUpgrade"
+          - "TestUpgradeScenario"
+          - "TestCustomCassandraConfiguration"
+        exclude:
+          - scenario: "TestUpgradeScenario"
+            k8s_version: "v1.22.2"
+          - scenario: "TestRestoreAfterUpgrade"
+            k8s_version: "v1.22.2"
+
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -104,15 +137,6 @@ jobs:
         with:
           version: ${{ env.HELM_VERSION }}
 
-      - name: Get k8s version
-        env:
-          DEFAULT_K8S_VERSION: v1.20.7
-        run: |
-          if [[ -z "${{ github.event.inputs.kubernetes_version }}" ]]; then
-            echo "K8S_VERSION=$DEFAULT_K8S_VERSION" >> $GITHUB_ENV
-          else
-            echo "K8S_VERSION=${{ github.event.inputs.kubernetes_version }}" >> $GITHUB_ENV
-          fi
       - name: Kind kube-proxy issue workaround
         run: sudo sysctl net/netfilter/nf_conntrack_max=524288
 
@@ -120,7 +144,7 @@ jobs:
         uses: helm/kind-action@v1.1.0
         with: 
           version: v0.11.1
-          node_image: kindest/node:${{ env.K8S_VERSION }}
+          node_image: kindest/node:${{ matrix.k8s_version }}
           cluster_name: kind
           config: tests/integration/kind/kind_config_3_workers.yaml
 

@@ -33,7 +33,7 @@ image:
   pullPolicy: IfNotPresent
 
   # -- Tag of the k8ssandra-operator image to pull from image.repository
-  tag: latest
+  tag: 99c58003
 
   # -- Docker registry containing all cass-operator related images. Setting this
   # allows for usage of an internal registry without specifying serverImage,
@@ -56,15 +56,10 @@ podAnnotations: {}
 podSecurityContext: {}
 
 securityContext:
-  # -- Mark root filesystem as read only
-  readOnlyRootFilesystem: true
-
   # -- Run cass-operator container as non-root user
   runAsNonRoot: true
-
   # -- Group for the user running the k8ssandra-operator container / process
   runAsGroup: 65534
-
   # -- User for running the k8ssandra-operator container / process
   runAsUser: 65534
 

@@ -1,6 +1,4 @@
 {{- if .Values.reaper.enabled }}
-{{- $defaultSecurityCtx := (include "k8ssandra-common.container.security-ctx-defaults" .) -}}
-{{- $defaultPodSecurityCtx := (include "k8ssandra-common.pod.pod-security-ctx-defaults" .) -}}
 apiVersion: reaper.cassandra-reaper.io/v1alpha1
 kind: Reaper
 metadata:
@@ -36,10 +34,12 @@ spec:
   {{- end }}
   schemaInitContainerConfig:
     {{- if (and .Values.reaper.schemaInitContainerConfig .Values.reaper.schemaInitContainerConfig.securityContext) }}
-    securityContext: {{ toYaml .Values.reaper.schemaInitContainerConfig.securityContext | nindent 6 -}}
-    {{- else }}
-    securityContext: {{ $defaultSecurityCtx | nindent 6 }}
+    securityContext: {{ toYaml .Values.reaper.schemaInitContainerConfig.securityContext | nindent 6 }}
     {{- end }}
-  podSecurityContext: {{- ternary ($defaultPodSecurityCtx) (.Values.reaper.podSecurityContext | toYaml) (empty .Values.reaper.podSecurityContext) | nindent 4 }}
-  securityContext: {{- ternary ($defaultSecurityCtx) (.Values.reaper.securityContext | toYaml) (empty .Values.reaper.securityContext) | nindent 4 }}
+  configInitContainerConfig:
+    {{- if (and .Values.reaper.configInitContainerConfig .Values.reaper.configInitContainerConfig.securityContext) }}
+    securityContext: {{ toYaml .Values.reaper.configInitContainerConfig.securityContext | nindent 6 }}
+    {{- end }}
+  podSecurityContext: {{- toYaml .Values.reaper.podSecurityContext | nindent 4 }}
+  securityContext: {{- toYaml .Values.reaper.securityContext | nindent 4 }}
 {{- end }}
