@@ -9,7 +9,7 @@ K8ssandra provides a production-ready platform for running Apache Cassandra&reg;
 
 **Latest release:** K8ssandra 1.4.0
 
-Release date: 15-November-2021
+Release date: 19-November-2021
 
 {{% alert title="Note" color="success" %}}
 **K8ssandra 1.4.0** implements a number of changes, enhancements, and bug fixes. This topic summarizes the key revisions in 1.4.0 and prior 1.x releases, provides links to the associated issues in our GitHub repo, and contains important upgrade considerations.
@@ -44,7 +44,7 @@ The K8ssandra helm chart deploys the following components. Some are optional, an
   * 3.11.9
   * 3.11.8
   * 3.11.7
-* [cass-operator](https://github.com/k8ssandra/cass-operator)) 1.8.0.
+* [cass-operator](https://github.com/k8ssandra/cass-operator)) 1.9.0.
 * Management API for Apache Cassandra ([MAAC](https://github.com/datastax/management-api-for-apache-cassandra)) 0.1.27
 * [Stargate](https://github.com/stargate/stargate) 1.0.40
 * Metric Collector for Apache Cassandra ([MCAC](https://github.com/datastax/metric-collector-for-apache-cassandra)) 0.2.0
@@ -89,16 +89,19 @@ To manually restart Stargate nodes:
 
 ## K8ssandra 1.4.0 revisions
 
-Release date: 15-November-2021
+Release date: 19-November-2021
 
 The following sections summarize and link to key revisions in K8ssandra 1.4.0. For the latest, refer to the [CHANGELOG](https://github.com/k8ssandra/k8ssandra/blob/main/CHANGELOG-1.4.md).
 
 ### Changes
 
 * Update to Reaper 3.0.0.
+* Update to Medusa 0.11.3.
+* Update to medusa-operator 0.4.0.
+* Update to Managment API v0.1.33.
 * Update to Stargate 1.0.40 [#1118](https://github.com/k8ssandra/k8ssandra/issues/1118).
-* Update to cass-operator 1.8.0-rc.1 [#950](https://github.com/k8ssandra/k8ssandra/issues/950).
-* Update to cass-operator v1.8.0.
+* Update to cass-operator v1.9.0 [#1194](https://github.com/k8ssandra/k8ssandra/issues/1194).
+* Update to kube-prometheus-stack v20.0.1 with Prometheus 2.28.1 and Grafana 7.5.1.
 
 ### Enhancements
 
@@ -114,12 +117,12 @@ The following sections summarize and link to key revisions in K8ssandra 1.4.0. F
 ### Bug fixes
 
 * Update k8ssandra-operator chart [#1181](https://github.com/k8ssandra/k8ssandra/issues/1181).
-* CassOperator kills C* pods with due to incorrect memory [#1129](https://github.com/k8ssandra/k8ssandra/issues/1129).
+* Cass Operator kills C* pods with due to incorrect memory [#1129](https://github.com/k8ssandra/k8ssandra/issues/1129).
 * Azure backups are broken due to missing azure-cli deps [#1066](https://github.com/k8ssandra/k8ssandra/issues/1066).
-* reaper-operator's role.yaml has more data than it should, causing role name conflicts [#1012](https://github.com/k8ssandra/k8ssandra/issues/1012).
-* reaper image registry typo and jvm typo fixed [#1018](https://github.com/k8ssandra/k8ssandra/issues/1018).
-* Do not change num_tokens when upgrading [#1029](https://github.com/k8ssandra/k8ssandra/issues/1029).
-* Ensure Cassandra 4x is compatible with Stargate deployments by including allow_alter_rf_during_range_movement in config.
+* reaper-operator's `role.yaml` has more data than it should, causing role name conflicts [#1012](https://github.com/k8ssandra/k8ssandra/issues/1012).
+* Reaper image registry typo and JVM typo fixed [#1018](https://github.com/k8ssandra/k8ssandra/issues/1018).
+* Do not change `num_tokens` when upgrading [#1029](https://github.com/k8ssandra/k8ssandra/issues/1029).
+* Ensure Cassandra 4x is compatible with Stargate deployments by including `allow_alter_rf_during_range_movement` in config.
 
 ## K8ssandra 1.3.1 revisions
 
