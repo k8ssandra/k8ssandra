@@ -1,10 +1,11 @@
 package integration
 
 import (
-	"github.com/gruntwork-io/terratest/modules/k8s"
 	"log"
 	"path/filepath"
 	"strings"
+
+	"github.com/gruntwork-io/terratest/modules/k8s"
 
 	"github.com/google/uuid"
 
@@ -13,6 +14,7 @@ import (
 	"fmt"
 	"os"
 	"testing"
+
 	. "github.com/onsi/gomega"
 )
 
@@ -238,6 +240,7 @@ func testMedusa(t *testing.T, namespace, backend, backupName string, useLocalCha
 	RestoreBackup(t, namespace, backupName)
 	CheckRowCountInTable(t, 10, namespace, medusaTestTable, medusaTestKeyspace)
 	CheckLastRestoreFilePresence(t, namespace)
+	CheckLastRestoreFileContainsKey(t, namespace)
 }
 
 func deployClusterForMedusa(t *testing.T, namespace, backend string, nodes int, useLocalCharts bool, version string) {
