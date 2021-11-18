@@ -26,9 +26,9 @@ test: fmt vet unit-test pkg-test
 
 unit-test:
 ifeq ($(TESTS), all)
-	go test $(GO_FLAGS) -test.timeout=3m ./tests/unit/... -coverprofile cover.out
+	go test $(GO_FLAGS) -test.timeout=5m ./tests/unit/... -coverprofile cover.out
 else
-	go test $(GO_FLAGS) -test.timeout=3m ./tests/unit/... -coverprofile cover.out -args -ginkgo.focus="$(TESTS)"
+	go test $(GO_FLAGS) -test.timeout=5m ./tests/unit/... -coverprofile cover.out -args -ginkgo.focus="$(TESTS)"
 endif
 
 pkg-test:

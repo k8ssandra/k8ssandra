@@ -2,13 +2,14 @@ package helm
 
 import (
 	"fmt"
+	"io/ioutil"
+	"os"
+	"path/filepath"
+
 	"github.com/gruntwork-io/terratest/modules/helm"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"io/ioutil"
 	"k8s.io/apimachinery/pkg/util/json"
-	"os"
-	"path/filepath"
 )
 
 const (

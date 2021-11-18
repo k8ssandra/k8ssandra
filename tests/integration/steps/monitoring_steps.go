@@ -55,7 +55,7 @@ func CountMonitoredItems(t *testing.T, namespace string) int {
 
 func CheckNoOutOfOrderMetrics(t *testing.T, namespace string) {
 	kubectlOptions := k8s.NewKubectlOptions("", "", namespace)
-	prometheusPods := GetPodsWithLabels(t, namespace, map[string]string{"app": "prometheus"})
+	prometheusPods := GetPodsWithLabels(t, namespace, map[string]string{"app.kubernetes.io/name": "prometheus"})
 	g(t).Expect(len(prometheusPods.Items)).To(Equal(1), fmt.Sprintf("Expected one Prometheus pod but found %d", len(prometheusPods.Items)))
 	prometheusLog, err := k8s.RunKubectlAndGetOutputE(t, kubectlOptions, "logs", prometheusPods.Items[0].Name, "-c", "prometheus")
 	g(t).Expect(err).To(BeNil())

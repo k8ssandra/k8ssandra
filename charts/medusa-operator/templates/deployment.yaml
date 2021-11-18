@@ -16,7 +16,7 @@ spec:
       serviceAccountName:  {{ include "k8ssandra-common.serviceAccountName" . }}
       containers:
       - args:
-        - --enable-leader-election
+        - --leader-elect
         command:
           - /manager
         env:
