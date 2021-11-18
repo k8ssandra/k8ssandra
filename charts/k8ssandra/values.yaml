@@ -41,7 +41,6 @@ cassandra:
 
   # -- Security context override for cassandra container
   securityContext: {}
-
   # -- Security context override for pod where Cassandra container resides
   podSecurityContext: {}
   # -- Cassandra base init container
@@ -442,7 +441,7 @@ stargate:
   # Cassandra cluster nodes. Each instance handles API and coordination tasks
   # for inbound queries.
   replicas: 1
-    # -- Specifies the name of a ConfigMap that contains a custom cassandra.yaml. The
+  # -- Specifies the name of a ConfigMap that contains a custom cassandra.yaml. The
   # ConfigMap should have a key named cassandra.yaml.  
   cassandraYamlConfigMap:
   # -- The wait-for-cassandra init container in the Stargate Deployment
@@ -594,9 +593,9 @@ reaper:
   # will need to make sure that the image is compatible with reaper-operator.
   image:
     # -- Image registry for reaper
-    registry: docker.io 
+    registry: docker.io
     # -- Image repository for reaper
-    repository: thelastpickle/cassandra-reaper 
+    repository: thelastpickle/cassandra-reaper
     # -- Tag of the reaper image to pull from
     tag: 3.0.0
     # -- Pull policy for the reaper container
@@ -662,7 +661,7 @@ medusa:
     # -- Image repository for medusa
     repository: k8ssandra/medusa
     # -- Tag of the medusa image to pull from
-    tag: 0.11.1
+    tag: 0.11.3
     # -- Pull policy for the medusa container
     pullPolicy: IfNotPresent
   # -- Configures the Cassandra user used by Medusa when authentication is
