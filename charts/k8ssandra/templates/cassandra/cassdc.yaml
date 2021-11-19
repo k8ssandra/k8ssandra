@@ -323,6 +323,7 @@ spec:
           {{- end }}
         {{- end }}
 
+        {{- if or .Values.medusa.enabled .Values.cassandra.encryption.keystoreSecret }}
         volumeMounts:
           {{- if .Values.medusa.enabled }}
           - name: cassandra-config
@@ -344,6 +345,8 @@ spec:
           - name: truststore-secret
             mountPath: {{ .Values.cassandra.encryption.truststoreMountPath }}
         {{- end}}
+        {{- end }}
+
       {{- if .Values.medusa.enabled }}
       - name: medusa
         image: {{ include "k8ssandra-common.flattenedImage" .Values.medusa.image }}
