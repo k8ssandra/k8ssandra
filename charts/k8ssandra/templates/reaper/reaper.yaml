@@ -32,14 +32,14 @@ spec:
   {{- if .Values.reaper.tolerations }}
   tolerations: {{ toYaml .Values.reaper.tolerations | nindent 4 }}
   {{- end }}
+  {{- if (and .Values.reaper.schemaInitContainerConfig .Values.reaper.schemaInitContainerConfig.securityContext) }}
   schemaInitContainerConfig:
-    {{- if (and .Values.reaper.schemaInitContainerConfig .Values.reaper.schemaInitContainerConfig.securityContext) }}
     securityContext: {{ toYaml .Values.reaper.schemaInitContainerConfig.securityContext | nindent 6 }}
-    {{- end }}
+  {{- end }}
+  {{- if (and .Values.reaper.configInitContainerConfig .Values.reaper.configInitContainerConfig.securityContext) }}
   configInitContainerConfig:
-    {{- if (and .Values.reaper.configInitContainerConfig .Values.reaper.configInitContainerConfig.securityContext) }}
     securityContext: {{ toYaml .Values.reaper.configInitContainerConfig.securityContext | nindent 6 }}
-    {{- end }}
+  {{- end }}
   podSecurityContext: {{- toYaml .Values.reaper.podSecurityContext | nindent 4 }}
   securityContext: {{- toYaml .Values.reaper.securityContext | nindent 4 }}
 {{- end }}
