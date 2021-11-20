@@ -41,7 +41,6 @@ cassandra:
 
   # -- Security context override for cassandra container
   securityContext: {}
-
   # -- Security context override for pod where Cassandra container resides
   podSecurityContext: {}
   # -- Cassandra base init container
@@ -428,7 +427,7 @@ stargate:
   enabled: true
   # -- version of Stargate to deploy. This is used in conjunction with cassandra.version to select the Stargate container image.
   # If stargate.image is set, this value has no effect.
-  version: "1.0.40"
+  version: "1.0.42"
   # -- Sets the Stargate container image. This value must be compatible
   # with the value provided for stargate.clusterVersion. If left blank (recommended),
   # k8ssandra will derive an appropriate image based on cassandra.clusterVersion.
@@ -442,7 +441,7 @@ stargate:
   # Cassandra cluster nodes. Each instance handles API and coordination tasks
   # for inbound queries.
   replicas: 1
-    # -- Specifies the name of a ConfigMap that contains a custom cassandra.yaml. The
+  # -- Specifies the name of a ConfigMap that contains a custom cassandra.yaml. The
   # ConfigMap should have a key named cassandra.yaml.  
   cassandraYamlConfigMap:
   # -- The wait-for-cassandra init container in the Stargate Deployment
@@ -594,9 +593,9 @@ reaper:
   # will need to make sure that the image is compatible with reaper-operator.
   image:
     # -- Image registry for reaper
-    registry: docker.io 
+    registry: docker.io
     # -- Image repository for reaper
-    repository: thelastpickle/cassandra-reaper 
+    repository: thelastpickle/cassandra-reaper
     # -- Tag of the reaper image to pull from
     tag: 3.0.0
     # -- Pull policy for the reaper container
