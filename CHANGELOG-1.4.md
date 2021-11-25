@@ -16,6 +16,9 @@ last).
 When cutting a new release of the parent `k8ssandra` chart update the `unreleased` heading to the tag being generated 
 and date `## vX.Y.Z - YYYY-MM-DD` and create a new placeholder section for  `unreleased` entries.
 
+## unreleased
+* [BUGFIX] Remove pod level SecurityContext to fix permissions issue on Cassandra data dir creation
+
 ## v1.4.0 - 2021-11-19
 * [CHANGE] Update to Managment API v0.1.33
 * [CHANGE] Update to Medusa 0.11.3
