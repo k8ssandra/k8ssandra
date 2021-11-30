@@ -42,8 +42,6 @@ cassandra:
   # -- Security context override for cassandra container
   securityContext: {}
 
-  # -- Security context override for pod where Cassandra container resides
-  podSecurityContext: {}
   # -- Cassandra base init container
   baseConfig:
     # -- Security context override for base init container
