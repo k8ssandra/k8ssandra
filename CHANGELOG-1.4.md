@@ -18,6 +18,7 @@ and date `## vX.Y.Z - YYYY-MM-DD` and create a new placeholder section for  `unr
 
 ## unreleased
 * [BUGFIX] Remove pod level SecurityContext to fix permissions issue on Cassandra data dir creation
+* [BUGFIX] #1208 Helm charts did not follow cass-operator's cleanup rules for clusterName to allow "broken" clusterNames which do not conform to DNS rules.
 
 ## v1.4.0 - 2021-11-19
 * [CHANGE] Update to Managment API v0.1.33

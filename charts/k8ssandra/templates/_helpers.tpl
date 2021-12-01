@@ -10,7 +10,10 @@ Expand the name of the chart.
 Cluster name definition.
 */}}
 {{- define "k8ssandra.clusterName" -}}
-{{- default .Release.Name .Values.cassandra.clusterName }}
+{{- $clusterName := lower .Values.cassandra.clusterName | replace " " "-" | replace "_" "-" }}
+{{- $matchAll := mustRegexFindAll "[a-z]([-a-z0-9]*[a-z0-9])?" $clusterName -1 }}
+{{- $final := join "" $matchAll }}
+{{- default .Release.Name $final }}
 {{- end }}
 
 {{/*
