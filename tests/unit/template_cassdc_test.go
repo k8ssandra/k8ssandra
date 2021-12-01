@@ -175,6 +175,19 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			Expect(cassdc.Spec.ClusterName).To(Equal(clusterName))
 		})
 
+		It("override clusterName with invalid form", func() {
+			clusterName := "MrDvrCassandraTv3t"
+			options := &helm.Options{
+				KubectlOptions: defaultKubeCtlOptions,
+				SetValues: map[string]string{
+					"cassandra.clusterName": clusterName,
+				},
+			}
+
+			Expect(renderTemplate(options)).To(Succeed())
+			Expect(cassdc.Spec.ClusterName).To(Equal("mrdvrcassandratv3t"))
+		})
+
 		It("default clusterName as release name", func() {
 			clusterName := ""
 			options := &helm.Options{
