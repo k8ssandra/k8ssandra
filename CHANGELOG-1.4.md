@@ -17,6 +17,8 @@ When cutting a new release of the parent `k8ssandra` chart update the `unrelease
 and date `## vX.Y.Z - YYYY-MM-DD` and create a new placeholder section for  `unreleased` entries.
 
 ## unreleased
+
+## v1.4.1 - 2021-12-02
 * [BUGFIX] Remove pod level SecurityContext to fix permissions issue on Cassandra data dir creation
 * [BUGFIX] #1208 Helm charts did not follow cass-operator's cleanup rules for clusterName to allow "broken" clusterNames which do not conform to DNS rules.
 
