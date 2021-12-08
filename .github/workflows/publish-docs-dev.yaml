@@ -32,4 +32,3 @@ jobs:
     - run: npm run clean
     - run: npm run build:dev
     - run: npm run deploy:dev
-    
