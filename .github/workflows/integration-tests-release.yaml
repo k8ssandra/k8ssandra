@@ -17,6 +17,8 @@ on:
       - 'charts/**'
       - 'tests/integration/**'
       - '.github/workflows/**'
+    tags-ignore:    
+      - 'v*-docs'
   release:
     types:
       - published
