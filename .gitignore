@@ -261,12 +261,6 @@ bin
 scripts/deleted-namespaces.txt
 scripts/namespaces.txt
 
-# Docs
-docs/public/
-docs/resources/
-docs/node_modules/
-docs/tech-doc-hugo
-
 # testenv
 testbin/
 docs/.vscode/settings.json
