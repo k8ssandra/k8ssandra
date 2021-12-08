@@ -1,0 +1,23 @@
+name: Test docs build
+
+on:
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build_and_publish:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+      name: Checkout code w/ submodules
+      with:
+        submodules: recursive
+    - uses: actions/setup-node@v2
+      name: Build and deploy
+      with:
+        node-version: 14.x
+        cache: 'npm'
+    - run: npm install
+    - run: npm run clean
+    - run: npm run build:prod

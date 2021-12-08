@@ -1,0 +1,31 @@
+name: Publish docs.k8ssandra-dev.io
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build_and_publish:
+    name: Build and publish
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+      name: Checkout code w/ submodules
+      with:
+        submodules: recursive
+    - uses: google-github-actions/setup-gcloud@master
+      name: Setup gcloud
+      with:
+        project_id: ${{ secrets.GCP_PROJECT_ID }}
+        service_account_key: ${{ secrets.GCP_SA_KEY }}
+        export_default_credentials: true
+    - uses: actions/setup-node@v2
+      name: Build and deploy
+      with:
+        node-version: 14.x
+        cache: 'npm'
+    - run: npm install
+    - run: npm run clean
+    - run: npm run build:dev
+    - run: npm run deploy:dev
+    
