@@ -25,7 +25,7 @@ jobs:
         service_account_key: ${{ secrets.GCP_SA_KEY }}
         export_default_credentials: true
     - uses: actions/setup-node@v2
-      name: Build and deploy
+      name: Setup Node
       with:
         node-version: 14.x
     - run: npm install

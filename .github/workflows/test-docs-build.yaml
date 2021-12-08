@@ -19,7 +19,7 @@ jobs:
       with:
         submodules: recursive
     - uses: actions/setup-node@v2
-      name: Build and deploy
+      name: Setup Node
       with:
         node-version: 14.x
     - run: npm install
