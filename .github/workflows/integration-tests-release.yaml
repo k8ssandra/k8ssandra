@@ -9,8 +9,6 @@ on:
       - 'charts/**'
       - 'tests/integration/**'
       - '.github/workflows/**'
-    paths-ignore:
-      - 'docs/**'
   push:
     branches:
     paths:
@@ -19,8 +17,6 @@ on:
       - 'charts/**'
       - 'tests/integration/**'
       - '.github/workflows/**'
-    paths-ignore:
-      - 'docs/**'
   release:
     types:
       - published
