@@ -3,11 +3,16 @@ name: Publish docs.k8ssandra-dev.io
 on:
   push:
     branches: [ main ]
+    paths:
+      - 'docs/**'
 
 jobs:
   build_and_publish:
     name: Build and publish
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./docs
     steps:
     - uses: actions/checkout@v2
       name: Checkout code w/ submodules
