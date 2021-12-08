@@ -8,7 +8,7 @@ description: Post-install topics customized for K8ssandra users to get started q
 
 Welcome! These quickstart topics are designed to meet the specialized, role-based information needs of developers or Site Reliability Engineers (SREs).
 
-If you haven't already, first follow the steps in the [Install K8ssandra]({{< relref "/install/" >}}) topic that matches your goals. Each install topic provides detailed steps to install K8ssandra:
+If you haven't already, first follow the steps in the [Install K8ssandra]({{< relref "/install/" >}}) topic that matches your goals. Each install topic provides detailed steps to install K8ssandra: **This is another test**
 
 * On your [local]({{< relref "/install/local" >}}) **development** machine that's running Kubernetes.  
 
