@@ -6,6 +6,8 @@ on:
     paths:
       - 'pkg/**'
       - 'cmd/**'
+    paths-ignore:
+      - 'docs/**'
 jobs:
   scan-repo:
     runs-on: ubuntu-latest
