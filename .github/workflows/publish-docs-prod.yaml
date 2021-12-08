@@ -1,8 +1,9 @@
 name: Publish docs.k8ssandra.io
 
 on:
-  tags:        
-    - v*-docs
+  push:
+    tags:        
+      - v*-docs
 
 jobs:
   build_and_publish:
