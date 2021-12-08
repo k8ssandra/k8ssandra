@@ -22,7 +22,6 @@ jobs:
       name: Build and deploy
       with:
         node-version: 14.x
-        cache: 'npm'
     - run: npm install
     - run: npm run clean
     - run: npm run build:prod
