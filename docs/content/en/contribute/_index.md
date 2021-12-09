@@ -109,7 +109,9 @@ Here's a quick guide to updating the docs. It assumes you're familiar with the G
   the content.
 1. When you're ready for a review, add a comment to the PR, and remove any
   "WIP" markers.
-1. After the Pull Request is reviewed and merged it will be deployed automatically. There is usually a delay of 10 or more minutes between deployment and when the updates are online. 
+1. After the Pull Request is reviewed and merged it will be deployed automatically to the development version of the docs site (https://docs.k8ssandra-dev.io). There is usually a delay of 10 or more minutes between deployment and when the updates are online.
+
+Deployments to the production site (https://docs.k8ssandra.io) are made by pushing a semantic version structured tag in the form of `v{major}.{minor}.{patch}-docs`.  This process is done one when docs content has stabilized and is ready to be made generally available. 
 
 ### Updating a single page
 
@@ -123,14 +125,48 @@ If you've just spotted something you'd like to change while using the docs, K8ss
 
 If you want to run your own local Hugo server to preview your changes as you work:
 
-1. Follow the instructions to install [Hugo](https://gohugo.io/) and any other tools you need. You'll need at least **Hugo version 0.45** (we recommend using the most recent available version), and it must be the **extended** version, which supports SCSS.
+1. Install Node/NPM using the instructions from the [NodeJS download](https://nodejs.org/en/download/) site (the latest LTS release version should be sufficient).
 1. Fork the [K8ssandra repo](https://github.com/k8ssandra/k8ssandra) repo into your own project, then create a local copy using `git clone`. Don’t forget to use `--recurse-submodules` or you won’t pull down some of the code you need to generate a working site.
 
     ```bash
-    git clone --recurse-submodules --depth 1 https://github.com/k8ssandra/k8ssandra.git
+    git clone --recurse-submodules https://github.com/k8ssandra/k8ssandra.git
+    ```
+1. Navigate to the `docs` directory within the k8ssandra repository
+1. Run `npm install` to install all of the dependencies required for building/testing with Hugo
+1. Run `npm run start` to start a live hugo server locally.  As changes are made and saved the site will automatically be rebuilt and be made available through a browser refresh.
+
+    ```bash
+    % npm run start
+
+    > k8ssandra@0.2.0 start
+    > hugo server --bind 0.0.0.0
+
+    port 1313 already in use, attempting to use an available port
+    Start building sites … 
+    hugo v0.89.4-AB01BA6E+extended darwin/amd64 BuildDate=2021-11-17T08:24:09Z VendorInfo=gohugoio
+    WARN 2021/12/09 08:55:07 Page.Dir is deprecated and will be removed in a future release. Use .File.Dir
+
+                      | EN   
+    -------------------+------
+      Pages            | 121  
+      Paginator pages  |   0  
+      Non-page files   | 109  
+      Static files     |  51  
+      Processed images |   0  
+      Aliases          |   0  
+      Sitemaps         |   1  
+      Cleaned          |   0  
+
+    Built in 690 ms
+    Watching for changes in /k8ssandra/k8ssandra/docs/{assets,content,i18n,layouts,package.json,static,themes}
+    Watching for config changes in /k8ssandra/k8ssandra/docs/config.toml, /Users/jeffdinoto/github/jdonenine/forks/k8ssandra/k8ssandra/docs/themes/docsy/config.toml
+    Environment: "development"
+    Serving pages from memory
+    Running in Fast Render Mode. For full rebuilds on change: hugo server --disableFastRender
+    Web Server is available at http://localhost:56711/ (bind address 0.0.0.0)
+    Press Ctrl+C to stop
     ```
 
-1. Run `hugo server` in the docs site root directory, such as your `~/github/k8ssandra/docs` directory. By default your site will be available at http://localhost:1313/. Now that you're serving your site locally, Hugo will watch for changes to the content and automatically refresh your site.
 1. Continue with the usual GitHub workflow to edit files, commit them, push the
   changes up to your fork, and create a pull request.
 
