@@ -46,7 +46,7 @@ There are a number of utility scripts provided in package.json that can be execu
 npm run start
 ```
 
-This provides a live-refresh server that will automatically load and changes made in the source code.  
+This provides a live-refresh server that will automatically load any changes made in the source code.  
 
 The local server will be available at http://localhost:1313/.
 
