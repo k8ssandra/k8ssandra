@@ -1,24 +1,79 @@
 # K8ssandra.io - Website & Documentation Repository
 
-This project is built with the [Hugo](https://gohugo.io/) static site generator and [Docsy](https://github.com/google/docsy) theme.
+This project is built with the [Hugo](https://gohugo.io/) static site generator and the [Docsy](https://github.com/google/docsy) theme.
+
+The documentation produced from this repository can be viewed at:
+
+Development Version -- https://docs.k8ssandra-dev.io
+
+Production Version -- https://docs.k8ssandra.io
 
 ## Dependencies
 
-* Hugo "extended" version - [OS X](https://github.com/gohugoio/hugo/releases/download/v0.76.5/hugo_extended_0.76.5_macOS-64bit.tar.gz), [Linux](https://github.com/gohugoio/hugo/releases/download/v0.76.5/hugo_extended_0.76.5_Linux-64bit.tar.gz), and [Windows](https://github.com/gohugoio/hugo/releases/download/v0.76.5/hugo_extended_0.76.5_Windows-64bit.zip)
-* Node Modules - `npm install`
-  * autoprefixer
-  * PostCSS
+This project requires Node.js and NPM to be installed locally.  All other dependencies are provided via NPM.
 
-## Running the website locally
+The latest version of Node/NPM should work, the current automation uses Node 14.
 
-Once you've cloned the site repo, from the repo root folder, run:
+You can install Node in a myriad of ways, check [here](https://nodejs.org/en/) for more information.
 
-```
-hugo server
-```
+## Cloning the repo
 
-to run the site with drafts enabled
+Because of the way Docsy is included in projects as a git submodule it's necessary to clone the project in a recursive fashion, using a command like:
 
 ```
-hugo server -D
+git clone --recurse-submodules https://github.com/k8ssandra/k8ssandra.git
 ```
+
+## Development
+
+### Install dependencies
+
+From the `/docs` directory, run
+
+```
+npm install
+```
+
+This command will install the project dependencies, such as hugo-extended.
+
+### Scripts
+
+There are a number of utility scripts provided in package.json that can be executed for various purposes:
+
+#### Start the Hugo server for local development
+
+```
+npm run start
+```
+
+This provides a live-refresh server that will automatically load and changes made in the source code.  
+
+The local server will be available at http://localhost:1313/.
+
+#### Use Hugo to build the site
+
+```
+npm run build:dev
+```
+
+or
+
+```
+npm run build:prod
+```
+
+#### Cleanup the build artifacts previously produced
+
+```
+npm run clean
+```
+
+#### Deploy to docs.k8ssandra-dev.io
+
+**This requires local gcloud authentication and permissions**
+
+```
+npm run deploy:dev
+```
+
+This will replace all content currently hosted at docs.k8ssandra-dev.io -- use with caution.
