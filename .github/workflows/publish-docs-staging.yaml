@@ -22,8 +22,8 @@ jobs:
     - uses: google-github-actions/setup-gcloud@master
       name: Setup gcloud
       with:
-        project_id: ${{ secrets.GCP_DOCS_DEV_V1_PROJECT_ID }}
-        service_account_key: ${{ secrets.GCP_DOCS_DEV_SA_KEY }}
+        project_id: ${{ secrets.GCP_DOCS_STAGING_PROJECT_ID }}
+        service_account_key: ${{ secrets.GCP_DOCS_STAGING_SA_KEY }}
         export_default_credentials: true
     - uses: actions/setup-node@v2
       name: Setup Node
