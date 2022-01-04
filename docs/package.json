@@ -10,9 +10,9 @@
     "clean": "npm run clean:public && npm run clean:resources",
     "build:dev": "hugo --environment dev",
     "build:staging": "hugo --environment staging",
-    "build:prod": "hugo --environment prod",
+    "build:production": "hugo --environment production",
     "deploy:staging": "hugo deploy --environment staging --target staging --verbose",
-    "deploy:prod": "hugo deploy --environment prod --target prod --verbose"
+    "deploy:production": "hugo deploy --environment production --target production --verbose"
   },
   "repository": {
     "type": "git",
