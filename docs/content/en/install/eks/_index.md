@@ -1,4 +1,5 @@
 ---
+versions: ["K8ssandra v1"]
 title: "Install K8ssandra on EKS"
 linkTitle: "Amazon EKS"
 weight: 2

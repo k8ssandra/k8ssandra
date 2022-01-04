@@ -1,4 +1,5 @@
 ---
+versions: ["K8ssandra v1"]
 title: "Install K8ssandra on GKE"
 linkTitle: "Google GKE"
 weight: 2

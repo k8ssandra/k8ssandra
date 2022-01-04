@@ -1,8 +1,9 @@
-name: Publish docs.k8ssandra-dev.io
+name: Publish docs-staging.k8ssandra.io
 
 on:
   push:
-    branches: [ main ]
+    branches:
+      - 'main'
     paths:
       - 'docs/**'
 
@@ -21,7 +22,7 @@ jobs:
     - uses: google-github-actions/setup-gcloud@master
       name: Setup gcloud
       with:
-        project_id: ${{ secrets.GCP_DOCS_DEV_PROJECT_ID }}
+        project_id: ${{ secrets.GCP_DOCS_DEV_V1_PROJECT_ID }}
         service_account_key: ${{ secrets.GCP_DOCS_DEV_SA_KEY }}
         export_default_credentials: true
     - uses: actions/setup-node@v2
@@ -30,5 +31,5 @@ jobs:
         node-version: 14.x
     - run: npm install
     - run: npm run clean
-    - run: npm run build:dev
-    - run: npm run deploy:dev
+    - run: npm run build:staging
+    - run: npm run deploy:staging

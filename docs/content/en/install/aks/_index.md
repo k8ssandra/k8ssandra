@@ -1,4 +1,5 @@
 ---
+versions: ["K8ssandra v1"]
 title: "Install K8ssandra on AKS"
 linkTitle: "Azure AKS"
 weight: 2

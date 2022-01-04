@@ -16,7 +16,20 @@ defaultContentLanguageInSubdir = false
 # Useful when translating.
 enableMissingTranslationPlaceholders = true
 
-disableKinds = ["taxonomy", "taxonomyTerm"]
+# You can add your own taxonomies
+[taxonomies]
+tag = "tags"
+version = "versions"
+
+[params.taxonomy]
+# set taxonomyCloud = [] to hide taxonomy clouds
+taxonomyCloud = ["tags", "versions"] 
+
+# If used, must have same lang as taxonomyCloud
+taxonomyCloudTitle = ["Tags", "Versions"] 
+
+# set taxonomyPageHeader = [] to hide taxonomies on the page headers
+taxonomyPageHeader = ["tags", "versions"] 
 
 # Highlighting config
 pygmentsCodeFences = true
@@ -205,12 +218,12 @@ changefreq = "daily"
 order = [".jpg$", ".gif$"]
 
 [[deployment.targets]]
-name = "development"
-URL = "gs://docs-dev"
+name = "staging"
+URL = "gs://docs-staging.k8ssandra.io"
 
 [[deployment.targets]]
-name = "production"
-URL = "gs://docs.k8ssandra.io"
+name = "prod"
+URL = "gs://docs-temp.k8ssandra.io"
 
 # Optionally, you can include or exclude specific files.
 # See https://godoc.org/github.com/gobwas/glob#Glob for the glob pattern syntax.
