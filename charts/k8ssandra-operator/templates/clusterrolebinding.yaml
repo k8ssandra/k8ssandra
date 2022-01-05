@@ -1,14 +1,15 @@
-{{- if not .Values.clusterScoped }}
+{{- if .Values.clusterScoped }}
 apiVersion: rbac.authorization.k8s.io/v1
-kind: RoleBinding
+kind: ClusterRoleBinding
 metadata:
   name: {{ include "k8ssandra-common.fullname" . }}
   labels: {{ include "k8ssandra-common.labels" . | indent 4 }}
 roleRef:
   apiGroup: rbac.authorization.k8s.io
-  kind: Role
+  kind: ClusterRole
   name: {{ include "k8ssandra-common.fullname" . }}
 subjects:
-- kind: ServiceAccount
-  name: {{ template "k8ssandra-common.serviceAccountName" . }}
-  {{- end }}
+  - kind: ServiceAccount
+    name: {{ template "k8ssandra-common.serviceAccountName" . }}
+    namespace: {{ .Release.Namespace }}
+{{- end }}

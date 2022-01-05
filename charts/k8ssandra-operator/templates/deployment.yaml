@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "k8ssandra-common.fullname" . }}-k8ssandra-operator
+  name: {{ include "k8ssandra-common.fullname" . }}
   labels: {{ include "k8ssandra-common.labels" . | indent 4 }}
     control-plane: k8ssandra-operator
 spec:
@@ -32,10 +32,15 @@ spec:
         # args:
         # - --config=controller_manager_config.yaml
         env:
+        {{- if .Values.clusterScoped}}
+        - name: WATCH_NAMESPACE
+          value: ""
+        {{- else }}
         - name: WATCH_NAMESPACE
           valueFrom:
             fieldRef:
               fieldPath: metadata.namespace
+        {{- end }}
         - name: K8SSANDRA_CONTROL_PLANE
           value: {{ .Values.controlPlane | quote }}
         image: {{ include "k8ssandra-common.flattenedImage" .Values.image }}
