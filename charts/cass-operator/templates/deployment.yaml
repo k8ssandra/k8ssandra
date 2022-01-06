@@ -66,7 +66,7 @@ spec:
             - name: ENABLE_VMWARE_PSP
               value: "true"
             {{- end }}
-            {{- if .Values.clusterScoped }}
+            {{- if .Values.global.clusterScoped }}
             - name: WATCH_NAMESPACE
               value: ""
             {{- else }}

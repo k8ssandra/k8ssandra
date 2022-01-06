@@ -32,7 +32,7 @@ spec:
         # args:
         # - --config=controller_manager_config.yaml
         env:
-        {{- if .Values.clusterScoped}}
+        {{- if .Values.global.clusterScoped}}
         - name: WATCH_NAMESPACE
           value: ""
         {{- else }}

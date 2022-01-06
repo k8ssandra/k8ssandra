@@ -1,3 +1,9 @@
+global:
+  # -- Determines whether cass-operator only watch and manages
+  # CassandraDatacenters in the same namespace in which the operator is deployed
+  # or if watches and manages CassandraDatacenters across all namespaces.
+  clusterScoped: false
+
 # -- A name in place of the chart name which is used in the metadata.name of
 # objects created by this chart.
 nameOverride: ''
@@ -11,11 +17,6 @@ commonLabels: {}
 
 # -- Sets the number of cass-operator pods.
 replicaCount: 1
-
-# -- Determines whether cass-operator only watch and manages
-# CassandraDatacenters in the same namespace in which the operator is deployed
-# or if watches and manages CassandraDatacenters across all namespaces.
-clusterScoped: false
 
 # -- Configures admission webhooks deployed with cass-operator.
 admissionWebhooks:
