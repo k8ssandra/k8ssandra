@@ -16,7 +16,14 @@ defaultContentLanguageInSubdir = false
 # Useful when translating.
 enableMissingTranslationPlaceholders = true
 
-disableKinds = ["taxonomy", "taxonomyTerm"]
+[taxonomies]
+tag = "tags"
+version = "versions"
+
+[params.taxonomy]
+taxonomyCloud = ["tags", "versions"] 
+taxonomyCloudTitle = ["Tags", "Versions"] 
+taxonomyPageHeader = ["tags", "versions"] 
 
 # Highlighting config
 pygmentsCodeFences = true
@@ -205,8 +212,8 @@ changefreq = "daily"
 order = [".jpg$", ".gif$"]
 
 [[deployment.targets]]
-name = "development"
-URL = "gs://docs-dev"
+name = "staging"
+URL = "gs://docs-staging.k8ssandra.io"
 
 [[deployment.targets]]
 name = "production"

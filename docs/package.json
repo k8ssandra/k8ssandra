@@ -4,13 +4,15 @@
   "description": "K8ssandra website and technical documentation.",
   "main": "none.js",
   "scripts": {
-    "start": "hugo server --bind 0.0.0.0",
+    "start": "hugo server --environment dev --noHTTPCache --disableFastRender --bind 0.0.0.0",
     "clean:public": "del-cli --force public",
     "clean:resources": "del-cli --force resources",
     "clean": "npm run clean:public && npm run clean:resources",
-    "build:dev": "hugo --environment development",
-    "build:prod": "hugo --environment production",
-    "deploy:dev": "hugo deploy --environment development --target development --verbose"
+    "build:dev": "hugo --environment dev",
+    "build:staging": "hugo --environment staging",
+    "build:production": "hugo --environment production",
+    "deploy:staging": "hugo deploy --environment staging --target staging --verbose",
+    "deploy:production": "hugo deploy --environment production --target production --verbose"
   },
   "repository": {
     "type": "git",

@@ -24,4 +24,4 @@ jobs:
         node-version: 14.x
     - run: npm install
     - run: npm run clean
-    - run: npm run build:prod
+    - run: npm run build:production
