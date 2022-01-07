@@ -4,14 +4,18 @@
   "description": "K8ssandra website and technical documentation.",
   "main": "none.js",
   "scripts": {
-    "start": "hugo server --environment dev --noHTTPCache --disableFastRender --bind 0.0.0.0",
+    "start": "hugo server --environment development --noHTTPCache --disableFastRender --bind 0.0.0.0",
     "clean:public": "del-cli --force public",
     "clean:resources": "del-cli --force resources",
     "clean": "npm run clean:public && npm run clean:resources",
-    "build:dev": "hugo --environment dev",
-    "build:staging": "hugo --environment staging",
-    "build:production": "hugo --environment production",
-    "deploy:staging": "hugo deploy --environment staging --target staging --verbose",
+    "build:dev": "hugo --environment development",
+    "build:staging-common": "hugo --environment staging-common",
+    "build:staging-v1": "hugo --environment staging-v1",
+    "build:staging-v2": "hugo --environment staging-v2",
+    "build:production-common": "hugo --environment production-common",
+    "build:production-v1": "hugo --environment production-v1",
+    "build:production-v2": "hugo --environment production-v2",
+    "deploy:staging-common": "hugo deploy --environment staging-common --target staging-common --verbose",
     "deploy:production": "hugo deploy --environment production --target production --verbose"
   },
   "repository": {
