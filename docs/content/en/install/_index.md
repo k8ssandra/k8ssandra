@@ -1,6 +1,4 @@
 ---
-versions: ["K8ssandra v1", "K8ssandra v2"]
-tags: ["Installation", "Get Started"]
 title: "Install K8ssandra"
 linkTitle: "Install"
 weight: 3
