@@ -99,24 +99,6 @@ code_of_conduct = "https://k8ssandra.io/community/code-of-conduct"
 # This menu appears only if you have at least one [params.versions] set.
 version_menu = "Versions"
 
-[[params.versions]]
-  version = "Common"
-  fullversion = "Common Information"
-  githubbranch = "docs"
-  url = "https://docs-temp.k8ssandra.io"
-
-[[params.versions]]
-  version = "v1"
-  fullversion = "k8ssandra-v1"
-  githubbranch = "docs-v1"
-  url = "https://docs-v1.k8ssandra.io"
-
-[[params.versions]]
-  version = "v2"
-  fullversion = "k8ssandra-operator-v1"
-  githubbranch = "docs-v2"
-  url = "https://docs-v2.k8ssandra.io"
-
 # Flag used in the "version-banner" partial to decide whether to display a 
 # banner on every page indicating that this is an archived version of the docs.
 # Set this flag to "true" if you want to display the banner.
@@ -243,6 +225,10 @@ URL = "gs://docs-staging-v2.k8ssandra.io"
 
 [[deployment.targets]]
 name = "production"
+URL = "gs://docs.k8ssandra.io"
+
+[[deployment.targets]]
+name = "production-temp"
 URL = "gs://docs-temp.k8ssandra.io"
 
 [[deployment.targets]]
