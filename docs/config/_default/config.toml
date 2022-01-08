@@ -1,4 +1,4 @@
-baseURL = "https://docs-temp.k8ssandra.io/"
+baseURL = "https://docs.k8ssandra.io/"
 title = "K8ssandra, Apache Cassandra on Kubernetes"
 
 enableRobotsTXT = true
