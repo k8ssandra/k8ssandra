@@ -9,14 +9,18 @@
     "clean:resources": "del-cli --force resources",
     "clean": "npm run clean:public && npm run clean:resources",
     "build:dev": "hugo --environment development",
-    "build:staging-common": "hugo --environment staging-common",
+    "build:staging": "hugo --environment staging",
     "build:staging-v1": "hugo --environment staging-v1",
     "build:staging-v2": "hugo --environment staging-v2",
-    "build:production-common": "hugo --environment production-common",
+    "build:production": "hugo --environment production",
     "build:production-v1": "hugo --environment production-v1",
     "build:production-v2": "hugo --environment production-v2",
-    "deploy:staging-common": "hugo deploy --environment staging-common --target staging-common --verbose",
-    "deploy:production": "hugo deploy --environment production --target production --verbose"
+    "deploy:staging": "hugo deploy --environment staging --target staging --verbose",
+    "deploy:staging-v1": "hugo deploy --environment staging-v1 --target staging-v1 --verbose",
+    "deploy:staging-v2": "hugo deploy --environment staging-v2 --target staging-v2 --verbose",
+    "deploy:production": "hugo deploy --environment production --target production --verbose",
+    "deploy:production-v1": "hugo deploy --environment production-v1 --target production-v1 --verbose",
+    "deploy:production-v2": "hugo deploy --environment production-v2 --target production-v2 --verbose"
   },
   "repository": {
     "type": "git",

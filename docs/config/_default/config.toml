@@ -1,4 +1,4 @@
-baseURL = "https://docs.k8ssandra.io/"
+baseURL = "https://docs-temp.k8ssandra.io/"
 title = "K8ssandra, Apache Cassandra on Kubernetes"
 
 enableRobotsTXT = true
@@ -103,7 +103,7 @@ version_menu = "Versions"
   version = "Common"
   fullversion = "Common Information"
   githubbranch = "docs"
-  url = "https://docs.k8ssandra.io"
+  url = "https://docs-temp.k8ssandra.io"
 
 [[params.versions]]
   version = "v1"
@@ -243,7 +243,7 @@ URL = "gs://docs-staging-v2.k8ssandra.io"
 
 [[deployment.targets]]
 name = "production"
-URL = "gs://docs.k8ssandra.io"
+URL = "gs://docs-temp.k8ssandra.io"
 
 [[deployment.targets]]
 name = "production-v1"
