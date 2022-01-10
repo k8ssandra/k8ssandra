@@ -1,5 +1,5 @@
-baseURL = "https://docs-staging.k8ssandra.io/"
-url_latest_version = "https://docs-staging.k8ssandra.io"
+baseURL = "https://docs-staging-v1.k8ssandra.io/"
+url_latest_version = "https://docs-staging-v1.k8ssandra.io"
 
 [[params.versions]]
   version = "Common"

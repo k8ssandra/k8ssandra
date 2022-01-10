@@ -1,9 +1,9 @@
-name: Publish docs-staging.k8ssandra.io
+name: Publish docs-temp.k8ssandra.io
 
 on:
   push:
-    branches:
-      - 'docs'
+    tags:
+      - 'docs-temp-v[0-9].[0-9]+.[0-9]+'
 
 jobs:
   build_and_publish:
@@ -20,8 +20,8 @@ jobs:
     - uses: google-github-actions/setup-gcloud@master
       name: Setup gcloud
       with:
-        project_id: ${{ secrets.GCP_DOCS_STAGING_PROJECT_ID }}
-        service_account_key: ${{ secrets.GCP_DOCS_STAGING_SA_KEY }}
+        project_id: ${{ secrets.GCP_DOCS_PROD_PROJECT_ID }}
+        service_account_key: ${{ secrets.GCP_DOCS_PROD_SA_KEY }}
         export_default_credentials: true
     - uses: actions/setup-node@v2
       name: Setup Node
@@ -29,8 +29,8 @@ jobs:
         node-version: 14.x
     - run: npm install
     - run: npm run clean
-    - run: npm run build:staging
-    - run: npm run deploy:staging
+    - run: npm run build:production-temp
+    - run: npm run deploy:production-temp
     - name: Purge CDN Cache
       env:
         ZONE_ID: ${{ secrets.CF_ZONE_ID }}

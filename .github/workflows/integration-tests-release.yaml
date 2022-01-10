@@ -11,6 +11,10 @@ on:
       - '.github/workflows/**'
   push:
     branches:
+    branches-ignore:
+      - 'docs'
+      - 'docs-v1'
+      - 'docs-v2'
     paths:
       - 'pkg/**'
       - 'cmd/**'

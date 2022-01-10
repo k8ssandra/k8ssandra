@@ -1,9 +1,9 @@
-name: Publish docs-staging.k8ssandra.io
+name: Publish docs-staging-v1.k8ssandra.io
 
 on:
   push:
     branches:
-      - 'docs'
+      - 'docs-v1'
 
 jobs:
   build_and_publish:
@@ -29,8 +29,8 @@ jobs:
         node-version: 14.x
     - run: npm install
     - run: npm run clean
-    - run: npm run build:staging
-    - run: npm run deploy:staging
+    - run: npm run build:staging-v1
+    - run: npm run deploy:staging-v1
     - name: Purge CDN Cache
       env:
         ZONE_ID: ${{ secrets.CF_ZONE_ID }}
