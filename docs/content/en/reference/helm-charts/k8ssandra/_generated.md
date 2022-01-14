@@ -1,6 +1,6 @@
 
 
-![Version: 1.4.0-SNAPSHOT](https://img.shields.io/badge/Version-1.4.0--SNAPSHOT-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)
+![Version: 1.5.0-SNAPSHOT](https://img.shields.io/badge/Version-1.5.0--SNAPSHOT-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)
 
 ## Maintainers
 
@@ -32,7 +32,6 @@
 | cassandra.versionImageMap | object | `{"3.11.10":"k8ssandra/cass-management-api:3.11.10-v0.1.27","3.11.11":"k8ssandra/cass-management-api:3.11.11-v0.1.33","3.11.7":"k8ssandra/cass-management-api:3.11.7-v0.1.33","3.11.8":"k8ssandra/cass-management-api:3.11.8-v0.1.33","3.11.9":"k8ssandra/cass-management-api:3.11.9-v0.1.27","4.0.0":"k8ssandra/cass-management-api:4.0.0-v0.1.33","4.0.1":"k8ssandra/cass-management-api:4.0.1-v0.1.33"}` | Specifies the image to use for a particular Cassandra version. Exercise care and caution with changing these values! cass-operator is not designed to work with arbitrary Cassandra images. It expects the cassandra container to be running management-api images. If you do want to change one of these mappings, the new value should be a management-api image. |
 | cassandra.image | object | `{}` | Overrides the default image mappings. This is intended for advanced use cases like development or testing. By default the Cassandra version has to be one that is in versionImageMap. Template rendering will fail if the version is not in the map. When you set the image directly, the version mapping check is skipped. Note that you are still constrained to the versions supported by cass-operator. |
 | cassandra.securityContext | object | `{}` | Security context override for cassandra container |
-| cassandra.podSecurityContext | object | `{}` | Security context override for pod where Cassandra container resides |
 | cassandra.baseConfig | object | `{"securityContext":{}}` | Cassandra base init container |
 | cassandra.baseConfig.securityContext | object | `{}` | Security context override for base init container |
 | cassandra.configBuilder | object | `{"image":{"pullPolicy":"IfNotPresent","registry":"docker.io","repository":"datastax/cass-config-builder","tag":"1.0.4"},"securityContext":{}}` | The server-config-init init container |
@@ -112,7 +111,7 @@
 | cassandra.metric_filters[12] | string | `"allow:org.apache.cassandra.metrics.table.coordinator"` |  |
 | cassandra.metric_filters[13] | string | `"allow:org.apache.cassandra.metrics.table.dropped_mutations"` |  |
 | stargate.enabled | bool | `true` | Enable Stargate resources as part of this release |
-| stargate.version | string | `"1.0.40"` | version of Stargate to deploy. This is used in conjunction with cassandra.version to select the Stargate container image. If stargate.image is set, this value has no effect. |
+| stargate.version | string | `"1.0.44"` | version of Stargate to deploy. This is used in conjunction with cassandra.version to select the Stargate container image. If stargate.image is set, this value has no effect. |
 | stargate.image | object | `{}` | Sets the Stargate container image. This value must be compatible with the value provided for stargate.clusterVersion. If left blank (recommended), k8ssandra will derive an appropriate image based on cassandra.clusterVersion. |
 | stargate.replicas | int | `1` | Number of Stargate instances to deploy. This value may be scaled independently of Cassandra cluster nodes. Each instance handles API and coordination tasks for inbound queries. |
 | stargate.cassandraYamlConfigMap | string | `nil` | Specifies the name of a ConfigMap that contains a custom cassandra.yaml. The ConfigMap should have a key named cassandra.yaml.   |
