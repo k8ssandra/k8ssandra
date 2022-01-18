@@ -1,4 +1,3 @@
----
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
@@ -899,6 +898,49 @@ spec:
                     name:
                       description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
                       TODO: Add other useful fields. apiVersion, kind, uid?'
+                      type: string
+                  type: object
+                containerImage:
+                  default:
+                    repository: stargateio
+                    tag: v1.0.45
+                  description: ContainerImage is the image characteristics to use for
+                    Stargate containers. Leave nil to use a default image.
+                  properties:
+                    name:
+                      description: The image name to use.
+                      type: string
+                    pullPolicy:
+                      description: The image pull policy to use. Defaults to "Always"
+                        if the tag is "latest", otherwise to "IfNotPresent".
+                      enum:
+                        - Always
+                        - IfNotPresent
+                        - Never
+                      type: string
+                    pullSecretRef:
+                      description: 'The secret to use when pulling the image from private
+                      repositories. If specified, this secret will be passed to individual
+                      puller implementations for them to use. For example, in the
+                      case of Docker, only DockerConfig type secrets are honored.
+                      More info: https://kubernetes.io/docs/concepts/containers/images#specifying-imagepullsecrets-on-a-pod'
+                      properties:
+                        name:
+                          description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                          TODO: Add other useful fields. apiVersion, kind, uid?'
+                          type: string
+                      type: object
+                    registry:
+                      default: docker.io
+                      description: The Docker registry to use. Defaults to "docker.io",
+                        the official Docker Hub.
+                      type: string
+                    repository:
+                      description: The Docker repository to use.
+                      type: string
+                    tag:
+                      default: latest
+                      description: The image tag to use. Defaults to "latest".
                       type: string
                   type: object
                 datacenterRef:
@@ -1967,6 +2009,49 @@ spec:
                             TODO: Add other useful fields. apiVersion, kind, uid?'
                             type: string
                         type: object
+                      containerImage:
+                        default:
+                          repository: stargateio
+                          tag: v1.0.45
+                        description: ContainerImage is the image characteristics to
+                          use for Stargate containers. Leave nil to use a default image.
+                        properties:
+                          name:
+                            description: The image name to use.
+                            type: string
+                          pullPolicy:
+                            description: The image pull policy to use. Defaults to "Always"
+                              if the tag is "latest", otherwise to "IfNotPresent".
+                            enum:
+                              - Always
+                              - IfNotPresent
+                              - Never
+                            type: string
+                          pullSecretRef:
+                            description: 'The secret to use when pulling the image from
+                            private repositories. If specified, this secret will be
+                            passed to individual puller implementations for them to
+                            use. For example, in the case of Docker, only DockerConfig
+                            type secrets are honored. More info: https://kubernetes.io/docs/concepts/containers/images#specifying-imagepullsecrets-on-a-pod'
+                            properties:
+                              name:
+                                description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                                TODO: Add other useful fields. apiVersion, kind, uid?'
+                                type: string
+                            type: object
+                          registry:
+                            default: docker.io
+                            description: The Docker registry to use. Defaults to "docker.io",
+                              the official Docker Hub.
+                            type: string
+                          repository:
+                            description: The Docker repository to use.
+                            type: string
+                          tag:
+                            default: latest
+                            description: The image tag to use. Defaults to "latest".
+                            type: string
+                        type: object
                       heapSize:
                         anyOf:
                           - type: integer
@@ -2292,26 +2377,24 @@ spec:
                         description: ServiceAccount is the service account name to use
                           for Stargate pods.
                         type: string
-                      stargateContainerImage:
-                        description: StargateContainerImage is the image characteristics
-                          to use for Stargate containers. Leave nil to use a default
-                          image.
+                      telemetry:
+                        description: Telemetry defines the desired telemetry integrations
+                          to deploy targeting the Stargate pods for all DCs in this
+                          cluster (unless overriden by DC specific settings)
                         properties:
-                          pullPolicy:
-                            default: IfNotPresent
-                            description: PullPolicy describes a policy for if/when to
-                              pull a container image
-                            type: string
-                          registry:
-                            default: docker.io
-                            type: string
-                          repository:
-                            type: string
-                          tag:
-                            default: latest
-                            type: string
-                        required:
-                          - repository
+                          prometheus:
+                            properties:
+                              commonLabels:
+                                additionalProperties:
+                                  type: string
+                                description: CommonLabels are applied to all serviceMonitors
+                                  created.
+                                type: object
+                              enabled:
+                                description: Enable the creation of Prometheus serviceMonitors
+                                  for this resource (Cassandra or Stargate).
+                                type: boolean
+                            type: object
                         type: object
                       tolerations:
                         description: Tolerations are tolerations to apply to the Stargate
@@ -2527,25 +2610,24 @@ spec:
                   format: int32
                   minimum: 1
                   type: integer
-                stargateContainerImage:
-                  description: StargateContainerImage is the image characteristics to
-                    use for Stargate containers. Leave nil to use a default image.
+                telemetry:
+                  description: Telemetry defines the desired telemetry integrations
+                    to deploy targeting the Stargate pods for all DCs in this cluster
+                    (unless overriden by DC specific settings)
                   properties:
-                    pullPolicy:
-                      default: IfNotPresent
-                      description: PullPolicy describes a policy for if/when to pull
-                        a container image
-                      type: string
-                    registry:
-                      default: docker.io
-                      type: string
-                    repository:
-                      type: string
-                    tag:
-                      default: latest
-                      type: string
-                  required:
-                    - repository
+                    prometheus:
+                      properties:
+                        commonLabels:
+                          additionalProperties:
+                            type: string
+                          description: CommonLabels are applied to all serviceMonitors
+                            created.
+                          type: object
+                        enabled:
+                          description: Enable the creation of Prometheus serviceMonitors
+                            for this resource (Cassandra or Stargate).
+                          type: boolean
+                      type: object
                   type: object
                 tolerations:
                   description: Tolerations are tolerations to apply to the Stargate

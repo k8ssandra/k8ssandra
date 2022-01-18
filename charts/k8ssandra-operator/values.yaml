@@ -1,3 +1,9 @@
+global:
+  # -- Determines whether k8ssandra-operator only watch and manages
+  # K8ssandraCluster in the same namespace in which the operator is deployed
+  # or if watches and manages K8ssandraClusters across all namespaces.
+  clusterScoped: false
+
 # -- A name in place of the chart name which is used in the metadata.name of
 # objects created by this chart.
 nameOverride: ''
@@ -11,12 +17,6 @@ commonLabels: {}
 
 # -- Sets the number of k8ssandra-operator pods.
 replicaCount: 1
-
-# -- Determines whether k8ssandra-operator only watch and manages
-# K8ssandraCluster in the same namespace in which the operator is deployed
-# or if watches and manages K8ssandraClusters across all namespaces.
-# Not supported yet in k8ssandra-operator
-#clusterScoped: false
 
 # -- Determines if the k8ssandra-operator should be installed as the control plane
 # or if it's simply in a secondary cluster waiting to be promoted
@@ -33,7 +33,7 @@ image:
   pullPolicy: IfNotPresent
 
   # -- Tag of the k8ssandra-operator image to pull from image.repository
-  tag: 99c58003
+  tag: 5b95fc98
 
   # -- Docker registry containing all cass-operator related images. Setting this
   # allows for usage of an internal registry without specifying serverImage,
