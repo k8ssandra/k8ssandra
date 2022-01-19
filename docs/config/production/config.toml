@@ -1,2 +1,3 @@
 baseURL = "https://docs.k8ssandra.io/"
 url_latest_version = "https://docs.k8ssandra.io"
+github_branch = "docs"

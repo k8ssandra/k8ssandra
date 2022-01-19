@@ -1,7 +1,0 @@
-stargate:
-  enabled: true
-  ingress:
-    host: "stargate.host"
-    enabled: true
-    cassandra:
-      host:
