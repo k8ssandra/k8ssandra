@@ -1,6 +1,6 @@
 {
-  "name": "k8ssandra",
-  "version": "0.2.0",
+  "name": "k8ssandra-docs-v2",
+  "version": "0.1.0",
   "description": "K8ssandra website and technical documentation.",
   "main": "none.js",
   "scripts": {
@@ -9,19 +9,9 @@
     "clean:resources": "del-cli --force resources",
     "clean": "npm run clean:public && npm run clean:resources",
     "build:dev": "hugo --environment development",
-    "build:staging": "hugo --environment staging",
-    "build:staging-v1": "hugo --environment staging-v1",
     "build:staging-v2": "hugo --environment staging-v2",
-    "build:production": "hugo --environment production",
-    "build:production-temp": "hugo --environment production-temp",
-    "build:production-v1": "hugo --environment production-v1",
     "build:production-v2": "hugo --environment production-v2",
-    "deploy:staging": "hugo deploy --environment staging --target staging --verbose",
-    "deploy:staging-v1": "hugo deploy --environment staging-v1 --target staging-v1 --verbose",
     "deploy:staging-v2": "hugo deploy --environment staging-v2 --target staging-v2 --verbose",
-    "deploy:production": "hugo deploy --environment production --target production --verbose",
-    "deploy:production-temp": "hugo deploy --environment production-temp --target production-temp --verbose",
-    "deploy:production-v1": "hugo deploy --environment production-v1 --target production-v1 --verbose",
     "deploy:production-v2": "hugo deploy --environment production-v2 --target production-v2 --verbose"
   },
   "repository": {
