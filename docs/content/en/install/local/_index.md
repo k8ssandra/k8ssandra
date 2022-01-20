@@ -86,7 +86,7 @@ minikube start --cpus=4 --memory='8128m' --kubernetes-version=1.18.16
 **Output**:
 
 ```bash
-😄  minikube v1.17.1 on Darwin 11.2.1
+😄  minikube v1.18.16 on Darwin 11.2.1
 ✨  Automatically selected the docker driver. Other choices: hyperkit, ssh
 👍  Starting control plane node k8ssandra in cluster k8ssandra
 🔥  Creating docker container (CPUs=4, Memory=8128MB) ...
