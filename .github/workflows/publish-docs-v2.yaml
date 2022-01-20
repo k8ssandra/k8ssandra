@@ -3,11 +3,12 @@ name: Publish docs-v2.k8ssandra.io
 on:
   push:
     tags:
-      - 'docs-v2-v[0-9].[0-9]+.[0-9]+'
+      - 'docs-v2-v*.*.*'
+      - 'docs-v2-v*.*.*-*'
 
 jobs:
   build_and_publish:
-    name: Build and publish
+    name: Build and publish docs-v2.k8ssandra.io
     runs-on: ubuntu-latest
     defaults:
       run:
