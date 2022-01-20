@@ -26,8 +26,6 @@ Cassandra may be deployed in a number of environments. This includes on bare met
 
 K8ssandra focuses on deploying Cassandra within Kubernetes. Kubernetes was chosen as it allows for the consumption of a common, versioned, set of APIs and tooling across multiple cloud platforms and environments.
 
-## What is K8ssandra Operator?
-
 ## Why do I want K8ssandra?
 
 Apache Cassandra is _the_ NoSQL database for applications that require resilience and scalability. Unfortunately this comes with the same burdens as other distributed systems. There are multiple nodes replicating data all the time. Understanding the health of these systems requires advanced tooling and knowledge of the constituent parts. Users could spend time investigating and building out solutions to ensure operational stability of their Cassandra clusters. K8ssandra looks to provide those integrations from the start in a simple easy to deploy package.
