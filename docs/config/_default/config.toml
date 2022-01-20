@@ -212,32 +212,12 @@ changefreq = "daily"
 order = [".jpg$", ".gif$"]
 
 [[deployment.targets]]
-name = "staging"
-URL = "gs://docs-staging.k8ssandra.io"
-
-[[deployment.targets]]
 name = "staging-v1"
 URL = "gs://docs-staging-v1.k8ssandra.io"
 
 [[deployment.targets]]
-name = "staging-v2"
-URL = "gs://docs-staging-v2.k8ssandra.io"
-
-[[deployment.targets]]
-name = "production"
-URL = "gs://docs.k8ssandra.io"
-
-[[deployment.targets]]
-name = "production-temp"
-URL = "gs://docs-temp.k8ssandra.io"
-
-[[deployment.targets]]
 name = "production-v1"
 URL = "gs://docs-v1.k8ssandra.io"
-
-[[deployment.targets]]
-name = "production-v2"
-URL = "gs://docs-v2.k8ssandra.io"
 
 # Optionally, you can include or exclude specific files.
 # See https://godoc.org/github.com/gobwas/glob#Glob for the glob pattern syntax.
