@@ -1,6 +1,6 @@
 {
   "name": "k8ssandra-docs",
-  "version": "0.3.0",
+  "version": "0.1.0",
   "description": "K8ssandra website and technical documentation.",
   "main": "none.js",
   "scripts": {
