@@ -1,6 +1,6 @@
 
 
-![Version: 0.32.0](https://img.shields.io/badge/Version-0.32.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.9.0](https://img.shields.io/badge/AppVersion-1.9.0-informational?style=flat-square)
+![Version: 0.33.0](https://img.shields.io/badge/Version-0.33.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.9.0](https://img.shields.io/badge/AppVersion-1.9.0-informational?style=flat-square)
 
 ## Maintainers
 
@@ -24,11 +24,11 @@
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
+| global.clusterScoped | bool | `false` | Determines whether cass-operator only watch and manages CassandraDatacenters in the same namespace in which the operator is deployed or if watches and manages CassandraDatacenters across all namespaces. |
 | nameOverride | string | `""` | A name in place of the chart name which is used in the metadata.name of objects created by this chart. |
 | fullnameOverride | string | `""` | A name in place of the value used for metadata.name in objects created by this chart. The default value has the form releaseName-chartName. |
 | commonLabels | object | `{}` | Labels to be added to all deployed resources. |
 | replicaCount | int | `1` | Sets the number of cass-operator pods. |
-| clusterScoped | bool | `false` | Determines whether cass-operator only watch and manages CassandraDatacenters in the same namespace in which the operator is deployed or if watches and manages CassandraDatacenters across all namespaces. |
 | admissionWebhooks | object | `{"enabled":false}` | Configures admission webhooks deployed with cass-operator. |
 | admissionWebhooks.enabled | bool | `false` | Turns the admission webhooks on or off |
 | image.registry | string | `"docker.io"` | Container registry containing the repository where the image resides |

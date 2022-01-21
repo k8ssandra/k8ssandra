@@ -1,6 +1,6 @@
 
 
-![Version: 0.32.0](https://img.shields.io/badge/Version-0.32.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.0.0](https://img.shields.io/badge/AppVersion-1.0.0-informational?style=flat-square)
+![Version: 0.33.0](https://img.shields.io/badge/Version-0.33.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.0.0](https://img.shields.io/badge/AppVersion-1.0.0-informational?style=flat-square)
 
 ## Maintainers
 
@@ -17,22 +17,23 @@
 
 | Repository | Name | Version |
 |------------|------|---------|
-| file://../cass-operator | cass-operator | 0.32.0 |
+| file://../cass-operator | cass-operator | 0.33.0 |
 | file://../k8ssandra-common | k8ssandra-common | 0.28.4 |
 
 ## Values
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
+| global.clusterScoped | bool | `false` | Determines whether k8ssandra-operator only watch and manages K8ssandraCluster in the same namespace in which the operator is deployed or if watches and manages K8ssandraClusters across all namespaces. |
 | nameOverride | string | `""` | A name in place of the chart name which is used in the metadata.name of objects created by this chart. |
 | fullnameOverride | string | `""` | A name in place of the value used for metadata.name in objects created by this chart. The default value has the form releaseName-chartName. |
 | commonLabels | object | `{}` | Labels to be added to all deployed resources. |
 | replicaCount | int | `1` | Sets the number of k8ssandra-operator pods. |
-| controlPlane | bool | `true` | Determines whether k8ssandra-operator only watch and manages K8ssandraCluster in the same namespace in which the operator is deployed or if watches and manages K8ssandraClusters across all namespaces. Not supported yet in k8ssandra-operator -- Determines if the k8ssandra-operator should be installed as the control plane or if it's simply in a secondary cluster waiting to be promoted |
+| controlPlane | bool | `true` | Determines if the k8ssandra-operator should be installed as the control plane or if it's simply in a secondary cluster waiting to be promoted |
 | image.registry | string | `"docker.io"` | Container registry containing the repository where the image resides |
 | image.repository | string | `"k8ssandra/k8ssandra-operator"` | Docker repository for cass-operator |
 | image.pullPolicy | string | `"IfNotPresent"` | Pull policy for the operator container |
-| image.tag | string | `"99c58003"` | Tag of the k8ssandra-operator image to pull from image.repository |
+| image.tag | string | `"5b95fc98"` | Tag of the k8ssandra-operator image to pull from image.repository |
 | image.registryOverride | string | `nil` | Docker registry containing all cass-operator related images. Setting this allows for usage of an internal registry without specifying serverImage, configBuilderImage, and busyboxImage on all CassandraDatacenter objects. |
 | imagePullSecrets | list | `[]` | References to secrets to use when pulling images. See: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/ |
 | serviceAccount.annotations | object | `{}` | Annotations to add to the service account. |
