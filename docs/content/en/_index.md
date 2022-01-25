@@ -24,7 +24,9 @@ K8ssandra is a cloud native distribution of Apache Cassandra® (Cassandra) meant
 
 Cassandra may be deployed in a number of environments. This includes on bare metal hosts, virtual machines, and within container platforms. Each deployment type has its pros and cons, but in all cases it is **_essential_** that automation be leveraged to ensure that all node are configured homogeneously and without failure.
 
-K8ssandra focuses on deploying Cassandra within Kubernetes. Kubernetes was chosen as it allows for the consumption of a common, versioned, set of APIs and tooling across multiple cloud platforms and environments.
+K8ssandra focuses on deploying Cassandra within Kubernetes. Kubernetes was chosen because it allows for the consumption of a common, versioned, set of APIs and tooling across multiple cloud platforms and environments.
+
+K8ssandra operator is a v2 feature that allows you to deploy Cassandra into multi-cluster and multi-region Kubernetes environments. For an introduction, see the [K8ssandra Operator]({{< relref "components/k8ssandra-operator" >}}) components topic.
 
 ## Why do I want K8ssandra?
 
