@@ -1,3 +1,4 @@
+---
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
@@ -890,6 +891,19 @@ spec:
                   that Stargate nodes won''t be allowed to sit on data nodes even
                   if this property is set to true, because of port conflicts on the
                   same IP address.'
+                  type: boolean
+                auth:
+                  default: true
+                  description: Whether to enable authentication for Stargate. The default
+                    is true; it is highly recommended to always leave authentication
+                    turned on, not only on Stargate nodes, but also on data nodes as
+                    well. Note that Stargate REST APIs are currently only accessible
+                    if authentication is enabled, and if the authenticator in use in
+                    the whole cluster is PasswordAuthenticator. The usage of any other
+                    authenticator will cause the REST API to become inaccessible, see
+                    https://github.com/stargate/stargate/issues/792 for more. Stargate
+                    CQL API however remains accessible even if authentication is disabled
+                    in the cluster, or when a custom authenticator is being used.
                   type: boolean
                 cassandraConfigMapRef:
                   description: CassandraConfigMapRef is a reference to a ConfigMap that
@@ -2743,7 +2757,6 @@ spec:
                   type: integer
               required:
                 - availableReplicas
-                - progress
                 - readyReplicas
                 - replicas
                 - updatedReplicas

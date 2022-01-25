@@ -21,7 +21,9 @@ spec:
     - name: v1alpha1
       schema:
         openAPIV3Schema:
-          description: K8ssandraCluster is the Schema for the k8ssandraclusters API
+          description: K8ssandraCluster is the Schema for the k8ssandraclusters API.
+            The K8ssandraCluster CRD name is also the name of the Cassandra cluster
+            (which corresponds to cluster_name in cassandra.yaml).
           properties:
             apiVersion:
               description: 'APIVersion defines the versioned schema of this representation
@@ -38,6 +40,14 @@ spec:
             spec:
               description: K8ssandraClusterSpec defines the desired state of K8ssandraCluster
               properties:
+                auth:
+                  default: true
+                  description: Whether to enable authentication in this cluster. The
+                    default is true; it is highly recommended to always leave authentication
+                    turned on. When enabled, authentication will be enforced not only
+                    on Cassandra nodes, but also on Reaper, Medusa and Stargate nodes,
+                    if any.
+                  type: boolean
                 cassandra:
                   description: Cassandra is a specification of the Cassandra cluster.
                     This includes everything from the number of datacenters, the k8s
@@ -65,55 +75,931 @@ spec:
                               type: boolean
                           type: object
                       type: object
-                    cluster:
-                      description: Cluster is the name of the cluster. This corresponds
-                        to cluster_name in cassandra.yaml.
-                      minLength: 2
-                      type: string
                     config:
                       description: CassandraConfig is configuration settings that are
                         applied to cassandra.yaml and jvm-options for 3.11.x or jvm-server-options
                         for 4.x.
                       properties:
                         cassandraYaml:
+                          description: 'CassandraYaml defines the contents of the cassandra.yaml
+                          file. For more info see: https://cassandra.apache.org/doc/latest/cassandra/configuration/cass_yaml_file.html'
                           properties:
+                            allocate_tokens_for_keyspace:
+                              description: Exists in 3.11, 4.0, trunk
+                              type: string
                             allocate_tokens_for_local_replication_factor:
+                              description: 'Exists in: 4.0, trunk'
                               type: integer
-                            auto_snapshot:
+                            audit_logging_options:
+                              description: 'Exists in: 4.0, trunk'
+                              properties:
+                                archive_command:
+                                  type: string
+                                block:
+                                  type: boolean
+                                enabled:
+                                  type: boolean
+                                excluded_categories:
+                                  type: string
+                                excluded_keyspaces:
+                                  type: string
+                                excluded_users:
+                                  type: string
+                                included_categories:
+                                  type: string
+                                included_keyspaces:
+                                  type: string
+                                included_users:
+                                  type: string
+                                logger:
+                                  properties:
+                                    class_name:
+                                      type: string
+                                    parameters:
+                                      additionalProperties:
+                                        type: string
+                                      type: object
+                                  required:
+                                    - class_name
+                                  type: object
+                                max_archive_retries:
+                                  type: integer
+                                max_log_size:
+                                  type: integer
+                                max_queue_weight:
+                                  type: integer
+                                roll_cycle:
+                                  type: string
+                              required:
+                                - enabled
+                              type: object
+                            auth_read_consistency_level:
+                              description: Exists in trunk
+                              enum:
+                                - ANY
+                                - ONE
+                                - TWO
+                                - THREE
+                                - QUORUM
+                                - ALL
+                                - LOCAL_QUORUM
+                                - EACH_QUORUM
+                                - SERIAL
+                                - LOCAL_SERIAL
+                                - LOCAL_ONE
+                                - NODE_LOCAL
+                              type: string
+                            auth_write_consistency_level:
+                              description: Exists in trunk
+                              enum:
+                                - ANY
+                                - ONE
+                                - TWO
+                                - THREE
+                                - QUORUM
+                                - ALL
+                                - LOCAL_QUORUM
+                                - EACH_QUORUM
+                                - SERIAL
+                                - LOCAL_SERIAL
+                                - LOCAL_ONE
+                                - NODE_LOCAL
+                              type: string
+                            authenticator:
+                              description: Exists in 3.11, 4.0, trunk
+                              type: string
+                            authorizer:
+                              description: Exists in 3.11, 4.0, trunk
+                              type: string
+                            auto_hints_cleanup_enabled:
+                              description: Exists in trunk
                               type: boolean
+                            auto_optimise_full_repair_streams:
+                              description: 'Exists in: 4.0, trunk'
+                              type: boolean
+                            auto_optimise_inc_repair_streams:
+                              description: 'Exists in: 4.0, trunk'
+                              type: boolean
+                            auto_optimise_preview_repair_streams:
+                              description: 'Exists in: 4.0, trunk'
+                              type: boolean
+                            auto_snapshot:
+                              description: Exists in 3.11, 4.0, trunk
+                              type: boolean
+                            autocompaction_on_startup_enabled:
+                              description: 'Exists in: 4.0, trunk'
+                              type: boolean
+                            automatic_sstable_upgrade:
+                              description: 'Exists in: 4.0, trunk'
+                              type: boolean
+                            available_processors:
+                              description: Exists in trunk
+                              type: integer
+                            back_pressure_enabled:
+                              description: Exists in 3.11, 4.0, trunk
+                              type: boolean
+                            back_pressure_strategy:
+                              description: Exists in 3.11, 4.0, trunk
+                              properties:
+                                class_name:
+                                  type: string
+                                parameters:
+                                  additionalProperties:
+                                    type: string
+                                  type: object
+                              required:
+                                - class_name
+                              type: object
+                            batch_size_fail_threshold_in_kb:
+                              description: Exists in 3.11, 4.0, trunk
+                              type: integer
+                            batch_size_warn_threshold_in_kb:
+                              description: Exists in 3.11, 4.0, trunk
+                              type: integer
+                            batchlog_replay_throttle_in_kb:
+                              description: Exists in 3.11, 4.0, trunk
+                              type: integer
+                            block_for_peers_in_remote_dcs:
+                              description: 'Exists in: 4.0, trunk'
+                              type: boolean
+                            block_for_peers_timeout_in_secs:
+                              description: 'Exists in: 4.0, trunk'
+                              type: integer
+                            buffer_pool_use_heap_if_exhausted:
+                              description: Exists in 3.11, 4.0, trunk
+                              type: boolean
+                            cas_contention_timeout_in_ms:
+                              description: Exists in 3.11, 4.0, trunk
+                              type: integer
+                            cdc_enabled:
+                              description: Exists in 3.11, 4.0, trunk
+                              type: boolean
+                            cdc_free_space_check_interval_ms:
+                              description: Exists in 3.11, 4.0, trunk
+                              type: integer
+                            cdc_raw_directory:
+                              description: Exists in 3.11, 4.0, trunk
+                              type: string
+                            cdc_total_space_in_mb:
+                              description: Exists in 3.11, 4.0, trunk
+                              type: integer
+                            check_for_duplicate_rows_during_compaction:
+                              description: Exists in 3.11, 4.0, trunk
+                              type: boolean
+                            check_for_duplicate_rows_during_reads:
+                              description: Exists in 3.11, 4.0, trunk
+                              type: boolean
+                            client_error_reporting_exclusions:
+                              description: Exists in trunk
+                              properties:
+                                subnets:
+                                  items:
+                                    properties:
+                                      subnet:
+                                        type: string
+                                    required:
+                                      - subnet
+                                    type: object
+                                  type: array
+                              required:
+                                - subnets
+                              type: object
+                            column_index_cache_size_in_kb:
+                              description: Exists in 3.11, 4.0, trunk
+                              type: integer
+                            column_index_size_in_kb:
+                              description: Exists in 3.11, 4.0, trunk
+                              type: integer
+                            commitlog_compression:
+                              description: Exists in 3.11, 4.0, trunk
+                              properties:
+                                class_name:
+                                  type: string
+                                parameters:
+                                  additionalProperties:
+                                    type: string
+                                  type: object
+                              required:
+                                - class_name
+                              type: object
+                            commitlog_max_compression_buffers_in_pool:
+                              description: Exists in 3.11, 4.0, trunk
+                              type: integer
+                            commitlog_periodic_queue_size:
+                              description: Exists in 3.11, 4.0, trunk
+                              type: integer
                             commitlog_segment_size_in_mb:
+                              description: Exists in 3.11, 4.0, trunk
+                              type: integer
+                            commitlog_sync:
+                              description: Exists in 3.11, 4.0, trunk
+                              enum:
+                                - periodic
+                                - batch
+                                - group
+                              type: string
+                            commitlog_sync_batch_window_in_ms:
+                              description: Exists in 3.11, 4.0, trunk
+                              type: string
+                            commitlog_sync_group_window_in_ms:
+                              description: 'Exists in: 4.0, trunk'
+                              type: integer
+                            commitlog_sync_period_in_ms:
+                              description: Exists in 3.11, 4.0, trunk
+                              type: integer
+                            commitlog_total_space_in_mb:
+                              description: Exists in 3.11, 4.0, trunk
+                              type: integer
+                            compaction_large_partition_warning_threshold_mb:
+                              description: Exists in 3.11, 4.0, trunk
                               type: integer
                             compaction_throughput_mb_per_sec:
+                              description: Exists in 3.11, 4.0, trunk
+                              type: integer
+                            compaction_tombstone_warning_threshold:
+                              description: Exists in trunk
                               type: integer
                             concurrent_compactors:
+                              description: Exists in 3.11, 4.0, trunk
                               type: integer
                             concurrent_counter_writes:
+                              description: Exists in 3.11, 4.0, trunk
+                              type: integer
+                            concurrent_materialized_view_builders:
+                              description: 'Exists in: 4.0, trunk'
+                              type: integer
+                            concurrent_materialized_view_writes:
+                              description: Exists in 3.11, 4.0, trunk
                               type: integer
                             concurrent_reads:
+                              description: Exists in 3.11, 4.0, trunk
+                              type: integer
+                            concurrent_replicates:
+                              description: Exists in 3.11, 4.0, trunk
+                              type: integer
+                            concurrent_validations:
+                              description: 'Exists in: 4.0, trunk'
                               type: integer
                             concurrent_writes:
+                              description: Exists in 3.11, 4.0, trunk
+                              type: integer
+                            consecutive_message_errors_threshold:
+                              description: 'Exists in: 4.0, trunk'
+                              type: integer
+                            corrupted_tombstone_strategy:
+                              description: 'Exists in: 4.0, trunk'
+                              enum:
+                                - disabled
+                                - warn
+                                - exception
+                              type: string
+                            counter_cache_keys_to_save:
+                              description: Exists in 3.11, 4.0, trunk
+                              type: integer
+                            counter_cache_save_period:
+                              description: Exists in 3.11, 4.0, trunk
                               type: integer
                             counter_cache_size_in_mb:
+                              description: Exists in 3.11, 4.0, trunk
                               type: integer
+                            counter_write_request_timeout_in_ms:
+                              description: Exists in 3.11, 4.0, trunk
+                              type: integer
+                            credentials_cache_max_entries:
+                              description: Exists in 3.11, 4.0, trunk
+                              type: integer
+                            credentials_update_interval_in_ms:
+                              description: Exists in 3.11, 4.0, trunk
+                              type: integer
+                            credentials_validity_in_ms:
+                              description: Exists in 3.11, 4.0, trunk
+                              type: integer
+                            cross_node_timeout:
+                              description: Exists in 3.11, 4.0, trunk
+                              type: boolean
+                            default_keyspace_rf:
+                              description: Exists in trunk
+                              type: integer
+                            denylist_consistency_level:
+                              description: Exists in trunk
+                              enum:
+                                - ANY
+                                - ONE
+                                - TWO
+                                - THREE
+                                - QUORUM
+                                - ALL
+                                - LOCAL_QUORUM
+                                - EACH_QUORUM
+                                - SERIAL
+                                - LOCAL_SERIAL
+                                - LOCAL_ONE
+                                - NODE_LOCAL
+                              type: string
+                            denylist_initial_load_retry_seconds:
+                              description: Exists in trunk
+                              type: integer
+                            denylist_max_keys_per_table:
+                              description: Exists in trunk
+                              type: integer
+                            denylist_max_keys_total:
+                              description: Exists in trunk
+                              type: integer
+                            denylist_refresh_seconds:
+                              description: Exists in trunk
+                              type: integer
+                            diagnostic_events_enabled:
+                              description: 'Exists in: 4.0, trunk'
+                              type: boolean
+                            disk_access_mode:
+                              description: Exists in 3.11, 4.0, trunk
+                              enum:
+                                - auto
+                                - mmap
+                                - mmap_index_only
+                                - standard
+                              type: string
+                            disk_optimization_estimate_percentile:
+                              description: Exists in 3.11, 4.0, trunk
+                              type: string
+                            disk_optimization_page_cross_chance:
+                              description: Exists in 3.11, 4.0, trunk
+                              type: string
+                            disk_optimization_strategy:
+                              description: Exists in 3.11, 4.0, trunk
+                              enum:
+                                - ssd
+                                - spinning
+                              type: string
+                            dynamic_snitch:
+                              description: Exists in 3.11, 4.0, trunk
+                              type: boolean
+                            dynamic_snitch_badness_threshold:
+                              description: Exists in 3.11, 4.0, trunk
+                              type: string
+                            dynamic_snitch_reset_interval_in_ms:
+                              description: Exists in 3.11, 4.0, trunk
+                              type: integer
+                            dynamic_snitch_update_interval_in_ms:
+                              description: Exists in 3.11, 4.0, trunk
+                              type: integer
+                            enable_denylist_range_reads:
+                              description: Exists in trunk
+                              type: boolean
+                            enable_denylist_reads:
+                              description: Exists in trunk
+                              type: boolean
+                            enable_denylist_writes:
+                              description: Exists in trunk
+                              type: boolean
+                            enable_drop_compact_storage:
+                              description: Exists in 3.11, 4.0, trunk
+                              type: boolean
+                            enable_materialized_views:
+                              description: Exists in 3.11, 4.0, trunk
+                              type: boolean
+                            enable_partition_denylist:
+                              description: Exists in trunk
+                              type: boolean
+                            enable_sasi_indexes:
+                              description: Exists in 3.11, 4.0, trunk
+                              type: boolean
+                            enable_scripted_user_defined_functions:
+                              description: Exists in 3.11, 4.0, trunk
+                              type: boolean
+                            enable_transient_replication:
+                              description: 'Exists in: 4.0, trunk'
+                              type: boolean
+                            enable_user_defined_functions:
+                              description: Exists in 3.11, 4.0, trunk
+                              type: boolean
+                            enable_user_defined_functions_threads:
+                              description: Exists in 3.11, 4.0, trunk
+                              type: boolean
+                            endpoint_snitch:
+                              description: Exists in 3.11, 4.0, trunk
+                              type: string
+                            failure_detector:
+                              description: Exists in trunk
+                              type: string
+                            file_cache_enabled:
+                              description: 'Exists in: 4.0, trunk'
+                              type: boolean
+                            file_cache_round_up:
+                              description: Exists in 3.11, 4.0, trunk
+                              type: boolean
                             file_cache_size_in_mb:
+                              description: Exists in 3.11, 4.0, trunk
+                              type: integer
+                            flush_compression:
+                              description: 'Exists in: 4.0, trunk'
+                              enum:
+                                - none
+                                - fast
+                                - table
+                              type: string
+                            full_query_logging_options:
+                              description: 'Exists in: 4.0, trunk'
+                              properties:
+                                archive_command:
+                                  type: string
+                                block:
+                                  type: boolean
+                                log_dir:
+                                  type: string
+                                max_archive_retries:
+                                  type: integer
+                                max_log_size:
+                                  type: integer
+                                max_queue_weight:
+                                  type: integer
+                                roll_cycle:
+                                  type: string
+                              type: object
+                            gc_log_threshold_in_ms:
+                              description: Exists in 3.11, 4.0, trunk
+                              type: integer
+                            gc_warn_threshold_in_ms:
+                              description: Exists in 3.11, 4.0, trunk
+                              type: integer
+                            hint_window_persistent_enabled:
+                              description: Exists in trunk
+                              type: boolean
+                            hinted_handoff_disabled_datacenters:
+                              description: Exists in 3.11, 4.0, trunk
+                              items:
+                                type: string
+                              type: array
+                            hinted_handoff_enabled:
+                              description: Exists in 3.11, 4.0, trunk
+                              type: boolean
+                            hinted_handoff_throttle_in_kb:
+                              description: Exists in 3.11, 4.0, trunk
+                              type: integer
+                            hints_compression:
+                              description: Exists in 3.11, 4.0, trunk
+                              properties:
+                                class_name:
+                                  type: string
+                                parameters:
+                                  additionalProperties:
+                                    type: string
+                                  type: object
+                              required:
+                                - class_name
+                              type: object
+                            hints_flush_period_in_ms:
+                              description: Exists in 3.11, 4.0, trunk
+                              type: integer
+                            ideal_consistency_level:
+                              description: 'Exists in: 4.0, trunk'
+                              enum:
+                                - ANY
+                                - ONE
+                                - TWO
+                                - THREE
+                                - QUORUM
+                                - ALL
+                                - LOCAL_QUORUM
+                                - EACH_QUORUM
+                                - SERIAL
+                                - LOCAL_SERIAL
+                                - LOCAL_ONE
+                                - NODE_LOCAL
+                              type: string
+                            index_interval:
+                              description: Exists in 3.11
+                              type: integer
+                            index_summary_capacity_in_mb:
+                              description: Exists in 3.11, 4.0, trunk
+                              type: integer
+                            index_summary_resize_interval_in_minutes:
+                              description: Exists in 3.11, 4.0, trunk
+                              type: integer
+                            initial_range_tombstone_list_allocation_size:
+                              description: 'Exists in: 4.0, trunk'
+                              type: integer
+                            inter_dc_stream_throughput_outbound_megabits_per_sec:
+                              description: Exists in 3.11, 4.0, trunk
+                              type: integer
+                            inter_dc_tcp_nodelay:
+                              description: Exists in 3.11, 4.0, trunk
+                              type: boolean
+                            internode_application_receive_queue_capacity_in_bytes:
+                              description: 'Exists in: 4.0, trunk'
+                              type: integer
+                            internode_application_receive_queue_reserve_endpoint_capacity_in_bytes:
+                              description: 'Exists in: 4.0, trunk'
+                              type: integer
+                            internode_application_receive_queue_reserve_global_capacity_in_bytes:
+                              description: 'Exists in: 4.0, trunk'
+                              type: integer
+                            internode_application_send_queue_capacity_in_bytes:
+                              description: 'Exists in: 4.0, trunk'
+                              type: integer
+                            internode_application_send_queue_reserve_endpoint_capacity_in_bytes:
+                              description: 'Exists in: 4.0, trunk'
+                              type: integer
+                            internode_application_send_queue_reserve_global_capacity_in_bytes:
+                              description: 'Exists in: 4.0, trunk'
+                              type: integer
+                            internode_authenticator:
+                              description: Exists in 3.11, 4.0, trunk
+                              type: string
+                            internode_compression:
+                              description: Exists in 3.11, 4.0, trunk
+                              enum:
+                                - all
+                                - none
+                                - dc
+                              type: string
+                            internode_error_reporting_exclusions:
+                              description: Exists in trunk
+                              properties:
+                                subnets:
+                                  items:
+                                    properties:
+                                      subnet:
+                                        type: string
+                                    required:
+                                      - subnet
+                                    type: object
+                                  type: array
+                              required:
+                                - subnets
+                              type: object
+                            internode_max_message_size_in_bytes:
+                              description: 'Exists in: 4.0, trunk'
+                              type: integer
+                            internode_recv_buff_size_in_bytes:
+                              description: Exists in 3.11
+                              type: integer
+                            internode_send_buff_size_in_bytes:
+                              description: Exists in 3.11
+                              type: integer
+                            internode_socket_receive_buffer_size_in_bytes:
+                              description: 'Exists in: 4.0, trunk'
+                              type: integer
+                            internode_socket_send_buffer_size_in_bytes:
+                              description: 'Exists in: 4.0, trunk'
+                              type: integer
+                            internode_streaming_tcp_user_timeout_in_ms:
+                              description: 'Exists in: 4.0, trunk'
+                              type: integer
+                            internode_tcp_connect_timeout_in_ms:
+                              description: 'Exists in: 4.0, trunk'
+                              type: integer
+                            internode_tcp_user_timeout_in_ms:
+                              description: 'Exists in: 4.0, trunk'
+                              type: integer
+                            key_cache_keys_to_save:
+                              description: Exists in 3.11, 4.0, trunk
+                              type: integer
+                            key_cache_migrate_during_compaction:
+                              description: 'Exists in: 4.0, trunk'
+                              type: boolean
+                            key_cache_save_period:
+                              description: Exists in 3.11, 4.0, trunk
                               type: integer
                             key_cache_size_in_mb:
+                              description: Exists in 3.11, 4.0, trunk
                               type: integer
+                            keyspace_count_warn_threshold:
+                              description: 'Exists in: 4.0, trunk'
+                              type: integer
+                            max_concurrent_automatic_sstable_upgrades:
+                              description: 'Exists in: 4.0, trunk'
+                              type: integer
+                            max_hint_window_in_ms:
+                              description: Exists in 3.11, 4.0, trunk
+                              type: integer
+                            max_hints_delivery_threads:
+                              description: Exists in 3.11, 4.0, trunk
+                              type: integer
+                            max_hints_file_size_in_mb:
+                              description: Exists in 3.11, 4.0, trunk
+                              type: integer
+                            max_mutation_size_in_kb:
+                              description: Exists in 3.11, 4.0, trunk
+                              type: integer
+                            max_streaming_retries:
+                              description: Exists in 3.11, 4.0, trunk
+                              type: integer
+                            max_value_size_in_mb:
+                              description: Exists in 3.11, 4.0, trunk
+                              type: integer
+                            memtable_allocation_type:
+                              description: Exists in 3.11, 4.0, trunk
+                              enum:
+                                - unslabbed_heap_buffers
+                                - unslabbed_heap_buffers_logged
+                                - heap_buffers
+                                - offheap_buffers
+                                - offheap_objects
+                              type: string
+                            memtable_cleanup_threshold:
+                              description: Exists in 3.11, 4.0, trunk
+                              type: string
                             memtable_flush_writers:
+                              description: Exists in 3.11, 4.0, trunk
+                              type: integer
+                            memtable_heap_space_in_mb:
+                              description: Exists in 3.11, 4.0, trunk
+                              type: integer
+                            memtable_offheap_space_in_mb:
+                              description: Exists in 3.11, 4.0, trunk
+                              type: integer
+                            min_free_space_per_drive_in_mb:
+                              description: Exists in 3.11, 4.0, trunk
+                              type: integer
+                            minimum_keyspace_rf:
+                              description: Exists in trunk
+                              type: integer
+                            native_transport_allow_older_protocols:
+                              description: 'Exists in: 4.0, trunk'
+                              type: boolean
+                            native_transport_flush_in_batches_legacy:
+                              description: Exists in 3.11, 4.0, trunk
+                              type: boolean
+                            native_transport_idle_timeout_in_ms:
+                              description: 'Exists in: 4.0, trunk'
+                              type: integer
+                            native_transport_max_concurrent_connections:
+                              description: Exists in 3.11, 4.0, trunk
+                              type: integer
+                            native_transport_max_concurrent_connections_per_ip:
+                              description: Exists in 3.11, 4.0, trunk
+                              type: integer
+                            native_transport_max_concurrent_requests_in_bytes:
+                              description: Exists in 3.11, 4.0, trunk
+                              type: integer
+                            native_transport_max_concurrent_requests_in_bytes_per_ip:
+                              description: Exists in 3.11, 4.0, trunk
+                              type: integer
+                            native_transport_max_frame_size_in_mb:
+                              description: Exists in 3.11, 4.0, trunk
+                              type: integer
+                            native_transport_max_negotiable_protocol_version:
+                              description: Exists in 3.11, 4.0, trunk
+                              type: integer
+                            native_transport_max_requests_per_second:
+                              description: Exists in trunk
+                              type: integer
+                            native_transport_max_threads:
+                              description: Exists in 3.11, 4.0, trunk
+                              type: integer
+                            native_transport_rate_limiting_enabled:
+                              description: Exists in trunk
+                              type: boolean
+                            native_transport_receive_queue_capacity_in_bytes:
+                              description: 'Exists in: 4.0, trunk'
+                              type: integer
+                            network_authorizer:
+                              description: 'Exists in: 4.0, trunk'
+                              type: string
+                            networking_cache_size_in_mb:
+                              description: 'Exists in: 4.0, trunk'
                               type: integer
                             num_tokens:
+                              description: Exists in 3.11, 4.0, trunk
                               type: integer
+                            otc_backlog_expiration_interval_ms:
+                              description: Exists in 3.11
+                              type: integer
+                            otc_coalescing_enough_coalesced_messages:
+                              description: Exists in 3.11, 4.0, trunk
+                              type: integer
+                            otc_coalescing_strategy:
+                              description: Exists in 3.11, 4.0, trunk
+                              type: string
+                            otc_coalescing_window_us:
+                              description: Exists in 3.11, 4.0, trunk
+                              type: integer
+                            paxos_cache_size_in_mb:
+                              description: Exists in trunk
+                              type: integer
+                            periodic_commitlog_sync_lag_block_in_ms:
+                              description: 'Exists in: 4.0, trunk'
+                              type: integer
+                            permissions_cache_max_entries:
+                              description: Exists in 3.11, 4.0, trunk
+                              type: integer
+                            permissions_update_interval_in_ms:
+                              description: Exists in 3.11, 4.0, trunk
+                              type: integer
+                            permissions_validity_in_ms:
+                              description: Exists in 3.11, 4.0, trunk
+                              type: integer
+                            phi_convict_threshold:
+                              description: Exists in 3.11, 4.0, trunk
+                              type: string
                             prepared_statements_cache_size_mb:
+                              description: Exists in 3.11, 4.0, trunk
+                              type: integer
+                            range_request_timeout_in_ms:
+                              description: Exists in 3.11, 4.0, trunk
+                              type: integer
+                            range_tombstone_list_growth_factor:
+                              description: 'Exists in: 4.0, trunk'
+                              type: string
+                            read_request_timeout_in_ms:
+                              description: Exists in 3.11, 4.0, trunk
+                              type: integer
+                            reject_repair_compaction_threshold:
+                              description: 'Exists in: 4.0, trunk'
+                              type: integer
+                            repair_command_pool_full_strategy:
+                              description: 'Exists in: 4.0, trunk'
+                              enum:
+                                - queue
+                                - reject
+                              type: string
+                            repair_command_pool_size:
+                              description: 'Exists in: 4.0, trunk'
+                              type: integer
+                            repair_session_max_tree_depth:
+                              description: Exists in 3.11, 4.0, trunk
+                              type: integer
+                            repair_session_space_in_mb:
+                              description: 'Exists in: 4.0, trunk'
+                              type: integer
+                            repaired_data_tracking_for_partition_reads_enabled:
+                              description: 'Exists in: 4.0, trunk'
+                              type: boolean
+                            repaired_data_tracking_for_range_reads_enabled:
+                              description: 'Exists in: 4.0, trunk'
+                              type: boolean
+                            replica_filtering_protection:
+                              description: Exists in 3.11, 4.0, trunk
+                              properties:
+                                cached_rows_fail_threshold:
+                                  type: integer
+                                cached_rows_warn_threshold:
+                                  type: integer
+                              type: object
+                            report_unconfirmed_repaired_data_mismatches:
+                              description: 'Exists in: 4.0, trunk'
+                              type: boolean
+                            request_scheduler:
+                              description: Exists in 3.11
+                              type: string
+                            request_scheduler_id:
+                              description: Exists in 3.11
+                              enum:
+                                - keyspace
+                              type: string
+                            request_scheduler_options:
+                              description: Exists in 3.11
+                              properties:
+                                default_weight:
+                                  type: integer
+                                throttle_limit:
+                                  type: integer
+                                weights:
+                                  additionalProperties:
+                                    type: integer
+                                  type: object
+                              type: object
+                            request_timeout_in_ms:
+                              description: Exists in 3.11, 4.0, trunk
+                              type: integer
+                            role_manager:
+                              description: Exists in 3.11, 4.0, trunk
+                              type: string
+                            roles_cache_max_entries:
+                              description: Exists in 3.11, 4.0, trunk
+                              type: integer
+                            roles_update_interval_in_ms:
+                              description: Exists in 3.11, 4.0, trunk
+                              type: integer
+                            roles_validity_in_ms:
+                              description: Exists in 3.11, 4.0, trunk
+                              type: integer
+                            row_cache_class_name:
+                              description: Exists in 3.11, 4.0, trunk
+                              type: string
+                            row_cache_keys_to_save:
+                              description: Exists in 3.11, 4.0, trunk
+                              type: integer
+                            row_cache_save_period:
+                              description: Exists in 3.11, 4.0, trunk
                               type: integer
                             row_cache_size_in_mb:
+                              description: Exists in 3.11, 4.0, trunk
                               type: integer
                             slow_query_log_timeout_in_ms:
+                              description: Exists in 3.11, 4.0, trunk
                               type: integer
-                            sstable_preemptive_open_interval_in_mb:
-                              type: integer
-                            start_rpc:
+                            snapshot_before_compaction:
+                              description: Exists in 3.11, 4.0, trunk
                               type: boolean
+                            snapshot_links_per_second:
+                              description: 'Exists in: 4.0, trunk'
+                              type: integer
+                            snapshot_on_duplicate_row_detection:
+                              description: Exists in 3.11, 4.0, trunk
+                              type: boolean
+                            snapshot_on_repaired_data_mismatch:
+                              description: 'Exists in: 4.0, trunk'
+                              type: boolean
+                            sstable_preemptive_open_interval_in_mb:
+                              description: Exists in 3.11, 4.0, trunk
+                              type: integer
+                            stream_entire_sstables:
+                              description: 'Exists in: 4.0, trunk'
+                              type: boolean
+                            stream_throughput_outbound_megabits_per_sec:
+                              description: Exists in 3.11, 4.0, trunk
+                              type: integer
+                            streaming_connections_per_host:
+                              description: 'Exists in: 4.0, trunk'
+                              type: integer
+                            streaming_keep_alive_period_in_secs:
+                              description: Exists in 3.11, 4.0, trunk
+                              type: integer
+                            streaming_socket_timeout_in_ms:
+                              description: Exists in 3.11
+                              type: integer
+                            table_count_warn_threshold:
+                              description: 'Exists in: 4.0, trunk'
+                              type: integer
+                            thrift_framed_transport_size_in_mb:
+                              description: Exists in 3.11
+                              type: integer
+                            thrift_max_message_length_in_mb:
+                              description: Exists in 3.11
+                              type: integer
                             thrift_prepared_statements_cache_size_mb:
+                              description: Exists in 3.11
+                              type: integer
+                            tombstone_failure_threshold:
+                              description: Exists in 3.11, 4.0, trunk
+                              type: integer
+                            tombstone_warn_threshold:
+                              description: Exists in 3.11, 4.0, trunk
+                              type: integer
+                            tracetype_query_ttl:
+                              description: Exists in 3.11, 4.0, trunk
+                              type: integer
+                            tracetype_repair_ttl:
+                              description: Exists in 3.11, 4.0, trunk
+                              type: integer
+                            track_warnings:
+                              description: Exists in trunk
+                              properties:
+                                coordinator_read_size:
+                                  type: integer
+                                enabled:
+                                  type: boolean
+                                local_read_size:
+                                  type: integer
+                                row_index_size:
+                                  type: integer
+                              required:
+                                - enabled
+                              type: object
+                            traverse_auth_from_root:
+                              description: Exists in trunk
+                              type: boolean
+                            trickle_fsync:
+                              description: Exists in 3.11, 4.0, trunk
+                              type: boolean
+                            trickle_fsync_interval_in_kb:
+                              description: Exists in 3.11, 4.0, trunk
+                              type: integer
+                            truncate_request_timeout_in_ms:
+                              description: Exists in 3.11, 4.0, trunk
+                              type: integer
+                            unlogged_batch_across_partitions_warn_threshold:
+                              description: Exists in 3.11, 4.0, trunk
+                              type: integer
+                            use_deterministic_table_id:
+                              description: Exists in trunk
+                              type: boolean
+                            use_offheap_merkle_trees:
+                              description: 'Exists in: 4.0, trunk'
+                              type: boolean
+                            user_defined_function_fail_timeout:
+                              description: Exists in 3.11, 4.0, trunk
+                              type: integer
+                            user_defined_function_warn_timeout:
+                              description: Exists in 3.11, 4.0, trunk
+                              type: integer
+                            user_function_timeout_policy:
+                              description: Exists in 3.11, 4.0, trunk
+                              enum:
+                                - ignore
+                                - die
+                                - die_immediate
+                              type: string
+                            validation_preview_purge_head_start_in_sec:
+                              description: 'Exists in: 4.0, trunk'
+                              type: integer
+                            windows_timer_interval:
+                              description: Exists in 3.11, 4.0, trunk
+                              type: integer
+                            write_request_timeout_in_ms:
+                              description: Exists in 3.11, 4.0, trunk
                               type: integer
                           type: object
                         jvmOptions:
@@ -160,6 +1046,54 @@ spec:
                                       for this resource (Cassandra or Stargate).
                                     type: boolean
                                 type: object
+                            type: object
+                          jmxInitContainerImage:
+                            default:
+                              name: busybox
+                              tag: 1.34.1
+                            description: The image to use in each Cassandra pod for
+                              the (short-lived) init container that enables JMX remote
+                              authentication on Cassandra pods. This is only useful
+                              when authentication is enabled in the cluster. The default
+                              is "busybox:1.34.1".
+                            properties:
+                              name:
+                                description: The image name to use.
+                                type: string
+                              pullPolicy:
+                                description: The image pull policy to use. Defaults
+                                  to "Always" if the tag is "latest", otherwise to "IfNotPresent".
+                                enum:
+                                  - Always
+                                  - IfNotPresent
+                                  - Never
+                                type: string
+                              pullSecretRef:
+                                description: 'The secret to use when pulling the image
+                                from private repositories. If specified, this secret
+                                will be passed to individual puller implementations
+                                for them to use. For example, in the case of Docker,
+                                only DockerConfig type secrets are honored. More info:
+                                https://kubernetes.io/docs/concepts/containers/images#specifying-imagepullsecrets-on-a-pod'
+                                properties:
+                                  name:
+                                    description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                                    TODO: Add other useful fields. apiVersion, kind,
+                                    uid?'
+                                    type: string
+                                type: object
+                              registry:
+                                default: docker.io
+                                description: The Docker registry to use. Defaults to
+                                  "docker.io", the official Docker Hub.
+                                type: string
+                              repository:
+                                description: The Docker repository to use.
+                                type: string
+                              tag:
+                                default: latest
+                                description: The image tag to use. Defaults to "latest".
+                                type: string
                             type: object
                           k8sContext:
                             type: string
@@ -1360,7 +2294,7 @@ spec:
                                   name: cassandra-reaper
                                   repository: thelastpickle
                                   tag: 3.1.0
-                                description: The image to use for tje Reaper pod init
+                                description: The image to use for the Reaper pod init
                                   container (that performs schema migrations). The default
                                   is "thelastpickle/cassandra-reaper:3.1.0".
                                 properties:
@@ -5844,6 +6778,51 @@ spec:
                         type: object
                         x-kubernetes-preserve-unknown-fields: true
                       type: array
+                    jmxInitContainerImage:
+                      default:
+                        name: busybox
+                        tag: 1.34.1
+                      description: The image to use in each Cassandra pod for the (short-lived)
+                        init container that enables JMX remote authentication on Cassandra
+                        pods. This is only useful when authentication is enabled in
+                        the cluster. The default is "busybox:1.34.1".
+                      properties:
+                        name:
+                          description: The image name to use.
+                          type: string
+                        pullPolicy:
+                          description: The image pull policy to use. Defaults to "Always"
+                            if the tag is "latest", otherwise to "IfNotPresent".
+                          enum:
+                            - Always
+                            - IfNotPresent
+                            - Never
+                          type: string
+                        pullSecretRef:
+                          description: 'The secret to use when pulling the image from
+                          private repositories. If specified, this secret will be
+                          passed to individual puller implementations for them to
+                          use. For example, in the case of Docker, only DockerConfig
+                          type secrets are honored. More info: https://kubernetes.io/docs/concepts/containers/images#specifying-imagepullsecrets-on-a-pod'
+                          properties:
+                            name:
+                              description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                              TODO: Add other useful fields. apiVersion, kind, uid?'
+                              type: string
+                          type: object
+                        registry:
+                          default: docker.io
+                          description: The Docker registry to use. Defaults to "docker.io",
+                            the official Docker Hub.
+                          type: string
+                        repository:
+                          description: The Docker repository to use.
+                          type: string
+                        tag:
+                          default: latest
+                          description: The image tag to use. Defaults to "latest".
+                          type: string
+                      type: object
                     mgmtAPIHeap:
                       anyOf:
                         - type: integer
@@ -6295,10 +7274,17 @@ spec:
                               type: string
                           type: object
                       type: object
-                    superuserSecret:
-                      description: SuperuserSecretName allows to override the default
-                        super user secret
-                      type: string
+                    superuserSecretRef:
+                      description: The reference to the superuser secret to use for
+                        Cassandra. If unspecified, a default secret will be generated
+                        with a random password; the generated secret name will be "<cluster_name>-superuser"
+                        where <cluster_name> is the K8ssandraCluster CRD name.
+                      properties:
+                        name:
+                          description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                          TODO: Add other useful fields. apiVersion, kind, uid?'
+                          type: string
+                      type: object
                     systemLoggerResources:
                       description: SystemLoggerResources is the cpu and memory resources
                         for the server-system-logger container.
@@ -6325,6 +7311,318 @@ spec:
                           it defaults to Limits if that is explicitly specified, otherwise
                           to an implementation-defined value. More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/'
                           type: object
+                      type: object
+                  type: object
+                medusa:
+                  description: Medusa defines the desired deployment characteristics
+                    for Medusa in this K8ssandraCluster. If this is non-nil, Medusa
+                    will be deployed in every Cassandra pod in this K8ssandraCluster.
+                  properties:
+                    cassandraUserSecretRef:
+                      description: 'Defines the username and password that Medusa will
+                      use to authenticate CQL connections to Cassandra clusters. These
+                      credentials will be automatically turned into CQL roles by cass-operator
+                      when bootstrapping the datacenter, then passed to the Medusa
+                      instances, so that it can authenticate against nodes in the
+                      datacenter using CQL. The secret must be in the same namespace
+                      as Cassandra and must contain two keys: "username" and "password".'
+                      properties:
+                        name:
+                          description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                          TODO: Add other useful fields. apiVersion, kind, uid?'
+                          type: string
+                      type: object
+                    containerImage:
+                      description: MedusaContainerImage is the image characteristics
+                        to use for Medusa containers. Leave nil to use a default image.
+                      properties:
+                        name:
+                          description: The image name to use.
+                          type: string
+                        pullPolicy:
+                          description: The image pull policy to use. Defaults to "Always"
+                            if the tag is "latest", otherwise to "IfNotPresent".
+                          enum:
+                            - Always
+                            - IfNotPresent
+                            - Never
+                          type: string
+                        pullSecretRef:
+                          description: 'The secret to use when pulling the image from
+                          private repositories. If specified, this secret will be
+                          passed to individual puller implementations for them to
+                          use. For example, in the case of Docker, only DockerConfig
+                          type secrets are honored. More info: https://kubernetes.io/docs/concepts/containers/images#specifying-imagepullsecrets-on-a-pod'
+                          properties:
+                            name:
+                              description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                              TODO: Add other useful fields. apiVersion, kind, uid?'
+                              type: string
+                          type: object
+                        registry:
+                          default: docker.io
+                          description: The Docker registry to use. Defaults to "docker.io",
+                            the official Docker Hub.
+                          type: string
+                        repository:
+                          description: The Docker repository to use.
+                          type: string
+                        tag:
+                          default: latest
+                          description: The image tag to use. Defaults to "latest".
+                          type: string
+                      type: object
+                    securityContext:
+                      description: SecurityContext applied to the Medusa containers.
+                      properties:
+                        allowPrivilegeEscalation:
+                          description: 'AllowPrivilegeEscalation controls whether a
+                          process can gain more privileges than its parent process.
+                          This bool directly controls if the no_new_privs flag will
+                          be set on the container process. AllowPrivilegeEscalation
+                          is true always when the container is: 1) run as Privileged
+                          2) has CAP_SYS_ADMIN'
+                          type: boolean
+                        capabilities:
+                          description: The capabilities to add/drop when running containers.
+                            Defaults to the default set of capabilities granted by the
+                            container runtime.
+                          properties:
+                            add:
+                              description: Added capabilities
+                              items:
+                                description: Capability represent POSIX capabilities
+                                  type
+                                type: string
+                              type: array
+                            drop:
+                              description: Removed capabilities
+                              items:
+                                description: Capability represent POSIX capabilities
+                                  type
+                                type: string
+                              type: array
+                          type: object
+                        privileged:
+                          description: Run container in privileged mode. Processes in
+                            privileged containers are essentially equivalent to root
+                            on the host. Defaults to false.
+                          type: boolean
+                        procMount:
+                          description: procMount denotes the type of proc mount to use
+                            for the containers. The default is DefaultProcMount which
+                            uses the container runtime defaults for readonly paths and
+                            masked paths. This requires the ProcMountType feature flag
+                            to be enabled.
+                          type: string
+                        readOnlyRootFilesystem:
+                          description: Whether this container has a read-only root filesystem.
+                            Default is false.
+                          type: boolean
+                        runAsGroup:
+                          description: The GID to run the entrypoint of the container
+                            process. Uses runtime default if unset. May also be set
+                            in PodSecurityContext.  If set in both SecurityContext and
+                            PodSecurityContext, the value specified in SecurityContext
+                            takes precedence.
+                          format: int64
+                          type: integer
+                        runAsNonRoot:
+                          description: Indicates that the container must run as a non-root
+                            user. If true, the Kubelet will validate the image at runtime
+                            to ensure that it does not run as UID 0 (root) and fail
+                            to start the container if it does. If unset or false, no
+                            such validation will be performed. May also be set in PodSecurityContext.  If
+                            set in both SecurityContext and PodSecurityContext, the
+                            value specified in SecurityContext takes precedence.
+                          type: boolean
+                        runAsUser:
+                          description: The UID to run the entrypoint of the container
+                            process. Defaults to user specified in image metadata if
+                            unspecified. May also be set in PodSecurityContext.  If
+                            set in both SecurityContext and PodSecurityContext, the
+                            value specified in SecurityContext takes precedence.
+                          format: int64
+                          type: integer
+                        seLinuxOptions:
+                          description: The SELinux context to be applied to the container.
+                            If unspecified, the container runtime will allocate a random
+                            SELinux context for each container.  May also be set in
+                            PodSecurityContext.  If set in both SecurityContext and
+                            PodSecurityContext, the value specified in SecurityContext
+                            takes precedence.
+                          properties:
+                            level:
+                              description: Level is SELinux level label that applies
+                                to the container.
+                              type: string
+                            role:
+                              description: Role is a SELinux role label that applies
+                                to the container.
+                              type: string
+                            type:
+                              description: Type is a SELinux type label that applies
+                                to the container.
+                              type: string
+                            user:
+                              description: User is a SELinux user label that applies
+                                to the container.
+                              type: string
+                          type: object
+                        seccompProfile:
+                          description: The seccomp options to use by this container.
+                            If seccomp options are provided at both the pod & container
+                            level, the container options override the pod options.
+                          properties:
+                            localhostProfile:
+                              description: localhostProfile indicates a profile defined
+                                in a file on the node should be used. The profile must
+                                be preconfigured on the node to work. Must be a descending
+                                path, relative to the kubelet's configured seccomp profile
+                                location. Must only be set if type is "Localhost".
+                              type: string
+                            type:
+                              description: "type indicates which kind of seccomp profile
+                              will be applied. Valid options are: \n Localhost - a
+                              profile defined in a file on the node should be used.
+                              RuntimeDefault - the container runtime default profile
+                              should be used. Unconfined - no profile should be applied."
+                              type: string
+                          required:
+                            - type
+                          type: object
+                        windowsOptions:
+                          description: The Windows specific settings applied to all
+                            containers. If unspecified, the options from the PodSecurityContext
+                            will be used. If set in both SecurityContext and PodSecurityContext,
+                            the value specified in SecurityContext takes precedence.
+                          properties:
+                            gmsaCredentialSpec:
+                              description: GMSACredentialSpec is where the GMSA admission
+                                webhook (https://github.com/kubernetes-sigs/windows-gmsa)
+                                inlines the contents of the GMSA credential spec named
+                                by the GMSACredentialSpecName field.
+                              type: string
+                            gmsaCredentialSpecName:
+                              description: GMSACredentialSpecName is the name of the
+                                GMSA credential spec to use.
+                              type: string
+                            hostProcess:
+                              description: HostProcess determines if a container should
+                                be run as a 'Host Process' container. This field is
+                                alpha-level and will only be honored by components that
+                                enable the WindowsHostProcessContainers feature flag.
+                                Setting this field without the feature flag will result
+                                in errors when validating the Pod. All of a Pod's containers
+                                must have the same effective HostProcess value (it is
+                                not allowed to have a mix of HostProcess containers
+                                and non-HostProcess containers).  In addition, if HostProcess
+                                is true then HostNetwork must also be set to true.
+                              type: boolean
+                            runAsUserName:
+                              description: The UserName in Windows to run the entrypoint
+                                of the container process. Defaults to the user specified
+                                in image metadata if unspecified. May also be set in
+                                PodSecurityContext. If set in both SecurityContext and
+                                PodSecurityContext, the value specified in SecurityContext
+                                takes precedence.
+                              type: string
+                          type: object
+                      type: object
+                    storageProperties:
+                      description: Provides all storage backend related properties for
+                        backups.
+                      properties:
+                        apiProfile:
+                          description: AWS Profile to use for authentication.
+                          type: string
+                        backupGracePeriodInDays:
+                          description: Age after which orphan sstables can be deleted
+                            from the storage backend. Protects from race conditions
+                            between purge and ongoing backups. Defaults to 10 days.
+                          type: integer
+                        bucketName:
+                          description: The name of the bucket to use for the backups.
+                          type: string
+                        concurrentTransfers:
+                          default: 1
+                          description: Number of concurrent uploads. Helps maximizing
+                            the speed of uploads but puts more pressure on the network.
+                            Defaults to 1.
+                          type: integer
+                        host:
+                          description: Host to connect to for the storage backend.
+                          type: string
+                        maxBackupAge:
+                          default: 0
+                          description: Maximum backup age that the purge process should
+                            observe.
+                          type: integer
+                        maxBackupCount:
+                          default: 0
+                          description: Maximum number of backups to keep (used by the
+                            purge process). Default is unlimited.
+                          type: integer
+                        multiPartUploadThreshold:
+                          default: 104857600
+                          description: File size over which cloud specific cli tools
+                            are used for transfer. Defaults to 100 MB.
+                          type: integer
+                        podStorage:
+                          description: Pod storage settings for the local storage provider
+                          properties:
+                            accessModes:
+                              description: Pod local storage access modes
+                              items:
+                                type: string
+                              type: array
+                            size:
+                              anyOf:
+                                - type: integer
+                                - type: string
+                              default: 10Gi
+                              description: Size of the pod's storage in bytes. Defaults
+                                to 10 GB.
+                              pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
+                              x-kubernetes-int-or-string: true
+                            storageClassName:
+                              description: Storage class name to use for the pod's storage.
+                              type: string
+                          type: object
+                        port:
+                          description: Port to connect to for the storage backend.
+                          type: integer
+                        prefix:
+                          description: Name of the top level folder in the backup bucket.
+                            If empty, the cluster name will be used.
+                          type: string
+                        region:
+                          description: Region of the storage bucket. Defaults to "default".
+                          type: string
+                        secure:
+                          description: Whether to use SSL for the storage backend.
+                          type: boolean
+                        storageProvider:
+                          description: The storage backend to use for the backups.
+                          enum:
+                            - local
+                            - google_storage
+                            - azure_blobs
+                            - s3
+                            - s3_compatible
+                            - s3_rgw
+                            - ibm_storage
+                          type: string
+                        storageSecretRef:
+                          description: Kubernetes Secret that stores the key file for
+                            the storage provider's API. If using 'local' storage, this
+                            value is ignored.
+                          type: string
+                        transferMaxBandwidth:
+                          default: 50MB/s
+                          description: Max upload bandwidth in MB/s. Defaults to 50
+                            MB/s.
+                          type: string
                       type: object
                   type: object
                 reaper:
@@ -7288,7 +8586,12 @@ spec:
                       using CQL. If CQL authentication is not required, leave this
                       field empty. The secret must be in the same namespace as Reaper
                       itself and must contain two keys: "username" and "password".'
-                      type: string
+                      properties:
+                        name:
+                          description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                          TODO: Add other useful fields. apiVersion, kind, uid?'
+                          type: string
+                      type: object
                     containerImage:
                       default:
                         name: cassandra-reaper
@@ -7338,7 +8641,7 @@ spec:
                         name: cassandra-reaper
                         repository: thelastpickle
                         tag: 3.1.0
-                      description: The image to use for tje Reaper pod init container
+                      description: The image to use for the Reaper pod init container
                         (that performs schema migrations). The default is "thelastpickle/cassandra-reaper:3.1.0".
                       properties:
                         name:
@@ -7545,7 +8848,12 @@ spec:
                       is not required, leave this field empty. The secret must be
                       in the same namespace as Reaper itself and must contain two
                       keys: "username" and "password".'
-                      type: string
+                      properties:
+                        name:
+                          description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                          TODO: Add other useful fields. apiVersion, kind, uid?'
+                          type: string
+                      type: object
                     keyspace:
                       default: reaper_db
                       description: The keyspace to use to store Reaper's state. Will
@@ -8174,6 +9482,15 @@ spec:
                             type: string
                         type: object
                       type: array
+                    uiUserSecretRef:
+                      description: Defines the secret which contains the username and
+                        password for the Reaper UI and REST API authentication.
+                      properties:
+                        name:
+                          description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                          TODO: Add other useful fields. apiVersion, kind, uid?'
+                          type: string
+                      type: object
                   type: object
                 stargate:
                   description: Stargate defines the desired deployment characteristics
@@ -9690,8 +11007,6 @@ spec:
                               - Configuring
                               - Running
                             type: string
-                        required:
-                          - progress
                         type: object
                       stargate:
                         description: StargateStatus defines the observed state of a
@@ -9764,7 +11079,6 @@ spec:
                             type: integer
                         required:
                           - availableReplicas
-                          - progress
                           - readyReplicas
                           - replicas
                           - updatedReplicas
