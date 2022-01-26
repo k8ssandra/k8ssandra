@@ -2,7 +2,10 @@ name: Test docs build
 
 on:
   pull_request:
-    branches: [ docs-v1 ]
+    branches:
+      - docs
+      - docs-v1
+      - docs-v2
     paths:
       - 'docs/**'
 
