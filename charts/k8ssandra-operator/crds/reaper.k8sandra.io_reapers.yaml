@@ -1,3 +1,4 @@
+---
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
@@ -959,7 +960,12 @@ spec:
                   CQL. If CQL authentication is not required, leave this field empty.
                   The secret must be in the same namespace as Reaper itself and must
                   contain two keys: "username" and "password".'
-                  type: string
+                  properties:
+                    name:
+                      description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                      TODO: Add other useful fields. apiVersion, kind, uid?'
+                      type: string
+                  type: object
                 containerImage:
                   default:
                     name: cassandra-reaper
@@ -1041,7 +1047,7 @@ spec:
                     name: cassandra-reaper
                     repository: thelastpickle
                     tag: 3.1.0
-                  description: The image to use for tje Reaper pod init container (that
+                  description: The image to use for the Reaper pod init container (that
                     performs schema migrations). The default is "thelastpickle/cassandra-reaper:3.1.0".
                   properties:
                     name:
@@ -1238,7 +1244,12 @@ spec:
                   against the former. If JMX authentication is not required, leave
                   this field empty. The secret must be in the same namespace as Reaper
                   itself and must contain two keys: "username" and "password".'
-                  type: string
+                  properties:
+                    name:
+                      description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                      TODO: Add other useful fields. apiVersion, kind, uid?'
+                      type: string
+                  type: object
                 keyspace:
                   default: reaper_db
                   description: The keyspace to use to store Reaper's state. Will default
@@ -1843,6 +1854,15 @@ spec:
                         type: string
                     type: object
                   type: array
+                uiUserSecretRef:
+                  description: Defines the secret which contains the username and password
+                    for the Reaper UI and REST API authentication.
+                  properties:
+                    name:
+                      description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                      TODO: Add other useful fields. apiVersion, kind, uid?'
+                      type: string
+                  type: object
               required:
                 - datacenterRef
               type: object
@@ -1874,8 +1894,6 @@ spec:
                     - Configuring
                     - Running
                   type: string
-              required:
-                - progress
               type: object
           type: object
       served: true
