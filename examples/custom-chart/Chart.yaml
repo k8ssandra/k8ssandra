@@ -2,11 +2,10 @@ apiVersion: v2
 dependencies:
   - condition: cass-operator.enabled
     name: cass-operator
-    repository: file://../cass-operator
+    repository: https://github.com/k8ssandra/k8ssandra/tree/main/charts/cass-operator
     version: 0.32.0
-
   - name: k8ssandra-common
-    repository: file://../k8ssandra-common
+    repository: https://github.com/k8ssandra/k8ssandra/tree/main/charts/k8ssandra-common
     version: 0.28.4
   - condition: kube-prometheus-stack.enabled
     name: kube-prometheus-stack
