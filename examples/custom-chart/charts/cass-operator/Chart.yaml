@@ -1,0 +1,21 @@
+apiVersion: v2
+appVersion: 1.9.0
+dependencies:
+- name: k8ssandra-common
+  repository: file://../k8ssandra-common
+  version: 0.28.4
+description: 'Kubernetes operator which handles the provisioning and management of Apache Cassandra clusters. '
+home: https://github.com/k8ssandra/cass-operator
+maintainers:
+- email: cass-operator@datastax.com
+  name: Cass Operator Team
+  url: https://github.com/k8ssandra/cass-operator
+- email: k8ssandra-developers@googlegroups.com
+  name: K8ssandra Team
+  url: https://github.com/k8ssandra
+name: cass-operator
+sources:
+- https://github.com/k8ssandra/cass-operator
+- https://github.com/k8ssandra/k8ssandra/tree/main/charts/cass-operator
+type: application
+version: 0.32.0

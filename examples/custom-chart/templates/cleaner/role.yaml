@@ -1,0 +1,14 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: {{ .Release.Name }}-cleaner-k8ssandra
+  labels: {{ include "k8ssandra.labels" . | indent 4 }}
+rules:
+  - apiGroups:
+      - cassandra.datastax.com
+    resources:
+      - cassandradatacenters
+    verbs:
+      - get
+      - list
+      - delete

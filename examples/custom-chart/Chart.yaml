@@ -1,0 +1,26 @@
+apiVersion: v2
+dependencies:
+  - condition: cass-operator.enabled
+    name: cass-operator
+    repository: file://../cass-operator
+    version: 0.32.0
+
+  - name: k8ssandra-common
+    repository: file://../k8ssandra-common
+    version: 0.28.4
+  - condition: kube-prometheus-stack.enabled
+    name: kube-prometheus-stack
+    repository: https://prometheus-community.github.io/helm-charts
+    version: 20.0.1
+description: "Provisions and configures an instance of the entire K8ssandra stack. This includes Apache Cassandra, Stargate, Reaper, Medusa, Prometheus, and Grafana. "
+home: https://k8ssandra.io/
+maintainers:
+  - email: k8ssandra-developers@googlegroups.com
+    name: K8ssandra Team
+    url: https://github.com/k8ssandra
+name: k8ssandra
+sources:
+  - https://github.com/k8ssandra/k8ssandra
+  - https://github.com/k8ssandra/k8ssandra/tree/main/charts/k8ssandra
+type: application
+version: 1.4.1

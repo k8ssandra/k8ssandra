@@ -1,0 +1,41 @@
+kind: ConfigMap
+metadata:
+  name: {{ include "k8ssandra-common.fullname" . }}-manager-config
+  labels: {{ include "k8ssandra-common.labels" . | indent 4 }}
+apiVersion: v1
+data:
+  controller_manager_config.yaml: |
+    apiVersion: config.k8ssandra.io/v1beta1
+    kind: OperatorConfig
+    health:
+      healthProbeBindAddress: :8081
+    metrics:
+      bindAddress: 127.0.0.1:8080
+    webhook:
+      port: 9443
+    leaderElection:
+      leaderElect: true
+      resourceName: b569adb7.cassandra.datastax.com
+{{- if .Values.admissionWebhooks.enabled }}
+    disableWebhooks: false
+{{- else }}
+    disableWebhooks: true
+
+{{- end }}
+    imageConfigFile: /configs/image_config.yaml
+  image_config.yaml: |
+    apiVersion: config.k8ssandra.io/v1beta1
+    kind: ImageConfig
+    images:
+      system-logger: "k8ssandra/system-logger:v1.9.0"
+      config-builder: "datastax/cass-config-builder:1.0.4-ubi7"
+{{- if .Values.image.registryOverride }}
+    imageRegistry: {{ .Values.image.registryOverride }}
+{{- end }}
+{{- with .Values.imagePullSecrets }}
+    imagePullSecrets:
+      {{- toYaml . | nindent 8 }}
+{{- end }}
+{{- if .Values.image.pullPolicy }}
+    imagePullPolicy: {{ .Values.image.pullPolicy }}
+{{- end -}}

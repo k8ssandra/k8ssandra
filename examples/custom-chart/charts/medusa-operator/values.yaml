@@ -1,0 +1,55 @@
+# -- Replaces the chart name which is used in the metadata.name of objects
+# created by this chart.
+nameOverride: ""
+
+# -- Replaces the value used for metadata.name in objects created by this chart.
+# The default value has the form releaseName-chartName.
+fullnameOverride: ""
+
+# -- Labels to be added to all deployed resources
+commonLabels: {}
+
+# -- Sets the number of medusa-operator pods.
+replicaCount: 1
+
+image:
+  # -- Container registry containing the repository where the image resides
+  registry: docker.io
+  # -- Container repository where the medusa-operator resides
+  repository: k8ssandra/medusa-operator
+
+  # -- Pull policy for the operator container
+  pullPolicy: IfNotPresent
+
+  # -- Tag of the medusa-operator image to pull from image.repository
+  tag: v0.4.0
+
+# -- References to secrets to use when pulling images. ref:
+# https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
+imagePullSecrets: []
+
+serviceAccount:
+  # -- Annotations for the medusa-operator service account.
+  annotations: {}
+
+# -- Annotations for the medusa-operator pod.
+podAnnotations: {}
+
+# -- SecurityContext for the medusa-operator pod.
+podSecurityContext: {}
+
+# -- SecurityContext for the medusa-operator container.
+securityContext:
+  runAsNonRoot: true
+  runAsUser: 65534
+  runAsGroup: 65534
+  readOnlyRootFilesystem: true
+
+# -- Resources requests and limits for the cass-operator pod. We usually
+# recommend not to specify default resources and to leave this as a conscious
+# choice for the user. This also increases chances charts run on environments
+# with little resources, such as Minikube. If you do want to specify resources,
+# uncomment the following lines, adjust them as necessary, and remove the curly
+# braces after 'resources:'. limits: cpu: 100m memory: 128Mi requests: cpu: 100m
+# memory: 128Mi
+resources: {}

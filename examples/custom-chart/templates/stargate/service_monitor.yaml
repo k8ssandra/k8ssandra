@@ -1,0 +1,129 @@
+{{- if .Values.stargate.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ .Release.Name }}-prometheus-{{ include "k8ssandra.datacenterName" . }}-stargate
+  labels:
+    release: {{ .Release.Name }}
+    app: {{ .Release.Name }}-{{ include "k8ssandra.datacenterName" . }}-stargate
+{{ include "k8ssandra.labels" . | indent 4 }}
+{{- if .Values.monitoring.serviceMonitors }}
+  namespace: {{ default .Release.Namespace .Values.monitoring.serviceMonitors.namespace }}
+{{- end }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-{{ include "k8ssandra.datacenterName" . }}-stargate
+  namespaceSelector:
+    matchNames:
+      - {{ .Release.Namespace }}
+  endpoints:
+  - port: health
+    interval: 15s
+    path: /metrics
+    scheme: http
+    scrapeTimeout: 15s
+    metricRelabelings:
+      # assign Datacenter label to Stargate metrics
+    - regex: persistence_cassandra_(\d_\d+)_org_apache_cassandra_metrics_ClientRequest_.*
+      replacement: {{ include "k8ssandra.datacenterName" . }}
+      sourceLabels:
+      - __name__
+      targetLabel: dc
+      # assign Cluster label to Stargate metrics
+    - regex: persistence_cassandra_(\d_\d+)_org_apache_cassandra_metrics_ClientRequest_.*
+      replacement: {{ include "k8ssandra.clusterName" . }}
+      sourceLabels:
+      - __name__
+      targetLabel: cluster
+      # assign Rack label to Stargate metrics
+    - regex: persistence_cassandra_(\d_\d+)_org_apache_cassandra_metrics_ClientRequest_.*
+      replacement: default
+      sourceLabels:
+      - __name__
+      targetLabel: rack
+      # add request_type=read label to Stargate Read metrics
+    - regex: persistence_cassandra_(\d_\d+)_org_apache_cassandra_metrics_ClientRequest_(\w+)_Read.*
+      replacement: read
+      sourceLabels:
+      - __name__
+      targetLabel: request_type
+      # add request_type=write label to Stargate Write metrics
+    - regex: persistence_cassandra_(\d_\d+)_org_apache_cassandra_metrics_ClientRequest_(\w+)_Write.*
+      replacement: write
+      sourceLabels:
+      - __name__
+      targetLabel: request_type
+      # add request_type=cas_read label to Stargate CASRead metrics
+    - regex: persistence_cassandra_(\d_\d+)_org_apache_cassandra_metrics_ClientRequest_(\w+)_CASRead.*
+      replacement: cas_read
+      sourceLabels:
+      - __name__
+      targetLabel: request_type
+      # add request_type=cas_write label to Stargate CASWrite metrics
+    - regex: persistence_cassandra_(\d_\d+)_org_apache_cassandra_metrics_ClientRequest_(\w+)_CASWrite.*
+      replacement: cas_write
+      sourceLabels:
+      - __name__
+      targetLabel: request_type
+      # add request_type=range_slice label to Stargate RangeSlice metrics
+    - regex: persistence_cassandra_(\d_\d+)_org_apache_cassandra_metrics_ClientRequest_(\w+)_RangeSlice.*
+      replacement: range_slice
+      sourceLabels:
+      - __name__
+      targetLabel: request_type
+      # add request_type=view_write label to Stargate ViewWriter metrics
+    - regex: persistence_cassandra_(\d_\d+)_org_apache_cassandra_metrics_ClientRequest_(\w+)_ViewWrite.*
+      replacement: view_write
+      sourceLabels:
+      - __name__
+      targetLabel: request_type
+      # rename (Read|Write|CASRead|CASWrite|RangeSlice|ViewWrite)_count metrics to stargate_client_request_latency_total
+    - regex: persistence_cassandra_(\d_\d+)_org_apache_cassandra_metrics_ClientRequest_Latency_(Read|Write|CASRead|CASWrite|RangeSlice|ViewWrite)_count
+      replacement: stargate_client_request_latency_total
+      sourceLabels:
+      - __name__
+      targetLabel: __name__
+      # rename (Read|Write|CASRead|CASWrite|RangeSlice|ViewWrite) metrics to stargate_client_request_latency_quantile
+    - regex: persistence_cassandra_(\d_\d+)_org_apache_cassandra_metrics_ClientRequest_Latency_(Read|Write|CASRead|CASWrite|RangeSlice|ViewWrite)
+      replacement: stargate_client_request_latency_quantile
+      sourceLabels:
+      - __name__
+      targetLabel: __name__
+      # rename Failures_(Read|Write|CASRead|CASWrite|RangeSlice|ViewWrite)_total metrics to stargate_client_request_failures_total
+    - regex: persistence_cassandra_(\d_\d+)_org_apache_cassandra_metrics_ClientRequest_Failures_(Read|Write|CASRead|CASWrite|RangeSlice|ViewWrite)_total
+      replacement: stargate_client_request_failures_total
+      sourceLabels:
+      - __name__
+      targetLabel: __name__
+      # rename Timeouts_(Read|Write|CASRead|CASWrite|RangeSlice|ViewWrite)_total metrics to stargate_client_request_timeouts_total
+    - regex: persistence_cassandra_(\d_\d+)_org_apache_cassandra_metrics_ClientRequest_Timeouts_(Read|Write|CASRead|CASWrite|RangeSlice|ViewWrite)_total
+      replacement: stargate_client_request_timeouts_total
+      sourceLabels:
+      - __name__
+      targetLabel: __name__
+      # rename Unavailables_(Read|Write|CASRead|CASWrite|RangeSlice|ViewWrite)_total metrics to stargate_client_request_unavailables_total
+    - regex: persistence_cassandra_(\d_\d+)_org_apache_cassandra_metrics_ClientRequest_Unavailables_(Read|Write|CASRead|CASWrite|RangeSlice|ViewWrite)_total
+      replacement: stargate_client_request_unavailables_total
+      sourceLabels:
+      - __name__
+      targetLabel: __name__
+      # rename ConditionNotMet_(Read|Write|CASRead|CASWrite|RangeSlice|ViewWrite) metrics to stargate_client_request_condition_not_met_total
+    - regex: persistence_cassandra_(\d_\d+)_org_apache_cassandra_metrics_ClientRequest_ConditionNotMet_(Read|Write|CASRead|CASWrite|RangeSlice|ViewWrite)
+      replacement: stargate_client_request_condition_not_met_total
+      sourceLabels:
+      - __name__
+      targetLabel: __name__
+      # rename UnfinishedCommit_(Read|Write|CASRead|CASWrite|RangeSlice|ViewWrite) metrics to stargate_client_request_unfinished_commit_total
+    - regex: persistence_cassandra_(\d_\d+)_org_apache_cassandra_metrics_ClientRequest_UnfinishedCommit_(Read|Write|CASRead|CASWrite|RangeSlice|ViewWrite)
+      replacement: stargate_client_request_unfinished_commit_total
+      sourceLabels:
+      - __name__
+      targetLabel: __name__
+      # rename ContentionHistogram_(Read|Write|CASRead|CASWrite|RangeSlice|ViewWrite)_count metrics to stargate_client_request_contention_histogran_total
+    - regex: persistence_cassandra_(\d_\d+)_org_apache_cassandra_metrics_ClientRequest_ContentionHistogram_(Read|Write|CASRead|CASWrite|RangeSlice|ViewWrite)_count
+      replacement: stargate_client_request_contention_histogran_total
+      sourceLabels:
+      - __name__
+      targetLabel: __name__
+{{- end }}
