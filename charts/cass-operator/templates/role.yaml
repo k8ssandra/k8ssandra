@@ -54,6 +54,32 @@ rules:
       - patch
       - update
   - apiGroups:
+      - control.k8ssandra.io
+    resources:
+      - cassandratasks
+    verbs:
+      - create
+      - delete
+      - get
+      - list
+      - patch
+      - update
+      - watch
+  - apiGroups:
+      - control.k8ssandra.io
+    resources:
+      - cassandratasks/finalizers
+    verbs:
+      - update
+  - apiGroups:
+      - control.k8ssandra.io
+    resources:
+      - cassandratasks/status
+    verbs:
+      - get
+      - patch
+      - update
+  - apiGroups:
       - ""
     resources:
       - configmaps
@@ -63,6 +89,19 @@ rules:
       - pods
       - secrets
       - services
+    verbs:
+      - create
+      - delete
+      - get
+      - list
+      - patch
+      - update
+      - watch
+  - apiGroups:
+      - ""
+    resources:
+      - events
+      - pods
     verbs:
       - create
       - delete
@@ -89,20 +128,7 @@ rules:
       - patch
       - update
       - watch
-  {{- if .Values.vmwarePSPEnabled }}
-  - apiGroups:
-      - "networking.k8s.io"
-    resources:
-      - networkpolicies
-    verbs:
-      - get
-      - create
-      - update
-      - patch
-      - delete
-      - list
-  {{- end }}
-  {{- else }}
+{{- else }}
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
@@ -158,6 +184,32 @@ rules:
       - patch
       - update
   - apiGroups:
+      - control.k8ssandra.io
+    resources:
+      - cassandratasks
+    verbs:
+      - create
+      - delete
+      - get
+      - list
+      - patch
+      - update
+      - watch
+  - apiGroups:
+      - control.k8ssandra.io
+    resources:
+      - cassandratasks/finalizers
+    verbs:
+      - update
+  - apiGroups:
+      - control.k8ssandra.io
+    resources:
+      - cassandratasks/status
+    verbs:
+      - get
+      - patch
+      - update
+  - apiGroups:
       - ""
     resources:
       - configmaps
@@ -167,6 +219,19 @@ rules:
       - pods
       - secrets
       - services
+    verbs:
+      - create
+      - delete
+      - get
+      - list
+      - patch
+      - update
+      - watch
+  - apiGroups:
+      - ""
+    resources:
+      - events
+      - pods
     verbs:
       - create
       - delete
@@ -193,17 +258,4 @@ rules:
       - patch
       - update
       - watch
-  {{- if .Values.vmwarePSPEnabled }}
-  - apiGroups:
-      - "networking.k8s.io"
-    resources:
-      - networkpolicies
-    verbs:
-      - get
-      - create
-      - update
-      - patch
-      - delete
-      - list
-  {{- end }}
-  {{- end }}
+{{- end }}

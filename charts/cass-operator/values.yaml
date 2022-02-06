@@ -34,7 +34,7 @@ image:
   pullPolicy: IfNotPresent
 
   # -- Tag of the cass-operator image to pull from image.repository
-  tag: v1.9.0
+  tag: 9d1c58a5
 
   # -- Docker registry containing all cass-operator related images. Setting this
   # allows for usage of an internal registry without specifying serverImage,
