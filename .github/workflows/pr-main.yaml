@@ -33,6 +33,11 @@ jobs:
         with:
           version: ${{ env.HELM_VERSION }}
 
+      - name: Add K8ssandra Helm repo
+        run: |
+          helm repo add k8ssandra https://helm.k8ssandra.io/stable
+          helm repo update
+
       - name: Install yq and validate tool versions
         run: |
           scripts/install-yq.sh ${{ env.YQ_VERSION }}
