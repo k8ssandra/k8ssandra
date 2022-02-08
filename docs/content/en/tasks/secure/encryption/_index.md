@@ -76,9 +76,10 @@ In the `K8ssandraCluster` manifest, you will need to configure encryption settin
 Also, you'll need to reference the encryption stores' secrets under:
 
 * `cassandra/serverEncryptionStores` 
-* *Or* `cassandra/clientEncryptionStores`
+* *Or*`cassandra/clientEncryptionStores`
 
-We emphasized "or" here because, theoretically, the keystore and truststore could be placed in different secrets.
+Server encryption and client encryption are different entities. They both have their own keystore/truststore pair.
+The "or" here shows that you can turn on either independently, or both. Server is for internode communications encryption, and client is for client-to-node communications encryption.
 
 Example:
 
@@ -129,7 +130,7 @@ spec:
 Enabling client-to-node encryption will also encrypt JMX communications. Running Cassandra `nodetool` commands will then require additional arguments to pass the encryption stores and their passwords.
 
 {{% alert title="Note" color="success" %}}
-Server (internode) and client encryption are totally independent and can be enabled/disabled individually, as well as use different encryption stores.
+Again, server (internode) and client (client-to-node) encryption are totally independent and can be enabled/disabled individually, as well as use different encryption stores.
 {{% /alert %}}
 
 ## Stargate and Reaper encryption
