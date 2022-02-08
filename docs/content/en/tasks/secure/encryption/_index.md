@@ -20,7 +20,7 @@ Apache Cassandra&reg; offers the ability to encrypt internode communications and
 
 ## Generating SSL encryption stores
 
-If you do not have a set of encryption stores available, follow the instructions in [this TLP blog post](https://thelastpickle.com/blog/2021/06/15/cassandra-certificate-management-part_1-how-to-rotate-keys.html). More specifically, use [the script](https://github.com/thelastpickle/cassandra-toolbox/tree/main/generate_cluster_ssl_stores) used to generate the SSL stores.
+If you do not have a set of encryption stores available, follow the instructions in [this TLP blog post](https://thelastpickle.com/blog/2021/06/15/cassandra-certificate-management-part_1-how-to-rotate-keys.html). More specifically, use [this script](https://github.com/thelastpickle/cassandra-toolbox/tree/main/generate_cluster_ssl_stores) to generate the SSL stores.
 
 You could clone the [cassandra-toolbox](https://github.com/thelastpickle/cassandra-toolbox) GitHub repository, and create a `cert.conf` file with the following format:
 
