@@ -7,7 +7,7 @@ description: "Steps to provision and scale up/down an Apache Cassandra® cluster
 This topic explains how to add and remove Cassandra nodes in a Kubernetes cluster, as well as insights into the underlying operations that occur with scaling. 
 
 {{% alert title="Note" color="success" %}}
-K8ssandra currently only supports a single-datacenter cluster.
+K8ssandra v1.x only supports a single-datacenter cluster. You can use K8ssandra v2 to setup and run multiple clusters, as explained in ( a new section of this topic ).
 {{% /alert %}}
 
 ## Prerequisites
