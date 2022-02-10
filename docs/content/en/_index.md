@@ -18,6 +18,20 @@ The K8ssandra documentation covers everything from install details, deployed com
 If you're impatient, jump right in with our **[install]({{< relref "install" >}})** topics!
 {{% /alert %}}
 
+## Features for single- and multi-cluster Kubernetes environments
+
+{{< cardpane >}}
+  {{< card header="K8ssandra v1.4.x" >}}
+    K8ssandra 1.4.1 is our initial implementation that provides separate Helm charts for services like 
+    Stargate, Reaper, Medusa, Grafana, and more. (docs-v1.k8ssandra.io/... link here)
+  {{< /card >}}
+  {{< card header="K8ssandra Operator v1.0.x" >}}
+    K8ssandra Operator v1.0.0 is our more recent offering that combines API, management, and observability features 
+    under the control of a unified operator. Important enhancements include multi-cluster and multi-region 
+    support for Cassandra deployments in Kubernetes, which enables greater scalability and availability. (docs-v2.k8ssandra.io/... link here)
+  {{< /card >}}
+{{< /cardpane >}}
+
 ## What is K8ssandra?
 
 K8ssandra is a cloud native distribution of Apache Cassandra® (Cassandra) meant to run on Kubernetes. Accompanying Cassandra is a suite of tools to ease and automate operational tasks. This includes metrics, data anti-entropy services, and backup tooling. As part of K8ssandra's installation process all of these components are installed and wired together freeing your teams from having to perform the tedious plumbing of components.
