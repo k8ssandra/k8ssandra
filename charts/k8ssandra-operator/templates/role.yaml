@@ -5,282 +5,282 @@ metadata:
   name: {{ include "k8ssandra-common.fullname" . }}
   labels: {{ include "k8ssandra-common.labels" . | indent 4 }}
 rules:
-  - apiGroups:
-      - ""
-    resources:
-      - pods
-      - services
-    verbs:
-      - get
-      - list
-      - watch
-  - apiGroups:
-      - apps
-    resources:
-      - deployments
-    verbs:
-      - create
-      - delete
-      - get
-      - list
-      - patch
-      - update
-      - watch
-  - apiGroups:
-      - apps
-    resources:
-      - statefulsets
-    verbs:
-      - list
-      - watch
-  - apiGroups:
-      - cassandra.datastax.com
-    resources:
-      - cassandradatacenters
-    verbs:
-      - create
-      - delete
-      - get
-      - list
-      - patch
-      - update
-      - watch
-  - apiGroups:
-      - config.k8ssandra.io
-    resources:
-      - clientconfigs
-    verbs:
-      - create
-      - delete
-      - get
-      - list
-      - patch
-      - update
-      - watch
-  - apiGroups:
-      - control.k8ssandra.io
-    resources:
-      - cassandratasks
-    verbs:
-      - create
-      - delete
-      - get
-      - list
-      - patch
-      - update
-      - watch
-  - apiGroups:
-      - ""
-    resources:
-      - configmaps
-    verbs:
-      - create
-      - delete
-      - get
-      - list
-      - patch
-      - update
-      - watch
-  - apiGroups:
-      - ""
-    resources:
-      - endpoints
-    verbs:
-      - create
-      - delete
-      - get
-      - list
-      - patch
-      - update
-      - watch
-  - apiGroups:
-      - ""
-    resources:
-      - pods
-      - secrets
-    verbs:
-      - get
-      - list
-      - watch
-  - apiGroups:
-      - ""
-    resources:
-      - secrets
-    verbs:
-      - create
-      - delete
-      - get
-      - list
-      - update
-      - watch
-  - apiGroups:
-      - ""
-    resources:
-      - services
-    verbs:
-      - create
-      - delete
-      - get
-      - list
-      - patch
-      - update
-      - watch
-  - apiGroups:
-      - k8ssandra.io
-    resources:
-      - clientconfigs
-      - k8ssandraclusters
-    verbs:
-      - create
-      - delete
-      - get
-      - list
-      - patch
-      - update
-      - watch
-  - apiGroups:
-      - k8ssandra.io
-    resources:
-      - k8ssandraclusters/finalizers
-    verbs:
-      - update
-  - apiGroups:
-      - k8ssandra.io
-    resources:
-      - k8ssandraclusters/status
-    verbs:
-      - get
-      - patch
-      - update
-  - apiGroups:
-      - medusa.datastax.com
-    resources:
-      - cassandradatacenters
-    verbs:
-      - get
-      - list
-      - watch
-  - apiGroups:
-      - medusa.k8ssandra.io
-    resources:
-      - cassandrabackups
-    verbs:
-      - create
-      - delete
-      - get
-      - list
-      - patch
-      - update
-      - watch
-  - apiGroups:
-      - medusa.k8ssandra.io
-    resources:
-      - cassandrabackups/status
-    verbs:
-      - get
-      - patch
-      - update
-  - apiGroups:
-      - medusa.k8ssandra.io
-    resources:
-      - cassandrarestores
-    verbs:
-      - delete
-      - get
-      - list
-      - patch
-      - update
-      - watch
-  - apiGroups:
-      - medusa.k8ssandra.io
-    resources:
-      - cassandrarestores/status
-    verbs:
-      - get
-      - patch
-      - update
-  - apiGroups:
-      - monitoring.coreos.com
-    resources:
-      - servicemonitors
-    verbs:
-      - create
-      - delete
-      - deletecollection
-      - get
-      - list
-      - patch
-      - update
-      - watch
-  - apiGroups:
-      - reaper.k8ssandra.io
-    resources:
-      - reapers
-    verbs:
-      - create
-      - delete
-      - get
-      - list
-      - patch
-      - update
-      - watch
-  - apiGroups:
-      - reaper.k8ssandra.io
-    resources:
-      - reapers/status
-    verbs:
-      - get
-      - patch
-      - update
-  - apiGroups:
-      - replication.k8ssandra.io
-    resources:
-      - replicatedsecrets
-    verbs:
-      - create
-      - delete
-      - get
-      - list
-      - update
-      - watch
-  - apiGroups:
-      - replication.k8ssandra.io
-    resources:
-      - replicatedsecrets/finalizers
-    verbs:
-      - update
-  - apiGroups:
-      - replication.k8ssandra.io
-    resources:
-      - replicatedsecrets/status
-    verbs:
-      - get
-      - patch
-      - update
-  - apiGroups:
-      - stargate.k8ssandra.io
-    resources:
-      - stargates
-    verbs:
-      - create
-      - delete
-      - get
-      - list
-      - patch
-      - update
-      - watch
-  - apiGroups:
-      - stargate.k8ssandra.io
-    resources:
-      - stargates/finalizers
-    verbs:
-      - update
-  - apiGroups:
-      - stargate.k8ssandra.io
-    resources:
-      - stargates/status
-    verbs:
-      - get
-      - patch
-      - update
+- apiGroups:
+  - ""
+  resources:
+  - pods
+  - services
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - apps
+  resources:
+  - deployments
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - apps
+  resources:
+  - statefulsets
+  verbs:
+  - list
+  - watch
+- apiGroups:
+  - cassandra.datastax.com
+  resources:
+  - cassandradatacenters
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - config.k8ssandra.io
+  resources:
+  - clientconfigs
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - control.k8ssandra.io
+  resources:
+  - cassandratasks
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - ""
+  resources:
+  - configmaps
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - ""
+  resources:
+  - endpoints
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - ""
+  resources:
+  - pods
+  - secrets
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - ""
+  resources:
+  - secrets
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - update
+  - watch
+- apiGroups:
+  - ""
+  resources:
+  - services
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - k8ssandra.io
+  resources:
+  - clientconfigs
+  - k8ssandraclusters
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - k8ssandra.io
+  resources:
+  - k8ssandraclusters/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - k8ssandra.io
+  resources:
+  - k8ssandraclusters/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - medusa.datastax.com
+  resources:
+  - cassandradatacenters
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - medusa.k8ssandra.io
+  resources:
+  - cassandrabackups
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - medusa.k8ssandra.io
+  resources:
+  - cassandrabackups/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - medusa.k8ssandra.io
+  resources:
+  - cassandrarestores
+  verbs:
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - medusa.k8ssandra.io
+  resources:
+  - cassandrarestores/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - monitoring.coreos.com
+  resources:
+  - servicemonitors
+  verbs:
+  - create
+  - delete
+  - deletecollection
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - reaper.k8ssandra.io
+  resources:
+  - reapers
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - reaper.k8ssandra.io
+  resources:
+  - reapers/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - replication.k8ssandra.io
+  resources:
+  - replicatedsecrets
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - update
+  - watch
+- apiGroups:
+  - replication.k8ssandra.io
+  resources:
+  - replicatedsecrets/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - replication.k8ssandra.io
+  resources:
+  - replicatedsecrets/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - stargate.k8ssandra.io
+  resources:
+  - stargates
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - stargate.k8ssandra.io
+  resources:
+  - stargates/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - stargate.k8ssandra.io
+  resources:
+  - stargates/status
+  verbs:
+  - get
+  - patch
+  - update
 {{- end }}
