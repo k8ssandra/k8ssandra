@@ -21,7 +21,7 @@ Be sure to leave us a <a class="github-button" href="https://github.com/k8ssandr
 | K8ssandra v1.4.x      | K8ssandra Operator v1.0.0 |
 | ----------- | ----------- |
 | K8ssandra v1.4.x is our initial implementation. It provides a set of separate Helm charts you can use to configure and deploy Apache Cassandra&reg; into a single-cluster, single-region Kubernetes environment. | K8ssandra Operator v1.0.0 is our most recent offering. It combines API, management, &amp; observability features under the control of a unified operator. Important enhancements include **multi-cluster** and **multi-region** support for Cassandra deployments in Kubernetes, which enables greater scalability and availability. Single cluster/region deployments are also supported with K8ssandra Operator.|
-| Start in the v1.4.x [Install]({{< relref "install" >}}) topics, which include local dev installs and cloud-provider installs. | Start in the K8ssandra Operator v1.0.0 [local install](https://docs-staging-v2.k8ssandra.io/install/local/) topic, which focuses on local dev installs on a kind Kubernetes environment, using helper scripts, or helm, or kustomize tools.
+| Start in the v1.4.x [Install]({{< relref "install" >}}) topics, which include local dev installs and cloud-provider installs. | Start in the K8ssandra Operator v1.0.0 [local install](https://docs-staging-v2.k8ssandra.io/install/local/) topic, which focuses on local dev installs on a kind Kubernetes environment using helper scripts, helm, or kustomize.
 
 ## What is K8ssandra?
 
