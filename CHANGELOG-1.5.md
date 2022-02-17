@@ -18,4 +18,5 @@ and date `## vX.Y.Z - YYYY-MM-DD` and create a new placeholder section for  `unr
 
 ## unreleased
 
+* [CHANGE] Upgrade Management API to v0.1.37
 * [CHANGE] Upgrade Stargate to v1.0.44

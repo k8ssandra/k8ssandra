@@ -206,12 +206,12 @@ var _ = Describe("Verify Stargate template", func() {
 			Expect(clusterVersionEnv.Value).To(Equal(DefaultStargateClusterVersion))
 		})
 
-		It("using cassandra version 4.0.0", func() {
+		It("using cassandra version 4.0.3", func() {
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
 				SetValues: map[string]string{
 					"stargate.enabled":  "true",
-					"cassandra.version": "4.0.0",
+					"cassandra.version": "4.0.3",
 				},
 			}
 
@@ -224,12 +224,12 @@ var _ = Describe("Verify Stargate template", func() {
 			Expect(clusterVersionEnv.Value).To(Equal(DefaultStargate4ClusterVersion))
 		})
 
-		It("using cassandra version 3.11.11", func() {
+		It("using cassandra version 3.11.12", func() {
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
 				SetValues: map[string]string{
 					"stargate.enabled":  "true",
-					"cassandra.version": "3.11.11",
+					"cassandra.version": "3.11.12",
 				},
 			}
 
@@ -376,7 +376,7 @@ var _ = Describe("Verify Stargate template", func() {
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
 				SetValues: map[string]string{
-					"cassandra.version": "3.11.11",
+					"cassandra.version": "3.11.12",
 					"stargate.enabled":  "true",
 					"stargate.version":  "1.0.5",
 				},
@@ -394,7 +394,7 @@ var _ = Describe("Verify Stargate template", func() {
 				SetValues: map[string]string{
 					"stargate.enabled":  "true",
 					"stargate.version":  "1.0.6",
-					"cassandra.version": "4.0.0",
+					"cassandra.version": "4.0.3",
 				},
 			}
 
