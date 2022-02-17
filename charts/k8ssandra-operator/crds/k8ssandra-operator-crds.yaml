@@ -8633,8 +8633,8 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
+    cert-manager.io/inject-ca-from: $(CERTIFICATE_NAMESPACE_K8S)/$(CERTIFICATE_NAME_K8S)
     controller-gen.kubebuilder.io/version: v0.7.0
-  creationTimestamp: null
   name: k8ssandraclusters.k8ssandra.io
 spec:
   group: k8ssandra.io
@@ -8684,27 +8684,19 @@ spec:
                   cluster where each DC should be deployed, node affinity (via racks),
                   individual C* node settings, JVM settings, and more.
                 properties:
-                  cassandraTelemetry:
-                    description: CassandraTelemetry defines the desired state for
-                      telemetry resources in this K8ssandraCluster. If telemetry configurations
-                      are defined, telemetry resources will be deployed to integrate
-                      with a user-provided monitoring solution (at present, only support
-                      for Prometheus is available).
-                    properties:
-                      prometheus:
-                        properties:
-                          commonLabels:
-                            additionalProperties:
-                              type: string
-                            description: CommonLabels are applied to all serviceMonitors
-                              created.
-                            type: object
-                          enabled:
-                            description: Enable the creation of Prometheus serviceMonitors
-                              for this resource (Cassandra or Stargate).
-                            type: boolean
-                        type: object
-                    type: object
+                  additionalSeeds:
+                    description: AdditionalSeeds specifies Cassandra node IPs for
+                      an existing datacenter. This is primarily intended for migrations
+                      from an existing Cassandra cluster that is not managed by k8ssandra-operator.
+                      Note that this property should NOT be used to set seeds for
+                      a DC that is or will be managed by k8ssandra-operator. k8ssandra-operator
+                      already manages seeds for DCs that it manages. If you have DNS
+                      set up such that you can resolve hostnames for the remote Cassandra
+                      cluster, then you can specify hostnames here; otherwise, use
+                      IP addresses.
+                    items:
+                      type: string
+                    type: array
                   clientEncryptionStores:
                     description: Client encryption stores which are used by Cassandra
                       and Reaper.
@@ -9749,27 +9741,6 @@ spec:
                     description: Datacenters a list of the DCs in the cluster.
                     items:
                       properties:
-                        cassandraTelemetry:
-                          description: Telemetry defines the desired state for telemetry
-                            resources in this datacenter. If telemetry configurations
-                            are defined, telemetry resources will be deployed to integrate
-                            with a user-provided monitoring solution (at present,
-                            only support for Prometheus is available).
-                          properties:
-                            prometheus:
-                              properties:
-                                commonLabels:
-                                  additionalProperties:
-                                    type: string
-                                  description: CommonLabels are applied to all serviceMonitors
-                                    created.
-                                  type: object
-                                enabled:
-                                  description: Enable the creation of Prometheus serviceMonitors
-                                    for this resource (Cassandra or Stargate).
-                                  type: boolean
-                              type: object
-                          type: object
                         jmxInitContainerImage:
                           default:
                             name: busybox
@@ -13470,6 +13441,70 @@ spec:
                                   type: string
                               type: object
                           type: object
+                        telemetry:
+                          description: Telemetry defines the desired state for telemetry
+                            resources in this datacenter. If telemetry configurations
+                            are defined, telemetry resources will be deployed to integrate
+                            with a user-provided monitoring solution (at present,
+                            only support for Prometheus is available).
+                          properties:
+                            prometheus:
+                              properties:
+                                commonLabels:
+                                  additionalProperties:
+                                    type: string
+                                  description: CommonLabels are applied to all serviceMonitors
+                                    created.
+                                  type: object
+                                enabled:
+                                  description: Enable the creation of Prometheus serviceMonitors
+                                    for this resource (Cassandra or Stargate).
+                                  type: boolean
+                              type: object
+                          type: object
+                        tolerations:
+                          description: Tolerations applied to every Cassandra pod.
+                          items:
+                            description: The pod this Toleration is attached to tolerates
+                              any taint that matches the triple <key,value,effect>
+                              using the matching operator <operator>.
+                            properties:
+                              effect:
+                                description: Effect indicates the taint effect to
+                                  match. Empty means match all taint effects. When
+                                  specified, allowed values are NoSchedule, PreferNoSchedule
+                                  and NoExecute.
+                                type: string
+                              key:
+                                description: Key is the taint key that the toleration
+                                  applies to. Empty means match all taint keys. If
+                                  the key is empty, operator must be Exists; this
+                                  combination means to match all values and all keys.
+                                type: string
+                              operator:
+                                description: Operator represents a key's relationship
+                                  to the value. Valid operators are Exists and Equal.
+                                  Defaults to Equal. Exists is equivalent to wildcard
+                                  for value, so that a pod can tolerate all taints
+                                  of a particular category.
+                                type: string
+                              tolerationSeconds:
+                                description: TolerationSeconds represents the period
+                                  of time the toleration (which must be of effect
+                                  NoExecute, otherwise this field is ignored) tolerates
+                                  the taint. By default, it is not set, which means
+                                  tolerate the taint forever (do not evict). Zero
+                                  and negative values will be treated as 0 (evict
+                                  immediately) by the system.
+                                format: int64
+                                type: integer
+                              value:
+                                description: Value is the taint value the toleration
+                                  matches to. If the operator is Exists, the value
+                                  should be empty, otherwise just a regular string.
+                                type: string
+                            type: object
+                          type: array
                       required:
                       - size
                       type: object
@@ -14016,7 +14051,79 @@ spec:
                           TODO: Add other useful fields. apiVersion, kind, uid?'
                         type: string
                     type: object
+                  telemetry:
+                    description: Telemetry defines the desired state for telemetry
+                      resources in this K8ssandraCluster. If telemetry configurations
+                      are defined, telemetry resources will be deployed to integrate
+                      with a user-provided monitoring solution (at present, only support
+                      for Prometheus is available).
+                    properties:
+                      prometheus:
+                        properties:
+                          commonLabels:
+                            additionalProperties:
+                              type: string
+                            description: CommonLabels are applied to all serviceMonitors
+                              created.
+                            type: object
+                          enabled:
+                            description: Enable the creation of Prometheus serviceMonitors
+                              for this resource (Cassandra or Stargate).
+                            type: boolean
+                        type: object
+                    type: object
+                  tolerations:
+                    description: Tolerations applied to every Cassandra pod.
+                    items:
+                      description: The pod this Toleration is attached to tolerates
+                        any taint that matches the triple <key,value,effect> using
+                        the matching operator <operator>.
+                      properties:
+                        effect:
+                          description: Effect indicates the taint effect to match.
+                            Empty means match all taint effects. When specified, allowed
+                            values are NoSchedule, PreferNoSchedule and NoExecute.
+                          type: string
+                        key:
+                          description: Key is the taint key that the toleration applies
+                            to. Empty means match all taint keys. If the key is empty,
+                            operator must be Exists; this combination means to match
+                            all values and all keys.
+                          type: string
+                        operator:
+                          description: Operator represents a key's relationship to
+                            the value. Valid operators are Exists and Equal. Defaults
+                            to Equal. Exists is equivalent to wildcard for value,
+                            so that a pod can tolerate all taints of a particular
+                            category.
+                          type: string
+                        tolerationSeconds:
+                          description: TolerationSeconds represents the period of
+                            time the toleration (which must be of effect NoExecute,
+                            otherwise this field is ignored) tolerates the taint.
+                            By default, it is not set, which means tolerate the taint
+                            forever (do not evict). Zero and negative values will
+                            be treated as 0 (evict immediately) by the system.
+                          format: int64
+                          type: integer
+                        value:
+                          description: Value is the taint value the toleration matches
+                            to. If the operator is Exists, the value should be empty,
+                            otherwise just a regular string.
+                          type: string
+                      type: object
+                    type: array
                 type: object
+              externalDatacenters:
+                description: During a migration the operator should alter keyspaces
+                  replication settings including the following external DCs. This
+                  avoids removing replicas from datacenters which are outside of the
+                  operator scope (not referenced in the CR). Replication settings
+                  changes will only apply to system_* keyspaces as well as reaper_db
+                  and data_endpoint_auth (Stargate).
+                items:
+                  type: string
+                type: array
               medusa:
                 description: Medusa defines the desired deployment characteristics
                   for Medusa in this K8ssandraCluster. If this is non-nil, Medusa
@@ -14321,7 +14428,12 @@ spec:
                         description: Kubernetes Secret that stores the key file for
                           the storage provider's API. If using 'local' storage, this
                           value is ignored.
-                        type: string
+                        properties:
+                          name:
+                            description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                              TODO: Add other useful fields. apiVersion, kind, uid?'
+                            type: string
+                        type: object
                       transferMaxBandwidth:
                         default: 50MB/s
                         description: Max upload bandwidth in MB/s. Defaults to 50
@@ -15300,9 +15412,9 @@ spec:
                     default:
                       name: cassandra-reaper
                       repository: thelastpickle
-                      tag: skip-migration
+                      tag: 3.1.1
                     description: The image to use for the Reaper pod main container.
-                      The default is "thelastpickle/cassandra-reaper:skip-migration".
+                      The default is "thelastpickle/cassandra-reaper:3.1.1".
                     properties:
                       name:
                         description: The image name to use.
@@ -15350,9 +15462,9 @@ spec:
                     default:
                       name: cassandra-reaper
                       repository: thelastpickle
-                      tag: skip-migration
+                      tag: 3.1.1
                     description: The image to use for the Reaper pod init container
-                      (that performs schema migrations). The default is "thelastpickle/cassandra-reaper:skip-migration".
+                      (that performs schema migrations). The default is "thelastpickle/cassandra-reaper:3.1.1".
                     properties:
                       name:
                         description: The image name to use.
@@ -18815,9 +18927,9 @@ spec:
                 default:
                   name: cassandra-reaper
                   repository: thelastpickle
-                  tag: skip-migration
+                  tag: 3.1.1
                 description: The image to use for the Reaper pod main container. The
-                  default is "thelastpickle/cassandra-reaper:skip-migration".
+                  default is "thelastpickle/cassandra-reaper:3.1.1".
                 properties:
                   name:
                     description: The image name to use.
@@ -18891,9 +19003,9 @@ spec:
                 default:
                   name: cassandra-reaper
                   repository: thelastpickle
-                  tag: skip-migration
+                  tag: 3.1.1
                 description: The image to use for the Reaper pod init container (that
-                  performs schema migrations). The default is "thelastpickle/cassandra-reaper:skip-migration".
+                  performs schema migrations). The default is "thelastpickle/cassandra-reaper:3.1.1".
                 properties:
                   name:
                     description: The image name to use.
