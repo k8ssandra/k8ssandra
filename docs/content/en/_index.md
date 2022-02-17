@@ -12,25 +12,16 @@ description: "K8ssandra documentation: architecture, configuration, guided tasks
 type: docs
 ---
 
-The K8ssandra documentation covers everything from install details, deployed components, configuration references, and guided outcome-based tasks. Check out the sections at left based on your needs and be sure to leave us a <a class="github-button" href="https://github.com/k8ssandra/k8ssandra" data-icon="octicon-star" aria-label="Star k8ssandra/k8ssandra on GitHub">star</a> on Github!
+The K8ssandra documentation covers everything from install details, deployed components, configuration references, and guided outcome-based tasks. 
 
-{{% alert title="Tip" color="primary" %}}
-If you're impatient, jump right in with our **[install]({{< relref "install" >}})** topics!
-{{% /alert %}}
+Be sure to leave us a <a class="github-button" href="https://github.com/k8ssandra/k8ssandra" data-icon="octicon-star" aria-label="Star k8ssandra/k8ssandra on GitHub">star</a> on Github!
 
 ## Features for single- and multi-cluster Kubernetes environments
 
-{{< cardpane >}}
-  {{< card header="K8ssandra v1.4.x" >}}
-    K8ssandra 1.4.1 is our initial implementation that provides separate Helm charts for services like 
-    Stargate, Reaper, Medusa, Grafana, and more. (docs-v1.k8ssandra.io/... link here)
-  {{< /card >}}
-  {{< card header="K8ssandra Operator v1.0.x" >}}
-    K8ssandra Operator v1.0.0 is our more recent offering that combines API, management, and observability features 
-    under the control of a unified operator. Important enhancements include multi-cluster and multi-region 
-    support for Cassandra deployments in Kubernetes, which enables greater scalability and availability. (docs-v2.k8ssandra.io/... link here)
-  {{< /card >}}
-{{< /cardpane >}}
+| K8ssandra v1.4.x      | K8ssandra Operator v1.0.0 |
+| ----------- | ----------- |
+| K8ssandra v1.4.x is our initial implementation. It provides a set of separate Helm charts you can use to configure and deploy Apache Cassandra&reg; into a single-cluster, single-region Kubernetes environment. | K8ssandra Operator v1.0.0 is our most recent offering. It combines API, management, &amp; observability features under the control of a unified operator. Important enhancements include **multi-cluster** and **multi-region** support for Cassandra deployments in Kubernetes, which enables greater scalability and availability. Single cluster/region deployments are also supported with K8ssandra Operator.|
+| Start in the v1.4.x [Install]({{< relref "install" >}}) topics, which include local dev installs and cloud-provider installs. | Start in the K8ssandra Operator v1.0.0 [local install](https://docs-staging-v2.k8ssandra.io/install/local/) topic, which focuses on local dev installs on a kind Kubernetes environment, using helper scripts, or helm, or kustomize tools.
 
 ## What is K8ssandra?
 
