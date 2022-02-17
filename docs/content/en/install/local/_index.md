@@ -87,11 +87,14 @@ single-up` or `make multi-up` will delete and recreate them.
 
 Deploy a single kind based Kubernetes cluster.
 
+Clone the https://github.com/k8ssandra/k8ssandra-operator repo to your local machine where you're already running a kind cluster. Then:
+
 ```sh
+cd k8ssandra/k8ssandra-operator
 make single-up
 ```
 
-Once cluster should be available:
+Once the cluster is available:
 
 ```sh
 kubectx
@@ -112,7 +115,7 @@ k8ssandra-0-worker3         Ready    <none>                 2m53s   v1.21.2
 k8ssandra-0-worker4         Ready    <none>                 2m53s   v1.21.2
 ```
 
-Once the Kubernetes cluster is ready, deploy a `K8ssandraCluster` like:
+When the Kubernetes cluster is ready, deploy a `K8ssandraCluster` like:
 
 ```sh
 cat <<EOF | kubectl -n k8ssandra-operator apply -f -
