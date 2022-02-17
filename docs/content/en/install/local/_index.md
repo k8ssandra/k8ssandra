@@ -1,441 +1,1271 @@
 ---
-title: "Install K8ssandra on your local K8s"
+title: "Install K8ssandra Operator on local K8s"
 linkTitle: "Local"
 no_list: true
 weight: 1
-description: "Details to install K8ssandra on a local Kubernetes **development** environment."
+description: "Details to install K8ssandra Operator on a local Kubernetes **kind** development environment."
 ---
 
-This topic gets you up and running with a single-node Apache Cassandra® cluster on Kubernetes (K8s). 
-
-If you want to install K8ssandra on a cloud provider's Kubernetes environment, see:
-
-* [K8ssandra installs on Azure Kubernetes Service (AKS)]({{< relref "/install/aks" >}})
-* [K8ssandra installs on DigitalOcean Managed Kubernetes Service (DOKS)]({{< relref "/install/doks" >}})
-* [K8ssandra installs on Amazon Elastic Kubernetes Service (EKS)]({{< relref "/install/eks" >}})
-* [K8ssandra installs on Google Kubernetes Engine (GKE)]({{< relref "/install/gke" >}})
+This topic explains how to install K8ssandra Operator in a local dev **kind** Kubernetes (K8s) environment. The configuration results in a Apache Cassandra&reg; database deployment in a **multi-cluster, multi-region** K8s environment. Included in the deployment are additional services, such as Stargate (API), Reaper (anti-entropy data repairs), and Medusa (backup/restore). Also shown in this topic are K8ssandra Operator install steps for a single-datacenter `kind` K8s cluster.
 
 {{% alert title="Tip" color="success" %}}
-Also available in followup topics are post-install steps and role-based considerations for [developers]({{< relref "/quickstarts/developer">}}) or [Site Reliability Engineers]({{< relref "/quickstarts/site-reliability-engineer">}}) (SREs).
+Follow-up topics cover the post-install steps and role-based considerations for [developers]({{< relref "/quickstarts/developer">}}) or [Site Reliability Engineers]({{< relref "/quickstarts/site-reliability-engineer">}}) (SREs).
 {{% /alert %}}
 
 ## Introduction
 
-In this quickstart for installs of K8ssandra on your local **DEV** environment, we'll cover:
+In this topic for installs of K8ssandra Operator on your local development environment, using **kind**, we'll cover:
 
-* [Prerequisites]({{< relref "#prerequisites" >}}): Required supporting software including resource recommendations.
-* [K8ssandra Helm repository configuration]({{< relref "#configure-the-k8ssandra-helm-repository" >}}): Accessing the Helm charts that install K8ssandra.
-* [K8ssandra installation]({{< relref "#install-k8ssandra" >}}): Getting K8ssandra up and running locally using the Helm chart repo.
-* [Verifying K8ssandra functionality]({{< relref "#verify-your-k8ssandra-installation" >}}): Making sure K8ssandra is working as expected.
-* [Retrieve K8ssandra superuser credentials]({{< relref "#superuser" >}}): Getting the K8ssandra superuser name and password so you can access common utilities as well as the Stargate API.
+* [Prerequisites]({{< relref "#prerequisites" >}}): Required supporting software
+* [Quick Start]({{< relref "#quick-start" >}}): Quick start install including helper scripts, with single-cluster and multi-cluster examples
+* [Helm]({{< relref "#helm" >}}): Install via a single K8ssandra Operator Helm chart, with single-cluster and multi-cluster examples
+* [Kustomize]({{< relref "#kustomize" >}}): Install via Kustomize - a declarative approach, with single-cluster and multi-cluster examples
+* [Next steps]({{< relref "#next-steps" >}}): Quick start info including helper scripts
 
 ## Prerequisites
+Make sure you have the following installed before going through the rest of the guide. 
 
-In your local environment the following tools are required for provisioning a K8ssandra cluster:
+* [kind](#kind)
+* [kubectx](#kubectx)
+* [yq (YAML processor)](#yq)
+* [setup-kind-multicluster.sh](#setup-kind-multiclustersh)
+* [create-clientconfig.sh](#create-clientconfigsh)
 
-* [Helm v3+](https://helm.sh/docs/intro/install/)
-* [Kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/)
+### **kind**
 
-As K8ssandra deploys on a K8s cluster, one must be available to target for installation. The K8s environment may be a local version running on your development machine, an on-premises self-hosted environment, or a managed cloud offering.
+The examples in this topic use [kind](https://kind.sigs.k8s.io/) clusters. Install it now if you have not already done so.
 
-K8ssandra works with the following versions of Kubernetes either standalone or via a cloud provider:
+By default, kind clusters run on the same Docker network, which means we will have routable pod IPs across clusters.
 
-* 1.17 (minimum supported version)
-* 1.18
-* 1.19
-* 1.20
-* v1.21.1 (current upper bound of K8ssandra testing)
+**Note:**  Issues creating multiple kind clusters have been observed on various versions of Docker Desktop for macOS.  These issues seem to be resolved with the 4.5.0 release of Docker Desktop.  Please be sure to upgrade Docker Desktop if you plan to deploy using kind. Other options for local dev K8s environments include [minikube](https://minikube.sigs.k8s.io/docs/start/) or [K3D](https://k3d.io/v5.3.0/). 
 
-To verify your K8s server version:
+### **kubectx**
 
-```bash
-kubectl version
+[kubectx](https://github.com/ahmetb/kubectx) is a really handy tool when you are dealing with multiple clusters. The examples will use it so go ahead and install it now.
+
+### **yq**
+
+[yq](https://github.com/mikefarah/yq#install) is lightweight and portable command-line YAML processor.
+
+### setup-kind-multicluster.sh
+
+[setup-kind-multicluster.sh](https://github.com/k8ssandra/k8ssandra-operator/blob/main/scripts/setup-kind-multicluster.sh) lives in the k8ssandra-operator repo. It is used extensively during development and testing. Not only does it configure and create kind clusters, it also generates kubeconfig files for each cluster.
+
+**Note:** kind generates a kubeconfig with the IP address of the API server set to 
+localhost since the cluster is intended for local development. We need a kubeconfig with the IP address set to the internal address of the api server. `setup-kind-mulitcluster.sh` takes care of this for us.
+
+### create-clientconfig.sh
+
+[create-clientconfig.sh](https://github.com/k8ssandra/k8ssandra-operator/blob/main/scripts/create-clientconfig.sh) lives in the k8ssandra-operator repo. It is used to configure access to remote clusters. 
+
+## Quick Start
+
+If you're interested in getting running as quickly as possible, there's a number of helper scripts that can be used to greatly reduce the steps to deploy a local K8ssandra cluster via kind for testing purposes.
+
+Two base `make` commands are provided that deploy a basic kind-based Kubernetes cluster(s).  These commands encapsulate the more detailed step-by-step installation instructions otherwise captured in this document.
+
+Each of these commands will do the following:
+
+* Create the kind-based cluster(s)
+
+Across the cluster:
+
+* Install cert-manager in it's own namespace
+* Install cass-operator in the `k8ssandra-operator` namespace
+* Build the k8ssandra-operator from source, load the image into the kind nodes, and 
+  install it in the `k8ssandra-operator` namespace
+* Install relevant CRDs
+
+At completion, the cluster is now ready to accept a `K8ssandraCluster` deployment.
+
+**Note:** if a k8ssandra-0 and/or k8ssandra-1 kind cluster already exists, running `make 
+single-up` or `make multi-up` will delete and recreate them.
+
+**Note:** These steps will attempt to start a local Docker registry instance to be used by the kind cluster(s), if you are already running one locally it will need to be stopped before following these procedures.
+
+### Single Cluster
+
+Deploy a single kind based Kubernetes cluster.
+
+```sh
+make single-up
 ```
 
-**Output**:
+Once cluster should be available:
 
-```json
-Client Version: version.Info{Major:"1", Minor:"20", GitVersion:"v1.20.3", GitCommit:"01849e73f3c86211f05533c2e807736e776fcf29", GitTreeState:"clean", BuildDate:"2021-02-18T12:10:55Z", GoVersion:"go1.15.8", Compiler:"gc", Platform:"darwin/amd64"}
-Server Version: version.Info{Major:"1", Minor:"18", GitVersion:"v1.18.16", GitCommit:"7a98bb2b7c9112935387825f2fce1b7d40b76236", GitTreeState:"clean", BuildDate:"2021-02-17T11:52:32Z", GoVersion:"go1.13.15", Compiler:"gc", Platform:"linux/amd64"}
+```sh
+kubectx
 ```
 
-Your K8s server version is a combination of the `Major:` and `Minor:` key/value pairs following `Server Version:`, in the example above, `1.18`.
+```sh
+kind-k8ssandra-0
+```
 
-If you don't have a K8s cluster available, you can use [OpenShift CodeReady Containers](https://developers.redhat.com/products/codeready-containers/overview) that run within a VM, or one of the following local versions that run within Docker:
+The cluster should consist of the following nodes:
 
-* [K3D](https://k3d.io/)
-* [Minikube](https://minikube.sigs.k8s.io/docs/start/)
-* [Kind](https://kind.sigs.k8s.io/)
+```sh
+NAME                        STATUS   ROLES                  AGE     VERSION
+k8ssandra-0-control-plane   Ready    control-plane,master   3m24s   v1.21.2
+k8ssandra-0-worker          Ready    <none>                 2m53s   v1.21.2
+k8ssandra-0-worker2         Ready    <none>                 3m5s    v1.21.2
+k8ssandra-0-worker3         Ready    <none>                 2m53s   v1.21.2
+k8ssandra-0-worker4         Ready    <none>                 2m53s   v1.21.2
+```
 
-The instructions in this section focus on the Docker container solutions above, but the general instructions should work for other environments as well.
+Once the Kubernetes cluster is ready, deploy a `K8ssandraCluster` like:
 
-### Resource recommendations for local Kubernetes installations
+```sh
+cat <<EOF | kubectl -n k8ssandra-operator apply -f -
+apiVersion: k8ssandra.io/v1alpha1
+kind: K8ssandraCluster
+metadata:
+  name: demo
+spec:
+  cassandra:
+    serverVersion: "4.0.1"
+    datacenters:
+      - metadata:
+          name: dc1
+        size: 3
+        storageConfig:
+          cassandraDataVolumeClaimSpec:
+            storageClassName: standard
+            accessModes:
+              - ReadWriteOnce
+            resources:
+              requests:
+                storage: 5Gi
+        config:
+          jvmOptions:
+            heapSize: 512M
+        stargate:
+          size: 1
+          heapSize: 256M
+EOF
+```
 
-We recommend a machine specification of **no less** than 16 gigs of RAM and 8 virtual processor cores (4 physical cores). You'll want to adjust your Docker resource preferences accordingly. For this quick start we're allocating 4 virtual processors and 8 gigs of RAM to the Docker environment.
+Confirm that the resource has been created:
+
+```console
+kubectl -n k8ssandra-operator get k8ssandraclusters
+```
+
+```console
+NAME   AGE
+demo   45s
+```
+
+```console
+kubectl -n k8ssandra-operator describe k8ssandracluster demo
+```
+
+```console
+Name:         demo
+Namespace:    k8ssandra-operator
+Labels:       <none>
+Annotations:  <none>
+API Version:  k8ssandra.io/v1alpha1
+Kind:         K8ssandraCluster
+...
+Status:
+  Datacenters:
+    dc1:
+      Cassandra:
+        Cassandra Operator Progress:  Updating
+        Node Statuses:
+Events:  <none>
+```
+
+Monitor the status of the deployment, eventually resulting in all the resources being in the `Ready` state:
+
+```console
+kubectl -n k8ssandra-operator describe K8ssandraCluster demo
+```
+
+```console
+Name:         demo
+Namespace:    k8ssandra-operator
+Labels:       <none>
+Annotations:  <none>
+API Version:  k8ssandra.io/v1alpha1
+Kind:         K8ssandraCluster
+...
+Status:
+  Datacenters:
+    dc1:
+      Cassandra:
+        Cassandra Operator Progress:  Ready
+      ...
+      Stargate:
+        Available Replicas:  1
+        Conditions:
+          Last Transition Time:  2021-09-28T03:32:07Z
+          Status:                True
+          Type:                  Ready
+        Deployment Refs:
+          demo-dc1-default-stargate-deployment
+        Progress:              Running
+        Ready Replicas:        1
+        Ready Replicas Ratio:  1/1
+        Replicas:              1
+        Service Ref:           demo-dc1-stargate-service
+        Updated Replicas:      1
+Events:                        <none>
+```
+
+### Multi-Cluster
+
+Deploy two kind based Kubernetes clusters with:
+
+```console
+make multi-up
+```
+
+Two clusters should be available:
+
+```console
+kubectx
+```
+
+```console
+kind-k8ssandra-0
+kind-k8ssandra-1
+```
+
+Each cluster should consist of the following nodes:
+
+kind-k8ssandra-0:
+
+```console
+NAME                        STATUS   ROLES                  AGE     VERSION
+k8ssandra-0-control-plane   Ready    control-plane,master   9m20s   v1.21.2
+k8ssandra-0-worker          Ready    <none>                 8m49s   v1.21.2
+k8ssandra-0-worker2         Ready    <none>                 8m49s   v1.21.2
+k8ssandra-0-worker3         Ready    <none>                 8m48s   v1.21.2
+k8ssandra-0-worker4         Ready    <none>                 8m49s   v1.21.2
+```
+
+kind-k8ssandra-1
+
+```console
+NAME                        STATUS   ROLES                  AGE     VERSION
+k8ssandra-1-control-plane   Ready    control-plane,master   9m51s   v1.21.2
+k8ssandra-1-worker          Ready    <none>                 9m32s   v1.21.2
+k8ssandra-1-worker2         Ready    <none>                 9m20s   v1.21.2
+k8ssandra-1-worker3         Ready    <none>                 9m32s   v1.21.2
+k8ssandra-1-worker4         Ready    <none>                 9m20s   v1.21.2
+```
+
+You're now ready to deploy a `K8ssandraCluster`.
+
+Set your context to the control-plane cluster (`kind-k8ssandra-0`):
+
+```console
+kubectx kind-k8ssandra-0
+```
+
+```console
+Switched to context "kind-k8ssandra-0".
+```
+
+Deploy the `K8ssandraCluster` resource:
+
+```sh
+cat <<EOF | kubectl -n k8ssandra-operator apply -f -
+apiVersion: k8ssandra.io/v1alpha1
+kind: K8ssandraCluster
+metadata:
+  name: demo
+spec:
+  cassandra:
+    serverVersion: "4.0.1"
+    storageConfig:
+      cassandraDataVolumeClaimSpec:
+        storageClassName: standard
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 5Gi
+    config:
+      jvmOptions:
+        heapSize: 512M
+    networking:
+      hostNetwork: true    
+    datacenters:
+      - metadata:
+          name: dc1
+        size: 3
+        stargate:
+          size: 1
+          heapSize: 256M
+      - metadata:
+          name: dc2
+        k8sContext: kind-k8ssandra-1
+        size: 3
+        stargate:
+          size: 1
+          heapSize: 256M 
+EOF
+```
+
+Confirm that the resource has been created:
+
+```console
+kubectl -n k8ssandra-operator get k8ssandraclusters
+```
+
+```console
+NAME   AGE
+demo   45s
+```
+
+```console
+kubectl describe -n k8ssandra-operator K8ssandraCluster demo
+```
+
+```sh
+Name:         demo
+Namespace:    k8ssandra-operator
+Labels:       <none>
+Annotations:  <none>
+API Version:  k8ssandra.io/v1alpha1
+Kind:         K8ssandraCluster
+...
+Status:
+  Datacenters:
+    dc1:
+      Cassandra:
+        Cassandra Operator Progress:  Updating
+        Node Statuses:
+Events:  <none>
+```
+
+Monitor the status of the deployment, eventually resulting in all the resources being in 
+the `Ready` state:
+
+```console
+kubectl -n k8ssandra-operator describe K8ssandraCluster demo
+```
+
+```console
+Name:         demo
+Namespace:    k8ssandra-operator
+Labels:       <none>
+Annotations:  <none>
+API Version:  k8ssandra.io/v1alpha1
+Kind:         K8ssandraCluster
+...
+Status:
+  Datacenters:
+    dc1:
+      Cassandra:
+        Cassandra Operator Progress:  Ready
+      ...
+      Stargate:
+        Available Replicas:  1
+        Conditions:
+          Last Transition Time:  2021-09-27T17:52:41Z
+          Status:                True
+          Type:                  Ready
+        Deployment Refs:
+          demo-dc1-default-stargate-deployment
+        Progress:              Running
+        Ready Replicas:        1
+        Ready Replicas Ratio:  1/1
+        Replicas:              1
+        Service Ref:           demo-dc1-stargate-service
+        Updated Replicas:      1
+    dc2:
+      Cassandra:
+        Cassandra Operator Progress:  Ready
+      ...
+      Stargate:
+        Available Replicas:  1
+        Conditions:
+          Last Transition Time:  2021-09-27T17:53:40Z
+          Status:                True
+          Type:                  Ready
+        Deployment Refs:
+          demo-dc2-default-stargate-deployment
+        Progress:              Running
+        Ready Replicas:        1
+        Ready Replicas Ratio:  1/1
+        Replicas:              1
+        Service Ref:           demo-dc2-stargate-service
+        Updated Replicas:      1
+Events:  <none>
+```
+## Helm
+You need to have [Helm v3+](https://helm.sh/docs/intro/install/) installed.
+
+Configure the K8ssandra Helm repository:
+
+```console
+helm repo add k8ssandra https://helm.k8ssandra.io/stable
+```
+
+Update your Helm repository cache:
+
+```console
+helm repo update
+```
+
+Verify that you see the `k8ssandra-operator` chart:
+
+```console
+helm search repo k8ssandra-operator
+```
+
+```console
+NAME                                CHART VERSION   APP VERSION DESCRIPTION
+k8ssandra/k8ssandra-operator        0.32.0          1.0.0       Kubernetes operator which handles the provision...
+```
+
+### Single Cluster 
+We will first look at a single cluster install to demonstrate that while K8ssandra 
+Operator is designed for multi-cluster use, it can be used in a single cluster without 
+any extra configuration.
+
+#### Create kind cluster
+Run `setup-kind-multicluster.sh` as follows:
+
+```sh
+./setup-kind-multicluster.sh --kind-worker-nodes 4
+```
+
+#### Install K8ssandra Operator
+Install the Helm chart:
+
+```console
+helm install k8ssandra-operator k8ssandra/k8ssandra-operator -n k8ssandra-operator --create-namespace
+```
+This `helm install` command does the following:
+
+* Create the `k8ssandra-operator` namespace if necessary
+* Install Cass Operator in the `k8ssandra-operator` namespace
+* Install K8ssandra Operator in the `k8ssandra-operator` namespace
+
+This does not currently install Cert Manager. Cass Operator requires Cert Manager when 
+its webhook is enabled. This installs with the webhook disabled.
+
+Verify that the Helm release is installed:
+
+```console
+helm ls -n k8ssandra-operator
+```
+
+```console
+NAME                NAMESPACE           REVISION    UPDATED                                 STATUS      CHART                       APP VERSION
+k8ssandra-operator  k8ssandra-operator  1           2021-09-30 16:28:08.722822 -0400 EDT    deployed    k8ssandra-operator-0.32.0   1.0.0
+```
+
+Verify that the following CRDs are installed:
+
+* `cassandradatacenters.cassandra.datastax.com`
+* `clientconfigs.config.k8ssandra.io`
+* `k8ssandraclusters.k8ssandra.io`
+* `replicatedsecrets.replication.k8ssandra.io`
+* `stargates.stargate.k8ssandra.io`
+
+
+Check that there are two Deployments. The output should look similar to this:
+
+```console
+kubectl -n k8ssandra-operator get deployment
+```
+
+```console
+NAME                                    READY   UP-TO-DATE   AVAILABLE   AGE
+k8ssandra-operator-cass-operator        1/1     1            1           85s
+k8ssandra-operator-k8ssandra-operator   1/1     1            1           85s
+```
+
+#### Deploy a K8ssandraCluster
+Now we will deploy a K8ssandraCluster that consists of a 3-node Cassandra cluster and a Stargate node.
+
+```sh
+cat <<EOF | kubectl -n k8ssandra-operator apply -f -
+apiVersion: k8ssandra.io/v1alpha1
+kind: K8ssandraCluster
+metadata:
+  name: demo
+spec:
+  cassandra:
+    serverVersion: "4.0.1"
+    datacenters:
+      - metadata:
+          name: dc1
+        size: 3
+        storageConfig:
+          cassandraDataVolumeClaimSpec:
+            storageClassName: standard
+            accessModes:
+              - ReadWriteOnce
+            resources:
+              requests:
+                storage: 5Gi
+        config:
+          jvmOptions:
+            heapSize: 512M
+        stargate:
+          size: 1
+          heapSize: 256M
+EOF
+```
+Confirm that the resource has been created:
+
+```console
+kubectl -n k8ssandra-operator get k8ssandraclusters
+```
+
+```console
+NAME   AGE
+demo   45s
+```
+
+```console
+kubectl -n k8ssandra-operator describe k8ssandracluster demo
+```
+
+```console
+Name:         demo
+Namespace:    k8ssandra-operator
+Labels:       <none>
+Annotations:  <none>
+API Version:  k8ssandra.io/v1alpha1
+Kind:         K8ssandraCluster
+...
+Status:
+  Datacenters:
+    dc1:
+      Cassandra:
+        Cassandra Operator Progress:  Updating
+        Node Statuses:
+Events:  <none>
+```
+
+Monitor the status of the deployment, eventually resulting in all the resources being in the `Ready` state:
+
+```console
+kubectl -n k8ssandra-operator describe K8ssandraCluster demo
+```
+
+```console
+Name:         demo
+Namespace:    k8ssandra-operator
+Labels:       <none>
+Annotations:  <none>
+API Version:  k8ssandra.io/v1alpha1
+Kind:         K8ssandraCluster
+...
+Status:
+  Datacenters:
+    dc1:
+      Cassandra:
+        Cassandra Operator Progress:  Ready
+      ...
+      Stargate:
+        Available Replicas:  1
+        Conditions:
+          Last Transition Time:  2021-09-28T03:32:07Z
+          Status:                True
+          Type:                  Ready
+        Deployment Refs:
+          demo-dc1-default-stargate-deployment
+        Progress:              Running
+        Ready Replicas:        1
+        Ready Replicas Ratio:  1/1
+        Replicas:              1
+        Service Ref:           demo-dc1-stargate-service
+        Updated Replicas:      1
+Events:                        <none>
+```
+
+### Multi-Cluster
+
+If you previously created a cluster with `setup-kind-multicluster.sh` we need to delete 
+it in order to create the multi-cluster setup. The script currently does not support 
+adding clusters to an existing setup (see[#128](https://github.com/k8ssandra/k8ssandra-operator/issues/128)).
+
+We will create two kind clusters with 3 worker nodes per clusters. Remember that 
+K8ssandra Operator requires clusters to have routable pod IPs. kind clusters by default 
+will run on the same Docker network which means that they will have routable IPs.
+
+#### Create kind clusters
+Run `setup-kind-multicluster.sh` as follows:
+
+```sh
+./setup-kind-multicluster.sh --clusters 2 --kind-worker-nodes 4
+```
+
+When creating a cluster, kind generates a kubeconfig with the address of the API server 
+set to localhost. We need a kubeconfig that has the API server address set to its 
+internal ip address. `setup-kind-multi-cluster.sh` takes care of this for us. Generated 
+files are written into a `build` directory.
+
+Run `kubectx` without any arguments and verify that you see the following contexts 
+listed in the output:
+
+* kind-k8ssandra-0
+* kind-k8ssandra-1
+
+#### Install the control plane
+We will install the control plane in `kind-k8ssandra-0`. Make sure your active context 
+is configured correctly:
+
+```console
+kubectx kind-k8ssandra-0
+```
+
+Install the operator:
+
+```console
+helm install k8ssandra-operator k8ssandra/k8ssandra-operator -n k8ssandra-operator --create-namespace
+```
+
+This `helm install` command does the following:
+
+* Create the `k8ssandra-operator` namespace if necessary
+* Install Cass Operator in the `k8ssandra-operator` namespace
+* Install K8ssandra Operator in the `k8ssandra-operator` namespace
+
+This does not currently install Cert Manager. Cass Operator requires Cert Manager when
+its webhook is enabled. This installs with Cass Operator's webhook disabled.
+
+Verify that the Helm release is installed:
+
+```console
+helm ls -n k8ssandra-operator
+```
+
+```console
+NAME                NAMESPACE           REVISION    UPDATED                                 STATUS      CHART                       APP VERSION
+k8ssandra-operator  k8ssandra-operator  1           2021-09-30 16:28:08.722822 -0400 EDT    deployed    k8ssandra-operator-0.32.0   1.0.0
+```
+
+Verify that the following CRDs are installed:
+
+* `cassandradatacenters.cassandra.datastax.com`
+* `clientconfigs.k8ssandra.io`
+* `k8ssandraclusters.k8ssandra.io`
+* `replicatedsecrets.k8ssandra.io`
+* `stargates.k8ssandra.io`
+
+Check that there are two Deployments. The output should look similar to this:
+
+```console
+kubectl -n k8ssandra-operator get deployment
+```
+
+```console
+NAME                                    READY   UP-TO-DATE   AVAILABLE   AGE
+k8ssandra-operator-cass-operator        1/1     1            1           85s
+k8ssandra-operator-k8ssandra-operator   1/1     1            1           85s
+```
+
+The operator looks for an environment variable named `K8SSANDRA_CONTROL_PLANE`. When set 
+to `true` the control plane is enabled. It is enabled by default.
+
+Verify that the `K8SSANDRA_CONTROL_PLANE` environment variable is set to `true`:
+
+```console
+kubectl -n k8ssandra-operator get deployment k8ssandra-operator-k8ssandra-operator -o jsonpath='{.spec.template.spec.containers[0].env[?(@.name=="K8SSANDRA_CONTROL_PLANE")].value}'
+```
+
+#### Install the data plane
+Now we will install the data plane in `kind-k8ssandra-1`. Switch the active context:
+
+```console
+kubectx kind-k8ssandra-1
+```
+
+Install the operator:
+
+```console
+helm install k8ssandra-operator k8ssandra/k8ssandra-operator -n k8ssandra-operator --create-namespace --set controlPlane=false
+```
+
+This `helm install` command does the following:
+
+* Create the `k8ssandra-operator` namespace if necessary
+* Install Cass Operator in the `k8ssandra-operator` namespace
+* Install K8ssandra Operator in the `k8ssandra-operator` namespace
+* Configures K8ssandra Operator to run in the data plane 
+
+This does not currently install Cert Manager. Cass Operator requires Cert Manager when
+its webhook is enabled. This installs with Cass Operator's webhook disabled.
+
+Verify that the following CRDs are installed:
+
+* `cassandradatacenters.cassandra.datastax.com`
+* `clientconfigs.k8ssandra.io`
+* `k8ssandraclusters.k8ssandra.io`
+* `replicatedsecrets.k8ssandra.io`
+* `stargates.k8ssandra.io`
+
+Check that there are two Deployments. The output should look similar to this:
+
+```console
+kubectl -n k8ssandra-operator get deployment
+```
+
+```console
+NAME                                    READY   UP-TO-DATE   AVAILABLE   AGE
+k8ssandra-operator-cass-operator        1/1     1            1           85s
+k8ssandra-operator-k8ssandra-operator   1/1     1            1           85s
+```
+
+Verify that the `K8SSANDRA_CONTROL_PLANE` environment variable is set to `false`:
+
+```console
+kubectl -n k8ssandra-operator get deployment k8ssandra-operator-k8ssandra-operator -o jsonpath='{.spec.template.spec.containers[0].env[?(@.name=="K8SSANDRA_CONTROL_PLANE")].value}'
+```
+
+#### Create a ClientConfig
+Now we need to create a `ClientConfig` for the `kind-k8ssandra-1` cluster. We will use 
+the `create-clientconfig.sh` script which can be found [here](https://github.com/k8ssandra/k8ssandra-operator/blob/main/scripts/create-clientconfig.sh).
+
+Here is a summary of what the script does:
+
+* Get the k8ssandra-operator service account from the data plane cluster
+* Extract the service account token
+* Extract the CA cert
+* Create a kubeonfig using the token and cert
+* Create a secret for the kubeconfig in the control plane cluster
+* Create a ClientConfig in the control plane cluster that references the secret
+
+Create a `ClientConfig` in the `kind-k8ssandra-0` cluster using the service account 
+token and CA cert from `kind-k8ssandra-1`:
+
+```sh
+./create-clientconfig.sh --namespace k8ssandra-operator --src-kubeconfig build/kubeconfigs/k8ssandra-1.yaml --dest-kubeconfig build/kubeconfigs/k8ssandra-0.yaml --in-cluster-kubeconfig build/kubeconfigs/updated/k8ssandra-1.yaml --output-dir clientconfig
+```
+The script stores all the artifacts that it generates in a directory which is specified with the `--output-dir` option. If not specified, a temp directory is created.
+
+You can specify the namespace where the secret and ClientConfig are created with the `--namespace` option.
+
+The `--in-cluster-kubeconfig` option is required for clusters that run locally like kind.
+
+#### Restart the control plane
+
+Make the active context `kind-k8ssandra-0`:
+
+```console
+kubectx kind-k8ssandra-0
+```
+
+Restart the operator:
+
+```console
+kubectl -n k8ssandra-operator rollout restart deployment k8ssandra-operator-k8ssandra-operator
+```
+
+**Note:** See https://github.com/k8ssandra/k8ssandra-operator/issues/178 for details on
+why it is necessary to restart the control plane operator.
+
+#### Deploy a K8ssandraCluster
+Now we will create a K8ssandraCluster that consists of a Cassandra cluster with 2 DCs and 3 
+nodes per DC, and a Stargate node per DC.
+
+```sh
+cat <<EOF | kubectl -n k8ssandra-operator apply -f -
+apiVersion: k8ssandra.io/v1alpha1
+kind: K8ssandraCluster
+metadata:
+  name: demo
+spec:
+  cassandra:
+    serverVersion: "3.11.11"
+    storageConfig:
+      cassandraDataVolumeClaimSpec:
+        storageClassName: standard
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 5Gi
+    config:
+      jvmOptions:
+        heapSize: 512M
+    networking:
+      hostNetwork: true    
+    datacenters:
+      - metadata:
+          name: dc1
+        size: 3
+        stargate:
+          size: 1
+          heapSize: 256M
+      - metadata:
+          name: dc2
+        k8sContext: kind-k8ssandra-1
+        size: 3
+        stargate:
+          size: 1
+          heapSize: 256M 
+EOF
+```
+
+## Kustomize
+K8ssandra Operator can be installed with [Kustomize](https://kustomize.io/) which takes 
+a declarative approach to configuring and deploying resources whereas Helm takes more of 
+an imperative approach.
+
+The following examples use `kubectl apply -k` to deploy resources. The `-k` option
+essentially runs `kustomize build` over the specified directory followed by `kubectl
+apply`. See this [doc](https://kubernetes.io/docs/tasks/manage-kubernetes-objects/kustomization/)
+for details on the integration of Kustomize into `kubectl`.
 
 {{% alert title="Tip" color="success" %}}
-See the documentation for your particular flavor of Docker for instructions on configuring resource limits.
+If `kubectl -k <dir>` does not work for, you can instead use 
+`kustomize build <dir> | kubectl apply -f -`.
 {{% /alert %}}
 
-The following Minikube example creates a K8s cluster running K8s version 1.18.16 with 4 virtual processor cores and 8 gigs of RAM:
+### Single Cluster
+We will first look at a single cluster install to demonstrate that while K8ssandra 
+Operator is designed for multi-cluster use, it can be used in a single cluster without 
+any extra configuration.
 
-```bash
-minikube start --cpus=4 --memory='8128m' --kubernetes-version=1.18.16
+#### Create kind cluster
+Run `setup-kind-multicluster.sh` as follows:
+
+```sh
+./setup-kind-multicluster.sh --kind-worker-nodes 4
 ```
 
-**Output**:
+#### Install Cert Manager
+We need to first install Cert Manager as it is a dependency of cass-operator:
 
-```bash
-😄  minikube v1.17.1 on Darwin 11.2.1
-✨  Automatically selected the docker driver. Other choices: hyperkit, ssh
-👍  Starting control plane node k8ssandra in cluster k8ssandra
-🔥  Creating docker container (CPUs=4, Memory=8128MB) ...
-🐳  Preparing Kubernetes v1.18.16 on Docker 20.10.2 ...
-    ▪ Generating certificates and keys ...
-    ▪ Booting up control plane ...
-    ▪ Configuring RBAC rules ...
-🔎  Verifying Kubernetes components...
-🌟  Enabled addons: storage-provisioner, default-storageclass
-🏄  Done! kubectl is now configured to use "minikube" cluster and "default" namespace by default
+```console
+kubectl apply -f https://github.com/jetstack/cert-manager/releases/download/v1.5.3/cert-manager.yaml
 ```
 
-### Verify your Kubernetes environment
+#### Install K8ssandra Operator
+The GitHub Actions for the project are configured to build and push a new operator image 
+to Docker Hub whenever commits are pushed to `main`. 
 
-To verify your Kubernetes environment:
+See [here](https://hub.docker.com/repository/docker/k8ssandra/k8ssandra-operator/tags?page=1&ordering=last_updated) 
+on Docker Hub for a list of available images.
 
-1. Verify that your K8s instance is up and running in the `READY` status:
+Install with kubectl:
 
-    ```bash
-    kubectl get nodes
-    ```
-
-    **Output**:
-
-    ```bash
-    NAME        STATUS   ROLES    AGE   VERSION
-    k8ssandra   Ready    master   21m   v1.18.16
-    ```
-
-### Validate the available Kubernetes StorageClasses {#storage-classes}
-
-Your K8s instance **must** support a storage class with a `VOLUMEBINDINGMODE` of `WaitForFirstConsumer`.
-
-To list the available K8s storage classes for your K8s instance:
-
-```bash
-kubectl get storageclasses
+```console
+kubectl apply -k github.com/k8ssandra/k8ssandra-operator/config/deployments/control-plane
 ```
 
-**Output**:
+This installs the operator in the `k8ssandra-operator` namespace.
 
-```bash
-NAME                 PROVISIONER                RECLAIMPOLICY   VOLUMEBINDINGMODE   ALLOWVOLUMEEXPANSION   AGE
-standard (default)   k8s.io/minikube-hostpath   Delete          Immediate           false                  2m25s
+**Note:** This will deploy the `latest` operator image, i.e., 
+`k8ssandra/k8ssandra-operator:latest`. In general it is best to avoid using `latest`. 
+
+In case you want to customize the installation, create a kustomization directory that 
+builds from the `main` branch and in this case we'll add namespace creation and define 
+new namespace. Note the `namespace` property which we added. This property tells 
+Kustomize to apply a transformation on all resources that specify a namespace.
+
+```sh
+K8SSANDRA_OPERATOR_HOME=$(mktemp -d)
+cat <<EOF >$K8SSANDRA_OPERATOR_HOME/kustomization.yaml
+
+namespace: k8ssandra-operator
+
+resources:
+- github.com/k8ssandra/k8ssandra-operator/config/deployments/default?ref=main
+
+components:
+- github.com/k8ssandra/k8ssandra-operator/config/components/namespace
+
+images:
+- name: k8ssandra/k8ssandra-operator
+  newTag: v1.0.0-alpha.1
+EOF
 ```
 
-If you don't have a storage class with a `VOLUMEBINDINGMODE` of `WaitForFirstConsumer` as in the Minikube example above, you can install the [Rancher Local Path Provisioner](https://github.com/rancher/local-path-provisioner):
+Now install the operator:
 
-```bash
-kubectl apply -f https://raw.githubusercontent.com/rancher/local-path-provisioner/master/deploy/local-path-storage.yaml
+```console
+kubectl apply -k $K8SSANDRA_OPERATOR_HOME
 ```
 
-**Output**:
+This installs the operator in the `k8ssandra-operator` namespace.
 
-```bash
-namespace/local-path-storage created
-serviceaccount/local-path-provisioner-service-account created
-clusterrole.rbac.authorization.k8s.io/local-path-provisioner-role created
-clusterrolebinding.rbac.authorization.k8s.io/local-path-provisioner-bind created
-deployment.apps/local-path-provisioner created
-storageclass.storage.k8s.io/local-path created
-configmap/local-path-config created
+If you just want to generate the manifests then run:
+
+```console
+kustomize build $K8SSANDRA_OPERATOR_HOME
 ```
 
-Rechecking the available storage classes, you should see that a new `local-path` storage class is available with the required `VOLUMEBINDINGMODE` of `WaitForFirstConsumer`:
+Verify that the following CRDs are installed:
 
-```bash
-kubectl get storageclasses
+* `cassandradatacenters.cassandra.datastax.com`
+* `certificaterequests.cert-manager.io`
+* `certificates.cert-manager.io`
+* `challenges.acme.cert-manager.io`
+* `clientconfigs.config.k8ssandra.io`
+* `clusterissuers.cert-manager.io`
+* `issuers.cert-manager.io`
+* `k8ssandraclusters.k8ssandra.io`
+* `orders.acme.cert-manager.io`
+* `replicatedsecrets.replication.k8ssandra.io`
+* `stargates.stargate.k8ssandra.io`
+
+
+Check that there are two Deployments. The output should look similar to this:
+
+```console
+kubectl -n k8ssandra-operator get deployment
+NAME                 READY   UP-TO-DATE   AVAILABLE   AGE
+cass-operator        1/1     1            1           2m
+k8ssandra-operator   1/1     1            1           2m
 ```
 
-**Output**:
+Verify that the `K8SSANDRA_CONTROL_PLANE` environment variable is set to `false`:
 
-```bash
-NAME                 PROVISIONER                RECLAIMPOLICY   VOLUMEBINDINGMODE      ALLOWVOLUMEEXPANSION   AGE
-local-path           rancher.io/local-path      Delete          WaitForFirstConsumer   false                  3s
-standard (default)   k8s.io/minikube-hostpath   Delete          Immediate              false                  39s
+```console
+kubectl -n k8ssandra-operator get deployment k8ssandra-operator-k8ssandra-operator -o jsonpath='{.spec.template.spec.containers[0].env[?(@.name=="K8SSANDRA_CONTROL_PLANE")].value}'
 ```
 
-## Configure the K8ssandra Helm repository
+#### Deploy a K8ssandraCluster
+Now we will deploy a K8ssandraCluster that consists of a 3-node Cassandra cluster and a 
+Stargate node.
 
-K8ssandra is delivered via a collection of Helm charts for easy installation, so once you've got a suitable K8s environment configured, you'll need to add the K8ssandra Helm chart repositories.
-
-To add the K8ssandra helm chart repos:
-
-1. Install [Helm v3+](https://helm.sh/docs/intro/install/) if you haven't already.
-
-1. Add the main K8ssandra stable Helm chart repo:
-
-    ```bash
-    helm repo add k8ssandra https://helm.k8ssandra.io/stable
-    ```
-
-1. If you want to access K8ssandra services from outside of the Kubernetes cluster, also add the Traefik Ingress repo:
-
-    ```bash
-    helm repo add traefik https://helm.traefik.io/traefik
-    ```
-
-1. Finally, update your helm repository listing:
-
-    ```bash
-    helm repo update
-    ```
-
-{{% alert title="Tip" color="success" %}}
-Alternatively, you can download the individual charts directly from the project's [releases](https://github.com/k8ssandra/k8ssandra/releases) page.
-{{% /alert %}}
-
-## Install K8ssandra
-
-The K8ssandra helm charts make installation a snap. You can override chart configurations during installation as necessary if you're an advanced user, or make changes after a default installation using `helm upgrade` at a later time.
-
-K8ssandra 1.3.0 can install the following versions of Apache Cassandra:
-
-* 3.11.7
-* 3.11.8
-* 3.11.9
-* 3.11.10
-* 4.0.0 (default)
-
-{{% alert title="Important" color="warning" %}}
-K8ssandra comes out of the box with a set of [default values](https://github.com/k8ssandra/k8ssandra/blob/main/charts/k8ssandra/values.yaml) tailored to getting up and running quickly.  Those defaults are intended to be a great starting point for smaller-scale local development but are **not** intended for production deployments.
-{{% /alert %}}
-
-To install a single node K8ssandra cluster:
-
-1. Copy the following YAML to a file named `k8ssandra.yaml`:
-
-    ```yaml
-    cassandra:
-      version: "3.11.10"
-      cassandraLibDirVolume:
-        storageClass: local-path
-        size: 5Gi
-      allowMultipleNodesPerWorker: true
-      heap:
-       size: 1G
-       newGenSize: 1G
-      resources:
-        requests:
-          cpu: 1000m
-          memory: 2Gi
-        limits:
-          cpu: 1000m
-          memory: 2Gi
-      datacenters:
-      - name: dc1
-        size: 1
-        racks:
-        - name: default
-    kube-prometheus-stack:
-      grafana:
-        adminUser: admin
-        adminPassword: admin123
-    stargate:
-      enabled: true
-      replicas: 1
-      heapMB: 256
-      cpuReqMillicores: 200
-      cpuLimMillicores: 1000
-    ```
-
-    That configuration file creates a K8ssandra cluster with a datacenter, `dc1`, containing a single Cassandra node, `size: 1` version `3.11.10` with the following specifications:
-
-    * 1 GB of heap
-    * 2 GB of RAM for the container
-    * 1 CPU core
-    * 5 GB of storage
-    * 1 Stargate node with
-      * 1 CPU core
-      * 256 MB of heap
-
-    {{% alert title="Important" color="warning" %}}
-The `storageClass:` parameter must be a storage class with a `VOLUMEBINDINGMODE` of `WaitForFirstConsumer` as described in [Validate the available Kubernetes StorageClasses]({{< relref "#storage-classes" >}}).
-    {{% /alert %}}
-
-1. Use `helm install` to install K8ssandra, pointing to the example configuration file using the `-f` flag:
-
-    ```bash
-    helm install -f k8ssandra.yaml k8ssandra k8ssandra/k8ssandra
-    ```
-
-    **Output**:
-
-    ```bash
-    NAME: k8ssandra
-    LAST DEPLOYED: Thu Feb 18 10:05:44 2021
-    NAMESPACE: default
-    STATUS: deployed
-    REVISION: 1
-    ```
-
-    {{% alert title="Tip" color="success" %}}
-In the example above, the K8ssandra pods will have the cluster name `k8ssandra` prefixed or appended inline.
-    {{% /alert %}}
-
-    {{% alert title="Note" color="primary" %}}
-When installing K8ssandra on newer versions of Kubernetes (v1.19+), some warnings may be visible on the command line related to deprecated API usage.  This is currently a known issue and will not impact the provisioning of the cluster.
-
-```bash
-W0128 11:24:54.792095  27657 warnings.go:70] 
-apiextensions.k8s.io/v1beta1 CustomResourceDefinition is 
-deprecated in v1.16+, unavailable in v1.22+; 
-use apiextensions.k8s.io/v1 CustomResourceDefinition
+```sh
+cat <<EOF | kubectl -n k8ssandra-operator apply -f -
+apiVersion: k8ssandra.io/v1alpha1
+kind: K8ssandraCluster
+metadata:
+  name: demo
+spec:
+  cassandra:
+    serverVersion: "4.0.1"
+    datacenters:
+      - metadata:
+          name: dc1
+        size: 3
+        storageConfig:
+          cassandraDataVolumeClaimSpec:
+            storageClassName: standard
+            accessModes:
+              - ReadWriteOnce
+            resources:
+              requests:
+                storage: 5Gi
+        config:
+          jvmOptions:
+            heapSize: 512M
+        stargate:
+          size: 1
+          heapSize: 256M
+EOF
 ```
 
-For more information, check out issue [#267](https://github.com/k8ssandra/k8ssandra/issues/267).
-    {{% /alert %}}
+Confirm that the resource has been created:
 
-## Verify your K8ssandra installation
-
-Depending upon your K8s configuration, initialization of your K8ssandra installation can take a few minutes. To check the status of your K8ssandra deployment, use the `kubectl get pods` command:
-
-```bash
-kubectl get pods
+```console
+kubectl -n k8ssandra-operator get k8ssandraclusters
 ```
 
-**Output**:
-
-```bash
-NAME                                                READY   STATUS      RESTARTS   AGE
-k8ssandra-cass-operator-766849b497-klgwf            1/1     Running     0          7m33s
-k8ssandra-dc1-default-sts-0                         2/2     Running     0          7m5s
-k8ssandra-dc1-stargate-5c46975f66-pxl84             1/1     Running     0          7m32s
-k8ssandra-grafana-679b4bbd74-wj769                  2/2     Running     0          7m32s
-k8ssandra-kube-prometheus-operator-85695ffb-ft8f8   1/1     Running     0          7m32s
-k8ssandra-reaper-655fc7dfc6-n9svw                   1/1     Running     0          4m52s
-k8ssandra-reaper-operator-79fd5b4655-748rv          1/1     Running     0          7m33s
-k8ssandra-reaper-schema-dxvmm                       0/1     Completed   0          5m3s
-prometheus-k8ssandra-kube-prometheus-prometheus-0   2/2     Running     1          7m27s
+```console
+NAME   AGE
+demo   45s
 ```
 
-The K8ssandra pods in the example above have the identifier `k8ssandra` either prefixed or inline, since that's the name that was specified when the cluster was created using Helm. If you choose a different cluster name during installation, your pod names will be different.
+```console
+kubectl -n k8ssandra-operator describe k8ssandracluster demo
+```
 
-The actual Cassandra node name from the listing above is `k8ssandra-dc1-default-sts-0` which we'll use throughout the following sections.
+```console
+Name:         demo
+Namespace:    k8ssandra-operator
+Labels:       <none>
+Annotations:  <none>
+API Version:  k8ssandra.io/v1alpha1
+Kind:         K8ssandraCluster
+...
+Status:
+  Datacenters:
+    dc1:
+      Cassandra:
+        Cassandra Operator Progress:  Updating
+        Node Statuses:
+Events:  <none>
+```
 
-Verify the following:
+Monitor the status of the deployment, eventually resulting in all the resources being in 
+the `Ready` state:
 
-* The K8ssandra pod running Cassandra, `k8ssandra-dc1-default-sts-0` in the example above should show `2/2` as `Ready`.
-* The Stargate pod, `k8ssandra-dc1-stargate-5c46975f66-pxl84` in the example above should show `1/1` as `Ready`.
+```console
+kubectl -n k8ssandra-operator describe K8ssandraCluster demo
+```
 
-{{% alert title="Important" color="warning" %}}
+```console
+Name:         demo
+Namespace:    k8ssandra-operator
+Labels:       <none>
+Annotations:  <none>
+API Version:  k8ssandra.io/v1alpha1
+Kind:         K8ssandraCluster
+...
+Status:
+  Datacenters:
+    dc1:
+      Cassandra:
+        Cassandra Operator Progress:  Ready
+      ...
+      Stargate:
+        Available Replicas:  1
+        Conditions:
+          Last Transition Time:  2021-09-28T03:32:07Z
+          Status:                True
+          Type:                  Ready
+        Deployment Refs:
+          demo-dc1-default-stargate-deployment
+        Progress:              Running
+        Ready Replicas:        1
+        Ready Replicas Ratio:  1/1
+        Replicas:              1
+        Service Ref:           demo-dc1-stargate-service
+        Updated Replicas:      1
+Events:                        <none>
+```
 
-* The Stargate pod will not show `Ready` until at least 4 minutes have elapsed.
-* The pod `k8ssandra-reaper-k8ssandra-schema-xxxxx` runs once as part of a job and does not persist.
+### Multi-cluster
 
-{{% /alert %}}
+If you previously created a cluster with `setup-kind-multicluster.sh` we need to delete 
+it in order to create the multi-cluster setup. The script currently does not support 
+adding clusters to an existing setup (see [#128](https://github.com/k8ssandra/k8ssandra-operator/issues/128)).
 
-Once all the pods are in the `Running` or `Completed` state, you can check the health of your K8ssandra cluster. There must be **no `PENDING` pods**.
+We will create two kind clusters with 3 worker nodes per clusters. Remember that 
+K8ssandra Operator requires clusters to have routable pod IPs. kind clusters by default 
+will run on the same Docker network which means that they will have routable IPs.
 
-To check the health of your K8ssandra cluster:
+#### Create kind clusters
+Run `setup-kind-multicluster.sh` as follows:
 
-1. Verify the name of the Cassandra datacenter:
+```sh
+./setup-kind-multicluster.sh --clusters 2 --kind-worker-nodes 4
+```
 
-    ```bash
-    kubectl get cassandradatacenters
-    ```
+When creating a cluster, kind generates a kubeconfig with the address of the API server 
+set to localhost. We need a kubeconfig that has the API server address set to its 
+internal ip address. `setup-kind-multi-cluster.sh` takes care of this for us. Generated 
+files are written into a `build` directory.
 
-    **Output**:
+Run `kubectx` without any arguments and verify that you see the following contexts 
+listed in the output:
 
-    ```bash
-    NAME   AGE
-    dc1    51m
-    ```
+* kind-k8ssandra-0
+* kind-k8ssandra-1
 
-1. Confirm that the Cassandra operator for the datacenter is `Ready`:
+#### Install Cert Manager
+Set the active context to `kind-k8ssandra-0`:
 
-    ```bash
-    kubectl describe CassandraDataCenter dc1 | grep "Cassandra Operator Progress:"
-    ```
+```console
+kubectx kind-k8ssandra-0
+```
 
-    **Output**:
+Install Cert Manager:
 
-    ```bash
-       Cassandra Operator Progress:  Ready
-    ```
+```console
+kubectl apply -f https://github.com/jetstack/cert-manager/releases/download/v1.5.3/cert-manager.yaml
+```
 
-1. Verify the list of available services:
+Set the active context to `kind-k8ssandra-1`:
 
-    ```bash
-    kubectl get services
-    ```
+```console
+kubectx kind-k8ssandra-1
+```
 
-    **Output**:
+Install Cert Manager:
 
-    ```bash
-    NAME                                   TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)                                                 AGE
-    cass-operator-metrics                  ClusterIP   10.80.3.92     <none>        8383/TCP,8686/TCP                                       47m
-    k8ssandra-dc1-all-pods-service         ClusterIP   None           <none>        9042/TCP,8080/TCP,9103/TCP                              47m
-    k8ssandra-dc1-service                  ClusterIP   None           <none>        9042/TCP,9142/TCP,8080/TCP,9103/TCP,9160/TCP            47m
-    k8ssandra-dc1-stargate-service         ClusterIP   10.80.13.197   <none>        8080/TCP,8081/TCP,8082/TCP,8084/TCP,8085/TCP,9042/TCP   47m
-    k8ssandra-grafana                      ClusterIP   10.80.7.168    <none>        80/TCP                                                  47m
-    k8ssandra-kube-prometheus-operator     ClusterIP   10.80.8.109    <none>        443/TCP                                                 47m
-    k8ssandra-kube-prometheus-prometheus   ClusterIP   10.80.2.44     <none>        9090/TCP                                                47m
-    k8ssandra-reaper-reaper-service        ClusterIP   10.80.5.77     <none>        8080/TCP                                                47m
-    k8ssandra-seed-service                 ClusterIP   None           <none>        <none>                                                  47m
-    kubernetes                             ClusterIP   10.80.0.1      <none>        443/TCP                                                 47m
-    prometheus-operated                    ClusterIP   None           <none>        9090/TCP                                                47m
-    ```
+```console
+kubectl apply -f https://github.com/jetstack/cert-manager/releases/download/v1.5.3/cert-manager.yaml
+```
 
-    Verify that the following services are present:
+#### Install the control plane
+We will install the control plane in `kind-k8ssandra-0`. Make sure your active context is 
+configured correctly:
 
-    * <cluster-name>-<datacenter-name>-all-pods-service
-    * <cluster-name>-<datacenter-name>-dc1-service
-    * <cluster-name>-<datacenter-name>-stargate-service
-    * <cluster-name>-<datacenter-name>-seed-service
+```console
+kubectx kind-k8ssandra-0
+```
+Now install the operator:
 
-## Retrieve K8ssandra superuser credentials {#superuser}
+```console
+kubectl apply -k github.com/k8ssandra/config/deployments/control-plane
+```
 
-You'll need the K8ssandra superuser name and password in order to access Cassandra utilities and do things like generate a Stargate access token.
+This installs the operator in the `k8ssandra-operator` namespace.
 
-To retrieve K8ssandra superuser credentials:
+Verify that the following CRDs are installed:
 
-1. Retrieve the K8ssandra superuser name:
+* `cassandradatacenters.cassandra.datastax.com`
+* `certificaterequests.cert-manager.io`
+* `certificates.cert-manager.io`
+* `challenges.acme.cert-manager.io`
+* `clientconfigs.k8ssandra.io`
+* `clusterissuers.cert-manager.io`
+* `issuers.cert-manager.io`
+* `k8ssandraclusters.k8ssandra.io`
+* `orders.acme.cert-manager.io`
+* `replicatedsecrets.k8ssandra.io`
+* `stargates.k8ssandra.io`
 
-    ```bash
-    kubectl get secret k8ssandra-superuser -o jsonpath="{.data.username}" | base64 --decode ; echo
-    ```
 
-    **Output**:
+Check that there are two Deployments. The output should look similar to this:
 
-    ```bash
-    k8ssandra-superuser
-    ```
+```console
+kubectl get deployment
+```
 
-1. Retrieve the K8ssandra superuser password:
+```console
+NAME                 READY   UP-TO-DATE   AVAILABLE   AGE
+cass-operator        1/1     1            1           2m
+k8ssandra-operator   1/1     1            1           2m
+```
 
-    ```bash
-    kubectl get secret k8ssandra-superuser -o jsonpath="{.data.password}" | base64 --decode ; echo
-    ```
+The operator looks for an environment variable named `K8SSANDRA_CONTROL_PLANE`. When set 
+to `true` the control plane is enabled. It is enabled by default.
 
-    **Output**:
+Verify that the `K8SSANDRA_CONTROL_PLANE` environment variable is set to `true`:
 
-    ```bash
-    PGo8kROUgAJOa8vhjQrE49Lgruw7s32HCPyVvcfVmmACW8oUhfoO9A
-    ```
+```sh
+kubectl -n k8ssandra-operator get deployment k8ssandra-operator -o jsonpath='{.spec.template.spec.containers[0].env[?(@.name=="K8SSANDRA_CONTROL_PLANE")].value}'
+```
 
-{{% alert title="Tip" color="success" %}}
-Save the superuser name and password for use in the [Quickstarts]({{< relref "/quickstarts" >}}), if you decide to follow those steps.
-{{% /alert %}}
+#### Install the data plane
+Now we will install the data plane in `kind-k8ssandra-1`. Switch the active context:
+
+```
+kubectx kind-k8ssandra-1
+```
+
+Now install the operator:
+
+```console
+kubectl apply -k github.com/k8ssandra/config/deployments/data-plane
+```
+
+This installs the operator in the `k8ssandra-operator` namespace.
+
+Verify that the following CRDs are installed:
+
+* `cassandradatacenters.cassandra.datastax.com`
+* `certificaterequests.cert-manager.io`
+* `certificates.cert-manager.io`
+* `challenges.acme.cert-manager.io`
+* `clientconfigs.k8ssandra.io`
+* `clusterissuers.cert-manager.io`
+* `issuers.cert-manager.io`
+* `k8ssandraclusters.k8ssandra.io`
+* `orders.acme.cert-manager.io`
+* `replicatedsecrets.k8ssandra.io`
+* `stargates.k8ssandra.io`
+
+
+Check that there are two Deployments. The output should look similar to this:
+
+```console
+kubectl -n k8ssandra-operator get deployment
+```
+```console
+NAME                 READY   UP-TO-DATE   AVAILABLE   AGE
+cass-operator        1/1     1            1           2m
+k8ssandra-operator   1/1     1            1           2m
+```
+
+Verify that the `K8SSANDRA_CONTROL_PLANE` environment variable is set to `false`:
+
+```console
+kubectl -n k8ssandra-operator get deployment k8ssandra-operator -o jsonpath='{.spec.template.spec.containers[0].env[?(@.name=="K8SSANDRA_CONTROL_PLANE")].value}'
+```
+
+#### Create a ClientConfig
+Now we need to create a `ClientConfig` for the `kind-k8ssandra-1` cluster. We will use the 
+`create-clientconfig.sh` script which can be found
+[here](https://github.com/k8ssandra/k8ssandra-operator/blob/main/scripts/create-clientconfig.sh).
+
+Here is a summary of what the script does:
+
+* Get the k8ssandra-operator service account from the data plane cluster
+* Extract the service account token 
+* Extract the CA cert
+* Create a kubeonfig using the token and cert
+* Create a secret for the kubeconfig in the control plane cluster
+* Create a ClientConfig in the control plane cluster that references the secret
+
+Create a `ClientConfig` in the `kind-k8ssandra-0` cluster using the service account 
+token and CA cert from `kind-k8ssandra-1`:
+
+```sh
+./create-clientconfig.sh --namespace k8ssandra-operator --src-kubeconfig build/kubeconfigs/k8ssandra-1.yaml --dest-kubeconfig build/kubeconfigs/k8ssandra-0.yaml --in-cluster-kubeconfig build/kubeconfigs/updated/k8ssandra-1.yaml --output-dir clientconfig
+```
+The script stores all of the artifacts that it generates in a directory which is specified with the `--output-dir` option. If not specified, a temp directory is created.
+
+The `--in-cluster-kubeconfig` option is required for clusters that run locally like kind.
+
+#### Restart the control plane
+
+Make the active context `kind-k8ssandra-0`:
+
+```console
+kubectx kind-k8ssandra-0
+```
+
+Restart the operator:
+
+```console
+kubectl -n k8ssandra-operator rollout restart deployment k8ssandra-operator
+```
+
+**Note:** See https://github.com/k8ssandra/k8ssandra-operator/issues/178 for details on
+why it is necessary to restart the control plane operator.
+
+### Deploy a K8ssandraCluster
+Now we will create a K8ssandraCluster that consists of a Cassandra cluster with 2 DCs and 3 
+nodes per DC, and a Stargate node per DC.
+
+```sh
+cat <<EOF | kubectl -n k8ssandra-operator apply -f -
+apiVersion: k8ssandra.io/v1alpha1
+kind: K8ssandraCluster
+metadata:
+  name: demo
+spec:
+  cassandra:
+    serverVersion: "4.0.1"
+    storageConfig:
+      cassandraDataVolumeClaimSpec:
+        storageClassName: standard
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 5Gi
+    config:
+      jvmOptions:
+        heapSize: 512M
+    networking:
+      hostNetwork: true    
+    datacenters:
+      - metadata:
+          name: dc1
+        size: 3
+        stargate:
+          size: 1
+          heapSize: 256M
+      - metadata:
+          name: dc2
+        k8sContext: kind-k8ssandra-1
+        size: 3
+        stargate:
+          size: 1
+          heapSize: 256M 
+EOF
+```
 
 ## Next steps
 
 * If you're a developer, and you'd like to get started coding using CQL or Stargate, see the [Quickstart for developers]({{< relref "/quickstarts/developer" >}}).
 * If you're a Site Reliability Engineer, and you'd like to explore the K8ssandra administration environment including monitoring and maintenance utilities, see the [Quickstart for Site Reliability Engineers]({{< relref "/quickstarts/site-reliability-engineer" >}}).
-
-For K8ssandra installation details that are specific to cloud providers, see:
-    
-* K8ssandra installs on [Amazon Elastic Kubernetes Service]({{< relref "/install/eks" >}}) (EKS)
-* K8ssandra installs on [DigitalOcean Kubernetes]({{< relref "/install/doks" >}}) (DOKS)
-* K8ssandra installs on [Google Kubernetes Engine]({{< relref "/install/gke" >}}) (GKE)
-* K8ssandra installs on [Microsoft Azure Kubernetes Service]({{< relref "/install/aks" >}}) (AKS)
