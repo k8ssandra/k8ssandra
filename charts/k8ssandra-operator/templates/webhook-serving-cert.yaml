@@ -1,0 +1,13 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: {{ include "k8ssandra-common.fullname" . }}-serving-cert
+  labels: {{ include "k8ssandra-common.labels" . | indent 4 }}
+spec:
+  dnsNames:
+    -  {{ include "k8ssandra-common.fullname" . }}-webhook-service.{{ .Release.Namespace }}.svc
+    -  {{ include "k8ssandra-common.fullname" . }}-webhook-service.{{ .Release.Namespace }}.svc.cluster.local
+  issuerRef:
+    kind: Issuer
+    name: {{ include "k8ssandra-common.fullname" . }}-selfsigned-issuer
+  secretName: {{ include "k8ssandra-common.fullname" . }}-webhook-server-cert

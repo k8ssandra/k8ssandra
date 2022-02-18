@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "k8ssandra-common.fullname" . }}-webhook-service
+  labels: {{ include "k8ssandra-common.labels" . | indent 4 }}
+spec:
+  ports:
+    - port: 443
+      protocol: TCP
+      targetPort: 9443
+  selector:
+    control-plane: k8ssandra-operator

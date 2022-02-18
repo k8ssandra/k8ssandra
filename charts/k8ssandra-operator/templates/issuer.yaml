@@ -1,0 +1,7 @@
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: {{ include "k8ssandra-common.fullname" . }}-selfsigned-issuer
+  labels: {{ include "k8ssandra-common.labels" . | indent 4 }}
+spec:
+  selfSigned: {}
