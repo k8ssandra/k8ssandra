@@ -6,24 +6,22 @@ weight: 1
 description: "Details to install K8ssandra Operator on a local Kubernetes **kind** development environment."
 ---
 
-This topic explains how to install K8ssandra Operator in a local dev **kind** Kubernetes (K8s) environment. The configuration results in a Apache Cassandra&reg; database deployment in a **multi-cluster, multi-region** K8s environment. Included in the deployment are additional services, such as Stargate (API), Reaper (anti-entropy data repairs), and Medusa (backup/restore). Also shown in this topic are K8ssandra Operator install steps for a single-datacenter `kind` K8s cluster.
-
-{{% alert title="Tip" color="success" %}}
-Follow-up topics cover the post-install steps and role-based considerations for [developers]({{< relref "/quickstarts/developer">}}) or [Site Reliability Engineers]({{< relref "/quickstarts/site-reliability-engineer">}}) (SREs).
-{{% /alert %}}
+This topic explains how to install K8ssandra Operator to manage Apache Cassandra&reg; in single- and multi-cluster Kubernetes. The examples use **kind** as a local (dev) Kubernetes environment.
 
 ## Introduction
 
 In this topic for installs of K8ssandra Operator on your local development environment, using **kind**, we'll cover:
 
 * [Prerequisites]({{< relref "#prerequisites" >}}): Required supporting software
-* [Quick Start]({{< relref "#quick-start" >}}): Quick start install including helper scripts, with single-cluster and multi-cluster examples
-* [Helm]({{< relref "#helm" >}}): Install via a single K8ssandra Operator Helm chart, with single-cluster and multi-cluster examples
-* [Kustomize]({{< relref "#kustomize" >}}): Install via Kustomize - a declarative approach, with single-cluster and multi-cluster examples
+* [Quick Start for single-cluster]({{< relref "#quick-start-for-a-single-cluster" >}}): Quick start K8ssandra Operator install in a single-cluster Kubernetes
+* [Quick Start for multi-cluster]({{< relref "#quick-start-for-multi-cluster" >}}): Quick start K8ssandra Operator install in a multi-cluster Kubernetes, with examples for a control plane and three data planes 
+* [Helm]({{< relref "#helm" >}}): Install via a single K8ssandra Operator Helm chart 
+* [Kustomize]({{< relref "#kustomize" >}}): Install via Kustomize - a declarative approach 
 * [Next steps]({{< relref "#next-steps" >}}): Quick start info including helper scripts
 
 ## Prerequisites
-Make sure you have the following installed before going through the rest of the guide. 
+
+Make sure you have the following installed before going through this topic. 
 
 * [kind](#kind)
 * [kubectx](#kubectx)
@@ -31,13 +29,18 @@ Make sure you have the following installed before going through the rest of the 
 * [setup-kind-multicluster.sh](#setup-kind-multiclustersh)
 * [create-clientconfig.sh](#create-clientconfigsh)
 
+You'll also need [kubectl](https://kubernetes.io/docs/tasks/tools/) and [helm v3+](https://helm.sh/docs/intro/install/) on your preferred OS. 
+
 ### **kind**
 
 The examples in this topic use [kind](https://kind.sigs.k8s.io/) clusters. Install it now if you have not already done so.
 
 By default, kind clusters run on the same Docker network, which means we will have routable pod IPs across clusters.
 
-**Note:**  Issues creating multiple kind clusters have been observed on various versions of Docker Desktop for macOS.  These issues seem to be resolved with the 4.5.0 release of Docker Desktop.  Please be sure to upgrade Docker Desktop if you plan to deploy using kind. Other options for local dev K8s environments include [minikube](https://minikube.sigs.k8s.io/docs/start/) or [K3D](https://k3d.io/v5.3.0/). 
+{{% alert title="Note" color="success" %}}
+Issues creating multiple kind clusters have been observed on various versions of Docker Desktop for macOS.  These issues seem to be resolved with the 4.5.0 release of Docker Desktop.  Please be sure to upgrade Docker Desktop if you plan to deploy using kind. Other options for local dev K8s environments include [minikube](https://minikube.sigs.k8s.io/docs/start/) or [K3D](https://k3d.io/v5.3.0/). 
+{{% /alert %}}
+
 
 ### **kubectx**
 
@@ -51,74 +54,177 @@ By default, kind clusters run on the same Docker network, which means we will ha
 
 [setup-kind-multicluster.sh](https://github.com/k8ssandra/k8ssandra-operator/blob/main/scripts/setup-kind-multicluster.sh) lives in the k8ssandra-operator repo. It is used extensively during development and testing. Not only does it configure and create kind clusters, it also generates kubeconfig files for each cluster.
 
-**Note:** kind generates a kubeconfig with the IP address of the API server set to 
-localhost since the cluster is intended for local development. We need a kubeconfig with the IP address set to the internal address of the api server. `setup-kind-mulitcluster.sh` takes care of this for us.
+{{% alert title="Tip" color="success" %}}
+kind generates a kubeconfig with the IP address of the API server set to 
+localhost because the cluster is intended for local development. We need a kubeconfig with the IP address set to the internal address of the api server. `setup-kind-mulitcluster.sh` takes care of this for us.
+{{% /alert %}}
 
 ### create-clientconfig.sh
 
 [create-clientconfig.sh](https://github.com/k8ssandra/k8ssandra-operator/blob/main/scripts/create-clientconfig.sh) lives in the k8ssandra-operator repo. It is used to configure access to remote clusters. 
 
-## Quick Start
+## Quick start for a single-cluster
 
-If you're interested in getting running as quickly as possible, there's a number of helper scripts that can be used to greatly reduce the steps to deploy a local K8ssandra cluster via kind for testing purposes.
+Deploy K8ssandra with one Cassandra datacenter in a **single-cluster** kind environment.
 
-Two base `make` commands are provided that deploy a basic kind-based Kubernetes cluster(s).  These commands encapsulate the more detailed step-by-step installation instructions otherwise captured in this document.
+### Clone the repo and use the setup script
 
-Each of these commands will do the following:
+If you haven't already, clone the https://github.com/k8ssandra/k8ssandra-operator repo to your local machine where you're already running a kind cluster. Example:
 
-* Create the kind-based cluster(s)
-
-Across the cluster:
-
-* Install cert-manager in it's own namespace
-* Install cass-operator in the `k8ssandra-operator` namespace
-* Build the k8ssandra-operator from source, load the image into the kind nodes, and 
-  install it in the `k8ssandra-operator` namespace
-* Install relevant CRDs
-
-At completion, the cluster is now ready to accept a `K8ssandraCluster` deployment.
-
-**Note:** if a k8ssandra-0 and/or k8ssandra-1 kind cluster already exists, running `make 
-single-up` or `make multi-up` will delete and recreate them.
-
-**Note:** These steps will attempt to start a local Docker registry instance to be used by the kind cluster(s), if you are already running one locally it will need to be stopped before following these procedures.
-
-### Single Cluster
-
-Deploy a single kind based Kubernetes cluster.
-
-Clone the https://github.com/k8ssandra/k8ssandra-operator repo to your local machine where you're already running a kind cluster. Then:
-
-```sh
-cd k8ssandra/k8ssandra-operator
-make single-up
+```bash
+cd ~/github
+git clone https://github.com/k8ssandra/k8ssandra-operator.git
+cd k8ssandra-operator
 ```
 
-Once the cluster is available:
+Invoke `make` with the following parameters: 
 
-```sh
-kubectx
+```bash
+make NUM_CLUSTERS=1 create-kind-multicluster
 ```
 
-```sh
-kind-k8ssandra-0
+**Output:**
+
+```bash
+scripts/setup-kind-multicluster.sh --clusters 1 --kind-worker-nodes 4
+Creating 1 clusters...
+Creating cluster 1 out of 1
+Creating cluster "k8ssandra-0" ...
+ ✓ Ensuring node image (kindest/node:v1.22.4) 🖼
+ ✓ Preparing nodes 📦 📦 📦 📦 📦
+ ✓ Writing configuration 📜
+ ✓ Starting control-plane 🕹️
+ ✓ Installing CNI 🔌
+ ✓ Installing StorageClass 💾
+ ✓ Joining worker nodes 🚜
+Set kubectl context to "kind-k8ssandra-0"
+You can now use your cluster with:
+
+kubectl cluster-info --context kind-k8ssandra-0
+
+Have a question, bug, or feature request? Let us know! https://kind.sigs.k8s.io/#community 🙂
+Error response from daemon: endpoint with name kind-registry already exists in network kind
+
+Generating kubeconfig
+Generating in-cluster kubeconfig
 ```
 
-The cluster should consist of the following nodes:
+Verify the depoyment:
 
-```sh
-NAME                        STATUS   ROLES                  AGE     VERSION
-k8ssandra-0-control-plane   Ready    control-plane,master   3m24s   v1.21.2
-k8ssandra-0-worker          Ready    <none>                 2m53s   v1.21.2
-k8ssandra-0-worker2         Ready    <none>                 3m5s    v1.21.2
-k8ssandra-0-worker3         Ready    <none>                 2m53s   v1.21.2
-k8ssandra-0-worker4         Ready    <none>                 2m53s   v1.21.2
+```bash
+ kubectl get nodes 
 ```
 
-When the Kubernetes cluster is ready, deploy a `K8ssandraCluster` like:
+**Output:**
 
-```sh
-cat <<EOF | kubectl -n k8ssandra-operator apply -f -
+```bash
+NAME                        STATUS   ROLES                  AGE   VERSION
+k8ssandra-0-control-plane   Ready    control-plane,master   80s   v1.22.4
+k8ssandra-0-worker          Ready    <none>                 42s   v1.22.4
+k8ssandra-0-worker2         Ready    <none>                 42s   v1.22.4
+k8ssandra-0-worker3         Ready    <none>                 42s   v1.22.4
+k8ssandra-0-worker4         Ready    <none>                 42s   v1.22.4
+```
+
+### Deploy cert-manager
+
+Update your helm repo and set the context:
+
+```bash
+helm repo add jetstack https://charts.jetstack.io
+
+helm repo update
+
+kubectx kind-k8ssandra-0
+```
+
+**The output includes:**
+
+```bash
+Switched to context "kind-k8ssandra-0".
+```
+
+Now install the `jetstack/cert-manager`:
+
+```bash
+helm install cert-manager jetstack/cert-manager \
+     --namespace cert-manager --create-namespace --set installCRDs=true
+```
+
+**Output:**
+
+```bash
+NAME: cert-manager
+LAST DEPLOYED: Mon Jan 31 12:29:43 2022
+NAMESPACE: cert-manager
+STATUS: deployed
+REVISION: 1
+TEST SUITE: None
+NOTES:
+cert-manager v1.7.0 has been deployed successfully!
+
+In order to begin issuing certificates, you will need to set up a ClusterIssuer
+or Issuer resource (for example, by creating a 'letsencrypt-staging' issuer).
+
+More information on the different types of issuers and how to configure them
+can be found in our documentation:
+
+https://cert-manager.io/docs/configuration/
+
+For information on how to configure cert-manager to automatically provision
+Certificates for Ingress resources, take a look at the `ingress-shim`
+documentation:
+
+https://cert-manager.io/docs/usage/ingress/
+```
+
+### Deploy K8ssandra Operator
+
+You can install K8ssandra Operator for namespace-scoped operation (default), or cluster-scoped operation. The example in this section shows K8ssandra Operator installed as namespace-scoped:
+
+```bash
+helm install k8ssandra-operator k8ssandra/k8ssandra-operator -n k8ssandra-operator --create-namespace
+```
+
+**Output:**
+
+```bash
+NAME: k8ssandra-operator
+LAST DEPLOYED: Mon Jan 31 12:30:40 2022
+NAMESPACE: k8ssandra-operator
+STATUS: deployed
+REVISION: 1
+TEST SUITE: None
+```
+
+{{% alert title="Tip" color="success" %}}
+Optionally, you can use `--set global.clusterScoped=true` to install K8ssandra Operator cluster-scoped:
+
+```bash
+helm install k8ssandra-operator k8ssandra/k8ssandra-operator -n k8ssandra-operator \ 
+     --set global.clusterScoped=true --create-namespace
+```
+{{% /alert %}}
+
+### Verify the deployment
+
+```bash
+kubectl get pods -n k8ssandra-operator
+```
+
+**Output:**
+
+```bash
+NAME                                                READY   STATUS    RESTARTS   AGE
+k8ssandra-operator-7f76579f94-7s2tw                 1/1     Running   0          60s
+k8ssandra-operator-cass-operator-794f65d9f4-j9lm5   1/1     Running   0          60s
+```
+
+### Deploy the K8ssandraCluster
+
+To deploy a `K8ssandraCluster`, we use a custom YAML file. In this example, k8c1.yml. Notice, there is just one datacenter, `dc1`.
+
+```yaml
 apiVersion: k8ssandra.io/v1alpha1
 kind: K8ssandraCluster
 metadata:
@@ -144,65 +250,270 @@ spec:
         stargate:
           size: 1
           heapSize: 256M
-EOF
 ```
 
-Confirm that the resource has been created:
+Apply the YAML to the already deployed K8ssandra Operator:
 
-```console
-kubectl -n k8ssandra-operator get k8ssandraclusters
+```bash
+kubectl apply -n k8ssandra-operator -f k8c1.yml
 ```
 
-```console
+**Output:**
+
+```bash
+k8ssandracluster.k8ssandra.io/demo created
+```
+
+### Verify pod deployment
+
+```bash
+$ kubectl get pods -n k8ssandra-operator
+```
+
+**Output:**
+
+```
+NAME                                                    READY   STATUS    RESTARTS   AGE
+demo-dc1-default-stargate-deployment-7b6c9d8dcd-k65jx   1/1     Running   0          5m33s
+demo-dc1-default-sts-0                                  2/2     Running   0          10m
+demo-dc1-default-sts-1                                  2/2     Running   0          10m
+demo-dc1-default-sts-2                                  2/2     Running   0          10m
+k8ssandra-operator-7f76579f94-7s2tw                     1/1     Running   0          11m
+k8ssandra-operator-cass-operator-794f65d9f4-j9lm5       1/1     Running   0          11m
+```
+
+### Verify `K8ssandraCluster` deployment
+
+```bash
+kubectl get k8cs -n k8ssandra-operator
+```
+
+**Output:**
+
+```bash
 NAME   AGE
-demo   45s
+demo   8m22s
 ```
 
-```console
-kubectl -n k8ssandra-operator describe k8ssandracluster demo
+```bash
+kubectl describe k8cs demo -n k8ssandra-operator
 ```
 
-```console
+**Output:**
+
+```bash
 Name:         demo
 Namespace:    k8ssandra-operator
 Labels:       <none>
-Annotations:  <none>
+Annotations:  k8ssandra.io/system-replication: {"datacenters":["dc1"],"replicationFactor":3}
 API Version:  k8ssandra.io/v1alpha1
 Kind:         K8ssandraCluster
-...
+Metadata:
+  Creation Timestamp:  2022-01-31T17:32:18Z
+  Finalizers:
+    k8ssandracluster.k8ssandra.io/finalizer
+  Generation:  2
+  Managed Fields:
+    API Version:  k8ssandra.io/v1alpha1
+    Fields Type:  FieldsV1
+    fieldsV1:
+      f:metadata:
+        f:annotations:
+          .:
+          f:kubectl.kubernetes.io/last-applied-configuration:
+      f:spec:
+        .:
+        f:auth:
+        f:cassandra:
+          .:
+          f:datacenters:
+          f:jmxInitContainerImage:
+            .:
+            f:name:
+            f:registry:
+            f:tag:
+          f:serverVersion:
+    Manager:      kubectl-client-side-apply
+    Operation:    Update
+    Time:         2022-01-31T17:32:18Z
+    API Version:  k8ssandra.io/v1alpha1
+    Fields Type:  FieldsV1
+    fieldsV1:
+      f:metadata:
+        f:annotations:
+          f:k8ssandra.io/system-replication:
+        f:finalizers:
+          .:
+          v:"k8ssandracluster.k8ssandra.io/finalizer":
+      f:spec:
+        f:cassandra:
+          f:superuserSecretRef:
+            .:
+            f:name:
+    Manager:      manager
+    Operation:    Update
+    Time:         2022-01-31T17:32:18Z
+    API Version:  k8ssandra.io/v1alpha1
+    Fields Type:  FieldsV1
+    fieldsV1:
+      f:status:
+        .:
+        f:conditions:
+        f:datacenters:
+          .:
+          f:dc1:
+            .:
+            f:cassandra:
+              .:
+              f:cassandraOperatorProgress:
+              f:conditions:
+              f:lastServerNodeStarted:
+              f:nodeStatuses:
+                .:
+                f:demo-dc1-default-sts-0:
+                  .:
+                  f:hostID:
+                f:demo-dc1-default-sts-1:
+                  .:
+                  f:hostID:
+                f:demo-dc1-default-sts-2:
+                  .:
+                  f:hostID:
+              f:observedGeneration:
+              f:quietPeriod:
+              f:superUserUpserted:
+              f:usersUpserted:
+            f:stargate:
+              .:
+              f:availableReplicas:
+              f:conditions:
+              f:deploymentRefs:
+              f:progress:
+              f:readyReplicas:
+              f:readyReplicasRatio:
+              f:replicas:
+              f:serviceRef:
+              f:updatedReplicas:
+    Manager:         manager
+    Operation:       Update
+    Subresource:     status
+    Time:            2022-01-31T17:37:52Z
+  Resource Version:  3385
+  UID:               bee3e4c9-59df-486c-b5ac-c83b65162b2c
+Spec:
+  Auth:  true
+  Cassandra:
+    Datacenters:
+      Config:
+        Jvm Options:
+          Heap Size:  512M
+      Jmx Init Container Image:
+        Name:      busybox
+        Registry:  docker.io
+        Tag:       1.34.1
+      Metadata:
+        Name:  dc1
+      Size:    3
+      Stargate:
+        Allow Stargate On Data Nodes:  false
+        Container Image:
+          Registry:       docker.io
+          Repository:     stargateio
+          Tag:            v1.0.45
+        Heap Size:        256M
+        Service Account:  default
+        Size:             1
+      Storage Config:
+        Cassandra Data Volume Claim Spec:
+          Access Modes:
+            ReadWriteOnce
+          Resources:
+            Requests:
+              Storage:         5Gi
+          Storage Class Name:  standard
+    Jmx Init Container Image:
+      Name:          busybox
+      Registry:      docker.io
+      Tag:           1.34.1
+    Server Version:  4.0.1
+    Superuser Secret Ref:
+      Name:  demo-superuser
 Status:
-  Datacenters:
-    dc1:
-      Cassandra:
-        Cassandra Operator Progress:  Updating
-        Node Statuses:
-Events:  <none>
-```
-
-Monitor the status of the deployment, eventually resulting in all the resources being in the `Ready` state:
-
-```console
-kubectl -n k8ssandra-operator describe K8ssandraCluster demo
-```
-
-```console
-Name:         demo
-Namespace:    k8ssandra-operator
-Labels:       <none>
-Annotations:  <none>
-API Version:  k8ssandra.io/v1alpha1
-Kind:         K8ssandraCluster
-...
-Status:
+  Conditions:
+    Last Transition Time:  2022-01-31T17:37:04Z
+    Status:                True
+    Type:                  CassandraInitialized
   Datacenters:
     dc1:
       Cassandra:
         Cassandra Operator Progress:  Ready
-      ...
+        Conditions:
+          Last Transition Time:    2022-01-31T17:37:00Z
+          Message:
+          Reason:
+          Status:                  False
+          Type:                    ScalingUp
+          Last Transition Time:    2022-01-31T17:37:00Z
+          Message:
+          Reason:
+          Status:                  False
+          Type:                    Stopped
+          Last Transition Time:    2022-01-31T17:37:00Z
+          Message:
+          Reason:
+          Status:                  False
+          Type:                    ReplacingNodes
+          Last Transition Time:    2022-01-31T17:37:00Z
+          Message:
+          Reason:
+          Status:                  False
+          Type:                    Updating
+          Last Transition Time:    2022-01-31T17:37:00Z
+          Message:
+          Reason:
+          Status:                  False
+          Type:                    RollingRestart
+          Last Transition Time:    2022-01-31T17:37:00Z
+          Message:
+          Reason:
+          Status:                  False
+          Type:                    Resuming
+          Last Transition Time:    2022-01-31T17:37:00Z
+          Message:
+          Reason:
+          Status:                  False
+          Type:                    ScalingDown
+          Last Transition Time:    2022-01-31T17:37:00Z
+          Message:
+          Reason:
+          Status:                  True
+          Type:                    Valid
+          Last Transition Time:    2022-01-31T17:37:00Z
+          Message:
+          Reason:
+          Status:                  True
+          Type:                    Initialized
+          Last Transition Time:    2022-01-31T17:37:00Z
+          Message:
+          Reason:
+          Status:                  True
+          Type:                    Ready
+        Last Server Node Started:  2022-01-31T17:35:39Z
+        Node Statuses:
+          demo-dc1-default-sts-0:
+            Host ID:  61dfa8cc-2a8b-4e8f-ae82-01c51833e0ba
+          demo-dc1-default-sts-1:
+            Host ID:  369aa179-d96e-4f21-a893-f6e6dc84b396
+          demo-dc1-default-sts-2:
+            Host ID:          bbdb6a9a-063b-4565-9704-f4caa6fd80f1
+        Observed Generation:  1
+        Quiet Period:         2022-01-31T17:37:06Z
+        Super User Upserted:  2022-01-31T17:37:00Z
+        Users Upserted:       2022-01-31T17:37:00Z
       Stargate:
         Available Replicas:  1
         Conditions:
-          Last Transition Time:  2021-09-28T03:32:07Z
+          Last Transition Time:  2022-01-31T17:37:48Z
           Status:                True
           Type:                  Ready
         Deployment Refs:
@@ -216,65 +527,470 @@ Status:
 Events:                        <none>
 ```
 
-### Multi-Cluster
+### Extract credentials
 
-Deploy two kind based Kubernetes clusters with:
+Use the following commands to extract the username and password:
 
-```console
-make multi-up
+```bash
+CASS_USERNAME=$(kubectl get secret demo-superuser -n k8ssandra-operator -o=jsonpath='{.data.username}' | base64 --decode)
+
+echo $CASS_USERNAME
 ```
 
-Two clusters should be available:
-
-```console
-kubectx
+**Output:**
+```bash
+demo-superuser
 ```
 
-```console
-kind-k8ssandra-0
-kind-k8ssandra-1
+Now obtain the password secret:
+
+```bash
+CASS_PASSWORD=$(kubectl get secret demo-superuser -n k8ssandra-operator -o=jsonpath='{.data.password}' | base64 --decode)
+
+echo $CASS_PASSWORD
 ```
 
-Each cluster should consist of the following nodes:
+**Output example - your value will be different:**
+```bash
+ACK7dO9qpsghIme-wvfI
+```
+{{% alert title="Tip" color="success" %}}
+You'll use the extract credentials for subsequent authentication in deployed containers.
+{{% /alert %}}
 
-kind-k8ssandra-0:
+### Verify cluster status
 
-```console
-NAME                        STATUS   ROLES                  AGE     VERSION
-k8ssandra-0-control-plane   Ready    control-plane,master   9m20s   v1.21.2
-k8ssandra-0-worker          Ready    <none>                 8m49s   v1.21.2
-k8ssandra-0-worker2         Ready    <none>                 8m49s   v1.21.2
-k8ssandra-0-worker3         Ready    <none>                 8m48s   v1.21.2
-k8ssandra-0-worker4         Ready    <none>                 8m49s   v1.21.2
+```bash
+kubectl exec --stdin --tty demo-dc1-default-sts-0 -n k8ssandra-operator -- /bin/bash
 ```
 
-kind-k8ssandra-1
+**Output plus nodetool example:**
 
-```console
-NAME                        STATUS   ROLES                  AGE     VERSION
-k8ssandra-1-control-plane   Ready    control-plane,master   9m51s   v1.21.2
-k8ssandra-1-worker          Ready    <none>                 9m32s   v1.21.2
-k8ssandra-1-worker2         Ready    <none>                 9m20s   v1.21.2
-k8ssandra-1-worker3         Ready    <none>                 9m32s   v1.21.2
-k8ssandra-1-worker4         Ready    <none>                 9m20s   v1.21.2
+```bash
+Defaulted container "cassandra" out of: cassandra, server-system-logger, jmx-credentials (init), server-config-init (init)
+cassandra@demo-dc1-default-sts-0:/$ nodetool -u demo-superuser -pw ACK7dO9qpsghIme-wvfI status
+Datacenter: dc1
+===============
+Status=Up/Down
+|/ State=Normal/Leaving/Joining/Moving
+--  Address     Load       Tokens  Owns (effective)  Host ID                               Rack
+UN  10.244.4.4  96.71 KiB  16      100.0%            bbdb6a9a-063b-4565-9704-f4caa6fd80f1  default
+UN  10.244.2.5  96.72 KiB  16      100.0%            61dfa8cc-2a8b-4e8f-ae82-01c51833e0ba  default
+UN  10.244.3.4  96.63 KiB  16      100.0%            369aa179-d96e-4f21-a893-f6e6dc84b396  default
 ```
 
-You're now ready to deploy a `K8ssandraCluster`.
+{{% alert title="Tip" color="success" %}}
+All nodes should have the status UN, which stands for "Up Normal".
+{{% /alert %}}
 
-Set your context to the control-plane cluster (`kind-k8ssandra-0`):
+### Test a few operations
 
-```console
+```bash
+kubectl exec --stdin --tty demo-dc1-default-sts-0 -n k8ssandra-operator -- /bin/bash
+```
+
+**Output and cqlsh example:**
+
+In the launched container's `cqlsh` session, notice we provide the extracted password for `demo-superuser`.
+
+```bash
+Defaulted container "cassandra" out of: cassandra, server-system-logger, jmx-credentials (init), server-config-init (init)
+cassandra@demo-dc1-default-sts-0:/$ cqlsh -u demo-superuser -p ACK7dO9qpsghIme-wvfI
+Connected to demo at 127.0.0.1:9042
+[cqlsh 6.0.0 | Cassandra 4.0.1 | CQL spec 3.4.5 | Native protocol v5]
+Use HELP for help.
+demo-superuser@cqlsh> CREATE KEYSPACE test WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 3};
+demo-superuser@cqlsh> USE test;
+demo-superuser@cqlsh:test> CREATE TABLE users (email text primary key, name text, state text);
+demo-superuser@cqlsh:test> insert into users (email, name, state) values ('john@gamil.com', 'John Smith', 'NC');
+demo-superuser@cqlsh:test> insert into users (email, name, state) values ('joe@gamil.com', 'Joe Jones', 'VA');
+demo-superuser@cqlsh:test> insert into users (email, name, state) values ('sue@help.com', 'Sue Sas', 'CA');
+demo-superuser@cqlsh:test> insert into users (email, name, state) values ('tom@yes.com', 'Tom and Jerry', 'NV');
+demo-superuser@cqlsh:test> select * from users;
+
+ email          | name          | state
+----------------+---------------+-------
+ john@gamil.com |    John Smith |    NC
+  joe@gamil.com |     Joe Jones |    VA
+   sue@help.com |       Sue Sas |    CA
+    tom@yes.com | Tom and Jerry |    NV
+
+(4 rows)
+```
+
+Now test an operation via the open-source Stargate API.
+
+```bash
+kubectl exec --stdin --tty demo-dc1-default-sts-0 -n k8ssandra-operator -- /bin/bash
+```
+
+**Output plus cqlsh &amp; stargate-service example:**
+
+```bash
+Defaulted container "cassandra" out of: cassandra, server-system-logger, server-config-init (init)
+cassandra@k8ssandra-3-worker:/$ ping demo-dc3-stargate-service
+cassandra@demo-dc1-default-sts-0:/$ cqlsh -u demo-superuser -p ACK7dO9qpsghIme-wvfI demo-dc1-stargate-service
+Connected to demo at demo-dc1-stargate-service:9042
+[cqlsh 6.0.0 | Cassandra 4.0.1 | CQL spec 3.4.5 | Native protocol v4]
+Use HELP for help.
+demo-superuser@cqlsh> use test;
+demo-superuser@cqlsh:test> select * from users;
+
+ email          | name          | state
+----------------+---------------+-------
+ john@gamil.com |    John Smith |    NC
+  joe@gamil.com |     Joe Jones |    VA
+   sue@help.com |       Sue Sas |    CA
+    tom@yes.com | Tom and Jerry |    NV
+
+(4 rows)
+```
+
+## Quick start for multi-cluster
+
+Follow these steps to deploy K8ssandra Operator with multiple Cassandra datacenters in a **multi-cluster** kind environment.
+
+### Clone the repo and use the setup script
+
+If you haven't already, clone the https://github.com/k8ssandra/k8ssandra-operator repo to your local machine where you're already running a kind cluster. Example:
+
+```bash
+cd ~/github
+git clone https://github.com/k8ssandra/k8ssandra-operator.git
+cd k8ssandra-operator
+```
+
+Invoke `make` with the following parameters: 
+
+```bash
+make NUM_CLUSTERS=4 create-kind-multicluster
+```
+
+### Verify the deployments 
+
+Set the context to each of the four created clusters, and get node information for each cluster. Examples:
+
+```bash
 kubectx kind-k8ssandra-0
 ```
 
-```console
+**Output:**
+
+```bash
 Switched to context "kind-k8ssandra-0".
 ```
 
-Deploy the `K8ssandraCluster` resource:
+Then enter:
 
-```sh
-cat <<EOF | kubectl -n k8ssandra-operator apply -f -
+```bash
+kubectl get nodes
+```
+
+**Output:**
+
+```bash
+NAME                        STATUS   ROLES                  AGE     VERSION
+k8ssandra-0-control-plane   Ready    control-plane,master   5h14m   v1.22.1
+k8ssandra-0-worker          Ready    <none>                 5h14m   v1.22.1
+k8ssandra-0-worker2         Ready    <none>                 5h14m   v1.22.1
+k8ssandra-0-worker3         Ready    <none>                 5h14m   v1.22.1
+k8ssandra-0-worker4         Ready    <none>                 5h14m   v1.22.1
+```
+
+Then enter:
+
+```bash
+kubectx kind-k8ssandra-1
+
+kubectl get nodes
+```
+
+**Output:**
+
+```bash
+NAME                        STATUS   ROLES                  AGE     VERSION
+k8ssandra-1-control-plane   Ready    control-plane,master   5h13m   v1.22.1
+k8ssandra-1-worker          Ready    <none>                 5h13m   v1.22.1
+k8ssandra-1-worker2         Ready    <none>                 5h13m   v1.22.1
+k8ssandra-1-worker3         Ready    <none>                 5h13m   v1.22.1
+k8ssandra-1-worker4         Ready    <none>                 5h13m   v1.22.1
+```
+
+Then enter:
+
+```bash
+kubectx kind-k8ssandra-2
+
+kubectl get nodes
+```
+
+**Output:**
+
+```bash
+NAME                        STATUS   ROLES                  AGE     VERSION
+k8ssandra-2-control-plane   Ready    control-plane,master   5h13m   v1.22.1
+k8ssandra-2-worker          Ready    <none>                 5h12m   v1.22.1
+k8ssandra-2-worker2         Ready    <none>                 5h12m   v1.22.1
+k8ssandra-2-worker3         Ready    <none>                 5h12m   v1.22.1
+k8ssandra-2-worker4         Ready    <none>                 5h12m   v1.22.1
+```
+
+Then enter:
+
+```bash
+kubectx kind-k8ssandra-3
+
+kubectl get nodes
+```
+
+**Output:**
+
+```bash
+NAME                        STATUS   ROLES                  AGE     VERSION
+k8ssandra-3-control-plane   Ready    control-plane,master   5h12m   v1.22.1
+k8ssandra-3-worker          Ready    <none>                 5h12m   v1.22.1
+k8ssandra-3-worker2         Ready    <none>                 5h12m   v1.22.1
+k8ssandra-3-worker3         Ready    <none>                 5h12m   v1.22.1
+k8ssandra-3-worker4         Ready    <none>                 5h12m   v1.22.1
+```
+
+### Install cert-manager in each cluster
+
+If you haven't already, update your helm repo with the jetstack cert-manager. 
+
+```bash
+helm repo add jetstack https://charts.jetstack.io
+
+helm repo update
+```
+
+Set the per-cluster context and install `jetstack/cert-manager`. Examples:
+
+```bash
+kubectx kind-k8ssandra-0
+
+helm install cert-manager jetstack/cert-manager --namespace cert-manager \
+     --create-namespace --set installCRDs=true
+```
+
+**Output:**
+
+```bash
+NAME: cert-manager
+LAST DEPLOYED: Thu Jan 27 15:28:59 2022
+NAMESPACE: cert-manager
+STATUS: deployed
+REVISION: 1
+TEST SUITE: None
+NOTES:
+cert-manager v1.7.0 has been deployed successfully!
+```
+
+Then enter:
+
+```bash
+kubectx kind-k8ssandra-1
+
+helm install cert-manager jetstack/cert-manager --namespace cert-manager \
+     --create-namespace --set installCRDs=true
+```
+
+**Output:**
+
+```bash
+NAME: cert-manager
+LAST DEPLOYED: Thu Jan 27 15:28:59 2022
+NAMESPACE: cert-manager
+STATUS: deployed
+REVISION: 1
+TEST SUITE: None
+NOTES:
+cert-manager v1.7.0 has been deployed successfully!
+```
+
+Then enter:
+
+```bash
+kubectx kind-k8ssandra-2
+
+helm install cert-manager jetstack/cert-manager --namespace cert-manager \
+     --create-namespace --set installCRDs=true
+```
+
+**Output:**
+
+```bash
+NAME: cert-manager
+LAST DEPLOYED: Thu Jan 27 15:28:59 2022
+NAMESPACE: cert-manager
+STATUS: deployed
+REVISION: 1
+TEST SUITE: None
+NOTES:
+cert-manager v1.7.0 has been deployed successfully!
+```
+
+Then enter:
+
+```bash
+kubectx kind-k8ssandra-3
+
+helm install cert-manager jetstack/cert-manager --namespace cert-manager \
+     --create-namespace --set installCRDs=true
+```
+
+**Output:**
+
+```bash
+NAME: cert-manager
+LAST DEPLOYED: Thu Jan 27 15:28:59 2022
+NAMESPACE: cert-manager
+STATUS: deployed
+REVISION: 1
+TEST SUITE: None
+NOTES:
+cert-manager v1.7.0 has been deployed successfully!
+```
+
+### Install K8ssandra Operator in the control-plane
+
+In this example, of the four clusters we've created, we'll use `kind-k8ssandra-0` as our control-plane.
+
+```bash
+kubectx kind-k8ssandra-0
+
+helm install k8ssandra-operator k8ssandra/k8ssandra-operator -n k8ssandra-operator \
+     --create-namespace
+```
+
+### Install K8ssandra Operator in the data-planes
+
+In this example, we'll use the three other clusters as data-planes.
+
+```bash
+kubectx kind-k8ssandra-1
+helm install k8ssandra-operator k8ssandra/k8ssandra-operator -n k8ssandra-operator \
+ --create-namespace
+
+kubectx kind-k8ssandra-2
+helm install k8ssandra-operator k8ssandra/k8ssandra-operator -n k8ssandra-operator \
+ --create-namespace
+
+kubectx kind-k8ssandra-3
+helm install k8ssandra-operator k8ssandra/k8ssandra-operator -n k8ssandra-operator \
+ --create-namespace
+```
+
+### Verify control-plane configuration
+
+```
+kubectx kind-k8ssandra-0
+
+kubectl -n k8ssandra-operator get deployment k8ssandra-operator \
+ -o jsonpath='{.spec.template.spec.containers[0].env[?(@.name=="K8SSANDRA_CONTROL_PLANE")].value}'
+```
+
+**Output:**
+
+```bash
+true
+```
+
+### Verify data-plane configuration
+
+We could test for `K8SSANDRA_CONTROL_PLANE`, which for each of the three clusters in our example serving as data-planes, should return `false`. Just one example:
+
+```
+kubectx kind-k8ssandra-1
+
+kubectl -n k8ssandra-operator get deployment k8ssandra-operator \
+ -o jsonpath='{.spec.template.spec.containers[0].env[?(@.name=="K8SSANDRA_CONTROL_PLANE")].value}'
+```
+
+**Output:**
+
+```bash
+false
+```
+
+### Generate and install ClientConfigs
+
+[create-clientconfig.sh](https://github.com/k8ssandra/k8ssandra-operator/blob/main/scripts/create-clientconfig.sh) lives in the k8ssandra-operator repo. It is used to configure access to remote clusters. 
+
+First, set the context to `kind-k8ssandra-0`, the control plane cluster. 
+
+```bash
+kubectx kind-k8ssandra-0
+```
+
+Run the create-clientconfig.sh script, once per data plane cluster.  
+
+```bash
+./scripts/create-clientconfig.sh --namespace k8ssandra-operator \
+  --src-kubeconfig build/kubeconfigs/k8ssandra-1.yaml \
+  --dest-kubeconfig build/kubeconfigs/k8ssandra-0.yaml \
+  --in-cluster-kubeconfig build/kubeconfigs/updated/k8ssandra-1.yaml \
+  --output-dir clientconfig
+```
+
+**Output:**
+
+```bash
+Creating clientconfig/kubeconfig
+Creating secret kind-k8ssandra-1-config
+Error from server (NotFound): secrets "kind-k8ssandra-1-config" not found
+secret/kind-k8ssandra-1-config created
+Creating ClientConfig clientconfig/kind-k8ssandra-1.yaml
+clientconfig.config.k8ssandra.io/kind-k8ssandra-1 created
+```
+
+Then enter:
+
+```bash
+./scripts/create-clientconfig.sh --namespace k8ssandra-operator \
+ --src-kubeconfig build/kubeconfigs/k8ssandra-2.yaml \
+ --dest-kubeconfig build/kubeconfigs/k8ssandra-0.yaml \
+ --in-cluster-kubeconfig build/kubeconfigs/updated/k8ssandra-2.yaml 
+ --output-dir clientconfig
+```
+
+**Output:**
+
+```bash
+Creating clientconfig/kubeconfig
+Creating secret kind-k8ssandra-2-config
+Error from server (NotFound): secrets "kind-k8ssandra-2-config" not found
+secret/kind-k8ssandra-2-config created
+Creating ClientConfig clientconfig/kind-k8ssandra-2.yaml
+clientconfig.config.k8ssandra.io/kind-k8ssandra-2 created
+```
+
+Then enter:
+
+```bash
+./scripts/create-clientconfig.sh --namespace k8ssandra-operator \
+ --src-kubeconfig build/kubeconfigs/k8ssandra-3.yaml \
+ --dest-kubeconfig build/kubeconfigs/k8ssandra-0.yaml \
+ --in-cluster-kubeconfig build/kubeconfigs/updated/k8ssandra-3.yaml \
+ --output-dir clientconfig
+```
+
+**Output:**
+
+```bash
+Creating clientconfig/kubeconfig
+Creating secret kind-k8ssandra-3-config
+Error from server (NotFound): secrets "kind-k8ssandra-3-config" not found
+secret/kind-k8ssandra-3-config created
+Creating ClientConfig clientconfig/kind-k8ssandra-3.yaml
+clientconfig.config.k8ssandra.io/kind-k8ssandra-3 created
+```
+
+### Deploy the K8ssandraCluster
+
+To deploy the `K8ssandraCluster`, we use a custom YAML file. In this example, k8cm1.yml. Notice, there are three Cassandra 4.0.1 datacenters, `dc1`, `dc2`, and `dc3` that are associated with the three data plane clusters.
+
+```yaml
 apiVersion: k8ssandra.io/v1alpha1
 kind: K8ssandraCluster
 metadata:
@@ -294,111 +1010,437 @@ spec:
       jvmOptions:
         heapSize: 512M
     networking:
-      hostNetwork: true    
+      hostNetwork: true
     datacenters:
       - metadata:
           name: dc1
+        k8sContext: kind-k8ssandra-1
         size: 3
         stargate:
           size: 1
           heapSize: 256M
       - metadata:
           name: dc2
-        k8sContext: kind-k8ssandra-1
+        k8sContext: kind-k8ssandra-2
         size: 3
         stargate:
           size: 1
-          heapSize: 256M 
-EOF
+          heapSize: 256M
+      - metadata:
+          name: dc3
+        k8sContext: kind-k8ssandra-3
+        size: 3
+        stargate:
+          size: 1
+          heapSize: 256M
 ```
 
-Confirm that the resource has been created:
+Verify again that your context is set to the control plane cluster, which is in this example:
 
-```console
-kubectl -n k8ssandra-operator get k8ssandraclusters
+```bash
+kubectx kind-k8ssandra-0
 ```
 
-```console
-NAME   AGE
-demo   45s
+Apply the YAML to the already deployed K8ssandra Operator. 
+
+```bash
+kubectl apply -n k8ssandra-operator -f k8cm1.yml
 ```
 
-```console
-kubectl describe -n k8ssandra-operator K8ssandraCluster demo
+### Verify pod deployment
+
+Initially the rollout will begin in dc1 and work across the full cluster:
+
+```bash
+kubectx kind-k8ssandra-1
+
+kubectl get pods -n k8ssandra-operator
 ```
 
-```sh
-Name:         demo
-Namespace:    k8ssandra-operator
-Labels:       <none>
-Annotations:  <none>
-API Version:  k8ssandra.io/v1alpha1
-Kind:         K8ssandraCluster
-...
-Status:
-  Datacenters:
-    dc1:
+Do the same on each of the other two clusters by setting the kubectx context to kind-k8ssandra-2, check the pods status; then kind-k8ssandra-3, and check the pods status.
+
+Eventually the datacenters will be fully deployed:
+
+```bash
+kubectx kind-k8ssandra-0
+
+kubectl get pods -n k8ssandra-operator
+```
+
+**Output:**
+
+```bash
+NAME                                                READY   STATUS    RESTARTS   AGE
+k8ssandra-operator-68568ffbd5-l6t2f                 1/1     Running   0          93m
+k8ssandra-operator-cass-operator-794f65d9f4-kqrpf   1/1     Running   0          97m
+```
+
+```bash
+kubectx kind-k8ssandra-1
+
+kubectl get pods -n k8ssandra-operator
+```
+
+**Output:**
+
+```bash
+NAME                                                    READY   STATUS    RESTARTS   AGE
+demo-dc1-default-stargate-deployment-547df5877d-bvnz2   1/1     Running   0          66m
+demo-dc1-default-sts-0                                  2/2     Running   0          80m
+demo-dc1-default-sts-1                                  2/2     Running   0          80m
+demo-dc1-default-sts-2                                  2/2     Running   0          80m
+k8ssandra-operator-7cfd7977cb-wxww5                     1/1     Running   0          97m
+k8ssandra-operator-cass-operator-794f65d9f4-s697p       1/1     Running   0          97m
+```
+
+```bash
+kubectx kind-k8ssandra-2
+
+kubectl get pods -n k8ssandra-operator
+```
+
+**Output:**
+
+```bash
+NAME                                                    READY   STATUS    RESTARTS   AGE
+demo-dc2-default-stargate-deployment-86c5fc44ff-lt9ts   1/1     Running   0          65m
+demo-dc2-default-sts-0                                  2/2     Running   0          76m
+demo-dc2-default-sts-1                                  2/2     Running   0          76m
+demo-dc2-default-sts-2                                  2/2     Running   0          76m
+k8ssandra-operator-7cfd7977cb-59nld                     1/1     Running   0          96m
+k8ssandra-operator-cass-operator-794f65d9f4-79z6z       1/1     Running   0          96m
+```
+
+```bash
+kubectx kind-k8ssandra-3
+
+kubectl get pods -n k8ssandra-operator
+```
+
+**Output:**
+
+```bash
+NAME                                                   READY   STATUS    RESTARTS   AGE
+demo-dc3-default-stargate-deployment-6bd8f87b4-ztxb8   1/1     Running   0          65m
+demo-dc3-default-sts-0                                 2/2     Running   0          71m
+demo-dc3-default-sts-1                                 2/2     Running   0          71m
+demo-dc3-default-sts-2                                 2/2     Running   0          71m
+k8ssandra-operator-7cfd7977cb-g6hcz                    1/1     Running   0          96m
+k8ssandra-operator-cass-operator-794f65d9f4-prfd8      1/1     Running   0          96m
+```
+
+### Verify K8ssandraCluster status
+
+While deployment is still in progress, you can check the status:
+
+```bash
+kubectx kind-k8ssandra-0
+
+kubectl describe k8cs demo -n k8ssandra-operator
+```
+
+In the **earlier** deployment phases, you may notice statuses such as:
+
+**Output:**
+
+```bash
+   .
+   .
+   .
+dc1:
       Cassandra:
-        Cassandra Operator Progress:  Updating
+        Cassandra Operator Progress:  Ready
+        Conditions:
+          Last Transition Time:    2022-01-31T19:02:40Z
+          Message:
+          Reason:
+          Status:                  False
+          Type:                    ScalingUp
+          Last Transition Time:    2022-01-31T19:02:40Z
+          Message:
+          Reason:
+          Status:                  False
+          Type:                    Stopped
+          Last Transition Time:    2022-01-31T19:02:40Z
+          Message:
+          Reason:
+          Status:                  False
+          Type:                    ReplacingNodes
+          Last Transition Time:    2022-01-31T19:02:40Z
+          Message:
+          Reason:
+   .
+   .
+   .
+```
+
+This behavior is expected for the deployments-in-progress. If you're curious, you can continue to check status bu submitting the command again. When the deployments have been completed, for example, here's the command again and a portion of its completed output:
+
+```bash
+kubectl describe k8cs demo -n k8ssandra-operator
+```
+
+**Output subset:**
+
+```bash
+   .
+   .
+   .
+dc3:
+      Cassandra:
+        Cassandra Operator Progress:  Ready
+        Conditions:
+          Last Transition Time:    2022-01-31T19:12:33Z
+          Message:
+          Reason:
+          Status:                  False
+          Type:                    ScalingUp
+          Last Transition Time:    2022-01-31T19:12:33Z
+          Message:
+          Reason:
+          Status:                  False
+          Type:                    Stopped
+          Last Transition Time:    2022-01-31T19:12:33Z
+          Message:
+          Reason:
+          Status:                  False
+          Type:                    ReplacingNodes
+          Last Transition Time:    2022-01-31T19:12:33Z
+          Message:
+          Reason:
+          Status:                  False
+          Type:                    Updating
+          Last Transition Time:    2022-01-31T19:12:33Z
+          Message:
+          Reason:
+          Status:                  False
+          Type:                    RollingRestart
+          Last Transition Time:    2022-01-31T19:12:33Z
+          Message:
+          Reason:
+          Status:                  False
+          Type:                    Resuming
+          Last Transition Time:    2022-01-31T19:12:33Z
+          Message:
+          Reason:
+          Status:                  False
+          Type:                    ScalingDown
+          Last Transition Time:    2022-01-31T19:12:33Z
+          Message:
+          Reason:
+          Status:                  True
+          Type:                    Valid
+          Last Transition Time:    2022-01-31T19:12:33Z
+          Message:
+          Reason:
+          Status:                  True
+          Type:                    Initialized
+          Last Transition Time:    2022-01-31T19:12:33Z
+          Message:
+          Reason:
+          Status:                  True
+          Type:                    Ready
+        Last Server Node Started:  2022-01-31T19:11:12Z
         Node Statuses:
-Events:  <none>
+          demo-dc3-default-sts-0:
+            Host ID:  2cceff49-6df2-4045-8e04-6ce262bd6fc4
+          demo-dc3-default-sts-1:
+            Host ID:  018bfd17-8a77-43c6-859b-ab69c1fc8a66
+          demo-dc3-default-sts-2:
+            Host ID:          38438f65-b10a-4b3f-a56f-488536bf4cd3
+        Observed Generation:  1
+        Quiet Period:         2022-01-31T19:12:39Z
+        Super User Upserted:  2022-01-31T19:12:34Z
+        Users Upserted:       2022-01-31T19:12:34Z
+Events:                       <none>
 ```
 
-Monitor the status of the deployment, eventually resulting in all the resources being in 
-the `Ready` state:
+### Extract credentials
 
-```console
-kubectl -n k8ssandra-operator describe K8ssandraCluster demo
+On the control plane, use the following commands to extract the username and password.
+
+```bash
+kubectx kind-k8ssandra-0
+
+CASS_USERNAME=$(kubectl get secret demo-superuser -n k8ssandra-operator -o=jsonpath='{.data.username}' | base64 --decode)
+
+echo $CASS_USERNAME
 ```
 
-```console
-Name:         demo
-Namespace:    k8ssandra-operator
-Labels:       <none>
-Annotations:  <none>
-API Version:  k8ssandra.io/v1alpha1
-Kind:         K8ssandraCluster
-...
-Status:
-  Datacenters:
-    dc1:
-      Cassandra:
-        Cassandra Operator Progress:  Ready
-      ...
-      Stargate:
-        Available Replicas:  1
-        Conditions:
-          Last Transition Time:  2021-09-27T17:52:41Z
-          Status:                True
-          Type:                  Ready
-        Deployment Refs:
-          demo-dc1-default-stargate-deployment
-        Progress:              Running
-        Ready Replicas:        1
-        Ready Replicas Ratio:  1/1
-        Replicas:              1
-        Service Ref:           demo-dc1-stargate-service
-        Updated Replicas:      1
-    dc2:
-      Cassandra:
-        Cassandra Operator Progress:  Ready
-      ...
-      Stargate:
-        Available Replicas:  1
-        Conditions:
-          Last Transition Time:  2021-09-27T17:53:40Z
-          Status:                True
-          Type:                  Ready
-        Deployment Refs:
-          demo-dc2-default-stargate-deployment
-        Progress:              Running
-        Ready Replicas:        1
-        Ready Replicas Ratio:  1/1
-        Replicas:              1
-        Service Ref:           demo-dc2-stargate-service
-        Updated Replicas:      1
-Events:  <none>
+**Output:**
+```bash
+demo-superuser
 ```
+
+Now obtain the password secret:
+
+```bash
+CASS_PASSWORD=$(kubectl get secret demo-superuser -n k8ssandra-operator -o=jsonpath='{.data.password}' | base64 --decode)
+
+echo $CASS_PASSWORD
+```
+
+**Output example - your value will be different:**
+```bash
+KT-ROFfbD-O9BzWS3Lxq
+```
+
+{{% alert title="Tip" color="success" %}}
+You'll use the extract credentials for subsequent authentication in deployed containers.
+{{% /alert %}}
+
+### Verify cluster status
+
+On one of the data plane clusters, verify the cluster status. Example:
+
+```bash
+kubectx kind-k8ssandra-1
+
+$ kubectl exec --stdin --tty demo-dc1-default-sts-0 -n k8ssandra-operator -- /bin/bash
+```
+
+**Output plus nodetool example:**
+
+```bash
+Defaulted container "cassandra" out of: cassandra, server-system-logger, jmx-credentials (init), server-config-init (init)
+cassandra@k8ssandra-1-worker2:/$ nodetool -u demo-superuser -pw KT-ROFfbD-O9BzWS3Lxq status
+Datacenter: dc1
+===============
+Status=Up/Down
+|/ State=Normal/Leaving/Joining/Moving
+--  Address      Load        Tokens  Owns (effective)  Host ID                               Rack
+UN  172.18.0.8   106.28 KiB  16      100.0%            676592e3-72f2-40c7-893e-932ab7f99fdd  default
+UN  172.18.0.9   101.93 KiB  16      100.0%            a6b62d88-0223-432d-a040-e10ce93a3342  default
+UN  172.18.0.7   106.26 KiB  16      100.0%            1228c0ec-b5f3-4bbc-9b32-e32a8600e58b  default
+
+Datacenter: dc2
+===============
+Status=Up/Down
+|/ State=Normal/Leaving/Joining/Moving
+--  Address      Load        Tokens  Owns (effective)  Host ID                               Rack
+UN  172.18.0.14  106.2 KiB   16      100.0%            0836237c-66d7-453a-b03a-91d64aaa0f77  default
+UN  172.18.0.12  106.18 KiB  16      100.0%            592a453f-7abb-483c-ab4e-2f37c8cd4713  default
+UN  172.18.0.16  106.2 KiB   16      100.0%            d19b5028-b28e-450b-a417-1cd2e42aa179  default
+
+Datacenter: dc3
+===============
+Status=Up/Down
+|/ State=Normal/Leaving/Joining/Moving
+--  Address      Load        Tokens  Owns (effective)  Host ID                               Rack
+UN  172.18.0.21  101.74 KiB  16      100.0%            2cceff49-6df2-4045-8e04-6ce262bd6fc4  default
+UN  172.18.0.20  106.11 KiB  16      100.0%            38438f65-b10a-4b3f-a56f-488536bf4cd3  default
+UN  172.18.0.19  106.1 KiB   16      100.0%            018bfd17-8a77-43c6-859b-ab69c1fc8a66  default
+```
+
+{{% alert title="Tip" color="success" %}}
+All nodes should have the status UN, which stands for "Up Normal".
+{{% /alert %}}
+
+### Test a few operations
+
+```bash
+kubectx kind-k8ssandra-1
+
+kubectl exec --stdin --tty demo-dc1-default-sts-0 -n k8ssandra-operator -- /bin/bash
+```
+
+**Output and cqlsh example:**
+
+In the launched container's `cqlsh` session, notice we provide the extracted password for `demo-superuser`.
+
+```bash
+Defaulted container "cassandra" out of: cassandra, server-system-logger, server-config-init (init)
+cassandra@k8ssandra-1-worker2:/$ cqlsh -u demo-superuser -p KT-ROFfbD-O9BzWS3Lxq
+Connected to demo at 127.0.0.1:9042
+[cqlsh 6.0.0 | Cassandra 4.0.1 | CQL spec 3.4.5 | Native protocol v5]
+Use HELP for help.
+demo-superuser@cqlsh> describe keyspaces;
+
+data_endpoint_auth  system_auth         system_schema  system_views
+system              system_distributed  system_traces  system_virtual_schema
+
+demo-superuser@cqlsh> CREATE KEYSPACE test WITH replication = {'class': 'NetworkTopologyStrategy', 'dc1' : 3, 'dc2' : 3, 'dc3': 3};
+demo-superuser@cqlsh> USE test;
+demo-superuser@cqlsh:test> CREATE TABLE users (email text primary key, name text, state text);
+demo-superuser@cqlsh:test> insert into users (email, name, state) values ('john@gamil.com', 'John Smith', 'NC');
+demo-superuser@cqlsh:test> insert into users (email, name, state) values ('joe@gamil.com', 'Joe Jones', 'VA');
+demo-superuser@cqlsh:test> insert into users (email, name, state) values ('sue@help.com', 'Sue Sas', 'CA');
+demo-superuser@cqlsh:test> insert into users (email, name, state) values ('tom@yes.com', 'Tom and Jerry', 'NV');
+demo-superuser@cqlsh:test> select * from users;
+
+ email          | name          | state
+----------------+---------------+-------
+ john@gamil.com |    John Smith |    NC
+  joe@gamil.com |     Joe Jones |    VA
+   sue@help.com |       Sue Sas |    CA
+    tom@yes.com | Tom and Jerry |    NV
+
+(4 rows)
+demo-superuser@cqlsh:test> exit
+cassandra@k8ssandra-1-worker2:/$ exit
+exit
+```
+
+Try another cqlsh operation on a different cluster.
+
+
+```bash
+kubectx kind-k8ssandra-3
+
+kubectl exec --stdin --tty demo-dc1-default-sts-0 -n k8ssandra-operator -- /bin/bash
+```
+
+**Output:**
+
+```bash
+Defaulted container "cassandra" out of: cassandra, server-system-logger, jmx-credentials (init), server-config-init (init)
+cassandra@k8ssandra-3-worker3:/$ cqlsh -u demo-superuser -p KT-ROFfbD-O9BzWS3Lxq
+Connected to demo at 127.0.0.1:9042
+[cqlsh 6.0.0 | Cassandra 4.0.1 | CQL spec 3.4.5 | Native protocol v5]
+Use HELP for help.
+demo-superuser@cqlsh> USE test;
+demo-superuser@cqlsh:test> SELECT * FROM users;
+
+ email          | name          | state
+----------------+---------------+-------
+ john@gamil.com |    John Smith |    NC
+  joe@gamil.com |     Joe Jones |    VA
+   sue@help.com |       Sue Sas |    CA
+    tom@yes.com | Tom and Jerry |    NV
+
+(4 rows)
+demo-superuser@cqlsh:test> exit
+cassandra@k8ssandra-3-worker3:/$ exit
+exit
+```
+
+Now try using the Stargate API. 
+
+**Output plus cqlsh &amp; stargate-service example:**
+
+```bash
+kubectx kind-k8ssandra-3
+
+kubectl exec --stdin --tty demo-dc3-default-sts-0 -n k8ssandra-operator -- /bin/bash
+
+Defaulted container "cassandra" out of: cassandra, server-system-logger, jmx-credentials (init), server-config-init (init)
+cassandra@k8ssandra-3-worker3:/$ cqlsh -u demo-superuser -p KT-ROFfbD-O9BzWS3Lxq demo-dc3-stargate-service
+Connected to demo at demo-dc3-stargate-service:9042
+[cqlsh 6.0.0 | Cassandra 4.0.1 | CQL spec 3.4.5 | Native protocol v4]
+Use HELP for help.
+demo-superuser@cqlsh> use test;
+demo-superuser@cqlsh:test> select * from users;
+
+ email          | name          | state
+----------------+---------------+-------
+ john@gamil.com |    John Smith |    NC
+  joe@gamil.com |     Joe Jones |    VA
+   sue@help.com |       Sue Sas |    CA
+    tom@yes.com | Tom and Jerry |    NV
+
+(4 rows)
+```
+
 ## Helm
 You need to have [Helm v3+](https://helm.sh/docs/intro/install/) installed.
 
