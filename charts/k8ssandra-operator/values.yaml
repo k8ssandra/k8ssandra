@@ -33,7 +33,7 @@ image:
   pullPolicy: IfNotPresent
 
   # -- Tag of the k8ssandra-operator image to pull from image.repository
-  tag: v0.5.0
+  tag: v1.0.0
 
   # -- Docker registry containing all cass-operator related images. Setting this
   # allows for usage of an internal registry without specifying serverImage,

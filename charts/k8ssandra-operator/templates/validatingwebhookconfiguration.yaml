@@ -1,0 +1,29 @@
+{{- if .Values.controlPlane }}
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingWebhookConfiguration
+metadata:
+  annotations:
+    cert-manager.io/inject-ca-from: {{ .Release.Namespace }}/{{ include "k8ssandra-common.fullname" . }}-serving-cert
+  name: {{ include "k8ssandra-common.fullname" . }}-validating-webhook-configuration
+webhooks:
+  - admissionReviewVersions:
+      - v1
+    clientConfig:
+      service:
+        name: {{ include "k8ssandra-common.fullname" . }}-webhook-service
+        namespace: {{ .Release.Namespace }}
+        path: /validate-k8ssandra-io-v1alpha1-k8ssandracluster
+    failurePolicy: Fail
+    name: vk8ssandracluster.kb.io
+    rules:
+      - apiGroups:
+          - k8ssandra.io
+        apiVersions:
+          - v1alpha1
+        operations:
+          - CREATE
+          - UPDATE
+        resources:
+          - k8ssandraclusters
+    sideEffects: None
+{{- end }}
