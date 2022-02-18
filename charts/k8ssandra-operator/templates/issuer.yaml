@@ -1,3 +1,4 @@
+{{- if .Values.controlPlane }}
 apiVersion: cert-manager.io/v1
 kind: Issuer
 metadata:
@@ -5,3 +6,4 @@ metadata:
   labels: {{ include "k8ssandra-common.labels" . | indent 4 }}
 spec:
   selfSigned: {}
+{{- end }}

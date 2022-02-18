@@ -1,3 +1,4 @@
+{{- if .Values.controlPlane }}
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
@@ -11,3 +12,4 @@ spec:
     kind: Issuer
     name: {{ include "k8ssandra-common.fullname" . }}-selfsigned-issuer
   secretName: {{ include "k8ssandra-common.fullname" . }}-webhook-server-cert
+{{- end }}
