@@ -1,6 +1,6 @@
 ---
-title: "Install K8ssandra Operator on local K8s"
-linkTitle: "Local"
+title: "Install single- or multi-clusters using K8ssandra Operator"
+linkTitle: "Local K8ssandraCluster"
 no_list: true
 weight: 1
 description: "Details to install a K8ssandra Cluster on a local Kubernetes **kind** development environment."
