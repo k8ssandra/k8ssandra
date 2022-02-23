@@ -5,37 +5,52 @@ weight: 2
 description: Release notes for the open-source K8ssandra community project.
 ---
 
-K8ssandra provides a production-ready platform for running Apache Cassandra&reg; on Kubernetes. This includes automation for operational tasks such as repairs, backup and restores, and monitoring. Also deployed is Stargate, an open source data gateway that lets you interact programmatically with your Kubernetes-hosted Cassandra resources via a well-defined API. 
+K8ssandra and K8ssandra Operator provide production-ready platform for running Apache Cassandra&reg; on Kubernetes. This includes automation for operational tasks such as repairs, backup and restores, and monitoring. Also deployed is Stargate, an open source data gateway that lets you interact programmatically with your Kubernetes-hosted Cassandra resources via a well-defined API. 
 
-**Latest release:** K8ssandra 1.4.0
+K8ssandra Operator 1.0.0 is a significant advancement of the overall K8ssandra project. K8ssandra Operator adds:
 
-Release date: 19-November-2021
+* Multi-cluster support for Kubernetes
+* Native support for multi-region/multi-DC Cassandra databases in Kubernetes
+
+As a platform architect or developer, you can declaratively manage the cluster topology and map Cassandra racks to cloud availability zones or failure domains.  
+
+K8ssandra Operator also adds a new observability service, which allows you to choose and deploy your preferred metrics collection and visualization tools.  
+
+**Latest releases:** 
+
+* K8ssandra Operator 1.0.0 on 03-March-2022
+* K8ssandra 1.4.1 on 02-December-2021
 
 {{% alert title="Note" color="success" %}}
-**K8ssandra 1.4.0** implements a number of changes, enhancements, and bug fixes. This topic summarizes the key revisions in 1.4.0 and prior 1.x releases, provides links to the associated issues in our GitHub repo, and contains important upgrade considerations.
+K8ssandra Operator 1.0.0 and K8ssandra 1.4.1 implement a number of changes, enhancements, and bug fixes. This topic summarizes the key revisions, provides links to the associated issues in our GitHub repo, and contains important upgrade considerations.
+
+In addition to this documentation, see the open-source GitHub repos:
+
+* K8ssandra Operator: https://github.com/k8ssandra/k8ssandra-operator
+* K8ssandra: https://github.com/k8ssandra/k8ssandra
 
 **Reminder**: We've migrated the cass-operator GitHub repo from https://github.com/datastax/cass-operator to https://github.com/k8ssandra/cass-operator. Refer to the new repo for the latest Cass Operator developments.
 {{% /alert %}}
 
 ## Prerequisites
 
-* A Kubernetes environment from v1.17 (minimum supported) up to v1.22 (current tested upper bound) - local or via a supported cloud provider
-* [Helm](https://helm.sh/) v3. Note that K8ssandra 1.4.0 has been tested with Helm v3.5.3. Recommendation: specifically avoid Helm 3.6.0 and 3.6.1 due to a known CVE and subsequent regression. Our testing will resume with Helm v3.6.2 and later. Related: see GH issue [1103](https://github.com/k8ssandra/k8ssandra/issues/1103).
+* A Kubernetes environment from v1.19 (minimum supported) up to v1.22 (current tested upper bound) - local or via a supported cloud provider
+* [Helm](https://helm.sh/) v3.
 
 ## Supported Kubernetes environments
 
 * Open-source [kubernetes.io](https://kubernetes.io)
-* [Amazon Elastic Kubernetes Service](https://aws.amazon.com/eks/) (EKS)
-* [DigitalOcean Kubernetes](https://www.digitalocean.com/products/kubernetes/) (DOKS)
-* [Google Kubernetes Engine](https://cloud.google.com/kubernetes-engine) (GKE)
 * [Microsoft Azure Kubernetes Service](https://azure.microsoft.com/en-us/services/kubernetes-service/) (AKS)
 * [MiniKube](https://minikube.sigs.k8s.io/docs/)
 * [Kind](https://kind.sigs.k8s.io/)
 * [K3D](https://k3d.io/)
+* [Amazon Elastic Kubernetes Service](https://aws.amazon.com/eks/) (EKS)
+* [DigitalOcean Kubernetes](https://www.digitalocean.com/products/kubernetes/) (DOKS)
+* [Google Kubernetes Engine](https://cloud.google.com/kubernetes-engine) (GKE)
 
 ## K8ssandra deployed components
 
-The K8ssandra helm chart deploys the following components. Some are optional, and depending on the configuration, may not be deployed:
+The K8ssandra 1.4.x helm charts deploy the following components. Some are optional, and depending on the configuration, may not be deployed:
 
 * [Apache Cassandra](https://cassandra.apache.org/) - the deployed version depends on the configured `cassandra.version` setting:
   * 4.0.1 (default)
@@ -58,15 +73,17 @@ The K8ssandra helm chart deploys the following components. Some are optional, an
 Operators are software extensions to Kubernetes that make use of custom resources to manage applications and their components. Thus, for example, "Reaper Operator" deploys and configures Reaper. "Reaper" itself manages the actual Cassandra repair operations. Similarly, "Prometheus Operator" deploys and configures Prometheus. "Prometheus" itself manages the actual collection of relevant OS / Cassandra metrics. "Medusa Operator" configures and orchestrates the backup and restore operations. "Medusa" itself runs the container that performs backups of Cassandra data. 
 {{% /alert %}}
 
-## Upgrade notices
+## Upgrade notices 
+
+(We will include a pointer here to the topic about **Upgrading from K8ssandra 1.4.x to K8ssandra Operator 1.0.0**.)
 
 {{% alert title="Tip" color="success" %}}
 Previously in K8ssandra 1.3.x, an issue with the `num_tokens` setting required that you match the value from Cassandra 3.11.x with `num_tokens` in Cassandra 4.0.x. That issue was resolved in K8ssandra 1.3.1 by [1029](https://github.com/k8ssandra/k8ssandra/issues/1029).
 {{% /alert %}}
 
-### Upgrading from K8ssandra 1.0.0 to 1.4.0
+### Upgrading from K8ssandra 1.0.0 to 1.4.x
 
-Upgrading directly from K8ssandra 1.0.0 to 1.4.0 causes a `StatefulSet` update, due to issues [#533](https://github.com/k8ssandra/k8ssandra/issues/533) and [#613](https://github.com/k8ssandra/k8ssandra/issues/613)). A `StatefulSet` update has the effect of a rolling restart. Because of issue [#411](https://github.com/k8ssandra/k8ssandra/issues/411), this could require you to perform a manual restart of all Stargate nodes after the Cassandra cluster is back online. This behavior also impacts in-place restore operations of Medusa backups - see issue [#611](https://github.com/k8ssandra/k8ssandra/issues/611). 
+Upgrading directly from K8ssandra 1.0.0 to 1.4.x causes a `StatefulSet` update, due to issues [#533](https://github.com/k8ssandra/k8ssandra/issues/533) and [#613](https://github.com/k8ssandra/k8ssandra/issues/613)). A `StatefulSet` update has the effect of a rolling restart. Because of issue [#411](https://github.com/k8ssandra/k8ssandra/issues/411), this could require you to perform a manual restart of all Stargate nodes after the Cassandra cluster is back online. This behavior also impacts in-place restore operations of Medusa backups - see issue [#611](https://github.com/k8ssandra/k8ssandra/issues/611). 
 
 To manually restart Stargate nodes:
 
@@ -86,6 +103,22 @@ To manually restart Stargate nodes:
    ```bash
     kubectl scale deployment <stargate-deployment> --replicas 1
     ```
+## K8ssandra Operator 1.0.0
+
+K8ssandra Operator 1.0.0 is the initial Generally Available (GA) release. For the historical revisions that led up to GA, refer to https://github.com/k8ssandra/k8ssandra-operator/blob/main/CHANGELOG/CHANGELOG-1.0.md. 
+
+Subsequent K8ssandra Operator 1.0.x revisions will be noted in this section.
+
+## K8ssandra 1.4.1 revisions
+
+Release date: 02-December-2021
+
+The following sections summarize and link to key revisions in K8ssandra 1.4.1. For the latest, refer to the [CHANGELOG](https://github.com/k8ssandra/k8ssandra/blob/main/CHANGELOG-1.4.md).
+
+### Bug fixes
+
+* Remove pod level `SecurityContext` to fix permissions issue on Cassandra data dir creation.
+* Helm charts did not follow cass-operator's cleanup rules for `clusterName` to allow "broken" clusterNames which do not conform to DNS rules. [#1208](https://github.com/k8ssandra/k8ssandra/issues/1208).
 
 ## K8ssandra 1.4.0 revisions
 
@@ -259,10 +292,7 @@ To submit documentation comments or edits, see [Contribution guidelines]({{< rel
 
 Read the K8ssandra [FAQs]({{< relref "faqs" >}}) - for starters, how to pronounce "K8ssandra." 
 
-If you're impatient, jump right in with the K8ssandra [install]({{< relref "install" >}}) steps for these platforms:
+If you're impatient, jump right in with the:
 
-* [Local]({{< relref "install/local" >}})
-* Amazon Elastic Kubernetes Service ([EKS]({{< relref "install/eks" >}}))
-* DigitalOcean Kubernetes ([DOKS]({{< relref "install/doks" >}}))
-* Google Kubernetes Engine ([GKE]({{< relref "install/gke" >}}))
-* Microsoft Azure Kubernetes Service ([AKS]({{< relref "install/aks" >}}))
+* K8ssandra 1.4.x [install](https://docs-staging-v1.k8ssandra.io/en/install) steps for local dev (kind, K3D, minikube) or cloud provider (AKS, DOKS, EKS, DOKS) single-cluster environments.
+* K8ssandra Operator 1.0.x [install](https://docs-staging-v2.k8ssandra.io/en/install) steps for local dev (kind) multi-cluster or single-cluster environments.

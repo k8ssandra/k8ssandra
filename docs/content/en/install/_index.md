@@ -1,7 +1,7 @@
 ---
-title: "Install K8ssandra"
-linkTitle: "Install"
+title: "Install K8ssandra Operator"
+linkTitle: "Install K8ssandra Operator"
 weight: 3
 description: >
-  Topics for installing K8ssandra on local (dev) machines or production-level K8ssandra clusters on a variety of cloud platforms.
+  Walk through the steps to install K8ssandra Operator on a local (dev) kind Kubernetes environment.
 ---
