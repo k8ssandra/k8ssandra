@@ -14,7 +14,7 @@ K8ssandra Operator 1.0.0 is a significant advancement of the overall K8ssandra p
 
 As a platform architect or developer, you can declaratively manage the cluster topology and map Cassandra racks to cloud availability zones or failure domains.  
 
-K8ssandra Operator also adds a new observability service, which allows you to choose and deploy your preferred metrics collection and visualization tools. That is, with K8ssandra Operator 1.0.0, you are not limited to using only the Prometheus and Grafana deployed by K8ssandra 1.4.x. 
+K8ssandra Operator also adds a new observability service, which allows you to choose and deploy your preferred metrics collection and visualization tools.  
 
 **Latest releases:** 
 
@@ -35,7 +35,7 @@ In addition to this documentation, see the open-source GitHub repos:
 ## Prerequisites
 
 * A Kubernetes environment from v1.19 (minimum supported) up to v1.22 (current tested upper bound) - local or via a supported cloud provider
-* [Helm](https://helm.sh/) v3. Note that K8ssandra 1.4.x and K8ssandra Operator have been tested with Helm v3.5.3. Recommendation: specifically avoid Helm 3.6.0 and 3.6.1 due to a known CVE and subsequent regression. Our testing may resume with Helm v3.6.2 and later. Related: see GH issue [1103](https://github.com/k8ssandra/k8ssandra/issues/1103).
+* [Helm](https://helm.sh/) v3.
 
 ## Supported Kubernetes environments
 
