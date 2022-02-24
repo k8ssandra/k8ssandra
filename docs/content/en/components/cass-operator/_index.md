@@ -2,16 +2,16 @@
 title: "Cass Operator"
 linkTitle: "Cass Operator"
 weight: 2
-description: K8ssandra deploys Kubernetes Operator for Apache Cassandra&reg; to support management tasks in Kubernetes.
+description: Cass Operator manages Apache Cassandra&reg; resources in Kubernetes.
 ---
 
-Kubernetes Operator for Apache Cassandra&reg;, also known as Cass Operator or cass-operator, is deployed by K8ssandra as part of its Helm chart. 
+Cass Operator, which is installed with K8ssandra Operator, deploys a Cassandra instance to your single- or multi-clusters in Kubernetes.
 
-If you haven't already installed K8ssandra, see the [install]({{< relref "/install" >}}) topics.
+If you haven't already installed a K8ssandraCluster using K8ssandra Operator, see the [local install]({{< relref "/install/local" >}}) topic.
 
 ## Introduction
 
-Cass Operator deploys a Cassandra instance to your Kubernetes cluster. Cass Operator then automates the process of managing Cassandra in Kubernetes. Cass Operator distills the user-supplied information down to the number of nodes and cluster name to manage the lifecycle of individual Kubernetes resources. Additional options are available, but for starters, that's essentially all you'll need to specify. Now the process of managing the distributed Cassandra or DSE data platform is turnkey and much easier, which means your team is free to focus on the application layer and its functionality.
+ Once deploy by K8ssandra Operator, Cass Operator then automates the process of managing Cassandra in Kubernetes. Cass Operator distills the user-supplied information down to the number of nodes and cluster name to manage the lifecycle of individual Kubernetes resources. Additional options are available, but for starters, that's essentially all you'll need to specify. Now the process of managing the distributed Cassandra or DSE data platform is turnkey and much easier, which means your team is free to focus on the application layer and its functionality.
 
 Let's start by looking at containers and the emergence of Kubernetes as the premier platform for application orchestration. Then we'll look at the Cassandra architecture deployed by K8ssandra's Cass Operator. 
 
@@ -74,6 +74,6 @@ For instance, all nodes in the cluster may be scheduled and start their manageme
 ## Next steps
 
 * For information about using a superuser and secrets with Cassandra authentication, see [Cassandra security]({{< relref "/tasks/secure/#cassandra-security" >}}).
-* For reference details, see the [K8ssandra]({{< relref "/reference/helm-charts/k8ssandra/" >}}) Helm chart.
+* For reference details, see the K8ssandra Operator [Custom Resource Definitions (CRDs)]({{< relref "reference" >}}).
 * Also see the topics covering other [components]({{< relref "/components/" >}}) deployed by K8ssandra. 
 * For information on using other deployed components, see the [Tasks]({{< relref "/tasks/" >}}) topics.

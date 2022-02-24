@@ -1,7 +1,8 @@
 ---
-title: "K8ssandra reference"
-linkTitle: "Reference"
+title: "Reference CRDs"
+linkTitle: "Reference CRDs"
+simple_list: true
 weight: 6
 description: >
-  Reference content for K8ssandra users including the YAML properties of each deployed Helm chart, plus a Glossary.
+  Reference topics covering Cassandra Custom Resource Definitions (CRDs) for use with K8ssandra Operator.
 ---

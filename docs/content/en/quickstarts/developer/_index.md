@@ -2,13 +2,11 @@
 title: "Quickstart for developers"
 linkTitle: "Developers"
 weight: 1
-description: "Get up and coding with K8ssandra by exposing access to Stargate and CQL APIs!"
+description: "Get up and coding with K8ssandra Operator by exposing access to Stargate and CQL APIs!"
 ---
 
-**Completion time**: **10 minutes**.
-
 {{% alert title="Tip" color="success" %}}
-Be sure to first complete one of the [K8ssandra install]({{< relref "/install" >}}) options (locally or on a cloud provider) before performing these post-install steps. 
+Before performing these post-install steps, complete at least one K8ssandra Operator [cluster deployment]({{< relref "/install/local" >}}) in Kubernetes. 
 {{% /alert %}}
 
 In this quickstart for developers, we'll cover:
@@ -30,23 +28,12 @@ kubectl get services
 **Output**:
 
 ```bash
-NAME                                   TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)                                                 AGE
-cass-operator-metrics                  ClusterIP   10.80.3.92     <none>        8383/TCP,8686/TCP                                       21h
-k8ssandra-dc1-all-pods-service         ClusterIP   None           <none>        9042/TCP,8080/TCP,9103/TCP                              21h
-k8ssandra-dc1-service                  ClusterIP   None           <none>        9042/TCP,9142/TCP,8080/TCP,9103/TCP,9160/TCP            21h
-k8ssandra-dc1-stargate-service         ClusterIP   10.80.13.197   <none>        8080/TCP,8081/TCP,8082/TCP,8084/TCP,8085/TCP,9042/TCP   21h
-k8ssandra-grafana                      ClusterIP   10.80.7.168    <none>        80/TCP                                                  21h
-k8ssandra-kube-prometheus-operator     ClusterIP   10.80.8.109    <none>        443/TCP                                                 21h
-k8ssandra-kube-prometheus-prometheus   ClusterIP   10.80.2.44     <none>        9090/TCP                                                21h
-k8ssandra-reaper-reaper-service        ClusterIP   10.80.5.77     <none>        8080/TCP                                                21h
-k8ssandra-seed-service                 ClusterIP   None           <none>        <none>                                                  21h
-kubernetes                             ClusterIP   10.80.0.1      <none>        443/TCP                                                 23h
-prometheus-operated                    ClusterIP   None           <none>        9090/TCP                                                21h
+(TODO: NEED SAMPLE OUTPUT HERE)
 ```
 
 In the output above, the service of interest is:
 
-* **k8ssandra-dc1-stargate-service**: The K8ssandra Stargate service where the name is a combination of the K8ssandra cluster name you specified during the Helm install, `k8ssandra`, the datacenter name, `dc1` and the postfix, `-service`. This service listens on the ports:
+* **demo-dc1-stargate-service**: The K8ssandra Stargate service where the name is a combination of the k8ssandra  cluster name you specified during the Helm install, such as `demo`, the datacenter name, `dc1` and the postfix, `-service`. This service listens on the ports:
   * **8080/TCP**: GraphQL interface
   * **8081/TCP**: REST authorization service for generating tokens
   * **8082/TCP**: REST interface
@@ -61,7 +48,7 @@ To configure port forwarding:
 2. Run the `kubectl port-forward` command in the background:
 
     ```bash
-    kubectl port-forward svc/k8ssandra-dc1-stargate-service 8080 8081 8082 9042 &
+    kubectl port-forward svc/demo-dc1-stargate-service 8080 8081 8082 9042 &
     ```
 
     **Output**:
@@ -224,9 +211,8 @@ For complete details on Cassandra, CQL and CQLSH, see the [Apache Cassandra](htt
 
 ## Next steps
 
-* [FAQs]({{< relref "faqs" >}}): If you're new to K8ssandra, these FAQs are for you. 
 * [Components]({{< relref "components" >}}): Dig in to each deployed component of the K8ssandra stack and see how it communicates with the others.
 * [Tasks]({{< relref "tasks" >}}): Need to get something done? Check out the Tasks topics for a helpful collection of outcome-based solutions.
-* [Reference]({{< relref "reference" >}}): Explore the K8ssandra configuration interface (Helm charts), the available options, and a Glossary.
+* [Reference]({{< relref "reference" >}}): Explore the Custom Resource Definitions (CRDs) used by K8ssandra Operator.
 
 We encourage developers to actively participate in the [K8ssandra community](https://k8ssandra.io/community/).

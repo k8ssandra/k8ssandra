@@ -2,12 +2,12 @@
 title: "Reaper for Cassandra repairs"
 linkTitle: "Reaper"
 weight: 3
-description: K8ssandra deploys Reaper to enable anti-entropy repair operations on Apache Cassandra&reg; data.
+description: K8ssandra Operator deploys Reaper to enable anti-entropy repair operations on Apache Cassandra&reg; data.
 ---
 
-Reaper for Apache Cassandra&reg; is deployed by a K8ssandra install, which includes the Reaper Operator [Helm chart]({{< relref "/reference/helm-charts/reaper-operator/" >}}).
+Reaper for Apache Cassandra&reg; is deployed by a K8ssandra Operator install, based on the [Reaper]({{< relref "/reference/crd/reaper/" >}}) Custom Resource Definition (CRD).
 
-If you haven't already installed K8ssandra, see the [install]({{< relref "/install" >}}) topics.
+If you haven't already installed a K8ssandraCluster using K8ssandra Operator, see the [local install]({{< relref "/install/local" >}}) topic.
 
 ## Introduction
 
@@ -128,6 +128,6 @@ These changes also introduced a long awaited feature by allowing fully concurren
 
 * For the steps to set up repair operations using the Reaper Web UI, see [Repair Cassandra with Reaper]({{< relref "/tasks/repair/" >}}). 
 * For information about using a superuser and secrets with Reaper authentication, see [Reaper security]({{< relref "/tasks/secure/#reaper-security" >}}).
-* For reference details, see the Reaper Operator [Helm chart]({{< relref "/reference/helm-charts/reaper-operator/" >}}).
-* Also see the topics covering other [components]({{< relref "/components/" >}}) deployed by K8ssandra. 
+* For reference details, see the K8ssandra Operator [Custom Resource Definitions (CRDs)]({{< relref "reference" >}}).
+* Also see the topics covering other [components]({{< relref "/components/" >}}) deployed by K8ssandra Operator. 
 * For information on using the deployed components, see the [Tasks]({{< relref "/tasks/" >}}) topics.

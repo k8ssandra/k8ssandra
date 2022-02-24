@@ -2,14 +2,14 @@
 title: "Private registries"
 linkTitle: "Private registries"
 weight: 1
-description: "Optional steps to use private registries with K8ssandra and its deployed components."
+description: "Optional steps to use private registries with K8ssandra Operator and its deployed components."
 ---
 
-Starting in the 1.3.0 release, K8ssandra supports the use of private registries. This feature is designed for those users who have limited or restricted access to public registries such as [Docker Hub](https://hub.docker.com). Site Reliability Engineers and developers can use the examples in this topic (and linked related topics) to provide access to all the images required for their K8ssandra environment.
+K8ssandra Operator supports the use of private registries. This feature is designed for those users who have limited or restricted access to public registries such as [Docker Hub](https://hub.docker.com). Site Reliability Engineers and developers can use the examples in this topic (and linked related topics) to provide access to all the images required for their K8ssandra environment.
 
 ## Introduction
 
-All images used by K8ssandra are pulled from Docker Hub, a publicly accessible registry. There are situations where some users need the ability to pull images from a different registry. Examples:
+All images used by K8ssandra Operator are pulled from Docker Hub, a publicly accessible registry. There are situations where some users need the ability to pull images from a different registry. Examples:
 
 * Consider ["air gapped"](https://en.wikipedia.org/wiki/Air_gap_(networking)) deployments, where there is no access to the public Internet. This scenario means images cannot be pulled from Docker Hub or any other external registry. Images must be pulled from a registry on the user's internal network.
 
@@ -17,19 +17,19 @@ All images used by K8ssandra are pulled from Docker Hub, a publicly accessible r
 
 ## Image coordinates
 
-K8ssandra 1.3.0 adds the ability to fully specify coordinates for every image that it deploys. To better understand what we mean by image coordinates, let's look closer.
+K8ssandra Operator allows you to fully specify coordinates for every image that it deploys. To better understand what we mean by image coordinates, let's look closer.
 
 ### Format of image coordinates
 
 Consider this example:
 
 ```
-docker.io/k8ssandra/cass-management-api:3.11.10-v0.1.26
+docker.io/k8ssandra-operator/cass-management-api:3.11.10-v0.1.26
 ```
 
 * `docker.io` is the registry.
 
-* `k8ssandra` is the repository.
+* `k8ssandra-operator` is the repository.
 
 * `cass-management-api` is the image.
 
@@ -41,11 +41,11 @@ Given this, the complete **format** of coordinates looks like this:
 registry/repository/image:tag
 ```
 
-K8ssandra allows you to configure each of these parts for each image that it deploys.
+K8ssandra Operator allows you to configure each of these parts for each image that it deploys.
 
 ### Chart properties YAML
 
-For each container that K8ssandra deploys, there are chart properties like this:
+For each container that K8ssandra Operator deploys, there are chart properties like this:
 
 ```yaml
 <container-name>:
@@ -78,9 +78,9 @@ While `pullPolicy` is shown above, it is not part of the image coordinates. Poss
 See [ImagePullPolicy](https://helm.sh/docs/chart_best_practices/pods/#imagepullpolicy) in the Helm v3 documentation.
 {{% /alert %}}
 
-### List of chart properties
+### List of CRD properties
 
-Here is a list of chart properties that correspond to K8ssandra deployed containers having an `image` property:
+Here is a list of CRD properties that correspond to K8ssandra Operator deployed containers having an `image` property:
 
 | Chart property / container name                          | Summary                               |
 | -------------------------------------------------------- | ------------------------------------- |
@@ -143,8 +143,7 @@ The following table lists the relevant properties for configuring service accoun
 
 ### Configure Image Pull Secrets
 
-There are some differences in the way K8ssandra handles the configuration of service accounts, depending on the component. Let's look 
-at each component to see how to configure image pull secrets.
+There are some differences in the way K8ssandra Operator handles the configuration of service accounts, depending on the component. Let's look at each component to see how to configure image pull secrets.
 
 #### Cassandra, Stargate, Reaper
 
@@ -178,28 +177,8 @@ kube-prometheus-stack:
       name: prometheus-operator
 ```
 
-#### Reaper Operator    
+#### Cass Operator
 
-Configuration for its service account:
-
-```yaml
-reaper-operator:
-  imagePullSecrets:
-  - myregistrykey
-  serviceAccount:
-    name: reaper-operator
-```
-
-#### Medusa Operator
-
-Configuration for its service account:
-
-```yaml
-medusa-operator:
-  imagePullSecrets:
-  - myregistrykey
-  serviceAccount:
-    name: medusa-operator
 ```
 
 #### Cass Operator
@@ -379,7 +358,7 @@ kube-prometheus-stack:
 ```
 ## Related issues and PR
 
-From the K8ssandra GitHub repo, here are the related issues and pull request for your reference:
+From the K8ssandra GitHub repo, here are the resolved issues and pull request for your reference:
 
 * https://github.com/k8ssandra/k8ssandra/pull/901
 * https://github.com/k8ssandra/k8ssandra/issues/420
@@ -390,4 +369,4 @@ From the K8ssandra GitHub repo, here are the related issues and pull request for
 
 Explore other K8ssandra [tasks]({{< relref "/tasks" >}}).
 
-See the [Helm Chart]({{< relref "/reference/helm-charts" >}}) reference topics.
+See the [Custom Resource Definitions (CRDs)]({{< relref "/reference" >}}) reference topics.

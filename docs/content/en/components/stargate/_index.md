@@ -2,10 +2,12 @@
 title: "Stargate APIs for Cassandra"
 linkTitle: "Stargate"
 weight: 1
-description: K8ssandra deploys Stargate to provide APIs that interact with Apache Cassandra&reg; databases.
+description: K8ssandra Operator deploys Stargate to provide APIs that interact with Apache Cassandra&reg; databases.
 ---
 
-Stargate provides a data gateway with REST, GraphQL, and Document APIs in front of your K8ssandra-managed Cassandra database. Stargate is deployed by K8ssandra as part of its Helm chart install. If you haven't already installed K8ssandra, see the [install]({{< relref "/install" >}}) topics.
+Stargate provides a data gateway with REST, GraphQL, and Document APIs in front of your K8ssandra-managed Cassandra database. Stargate is deployed by a K8ssandra Operator install, based on the [Stargate]({{< relref "/reference/crd/stargate/" >}}) Custom Resource Definition (CRD).
+
+If you haven't already installed a K8ssandraCluster using K8ssandra Operator, see the [local install]({{< relref "/install/local" >}}) topic.
 
 ## Introduction
 
@@ -34,6 +36,7 @@ Here's how the modules fit together:
 * For comprehensive information about Stargate, visit the [stargate.io](https://stargate.io/) site.
 * For details on the API calls, see the Stargate [API reference](https://stargate.io/docs/stargate/1.0/api.html).
 * For an introduction to using Stargate with K8ssandra, see [Develop with Stargate APIs]({{< relref "/tasks/develop/" >}}). 
+* For reference details, see the K8ssandra Operator [Custom Resource Definitions (CRDs)]({{< relref "/reference/" >}}).
 * For information about using a superuser and secrets with Stargate authentication, see [Stargate security]({{< relref "/tasks/secure/#stargate-security" >}}).
 * Also see the topics covering other [components]({{< relref "/components/" >}}) deployed by K8ssandra. 
 * For information on using the deployed components, see the [Tasks]({{< relref "/tasks/" >}}) topics.
