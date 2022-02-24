@@ -37,7 +37,7 @@ We've organized this docs site into three areas:
 
 ## What is K8ssandra Operator?
 
-K8ssandra Operator is a cloud native distribution of Cassandra that is designed to run on Kubernetes. Accompanying Cassandra is a suite of tools to ease and automate operational tasks. This includes metrics, data anti-entropy services, and backup tooling. As part of the K8ssandraCluster installation process, which uses the new K8ssandra Operator, all of these components are installed and wired together. This unified operator frees your teams from having to perform the tedious Kubernetes plumbing of components.
+K8ssandra Operator is a native Kubernetes operator that supports the deployment and operation of Cassandra that is designed to run on Kubernetes. Accompanying Cassandra is a suite of tools to ease and automate operational tasks. This includes metrics, data anti-entropy services, and backup tooling. As part of the K8ssandraCluster installation process, which uses the new K8ssandra Operator, all of these components are installed and wired together. This unified operator frees your teams from having to perform the tedious Kubernetes plumbing of components.
 
 Cassandra may be deployed in a number of environments. This includes on bare metal hosts, virtual machines, and within container platforms. Each deployment type has its pros and cons, but in all cases it is **_essential_** that automation be leveraged to ensure that all node are configured homogeneously and without failure.
 
