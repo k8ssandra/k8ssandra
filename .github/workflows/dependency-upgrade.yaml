@@ -21,42 +21,48 @@ jobs:
             chart_version_path: ""
             operator: false
             docker_hub_url: "https://registry.hub.docker.com/v2/repositories/stargateio/stargate-3_11/tags?page_size=100"
+            version_character: ""
           - dependency: Medusa
             version_path: ".medusa.image.tag"
             values_file: "charts/k8ssandra/values.yaml"
             chart_version_path: ""
             operator: false
             docker_hub_url: "https://registry.hub.docker.com/v2/repositories/k8ssandra/medusa/tags?page_size=100"
+            version_character: ""
           - dependency: Reaper
             version_path: ".reaper.image.tag"
             values_file: "charts/k8ssandra/values.yaml"
             chart_version_path: ""
             operator: false
             docker_hub_url: "https://registry.hub.docker.com/v2/repositories/thelastpickle/cassandra-reaper/tags?page_size=100"
+            version_character: ""
           - dependency: cass-operator
             app_version_path: ".appVersion"
-            version_path: ".version"
+            version_path: ".image.tag"
             values_file: "charts/cass-operator/values.yaml"
             chart_version_path: ".version"
             chart_file: "charts/cass-operator/Chart.yaml"
             operator: true
             docker_hub_url: "https://registry.hub.docker.com/v2/repositories/k8ssandra/cass-operator/tags?page_size=100"
+            version_character: "v"
           - dependency: k8ssandra-operator
             app_version_path: ".appVersion"
-            version_path: ".version"
+            version_path: ".image.tag"
             values_file: "charts/k8ssandra-operator/values.yaml"
             chart_version_path: ".version"
             chart_file: "charts/k8ssandra-operator/Chart.yaml"
             operator: true
             docker_hub_url: "https://registry.hub.docker.com/v2/repositories/k8ssandra/k8ssandra-operator/tags?page_size=100"
+            version_character: "v"
           - dependency: medusa-operator
             app_version_path: ".appVersion"
-            version_path: ".version"
+            version_path: ".image.tag"
             values_file: "charts/medusa-operator/values.yaml"
             chart_version_path: ".version"
             chart_file: "charts/medusa-operator/Chart.yaml"
             operator: true
             docker_hub_url: "https://registry.hub.docker.com/v2/repositories/k8ssandra/medusa-operator/tags?page_size=100"
+            version_character: "v"
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -107,7 +113,7 @@ jobs:
               cat ${{ matrix.chart_file }}
               cat charts/k8ssandra/Chart.yaml
             fi
-            yq eval "${{ matrix.version_path }} |= \"${{ env.LATEST_VERSION }}\"" ${{ matrix.values_file }} -i
+            yq eval "${{ matrix.version_path }} |= \"${{ matrix.version_character }}${{ env.LATEST_VERSION }}\"" ${{ matrix.values_file }} -i
             cat ${{ matrix.values_file }}
             echo "PR_EXISTS=no" >> $GITHUB_ENV
           else
