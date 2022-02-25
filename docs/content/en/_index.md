@@ -31,19 +31,19 @@ And while the initial K8ssandra project features (currently, v1.4.1) are still a
 
 We've organized this docs site into three areas:
 
-* [docs.k8ssandra.io](https://docs-staging.k8ssandra.io) provides topics that are of interest to users of K8ssandra Operator and K8ssandra, such as FAQs, Release Notes, and a Glossary.
+* [docs.k8ssandra.io](https://docs-staging.k8ssandra.io) provides topics that are of common interest to users of K8ssandra Operator and K8ssandra, such as FAQs, Release Notes, and a Glossary.
 * [docs-v1.k8ssandra.io](https://docs-staging-v1.k8ssandra.io) provides topics that are specific to K8ssandra 1.4.x users (the initial project releases).
 * [docs-v2.k8ssandra.io](https://docs-staging-v2.k8ssandra.io) provides topics that are specific to the more recent (and recommended) K8ssandra Operator software.
 
 ## What is K8ssandra Operator?
 
-K8ssandra Operator is a native Kubernetes operator that supports the deployment and operation of Cassandra that is designed to run on Kubernetes. Accompanying Cassandra is a suite of tools to ease and automate operational tasks. This includes metrics, data anti-entropy services, and backup tooling. As part of the K8ssandraCluster installation process, which uses the new K8ssandra Operator, all of these components are installed and wired together. This unified operator frees your teams from having to perform the tedious Kubernetes plumbing of components.
+K8ssandra Operator is the most recent implementation that allows you to deploy Cassandra into multi-cluster and multi-region Kubernetes environments.
+
+K8ssandra Operator is a native Kubernetes operator that supports the deployment and management of Cassandra databases. Accompanying Cassandra is a suite of tools to ease and automate operational tasks. This includes metrics, data anti-entropy services, and backup tooling. As part of the `K8ssandraCluster` installation process, which uses the new K8ssandra Operator, all of these components are installed and wired together. This unified operator frees your teams from having to perform the tedious Kubernetes plumbing of components.
 
 Cassandra may be deployed in a number of environments. This includes on bare metal hosts, virtual machines, and within container platforms. Each deployment type has its pros and cons, but in all cases it is **_essential_** that automation be leveraged to ensure that all node are configured homogeneously and without failure.
 
 K8ssandra Operator focuses on deploying Cassandra within Kubernetes. Kubernetes was chosen as it allows for the consumption of a common, versioned, set of APIs and tooling across multiple cloud platforms and environments.
-
-K8ssandra Operator is the most recent implementation that allows you to deploy Cassandra into multi-cluster and multi-region Kubernetes environments.
 
 ## Why do I want K8ssandra Operator?
 
@@ -58,5 +58,6 @@ K8ssandra Operator is a great fit for developers and Site Reliability Engineers 
 * If you want to deploy K8ssandra Operator and explore single- and multi-cluster deployment examples, start in its local dev (kind) install topic on the [docs-v2](https://docs-staging-v2.k8ssandra.io/install/local/) area of our site.
 * If you prefer to continue using K8ssandra v1.4.x (the initial project implementation), head over to the [docs-v1](https://docs-staging-v1.k8ssandra.io) area of this site.
 * [FAQs]({{< relref "faqs" >}}): If you're new to K8ssandra and K8ssandra Operator, these FAQs are for you. 
-* [Release Notes]({{< relref "release-notes" >}}): Per-release details about the enhancements, bugs fixed, and other changes since prior releases.
-* We also strongly encourage you to actively participate in the [K8ssandra community](https://k8ssandra.io/community/).
+* [Release Notes]({{< relref "release-notes" >}}): For each release, this topic details the enhancements, bugs fixes, and other changes.
+
+We also strongly encourage you to actively participate in the [K8ssandra community](https://k8ssandra.io/community/)!
