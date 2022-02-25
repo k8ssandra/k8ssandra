@@ -1,6 +1,6 @@
 
 
-![Version: 0.33.0](https://img.shields.io/badge/Version-0.33.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.9.0](https://img.shields.io/badge/AppVersion-1.9.0-informational?style=flat-square)
+![Version: 0.35.0](https://img.shields.io/badge/Version-0.35.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.10.0](https://img.shields.io/badge/AppVersion-1.10.0-informational?style=flat-square)
 
 ## Maintainers
 
@@ -34,7 +34,7 @@
 | image.registry | string | `"docker.io"` | Container registry containing the repository where the image resides |
 | image.repository | string | `"k8ssandra/cass-operator"` | Docker repository for cass-operator |
 | image.pullPolicy | string | `"IfNotPresent"` | Pull policy for the operator container |
-| image.tag | string | `"v1.9.0"` | Tag of the cass-operator image to pull from image.repository |
+| image.tag | string | `"v1.10.0"` | Tag of the cass-operator image to pull from image.repository |
 | image.registryOverride | string | `nil` | Docker registry containing all cass-operator related images. Setting this allows for usage of an internal registry without specifying serverImage, configBuilderImage, and busyboxImage on all CassandraDatacenter objects. |
 | imagePullSecrets | list | `[]` | References to secrets to use when pulling images. See: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/ |
 | serviceAccount.annotations | object | `{}` | Annotations to add to the service account. |
