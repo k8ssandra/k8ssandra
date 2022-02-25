@@ -13,7 +13,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        dependency: ["Stargate", "Medusa", "Reaper", "cass-operator", "k8ssandra-operator"]
+        dependency: ["Stargate", "Medusa", "Reaper", "cass-operator", "k8ssandra-operator", "medusa-operator", "reaper-operator"]
         include:
           - dependency: Stargate
             version_path: ".stargate.version"
@@ -62,6 +62,15 @@ jobs:
             chart_file: "charts/medusa-operator/Chart.yaml"
             operator: true
             docker_hub_url: "https://registry.hub.docker.com/v2/repositories/k8ssandra/medusa-operator/tags?page_size=100"
+            version_character: "v"
+          - dependency: reaper-operator
+            app_version_path: ".appVersion"
+            version_path: ".image.tag"
+            values_file: "charts/reaper-operator/values.yaml"
+            chart_version_path: ".version"
+            chart_file: "charts/reaper-operator/Chart.yaml"
+            operator: true
+            docker_hub_url: "https://registry.hub.docker.com/v2/repositories/k8ssandra/reaper-operator/tags?page_size=100"
             version_character: "v"
     steps:
       - name: Checkout
