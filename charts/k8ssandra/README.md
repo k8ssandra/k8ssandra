@@ -21,10 +21,10 @@ Provisions and configures an instance of the entire K8ssandra stack. This includ
 
 | Repository | Name | Version |
 |------------|------|---------|
-| file://../cass-operator | cass-operator | 0.33.0 |
 | file://../k8ssandra-common | k8ssandra-common | 0.28.4 |
 | file://../medusa-operator | medusa-operator | 0.32.0 |
 | file://../reaper-operator | reaper-operator | 0.32.3 |
+| https://helm.k8ssandra.io/stable | cass-operator | 0.33.0 |
 | https://prometheus-community.github.io/helm-charts | kube-prometheus-stack | 20.0.1 |
 
 ## Values
