@@ -372,9 +372,8 @@ kubectl get cassadrarestore helm-test -o yaml
 
 An alternative to an Amazon S3 bucket is MinIO, which is S3 compatible and also supported by Medusa. See [Backup and restore Cassandra with MinIO]({{< relref "/tasks/backup-restore/minio/" >}}).
 
-Also see the following reference topics:
+Also see the following Custom Resource Definition (CRD) reference topics:
 
-* [Medusa Operator Helm Chart]({{< relref "/reference/helm-charts/medusa-operator" >}})
-* [Backup Helm Chart]({{< relref "/reference/helm-charts/backup" >}})
-* [Restore Helm Chart]({{< relref "/reference/helm-charts/restore" >}})
-
+* [Medusa CRD]({{< relref "/reference/crd/medusa" >}})
+* [CassandraBackup CRD]({{< relref "/reference/crd/cassandrabackup" >}})
+* [CassansdraRestore CRD]({{< relref "/reference/crd/cassandrarestore" >}})

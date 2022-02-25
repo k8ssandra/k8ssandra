@@ -4,7 +4,7 @@ linkTitle: "Repair"
 description: "Use the Reaper for Apache Cassandra&reg; web interface to perform repairs."
 ---
 
-Repairs are a critical anti-entropy operation in Cassandra. In the past, there have been many custom solutions to manage them outside of your main Cassandra installation. K8ssandra provides the Reaper web interface that eliminates the need for a custom solution. Just like K8ssandra makes Cassandra setup easy, Reaper makes configuration of repairs even easier.
+Repairs are a critical anti-entropy operation in Cassandra. In the past, there have been many custom solutions to manage them outside of your main Cassandra installation. K8ssandra Operator provides the Reaper web interface that eliminates the need for a custom solution. Just as K8ssandra Operator makes Cassandra setup easy, Reaper makes configuration of repairs even easier.
 
 {{% alert title="Tip" color="success" %}}
 The requirement for your environment may vary considerably, however the general recommendation is to run a repair operation on your Cassandra clusters about once a week.
@@ -18,12 +18,12 @@ The requirement for your environment may vary considerably, however the general 
 ## Prerequisites
 
 1. Kubernetes cluster with the following elements deployed:
-   * [K8ssandra]({{< relref "quickstarts#install-k8ssandra" >}}) Helm chart
+   * If you haven't already installed a K8ssandraCluster using K8ssandra Operator, see the [local install]({{< relref "/install/local" >}}) topic.
    * [Ingress Controller]({{< relref "tasks/connect/ingress" >}})
 2. DNS name configured for the Reaper web interface
 
 {{% alert title="Tip" color="success" %}}
-As an alternative to configuring an Ingress, consider port forwarding. It's another way to provide external access to resources that have been deployed by K8ssandra in your Kubernetes environment. Those resources could include Prometheus metrics, pre-configured Grafana dashboards, and the Reaper web interface for repairs of Cassandra data. The `kubectl port-forward` command does not require an Ingress/Traefik to work. 
+As an alternative to configuring an Ingress, consider **port forwarding**. It's another way to provide external access to resources that have been deployed by K8ssandra Operator in your Kubernetes environment. Those resources could include Prometheus metrics, pre-configured Grafana dashboards, and the Reaper web interface for repairs of Cassandra data. The `kubectl port-forward` command does not require an Ingress/Traefik to work. 
 
 * Developers, see [Set up port forwarding]({{< relref "/quickstarts/developer/#set-up-port-forwarding" >}}).  
 * Site reliability engineers, see [Configure port forwarding]({{< relref "/quickstarts/site-reliability-engineer/#port-forwarding" >}}).
@@ -138,6 +138,6 @@ Notice the repair job kicking off.
 
 ## Next steps
 
-Explore other K8ssandra [tasks]({{< relref "/tasks" >}}).
+Explore other K8ssandra Operator [tasks]({{< relref "/tasks" >}}).
 
-See the [Reaper Operator Helm Chart]({{< relref "/reference/helm-charts/reaper-operator" >}}) reference.
+See the Reaper [Custom Resource Definition (CRD)]({{< relref "/reference/crd/reaper" >}}) reference.

@@ -2,12 +2,12 @@
 title: "Medusa for Cassandra backup and restore"
 linkTitle: "Medusa"
 weight: 4
-description: K8ssandra deploys Medusa to support backup and restore of Apache Cassandra&reg; tables.
+description: K8ssandra Operator deploys Medusa to support backup and restore operations of Apache Cassandra&reg; tables.
 ---
 
-Medusa for Apache Cassandra&reg; is deployed by K8ssandra as part of its Helm chart install. 
+Medusa for Apache Cassandra&reg; is deployed by a K8ssandra Operator install, based on the [Medusa]({{< relref "/reference/crd/medusa/" >}}) Custom Resource Definition (CRD).
 
-If you haven't already installed K8ssandra, see the [install]({{< relref "/install" >}}) topics.
+If you haven't already installed a K8ssandraCluster using K8ssandra Operator, see the [local install]({{< relref "/install/local" >}}) topic.
 
 ## Introduction
 
@@ -39,9 +39,6 @@ K8ssandra's Medusa supports:
 * Backup and restore Cassandra with [Amazon S3]({{< relref "/tasks/backup-restore/amazon-s3/" >}}).
 * Backup and restore Cassandra with [Google Cloud Storage]({{< relref "/tasks/backup-restore/gcs/" >}}).
 * For information about using a superuser and secrets with Medusa authentication, see [Medusa security]({{< relref "/tasks/secure/#medusa-security" >}}).
-* For reference details, see the:
-  * [Medusa Operator Helm Chart]({{< relref "/reference/helm-charts/medusa-operator" >}})
-  * [Backup Helm Chart]({{< relref "/reference/helm-charts/backup/" >}})
-  * [Restore Helm Chart]({{< relref "/reference/helm-charts/restore/" >}})
-* Also see the topics covering other [components]({{< relref "/components/" >}}) deployed by K8ssandra. 
+* For reference details, see the K8ssandra Operator [Custom Resource Definitions (CRDs)]({{< relref "reference" >}}).
+* Also see the topics covering other [components]({{< relref "/components/" >}}) deployed by K8ssandra Operator. 
 * For information on using other deployed components, see the [Tasks]({{< relref "/tasks/" >}}) topics.

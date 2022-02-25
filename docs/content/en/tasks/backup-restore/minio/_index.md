@@ -312,8 +312,10 @@ Success! You’ve successfully restored your lost data in just a few commands.
 
 An alternative to MinIO buckets is Amazon S3. See [Backup and restore Cassandra with Amazon S3]({{< relref "/tasks/backup-restore/amazon-s3" >}}).
 
-Also see the following reference topics:
+## Next steps
 
-* [Medusa Operator Helm Chart]({{< relref "/reference/helm-charts/medusa-operator" >}})
-* [Backup Helm Chart]({{< relref "/reference/helm-charts/backup" >}})
-* [Restore Helm Chart]({{< relref "/reference/helm-charts/restore" >}})
+See the following Custom Resource Definition (CRD) reference topics:
+
+* [Medusa CRD]({{< relref "/reference/crd/medusa" >}})
+* [CassandraBackup CRD]({{< relref "/reference/crd/cassandrabackup" >}})
+* [CassansdraRestore CRD]({{< relref "/reference/crd/cassandrarestore" >}})

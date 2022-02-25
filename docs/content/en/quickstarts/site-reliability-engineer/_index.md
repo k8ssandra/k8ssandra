@@ -2,22 +2,20 @@
 title: "Quickstart for Site Reliability Engineers"
 linkTitle: "SREs"
 weight: 2
-description: "Familiarize yourself with K8ssandra utilities and procedures for monitoring, repair, and upgrading your Apache Cassandra® database!"
+description: "Familiarize yourself with K8ssandra utilities and procedures for repair, upgrade, and backup/restore operations for your Apache Cassandra® database."
 ---
 
-**Completion time**: **10 minutes**.
-
 {{% alert title="Tip" color="success" %}}
-Be sure to first complete one of the [K8ssandra install]({{< relref "/install" >}}) options (locally or on a cloud provider) before performing these post-install steps. 
+Before performing these post-install steps, complete at least one K8ssandra Operator [cluster deployment]({{< relref "/install/local" >}}) in Kubernetes. 
 {{% /alert %}}
 
 In this quickstart for Site Reliability Engineers (SREs), we'll cover:
 
 * [Accessing nodetool commands]({{< relref "#nodetool" >}}) like status, ring, and info.
 * [Configure port forwarding]({{< relref "#port-forwarding" >}}) for the Prometheus and Grafana monitoring utilities as well as Reaper for Apache Cassandra® (Reaper).
-* [Accessing the K8ssandra monitoring utilities]({{< relref "#monitoring" >}}), Prometheus and Grafana.
+* [Accessing the K8ssandra Operator monitoring utilities]({{< relref "#monitoring" >}}), Prometheus and Grafana.
 * [Accessing Reaper]({{< relref "#reaper" >}}), an easy to use repair interface.
-* [Upgrading a K8ssandra cluster]({{< relref "#upgrade" >}}): to ensure you're using the latest K8ssandra software, or to apply new settings.
+* [Upgrading a K8ssandra Operator cluster]({{< relref "#upgrade" >}}): to ensure you're using the latest K8ssandra Operator, or to apply new settings.
 
 ## Access the Apache Cassandra® nodetool utility {#nodetool}
 
@@ -28,58 +26,59 @@ To run `nodetool` commands:
 1. Get a list of the running K8ssandra pods using `kubectl get`:
 
     ```bash
-    kubectl get pods
+    kubectl get pods -n k8ssandra-operator
     ```
 
-    **Output**:
+    **Output:**
 
-    ```bash
-    NAME                                                READY   STATUS      RESTARTS   AGE
-    k8ssandra-cass-operator-766849b497-klgwf            1/1     Running     1          45h
-    k8ssandra-dc1-default-sts-0                         2/2     Running     0          115m
-    k8ssandra-dc1-stargate-5c46975f66-pxl84             1/1     Running     5          45h
-    k8ssandra-grafana-679b4bbd74-wj769                  2/2     Running     2          45h
-    k8ssandra-kube-prometheus-operator-85695ffb-ft8f8   1/1     Running     1          45h
-    k8ssandra-reaper-655fc7dfc6-n9svw                   1/1     Running     7          45h
-    k8ssandra-reaper-operator-79fd5b4655-748rv          1/1     Running     0          45h
-    prometheus-k8ssandra-kube-prometheus-prometheus-0   2/2     Running     3          45h
     ```
+    NAME                                                    READY   STATUS    RESTARTS   AGE
+    demo-dc1-default-stargate-deployment-7b6c9d8dcd-k65jx   1/1     Running   0          5m33s
+    demo-dc1-default-sts-0                                  2/2     Running   0          10m
+    demo-dc1-default-sts-1                                  2/2     Running   0          10m
+    demo-dc1-default-sts-2                                  2/2     Running   0          10m
+    k8ssandra-operator-7f76579f94-7s2tw                     1/1     Running   0          11m
+    k8ssandra-operator-cass-operator-794f65d9f4-j9lm5       1/1     Running   0          11m
+```
 
-    The K8ssandra pod running Cassandra takes the form `<k8ssandra-cluster-name>-<datacenter-name>-default-sts-<n>` and, in the example above is `k8ssandra-dc1-default-sts-0` which we'll use throughout the following sections.
+    The K8ssandra pod running Cassandra takes the form `<k8ssandra-cluster-name>-<datacenter-name>-default-sts-<n>` and, in the example above is `demo-dc1-default-sts-0` which we'll use throughout the following sections.
 
     {{% alert title="Tip" color="success" %}}
-Although not applicable to this quick start, additional K8ssandra Cassandra nodes will increment the final `<n>` but the rest of the name will remain the same.
+Although not applicable to this quick start, additional K8ssandra Operator Cassandra nodes will increment the final `<n>` but the rest of the name will remain the same.
     {{% /alert %}}
 
-1. Run [`nodetool status`](https://docs.datastax.com/en/cassandra-oss/3.x/cassandra/tools/toolsStatus.html), using the Cassandra node name `k8ssandra-dc1-default-sts-0`, and replacing `<k8ssandra-username>` and `<k8ssandra-password>` with the values you retrieved in [Retrieve K8ssandra superuser credentials]({{< relref "/install/local#superuser" >}}):
+1. Run [`nodetool status`](https://docs.datastax.com/en/cassandra-oss/3.x/cassandra/tools/toolsStatus.html), using the Cassandra node name `demo-dc1-default-sts-0`, and replacing `<k8ssandra-username>` and `<k8ssandra-password>` with the values you retrieved in the local install topic's [Extract credentials]({{< relref "/install/local#extract-credentials" >}}) section:
+
+Hint: in that topic, the first single-cluster example returned this password: `ACK7dO9qpsghIme-wvfI`.
+
+With known `-u` and `-p` credentials, you can enter a command that invokes nodetool. Here's an example. Your credentials will be different:
 
     ```bash
-    kubectl exec -it k8ssandra-dc1-default-sts-0 -c cassandra -- nodetool -u <k8ssandra-username> -pw <k8ssandra-password> status
-    ```
+    kubectl exec --stdin --tty demo-dc1-default-sts-0 -n k8ssandra-operator -c cassandra -- nodetool -u demo-superuser -pw ACK7dO9qpsghIme-wvfI status
 
-    **Output**:
+    ```
 
     ```bash
     Datacenter: dc1
     ===============
     Status=Up/Down
     |/ State=Normal/Leaving/Joining/Moving
-    --  Address      Load       Owns    Host ID                               Token                                    Rack
-    UN  10.244.1.12  215.3 KiB  ?       75e52e51-edc9-49f8-84f6-f044999ac130  -1080085985719557225                     default
-
-    Note: Non-system keyspaces don't have the same replication settings, effective ownership information is meaningless
+    --  Address     Load       Tokens  Owns (effective)  Host ID                               Rack
+    UN  10.244.1.5  96.71 KiB  16      100.0%            4b95036b-1603-464f-bdee-b519fa28a079  default
+    UN  10.244.2.4  96.62 KiB  16      100.0%            ade61d9f-90f4-464c-8e18-dd3522c2bf3c  default
+    UN  10.244.3.4  96.7 KiB   16      100.0%            0f75a6fe-c91d-4c0e-9253-2235b6c9a206  default
     ```
 
-    {{% alert title="Tip" color="success" %}}
-All nodes should have the status `UN` or "Up Normal."
-    {{% /alert %}}
+{{% alert title="Tip" color="success" %}}
+All nodes should have the status UN, which stands for "Up Normal".
+{{% /alert %}}
 
 Other useful nodetool commands include:
 
-* [`nodetool ring`](https://docs.datastax.com/en/cassandra-oss/3.x/cassandra/tools/toolsRing.html) which outputs all the tokens in the node:
+* [`nodetool ring`](https://docs.datastax.com/en/cassandra-oss/3.x/cassandra/tools/toolsRing.html) which outputs all the tokens in the node. Example:
 
     ```bash
-    kubectl exec -it k8ssandra-dc1-default-sts-0 -c cassandra -- nodetool -u <k8ssandra-username> -pw <k8ssandra-password> ring
+    kubectl exec --stdin --tty demo-dc1-default-sts-0 -n k8ssandra-operator -c cassandra -- nodetool -u demo-superuser -pw ACK7dO9qpsghIme-wvfI ring
     ```
 
     **Output**:
@@ -100,7 +99,7 @@ Other useful nodetool commands include:
 * [`nodetool info`](https://docs.datastax.com/en/cassandra-oss/3.x/cassandra/tools/toolsInfo.html) which provides load and uptime information:
 
     ```bash
-    kubectl exec -it k8ssandra-dc1-default-sts-0 -c cassandra -- nodetool -u <k8ssandra-username> -pw <k8ssandra-password> ring
+    kkubectl exec --stdin --tty demo-dc1-default-sts-0 -n k8ssandra-operator -c cassandra -- nodetool -u demo-superuser -pw ACK7dO9qpsghIme-wvfI info
     ```
 
     **Output**:
@@ -141,31 +140,14 @@ kubectl get services
 **Output**:
 
 ```bash
-NAME                                   TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)                                                 AGE
-cass-operator-metrics                  ClusterIP   10.80.3.92     <none>        8383/TCP,8686/TCP                                       24h
-k8ssandra-dc1-all-pods-service         ClusterIP   None           <none>        9042/TCP,8080/TCP,9103/TCP                              24h
-k8ssandra-dc1-service                  ClusterIP   None           <none>        9042/TCP,9142/TCP,8080/TCP,9103/TCP,9160/TCP            24h
-k8ssandra-dc1-stargate-service         ClusterIP   10.80.13.197   <none>        8080/TCP,8081/TCP,8082/TCP,8084/TCP,8085/TCP,9042/TCP   24h
-k8ssandra-grafana                      ClusterIP   10.80.7.168    <none>        80/TCP                                                  24h
-k8ssandra-kube-prometheus-operator     ClusterIP   10.80.8.109    <none>        443/TCP                                                 24h
-k8ssandra-kube-prometheus-prometheus   ClusterIP   10.80.2.44     <none>        9090/TCP                                                24h
-k8ssandra-reaper-reaper-service        ClusterIP   10.80.5.77     <none>        8080/TCP                                                24h
-k8ssandra-seed-service                 ClusterIP   None           <none>        <none>                                                  24h
-kubernetes                             ClusterIP   10.80.0.1      <none>        443/TCP                                                 27h
-prometheus-operated                    ClusterIP   None           <none>        9090/TCP                                                24h
+(TODO: NEED SAMPLE OUTPUT HERE)
 ```
-
-In the output above, the services of interest are:
-
-* **k8ssandra-grafana**: The K8ssandra grafana service where the name is a combination of the K8ssandra cluster name you specified during the Helm install, `k8ssandra`, and the postfix, `-grafana`. This service listens on the internal K8s port `80`.
-* **prometheus-operated**: The K8ssandra Prometheus daemon. This service listens on the internal K8s port `9090`.
-* **k8ssandra-reaper-reaper-service**: The K8ssandra Reaper service where the name is a combination of the K8ssandra cluster name you specified during the Helm install, `k8ssandra`, `-reaper`, the K8ssandra cluster name again, and the postfix `-reaper-service`. This port listens on the internal K8s port `8080`.
 
 To configure port forwarding:
 
 1. Open a new terminal.
 
-2. Run the following 3 `kubectl port-forward` commands in the background:
+2. Run the following 3 `kubectl port-forward` commands in the background. Example:
 
     ```bash
     kubectl port-forward svc/k8ssandra-grafana 9191:80 &
@@ -189,7 +171,7 @@ To configure port forwarding:
     Forwarding from [::1]:9191 -> 3000
     ```
 
-The K8ssandra services are now available at:
+The K8ssandra Operator services are now available at:
 
 * Prometheus: <http://127.0.0.1:9292>
 * Grafana: <http://127.0.0.1:9191>
@@ -227,16 +209,16 @@ To terminate a particular forwarded port:
 Exiting the terminal instance will terminate all port forwarding services.
 {{% /alert %}}
 
-## Access K8ssandra monitoring utilities {#monitoring}
+## Access K8ssandra Operator monitoring utilities {#monitoring}
 
-K8ssandra deploys the following customized monitoring utilities:
+K8ssandra Operator allows you to integrate with monitoring tools such as the following utilities:
 
 * [Prometheus](https://prometheus.io/) a standard metrics collection and alerting tool.
 * [Grafana](https://grafana.com/) a set of preconfigured dashboards displaying important K8ssandra metrics.
 
 ### Prometheus
 
-To check on the health of your K8ssandra cluster using the K8ssandra Prometheus interface:
+To check on the health of your K8ssandraCluster using the K8ssandra Operator Prometheus interface:
 
 1. Access the Prometheus home page at <http://127.0.0.1:9292>:
 
@@ -252,7 +234,7 @@ For more details on Prometheus, see the [Prometheus](https://prometheus.io/) web
 
 ### Grafana
 
-To monitor the health and performance of your K8ssandra cluster using the pre-configured K8ssandra dashboards:
+To monitor the health and performance of your K8ssandraCluster using pre-configured Grafana dashboards:
 
 1. Retrieve the Grafana login username using the `helm show` command:
 
@@ -300,22 +282,20 @@ For more information see the [Grafana](https://grafana.com/) web site.
 
 ## Access Reaper {#reaper}
 
-[Reaper](http://cassandra-reaper.io/) is an easy interface for managing K8ssandra cluster repairs.  Reaper is deployed as part of the K8ssandra [install]({{< relref "/install" >}}). 
+[Reaper](http://cassandra-reaper.io/) is an easy interface for managing K8ssandra cluster repairs.  Reaper is deployed as part of the K8ssandra Operator [install]({{< relref "/install/local" >}}). 
 
 ![Reaper](cass-reaper.png)
 
 For details, start in the [Reaper]({{< relref "/components/reaper" >}}) topic. Then read about the [repair]({{< relref "/tasks/repair" >}}) tasks you can perform with Reaper.
 
-## Upgrade K8ssandra {#upgrade}
+## Upgrade K8ssandra Operator {#upgrade}
 
-You can easily upgrade your K8ssandra software with the `helm repo update` command, or apply new settings with the `helm upgrade` command. 
-For details, see [Upgrade K8ssandra]({{< relref "upgrade" >}}).
+You can easily upgrade your K8ssandra software with the `helm repo update` command, or apply new settings with the `helm upgrade` command. For details, see [Upgrade K8ssandra]({{< relref "upgrade" >}}).
 
 ## Next steps
 
-* [FAQs]({{< relref "faqs" >}}): If you're new to K8ssandra, these FAQs are for you. 
 * [Components]({{< relref "components" >}}): Dig in to each deployed component of the K8ssandra stack and see how it communicates with the others.
 * [Tasks]({{< relref "tasks" >}}): Need to get something done? Check out the Tasks topics for a helpful collection of outcome-based solutions.
-* [Reference]({{< relref "reference" >}}): Explore the K8ssandra configuration interface (Helm charts), the available options, and a Glossary.
+* [Reference]({{< relref "reference" >}}): Explore the Custom Resource Definitions (CRDs) used by K8ssandra Operator.
 
-We encourage SREs to actively participate in the [K8ssandra community](https://k8ssandra.io/community/).
+We encourage developers and SREs to actively participate in the [K8ssandra community](https://k8ssandra.io/community/).

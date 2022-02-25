@@ -1,9 +1,9 @@
 ---
-title: "Install single- or multi-clusters using K8ssandra Operator"
-linkTitle: "Local K8ssandraCluster"
+title: "Install K8ssandraCluster"
+linkTitle: "Local install"
 no_list: true
 weight: 1
-description: "Details to install a K8ssandra Cluster on a local Kubernetes **kind** development environment."
+description: "Details to install a K8ssandraCluster on a local Kubernetes."
 ---
 
 This topic explains how to install and manage an Apache Cassandra&reg; cluster (or multiple clusters) in Kubernetes using K8ssandra Operator.
@@ -1959,7 +1959,3 @@ spec:
 EOF
 ```
 
-## Next steps
-
-* If you're a developer, and you'd like to get started coding using CQL or Stargate, see the [Quickstart for developers]({{< relref "/quickstarts/developer" >}}).
-* If you're a Site Reliability Engineer, and you'd like to explore the K8ssandra administration environment including monitoring and maintenance utilities, see the [Quickstart for Site Reliability Engineers]({{< relref "/quickstarts/site-reliability-engineer" >}}).
