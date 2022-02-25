@@ -138,8 +138,13 @@ ul.footer-nav {
       display: flex;
       flex-flow: column nowrap;
       align-items: center;
+      li div.dropdown-menu {
+        @media (max-width: 992px) {
+          background-color: $blue;
+        }
+      }
       li a span {
-        display: block;
+        display: inline-block;
         padding: 10px 0;
         text-decoration: none;
         font-size: 20px;
@@ -150,6 +155,7 @@ ul.footer-nav {
           font-size: 16px;
           line-height: 1;
           color: unset;
+          background-color: unset;
         }
       }
       @media (min-width: 992px) {
