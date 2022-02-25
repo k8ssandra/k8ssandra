@@ -17,28 +17,46 @@ jobs:
         include:
           - dependency: Stargate
             version_path: ".stargate.version"
+            values_file: "charts/k8ssandra/values.yaml"
+            chart_version_path: ""
             operator: false
             docker_hub_url: "https://registry.hub.docker.com/v2/repositories/stargateio/stargate-3_11/tags?page_size=100"
           - dependency: Medusa
             version_path: ".medusa.image.tag"
+            values_file: "charts/k8ssandra/values.yaml"
+            chart_version_path: ""
             operator: false
             docker_hub_url: "https://registry.hub.docker.com/v2/repositories/k8ssandra/medusa/tags?page_size=100"
           - dependency: Reaper
             version_path: ".reaper.image.tag"
+            values_file: "charts/k8ssandra/values.yaml"
+            chart_version_path: ""
             operator: false
             docker_hub_url: "https://registry.hub.docker.com/v2/repositories/thelastpickle/cassandra-reaper/tags?page_size=100"
           - dependency: cass-operator
             app_version_path: ".appVersion"
             version_path: ".version"
+            values_file: "charts/cass-operator/values.yaml"
+            chart_version_path: ".version"
             chart_file: "charts/cass-operator/Chart.yaml"
             operator: true
             docker_hub_url: "https://registry.hub.docker.com/v2/repositories/k8ssandra/cass-operator/tags?page_size=100"
           - dependency: k8ssandra-operator
             app_version_path: ".appVersion"
             version_path: ".version"
+            values_file: "charts/k8ssandra-operator/values.yaml"
+            chart_version_path: ".version"
             chart_file: "charts/k8ssandra-operator/Chart.yaml"
             operator: true
             docker_hub_url: "https://registry.hub.docker.com/v2/repositories/k8ssandra/k8ssandra-operator/tags?page_size=100"
+          - dependency: medusa-operator
+            app_version_path: ".appVersion"
+            version_path: ".version"
+            values_file: "charts/medusa-operator/values.yaml"
+            chart_version_path: ".version"
+            chart_file: "charts/medusa-operator/Chart.yaml"
+            operator: true
+            docker_hub_url: "https://registry.hub.docker.com/v2/repositories/k8ssandra/medusa-operator/tags?page_size=100"
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -76,21 +94,21 @@ jobs:
           
           if [ -z "$CLOSED_UPGRADE_PR" ] && [ "${{ env.CURRENT_VERSION }}" != "${{ env.LATEST_VERSION }}" ]; then
             if [ "${{ matrix.operator }}" == "true" ]; then
-              CHART_VERSION=$(yq eval '.version' ${{ matrix.chart_file }})
+              CHART_VERSION=$(yq eval '${{ matrix.chart_version_path }}' ${{ matrix.chart_file }})
               NEW_CHART_VERSION=$(echo "$CHART_VERSION"|awk -F. -v OFS=. '{$NF += 1 ; print}')
               yq eval "${{ matrix.app_version_path }} |= \"${{ env.LATEST_VERSION }}\"" ${{ matrix.chart_file }} -i
-              yq eval "${{ matrix.version_path }} |= \"${NEW_CHART_VERSION}\"" ${{ matrix.chart_file }} -i
-              yq eval "(.dependencies.[]| select(.name == \"${{ matrix.dependency }}\")| .version) |= \"${NEW_CHART_VERSION}\"" charts/k8ssandra/Chart.yaml -i
+              yq eval "${{ matrix.chart_version_path }} |= \"${NEW_CHART_VERSION}\"" ${{ matrix.chart_file }} -i
+              yq eval "(.dependencies.[]| select(.name == \"${{ matrix.dependency }}\")| ${{ matrix.chart_version_path }}) |= \"${NEW_CHART_VERSION}\"" charts/k8ssandra/Chart.yaml -i
               if [ "${{ matrix.dependency }}" == "cass-operator" ]; then
                 # Update the cass-operator chart version in the k8ssandra-operator chart
-                yq eval "(.dependencies.[]| select(.name == \"${{ matrix.dependency }}\")| .version) |= \"${NEW_CHART_VERSION}\"" charts/k8ssandra-operator/Chart.yaml -i
+                yq eval "(.dependencies.[]| select(.name == \"${{ matrix.dependency }}\")| ${{ matrix.chart_version_path }}) |= \"${NEW_CHART_VERSION}\"" charts/k8ssandra-operator/Chart.yaml -i
               fi
+              yq eval "${{ matrix.version_path }} |= \"${{ env.LATEST_VERSION }}\"" charts/${{ matrix.dependency }}/values.yaml -i
               cat ${{ matrix.chart_file }}
               cat charts/k8ssandra/Chart.yaml
-            else
-              yq eval "${{ matrix.version_path }} |= \"${{ env.LATEST_VERSION }}\"" charts/k8ssandra/values.yaml -i
-              cat charts/k8ssandra/values.yaml
             fi
+            yq eval "${{ matrix.version_path }} |= \"${{ env.LATEST_VERSION }}\"" ${{ matrix.values_file }} -i
+            cat ${{ matrix.values_file }}
             echo "PR_EXISTS=no" >> $GITHUB_ENV
           else
             echo "PR_EXISTS=yes" >> $GITHUB_ENV
