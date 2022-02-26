@@ -1,6 +1,7 @@
 ---
 title: "Backup and restore Cassandra with MinIO"
 linkTitle: "MinIO buckets"
+toc_hide: true
 weight: 1
 description: Use K8ssandra's Medusa to backup and restore Cassandra® data with MinIO buckets.
 ---

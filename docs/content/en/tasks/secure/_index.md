@@ -2,6 +2,7 @@
 title: "K8ssandra security"
 linkTitle: "Secure"
 no_list: true
+toc_hide: true
 weight: 3
 description: K8ssandra security defaults, secrets, and options for Apache Cassandra&reg; authentication and role-based authorization.
 ---

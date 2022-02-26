@@ -2,6 +2,7 @@
 title: "Backup and restore with Azure Storage"
 linkTitle: "Azure Blob Storage"
 no_list: true
+toc_hide: true
 weight: 3
 description: Use Medusa to backup and restore Apache Cassandra® data in Kubernetes to Azure Storage.
 ---

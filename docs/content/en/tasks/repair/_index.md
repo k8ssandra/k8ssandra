@@ -1,6 +1,7 @@
 ---
 title: "Repair Cassandra with Reaper"
 linkTitle: "Repair"
+toc_hide: true
 description: "Use the Reaper for Apache Cassandra&reg; web interface to perform repairs."
 ---
 

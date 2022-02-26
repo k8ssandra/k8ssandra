@@ -1,6 +1,7 @@
 ---
 title: "Quickstart for Site Reliability Engineers"
 linkTitle: "SREs"
+toc_hide: true
 weight: 2
 description: "Familiarize yourself with K8ssandra utilities and procedures for monitoring, repair, and upgrading your Apache Cassandra® database!"
 ---

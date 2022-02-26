@@ -1,6 +1,7 @@
 ---
 title: "Develop with Stargate APIs"
 linkTitle: "Develop"
+toc_hide: true
 weight: 5
 description: Develop clients to interact with Apache Cassandra® data via Stargate REST, GraphQL and document APIs.
 ---

@@ -1,6 +1,7 @@
 ---
 title: "Install K8ssandra on EKS"
 linkTitle: "Amazon EKS"
+toc_hide: true
 weight: 2
 description: >
   Pointer to K8ssandra install on Amazon EKS topic.

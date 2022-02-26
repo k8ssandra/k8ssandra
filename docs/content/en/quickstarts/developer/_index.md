@@ -1,6 +1,7 @@
 ---
 title: "Quickstart for developers"
 linkTitle: "Developers"
+toc_hide: true
 weight: 1
 description: "Get up and coding with K8ssandra by exposing access to Stargate and CQL APIs!"
 ---

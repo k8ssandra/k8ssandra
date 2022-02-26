@@ -2,6 +2,7 @@
 title: "Backup and restore Cassandra data"
 linkTitle: "Backup/restore"
 no_list: true
+toc_hide: true
 weight: 4
 description: Use Medusa to backup and restore Apache Cassandra® data in Kubernetes.
 ---
