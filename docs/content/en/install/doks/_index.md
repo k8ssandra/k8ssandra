@@ -1,6 +1,7 @@
 ---
 title: "Install K8ssandra on DOKS"
 linkTitle: "DigitalOcean DOKS"
+toc_hide: true
 weight: 2
 description: >
   Pointer to K8ssandra install on DigitalOcean DOKS topic.

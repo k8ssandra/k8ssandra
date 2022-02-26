@@ -1,6 +1,7 @@
 ---
 title: "Private registries"
 linkTitle: "Private registries"
+toc_hide: true
 weight: 1
 description: "Optional steps to use private registries with K8ssandra and its deployed components."
 ---

@@ -1,6 +1,7 @@
 ---
 title: "Install K8ssandra on your local K8s"
 linkTitle: "Local"
+toc_hide: true
 no_list: true
 weight: 1
 description: "Pointers to K8ssandra Operator and K8ssandra install topics for local dev Kubernetes."

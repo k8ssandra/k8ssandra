@@ -1,6 +1,7 @@
 ---
 title: "Troubleshoot K8ssandra"
 linkTitle: "Troubleshoot"
+toc_hide: true
 description: "Troubleshooting tips for K8ssandra users."
 ---
 

@@ -2,6 +2,7 @@
 title: "Connect"
 linkTitle: "Connect"
 simple_list: true
+toc_hide: true
 weight: 1
 description: Learn how to connect K8ssandra deployments with clients and Apache Cassandra® interfaces.
 ---

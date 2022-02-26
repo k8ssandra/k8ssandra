@@ -1,6 +1,7 @@
 ---
 title: "Upgrade K8ssandra"
 linkTitle: "Upgrade"
+toc_hide: true
 no_list: true
 weight: 2
 description: How to upgrade K8ssandra to use the latest release, new settings, or both.

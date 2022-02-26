@@ -25,9 +25,9 @@ Accompanying Cassandra is a suite of tools to ease and automate operational task
 
 ### What is `K8ssandraCluster`?
 
-The `K8ssandraCluster` is a new custom resource that covers all the bases necessary for installing a production-ready, multi-cluster deployment using K8ssandra Operator. Head over to the DataStax Tech blog to learn more about how to specify your remote clusters with the K8ssandraCluster, its deployment architecture, and what’s coming next in our continued development of the K8ssandra operator.
+The `K8ssandraCluster` is a new custom resource that covers all the bases necessary for installing a production-ready, multi-cluster deployment using K8ssandra Operator. Head over to the [DataStax Tech blog](https://medium.com/building-the-open-data-stack/deploying-to-multiple-kubernetes-clusters-with-the-k8ssandra-operator-f7562bee1841) to learn more about how to specify your remote clusters with the `K8ssandraCluster`, its deployment architecture, and what's coming next in our continued development of the K8ssandra Operator.
 
-We built the new K8ssandra Operator to simplify deploying multiple Apache Cassandra data centers in different regions and across multiple Kubernetes (K8s) clusters. Now, it’s easier than ever to run Apache Cassandra® across multiple K8s clusters in multiple regions with the `K8ssandraCluster`. 
+We built the new K8ssandra Operator to simplify deploying multiple Apache Cassandra data centers in different regions and across multiple Kubernetes (K8s) clusters. Now, it's easier than ever to run Apache Cassandra® across multiple K8s clusters in multiple regions with the `K8ssandraCluster`. 
 
 ### What does K8ssandra Operator include?
 

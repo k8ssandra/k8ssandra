@@ -1,6 +1,7 @@
 ---
 title: "Install K8ssandra on GKE"
 linkTitle: "Google GKE"
+toc_hide: true
 weight: 2
 description: >
   Pointer to K8ssandra install on Google GKE topic.

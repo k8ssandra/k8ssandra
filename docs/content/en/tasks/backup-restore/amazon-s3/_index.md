@@ -1,6 +1,7 @@
 ---
 title: "Backup and restore Cassandra with Amazon S3"
 linkTitle: "Amazon S3 buckets"
+toc_hide: true
 weight: 2
 description: Use K8ssandra's Medusa to backup and restore Cassandra® data with Amazon S3 buckets.
 ---

@@ -1,6 +1,7 @@
 ---
 title: "Install K8ssandra on AKS"
 linkTitle: "Azure AKS"
+toc_hide: true
 weight: 2
 description: >
   Pointer to K8ssandra install on Azure AKS topic

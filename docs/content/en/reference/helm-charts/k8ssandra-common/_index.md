@@ -1,6 +1,7 @@
 ---
 title: "K8ssandra Common Helm Chart"
 linkTitle: "k8ssandra-common"
+toc_hide: true
 weight: 3
 description: >
   Library Helm chart providing common functions for use across charts in the K8ssandra project.
