@@ -8,15 +8,21 @@ menu:
     weight: 20
   footer:
     weight: 60
-description: "K8ssandra documentation: architecture, configuration, guided tasks"
+description: "K8ssandra documentation: architecture, configuration, guided tasks."
 type: docs
 ---
 
 The K8ssandra documentation covers everything from install details, deployed components, configuration references, and guided outcome-based tasks. Check out the sections at left based on your needs and be sure to leave us a <a class="github-button" href="https://github.com/k8ssandra/k8ssandra" data-icon="octicon-star" aria-label="Star k8ssandra/k8ssandra on GitHub">star</a> on Github!
 
-{{% alert title="Tip" color="primary" %}}
-If you're impatient, jump right in with our **[install]({{< relref "install" >}})** topics!
-{{% /alert %}}
+**Tip:** Starting with the March 2022 introduction of K8ssandra Operator, the K8ssandra Operator custom resource, and its support for single- or **multi-cluster** deployments, the documentation site has been organized into three areas. 
+
+* [docs.k8ssandra.io](https://docs-staging.k8ssandra.io/) provides topics that are of common interest to users of K8ssandra Operator and K8ssandra, such as FAQs, Release Notes, Components, and a Glossary.
+* [docs-v1.k8ssandra.io](https://docs-staging-v1.k8ssandra.io/) (**you are here**) provides topics that are specific to K8ssandra 1.4.x users (the initial project releases).
+* [docs-v2.k8ssandra.io](https://docs-staging-v2.k8ssandra.io/) provides topics that are specific to the more recent (and recommended) K8ssandra Operator software, including single- or multi-cluster installs.
+
+From each page’s top banner, use the **Versions** menu to navigate back to the Common, v1, or v2 documentation Home.
+
+![K8ssandra documentation Versions](k8ssandra-doc-versions.png)
 
 ## What is K8ssandra?
 
@@ -25,6 +31,8 @@ K8ssandra is a cloud native distribution of Apache Cassandra® (Cassandra) meant
 Cassandra may be deployed in a number of environments. This includes on bare metal hosts, virtual machines, and within container platforms. Each deployment type has its pros and cons, but in all cases it is **_essential_** that automation be leveraged to ensure that all node are configured homogeneously and without failure.
 
 K8ssandra focuses on deploying Cassandra within Kubernetes. Kubernetes was chosen as it allows for the consumption of a common, versioned, set of APIs and tooling across multiple cloud platforms and environments.
+
+If you're impatient, jump right in with our K8ssandra 1.4.x **[install]({{< relref "install" >}})** topics!
 
 ## Why do I want K8ssandra?
 
