@@ -1,6 +1,8 @@
 ---
 title: "Reaper CRD"
 linkTitle: "Reaper CRD"
+no_list: true
+toc_hide: true
 simple_list: false
 weight: 6
 description: >
