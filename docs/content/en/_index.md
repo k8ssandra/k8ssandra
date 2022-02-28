@@ -14,8 +14,7 @@ type: docs
 
 The K8ssandra documentation covers everything from install details, deployed components, configuration references, and guided outcome-based tasks. Be sure to leave us a <a class="github-button" href="https://github.com/k8ssandra/k8ssandra" data-icon="octicon-star" aria-label="Star k8ssandra/k8ssandra on GitHub">star</a> on Github!
 
-**Important!** K8ssandra Operator is our newest implementation that supports single- or multi-cluster Kubernetes deployments of 
-Apache Cassandra&reg; databases. Along with the ability to deploy Cassandra into multiple clusters comes the ability to configure multiple regions for the deployed Datacenters (DCs). K8ssandra Operator offers **unified** deployment and management operations in Kubernetes for related pods that service your Cassandra data via:
+**Important! K8ssandra Operator** is our newest implementation that supports single- or multi-cluster Kubernetes deployments of Apache Cassandra&reg; databases. Along with the ability to deploy Cassandra into multiple clusters comes the ability to configure multiple regions for the deployed Datacenters (DCs). K8ssandra Operator offers **unified** deployment and management operations in Kubernetes for related pods that service your Cassandra data via:
 
 * API services (Stargate)
 * Management services (cass-operator)
@@ -31,9 +30,13 @@ And while the initial K8ssandra project features (currently, v1.4.1) are still a
 
 We've organized this docs site into three areas:
 
-* [docs.k8ssandra.io](https://docs-staging.k8ssandra.io) provides topics that are of common interest to users of K8ssandra Operator and K8ssandra, such as FAQs, Release Notes, and a Glossary.
+* [docs.k8ssandra.io](https://docs-staging.k8ssandra.io) provides topics that are of common interest to users of K8ssandra Operator and K8ssandra, such as FAQs, Release Notes, Components, and a Glossary.
 * [docs-v1.k8ssandra.io](https://docs-staging-v1.k8ssandra.io) provides topics that are specific to K8ssandra 1.4.x users (the initial project releases).
-* [docs-v2.k8ssandra.io](https://docs-staging-v2.k8ssandra.io) provides topics that are specific to the more recent (and recommended) K8ssandra Operator software.
+* [docs-v2.k8ssandra.io](https://docs-staging-v2.k8ssandra.io) provides topics that are specific to the more recent (and recommended) K8ssandra Operator software, including single- or **multi-cluster** installs.
+
+**Tip**: From each page's top banner, use the **Versions** drop-down menu to navigate back to the Common, v1, or v2 documentation Home.
+
+![Documentation Versions menu](k8ssandra-doc-versions.png)
 
 ## What is K8ssandra Operator?
 
