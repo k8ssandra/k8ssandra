@@ -8,7 +8,7 @@ With the introduction of the K8ssandra Operator, the documentation site has intr
 
 There three "versioned" docs sites:
 
-"Common" content -- https://docs-temp.k8ssandra.io (at the official release of k8ssandra-operator this will be made available at https://docs.k8ssandra.io)
+"Common" content -- https://docs.k8ssandra.io (at the official release of k8ssandra-operator this will be made available at https://docs.k8ssandra.io)
 
 "v1" (Original `helm` focused implementation) content -- https://docs-v1.k8ssandra.io
 
@@ -34,7 +34,7 @@ git clone --recurse-submodules https://github.com/k8ssandra/k8ssandra.git
 
 Docsy/Hugo versioning works through an association of site "version" to Git "branch".  The documentation content and tooling support are provided for each versioned side on a series of docs branches.
 
-* `docs` branch -> `docs-temp.k8ssandra.io`/`docs-staging.k8ssandra.io`
+* `docs` branch -> `docs.k8ssandra.io`/`docs-staging.k8ssandra.io`
 
 * `docs-v1` branch -> `docs-v1.k8ssandra.io`/`docs-staging-v1.k8ssandra`
 
