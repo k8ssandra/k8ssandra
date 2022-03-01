@@ -556,7 +556,7 @@ Create a `test.users` table in the deployed Cassandra database:
 Insert some data in the table:
 
 ```bash
-% kubectl exec -it demo-dc1-default-sts-0 -n k8ssandra-operator -c cassandra -- cqlsh -u $CASS_USERNAME -p $CASS_PASSWORD demo-dc1-stargate-service -e "insert into test.users (email, name, state) values ('john@gamil.com', 'John Smith', 'NC');"
+% kubectl exec -it demo-dc1-default-sts-0 -n k8ssandra-operator -c cassandra -- cqlsh -u $CASS_USERNAME -p $CASS_PASSWORD -e "insert into test.users (email, name, state) values ('john@gamil.com', 'John Smith', 'NC');"
 ```
 
 Insert another row of data in the table:
