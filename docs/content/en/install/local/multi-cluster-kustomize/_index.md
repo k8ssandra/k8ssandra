@@ -28,7 +28,7 @@ K8ssandra Operator uses some features of Kustomize that are only available in `k
 If you previously created a [single cluster]({{< relref "install/local/" >}}) with `setup-kind-multicluster.sh`, you will need to delete it in order to perform the multi-cluster setup. The script currently does not support 
 adding clusters to an existing setup (see [#128](https://github.com/k8ssandra/k8ssandra-operator/issues/128)).
 
-In this multi-cluster topic, we will create two kind clusters with three worker nodes per clusters. Remember that 
+In this multi-cluster topic, we will create two kind clusters with four worker nodes per clusters. Remember that 
 K8ssandra Operator requires clusters to have routable pod IPs. kind clusters by default 
 will run on the same Docker network, which means that they will have routable IPs.
 
