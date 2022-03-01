@@ -305,9 +305,8 @@ Creating ClientConfig clientconfig/kind-k8ssandra-2.yaml
 clientconfig.config.k8ssandra.io/kind-k8ssandra-2 created
 ```
 
-Then enter:
+**Note:** K8ssandra Operator restarts automatically whenever there is a change to a `ClientConfig` (a create, update, or delete operation). This restart is done in order to update connections to remote clusters.
 
-```bash
 ### Deploy the K8ssandraCluster
 
 To deploy the `K8ssandraCluster`, we use a custom YAML file. In this example, k8cm1.yml. Notice, there are two Cassandra 4.0.1 datacenters, `dc1` and `dc2` that are associated with the two data plane clusters.
