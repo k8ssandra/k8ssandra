@@ -201,17 +201,7 @@ The `--in-cluster-kubeconfig` option is required for clusters that run locally l
 
 ### Restart the control plane
 
-Make the active context `kind-k8ssandra-0`:
-
-```console
-kubectx kind-k8ssandra-0
-```
-
-Restart the operator:
-
-```console
-kubectl -n k8ssandra-operator rollout restart deployment k8ssandra-operator
-```
+There is a controller in the operator that watches for ClientConfig changes. When it detects a change (create/update/delete), it automatically restarts the operator.
 
 **Note:** See https://github.com/k8ssandra/k8ssandra-operator/issues/178 for details on
 why it is necessary to restart the control plane operator.
