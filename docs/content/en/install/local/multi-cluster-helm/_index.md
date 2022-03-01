@@ -257,6 +257,8 @@ false
 
 [create-clientconfig.sh](https://github.com/k8ssandra/k8ssandra-operator/blob/main/scripts/create-clientconfig.sh) lives in the k8ssandra-operator repo. It is used to configure access to remote clusters. 
 
+**Note:** K8ssandra Operator restarts automatically whenever there is a change to a `ClientConfig` (a create, update, or delete operation). This restart is done in order to update connections to remote clusters.
+
 First, set the context to `kind-k8ssandra-0`, the control plane cluster. 
 
 ```bash
@@ -304,8 +306,6 @@ secret/kind-k8ssandra-2-config created
 Creating ClientConfig clientconfig/kind-k8ssandra-2.yaml
 clientconfig.config.k8ssandra.io/kind-k8ssandra-2 created
 ```
-
-**Note:** K8ssandra Operator restarts automatically whenever there is a change to a `ClientConfig` (a create, update, or delete operation). This restart is done in order to update connections to remote clusters.
 
 ### Deploy the K8ssandraCluster
 
