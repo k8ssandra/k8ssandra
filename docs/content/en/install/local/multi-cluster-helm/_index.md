@@ -101,25 +101,6 @@ k8ssandra-2-worker3         Ready    <none>                 5h12m   v1.22.1
 k8ssandra-2-worker4         Ready    <none>                 5h12m   v1.22.1
 ```
 
-Then enter:
-
-```bash
-kubectx kind-k8ssandra-3
-
-kubectl get nodes
-```
-
-**Output:**
-
-```bash
-NAME                        STATUS   ROLES                  AGE     VERSION
-k8ssandra-3-control-plane   Ready    control-plane,master   5h12m   v1.22.1
-k8ssandra-3-worker          Ready    <none>                 5h12m   v1.22.1
-k8ssandra-3-worker2         Ready    <none>                 5h12m   v1.22.1
-k8ssandra-3-worker3         Ready    <none>                 5h12m   v1.22.1
-k8ssandra-3-worker4         Ready    <none>                 5h12m   v1.22.1
-```
-
 ### Install cert-manager in each cluster
 
 If you haven't already, update your helm repo with the jetstack cert-manager. 
