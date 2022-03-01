@@ -137,7 +137,7 @@ kubectx kind-k8ssandra-1
 Now install the operator:
 
 ```console
-kubectl apply -k github.com/k8ssandra/config/deployments/data-plane
+kustomize build "github.com/k8ssandra/k8ssandra-operator/config/deployments/data-plane?ref=v1.0.0" | k apply --server-side -f -
 ```
 
 This installs the operator in the `k8ssandra-operator` namespace.
