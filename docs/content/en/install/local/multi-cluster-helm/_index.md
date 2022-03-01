@@ -308,24 +308,6 @@ clientconfig.config.k8ssandra.io/kind-k8ssandra-2 created
 Then enter:
 
 ```bash
-./scripts/create-clientconfig.sh --namespace k8ssandra-operator \
- --src-kubeconfig build/kubeconfigs/k8ssandra-3.yaml \
- --dest-kubeconfig build/kubeconfigs/k8ssandra-0.yaml \
- --in-cluster-kubeconfig build/kubeconfigs/updated/k8ssandra-3.yaml \
- --output-dir clientconfig
-```
-
-**Output:**
-
-```bash
-Creating clientconfig/kubeconfig
-Creating secret kind-k8ssandra-3-config
-Error from server (NotFound): secrets "kind-k8ssandra-3-config" not found
-secret/kind-k8ssandra-3-config created
-Creating ClientConfig clientconfig/kind-k8ssandra-3.yaml
-clientconfig.config.k8ssandra.io/kind-k8ssandra-3 created
-```
-
 ### Deploy the K8ssandraCluster
 
 To deploy the `K8ssandraCluster`, we use a custom YAML file. In this example, k8cm1.yml. Notice, there are three Cassandra 4.0.1 datacenters, `dc1`, `dc2`, and `dc3` that are associated with the three data plane clusters.
