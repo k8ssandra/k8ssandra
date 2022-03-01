@@ -423,24 +423,6 @@ k8ssandra-operator-7cfd7977cb-59nld                     1/1     Running   0     
 k8ssandra-operator-cass-operator-794f65d9f4-79z6z       1/1     Running   0          96m
 ```
 
-```bash
-kubectx kind-k8ssandra-3
-
-kubectl get pods -n k8ssandra-operator
-```
-
-**Output:**
-
-```bash
-NAME                                                   READY   STATUS    RESTARTS   AGE
-demo-dc3-default-stargate-deployment-6bd8f87b4-ztxb8   1/1     Running   0          65m
-demo-dc3-default-sts-0                                 2/2     Running   0          71m
-demo-dc3-default-sts-1                                 2/2     Running   0          71m
-demo-dc3-default-sts-2                                 2/2     Running   0          71m
-k8ssandra-operator-7cfd7977cb-g6hcz                    1/1     Running   0          96m
-k8ssandra-operator-cass-operator-794f65d9f4-prfd8      1/1     Running   0          96m
-```
-
 ### Verify K8ssandraCluster status
 
 While deployment is still in progress, you can check the status:
