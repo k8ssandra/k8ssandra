@@ -769,7 +769,7 @@ Try another cqlsh operation on a different cluster.
 ```bash
 kubectx kind-k8ssandra-3
 
-kubectl exec --stdin --tty demo-dc1-default-sts-0 -n k8ssandra-operator -- /bin/bash
+kubectl exec -it demo-dc2-default-sts-0 -n k8ssandra-operator -- /bin/bash
 ```
 
 **Output:**
