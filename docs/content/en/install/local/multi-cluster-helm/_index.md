@@ -760,7 +760,7 @@ Now use the Stargate API.
 **Output plus cqlsh &amp; stargate-service example:**
 
 ```bash
-kubectx kind-k8ssandra-3
+kubectx kind-k8ssandra-2
 
 kubectl exec -it demo-dc2-default-sts-0 -n k8ssandra-operator -- /bin/bash
 
