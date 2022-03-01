@@ -765,7 +765,7 @@ kubectx kind-k8ssandra-2
 kubectl exec -it demo-dc2-default-sts-0 -n k8ssandra-operator -- /bin/bash
 
 Defaulted container "cassandra" out of: cassandra, server-system-logger, jmx-credentials (init), server-config-init (init)
-cassandra@k8ssandra-3-worker3:/$ cqlsh -u demo-superuser -p KT-ROFfbD-O9BzWS3Lxq demo-dc3-stargate-service
+cassandra@k8ssandra-2-worker3:/$ cqlsh -u demo-superuser -p KT-ROFfbD-O9BzWS3Lxq demo-dc3-stargate-service
 Connected to demo at demo-dc3-stargate-service:9042
 [cqlsh 6.0.0 | Cassandra 4.0.1 | CQL spec 3.4.5 | Native protocol v4]
 Use HELP for help.
