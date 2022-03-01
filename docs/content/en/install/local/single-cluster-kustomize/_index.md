@@ -50,7 +50,8 @@ kustomize build "github.com/k8ssandra/k8ssandra-operator/config/deployments/cont
 
 Verify that the following CRDs are installed:
 
-* `cassandradatacenters.cassandra.datastax.com`
+* `cassandrabackups.medusa.k8ssandra.io`
+* `cassandrarestores.medusa.k8ssandra.io`
 * `certificaterequests.cert-manager.io`
 * `certificates.cert-manager.io`
 * `challenges.acme.cert-manager.io`
@@ -59,6 +60,7 @@ Verify that the following CRDs are installed:
 * `issuers.cert-manager.io`
 * `k8ssandraclusters.k8ssandra.io`
 * `orders.acme.cert-manager.io`
+* `reapers.reaper.k8ssandra.io`
 * `replicatedsecrets.replication.k8ssandra.io`
 * `stargates.stargate.k8ssandra.io`
 
