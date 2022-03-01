@@ -74,7 +74,7 @@ cass-operator-controller-manager   1/1     1            1           77s
 k8ssandra-operator                 1/1     1            1           77s
 ```
 
-Verify that the `K8SSANDRA_CONTROL_PLANE` environment variable is set to `false`:
+Verify that the `K8SSANDRA_CONTROL_PLANE` environment variable is set to `true`:
 
 ```console
 kubectl -n k8ssandra-operator get deployment k8ssandra-operator -o jsonpath='{.spec.template.spec.containers[0].env[?(@.name=="K8SSANDRA_CONTROL_PLANE")].value}'
