@@ -338,23 +338,13 @@ spec:
           name: dc1
         k8sContext: kind-k8ssandra-1
         size: 3
-        stargate:
-          size: 1
-          heapSize: 256M
       - metadata:
           name: dc2
         k8sContext: kind-k8ssandra-2
         size: 3
-        stargate:
-          size: 1
-          heapSize: 256M
-      - metadata:
-          name: dc3
-        k8sContext: kind-k8ssandra-3
-        size: 3
-        stargate:
-          size: 1
-          heapSize: 256M
+  stargate:
+     size: 1
+     heapSize: 512M
 ```
 
 Verify again that your context is set to the control plane cluster, which is in this example:
