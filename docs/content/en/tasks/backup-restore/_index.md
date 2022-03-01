@@ -21,7 +21,7 @@ Supported in K8ssandra Operator's Medusa:
 * azure_blobs
 * google_storage
 
-# Deploying Medusa
+## Deploying Medusa
 
 You can deploy Medusa on all Cassandra datacenters in the cluster through the addition of settings in the `K8ssandraCluster` definition. Example:
 
@@ -113,7 +113,7 @@ The file should always specify `credentials` as shown in the example above; in t
 
 A successful deployment should inject a new init container named `medusa-restore` and a new container named `medusa` in the Cassandra STS pods.  
 
-# Creating a Backup
+## Creating a Backup
 
 To perform a backup of a Cassandra datacenter, create the following custom resource in the namespace where K8ssandra was deployed:
 
@@ -129,7 +129,7 @@ spec:
 
 The `metadata.name` value can match the `spec.name` value for convenience, but it is not mandatory. The latter will be used to identify the backup in the storage backend, the former being the name of the `CassandraBackup` custom resource in Kubernetes.
 
-## Checking Backup Completion
+### Checking Backup Completion
 
 K8ssandra Operator will detect the `CassandraBackup` object creation and trigger a backup asynchronously.
 
@@ -159,7 +159,7 @@ status:
 
 All pods having completed the backup will be in the `finished` list.
 
-# Restoring a Backup
+## Restoring a Backup
 
 To restore an existing backup for a Cassandra datacenter, create the following custom resource in the namespace where K8ssandra was deployed. Example:
 
@@ -181,7 +181,7 @@ spec:
 The `spec.backup` value should match the CassandraBackup `spec.name` value.  
 Once the K8ssandra Operator detects on the `CassandraRestore` object creation, it will control the shutdown of all Cassandra pods, and the `medusa-restore` container will perform the actual data restore upon pod restart.
 
-## Checking Restore Completion
+### Checking Restore Completion
 
 To monitor the restore completion, check if the `finishTime` value isn't empty in the `CassandraRestore` object status. Example:
 
