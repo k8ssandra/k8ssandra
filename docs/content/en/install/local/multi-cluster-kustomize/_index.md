@@ -60,7 +60,7 @@ kubectx kind-k8ssandra-0
 Install Cert Manager:
 
 ```console
-kubectl apply -f https://github.com/jetstack/cert-manager/releases/download/v1.5.3/cert-manager.yaml
+kubectl apply -f https://github.com/jetstack/cert-manager/releases/download/v1.7.1/cert-manager.yaml
 ```
 
 Set the active context to `kind-k8ssandra-1`:
