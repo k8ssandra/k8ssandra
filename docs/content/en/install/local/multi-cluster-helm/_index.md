@@ -535,11 +535,12 @@ dc2:
           Type:                    Ready
         Last Server Node Started:  2022-01-31T19:11:12Z
         Node Statuses:
-          demo-dc3-default-sts-0:
-            Host ID:  2cceff49-6df2-4045-8e04-6ce262bd6fc4
-          demo-dc3-default-sts-1:
-            Host ID:  018bfd17-8a77-43c6-859b-ab69c1fc8a66
-          demo-dc3-default-sts-2:
+          demo-dc2-default-sts-0:
+            Host ID:  f2bd31ef-5ca5-4c28-a9b2-bac28f76af4f
+          demo-dc2-default-sts-1:
+            Host ID:  878e519b-a6f4-4aff-b8ab-c1fb30679847
+          demo-dc2-default-sts-2:
+            Host ID: 3efa6a2f-47d1-49e3-ba93-0a58870e7c0f
             Host ID:          38438f65-b10a-4b3f-a56f-488536bf4cd3
         Observed Generation:  1
         Quiet Period:         2022-01-31T19:12:39Z
