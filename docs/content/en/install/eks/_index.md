@@ -6,6 +6,8 @@ description: >
   Complete **production** ready environment of K8ssandra on Amazon Elastic Kubernetes Service (EKS).
 ---
 
+**Tip:** This topic is specific to K8ssandra 1.4.x. Consider exploring our most recent (and recommended) implementation: **K8ssandra Operator**. It includes a `K8ssandraCluster` custom resource and supports single- and **multi-cluster** Cassandra deployments in Kubernetes, for High Availability (HA) capabilities. See the [K8ssandra Operator documentatation](https://docs-staging-v2.k8ssandra.io/install/local/). 
+
 Amazon [Elastic Kubernetes Service](https://aws.amazon.com/eks/features/) or "EKS" is a managed Kubernetes service that makes it easy for you to run Kubernetes on AWS and on-premises. EKS is certified Kubernetes conformant, so existing applications that run on upstream Kubernetes are compatible with EKS. AWS automatically manages the availability and scalability of the Kubernetes control plane nodes responsible scheduling containers, managing the availability of applications, storing cluster data, and other key tasks.
 
 {{% alert title="Tip" color="success" %}}

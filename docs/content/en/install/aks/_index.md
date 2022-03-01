@@ -6,6 +6,8 @@ description: >
   Complete **production** ready environment of K8ssandra on Azure Kubernetes Service (AKS).
 ---
 
+**Tip:** This topic is specific to K8ssandra 1.4.x. Consider exploring our most recent (and recommended) implementation: **K8ssandra Operator**. It includes a `K8ssandraCluster` custom resource and supports single- and **multi-cluster** Cassandra deployments in Kubernetes, for High Availability (HA) capabilities. See the [K8ssandra Operator documentatation](https://docs-staging-v2.k8ssandra.io/install/). 
+
 [Azure Elastic Kubernetes Service](https://azure.microsoft.com/en-us/services/kubernetes-service/) or "AKS" is a managed Kubernetes service that makes it easy for you to run Kubernetes on Azure. AKS offers serverless Kubernetes, an integrated continuous integration and continuous delivery (CI/CD) experience, and enterprise-grade security and governance.
 
 {{% alert title="Tip" color="success" %}}
