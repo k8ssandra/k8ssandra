@@ -1,6 +1,7 @@
 ---
 title: "Deploy K8ssandra and Traefik with Kind"
 linkTitle: "Kind Deployment"
+toc_hide: true
 description: "Deploy Apache Cassandra® on Kubernetes in a local Kind cluster with Traefik ingress installed and configured."
 ---
 

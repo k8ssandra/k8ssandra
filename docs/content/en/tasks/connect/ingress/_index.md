@@ -1,6 +1,7 @@
 ---
 title: "Configure Traefik ingress"
 linkTitle: "Traefik ingress"
+toc_hide: true
 simple_list: true
 description: "Provide access to your Apache Cassandra® database and utilities using a Kubernetes ingress."
 ---

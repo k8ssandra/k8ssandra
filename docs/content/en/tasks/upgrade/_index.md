@@ -1,9 +1,9 @@
 ---
-title: "Upgrade K8ssandra"
+title: "Upgrade to K8ssandra Operator"
 linkTitle: "Upgrade"
 no_list: true
 weight: 2
-description: How to upgrade K8ssandra to use the latest release, new settings, or both.
+description: How to upgrade from K8ssandra v1.4.x to use the latest K8ssandra Operator release, new settings, or both.
 ---
 
 You can easily upgrade your K8ssandra cluster. In this topic, we'll describe how to:
@@ -11,6 +11,7 @@ You can easily upgrade your K8ssandra cluster. In this topic, we'll describe how
 * Update an existing K8ssandra repo to the latest release
 * Take action based on an upgrade consideration for K8ssandra 1.1.0
 * Upgrade from the single-node Cassandra instance to a 3-node Cassandra instance, as an example
+* Upgrade from a single-cluster that uses K8ssandra v1.4.x to a multi-cluster environment that uses K8ssandra Operator
 
 ## Introduction
 
@@ -43,7 +44,7 @@ Hang tight while we grab the latest from your chart repositories...
 Update Complete. ⎈Happy Helming!⎈
 ```
 
-For example, because K8ssandra released 1.1.0 on 09-Apr-2021, the `helm repo update` command automatically gets the latest software. 
+For example, because K8ssandra released 1.4.1 on 09-Nov-2021, the `helm repo update` command automatically gets the latest K8ssandra Operator software. 
 
 ## Upgrade notice for K8ssandra 1.1.0
 

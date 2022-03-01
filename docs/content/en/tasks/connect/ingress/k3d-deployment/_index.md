@@ -1,6 +1,7 @@
 ---
 title: "Deploy K8ssandra and Traefik with K3d"
 linkTitle: "K3d Deployment"
+toc_hide: true
 description: "Deploy Apache Cassandra® on Kubernetes in a local K3d cluster with Traefik ingress installed and configured."
 ---
 

@@ -226,6 +226,6 @@ The steps necessary here will vary depending on how you installed and managed th
 
 ## Next steps
 
-Explore other K8ssandra [tasks]({{< relref "/tasks" >}}).
+Explore other K8ssandra Operator [tasks]({{< relref "/tasks" >}}).
 
-See the [Reference]({{< relref "/reference" >}}) topics for information about K8ssandra Helm charts, and a glossary. 
+See the [Reference]({{< relref "/reference" >}}) topics for information about the K8ssandra Operator Helm chart, and the Custom Resource Definitions (CRDs).  
