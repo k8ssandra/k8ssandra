@@ -29,7 +29,7 @@ cd k8ssandra-operator
 Invoke `make` with the following parameters: 
 
 ```bash
-make NUM_CLUSTERS=4 create-kind-multicluster
+make NUM_CLUSTERS=3 create-kind-multicluster
 ```
 
 ### Verify the deployments 
