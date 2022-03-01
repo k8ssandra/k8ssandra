@@ -221,11 +221,6 @@ kubectx kind-k8ssandra-2
 helm install k8ssandra-operator k8ssandra/k8ssandra-operator -n k8ssandra-operator \
  --create-namespace --set controlPlane=false
 
-kubectx kind-k8ssandra-3
-helm install k8ssandra-operator k8ssandra/k8ssandra-operator -n k8ssandra-operator \
- --create-namespace
-```
-
 ### Verify control-plane configuration
 
 ```
