@@ -177,28 +177,6 @@ NOTES:
 cert-manager v1.7.0 has been deployed successfully!
 ```
 
-Then enter:
-
-```bash
-kubectx kind-k8ssandra-3
-
-helm install cert-manager jetstack/cert-manager --namespace cert-manager \
-     --create-namespace --set installCRDs=true
-```
-
-**Output:**
-
-```bash
-NAME: cert-manager
-LAST DEPLOYED: Thu Jan 27 15:28:59 2022
-NAMESPACE: cert-manager
-STATUS: deployed
-REVISION: 1
-TEST SUITE: None
-NOTES:
-cert-manager v1.7.0 has been deployed successfully!
-```
-
 ### Install K8ssandra Operator in the control-plane
 
 First, you'll need to have [Helm v3+](https://helm.sh/docs/intro/install/) installed.
