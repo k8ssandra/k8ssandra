@@ -480,7 +480,7 @@ kubectl describe k8cs demo -n k8ssandra-operator
    .
    .
    .
-dc3:
+dc2:
       Cassandra:
         Cassandra Operator Progress:  Ready
         Conditions:
