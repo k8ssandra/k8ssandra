@@ -240,7 +240,7 @@ Verify that you see the `k8ssandra-operator` chart:
 helm search repo k8ssandra-operator
 ```
 
-In the following example, of the four clusters we've created in the section above, we'll use `kind-k8ssandra-0` as our control-plane.
+In the following example, of the three clusters we've created in the section above, we'll use `kind-k8ssandra-0` as our control-plane.
 
 ```bash
 kubectx kind-k8ssandra-0
