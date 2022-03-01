@@ -43,22 +43,10 @@ kubectl apply -f https://github.com/jetstack/cert-manager/releases/download/v1.5
 ```
 
 ### Install K8ssandra Operator
-The GitHub Actions for the project are configured to build and push a new operator image 
-to Docker Hub whenever commits are pushed to `main`. 
-
-See [here](https://hub.docker.com/repository/docker/k8ssandra/k8ssandra-operator/tags?page=1&ordering=last_updated) 
-on Docker Hub for a list of available images.
-
-Install with kubectl:
+Install with:
 
 ```console
-kubectl apply -k github.com/k8ssandra/k8ssandra-operator/config/deployments/control-plane
-```
-
-This installs the operator in the `k8ssandra-operator` namespace.
-
-**Note:** This will deploy the `latest` operator image, i.e., 
-`k8ssandra/k8ssandra-operator:latest`. In general it is best to avoid using `latest`. 
+kustomize build "github.com/k8ssandra/k8ssandra-operator/config/deployments/control-plane?ref=v1.0.0" | k apply --server-side -f -
 
 In case you want to customize the installation, create a kustomization directory that 
 builds from the `main` branch; in this case, we'll add namespace creation and define 
