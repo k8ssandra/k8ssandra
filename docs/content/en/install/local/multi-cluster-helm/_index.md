@@ -369,7 +369,7 @@ kubectx kind-k8ssandra-1
 kubectl get pods -n k8ssandra-operator
 ```
 
-Do the same on each of the other two clusters by setting the kubectx context to kind-k8ssandra-2, check the pods status; then kind-k8ssandra-3, and check the pods status.
+Do the same the other cluster by setting the kubectx context to kind-k8ssandra-2, check the pods status.
 
 Eventually the datacenters will be fully deployed:
 
