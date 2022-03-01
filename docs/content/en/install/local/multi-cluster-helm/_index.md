@@ -256,7 +256,7 @@ In this example, we'll use the three other clusters as data-planes.
 ```bash
 kubectx kind-k8ssandra-1
 helm install k8ssandra-operator k8ssandra/k8ssandra-operator -n k8ssandra-operator \
- --create-namespace
+ --create-namespace --set controlPlane=false
 
 kubectx kind-k8ssandra-2
 helm install k8ssandra-operator k8ssandra/k8ssandra-operator -n k8ssandra-operator \
