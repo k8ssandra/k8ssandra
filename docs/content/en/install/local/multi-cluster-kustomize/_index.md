@@ -18,15 +18,9 @@ You can install K8ssandra Operator with [Kustomize](https://kustomize.io/), whic
 a declarative approach to configuring and deploying resources, whereas Helm takes more of 
 an imperative approach.
 
-The following examples use `kubectl apply -k` to deploy resources. The `-k` option
-essentially runs `kustomize build` over the specified directory followed by `kubectl
-apply`. See this [topic](https://kubernetes.io/docs/tasks/manage-kubernetes-objects/kustomization/)
-for details on the integration of Kustomize into `kubectl`.
+Kustomize is integrated directly into `kubectl`. For example, `kubectl apply -k` essentially runs `kustomize build` over the specified directory followed by `kubectl apply`. See this [topic](https://kubernetes.io/docs/tasks/manage-kubernetes-objects/kustomization/) for details on the integration of Kustomize into `kubectl`.
 
-**Tip:** 
-    If `kubectl -k <dir>` does not work, instead use:
-    `kustomize build <dir> | kubectl apply -f -`
-
+K8ssandra Operator uses some features of Kustomize that are only available in `kubectl` v1.23 or later. For this reason the following examples use `kustomize buid <dir> | kubectl apply -f -`.
 
 
 ## Multi-cluster local Kubernetes
