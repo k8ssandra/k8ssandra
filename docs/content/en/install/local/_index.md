@@ -47,7 +47,7 @@ In our testing on Linux, we used `gnu-getopt` version 2.37.3. The default downlo
 
 ### setup-kind-multicluster.sh (FYI) 
 
-Note that the `make NUM_CLUSTERS=<number> create-kind-multicluster` command invokes the [setup-kind-multicluster.sh](https://github.com/k8ssandra/k8ssandra-operator/blob/main/scripts/setup-kind-multicluster.sh) script. You won't need to run this script directly. FYI, the script is in the k8ssandra/k8ssandra-operator GitHub repo, and used extensively during development and testing. Not only does it configure and create kind clusters, it also generates kubeconfig files for each cluster.
+Note that the `make NUM_CLUSTERS=<number> create-kind-multicluster` command, which is shown in subsequent install topics, is a reference to a `Makefile` target within the k8ssandra-operator repo. The `Makefile` is [here](https://github.com/k8ssandra/k8ssandra-operator/blob/main/Makefile). The command invokes the [setup-kind-multicluster.sh](https://github.com/k8ssandra/k8ssandra-operator/blob/main/scripts/setup-kind-multicluster.sh) script. It's used extensively during development and testing. Not only does it configure and create kind clusters, it also generates `kubeconfig` files for each cluster.
 
 **Tip:** kind generates a `kubeconfig` with the IP address of the API server set to `localhost` because the cluster is intended for local development. We need a `kubeconfig` with the IP address set to the internal address of the API server. The `setup-kind-mulitcluster.sh` script takes care of this requirement for you.  
 
