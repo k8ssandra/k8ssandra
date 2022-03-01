@@ -48,43 +48,6 @@ Install with:
 ```console
 kustomize build "github.com/k8ssandra/k8ssandra-operator/config/deployments/control-plane?ref=v1.0.0" | k apply --server-side -f -
 
-In case you want to customize the installation, create a kustomization directory that 
-builds from the `main` branch; in this case, we'll add namespace creation and define 
-new namespace. Note the `namespace` property that we added. This property tells 
-Kustomize to apply a transformation on all resources that specify a namespace.
-
-```sh
-K8SSANDRA_OPERATOR_HOME=$(mktemp -d)
-cat <<EOF >$K8SSANDRA_OPERATOR_HOME/kustomization.yaml
-
-namespace: k8ssandra-operator
-
-resources:
-- github.com/k8ssandra/k8ssandra-operator/config/deployments/default?ref=main
-
-components:
-- github.com/k8ssandra/k8ssandra-operator/config/components/namespace
-
-images:
-- name: k8ssandra/k8ssandra-operator
-  newTag: v1.0.0-alpha.1
-EOF
-```
-
-Now install the operator:
-
-```console
-kubectl apply -k $K8SSANDRA_OPERATOR_HOME
-```
-
-This installs the operator in the `k8ssandra-operator` namespace.
-
-If you just want to generate the manifests then run:
-
-```console
-kustomize build $K8SSANDRA_OPERATOR_HOME
-```
-
 Verify that the following CRDs are installed:
 
 * `cassandradatacenters.cassandra.datastax.com`
