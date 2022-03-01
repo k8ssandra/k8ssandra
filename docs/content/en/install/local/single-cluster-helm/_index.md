@@ -208,7 +208,7 @@ spec:
           heapSize: 256M
 ```
 
-Apply the YAML to the already deployed K8ssandra Operator:
+Create the K8ssandraCluster with `kubectl apply`:
 
 ```bash
 kubectl apply -n k8ssandra-operator -f k8c1.yml
