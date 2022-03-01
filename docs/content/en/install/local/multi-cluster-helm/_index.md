@@ -310,7 +310,7 @@ Then enter:
 ```bash
 ### Deploy the K8ssandraCluster
 
-To deploy the `K8ssandraCluster`, we use a custom YAML file. In this example, k8cm1.yml. Notice, there are three Cassandra 4.0.1 datacenters, `dc1`, `dc2`, and `dc3` that are associated with the three data plane clusters.
+To deploy the `K8ssandraCluster`, we use a custom YAML file. In this example, k8cm1.yml. Notice, there are two Cassandra 4.0.1 datacenters, `dc1` and `dc2` that are associated with the two data plane clusters.
 
 ```yaml
 apiVersion: k8ssandra.io/v1alpha1
