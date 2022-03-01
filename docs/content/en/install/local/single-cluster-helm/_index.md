@@ -580,7 +580,7 @@ Insert another row of data in the table:
 Select data from the table:
 
 ```bash
-% kubectl exec -it demo-dc1-default-sts-0 -n k8ssandra-operator -c cassandra -- cqlsh -u $CASS_USERNAME -p $CASS_PASSWORD demo-dc1-stargate-service -e "select * from test.users;"
+% kubectl exec -it demo-dc1-default-sts-0 -n k8ssandra-operator -c cassandra -- cqlsh -u $CASS_USERNAME -p $CASS_PASSWORD -e "select * from test.users;"
 ```
 
 **Output of the SELECT:**
