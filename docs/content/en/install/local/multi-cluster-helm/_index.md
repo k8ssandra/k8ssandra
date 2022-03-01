@@ -612,14 +612,6 @@ Status=Up/Down
 UN  172.18.0.16  355.6 KiB  256          100.0%            f2bd31ef-5ca5-4c28-a9b2-bac28f76af4f  default
 UN  172.18.0.15  368.66 KiB  256          100.0%            878e519b-a6f4-4aff-b8ab-c1fb30679847  default
 UN  172.18.0.13  344.76 KiB  256          100.0%            3efa6a2f-47d1-49e3-ba93-0a58870e7c0f  default
-Datacenter: dc3
-===============
-Status=Up/Down
-|/ State=Normal/Leaving/Joining/Moving
---  Address      Load       Tokens       Owns (effective)  Host ID                               Rack
-UN  172.18.0.18  389.07 KiB  256          100.0%            9fc9983e-24a6-415d-9a4d-10d3deff4ca4  default
-UN  172.18.0.19  376.66 KiB  256          100.0%            e36d3a62-b521-4a50-b86a-2b392c972195  default
-UN  172.18.0.20  401.81 KiB  256          100.0%            396ebb0a-da34-47c9-8f74-0816b5658f86  default
 ```
 
 {{% alert title="Tip" color="success" %}}
