@@ -113,8 +113,8 @@ kubectl get deployment
 
 ```console
 NAME                 READY   UP-TO-DATE   AVAILABLE   AGE
-cass-operator        1/1     1            1           2m
-k8ssandra-operator   1/1     1            1           2m
+cass-operator-controller-manager   1/1     1            1           2m
+k8ssandra-operator                 1/1     1            1           2m```
 ```
 
 The operator looks for an environment variable named `K8SSANDRA_CONTROL_PLANE`. When set 
