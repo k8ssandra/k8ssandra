@@ -601,7 +601,7 @@ In the launched container's `cqlsh` session, notice we provide the extracted pas
 Now test an operation via the open-source Stargate API.
 
 ```bash
-kubectl exec --stdin --tty demo-dc1-default-sts-0 -n k8ssandra-operator -- /bin/bash
+kubectl exec -it demo-dc1-default-sts-0 -n k8ssandra-operator -- /bin/bash
 ```
 
 **Output plus cqlsh &amp; stargate-service example:**
