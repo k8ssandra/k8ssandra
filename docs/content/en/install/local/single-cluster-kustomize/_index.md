@@ -70,8 +70,8 @@ Check that there are two Deployments. The output should look similar to this:
 ```console
 kubectl -n k8ssandra-operator get deployment
 NAME                 READY   UP-TO-DATE   AVAILABLE   AGE
-cass-operator        1/1     1            1           2m
-k8ssandra-operator   1/1     1            1           2m
+cass-operator-controller-manager   1/1     1            1           77s
+k8ssandra-operator                 1/1     1            1           77s
 ```
 
 Verify that the `K8SSANDRA_CONTROL_PLANE` environment variable is set to `false`:
