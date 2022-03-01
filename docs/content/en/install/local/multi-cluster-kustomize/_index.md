@@ -143,18 +143,19 @@ This installs the operator in the `k8ssandra-operator` namespace.
 
 Verify that the following CRDs are installed:
 
-* `cassandradatacenters.cassandra.datastax.com`
+* `cassandrabackups.medusa.k8ssandra.io`
+* `cassandrarestores.medusa.k8ssandra.io`
 * `certificaterequests.cert-manager.io`
 * `certificates.cert-manager.io`
 * `challenges.acme.cert-manager.io`
-* `clientconfigs.k8ssandra.io`
+* `clientconfigs.config.k8ssandra.io`
 * `clusterissuers.cert-manager.io`
 * `issuers.cert-manager.io`
 * `k8ssandraclusters.k8ssandra.io`
 * `orders.acme.cert-manager.io`
-* `replicatedsecrets.k8ssandra.io`
-* `stargates.k8ssandra.io`
-
+* `reapers.reaper.k8ssandra.io`
+* `replicatedsecrets.replication.k8ssandra.io`
+* `stargates.stargate.k8ssandra.io`
 
 Check that there are two Deployments. The output should look similar to this:
 
