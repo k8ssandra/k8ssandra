@@ -39,7 +39,7 @@ Run `setup-kind-multicluster.sh` as follows:
 We need to first install Cert Manager because it is a dependency of cass-operator:
 
 ```console
-kubectl apply -f https://github.com/jetstack/cert-manager/releases/download/v1.5.3/cert-manager.yaml
+kubectl apply -f https://github.com/jetstack/cert-manager/releases/download/v1.7.1/cert-manager.yaml
 ```
 
 ### Install K8ssandra Operator
