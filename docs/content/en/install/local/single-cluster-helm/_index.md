@@ -517,7 +517,7 @@ You'll use the extracted credentials for subsequent authentication in deployed c
 ### Verify cluster status
 
 ```bash
-kubectl exec --stdin --tty demo-dc1-default-sts-0 -n k8ssandra-operator -c cassandra -- nodetool -u demo-superuser -pw ACK7dO9qpsghIme-wvfI status
+% kubectl exec -it demo-dc1-default-sts-0 -n k8ssandra-operator -c cassandra -- nodetool -u $CASS_USERNAME -pw $CASS_PASSWORD status
 ```
 
 **Output plus nodetool example:**
