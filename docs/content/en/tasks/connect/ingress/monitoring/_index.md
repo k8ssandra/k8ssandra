@@ -1,6 +1,7 @@
 ---
 title: "Access K8ssandra Monitoring with Traefik"
 linkTitle: "Monitoring"
+toc_hide: true
 description: "Expose access to your Prometheus and Grafana monitoring interfaces for Apache Cassandra® using Traefik ingress"
 ---
 

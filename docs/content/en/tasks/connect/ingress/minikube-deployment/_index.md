@@ -1,6 +1,7 @@
 ---
 title: "Deploy K8ssandra and Traefik with Minikube"
 linkTitle: "Minikube Deployment"
+toc_hide: true
 description: "Deploy Apache Cassandra® on Kubernetes in a local Minikube cluster with Traefik ingress installed and configured."
 ---
 

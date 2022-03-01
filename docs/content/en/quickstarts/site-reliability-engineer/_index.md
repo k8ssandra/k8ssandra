@@ -15,7 +15,6 @@ In this quickstart for Site Reliability Engineers (SREs), we'll cover:
 * [Configure port forwarding]({{< relref "#port-forwarding" >}}) for the Prometheus and Grafana monitoring utilities as well as Reaper for Apache Cassandra® (Reaper).
 * [Accessing the K8ssandra Operator monitoring utilities]({{< relref "#monitoring" >}}), Prometheus and Grafana.
 * [Accessing Reaper]({{< relref "#reaper" >}}), an easy to use repair interface.
-* [Upgrading a K8ssandra Operator cluster]({{< relref "#upgrade" >}}): to ensure you're using the latest K8ssandra Operator, or to apply new settings.
 
 ## Access the Apache Cassandra® nodetool utility {#nodetool}
 
@@ -287,10 +286,6 @@ For more information see the [Grafana](https://grafana.com/) web site.
 ![Reaper](cass-reaper.png)
 
 For details, start in the [Reaper]({{< relref "/components/reaper" >}}) topic. Then read about the [repair]({{< relref "/tasks/repair" >}}) tasks you can perform with Reaper.
-
-## Upgrade K8ssandra Operator {#upgrade}
-
-You can easily upgrade your K8ssandra software with the `helm repo update` command, or apply new settings with the `helm upgrade` command. For details, see [Upgrade K8ssandra]({{< relref "upgrade" >}}).
 
 ## Next steps
 

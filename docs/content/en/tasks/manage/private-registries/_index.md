@@ -1,6 +1,7 @@
 ---
 title: "Private registries"
 linkTitle: "Private registries"
+toc_hide: true
 weight: 1
 description: "Optional steps to use private registries with K8ssandra Operator and its deployed components."
 ---
@@ -367,6 +368,6 @@ From the K8ssandra GitHub repo, here are the resolved issues and pull request fo
 
 ## Next steps
 
-Explore other K8ssandra [tasks]({{< relref "/tasks" >}}).
+Explore other K8ssandra Operator [tasks]({{< relref "/tasks" >}}).
 
 See the [Custom Resource Definitions (CRDs)]({{< relref "/reference" >}}) reference topics.

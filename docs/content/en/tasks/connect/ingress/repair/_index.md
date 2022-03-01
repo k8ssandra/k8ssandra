@@ -1,6 +1,7 @@
 ---
 title: "Access K8ssandra Repair with Traefik"
 linkTitle: "Repair"
+toc_hide: true
 description: "Expose access to your Reaper for Apache Cassandra® repair interface using Traefik ingress."
 ---
 
