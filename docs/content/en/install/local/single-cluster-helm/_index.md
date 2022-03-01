@@ -550,7 +550,7 @@ Create a keyspace in the deployed Cassandra database, which is managed by K8ssan
 Create a `test.users` table in the deployed Cassandra database:
 
 ```bash
-% kubectl exec --stdin --tty demo-dc1-default-sts-0 -n k8ssandra-operator -c cassandra -- cqlsh -u $CASS_USERNAME -p $CASS_PASSWORD demo-dc1-stargate-service -e "CREATE TABLE test.users (email text primary key, name text, state text);"
+% kubectl exec -it demo-dc1-default-sts-0 -n k8ssandra-operator -c cassandra -- cqlsh -u $CASS_USERNAME -p $CASS_PASSWORD demo-dc1-stargate-service -e "CREATE TABLE test.users (email text primary key, name text, state text);"
 ```
 
 Insert some data in the table:
