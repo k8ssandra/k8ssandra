@@ -641,7 +641,7 @@ demo-superuser@cqlsh> describe keyspaces;
 data_endpoint_auth  system_auth         system_schema  system_views
 system              system_distributed  system_traces  system_virtual_schema
 
-demo-superuser@cqlsh> CREATE KEYSPACE test WITH replication = {'class': 'NetworkTopologyStrategy', 'dc1' : 3, 'dc2' : 3, 'dc3': 3};
+demo-superuser@cqlsh> CREATE KEYSPACE test WITH replication = {'class': 'NetworkTopologyStrategy', 'dc1' : 3, 'dc2' : 3};
 demo-superuser@cqlsh> USE test;
 demo-superuser@cqlsh:test> CREATE TABLE users (email text primary key, name text, state text);
 demo-superuser@cqlsh:test> insert into users (email, name, state) values ('john@gamil.com', 'John Smith', 'NC');
