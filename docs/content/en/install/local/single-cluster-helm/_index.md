@@ -544,7 +544,7 @@ To make it easier for you to copy the commands, we've listed them individually b
 Create a keyspace in the deployed Cassandra database, which is managed by K8ssandra Operator in the Kubernetes environment:
 
 ```bash
-kubectl exec --stdin --tty demo-dc1-default-sts-0 -n k8ssandra-operator -c cassandra -- cqlsh -u $CASS_USERNAME -p $CASS_PASSWORD demo-dc1-stargate-service -e "CREATE KEYSPACE test WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 3};"
+% kubectl exec -it demo-dc1-default-sts-0 -n k8ssandra-operator -c cassandra -- cqlsh -u $CASS_USERNAME -p $CASS_PASSWORD demo-dc1-stargate-service -e "CREATE KEYSPACE test WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 3};"
 ```
 
 Create a `test.users` table in the deployed Cassandra database:
