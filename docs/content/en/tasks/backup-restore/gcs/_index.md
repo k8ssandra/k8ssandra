@@ -1,10 +1,13 @@
 ---
 title: "Backup and restore with Google Cloud Storage"
 linkTitle: "Google Cloud Storage"
+toc_hide: true
 no_list: true
 weight: 3
 description: Use Medusa to backup and restore Apache Cassandra® data in Kubernetes to Google Cloud Storage (GCS).
 ---
+
+**Note:** The information in this topic has not been verified yet for use with K8ssandra Operator.  
 
 Medusa is a Cassandra backup and restore tool. It's packaged with K8ssandra and supports a variety of backends, including GCS for storage in Google Kubernetes Engine (GKE) environments.
 

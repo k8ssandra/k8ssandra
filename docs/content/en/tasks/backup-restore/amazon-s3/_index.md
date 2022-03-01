@@ -1,9 +1,12 @@
 ---
 title: "Backup and restore Cassandra with Amazon S3"
 linkTitle: "Amazon S3 buckets"
+toc_hide: true
 weight: 2
 description: Use K8ssandra's Medusa to backup and restore Cassandra® data with Amazon S3 buckets.
 ---
+
+**Note:** The information in this topic has not been verified yet for use with K8ssandra Operator.  
 
 This topic walks you through the steps with Amazon S3 buckets. This feature is included in K8ssandra 1.0.0 and later releases.
 
@@ -189,7 +192,7 @@ In the output, see the `podTemplateSpec` property; two containers were added for
 
 `    name: medusa`
 
-Here’s the entry for the restore’s init container. K8ssandra looks for an environment variable to be set, which would indicate when to perform a restore operation.
+Here's the entry for the restore's init container. K8ssandra looks for an environment variable to be set, which would indicate when to perform a restore operation.
 
 `    name: medusa-restore`
 
@@ -281,7 +284,7 @@ Keep the sample `medusa_test.users` keyspace.table data in mind -- we will use s
 
 ### Create the backup
 
-Now create a backup by relreferencing the backup chart:
+Now create a backup by referencing the backup chart:
 
 ```bash
 helm install test k8ssandra/backup --set name=test,cassandraDatacenter.name=dc1
@@ -301,7 +304,7 @@ Examine the YAML:
 kubectl get cassandrabackup test -o yaml
 ```
 
-The Status section in the YAML shows the backup operation’s start and finish timestamps.
+The Status section in the YAML shows the backup operation's start and finish timestamps.
 
 ### Amazon S3 buckets
 
@@ -327,7 +330,7 @@ Examine the YAML:
 kubectl get cassandrarestore helm-test -o yaml
 ```
 
-The output will show the restore operation’s start time and that the `cassandraDatacenter` is being recreated.
+The output will show the restore operation's start time and that the `cassandraDatacenter` is being recreated.
 
 You can also examine the in-progress logs:
 
@@ -370,7 +373,7 @@ kubectl get cassadrarestore helm-test -o yaml
 
 ## Next steps
 
-An alternative to an Amazon S3 bucket is MinIO, which is S3 compatible and also supported by Medusa. See [Backup and restore Cassandra with MinIO]({{< relref "/tasks/backup-restore/minio/" >}}).
+An alternative to an Amazon S3 bucket is MinIO, which is S3 compatible and also supported by Medusa. See [Backup and restore Cassandra with MinIO]({{< relref "/tasks/backup-restore/" >}}).
 
 Also see the following Custom Resource Definition (CRD) reference topics:
 

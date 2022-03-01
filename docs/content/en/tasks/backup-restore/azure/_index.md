@@ -1,10 +1,13 @@
 ---
 title: "Backup and restore with Azure Storage"
 linkTitle: "Azure Blob Storage"
+toc_hide: true
 no_list: true
 weight: 3
 description: Use Medusa to backup and restore Apache Cassandra® data in Kubernetes to Azure Storage.
 ---
+
+**Note:** The information in this topic has not been verified yet for use with K8ssandra Operator.  
 
 Medusa is a Cassandra backup and restore tool. It's packaged with K8ssandra and supports a variety of backends,
 including Azure Storage.
