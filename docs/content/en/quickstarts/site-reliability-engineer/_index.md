@@ -2,10 +2,8 @@
 title: "Quickstart for Site Reliability Engineers"
 linkTitle: "SREs"
 weight: 2
-description: "Familiarize yourself with K8ssandra utilities and procedures for monitoring, repair, and upgrading your Apache Cassandra® database!"
+description: "Familiarize yourself with K8ssandra 1.4.x utilities and procedures for monitoring, repair, and upgrading your Apache Cassandra® database!"
 ---
-
-**Completion time**: **10 minutes**.
 
 {{% alert title="Tip" color="success" %}}
 Be sure to first complete one of the [K8ssandra install]({{< relref "/install" >}}) options (locally or on a cloud provider) before performing these post-install steps. 
@@ -313,7 +311,7 @@ For details, see [Upgrade K8ssandra]({{< relref "upgrade" >}}).
 
 ## Next steps
 
-* [FAQs]({{< relref "faqs" >}}): If you're new to K8ssandra, these FAQs are for you. 
+* [FAQs](https://docs.k8ssandra.io/faqs/): If you're new to K8ssandra, these FAQs are for you. 
 * [Components]({{< relref "components" >}}): Dig in to each deployed component of the K8ssandra stack and see how it communicates with the others.
 * [Tasks]({{< relref "tasks" >}}): Need to get something done? Check out the Tasks topics for a helpful collection of outcome-based solutions.
 * [Reference]({{< relref "reference" >}}): Explore the K8ssandra configuration interface (Helm charts), the available options, and a Glossary.

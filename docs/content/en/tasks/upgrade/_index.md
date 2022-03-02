@@ -45,9 +45,9 @@ Update Complete. ⎈Happy Helming!⎈
 
 For example, because K8ssandra released 1.1.0 on 09-Apr-2021, the `helm repo update` command automatically gets the latest software. 
 
-## Upgrade notice for K8ssandra 1.1.0
+## Upgrade notice for K8ssandra 1.4.x
 
-As cited in the K8ssandra [release notes]({{< relref "/release-notes/#upgrade-notice" >}}), upgrading from K8ssandra 1.0.0 to 1.1.0 causes a StatefulSet update, which has the effect of a rolling restart. This situation could require you to perform a manual restart of all Stargate nodes after the Cassandra cluster is back online. 
+Upgrading from K8ssandra 1.0.x to 1.4.x causes a StatefulSet update, which has the effect of a rolling restart. This situation could require you to perform a manual restart of all Stargate nodes after the Cassandra cluster is back online. 
 
 To manually restart Stargate nodes:
 
