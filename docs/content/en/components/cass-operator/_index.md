@@ -7,7 +7,10 @@ description: K8ssandra deploys Kubernetes Operator for Apache Cassandra&reg; to 
 
 Kubernetes Operator for Apache Cassandra&reg;, also known as Cass Operator or cass-operator, is deployed by K8ssandra as part of its Helm chart. 
 
-If you haven't already installed K8ssandra, see the [install]({{< relref "/install" >}}) topics.
+If you haven't already installed K8ssandra or a `K8ssasdraCluster` custom resource using K8ssandra Operator, see:
+
+* [docs-v1.k8ssandra.io](https://docs-staging-v1.k8ssandra.io/install/) provides install topics that are specific to K8ssandra 1.4.x users (the initial project releases).
+* [docs-v2.k8ssandra.io](https://docs-staging-v2.k8ssandra.io/install/) provides local install topics that are specific to the more recent (and recommended) K8ssandra Operator software, including single- or multi-cluster installs.
 
 ## Introduction
 
@@ -73,7 +76,7 @@ For instance, all nodes in the cluster may be scheduled and start their manageme
 
 ## Next steps
 
-* For information about using a superuser and secrets with Cassandra authentication, see [Cassandra security]({{< relref "/tasks/secure/#cassandra-security" >}}).
-* For reference details, see the [K8ssandra]({{< relref "/reference/helm-charts/k8ssandra/" >}}) Helm chart.
-* Also see the topics covering other [components]({{< relref "/components/" >}}) deployed by K8ssandra. 
-* For information on using other deployed components, see the [Tasks]({{< relref "/tasks/" >}}) topics.
+* For information about using a superuser and secrets with Cassandra authentication, see [Cassandra security](https://docs-staging-v2.k8ssandra.io/tasks/secure/#cassandra-security" >}}).
+* For CRD and Helm details, see the [K8ssandra Operator](https://docs-staging-v2.k8ssandra.io/reference/) reference topics.
+* Also see the topics covering other deployed [components](https://docs-staging-v2.k8ssandra.io/components/). 
+* For information on using deployed components, see the [K8ssandra Operator tasks](https://docs-staging-v2.k8ssandra.io/tasks) topics.

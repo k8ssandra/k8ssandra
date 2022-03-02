@@ -1,11 +1,17 @@
 ---
 title: "K8ssandra tasks"
 linkTitle: "Tasks"
-simple_list: true
+simple_list: false
 weight: 5
-description: Topics to help you get things done, **now**.
+description: "Pointers to v1 or v2 task topics."
 ---
 
-These task topics build on the [Quickstart]({{< relref "/quickstarts/" >}}) steps for developers or SREs, and on the cloud-provider specific [Install]({{< relref "/install/" >}}) topics. If you haven't already installed K8ssandra and its deployed components using default or custom settings for your preferred cloud provider, see those topics.
+Welcome! Depending on which version you're using, follow the steps in these task-oriented topics on:
 
-Accessing resources from outside of the K8ssandra cluster requires tooling to make the internal resources available at external connection points. This may be accomplished through a number of means, many explored here. Some of the tasks assume a Kubernetes Ingress Controller has been installed and configured. If you need help with that setup, head over to the [Traefik ingress]({{< relref "/tasks/connect/ingress" >}}) section and explore these topics.
+* [docs-v2.k8ssandra.io](https://docs-staging-v2.k8ssandra.io/tasks/) provides topics that are specific to the more recent (and recommended) K8ssandra Operator software, including single- or multi-cluster installs, post-installs, and related tasks.
+
+* [docs-v1.k8ssandra.io](https://docs-staging-v1.k8ssandra.io/tasks/) provides topics that are specific to K8ssandra 1.4.x users (the initial project releases).
+
+**Tip:** From each page's top banner, use the **Versions** menu to navigate to the Common, v1, or v2 documentation Home.
+
+![Documentation Versions menu](/k8ssandra-doc-versions.png)

@@ -38,12 +38,12 @@ At a pure component level, K8ssandra Operator integrates and packages together:
 * Cass Operator, also known as `cass-operator`
 * Reaper for Apache Cassandra anti-entropy data repair feature
 * Medusa for Apache Cassandra backup and restore
-* Observability service for integration with metrics and visualization tools
+* Observability service for integration with metrics and visualization tools, such as Prometheous and Grafana
 * Templates for connections into your Kubernetes environment via Ingress solutions; or, instructions for using `port-forwarding`, as an alternative approach)
 
 For the full list of deployed components and latest versions, see the [Release notes]({{< relref "release-notes" >}}). 
 
-In addition to the set of components, it's important to emphasize that the K8ssandra project is really a collection of experience from the community of Cassandra + Kubernetes users, packaged and ready for everyone to use freely. 
+In addition to the set of components, it's important to emphasize that the overall K8ssandra project is really a collection of experience from the community of Cassandra + Kubernetes users, packaged and ready for everyone to use freely. 
 
 ### How do I get started and install a `K8ssandraCluster` using K8ssandra Operator?
 
@@ -141,7 +141,7 @@ For more, see the [backup/restore](https://docs-staging-v2.k8ssandra.io/tasks/ba
 
 ### How can I access Kubernetes resources from outside the environment?
 
-K8ssandra provides [preconfigured]({{< relref "/tasks/connect/ingress/" >}}) Ingress integrations, such as Traefik, which is a modern reverse proxy and load balancer that makes deploying microservices easy. Traefik integrates with your existing infrastructure components and configures itself automatically and dynamically. Traefik handles advanced ingress deployments including mTLS of TCP with SNI and UDP. Operators define rules for routing traffic to downstream systems through Kubernetes Ingress objects or more specific Custom Resource Definitions. K8ssandra supports deploying `IngressRoute objects` as part of a deployment to expose metrics, repair, and Cassandra interfaces. For more, see the [Connect](https://docs-staging-v2.k8ssandra.io/tasks/connect/) topic in the K8ssandra Operator docs. 
+K8ssandra provides preconfigured Ingress integrations, such as Traefik, which is a modern reverse proxy and load balancer that makes deploying microservices easy. Traefik integrates with your existing infrastructure components and configures itself automatically and dynamically. Traefik handles advanced ingress deployments including mTLS of TCP with SNI and UDP. Operators define rules for routing traffic to downstream systems through Kubernetes Ingress objects or more specific Custom Resource Definitions. K8ssandra supports deploying `IngressRoute objects` as part of a deployment to expose metrics, repair, and Cassandra interfaces. For more, see the [Connect](https://docs-staging-v2.k8ssandra.io/tasks/connect/) topic in the K8ssandra Operator docs. 
 
 ### How can I monitor the health of my Kubernetes + Cassandra cluster?
 
@@ -166,9 +166,7 @@ Backup and restore Cassandra data to/from a supported storage object, such as an
 
 ### How do I schedule and orchestrate repairs of my Cassandra data?
 
-Periodically run anti-entropy operations to repair your Cassandra data. A general recommendation is once every 7-10 days. With the Reaper UI, you can schedule repairs, run repairs, and check the cluster's health. See [Reaper for Apache Cassandra repairs]({{< relref "/tasks/repair" >}}).
-
-For command-line and UI details, see the [tasks](https://docs-staging-v2.k8ssandra.io/tasks/) topics.
+Periodically run anti-entropy operations to repair your Cassandra data. A general recommendation is once every 7-10 days. With the Reaper UI, you can schedule repairs, run repairs, and check the cluster's health. For command-line and UI details, see the [tasks](https://docs-staging-v2.k8ssandra.io/tasks/) topics.
 
 ### How can I contribute to the K8ssandra Operator docs?
 

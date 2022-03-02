@@ -2,12 +2,12 @@
 title: "Metrics Collector"
 linkTitle: "Metrics Collector"
 weight: 5
-description: Metrics Collector for Apache Cassandra&reg; provides K8ssandra monitoring capabilities with Prometheus and Grafana.
+description: Metrics Collector for Apache Cassandra&reg; provides K8ssandra Operator monitoring capabilities.
 ---
 
 ## Introduction
 
-When running applications in Kubernetes, observability is key. K8ssandra includes [Prometheus](http://prometheus.io) and [Grafana](http://grafana.com) for storage and visualization of metrics associated with the Cassandra cluster.
+When running applications in Kubernetes, observability is key. You can integrate [Prometheus](http://prometheus.io) and [Grafana](http://grafana.com) for storage and visualization of metrics associated with the Cassandra cluster.
 
 ![Monitoring Overview](monitoring-overview.png)
 
@@ -94,6 +94,6 @@ Ingress or port forwarding can be used to expose access to the Prometheus and Gr
 
 ## Next steps
 
-* For details about viewing the metrics in Grafana dashboards provided by K8ssandra, see [Monitor Cassandra]({{< relref "/tasks/monitor/" >}}).
-* See the topics covering other [components]({{< relref "/components/" >}}) deployed by K8ssandra. 
-* For information on using other deployed components, see the [Tasks]({{< relref "/tasks/" >}}) topics.
+* For details about viewing the metrics in Grafana dashboards provided by K8ssandra v1.4.x, see [Monitor Cassandra](https://docs-v1.k8ssandra.io/tasks/monitor/).
+* Additional v1.4.x [components](https://docs-staging-v1.k8ssandra.io/components/)
+* [Tasks in v1.4.x](https://docs-staging-v1.k8ssandra.io/tasks)

@@ -1,15 +1,15 @@
 ---
-title: "K8ssandra release notes"
+title: "K8ssandra project release notes"
 linkTitle: "Release notes"
 weight: 2
-description: Release notes for the open-source K8ssandra community project.
+description: "Release notes for the open-source K8ssandra project."
 ---
 
 K8ssandra provides a production-ready platform for running Apache Cassandra&reg; on Kubernetes. This includes automation for operational tasks such as repairs, backup and restores, and monitoring. Also deployed is Stargate, an open source data gateway that lets you interact programmatically with your Kubernetes-hosted Cassandra resources via a well-defined API. 
 
-**Latest release:** K8ssandra 1.4.0
+**Latest release:** K8ssandra 1.4.1
 
-Release date: 19-November-2021
+Release date: 02-December-2021
 
 {{% alert title="Note" color="success" %}}
 **K8ssandra 1.4.0** implements a number of changes, enhancements, and bug fixes. This topic summarizes the key revisions in 1.4.0 and prior 1.x releases, provides links to the associated issues in our GitHub repo, and contains important upgrade considerations.
@@ -180,12 +180,12 @@ Also see: Add validation check for Cassandra heap size properties, [#701](https:
 ### Doc updates
 
 * See the new topics that cover:
-  *  [Backup and restore with Azure Storage]({{< relref "tasks/backup-restore/azure/" >}})
-  *  [Private registries]({{< relref "tasks/manage/private-registries/" >}})
-* [The topics that walk through installing K8ssandra]({{< relref "install" >}}) on AKS, EKS, and GKE include settings and guidelines from the [performance benchmark blog](https://k8ssandra.io/blog/articles/k8ssandra-performance-benchmarks-on-cloud-managed-kubernetes/), which compares throughput and latency between:
+  *  Backup and restore with Azure Storage
+  *  Private registries
+* The topics that walk through installing K8ssandra on AKS, EKS, and GKE include settings and guidelines from the [performance benchmark blog](https://k8ssandra.io/blog/articles/k8ssandra-performance-benchmarks-on-cloud-managed-kubernetes/), which compares throughput and latency between:
   * The baseline performance of a Cassandra cluster running on AWS EC2 instances -- a common setup for enterprises operating Cassandra clusters
   * The performance of K8ssandra running on AKS, EKS, GKE
-* [The reference topics]({{< relref "reference/helm-charts" >}}) for the K8ssandra deployed Helm charts have been updated with the latest descriptions.
+* The reference topics for the K8ssandra deployed Helm charts have been updated with the latest descriptions.
 
 ## K8ssandra 1.2.0 revisions
 
@@ -218,7 +218,7 @@ In Kubernetes, **node affinity** is a property of Pods that attracts them to a s
 
 ### Doc updates
 
-* [Reference topics]({{< relref "reference/helm-charts" >}}) for the K8ssandra deployed Helm charts have been updated with the latest descriptions.
+* Reference topics for the K8ssandra deployed Helm charts have been updated with the latest descriptions.
 
 
 ## K8ssandra 1.1.0 revisions
@@ -229,7 +229,7 @@ Each of the following sections present a **subset** of key developments in K8ssa
 
 * Shut down cluster by default with in-place restores of Medusa backups [#611](https://github.com/k8ssandra/k8ssandra/issues/611). 
   {{% alert title="Important!" color="warning" %}} 
-  The new default behavior for in-place restores, which now shut down the whole cluster by default, will require Stargate nodes to be restarted after the Cassandra cluster is back online. See the [Upgrade notice]({{< relref "#upgrade-notice" >}}) above.
+  The new default behavior for in-place restores, which now shut down the whole cluster by default, will require Stargate nodes to be restarted after the Cassandra cluster is back online. See the Upgrade notice above.
   {{% /alert %}} 
 * Update Management API image locations [#637](https://github.com/k8ssandra/k8ssandra/issues/533).
 
@@ -245,9 +245,9 @@ Each of the following sections present a **subset** of key developments in K8ssa
 
 ### Doc updates
 
-* S3-compliant MinIO buckets for Medusa backup and restore operations, and related edits for the separate Amazon S3 topic [#556](https://github.com/k8ssandra/k8ssandra/issues/556). For the updates, start in [Backup and restore Cassandra data]({{< relref "backup-restore" >}}).
-* Migrating existing Cassandra to K8ssandra [#377](https://github.com/k8ssandra/k8ssandra/issues/377). See [Migrating a Cassandra cluster to K8ssandra]({{< relref "migrate" >}}).
-* Underlying considerations for scaling nodes up/down [#501](https://github.com/k8ssandra/k8ssandra/issues/501). See [Scale your Cassandra cluster in K8ssandra]({{< relref "scale" >}}).
+* S3-compliant MinIO buckets for Medusa backup and restore operations, and related edits for the separate Amazon S3 topic [#556](https://github.com/k8ssandra/k8ssandra/issues/556). For the updates, start in "Backup and restore Cassandra data.""
+* Migrating existing Cassandra to K8ssandra [#377](https://github.com/k8ssandra/k8ssandra/issues/377). See "Migrating a Cassandra cluster to K8ssandra.""
+* Underlying considerations for scaling nodes up/down [#501](https://github.com/k8ssandra/k8ssandra/issues/501). See "Scale your Cassandra cluster in K8ssandra."
 
 ## Contributions
 ​
@@ -258,11 +258,3 @@ To submit documentation comments or edits, see [Contribution guidelines]({{< rel
 ## Next steps
 
 Read the K8ssandra [FAQs]({{< relref "faqs" >}}) - for starters, how to pronounce "K8ssandra." 
-
-If you're impatient, jump right in with the K8ssandra [install]({{< relref "install" >}}) steps for these platforms:
-
-* [Local]({{< relref "install/local" >}})
-* Amazon Elastic Kubernetes Service ([EKS]({{< relref "install/eks" >}}))
-* DigitalOcean Kubernetes ([DOKS]({{< relref "install/doks" >}}))
-* Google Kubernetes Engine ([GKE]({{< relref "install/gke" >}}))
-* Microsoft Azure Kubernetes Service ([AKS]({{< relref "install/aks" >}}))

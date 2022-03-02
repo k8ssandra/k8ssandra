@@ -19,11 +19,9 @@ K8ssandra Operator consists of two primary components:
 * A control plane
 * A data plane
 
-The control plane creates and manages objects that exist only in the API server. The control plane does not deploy or manage pods. Note that the control plane can be installed in only one cluster; that is, in the control plane cluster.
+The control plane creates and manages objects that exist only in the API server. Note that the control plane can be installed in only one cluster; that is, in the control plane cluster.
 
-The data plane can be installed on any number of clusters. The control plane cluster can also function as the data plane.
-
-The data plane deploys and manages pods. Moreover, the data plane may interact directly with the managed applications. For example, the operator may call the `management-api` to create keyspaces in Cassandra.
+The data plane deploys and manages pods, and can be installed on any number of clusters. Moreover, the data plane may interact directly with the managed applications. For example, the operator may call the `management-api` to create keyspaces in Cassandra.
 
 In each cluster, the deployed and managed pods can include [Stargate]({{< relref "/components/stargate/" >}}) and [cass-operator]({{< relref "/components/cass-operator/" >}}).   
 

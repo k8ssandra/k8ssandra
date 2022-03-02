@@ -1,8 +1,7 @@
 ---
 title: "K8ssandra glossary"
 linkTitle: "Glossary"
-toc_hide: true
-weight: 2
+weight: 7
 description: Helpful definitions of common Kubernetes terms along with the K8ssandra or Apache Cassandra context.
 ---
 

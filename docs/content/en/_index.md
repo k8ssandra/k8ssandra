@@ -34,7 +34,7 @@ We've organized this docs site into three areas:
 * [docs-v1.k8ssandra.io](https://docs-staging-v1.k8ssandra.io) provides topics that are specific to K8ssandra 1.4.x users (the initial project releases).
 * [docs-v2.k8ssandra.io](https://docs-staging-v2.k8ssandra.io) provides topics that are specific to the more recent (and recommended) K8ssandra Operator software, including single- or **multi-cluster** installs.
 
-**Tip**: From each page's top banner, use the **Versions** drop-down menu to navigate back to the Common, v1, or v2 documentation Home.
+**Tip:** From each page's top banner, use the **Versions** menu to navigate to the Common, v1, or v2 documentation Home.
 
 ![Documentation Versions menu](k8ssandra-doc-versions.png)
 
