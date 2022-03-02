@@ -95,5 +95,5 @@ Ingress or port forwarding can be used to expose access to the Prometheus and Gr
 ## Next steps
 
 * For details about viewing the metrics in Grafana dashboards provided by K8ssandra v1.4.x, see [Monitor Cassandra](https://docs-v1.k8ssandra.io/tasks/monitor/).
-* Additional v1.4.x [components](https://docs-staging-v1.k8ssandra.io/components/)
-* [Tasks in v1.4.x](https://docs-staging-v1.k8ssandra.io/tasks)
+* Additional v1.4.x [components](https://docs-v1.k8ssandra.io/components/)
+* [Tasks in v1.4.x](https://docs-v1.k8ssandra.io/tasks)

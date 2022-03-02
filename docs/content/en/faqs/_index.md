@@ -47,13 +47,13 @@ In addition to the set of components, it's important to emphasize that the overa
 
 ### How do I get started and install a `K8ssandraCluster` using K8ssandra Operator?
 
-Start with the steps for a [local dev install](https://docs-staging-v2.k8ssandra.io/install/local/). Related install topics cover single- and multi-cluster, multi-region configurations. 
+Start with the steps for a [local dev install](https://docs-v2.k8ssandra.io/install/local/). Related install topics cover single- and multi-cluster, multi-region configurations. 
 
-Then proceed to the post-installation quickstart steps for [developers](https://docs-staging-v2.k8ssandra.io/quickstarts/developer/) or [Site Reliability Engineers (SREs)](https://docs-staging-v2.k8ssandra.io/quickstarts/site-reliability-engineer/).
+Then proceed to the post-installation quickstart steps for [developers](https://docs-v2.k8ssandra.io/quickstarts/developer/) or [Site Reliability Engineers (SREs)](https://docs-v2.k8ssandra.io/quickstarts/site-reliability-engineer/).
 
 ### How do I get started and install K8ssandra 1.4.x?
 
-For single-cluster, single-region only environments, start in the [install](https://docs-staging-v1.k8ssandra.io/install/) topics.
+For single-cluster, single-region only environments, start in the [install](https://docs-v1.k8ssandra.io/install/) topics.
 
 ### When I install using K8ssandra or K8ssandra Operator, I see some warning messages. Is that a problem?
 
@@ -67,7 +67,7 @@ For more information, see issue [#267](https://github.com/k8ssandra/k8ssandra/is
 
 ### Does K8ssandra Opertor have to be installed in a particular namespace?
 
-You can install a `K8ssandraCluster` using K8ssandra Operator as namespace-scoped or cluste-scoped. The default is namespace-scoped. For details, start in the [local install](https://docs-staging-v2.k8ssandra.io/install/local/) topic. Examples:
+You can install a `K8ssandraCluster` using K8ssandra Operator as namespace-scoped or cluste-scoped. The default is namespace-scoped. For details, start in the [local install](https://docs-v2.k8ssandra.io/install/local/) topic. Examples:
 
 Namespace-scoped:
 
@@ -131,42 +131,42 @@ Kubernetes Operator for Apache Cassandra, also known as Cass Operator or cass-op
 
 Reaper for Apache Cassandra is a tool that helps manage the critical maintenance task of anti-entropy **repairs** in a Cassandra cluster. Originally created by Spotify, later adopted and maintained by The Last Pickle, and one of the features installed by K8ssandra. If you were to sit a group of Cassandra DBAs down to talk about what they do, chances are they would talk a lot about running repairs. It’s an important operation because it keeps data consistent despite inevitable issues that happen like node failures and network partitions. In K8ssandra, Reaper runs it for you automatically! And because this is built for SREs, you can expect a good set of pre-built metrics to verify everything is working great. 
 
-For more, see the [Reaper repair](https://docs-staging-v2.k8ssandra.io/tasks/repair/) topic in the K8ssandra Operator docs.
+For more, see the [Reaper repair](https://docs-v2.k8ssandra.io/tasks/repair/) topic in the K8ssandra Operator docs.
 
 ### What is Medusa for Apache Cassandra?
 
 Medusa for Apache Cassandra provides backup/restore functionality for Cassandra data. This project also originated at Spotify. Medusa not only helps coordinate backup &amp; restore tasks, it manages the placement of the data at rest. The initial implementation allows backup sets to be stored and retrieved on cloud object storage (such as AWS S3 buckets) with more options on the way. 
 
-For more, see the [backup/restore](https://docs-staging-v2.k8ssandra.io/tasks/backup-restore/) topic in the K8ssandra Operator docs.
+For more, see the [backup/restore](https://docs-v2.k8ssandra.io/tasks/backup-restore/) topic in the K8ssandra Operator docs.
 
 ### How can I access Kubernetes resources from outside the environment?
 
-K8ssandra provides preconfigured Ingress integrations, such as Traefik, which is a modern reverse proxy and load balancer that makes deploying microservices easy. Traefik integrates with your existing infrastructure components and configures itself automatically and dynamically. Traefik handles advanced ingress deployments including mTLS of TCP with SNI and UDP. Operators define rules for routing traffic to downstream systems through Kubernetes Ingress objects or more specific Custom Resource Definitions. K8ssandra supports deploying `IngressRoute objects` as part of a deployment to expose metrics, repair, and Cassandra interfaces. For more, see the [Connect](https://docs-staging-v2.k8ssandra.io/tasks/connect/) topic in the K8ssandra Operator docs. 
+K8ssandra provides preconfigured Ingress integrations, such as Traefik, which is a modern reverse proxy and load balancer that makes deploying microservices easy. Traefik integrates with your existing infrastructure components and configures itself automatically and dynamically. Traefik handles advanced ingress deployments including mTLS of TCP with SNI and UDP. Operators define rules for routing traffic to downstream systems through Kubernetes Ingress objects or more specific Custom Resource Definitions. K8ssandra supports deploying `IngressRoute objects` as part of a deployment to expose metrics, repair, and Cassandra interfaces. For more, see the [Connect](https://docs-v2.k8ssandra.io/tasks/connect/) topic in the K8ssandra Operator docs. 
 
 ### How can I monitor the health of my Kubernetes + Cassandra cluster?
 
 You can configure Traefik to expose the K8ssandra monitoring interfaces, or use port-forwarding. See:
 
-* [Monitoring with Traefik](https://docs-staging-v2.k8ssandra.io/tasks/connect/ingress/monitoring/)
-* [Configure port-forwarding](https://docs-staging-v1.k8ssandra.io/quickstarts/site-reliability-engineer/#port-forwarding)
+* [Monitoring with Traefik](https://docs-v2.k8ssandra.io/tasks/connect/ingress/monitoring/)
+* [Configure port-forwarding](https://docs-v1.k8ssandra.io/quickstarts/site-reliability-engineer/#port-forwarding)
 
 After completing the prerequisites, for example in your local environment, you can open <http://grafana.localhost:8080>. 
 
 ### What is the login for the Grafana dashboards?
 
-The default configured Grafana username is `admin`, and the password is `secret`. See the topic about managing [Grafana credentials](https://docs-staging-v2.k8ssandra.io/tasks/monitor#grafana-credentials).
+The default configured Grafana username is `admin`, and the password is `secret`. See the topic about managing [Grafana credentials](https://docs-v2.k8ssandra.io/tasks/monitor#grafana-credentials).
 
 ### What kind of provisioning tasks can I perform with K8ssandra?
 
-Among the tasks are to dynamically scale up or down the size of your cluster. See the [scaling task](https://docs-staging-v2.k8ssandra.io/tasks/scale/").
+Among the tasks are to dynamically scale up or down the size of your cluster. See the [scaling task](https://docs-v2.k8ssandra.io/tasks/scale/").
 
 ### How can I backup and restore my Cassandra data?
 
-Backup and restore Cassandra data to/from a supported storage object, such as an Amazon S3 bucket or Google Cloud Storage. See [Backup and restore Cassandra](https://docs-staging-v2.k8ssandra.io/tasks/backup-restore/).
+Backup and restore Cassandra data to/from a supported storage object, such as an Amazon S3 bucket or Google Cloud Storage. See [Backup and restore Cassandra](https://docs-v2.k8ssandra.io/tasks/backup-restore/).
 
 ### How do I schedule and orchestrate repairs of my Cassandra data?
 
-Periodically run anti-entropy operations to repair your Cassandra data. A general recommendation is once every 7-10 days. With the Reaper UI, you can schedule repairs, run repairs, and check the cluster's health. For command-line and UI details, see the [tasks](https://docs-staging-v2.k8ssandra.io/tasks/) topics.
+Periodically run anti-entropy operations to repair your Cassandra data. A general recommendation is once every 7-10 days. With the Reaper UI, you can schedule repairs, run repairs, and check the cluster's health. For command-line and UI details, see the [tasks](https://docs-v2.k8ssandra.io/tasks/) topics.
 
 ### How can I contribute to the K8ssandra Operator docs?
 
@@ -174,9 +174,9 @@ See the code and documentation [Contributing guidelines]({{< relref "contribute"
 
 ## Next steps
 
-* [Install](https://docs-staging-v2.k8ssandra.io/install/local/): Learn how to deploy a `K8ssandraCluster` custom resource, using K8ssansdra Operator, in your local dev Kubernetes. 
-* [Components](https://docs-staging-v2.k8ssandra.io/components/): Dig in to each deployed component of the K8ssandra stack and see how it communicates with the others.
-* [Tasks](https://docs-staging-v2.k8ssandra.io/tasks/): Need to get something done? Check out the Tasks topics for a helpful collection of outcome-based solutions.
-* [Reference](https://docs-staging-v2.k8ssandra.io/reference/): Explore the K8ssandra Operator reference topics on the provided Cassandra Custom Resource Definitions (CRDs).
+* [Install](https://docs-v2.k8ssandra.io/install/local/): Learn how to deploy a `K8ssandraCluster` custom resource, using K8ssansdra Operator, in your local dev Kubernetes. 
+* [Components](https://docs-v2.k8ssandra.io/components/): Dig in to each deployed component of the K8ssandra stack and see how it communicates with the others.
+* [Tasks](https://docs-v2.k8ssandra.io/tasks/): Need to get something done? Check out the Tasks topics for a helpful collection of outcome-based solutions.
+* [Reference](https://docs-v2.k8ssandra.io/reference/): Explore the K8ssandra Operator reference topics on the provided Cassandra Custom Resource Definitions (CRDs).
 
 We encourage you to actively participate in the [K8ssandra community](https://k8ssandra.io/community/).

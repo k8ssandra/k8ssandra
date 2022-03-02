@@ -7,7 +7,7 @@ description: K8ssandra deploys Medusa to support backup and restore of Apache Ca
 
 Medusa for Apache Cassandra&reg; is deployed by K8ssandra Operator as part of its K8ssandraCluster install. 
 
-If you haven't already installed K8ssandra Operator, see the [install](https://docs-staging-v2.k8ssandra.io/install) topics.
+If you haven't already installed K8ssandra Operator, see the [install](https://docs-v2.k8ssandra.io/install) topics.
 
 ## Introduction
 
@@ -35,10 +35,10 @@ K8ssandra Operator's Medusa supports:
 
 ## Next steps
 
-* [Backup and restore Cassandra data](https://docs-staging-v2.k8ssandra.io/tasks/backup-restore/)
+* [Backup and restore Cassandra data](https://docs-v2.k8ssandra.io/tasks/backup-restore/)
 * Reference topics:
   * [Medusa Custom Resource Definition (CRD)](https://docs-v2.k8ssandra.io/reference/crd/medusa/)
   * [CassandraBackup CRD](https://docs-v2.k8ssandra.io/reference/crd/cassandrabackup/)
   * [CassansdraRestore CRD](https://docs-v2.k8ssandra.io/reference/crd/cassandrarestore/)
-* Additional [components](https://docs-staging-v2.k8ssandra.io/components/)
-* [Tasks](https://docs-staging-v2.k8ssandra.io/tasks)
+* Additional [components](https://docs-v2.k8ssandra.io/components/)
+* [Tasks](https://docs-v2.k8ssandra.io/tasks)
