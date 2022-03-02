@@ -7,8 +7,8 @@ description: K8ssandra deploys Reaper to enable anti-entropy repair operations o
 
 Reaper for Apache Cassandra&reg; is deployed by K8ssandra. If you haven't already installed K8ssandra or a `K8ssasdraCluster` custom resource using K8ssandra Operator, see:
 
-* [docs-v1.k8ssandra.io](https://docs-staging-v1.k8ssandra.io/install/) provides install topics that are specific to K8ssandra 1.4.x users (the initial project releases).
-* [docs-v2.k8ssandra.io](https://docs-staging-v2.k8ssandra.io/install/) provides local install topics that are specific to the more recent (and recommended) K8ssandra Operator software, including single- or multi-cluster installs.
+* [docs-v1.k8ssandra.io](https://docs-v1.k8ssandra.io/install/) provides install topics that are specific to K8ssandra 1.4.x users (the initial project releases).
+* [docs-v2.k8ssandra.io](https://docs-v2.k8ssandra.io/install/) provides local install topics that are specific to the more recent (and recommended) K8ssandra Operator software, including single- or multi-cluster installs.
 
 ## Introduction
 
@@ -127,8 +127,8 @@ These changes also introduced a long awaited feature by allowing fully concurren
 
 ## Next steps
 
-* [Repair Cassandra with Reaper](https://docs-staging-v2.k8ssandra.io/tasks)
-* [Cassandra security](https://docs-staging-v2.k8ssandra.io/tasks/secure/#cassandra-security" >}})
-* [Reaper Custom Resource Definition (CRD)](https://docs-staging-v2.k8ssandra.io/reference/crd/reaper/) reference
-* Additional [components](https://docs-staging-v2.k8ssandra.io/components/)
-* [Tasks](https://docs-staging-v2.k8ssandra.io/tasks/)
+* [Repair Cassandra with Reaper](https://docs-v2.k8ssandra.io/tasks)
+* [Cassandra security](https://docs-v2.k8ssandra.io/tasks/secure/#cassandra-security" >}})
+* [Reaper Custom Resource Definition (CRD)](https://docs-v2.k8ssandra.io/reference/crd/reaper/) reference
+* Additional [components](https://docs-v2.k8ssandra.io/components/)
+* [Tasks](https://docs-v2.k8ssandra.io/tasks/)

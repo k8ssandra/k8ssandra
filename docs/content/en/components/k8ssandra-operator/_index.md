@@ -7,7 +7,7 @@ description: An introduction to K8ssandra Operator, our newest implementation.
 
 K8ssandra Operator provides multi-cluster and multi-region support for Apache Cassandra&reg; databases deployed in Kubernetes environments. K8ssandra operator also works in single-cluster and single-region Kubernetes deployments.
 
-You can [install](https://docs-staging-v2.k8ssandra.io/install/local/) K8ssandra Operator in:
+You can [install](https://docs-v2.k8ssandra.io/install/local/) K8ssandra Operator in:
 
 * A local Kubernetes 1.19+ environment, such as kind, K3D, or minikube
 * A supported cloud provider's Kubernetes environment
@@ -97,7 +97,7 @@ What happens when you deploy a `K8ssandraCluster`?
 
 Before deploying a `K8ssandraCluster`, there are a few other requirements, including the installation of the necessary operators as well as establishing network connectivity between the clusters. It's important to note that there must be routable network connectivity among the pods in each cluster. The good news is that the virtual networking configurations available within cloud services, such as Google Kubernetes Engine (GKE), make this easy to do.
 
-There are a few different ways to accomplish the prerequisite steps, using Helm or Kustomize. You can learn more about the installation process in our K8ssandra Operator [local install](https://docs-staging-v2.k8ssandra.io/install/local/) topic and its related topics.
+There are a few different ways to accomplish the prerequisite steps, using Helm or Kustomize. You can learn more about the installation process in our K8ssandra Operator [local install](https://docs-v2.k8ssandra.io/install/local/) topic and its related topics.
 
 This next diagram gives you a quick glimpse at a simple deployment, **before** the installation of the `K8ssandraCluster`:
 
@@ -132,6 +132,6 @@ In addition to coordinating the distribution of resources to remote clusters and
 
 ## Next steps
 
-* Learn how to [install](https://docs-staging-v2.k8ssandra.io/install/local/) a `K8ssandraCluster` custom resource, using K8ssandra Operator, in a local single- or multi-cluster Kubernetes.
-* Also see the topics covering other [components](https://docs-staging-v2.k8ssandra.io/components/) deployed by K8ssandra Operator. 
-* For information on using the deployed K8ssandra components, see the [Tasks](https://docs-staging-v2.k8ssandra.io/tasks/) topics.
+* Learn how to [install](https://docs-v2.k8ssandra.io/install/local/) a `K8ssandraCluster` custom resource, using K8ssandra Operator, in a local single- or multi-cluster Kubernetes.
+* Also see the topics covering other [components](https://docs-v2.k8ssandra.io/components/) deployed by K8ssandra Operator. 
+* For information on using the deployed K8ssandra components, see the [Tasks](https://docs-v2.k8ssandra.io/tasks/) topics.

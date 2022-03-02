@@ -11,6 +11,6 @@ description: >
 
 ## Available topics
 
-* For details about the initial K8ssandra (1.4.x) implementation, see this [Azure AKS](https://docs-staging-v1.k8ssandra.io/install/aks) install topic.
+* For details about the initial K8ssandra (1.4.x) implementation, see this [Azure AKS](https://docs-v1.k8ssandra.io/install/aks) install topic.
 
-* For details about the new K8ssandra Operator, see this [local install](https://docs-staging-v2.k8ssandra.io/install/local/) topic. It showcases the K8ssandra Operator support for single- and multi-cluster environments. Examples use local **kind** Kubernetes along with helper scripts invoked by `make` commands, as well as `helm` and `kustomize` options. Topics covering installs that use K8ssandra Operator for Google GKE, Amazon EKS, and Azure AKS may be added at a later time. 
+* For details about the new K8ssandra Operator, see this [local install](https://docs-v2.k8ssandra.io/install/local/) topic. It showcases the K8ssandra Operator support for single- and multi-cluster environments. Examples use local **kind** Kubernetes along with helper scripts invoked by `make` commands, as well as `helm` and `kustomize` options. Topics covering installs that use K8ssandra Operator for Google GKE, Amazon EKS, and Azure AKS may be added at a later time. 

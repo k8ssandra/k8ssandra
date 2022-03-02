@@ -30,9 +30,9 @@ And while the initial K8ssandra project features (currently, v1.4.1) are still a
 
 We've organized this docs site into three areas:
 
-* [docs.k8ssandra.io](https://docs-staging.k8ssandra.io) provides topics that are of common interest to users of K8ssandra Operator and K8ssandra, such as FAQs, Release Notes, Components, and a Glossary.
-* [docs-v1.k8ssandra.io](https://docs-staging-v1.k8ssandra.io) provides topics that are specific to K8ssandra 1.4.x users (the initial project releases).
-* [docs-v2.k8ssandra.io](https://docs-staging-v2.k8ssandra.io) provides topics that are specific to the more recent (and recommended) K8ssandra Operator software, including single- or **multi-cluster** installs.
+* [docs.k8ssandra.io](https://docs.k8ssandra.io) provides topics that are of common interest to users of K8ssandra Operator and K8ssandra, such as FAQs, Release Notes, Components, and a Glossary.
+* [docs-v1.k8ssandra.io](https://docs-v1.k8ssandra.io) provides topics that are specific to K8ssandra 1.4.x users (the initial project releases).
+* [docs-v2.k8ssandra.io](https://docs-v2.k8ssandra.io) provides topics that are specific to the more recent (and recommended) K8ssandra Operator software, including single- or **multi-cluster** installs.
 
 **Tip:** From each page's top banner, use the **Versions** menu to navigate to the Common, v1, or v2 documentation Home.
 
@@ -58,8 +58,8 @@ K8ssandra Operator is a great fit for developers and Site Reliability Engineers 
 
 ## Next steps
 
-* If you want to deploy K8ssandra Operator and explore single- and multi-cluster deployment examples, start in its local dev (kind) install topic on the [docs-v2](https://docs-staging-v2.k8ssandra.io/install/local/) area of our site.
-* If you prefer to continue using K8ssandra v1.4.x (the initial project implementation), head over to the [docs-v1](https://docs-staging-v1.k8ssandra.io) area of this site.
+* If you want to deploy K8ssandra Operator and explore single- and multi-cluster deployment examples, start in its local dev (kind) install topic on the [docs-v2](https://docs-v2.k8ssandra.io/install/local/) area of our site.
+* If you prefer to continue using K8ssandra v1.4.x (the initial project implementation), head over to the [docs-v1](https://docs-v1.k8ssandra.io) area of this site.
 * [FAQs]({{< relref "faqs" >}}): If you're new to K8ssandra and K8ssandra Operator, these FAQs are for you. 
 * [Release Notes]({{< relref "release-notes" >}}): For each release, this topic details the enhancements, bugs fixes, and other changes.
 

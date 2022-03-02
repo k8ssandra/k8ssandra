@@ -14,9 +14,9 @@ The open-source K8ssandra project provides a production-ready platform for runni
 
 ## New &amp; noteworthy
 
-**K8ssandra Operator** is our latest implementation. It provides a cloud-native distribution of Cassandra that runs on Kubernetes. Significantly, K8ssandra Operator provides a new `K8ssandraCluster` custom resource that enables support for single- or **multi-cluster, multi-region** deployments of Cassandra and related services. It's all part of the overall K8ssandra project, but you'll need to deploy with K8ssandra Operator to use the latest multi-cluster/region features. For details, start in the K8ssandra Operator [install topics](https://docs-staging-v2.k8ssandra.io/install/). You'll find there topics for single- and multi-cluster instructions that use Helm or Kustomize tools.
+**K8ssandra Operator** is our latest implementation. It provides a cloud-native distribution of Cassandra that runs on Kubernetes. Significantly, K8ssandra Operator provides a new `K8ssandraCluster` custom resource that enables support for single- or **multi-cluster, multi-region** deployments of Cassandra and related services. It's all part of the overall K8ssandra project, but you'll need to deploy with K8ssandra Operator to use the latest multi-cluster/region features. For details, start in the K8ssandra Operator [install topics](https://docs-v2.k8ssandra.io/install/). You'll find there topics for single- and multi-cluster instructions that use Helm or Kustomize tools.
 
-For more, see the [K8ssandra Operator architecture](https://docs-staging-v2.k8ssandra.io/components/k8ssandra-operator/architecture/).
+For more, see the [K8ssandra Operator architecture](https://docs-v2.k8ssandra.io/components/k8ssandra-operator/architecture/).
 
 ## GitHub repos
 
@@ -28,7 +28,7 @@ For more, see the [K8ssandra Operator architecture](https://docs-staging-v2.k8ss
 
 * A Kubernetes environment from v1.17 (minimum supported) up to v1.22 (current tested upper bound) - local or via a supported cloud provider
 * [Helm](https://helm.sh/) v3.5.x or later. Recommendation: avoid Helm 3.7.0 due to a known CVE and subsequent regression. See issue [1103](https://github.com/k8ssandra/k8ssandra/issues/1103) in GitHub.
-* Additional prereqs are listed in the K8ssandra Operator [install](https://docs-staging-v2.k8ssandra.io/install/) topic.
+* Additional prereqs are listed in the K8ssandra Operator [install](https://docs-v2.k8ssandra.io/install/) topic.
 
 ## Supported Kubernetes environments
 
