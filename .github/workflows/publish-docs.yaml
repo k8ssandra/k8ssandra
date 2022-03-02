@@ -1,14 +1,14 @@
-name: Publish docs-temp.k8ssandra.io
+name: Publish docs.k8ssandra.io
 
 on:
   push:
     tags:
-      - 'docs-temp-v*.*.*'
-      - 'docs-temp-v*.*.*-*'
+      - 'docs-v*.*.*'
+      - 'docs-v*.*.*-*'
 
 jobs:
   build_and_publish:
-    name: Build and publish docs-temp.k8ssandra.io
+    name: Build and publish docs.k8ssandra.io
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -30,8 +30,8 @@ jobs:
         node-version: 14.x
     - run: npm install
     - run: npm run clean
-    - run: npm run build:production-temp
-    - run: npm run deploy:production-temp
+    - run: npm run build:production
+    - run: npm run deploy:production
     - name: Purge CDN Cache
       env:
         ZONE_ID: ${{ secrets.CF_ZONE_ID }}

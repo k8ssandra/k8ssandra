@@ -1,3 +1,21 @@
 baseURL = "https://docs.k8ssandra.io/"
 url_latest_version = "https://docs.k8ssandra.io"
 github_branch = "docs"
+
+[[params.versions]]
+  version = "Common"
+  fullversion = "Common Information"
+  githubbranch = "docs"
+  url = "https://docs.k8ssandra.io"
+
+[[params.versions]]
+  version = "v1"
+  fullversion = "k8ssandra-v1"
+  githubbranch = "docs-v1"
+  url = "https://docs-v1.k8ssandra.io"
+
+[[params.versions]]
+  version = "v2"
+  fullversion = "k8ssandra-operator-v1"
+  githubbranch = "docs-v2"
+  url = "https://docs-v2.k8ssandra.io"

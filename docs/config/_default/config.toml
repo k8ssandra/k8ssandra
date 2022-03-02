@@ -219,10 +219,6 @@ URL = "gs://docs-staging.k8ssandra.io"
 name = "production"
 URL = "gs://docs.k8ssandra.io"
 
-[[deployment.targets]]
-name = "production-temp"
-URL = "gs://docs-temp.k8ssandra.io"
-
 # Optionally, you can include or exclude specific files.
 # See https://godoc.org/github.com/gobwas/glob#Glob for the glob pattern syntax.
 # If non-empty, the pattern is matched against the local path.
