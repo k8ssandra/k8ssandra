@@ -35,10 +35,6 @@ spec:
     ...
     ...
   medusa:
-    containerImage:
-      registry: docker.io
-      repository: k8ssandra
-      tag: 0.11.3
     storageProperties:
       # Can be either of local, google_storage, azure_blobs, s3, s3_compatible, s3_rgw or ibm_storage 
       storageProvider: s3_compatible
