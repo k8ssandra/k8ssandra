@@ -192,6 +192,5 @@ This means for example that `my-k8ssandra-dc1-default-sts-3` will be deleted bef
 
 ## Next steps
 
-Explore other K8ssandra [tasks]({{< relref "/tasks" >}}).
-
-See the [Reference]({{< relref "/reference" >}}) topics for information about K8ssandra Helm charts, and a glossary. 
+* Explore other K8ssandra Operator [tasks]({{< relref "/tasks" >}}).
+* See the [Reference]({{< relref "/reference" >}}) topics for information about K8ssandra Operator Custom Resource Definitions (CRDs) and the single K8ssandra Operator Helm chart. 

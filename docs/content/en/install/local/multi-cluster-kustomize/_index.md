@@ -1,6 +1,6 @@
 ---
-title: "Quickstart multi-cluster via Kustomize"
-linkTitle: "Multi-cluster via Kustomize"
+title: "Multi-cluster install with kustomize"
+linkTitle: "Multi-cluster/kustomize"
 no_list: false
 weight: 4
 description: "Quickstart with Kustomize to install K8ssandraCluster in multi-cluster Kubernetes."

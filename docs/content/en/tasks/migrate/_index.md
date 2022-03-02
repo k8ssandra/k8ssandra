@@ -6,13 +6,9 @@ weight: 1
 description: How to migrate an existing Cassandra cluster that's running in Kubernetes to K8ssandra Operator.
 ---
 
-The strategy to perform this migration to K8ssandra Operator focuses on datacenter migration.
-
 ## Migrating an existing K8ssandra v1 cluster to a K8ssandra Operator cluster
 
-The steps to migrate an existing K8ssandra v1 cluster to a K8ssandra Operator cluster will be provided in an upcoming Blog post. When available, we will link to the blog from here.
-
-Other details in this topic will be updated accordingly.
+**Note:** The steps to migrate an existing K8ssandra v1 cluster to a K8ssandra Operator cluster will be provided in an upcoming Blog post. When available, this topic will link to the blog's URL. Other details in this topic will be updated accordingly.  The strategy to perform this migration to K8ssandra Operator will focus on datacenter migration.
 
 ## The environment
 
@@ -232,6 +228,5 @@ The steps necessary here will vary depending on how you installed and managed th
 
 ## Next steps
 
-Explore other K8ssandra Operator [tasks]({{< relref "/tasks" >}}).
-
-See the [Reference]({{< relref "/reference" >}}) topics for information about the K8ssandra Operator Helm chart, and the Custom Resource Definitions (CRDs).  
+* Explore other K8ssandra Operator [tasks]({{< relref "/tasks" >}}).
+* See the [Reference]({{< relref "/reference" >}}) topics for information about K8ssandra Operator Custom Resource Definitions (CRDs) and the single K8ssandra Operator Helm chart. 

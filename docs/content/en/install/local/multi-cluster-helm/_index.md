@@ -1,6 +1,6 @@
 ---
 title: "Multi-cluster install with helm"
-linkTitle: "Multi-cluster install with helm"
+linkTitle: "Multi-cluster/helm"
 no_list: false
 weight: 2
 description: "Quickstart with a unified helm chart to install K8ssandraCluster in multi-cluster Kubernetes."
