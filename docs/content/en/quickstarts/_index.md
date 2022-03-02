@@ -1,23 +1,21 @@
 ---
 title: "Quickstarts"
 linkTitle: "Quickstarts"
-simple_list: true
+simple_list: false
 weight: 3
-description: Post-install topics customized for K8ssandra users to get started quickly.
+description: "Pointers to v1 or v2 post-install topics."
 ---
 
-Welcome! These quickstart topics are designed to meet the specialized, role-based information needs of developers or Site Reliability Engineers (SREs).
+Welcome! Depending on which version you're using, follow the post-install steps in:
 
-If you haven't already, first follow the steps in the [Install K8ssandra]({{< relref "/install/" >}}) topic that matches your goals. Each install topic provides detailed steps to install K8ssandra:
+* https://docs-staging-v2.k8ssandra.io/quickstarts/developer/ ) is for developers using K8ssandra Operator, our new (and recommended) implementation.
 
-* On your [local]({{< relref "/install/local" >}}) **development** machine that's running Kubernetes.  
+* https://docs-staging-v2.k8ssandra.io/quickstarts/site-reliability-engineer/ is for SREs using K8ssandra Operator.
 
-* Or on a cloud provider such as:
+* https://docs-staging-v1.k8ssandra.io/quickstarts/developer/ is for developers using K8ssandra 1.4.x (the initial project releases).
 
-  * [Google Kubernetes Engine]({{< relref "/install/gke" >}}) (GKE)
-  * Amazon [Elastic Kubernetes Service]({{< relref "/install/eks" >}}) (EKS)
-  * Microsoft [Azure Kubernetes Service]({{< relref "/install/aks" >}}) (AKS)
+* https://docs-staging-v1.k8ssandra.io/quickstarts/site-reliability-engineer/ is for Site Reliability Engineers (SREs) using K8ssandra v1.4.x.
 
-  Each cloud-provider topic provides specific **production** recommendations.
+**Tip:** From each page's top banner, use the **Versions** menu to navigate to the Common, v1, or v2 documentation Home.
 
-Having completed the install steps for your Kubernetes environment, then follow these role-based topics:
+![Documentation Versions menu](/k8ssandra-doc-versions.png)

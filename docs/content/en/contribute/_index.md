@@ -2,7 +2,7 @@
 title: "Contribution guidelines"
 linkTitle: "Contribute"
 weight: 9
-description: How to contribute to the K8ssandra open-source code and documentation.
+description: How to contribute to the open-source code and documentation.
 ---
 
 We welcome contributions from the K8ssandra community! 
@@ -11,7 +11,7 @@ We welcome contributions from the K8ssandra community!
 
 The overall procedure:
 
-1. Start on https://github.com/k8ssandra/k8ssandra.
+1. Start on https://github.com/k8ssandra/k8ssandra-operator.
 2. Fork the repo by clicking the **Fork** button in the GitHub UI.
 3. Make your changes locally on your fork. Git commit and push only to your fork.
 4. Wait for CI to run successfully in GitHub Actions before submitting a PR.
@@ -19,7 +19,7 @@ The overall procedure:
 6. If you're not yet ready for a review, add "WIP" to the PR name to indicate it's a work in progress.  
 7. Wait for the automated PR workflow to do some checks. Members of the K8ssandra community will review your PR and decide whether to approve and merge it.
 
-Also, we encourage you to submit Issues, starting from https://github.com/k8ssandra/k8ssandra/issues. Add a label to help categorize the issue, such as the complexity level, component name, and other labels you'll find in the repo's Issues display. 
+Also, we encourage you to submit Issues, starting from https://github.com/k8ssandra/k8ssandra-operator/issues. Add a label to help categorize the issue, such as the complexity level, component name, and other labels you'll find in the repo's Issues display. 
 
 ## Setting up CI in GitHub Actions
 
@@ -55,9 +55,6 @@ stringData:
     aws_secret_access_key = <your key secret>
 ```
 
-See [Backup and restore with Amazon S3]({{< relref "/tasks/backup-restore/amazon-s3/" >}}) for
-more information.
-
 When testing Medusa on Azure, the GitHub `K8SSANDRA_MEDUSA_SECRET_AZURE` secret _must_ contain a
 valid Kubernetes secret definition similar to the one below:
 
@@ -76,9 +73,6 @@ stringData:
         "key": "<your storage account key>"
     }
 ```
-
-See [Backup and restore with Azure Storage]({{< relref "/tasks/backup-restore/azure/" >}}) for
-more information.
 
 ## Prevent CI from running for a specific commit
 
@@ -100,6 +94,7 @@ Most of the documentation source files are authored in [markdown](https://daring
 Here's a quick guide to updating the docs. It assumes you're familiar with the GitHub workflow and you're happy to use the automated preview of your doc updates:
 
 1. **Fork** the [K8ssandra docs repo](https://github.com/k8ssandra/k8ssandra.git) on GitHub. 
+1. Create your own working branch based on the `docs`, `docs-v1`, or `docs-v2` branch.  The `docs` branch contains topics that are of commmon interest. The `docs-v1` contains the K8ssandra v1.4.x content (the initial K8ssandra project).  The `docs-v2` branch contains the content that is specific to K8ssandra Operator. 
 1. Make your changes and send a pull request (PR).
 1. If you're not yet ready for a review, add "WIP" to the PR name to indicate 
   it's a work in progress. (**Don't** add the Hugo property 
@@ -136,7 +131,12 @@ If you want to run your own local Hugo server to preview your changes as you wor
 
 ### Creating an issue
 
-If you've found a problem in the docs, but you're not sure how to fix it yourself, please create an issue in the [K8ssandra repo](https://github.com/k8ssandra/k8ssandra/issues). You can also create an issue about a specific page by clicking the **Create Issue** button in the top right hand corner of the page.
+If you've found a problem in the docs, but you're not sure how to fix it yourself, please create an issue in:
+
+* The [K8ssandra repo](https://github.com/k8ssandra/k8ssandra/issues)
+* Or in the [K8ssandra Operator repo](https://github.com/k8ssandra/k8ssandra-operator/issues). 
+
+You can also create an issue about a specific page by clicking the **Create Issue** button in the top right hand corner of the page.
 
 ## Next steps
 

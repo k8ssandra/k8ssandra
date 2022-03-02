@@ -33,7 +33,8 @@ Here's how the modules fit together:
 
 * For comprehensive information about Stargate, visit the [stargate.io](https://stargate.io/) site.
 * For details on the API calls, see the Stargate [API reference](https://stargate.io/docs/stargate/1.0/api.html).
-* For an introduction to using Stargate with K8ssandra, see [Develop with Stargate APIs]({{< relref "/tasks/develop/" >}}). 
-* For information about using a superuser and secrets with Stargate authentication, see [Stargate security]({{< relref "/tasks/secure/#stargate-security" >}}).
-* Also see the topics covering other [components]({{< relref "/components/" >}}) deployed by K8ssandra. 
-* For information on using the deployed components, see the [Tasks]({{< relref "/tasks/" >}}) topics.
+* For an introduction to using Stargate with K8ssandra, see [Develop with Stargate APIs](https://docs-v2.k8ssandra.io/tasks/develop/). 
+* Stargate [Custom Resource Definition (CRD)](https://docs-v2.k8ssandra.io/reference/crd/stargate/) reference.
+* For information about using a superuser and secrets with Cassandra authentication, see [Cassandra security](https://docs-staging-v2.k8ssandra.io/tasks/secure/#cassandra-security" >}}).
+* Additional [components](https://docs-staging-v2.k8ssandra.io/components/).
+* [Tasks](https://docs-staging-v2.k8ssandra.io/tasks).

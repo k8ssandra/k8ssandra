@@ -3,8 +3,7 @@ title: "Installs"
 linkTitle: "Installs"
 weight: 3
 no_list: true
-description: >
-  Orientation of install topics for v1 K8ssandra and v2 K8ssandra Operator.
+description: "Pointers to v1 or v2 install topics."
 ---
 
 Welcome! Starting with the introduction of the unified K8ssansdra Operator in March 2022, the install topics are organized as follows:

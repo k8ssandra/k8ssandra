@@ -5,9 +5,10 @@ weight: 3
 description: K8ssandra deploys Reaper to enable anti-entropy repair operations on Apache Cassandra&reg; data.
 ---
 
-Reaper for Apache Cassandra&reg; is deployed by a K8ssandra install, which includes the Reaper Operator [Helm chart]({{< relref "/reference/helm-charts/reaper-operator/" >}}).
+Reaper for Apache Cassandra&reg; is deployed by K8ssandra. If you haven't already installed K8ssandra or a `K8ssasdraCluster` custom resource using K8ssandra Operator, see:
 
-If you haven't already installed K8ssandra, see the [install]({{< relref "/install" >}}) topics.
+* [docs-v1.k8ssandra.io](https://docs-staging-v1.k8ssandra.io/install/) provides install topics that are specific to K8ssandra 1.4.x users (the initial project releases).
+* [docs-v2.k8ssandra.io](https://docs-staging-v2.k8ssandra.io/install/) provides local install topics that are specific to the more recent (and recommended) K8ssandra Operator software, including single- or multi-cluster installs.
 
 ## Introduction
 
@@ -19,7 +20,7 @@ Apache Cassandra works constantly to provide consistent results for queries. The
 
 To that end, K8ssandra leverages [Reaper for Apache Cassandra](http://cassandra-reaper.io/) from The Last Pickle to handle the scheduling, execution, and monitoring of repair tasks. Optionally, ingress may be configured as part of the K8ssandra installation for external connectivity to the Reaper web interface.
 
-Here's an example from the Reaper Web UI. For more, see [Repair tasks]({{< relref "/tasks/repair/" >}}). 
+Here's an example from the Reaper Web UI. 
 
 ![Reaper Web UI - Cluster dialog](reaper-ui.png)
 
@@ -126,8 +127,8 @@ These changes also introduced a long awaited feature by allowing fully concurren
 
 ## Next steps
 
-* For the steps to set up repair operations using the Reaper Web UI, see [Repair Cassandra with Reaper]({{< relref "/tasks/repair/" >}}). 
-* For information about using a superuser and secrets with Reaper authentication, see [Reaper security]({{< relref "/tasks/secure/#reaper-security" >}}).
-* For reference details, see the Reaper Operator [Helm chart]({{< relref "/reference/helm-charts/reaper-operator/" >}}).
-* Also see the topics covering other [components]({{< relref "/components/" >}}) deployed by K8ssandra. 
-* For information on using the deployed components, see the [Tasks]({{< relref "/tasks/" >}}) topics.
+* [Repair Cassandra with Reaper](https://docs-staging-v2.k8ssandra.io/tasks)
+* [Cassandra security](https://docs-staging-v2.k8ssandra.io/tasks/secure/#cassandra-security" >}})
+* [Reaper Custom Resource Definition (CRD)](https://docs-staging-v2.k8ssandra.io/reference/crd/reaper/) reference
+* Additional [components](https://docs-staging-v2.k8ssandra.io/components/)
+* [Tasks](https://docs-staging-v2.k8ssandra.io/tasks/)
