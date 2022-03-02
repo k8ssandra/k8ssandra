@@ -6,7 +6,7 @@ weight: 1
 description: "Details to install K8ssandra on a local Kubernetes **development** environment."
 ---
 
-**Tip:** This topic is specific to K8ssandra 1.4.x. Consider exploring our most recent (and recommended) implementation: **K8ssandra Operator**. It includes a `K8ssandraCluster` custom resource and supports single- and **multi-cluster** Cassandra deployments in Kubernetes, for High Availability (HA) capabilities. See the [K8ssandra Operator documentatation](https://docs-staging-v2.k8ssandra.io/install/local/). 
+**Tip:** This topic is specific to K8ssandra 1.4.x. Consider exploring our most recent (and recommended) implementation: **K8ssandra Operator**. It includes a `K8ssandraCluster` custom resource and supports single- and **multi-cluster** Cassandra deployments in Kubernetes, for High Availability (HA) capabilities. See the [K8ssandra Operator documentatation](https://docs-v2.k8ssandra.io/install/local/). 
 
 This topic gets you up and running with a single-node Apache Cassandra® cluster on Kubernetes (K8s). 
 
