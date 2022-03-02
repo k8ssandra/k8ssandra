@@ -2,6 +2,8 @@
 title: "CassandraBackup CRD"
 linkTitle: "CassandraBackup CRD"
 simple_list: false
+no_list: true
+toc_hide: true
 weight: 6
 description: >
   CassandraBackup Custom Resource Definition (CRD) reference for use with K8ssandra Operator.

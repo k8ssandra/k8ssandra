@@ -1,6 +1,8 @@
 ---
 title: "CassandraConfig CRD"
 linkTitle: "CassandraConfig CRD"
+no_list: true
+toc_hide: true
 simple_list: false
 weight: 6
 description: >

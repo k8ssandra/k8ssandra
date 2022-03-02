@@ -1,8 +1,7 @@
 ---
-title: "Reference CRDs"
-linkTitle: "Reference CRDs"
-simple_list: true
+title: "K8ssandra Operator reference"
+linkTitle: "Reference"
 weight: 6
 description: >
-  Reference topics covering Cassandra Custom Resource Definitions (CRDs) for use with K8ssandra Operator.
+  Reference topics for K8ssandra Operator including Cassandra Custom Resource Definitions (CRDs) and the single Helm chart. 
 ---

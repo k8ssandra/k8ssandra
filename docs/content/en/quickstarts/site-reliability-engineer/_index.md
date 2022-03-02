@@ -2,12 +2,10 @@
 title: "Quickstart for Site Reliability Engineers"
 linkTitle: "SREs"
 weight: 2
-description: "Familiarize yourself with K8ssandra utilities and procedures for repair, upgrade, and backup/restore operations for your Apache Cassandra® database."
+description: "Familiarize yourself with K8ssandra Operator utilities and procedures for repair, upgrade, and backup/restore operations for your Apache Cassandra® database."
 ---
 
-{{% alert title="Tip" color="success" %}}
 Before performing these post-install steps, complete at least one K8ssandra Operator [cluster deployment]({{< relref "/install/local" >}}) in Kubernetes. 
-{{% /alert %}}
 
 In this quickstart for Site Reliability Engineers (SREs), we'll cover:
 
@@ -16,11 +14,11 @@ In this quickstart for Site Reliability Engineers (SREs), we'll cover:
 * [Accessing the K8ssandra Operator monitoring utilities]({{< relref "#monitoring" >}}), Prometheus and Grafana.
 * [Accessing Reaper]({{< relref "#reaper" >}}), an easy to use repair interface.
 
-## Access the Apache Cassandra® nodetool utility {#nodetool}
+## Access the Cassandra nodetool utility {#nodetool}
 
 Cassandra's nodetool utility is commonly used for a variety of monitoring and management tasks. You'll need to run nodetool on your K8ssandra cluster using the `kubectl exec` command, because there's no external standalone option available.
 
-To run `nodetool` commands:
+Follow these steps to run `nodetool` commands.
 
 1. Get a list of the running K8ssandra pods using `kubectl get`:
 
@@ -38,24 +36,26 @@ To run `nodetool` commands:
     demo-dc1-default-sts-2                                  2/2     Running   0          10m
     k8ssandra-operator-7f76579f94-7s2tw                     1/1     Running   0          11m
     k8ssandra-operator-cass-operator-794f65d9f4-j9lm5       1/1     Running   0          11m
-```
+    ```
 
     The K8ssandra pod running Cassandra takes the form `<k8ssandra-cluster-name>-<datacenter-name>-default-sts-<n>` and, in the example above is `demo-dc1-default-sts-0` which we'll use throughout the following sections.
 
-    {{% alert title="Tip" color="success" %}}
-Although not applicable to this quick start, additional K8ssandra Operator Cassandra nodes will increment the final `<n>` but the rest of the name will remain the same.
-    {{% /alert %}}
+    **Note:** Although not applicable to this quick start, additional K8ssandra Operator Cassandra nodes will increment the final `<n>` but the rest of the name will remain the same.
 
-1. Run [`nodetool status`](https://docs.datastax.com/en/cassandra-oss/3.x/cassandra/tools/toolsStatus.html), using the Cassandra node name `demo-dc1-default-sts-0`, and replacing `<k8ssandra-username>` and `<k8ssandra-password>` with the values you retrieved in the local install topic's [Extract credentials]({{< relref "/install/local#extract-credentials" >}}) section:
+2. Run [`nodetool status`](https://docs.datastax.com/en/cassandra-oss/3.x/cassandra/tools/toolsStatus.html), using the Cassandra node name `demo-dc1-default-sts-0`. 
 
-Hint: in that topic, the first single-cluster example returned this password: `ACK7dO9qpsghIme-wvfI`.
+    Replace `<k8ssandra-username>` and `<k8ssandra-password>` with the values you retrieved in the local install topic's [Extract credentials]({{< relref "/install/local#extract-credentials" >}}) section:
 
-With known `-u` and `-p` credentials, you can enter a command that invokes nodetool. Here's an example. Your credentials will be different:
+    **Tip:** in that topic, the first single-cluster example returned this password: `ACK7dO9qpsghIme-wvfI`.
+
+    With known `-u` and `-p` credentials, you can enter a command that invokes nodetool. Here's an example. Your credentials will be different:
 
     ```bash
-    kubectl exec --stdin --tty demo-dc1-default-sts-0 -n k8ssandra-operator -c cassandra -- nodetool -u demo-superuser -pw ACK7dO9qpsghIme-wvfI status
-
+    kubectl exec --stdin --tty demo-dc1-default-sts-0 -n k8ssandra-operator -c cassandra -- nodetool -u demo-superuser 
+    -pw ACK7dO9qpsghIme-wvfI status
     ```
+
+    **Output:**
 
     ```bash
     Datacenter: dc1
@@ -68,16 +68,15 @@ With known `-u` and `-p` credentials, you can enter a command that invokes nodet
     UN  10.244.3.4  96.7 KiB   16      100.0%            0f75a6fe-c91d-4c0e-9253-2235b6c9a206  default
     ```
 
-{{% alert title="Tip" color="success" %}}
-All nodes should have the status UN, which stands for "Up Normal".
-{{% /alert %}}
+    **Note:** All nodes should have the status `UN`, which stands for "Up Normal".
 
-Other useful nodetool commands include:
+3. Other useful nodetool commands include:
 
-* [`nodetool ring`](https://docs.datastax.com/en/cassandra-oss/3.x/cassandra/tools/toolsRing.html) which outputs all the tokens in the node. Example:
+    [`nodetool ring`](https://docs.datastax.com/en/cassandra-oss/3.x/cassandra/tools/toolsRing.html) which outputs all the tokens in the node. Example:
 
     ```bash
-    kubectl exec --stdin --tty demo-dc1-default-sts-0 -n k8ssandra-operator -c cassandra -- nodetool -u demo-superuser -pw ACK7dO9qpsghIme-wvfI ring
+    kubectl exec --stdin --tty demo-dc1-default-sts-0 -n k8ssandra-operator -c cassandra -- nodetool -u demo-superuser 
+    -pw ACK7dO9qpsghIme-wvfI ring
     ```
 
     **Output**:
@@ -86,7 +85,7 @@ Other useful nodetool commands include:
     Datacenter: dc1
     ==========
     Address      Rack        Status State   Load            Owns                Token
-                                                                                9126546575375666475
+                                                                               9126546575375666475
     172.17.0.13  default     Up     Normal  597.42 KiB      ?                   -9138166261715795932
     172.17.0.13  default     Up     Normal  597.42 KiB      ?                   -9120920057340937901
     172.17.0.13  default     Up     Normal  597.42 KiB      ?                   -9117737800555727340
@@ -95,10 +94,11 @@ Other useful nodetool commands include:
     ...
     ```
 
-* [`nodetool info`](https://docs.datastax.com/en/cassandra-oss/3.x/cassandra/tools/toolsInfo.html) which provides load and uptime information:
+    [`nodetool info`](https://docs.datastax.com/en/cassandra-oss/3.x/cassandra/tools/toolsInfo.html) which provides load and uptime information:
 
     ```bash
-    kkubectl exec --stdin --tty demo-dc1-default-sts-0 -n k8ssandra-operator -c cassandra -- nodetool -u demo-superuser -pw ACK7dO9qpsghIme-wvfI info
+    kubectl exec --stdin --tty demo-dc1-default-sts-0 -n k8ssandra-operator -c cassandra -- nodetool -u demo-superuser 
+    -pw ACK7dO9qpsghIme-wvfI info
     ```
 
     **Output**:
@@ -116,15 +116,19 @@ Other useful nodetool commands include:
     Data Center            : dc1
     Rack                   : default
     Exceptions             : 0
-    Key Cache              : entries 39, size 3.46 KiB, capacity 51 MiB, 199 hits, 240 requests, 0.829 recent hit rate, 14400 save period in seconds
-    Row Cache              : entries 0, size 0 bytes, capacity 0 bytes, 0 hits, 0 requests, NaN recent hit rate, 0 save period in seconds
-    Counter Cache          : entries 0, size 0 bytes, capacity 25 MiB, 0 hits, 0 requests, NaN recent hit rate, 7200 save period in seconds
-    Chunk Cache            : entries 6, size 384 KiB, capacity 224 MiB, 111 misses, 3472 requests, 0.968 recent hit rate, NaN microseconds miss latency
+    Key Cache              : entries 39, size 3.46 KiB, capacity 51 MiB, 199 hits, 240 requests, 0.829 recent hit rate, 
+    14400 save period in seconds
+    Row Cache              : entries 0, size 0 bytes, capacity 0 bytes, 0 hits, 0 requests, NaN recent hit rate, 
+    0 save period in seconds
+    Counter Cache          : entries 0, size 0 bytes, capacity 25 MiB, 0 hits, 0 requests, NaN recent hit rate, 7200 save period 
+    in seconds
+    Chunk Cache            : entries 6, size 384 KiB, capacity 224 MiB, 111 misses, 3472 requests, 0.968 recent hit rate, 
+    NaN microseconds miss latency
     Percent Repaired       : 100.0%
     Token                  : (invoke with -T/--tokens to see all 256 tokens)
     ```
 
-For details on all nodetool commands, see [The nodetool utility](https://docs.datastax.com/en/cassandra-oss/3.x/cassandra/tools/toolsNodetool.html).
+For details on all `nodetool` commands, see [The nodetool utility](https://docs.datastax.com/en/cassandra-oss/3.x/cassandra/tools/toolsNodetool.html).
 
 ## Configure port forwarding {#port-forwarding}
 
@@ -192,7 +196,7 @@ To terminate a particular forwarded port:
     [3]  + 29213 running    kubectl port-forward svc/k8ssandra-reaper-k8ssandra-reaper-service 9393:8080
     ```
 
-1. Kill the process
+    2. Kill the process
 
     ```bash
     kill 80940
@@ -204,9 +208,7 @@ To terminate a particular forwarded port:
     [3]  + terminated  kubectl port-forward svc/k8ssandra-reaper-k8ssandra-reaper-service 9393:8080
     ```
 
-{{% alert title="Tip" color="success" %}}
-Exiting the terminal instance will terminate all port forwarding services.
-{{% /alert %}}
+    **Note:** Exiting the terminal instance will terminate all port forwarding services.
 
 ## Access K8ssandra Operator monitoring utilities {#monitoring}
 
