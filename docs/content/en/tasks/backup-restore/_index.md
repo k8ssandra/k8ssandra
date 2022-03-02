@@ -14,7 +14,7 @@ These instructions use a local `minio` bucket as an example.
 
 Supported in K8ssandra Operator's Medusa:
 
-* local (`host: minio.minio.svc.cluster.local` in this topic)
+* local
 * s3
 * s3_compatible
 * s3_rgw
