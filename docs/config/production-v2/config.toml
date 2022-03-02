@@ -5,7 +5,7 @@ url_latest_version = "https://docs-v2.k8ssandra.io"
   version = "Common"
   fullversion = "Common Information"
   githubbranch = "docs"
-  url = "https://docs-temp.k8ssandra.io"
+  url = "https://docs.k8ssandra.io"
 
 [[params.versions]]
   version = "v1"
