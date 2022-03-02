@@ -1,6 +1,6 @@
 ---
-title: "Quickstart single-cluster with Kustomize"
-linkTitle: "Single-cluster with Kustomize"
+title: "Single-cluster install with kustomize"
+linkTitle: "Single-cluster/kustomize"
 no_list: false
 weight: 3
 description: "Quickstart with Kustomize to install K8ssandraCluster in single-cluster Kubernetes."

@@ -1,6 +1,6 @@
 ---
 title: "Single-cluster install with helm"
-linkTitle: "Single-cluster install with helm"
+linkTitle: "Single-cluster/helm"
 no_list: false
 weight: 1
 description: "Quickstart with a unified helm chart to install K8ssandraCluster in single-cluster Kubernetes."

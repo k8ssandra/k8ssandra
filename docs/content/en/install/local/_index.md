@@ -1,6 +1,6 @@
 ---
 title: "Install prerequisites"
-linkTitle: "Install prerequisites"
+linkTitle: "Prerequisites"
 no_list: true
 weight: 1
 description: "Install K8ssandraCluster custom resource for Apache Cassandra&reg; in local Kubernetes."
@@ -59,17 +59,17 @@ Note that the `make NUM_CLUSTERS=<number> create-kind-multicluster` command, whi
 
 After confirming you have the prerequisite software, proceed to the detailed steps for single- or multi-clusters, using your preferred tools:
 
-### Quickstarts with helm
+### Installs with helm
 
-* [Quickstart **single-cluster** install]({{< relref "single-cluster-helm/" >}}) of K8ssandra Operator with `helm`.
+* [**Single-cluster** install]({{< relref "single-cluster-helm/" >}}) of K8ssandra Operator with `helm`.
 
-* [Quickstart **multi-cluster** install]({{< relref "multi-cluster-helm/" >}}) of K8ssandra Operator with `helm`. 
+* [**Multi-cluster** install]({{< relref "multi-cluster-helm/" >}}) of K8ssandra Operator with `helm`. 
 
-### Quickstarts with Kustomize
+### Installs with Kustomize
 
-* [Quickstart **single-cluster** install]({{< relref "single-cluster-kustomize/" >}}) of K8ssandra Operator with `kustomize`.
+* [**Single-cluster** install]({{< relref "single-cluster-kustomize/" >}}) of K8ssandra Operator with `kustomize`.
 
-* [Quickstart **multi-cluster** install]({{< relref "multi-cluster-kustomize/" >}}) of K8ssandra Operator with `kustomize`.
+* [**Multi-cluster** install]({{< relref "multi-cluster-kustomize/" >}}) of K8ssandra Operator with `kustomize`.
 
 
 

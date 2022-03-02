@@ -203,6 +203,5 @@ K8ssandra currently does not support JMX authorization. This issue is also cover
 
 ## Next steps
 
-Explore other K8ssandra [tasks]({{< relref "/tasks" >}}).
-
-See the [Reference]({{< relref "/reference" >}}) topics for information about K8ssandra Helm charts, and a glossary. 
+* Explore other K8ssandra Operator [tasks]({{< relref "/tasks" >}}).
+* See the [Reference]({{< relref "/reference" >}}) topics for information about K8ssandra Operator Custom Resource Definitions (CRDs) and the single K8ssandra Operator Helm chart. 

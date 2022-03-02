@@ -168,7 +168,6 @@ Prometheus is available at the following address if running locally:
 
 ## Next steps
 
-Explore other K8ssandra [tasks]({{< relref "/tasks" >}}).
-
-See the [Reference]({{< relref "/reference" >}}) topics for information about K8ssandra Helm charts, and a glossary.
+* Explore other K8ssandra Operator [tasks]({{< relref "/tasks" >}}).
+* See the [Reference]({{< relref "/reference" >}}) topics for information about K8ssandra Operator Custom Resource Definitions (CRDs) and the single K8ssandra Operator Helm chart. 
 

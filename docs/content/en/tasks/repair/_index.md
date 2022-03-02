@@ -138,6 +138,6 @@ Notice the repair job kicking off.
 
 ## Next steps
 
-Explore other K8ssandra Operator [tasks]({{< relref "/tasks" >}}).
-
-See the Reaper [Custom Resource Definition (CRD)]({{< relref "/reference/crd/reaper" >}}) reference.
+* Explore other K8ssandra Operator [tasks]({{< relref "/tasks" >}}).
+* See the [Reference]({{< relref "/reference" >}}) topics for information about K8ssandra Operator Custom Resource Definitions (CRDs) and the single K8ssandra Operator Helm chart. 
+* See the Reaper [Custom Resource Definition (CRD)]({{< relref "/reference/crd/reaper" >}}) reference.
