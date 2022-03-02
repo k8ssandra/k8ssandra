@@ -12,13 +12,13 @@ description: "K8ssandra documentation: architecture, configuration, guided tasks
 type: docs
 ---
 
-The K8ssandra documentation covers everything from install details, deployed components, configuration references, and guided outcome-based tasks. Check out the sections at left based on your needs and be sure to leave us a <a class="github-button" href="https://github.com/k8ssandra/k8ssandra" data-icon="octicon-star" aria-label="Star k8ssandra/k8ssandra on GitHub">star</a> on Github!
+The K8ssandra 1.4.x documentation covers everything from install details, deployed components, configuration references, and guided outcome-based tasks. Check out the sections at left based on your needs and be sure to leave us a <a class="github-button" href="https://github.com/k8ssandra/k8ssandra" data-icon="octicon-star" aria-label="Star k8ssandra/k8ssandra on GitHub">star</a> on Github!
 
 **Tip:** Starting with the March 2022 introduction of K8ssandra Operator, the K8ssandra Operator custom resource, and its support for single- or **multi-cluster** deployments, the documentation site has been organized into three areas. 
 
-* [docs.k8ssandra.io](https://docs-staging.k8ssandra.io/) provides topics that are of common interest to users of K8ssandra Operator and K8ssandra, such as FAQs, Release Notes, Components, and a Glossary.
-* [docs-v1.k8ssandra.io](https://docs-staging-v1.k8ssandra.io/) (**you are here**) provides topics that are specific to K8ssandra 1.4.x users (the initial project releases).
-* [docs-v2.k8ssandra.io](https://docs-staging-v2.k8ssandra.io/) provides topics that are specific to the more recent (and recommended) K8ssandra Operator software, including single- or multi-cluster installs.
+* [docs.k8ssandra.io](https://docs.k8ssandra.io/) provides topics that are of common interest to users of K8ssandra Operator and K8ssandra, such as FAQs, Release Notes, Components, and a Glossary.
+* [docs-v1.k8ssandra.io](https://docs-v1.k8ssandra.io/) (**you are here**) provides topics that are specific to K8ssandra 1.4.x users (the initial project releases).
+* [docs-v2.k8ssandra.io](https://docs-v2.k8ssandra.io/) provides topics that are specific to the more recent (and recommended) K8ssandra Operator software, including single- or multi-cluster installs.
 
 From each page’s top banner, use the **Versions** menu to navigate back to the Common, v1, or v2 documentation Home.
 
@@ -53,7 +53,7 @@ K8ssandra is a great fit for operators looking for easy to install and manage Ca
 
 ## Next steps
 
-* [FAQs]({{< relref "faqs" >}}): If you're new to K8ssandra, these FAQs are for you. 
+* [FAQs](https://docs.k8ssandra.io/faqs/): If you're new to K8ssandra, these FAQs are for you. 
 * [Install]({{< relref "install" >}}): K8ssandra install steps for local development or production-ready cloud platforms.
 * [Quickstarts]({{< relref "quickstarts" >}}): Post-install K8ssandra topics for developers or Site Reliability Engineers.
 * [Components]({{< relref "components" >}}): Dig in to each deployed component of the K8ssandra stack and see how it communicates with the others.

@@ -1,6 +1,7 @@
 ---
 title: "Branching model for the K8ssandra project"
 linkTitle: "Branching model"
+toc_hide: true
 weight: 10
 description: How to branch and release K8ssandra.
 ---
