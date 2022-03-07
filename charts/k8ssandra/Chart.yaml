@@ -4,27 +4,22 @@ description: |
   Provisions and configures an instance of the entire K8ssandra stack. This includes Apache Cassandra, Stargate, Reaper, Medusa, Prometheus, and Grafana.
 type: application
 version: 1.5.0-SNAPSHOT
-
 dependencies:
   - name: cass-operator
     version: 0.35.0
     repository: file://../cass-operator
     condition: cass-operator.enabled
-
   - name: reaper-operator
     version: 0.32.3
     repository: file://../reaper-operator
     condition: reaper-operator.enabled
-
   - name: medusa-operator
     version: 0.32.0
     repository: file://../medusa-operator
     condition: medusa.enabled
-
   - name: k8ssandra-common
     version: 0.28.4
     repository: file://../k8ssandra-common
-
   - name: kube-prometheus-stack
     version: 20.0.1
     repository: https://prometheus-community.github.io/helm-charts
