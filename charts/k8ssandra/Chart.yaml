@@ -7,8 +7,8 @@ version: 1.5.0-SNAPSHOT
 
 dependencies:
   - name: cass-operator
-    version: 0.33.0
-    repository: https://helm.k8ssandra.io/stable
+    version: 0.35.0
+    repository: file://../cass-operator
     condition: cass-operator.enabled
 
   - name: reaper-operator
