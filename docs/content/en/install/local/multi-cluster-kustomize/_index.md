@@ -20,7 +20,7 @@ an imperative approach.
 
 Kustomize is integrated directly into `kubectl`. For example, `kubectl apply -k` essentially runs `kustomize build` over the specified directory followed by `kubectl apply`. See this [topic](https://kubernetes.io/docs/tasks/manage-kubernetes-objects/kustomization/) for details on the integration of Kustomize into `kubectl`.
 
-K8ssandra Operator uses some features of Kustomize that are only available in `kubectl` v1.23 or later. For this reason the following examples use `kustomize buid <dir> | kubectl apply -f -`.
+K8ssandra Operator uses some features of Kustomize that are only available in `kubectl` v1.23 or later. For this reason the following examples use `kustomize build <dir> | kubectl apply -f -`.
 
 
 ## Multi-cluster local Kubernetes

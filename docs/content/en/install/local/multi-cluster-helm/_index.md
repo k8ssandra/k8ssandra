@@ -16,9 +16,18 @@ If you haven't already, see the install [prerequisites]({{< relref "install/loca
 
 Deploy K8ssandra with multiple Cassandra datacenters in a **multi-cluster** kind environment.
 
-### Clone the repo and use the setup script
+### Add the K8ssandra Helm chart repo
 
-If you haven't already, clone the https://github.com/k8ssandra/k8ssandra-operator repo to your local machine where you're already running a kind cluster. Example:
+If you haven't already, add the main K8ssandra stable Helm chart repo:
+
+```bash
+helm repo add k8ssandra https://helm.k8ssandra.io/stable
+helm repo update
+```
+
+### Clone the K8ssandra Operator's GitHub repo and use the setup script
+
+Also clone the https://github.com/k8ssandra/k8ssandra-operator GitHub repo to your local machine where you're already running a kind cluster. Example:
 
 ```bash
 cd ~/github
