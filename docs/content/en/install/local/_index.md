@@ -10,6 +10,17 @@ This topic identifies the K8ssandra Operator install prerequisites. It then dire
 
 ## Prerequisites
 
+### Add the K8ssandra Helm chart repo
+
+For installs with helm, add the main K8ssandra stable Helm chart repo:
+
+```bash
+helm repo add k8ssandra https://helm.k8ssandra.io/stable
+helm repo update
+```
+
+### Additional tools
+
 Make sure you have the following installed before going through the related install topics. 
 
 * [kind](#kind)
@@ -19,21 +30,21 @@ Make sure you have the following installed before going through the related inst
 * [kubectl](https://kubernetes.io/docs/tasks/tools/)
  and [helm v3+](https://helm.sh/docs/intro/install/) on your preferred OS. 
 
-### **kind**
+#### **kind**
 
 The local install examples use [kind](https://kind.sigs.k8s.io/) clusters. If you have not already, install kind.
 
 By default, kind clusters run on the same Docker network, which means we will have routable pod IPs across clusters.
 
-### **kubectx**
+#### **kubectx**
 
 [kubectx](https://github.com/ahmetb/kubectx) is a really handy tool when you are dealing with multiple clusters.  
 
-### **yq**
+#### **yq**
 
 [yq](https://github.com/mikefarah/yq#install) is lightweight and portable command-line YAML processor.
 
-### **gnu-getopt**
+#### **gnu-getopt**
 
 [gnu-getopt](https://formulae.brew.sh/formula/gnu-getopt) is a command-line option parsing utility. 
 
@@ -45,13 +56,13 @@ export PATH="/usr/local/opt/gnu-getopt/bin:$PATH"
 
 In our testing on Linux, we used `gnu-getopt` version 2.37.3. The default downloaded version of `gnu-getopt` on macOS might cause issues.
 
-### setup-kind-multicluster.sh (FYI) 
+#### setup-kind-multicluster.sh (FYI) 
 
 Note that the `make NUM_CLUSTERS=<number> create-kind-multicluster` command, which is shown in subsequent install topics, is a reference to a `Makefile` target within the k8ssandra-operator repo. The `Makefile` is [here](https://github.com/k8ssandra/k8ssandra-operator/blob/main/Makefile). The command invokes the [setup-kind-multicluster.sh](https://github.com/k8ssandra/k8ssandra-operator/blob/main/scripts/setup-kind-multicluster.sh) script. It's used extensively during development and testing. Not only does it configure and create kind clusters, it also generates `kubeconfig` files for each cluster.
 
 **Tip:** kind generates a `kubeconfig` with the IP address of the API server set to `localhost` because the cluster is intended for local development. We need a `kubeconfig` with the IP address set to the internal address of the API server. The `setup-kind-mulitcluster.sh` script takes care of this requirement for you.  
 
-### create-clientconfig.sh (FYI) 
+#### create-clientconfig.sh (FYI) 
 
 [create-clientconfig.sh](https://github.com/k8ssandra/k8ssandra-operator/blob/main/scripts/create-clientconfig.sh) is in the k8ssandra-operator repo. This script is used to configure access to remote clusters, as described in subsequent topics. 
 
