@@ -40,7 +40,7 @@ Docsy/Hugo versioning works through an association of site "version" to Git "bra
 
 * `docs-v2` branch -> `docs-v2.k8ssandra.io`/`docs-staging-v2.k8ssandra`
 
-## GitHub Actions
+## GitHub Actions and Tags
 
 On each "docs" branch GitHub Action workflows are configured to provide automated PR checks, deployments to staging, and deployments to production.
 
@@ -55,6 +55,29 @@ On the push of a semantically structured tag the tagged commit will be built and
 * `docs-v1-v*.*.*` tag -> `docs-v1.k8ssandra.io`
 
 * `docs-v2-v*.*.*` tag -> `docs-v2.k8ssandra.io`
+
+### Example
+
+Assume the most recent tag for a set of updates on the `docs-v2` branch was `docs-v2-1.0.1`. 
+
+Goal: increment the tag and publish the updates to the external live server. 
+
+`git checkout docs-v2`
+
+`git pull origin`
+
+`git log`      (look for recent commit, just to verify)
+
+`git tag -l`   (get list of existing tags)
+
+`git tag docs-v2-v1.0.2`
+
+`git push origin docs-v2-v1.0.2`
+
+Result: 
+
+* Kicks off a GH Action to publish the newly tagged updates made on the `docs-v2` branch. If all tests pass, takes about 4-5 minutes to complete.
+* Updates are pushed to external live site, in this example to docs-v2.k8ssandra.io/ ... 
 
 ## Development
 
