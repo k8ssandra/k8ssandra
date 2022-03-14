@@ -16,7 +16,7 @@ Apache Cassandra&reg; offers the ability to encrypt internode communications and
   * DigitalOcean Kubernetes (DOKS)
   * Google Kubernetes Engine (GKE) in a Google Cloud project
   * Microsoft Azure Kubernetes Service (AKS)
-* K8ssandra version 2.0 or later
+* **K8ssandra Operator** has been installed - see the [install]({{< relref "install" >}}) topics
 * An SSL encryption store, as covered in the next section
 
 ## Generating SSL encryption stores

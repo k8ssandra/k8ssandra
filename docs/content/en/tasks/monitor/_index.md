@@ -2,8 +2,10 @@
 title: "Monitor Cassandra"
 linkTitle: "Monitor"
 weight: 6
-description: "Access the Prometheus and Grafana interfaces to monitor your Apache Cassandra® cluster running in Kubernetes"
+description: "Access tools to monitor your Apache Cassandra® cluster running in Kubernetes."
 ---
+
+{{< tbs >}}
 
 When you used Helm to install a `k8ssandra` instance in Kubernetes, one of the key features provided was a set of preconfigured Grafana dashboards. They visualize data collected about your environment by the Prometheus Operator, which is also packaged with K8ssandra. Use the Grafana dashboards to monitor your K8ssandra cluster's health and traffic metrics.  
 

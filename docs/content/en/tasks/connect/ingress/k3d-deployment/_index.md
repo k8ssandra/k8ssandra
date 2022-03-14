@@ -5,6 +5,8 @@ toc_hide: true
 description: "Deploy Apache Cassandra® on Kubernetes in a local K3d cluster with Traefik ingress installed and configured."
 ---
 
+{{< tbs >}}
+
 K3d automatically deploys the Traefik ingress controller when the cluster is started. Unfortunately, it is not configured to accept traffic on ports other than 80. 
 
 For our purposes it is best to _skip_ the automatic Traefik installation and install it ourselves via Helm. 

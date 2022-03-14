@@ -8,7 +8,9 @@ description: How to migrate an existing Cassandra cluster that's running in Kube
 
 ## Migrating an existing K8ssandra v1 cluster to a K8ssandra Operator cluster
 
-**Note:** The steps to migrate an existing K8ssandra v1 cluster to a K8ssandra Operator cluster will be provided in an upcoming Blog post. When available, this topic will link to the blog's URL. Other details in this topic will be updated accordingly.  The strategy to perform this migration to K8ssandra Operator will focus on datacenter migration.
+{{< tbs >}}
+
+The steps to migrate an existing K8ssandra v1 cluster to a K8ssandra Operator cluster will be provided in an upcoming Blog post. When available, this topic will link to the blog. Other details in this topic will be updated accordingly. The strategy to perform this migration to K8ssandra Operator will focus on datacenter migration.
 
 ## The environment
 
