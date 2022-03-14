@@ -47,18 +47,20 @@ For more, see the [K8ssandra Operator architecture](https://docs-v2.k8ssandra.io
 
 K8ssandra Operator deploys and manages the following. 
 
-* [Apache Cassandra](https://cassandra.apache.org/) - the deployed version depends on the configured setting:
-  * 4.0.1 (default)
+* [Apache Cassandra](https://cassandra.apache.org/)  
+  * 4.0.3
+  * 4.0.1
+  * 4.0.0
+  * 3.11.12
   * 3.11.11
   * 3.11.10
   * 3.11.9
   * 3.11.8
   * 3.11.7
-* [cass-operator](https://github.com/k8ssandra/cass-operator) v1.10.0.
-* Reaper vN.n.n
-* Medusa vN.n.n
+* [cass-operator](https://github.com/k8ssandra/cass-operator) v1.10
+* [Reaper](http://cassandra-reaper.io/) vN.n.n
+* [Medusa](https://github.com/thelastpickle/cassandra-medusa) vN.n.n
 * [Stargate](https://github.com/stargate/stargate) vN.n.n
-* Others TBS here ... 
 
 ### K8ssandra 1.4.x deployments
 
