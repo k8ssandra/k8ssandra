@@ -5,6 +5,8 @@ toc_hide: true
 description: "Deploy Apache Cassandra® on Kubernetes in a local Minikube cluster with Traefik ingress installed and configured."
 ---
 
+{{< tbs >}}
+
 Minikube is a popular tool for testing k8s clusters locally. When deploying to Minikube, we use the native Kubernetes `port-forward` command from `kubectl` in order to access the services. 
 
 ### 1. Install Minikube and start the cluster

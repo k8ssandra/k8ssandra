@@ -6,9 +6,9 @@ weight: 3
 description: K8ssandra security defaults, secrets, and options for Apache Cassandra&reg; authentication and role-based authorization.
 ---
 
-This topic describes how K8ssandra supports Cassandra's authentication and authorization features. Also, how Kubernetes secrets are created and used by the K8ssandra deployed components: Cassandra (via cass-operator), Stargate, Reaper, and Medusa. 
+{{< tbs >}}
 
-For related information, see [Enabling encryption]({{< relref "/tasks/secure/encryption/" >}}) in K8ssandra clusters.
+**Note:** Please refer to [Enabling encryption]({{< relref "/tasks/secure/encryption/" >}}) in K8ssandra clusters; its description has been updated for K8ssandra Operator.
 
 ## Introduction
 

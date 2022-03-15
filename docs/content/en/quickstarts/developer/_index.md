@@ -17,21 +17,13 @@ In this quickstart for developers, we'll cover:
 
 ## Set up port forwarding
 
-In order to access Apache Cassandra® outside of the K8s cluster, you'll need to utilize port forwarding unless ingress is [configured]({{< relref "/tasks/connect/ingress" >}}).
-
-Begin by getting a list of your K8ssandra K8s services and ports:
+In order to access Apache Cassandra® outside of the K8s cluster, you'll need to utilize port forwarding. Begin by getting a list of your K8ssandra K8s services and ports:
 
 ```bash
 kubectl get services
 ```
 
-**Output**:
-
-```bash
-(TODO: NEED SAMPLE OUTPUT HERE)
-```
-
-In the output above, the service of interest is:
+The service of interest is:
 
 * **demo-dc1-stargate-service**: The K8ssandra Stargate service where the name is a combination of the k8ssandra  cluster name you specified during the Helm install, such as `demo`, the datacenter name, `dc1` and the postfix, `-service`. This service listens on the ports:
   * **8080/TCP**: GraphQL interface

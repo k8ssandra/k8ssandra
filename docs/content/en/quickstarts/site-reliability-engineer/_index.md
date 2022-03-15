@@ -10,8 +10,6 @@ Before performing these post-install steps, complete at least one K8ssandra Oper
 In this quickstart for Site Reliability Engineers (SREs), we'll cover:
 
 * [Accessing nodetool commands]({{< relref "#nodetool" >}}) like status, ring, and info.
-* [Configure port forwarding]({{< relref "#port-forwarding" >}}) for the Prometheus and Grafana monitoring utilities as well as Reaper for Apache Cassandra® (Reaper).
-* [Accessing the K8ssandra Operator monitoring utilities]({{< relref "#monitoring" >}}), Prometheus and Grafana.
 * [Accessing Reaper]({{< relref "#reaper" >}}), an easy to use repair interface.
 
 ## Access the Cassandra nodetool utility {#nodetool}
@@ -132,18 +130,12 @@ For details on all `nodetool` commands, see [The nodetool utility](https://docs.
 
 ## Configure port forwarding {#port-forwarding}
 
-In order to access Cassandra utilities outside of the K8s cluster, if you don't have an Ingress setup as described in [Configure Ingress]({{< relref "tasks/connect/ingress" >}}), you'll need to configure port forwarding.
+In order to access Cassandra utilities outside of the K8s cluster, you'll need to configure port forwarding.
 
-Begin by getting a list of your K8ssandra K8s services and ports:
+If you haven't already, get a list of your K8ssandra K8s services and ports:
 
 ```bash
 kubectl get services
-```
-
-**Output**:
-
-```bash
-(TODO: NEED SAMPLE OUTPUT HERE)
 ```
 
 To configure port forwarding:
@@ -153,31 +145,19 @@ To configure port forwarding:
 2. Run the following 3 `kubectl port-forward` commands in the background. Example:
 
     ```bash
-    kubectl port-forward svc/k8ssandra-grafana 9191:80 &
-    kubectl port-forward svc/prometheus-operated 9292:9090 &
     kubectl port-forward svc/k8ssandra-reaper-reaper-service 9393:8080 &
     ```
 
     **Output**:
 
     ```bash
-    [1] 29211
-    [2] 29212
-    [3] 29213
-
     ~/
-    Forwarding from 127.0.0.1:9292 -> 9090
-    Forwarding from [::1]:9292 -> 9090
     Forwarding from 127.0.0.1:9393 -> 8080
     Forwarding from [::1]:9393 -> 8080
-    Forwarding from 127.0.0.1:9191 -> 3000
-    Forwarding from [::1]:9191 -> 3000
     ```
 
 The K8ssandra Operator services are now available at:
 
-* Prometheus: <http://127.0.0.1:9292>
-* Grafana: <http://127.0.0.1:9191>
 * Reaper: <http://127.0.0.1:9393/webui>
 
 ### Terminate port forwarding
@@ -209,77 +189,6 @@ To terminate a particular forwarded port:
     ```
 
     **Note:** Exiting the terminal instance will terminate all port forwarding services.
-
-## Access K8ssandra Operator monitoring utilities {#monitoring}
-
-K8ssandra Operator allows you to integrate with monitoring tools such as the following utilities:
-
-* [Prometheus](https://prometheus.io/) a standard metrics collection and alerting tool.
-* [Grafana](https://grafana.com/) a set of preconfigured dashboards displaying important K8ssandra metrics.
-
-### Prometheus
-
-To check on the health of your K8ssandraCluster using the K8ssandra Operator Prometheus interface:
-
-1. Access the Prometheus home page at <http://127.0.0.1:9292>:
-
-    ![Prometheus home page](prom-home.png)
-
-1. From the **Status** menu, choose **Targets**.
-
-1. Verify that the `stargate/0` and `k8ssandra/0` are in the state `UP`:
-
-    ![Prometheus targets](prom-targets.png)
-
-For more details on Prometheus, see the [Prometheus](https://prometheus.io/) web site.
-
-### Grafana
-
-To monitor the health and performance of your K8ssandraCluster using pre-configured Grafana dashboards:
-
-1. Retrieve the Grafana login username using the `helm show` command:
-
-    ```bash
-    helm show values k8ssandra/k8ssandra | grep "adminUser"
-    ```
-
-    **Output**:
-
-    ```bash
-    admin
-    ```
-
-1. Retrieve the Grafana login password using the `helm show` command:
-
-    ```bash
-    helm show values k8ssandra/k8ssandra | grep "adminPassword"
-    ```
-
-    **Output**:
-
-    ```bash
-    secret
-    ```
-
-1. Access the Grafana login screen at <http://127.0.0.1:9191> and login using the username and password:
-
-    ![Grafana login page](grafana-login.png)
-
-1. Click the home button indicated by the arrow:
-
-    ![Grafana home page](grafana-home.png)
-
-1. Click the `K8ssandra Overview` dashboard:
-
-    ![Grafana dashboards](grafana-dashboards.png)
-
-1. The `K8ssandra Overview` dashboard is displayed:
-
-    ![Grafana K8ssandra overview](grafana-k8overview.png)
-
-1. Explore the other K8ssandra dashboards.
-
-For more information see the [Grafana](https://grafana.com/) web site.
 
 ## Access Reaper {#reaper}
 
