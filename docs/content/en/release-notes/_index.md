@@ -81,7 +81,7 @@ The K8ssandra helm chart deploys the following components. Some are optional, an
 * [Stargate](https://github.com/stargate/stargate) Stargate 1.0.40
 * Metric Collector for Apache Cassandra ([MCAC](https://github.com/datastax/metric-collector-for-apache-cassandra) 0.2.0
 * kube-prometheus-stack 12.11.3 [chart](https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-prometheus-stack)
-* Medusa for Apache Cassandra 0.11.13
+* Medusa for Apache Cassandra 0.11.3
 * medusa-operator 0.4.0
 * Reaper for Apache Cassandra 3.0.0
 * reaper-operator 2.3.0
