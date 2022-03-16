@@ -599,7 +599,7 @@ reaper:
     # -- Image repository for reaper
     repository: thelastpickle/cassandra-reaper
     # -- Tag of the reaper image to pull from
-    tag: 3.0.0
+    tag: 3.1.1
     # -- Pull policy for the reaper container
     pullPolicy: IfNotPresent
   # -- Configures the Cassandra user used by Reaper when authentication is
