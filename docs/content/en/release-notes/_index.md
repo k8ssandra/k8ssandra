@@ -1,5 +1,5 @@
 ---
-title: "K8ssandra project release notes"
+title: "K8ssandra release notes"
 linkTitle: "Release notes"
 weight: 2
 description: "Release notes for the open-source K8ssandra project."
@@ -14,9 +14,17 @@ The open-source K8ssandra project provides a production-ready platform for runni
 
 ## New &amp; noteworthy
 
-**K8ssandra Operator** is our latest implementation. It provides a cloud-native distribution of Cassandra that runs on Kubernetes. Significantly, K8ssandra Operator provides a new `K8ssandraCluster` custom resource that enables support for single- or **multi-cluster, multi-region** deployments of Cassandra and related services. It's all part of the overall K8ssandra project, but you'll need to deploy with K8ssandra Operator to use the latest multi-cluster/region features. For details, start in the K8ssandra Operator [install topics](https://docs-v2.k8ssandra.io/install/). You'll find there topics for single- and multi-cluster instructions that use Helm or Kustomize tools.
+**K8ssandra Operator** is our latest implementation. It provides a cloud-native distribution of Cassandra that runs on Kubernetes. Significantly, K8ssandra Operator provides a new `K8ssandraCluster` custom resource that enables support for single- or **multi-cluster, multi-region** deployments of Cassandra and related services. It's all part of the overall K8ssandra project, but you'll need to deploy with K8ssandra Operator to use the latest multi-cluster/region features. For details, start in the K8ssandra Operator [install topics](https://docs-v2.k8ssandra.io/install/). You'll find there topics for single- and multi-cluster instructions that use Helm or Kustomize tools. For more, see the [K8ssandra Operator architecture](https://docs-v2.k8ssandra.io/components/k8ssandra-operator/architecture/).
 
-For more, see the [K8ssandra Operator architecture](https://docs-v2.k8ssandra.io/components/k8ssandra-operator/architecture/).
+Also, we've organized this documentation site into three areas:
+
+* [docs.k8ssandra.io](https://docs.k8ssandra.io) provides topics that are of common interest to users of K8ssandra Operator and K8ssandra, such as FAQs, these Release Notes, Components, and a Glossary.
+* [docs-v1.k8ssandra.io](https://docs-v1.k8ssandra.io) provides topics that are specific to K8ssandra 1.4.x users (the initial project releases).
+* [docs-v2.k8ssandra.io](https://docs-v2.k8ssandra.io) provides topics that are specific to the more recent (and recommended) K8ssandra Operator software, including single- or **multi-cluster** installs.
+
+**Tip:** From each page's top banner, use the **Versions** menu to navigate to the Common, v1, or v2 documentation Home.
+
+![Documentation Versions menu](/k8ssandra-doc-versions.png)
 
 ## GitHub repos
 
@@ -45,20 +53,17 @@ For more, see the [K8ssandra Operator architecture](https://docs-v2.k8ssandra.io
 
 ### K8ssandra Operator 1.0.x deployments
 
-K8ssandra Operator deploys and manages the following. 
+K8ssandra Operator can deploy and manage the following components and versions. 
 
-* [Apache Cassandra](https://cassandra.apache.org/) - the deployed version depends on the configured setting:
-  * 4.0.1 (default)
-  * 3.11.11
-  * 3.11.10
-  * 3.11.9
-  * 3.11.8
-  * 3.11.7
-* [cass-operator](https://github.com/k8ssandra/cass-operator) v1.10.0.
-* Reaper vN.n.n
-* Medusa vN.n.n
-* [Stargate](https://github.com/stargate/stargate) vN.n.n
-* Others TBS here ... 
+* [Apache Cassandra](https://cassandra.apache.org/)  
+  * 4.0.3
+  * 4.0.1
+  * 4.0.0
+  * 3.11.7 to 3.11.12
+* [cass-operator](https://github.com/k8ssandra/cass-operator) 1.10.0
+* [Reaper](http://cassandra-reaper.io/) 3.1.1+
+* [Medusa](https://github.com/thelastpickle/cassandra-medusa) 0.11.3+
+* [Stargate](https://github.com/stargate/stargate) 1.0.45
 
 ### K8ssandra 1.4.x deployments
 
@@ -71,20 +76,19 @@ The K8ssandra helm chart deploys the following components. Some are optional, an
   * 3.11.9
   * 3.11.8
   * 3.11.7
-* [cass-operator](https://github.com/k8ssandra/cass-operator) v1.8.0
-* Management API for Apache Cassandra ([MAAC](https://github.com/datastax/management-api-for-apache-cassandra) v0.1.33
-* [Stargate](https://github.com/stargate/stargate) Stargate v1.0.40
-* Metric Collector for Apache Cassandra ([MCAC](https://github.com/datastax/metric-collector-for-apache-cassandra) v0.2.0
-* kube-prometheus-stack v12.11.3 [chart](https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-prometheus-stack)
-* Medusa for Apache Cassandra v0.11.13
-* medusa-operator v0.4.0
-* Reaper for Apache Cassandra v3.0.0
-* reaper-operator v2.3.0
+* [cass-operator](https://github.com/k8ssandra/cass-operator) 1.8.0
+* Management API for Apache Cassandra ([MAAC](https://github.com/datastax/management-api-for-apache-cassandra) 0.1.33
+* [Stargate](https://github.com/stargate/stargate) Stargate 1.0.40
+* Metric Collector for Apache Cassandra ([MCAC](https://github.com/datastax/metric-collector-for-apache-cassandra) 0.2.0
+* kube-prometheus-stack 12.11.3 [chart](https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-prometheus-stack)
+* Medusa for Apache Cassandra 0.11.3
+* medusa-operator 0.4.0
+* Reaper for Apache Cassandra 3.0.0
+* reaper-operator 2.3.0
 
 ## K8ssandra Operator 1.0.x revisions
 
 For the latest K8ssandra Operator changes, features, enhancements, and bug fixes, refer to the [CHANGELOG](https://github.com/k8ssandra/k8ssandra-operator/blob/main/CHANGELOG/CHANGELOG-1.0.md).
-
 
 ## K8ssandra 1.4.x revisions
 
