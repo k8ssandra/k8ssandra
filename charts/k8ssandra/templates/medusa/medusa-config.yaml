@@ -17,8 +17,10 @@ data:
     cql_password = cassandra
   {{- end}}
     check_running = nodetool version
+    use_sudo = False
 
     [storage]
+    use_sudo_for_restore = False
   {{- if (not (has .Values.medusa.storage $storageTypes)) }}
     {{ fail (print "Accepted storage type values are " $storageTypes) }}
   {{- end }}
