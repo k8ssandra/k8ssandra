@@ -10,7 +10,7 @@ dependencies:
     repository: file://../cass-operator
     condition: cass-operator.enabled
   - name: reaper-operator
-    version: 0.32.3
+    version: 0.32.4
     repository: file://../reaper-operator
     condition: reaper-operator.enabled
   - name: medusa-operator
