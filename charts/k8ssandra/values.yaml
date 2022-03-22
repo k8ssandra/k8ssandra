@@ -435,7 +435,7 @@ stargate:
   enabled: true
   # -- version of Stargate to deploy. This is used in conjunction with cassandra.version to select the Stargate container image.
   # If stargate.image is set, this value has no effect.
-  version: "1.0.44"
+  version: "1.0.52"
   # -- Sets the Stargate container image. This value must be compatible
   # with the value provided for stargate.clusterVersion. If left blank (recommended),
   # k8ssandra will derive an appropriate image based on cassandra.clusterVersion.
@@ -569,6 +569,10 @@ stargate:
   # -- Tolerations to apply to the Stargate pods. See
   # https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/ for background.
   tolerations: []
+  # -- SecurityContext for all Stargate containers and init containers. Do not change from value 999, it will fail.
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 999
 reaper:
   # -- Security context override for reaper container
   securityContext:
