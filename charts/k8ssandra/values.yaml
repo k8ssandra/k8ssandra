@@ -577,12 +577,12 @@ reaper:
   # -- Security context override for reaper container
   securityContext:
     runAsNonRoot: true
-    runAsUser: 65534
+    runAsUser: 1001
   # -- Security context override for reaper schema init container
   schemaInitContainerConfig:
     securityContext:
       runAsNonRoot: true
-      runAsUser: 65534
+      runAsUser: 1001
   # -- Security context override for reaper config init container
   # configInitContainerConfig:
   #   securityContext:
