@@ -195,10 +195,10 @@ var _ = Describe("Verify Reaper template", func() {
 			_ = renderTemplate(options)
 
 			Expect(reaper.Spec.SchemaInitContainerConfig).ToNot(BeNil())
-			Expect(reaper.Spec.SchemaInitContainerConfig.SecurityContext).To(BeNil())
+			Expect(reaper.Spec.SchemaInitContainerConfig.SecurityContext).ToNot(BeNil())
 
 			Expect(reaper.Spec.ConfigInitContainerConfig).ToNot(BeNil())
-			Expect(reaper.Spec.ConfigInitContainerConfig.SecurityContext).To(BeNil())
+			Expect(reaper.Spec.ConfigInitContainerConfig.SecurityContext).ToNot(BeNil())
 
 		})
 
