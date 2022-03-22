@@ -573,14 +573,17 @@ reaper:
   # -- Security context override for reaper container
   securityContext:
     runAsNonRoot: true
+    runAsUser: 65534
   # -- Security context override for reaper schema init container
   schemaInitContainerConfig:
     securityContext:
       runAsNonRoot: true
+      runAsUser: 65534
   # -- Security context override for reaper config init container
   configInitContainerConfig:
     securityContext:
       runAsNonRoot: true
+      runAsUser: 65534
   # -- Security context override for reaper pod
   podSecurityContext: {}
   # -- When enabled, Reaper automatically sets up repair schedules for all
