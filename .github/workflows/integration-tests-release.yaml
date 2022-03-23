@@ -328,7 +328,7 @@ jobs:
         working-directory: build/${{ steps.compute_next_version.outputs.RELEASE_VERSION }}
 
       # Helm Release
-      - uses: google-github-actions/setup-gcloud@master
+      - uses: google-github-actions/setup-gcloud@v0
         with:
           version: '290.0.1'
           project_id: ${{ secrets.GCP_PROJECT_ID }}
