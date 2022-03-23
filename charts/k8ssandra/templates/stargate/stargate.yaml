@@ -30,6 +30,8 @@ spec:
       labels:
         app: {{ .Release.Name }}-{{ include "k8ssandra.datacenterName" . }}-stargate
     spec:
+      securityContext:
+        {{- toYaml .Values.stargate.securityContext | nindent 8 }}
       serviceAccountName: {{ default "default" .Values.stargate.serviceAccount }}
       initContainers:
           - name: wait-for-cassandra

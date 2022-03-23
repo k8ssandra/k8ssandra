@@ -44,15 +44,18 @@ cassandra:
   #   pullPolicy: IfNotPresent
 
   # -- Security context override for cassandra container
-  securityContext: {}
+  securityContext:
+    runAsNonRoot: true
   # -- Cassandra base init container
   baseConfig:
     # -- Security context override for base init container
-    securityContext: {}
+    securityContext:
+      runAsNonRoot: true
   # -- The server-config-init init container
   configBuilder:
     # -- Security context override for server-config-init container
-    securityContext: {}
+    securityContext:
+      runAsNonRoot: true
     image:
       # -- Container registry for the config builder
       registry: docker.io
@@ -71,20 +74,23 @@ cassandra:
       # -- Repository for the apply-custom-config image
       repository: mikefarah/yq
       # -- Tag of the apply-custom-config image to pull from
-      tag: 4.14.1
+      tag: 4.22.1
       # -- Pull policy for the apply-custom-config image
       pullPolicy: IfNotPresent
+    securityContext:
+      runAsNonRoot: true
   # -- The jmx-credentials init container that configures JMX credentials.
   jmxCredentialsConfig:
     # -- Security context override for jmx init container
-    securityContext: {}
+    securityContext:
+      runAsNonRoot: true
     image:
       # -- Container registry for the jmx-credentials container
       registry: docker.io
       # -- Repository for jmx-credentials container image
       repository: busybox
       # -- Tag of the jmx-credentials image to pull from image repository
-      tag: 1.33.1
+      tag: 1.35.0
       # -- Pull policy for the jmx-credentials image
       pullPolicy: IfNotPresent
   # -- The ServiceAccount to use for Cassandra pods. If not defined, defaults
@@ -563,15 +569,25 @@ stargate:
   # -- Tolerations to apply to the Stargate pods. See
   # https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/ for background.
   tolerations: []
+  # -- SecurityContext for all Stargate containers and init containers. Do not change from value 999, it will fail.
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 999
 reaper:
   # -- Security context override for reaper container
-  securityContext: {}
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 1001
   # -- Security context override for reaper schema init container
   schemaInitContainerConfig:
-    securityContext: {}
+    securityContext:
+      runAsNonRoot: true
+      runAsUser: 1001
   # -- Security context override for reaper config init container
-  configInitContainerConfig:
-    securityContext: {}
+  # configInitContainerConfig:
+  #   securityContext:
+  #     runAsNonRoot: true
+  #     runAsUser: 65534
   # -- Security context override for reaper pod
   podSecurityContext: {}
   # -- When enabled, Reaper automatically sets up repair schedules for all
@@ -651,10 +667,12 @@ medusa:
   # `bucketName` and `storageSecret` **must** be defined.
   enabled: false
   # -- Security context override for Medusa container.
-  securityContext: {}
+  securityContext:
+    runAsNonRoot: true
   # -- Security context override for Medusa config init container.
   restoreInitContainerConfig:
-    securityContext: {}
+    securityContext:
+      runAsNonRoot: true
   # Configures the Medusa image which is built from
   # https://github.com/thelastpickle/cassandra-medusa/tree/master/k8s.
   image:

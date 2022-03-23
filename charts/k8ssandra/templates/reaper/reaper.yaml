@@ -36,10 +36,6 @@ spec:
   schemaInitContainerConfig:
     securityContext: {{ toYaml .Values.reaper.schemaInitContainerConfig.securityContext | nindent 6 }}
   {{- end }}
-  {{- if (and .Values.reaper.configInitContainerConfig .Values.reaper.configInitContainerConfig.securityContext) }}
-  configInitContainerConfig:
-    securityContext: {{ toYaml .Values.reaper.configInitContainerConfig.securityContext | nindent 6 }}
-  {{- end }}
   podSecurityContext: {{- toYaml .Values.reaper.podSecurityContext | nindent 4 }}
   securityContext: {{- toYaml .Values.reaper.securityContext | nindent 4 }}
 {{- end }}

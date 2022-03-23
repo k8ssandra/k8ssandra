@@ -195,10 +195,7 @@ var _ = Describe("Verify Reaper template", func() {
 			_ = renderTemplate(options)
 
 			Expect(reaper.Spec.SchemaInitContainerConfig).ToNot(BeNil())
-			Expect(reaper.Spec.SchemaInitContainerConfig.SecurityContext).To(BeNil())
-
-			Expect(reaper.Spec.ConfigInitContainerConfig).ToNot(BeNil())
-			Expect(reaper.Spec.ConfigInitContainerConfig.SecurityContext).To(BeNil())
+			Expect(reaper.Spec.SchemaInitContainerConfig.SecurityContext).ToNot(BeNil())
 
 		})
 
@@ -213,12 +210,6 @@ var _ = Describe("Verify Reaper template", func() {
 			Expect(reaper.Spec.SchemaInitContainerConfig.SecurityContext).
 				ToNot(BeNil())
 			Expect(*reaper.Spec.SchemaInitContainerConfig.SecurityContext.RunAsGroup).
-				To(BeIdenticalTo(int64(8675309)))
-
-			Expect(reaper.Spec.ConfigInitContainerConfig).ToNot(BeNil())
-			Expect(reaper.Spec.ConfigInitContainerConfig.SecurityContext).
-				ToNot(BeNil())
-			Expect(*reaper.Spec.ConfigInitContainerConfig.SecurityContext.RunAsGroup).
 				To(BeIdenticalTo(int64(8675309)))
 		})
 
