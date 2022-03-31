@@ -328,8 +328,10 @@ Add garbage collection settings based on the following rules in the order listed
 {{- $datacenter := (index .Values.cassandra.datacenters 0) }}
 {{- $clusterCmsEnabled := .Values.cassandra.gc.cms.enabled }}
 {{- $clusterG1Enabled := .Values.cassandra.gc.g1.enabled }}
+{{- $clusterZgcEnabled := .Values.cassandra.gc.zgc.enabled }}
 {{- $dcCmsEnabled := false }}
 {{- $dcG1Enabled := false }}
+{{- $dcZgcEnabled := false }}
 {{- $gc := "" -}}
 
 {{- if $datacenter.gc }}
@@ -339,18 +341,33 @@ Add garbage collection settings based on the following rules in the order listed
   {{- if $datacenter.gc.g1 }}
     {{ $dcG1Enabled = $datacenter.gc.g1.enabled }}
   {{- end }}
+  {{- if $datacenter.gc.zgc }}
+    {{ $dcZgcEnabled = $datacenter.gc.zgc.enabled }}
+    {{- if and (hasPrefix "3" .Values.cassandra.version) $dcZgcEnabled }}
+      {{- fail "ZGC is available since JDK11 which is present on images of Cassandra 4.0 and above" }}
+    {{- end }}
+  {{- end }}
 {{- end }}
 
-{{- $dcGcEnabled := or $dcCmsEnabled $dcG1Enabled }}
-{{- $clusterGcEnabled := or $clusterCmsEnabled $clusterG1Enabled }}
+{{- $dcGcEnabled := or $dcCmsEnabled $dcG1Enabled $dcZgcEnabled }}
+{{- $clusterGcEnabled := or $clusterCmsEnabled $clusterG1Enabled $clusterZgcEnabled }}
 
 {{- if and $dcCmsEnabled $dcG1Enabled }}
+  {{- fail "Only one of the CMS and G1 garbage collectors can be enabled" }}
+{{- end }}
+{{- if and $dcZgcEnabled $dcG1Enabled }}
   {{- fail "Only one of the CMS and G1 garbage collectors can be enabled" }}
 {{- end }}
 
 {{- if not $dcGcEnabled }}
   {{- if and $clusterCmsEnabled $clusterG1Enabled }}
     {{- fail "Only one of the CMS and G1 garbage collectors can be enabled" }}
+  {{- end }}
+  {{- if and $clusterZgcEnabled $clusterG1Enabled }}
+    {{- fail "Only one of the ZGC and G1 garbage collectors can be enabled" }}
+  {{- end }}
+  {{- if and (hasPrefix "3" .Values.cassandra.version) $clusterZgcEnabled }}
+    {{- fail "ZGC is available since JDK11 which is present on images of Cassandra 4.0 and above" }}
   {{- end }}
 {{- end }}
 
@@ -359,12 +376,16 @@ Add garbage collection settings based on the following rules in the order listed
     {{ include "k8ssandra.gcCms" $datacenter.gc.cms }}
   {{- else if $dcG1Enabled }}
     {{ include "k8ssandra.gcG1" $datacenter.gc.g1 }}
+  {{- else if $dcZgcEnabled }}
+    {{ include "k8ssandra.gcZgc" $datacenter.gc.zgc }}
   {{- end }}
 {{- else if $clusterGcEnabled }}
   {{- if $clusterCmsEnabled }}
     {{ include "k8ssandra.gcCms" .Values.cassandra.gc.cms }}
   {{- else if $clusterG1Enabled }}
     {{ include "k8ssandra.gcG1" .Values.cassandra.gc.g1 }}
+  {{- else if $clusterZgcEnabled }}
+    {{ include "k8ssandra.gcZgc" .Values.cassandra.gc.zgc }}
   {{- end }}
 {{- end }}
 {{- end -}}
@@ -402,6 +423,10 @@ Add garbage collection settings based on the following rules in the order listed
 {{- if .concurrentGcThreads }}
   {{ indent 4 (cat "conc_gc_threads:" .concurrentGcThreads) }}
 {{- end }}
+{{- end -}}
+
+{{- define "k8ssandra.gcZgc" -}}
+{{- indent 2 "garbage_collector: ZGC" -}}
 {{- end -}}
 
 {{/*

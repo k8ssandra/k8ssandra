@@ -3,6 +3,7 @@ package steps
 import (
 	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
 	"log"
 	"os"
@@ -139,6 +140,9 @@ func deployCluster(t *testing.T, namespace, customValues string, helmValues map[
 
 	// Wait for CassandraDatacenter to be ready..
 	WaitForCassDcToBeReady(t, namespace)
+
+	// check that jvm options are set on the right files
+	checkJvmOptions(t, namespace)
 }
 
 func DeployClusterWithValues(t *testing.T, namespace, medusaBackend, customValues string, nodes int, upgrade bool, useLocalCharts bool, version string) {
@@ -591,4 +595,36 @@ func LoadRowsInTable(t *testing.T, nbRows int, namespace, tableName, keyspaceNam
 	for i := 0; i < nbRows; i++ {
 		runCassandraQueryAndGetOutput(t, namespace, fmt.Sprintf("INSERT INTO %s.%s(id,val) values(now(), '%d');", keyspaceName, tableName, i))
 	}
+}
+
+func checkJvmOptions(t *testing.T, namespace string) {
+	if os.Getenv("K8SSANDRA_CASSANDRA_VERSION") != "" {
+		cassdcKey := types.NamespacedName{
+			Name:      datacenterName,
+			Namespace: namespace,
+		}
+		cassdc, err := getCassandraDatacenter(cassdcKey)
+		g(t).Expect(err).To(BeNil(), "Failed getting cassandra datacenter")
+
+		dcConfig, err := unmarshalToMap(cassdc.Spec.Config)
+		g(t).Expect(err).To(BeNil(), "Failed unmarshalling cassandra datacenter config")
+
+		cassandraVersion := os.Getenv("K8SSANDRA_CASSANDRA_VERSION")
+		// Check if cassandraVersion starts with 3.
+		if strings.HasPrefix(cassandraVersion, "3.") {
+			g(t).Expect(dcConfig["jvm-options"]).ShouldNot(BeNil(), "jvm-options should not be empty for Cassandra 3.x")
+			g(t).Expect(dcConfig["jvm-server-options"]).Should(BeNil(), "jvm-server-options should not be set Cassandra 3.x")
+			g(t).Expect(dcConfig["jvm11-server-options"]).Should(BeNil(), "jvm-server-options should not be set Cassandra 3.x")
+		} else {
+			g(t).Expect(dcConfig["jvm-server-options"]).ShouldNot(BeNil(), "jvm-server-options should be set Cassandra 4.x")
+			g(t).Expect(dcConfig["jvm11-server-options"]).ShouldNot(BeNil(), "jvm11-server-options should be set Cassandra 4.x")
+		}
+	}
+
+}
+
+func unmarshalToMap(data []byte) (map[string]interface{}, error) {
+	var result map[string]interface{}
+	err := json.Unmarshal(data, &result)
+	return result, err
 }
