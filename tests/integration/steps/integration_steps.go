@@ -141,8 +141,11 @@ func deployCluster(t *testing.T, namespace, customValues string, helmValues map[
 	// Wait for CassandraDatacenter to be ready..
 	WaitForCassDcToBeReady(t, namespace)
 
-	// check that jvm options are set on the right files
-	checkJvmOptions(t, namespace)
+	if useLocalCharts {
+		// Previous versions may not support this check
+		// check that jvm options are set on the right files
+		checkJvmOptions(t, namespace)
+	}
 }
 
 func DeployClusterWithValues(t *testing.T, namespace, medusaBackend, customValues string, nodes int, upgrade bool, useLocalCharts bool, version string) {
