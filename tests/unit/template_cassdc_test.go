@@ -140,9 +140,9 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			// JVM heap options -- default to settings as defined in cassdc.yaml
 			var config Config
 			Expect(json.Unmarshal(cassdc.Spec.Config, &config)).To(Succeed())
-			Expect(config.JvmServerOptions.InitialHeapSize).To(BeEmpty())
-			Expect(config.JvmServerOptions.MaxHeapSize).To(BeEmpty())
-			Expect(config.JvmServerOptions.YoungGenSize).To(BeEmpty())
+			Expect(config.Jvm11ServerOptions.InitialHeapSize).To(BeEmpty())
+			Expect(config.Jvm11ServerOptions.MaxHeapSize).To(BeEmpty())
+			Expect(config.Jvm11ServerOptions.YoungGenSize).To(BeEmpty())
 
 			// Default set of volume and volume mounts
 			Expect(kubeapi.GetVolumeMountNames(&initContainers[0])).To(ConsistOf(CassandraConfigVolumeName,
@@ -1088,7 +1088,9 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			Expect(config.CassandraConfig.PermissionsUpdateMillis).To(Equal(cacheUpdateInterval))
 			Expect(config.CassandraConfig.CredentialsValidityMillis).To(Equal(cacheValidityPeriod))
 			Expect(config.CassandraConfig.CredentialsUpdateMillis).To(Equal(cacheUpdateInterval))
-			Expect(config.JvmServerOptions.AdditionalJvmOptions).To(ContainElements(
+			Expect(config.Jvm11ServerOptions).NotTo(BeNil(), "Jvm11ServerOptions should not be nil")
+			Expect(config.Jvm11ServerOptions.AdditionalJvmOptions).NotTo(BeNil(), "Jvm11ServerOptions.AdditionalJvmOptions should not be nil")
+			Expect(config.Jvm11ServerOptions.AdditionalJvmOptions).To(ContainElements(
 				"-Dcassandra.system_distributed_replication_dc_names="+dcName,
 				"-Dcassandra.system_distributed_replication_per_dc="+strconv.Itoa(clusterSize),
 			))
