@@ -17,5 +17,6 @@
     "ssandra",
     "ssandra's",
     "templating"
-  ]
+  ],
+  "window.title": "${activeEditorShort}${separator}${rootName} ${separator} [Branch: dejanovski/docs-v2-repair]"
 }
