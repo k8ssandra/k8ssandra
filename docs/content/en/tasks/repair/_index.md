@@ -23,7 +23,7 @@ The requirement for your environment may vary considerably, however the general 
 Access to the Reaper web interface requires either:  
 
 * setting up a custom Ingress resource
-* or modifying Reaper's Kubernetes service into a LoadBalancer (in cloud environments), which will expose it over a public IP
+* or modifying Reaper's Kubernetes service as a LoadBalancer (in cloud environments), which will expose it over a public IP
 * or using port forwarding, which is another way to provide external access to resources that have been deployed by K8ssandra Operator in your Kubernetes environment:  
   * Developers, see [Set up port forwarding]({{< relref "/quickstarts/developer/#set-up-port-forwarding" >}}).  
   * Site reliability engineers, see [Configure port forwarding]({{< relref "/quickstarts/site-reliability-engineer/#port-forwarding" >}}).
@@ -60,7 +60,7 @@ k8ssandra-operator-6d4dd9fb8f-5kzl6                          1/1     Running   0
 To access Reaper, navigate to [http://localhost:8080/webui/](http://localhost:8080/webui/). 
 
 {{% alert title="Tip" color="success" %}}
-Again, if you are not running locally, use the IP address provided by your cluster for the ingress resource or the load balancer service.
+If you are not running locally, use the IP address provided by your cluster for the ingress resource or the load balancer service.
 {{% /alert %}}
 
 ### Check the cluster’s health
