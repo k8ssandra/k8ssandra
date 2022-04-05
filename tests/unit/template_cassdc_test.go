@@ -51,9 +51,10 @@ type JvmOptions struct {
 }
 
 type Config struct {
-	CassandraConfig  CassandraConfig `json:"cassandra-yaml"`
-	JvmOptions       *JvmOptions     `json:"jvm-options"`
-	JvmServerOptions *JvmOptions     `json:"jvm-server-options"`
+	CassandraConfig    CassandraConfig `json:"cassandra-yaml"`
+	JvmOptions         *JvmOptions     `json:"jvm-options"`
+	JvmServerOptions   *JvmOptions     `json:"jvm-server-options"`
+	Jvm11ServerOptions *JvmOptions     `json:"jvm11-server-options"`
 }
 
 var (
@@ -139,10 +140,9 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			// JVM heap options -- default to settings as defined in cassdc.yaml
 			var config Config
 			Expect(json.Unmarshal(cassdc.Spec.Config, &config)).To(Succeed())
-			Expect(config.JvmServerOptions).ToNot(BeNil())
-			Expect(config.JvmServerOptions.InitialHeapSize).To(BeEmpty())
-			Expect(config.JvmServerOptions.MaxHeapSize).To(BeEmpty())
-			Expect(config.JvmServerOptions.YoungGenSize).To(BeEmpty())
+			Expect(config.Jvm11ServerOptions.InitialHeapSize).To(BeEmpty())
+			Expect(config.Jvm11ServerOptions.MaxHeapSize).To(BeEmpty())
+			Expect(config.Jvm11ServerOptions.YoungGenSize).To(BeEmpty())
 
 			// Default set of volume and volume mounts
 			Expect(kubeapi.GetVolumeMountNames(&initContainers[0])).To(ConsistOf(CassandraConfigVolumeName,
@@ -1088,7 +1088,9 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 			Expect(config.CassandraConfig.PermissionsUpdateMillis).To(Equal(cacheUpdateInterval))
 			Expect(config.CassandraConfig.CredentialsValidityMillis).To(Equal(cacheValidityPeriod))
 			Expect(config.CassandraConfig.CredentialsUpdateMillis).To(Equal(cacheUpdateInterval))
-			Expect(config.JvmServerOptions.AdditionalJvmOptions).To(ContainElements(
+			Expect(config.Jvm11ServerOptions).NotTo(BeNil(), "Jvm11ServerOptions should not be nil")
+			Expect(config.Jvm11ServerOptions.AdditionalJvmOptions).NotTo(BeNil(), "Jvm11ServerOptions.AdditionalJvmOptions should not be nil")
+			Expect(config.Jvm11ServerOptions.AdditionalJvmOptions).To(ContainElements(
 				"-Dcassandra.system_distributed_replication_dc_names="+dcName,
 				"-Dcassandra.system_distributed_replication_per_dc="+strconv.Itoa(clusterSize),
 			))
@@ -1684,6 +1686,70 @@ var _ = Describe("Verify CassandraDatacenter template", func() {
 		Entry("3.11.12 default", "3.11.12", "", 256),
 		Entry("3.11.12 custom", "3.11.12", "16", 16),
 	)
+
+	It("using ZGC with Cassandra 3.11", func() {
+		options := &helm.Options{
+			KubectlOptions: defaultKubeCtlOptions,
+			SetValues: map[string]string{
+				"cassandra.version":        "3.11.12",
+				"cassandra.gc.zgc.enabled": "true",
+			},
+		}
+
+		err := renderTemplate(options)
+
+		Expect(err).ToNot(BeNil(), "Rendering should fail when using ZGC with Cassandra 3.11")
+	})
+
+	It("using both G1 and CMS with Cassandra 3.11", func() {
+		options := &helm.Options{
+			KubectlOptions: defaultKubeCtlOptions,
+			SetValues: map[string]string{
+				"cassandra.version":        "3.11.12",
+				"cassandra.gc.g1.enabled":  "true",
+				"cassandra.gc.cms.enabled": "true",
+			},
+		}
+
+		err := renderTemplate(options)
+
+		Expect(err).ToNot(BeNil(), "Rendering should fail when using both CMS and G1 with Cassandra 3.11")
+	})
+
+	It("using both G1 and ZGC with Cassandra 4.0", func() {
+		options := &helm.Options{
+			KubectlOptions: defaultKubeCtlOptions,
+			SetValues: map[string]string{
+				"cassandra.version":        "4.0.0",
+				"cassandra.gc.g1.enabled":  "true",
+				"cassandra.gc.zgc.enabled": "true",
+			},
+		}
+
+		err := renderTemplate(options)
+
+		Expect(err).ToNot(BeNil(), "Rendering should fail when using both ZGC and G1 with Cassandra 4.0")
+	})
+
+	It("using ZGC with Cassandra 4.0", func() {
+		options := &helm.Options{
+			KubectlOptions: defaultKubeCtlOptions,
+			SetValues: map[string]string{
+				"cassandra.version":        "4.0.0",
+				"cassandra.gc.zgc.enabled": "true",
+			},
+		}
+
+		err := renderTemplate(options)
+		var config Config
+		Expect(json.Unmarshal(cassdc.Spec.Config, &config)).To(Succeed())
+
+		Expect(config.JvmOptions).To(BeNil())
+		//Expect(config.JvmServerOptions).ToNot(BeNil())
+		Expect(config.Jvm11ServerOptions).ToNot(BeNil())
+		Expect(config.Jvm11ServerOptions.GarbageCollector).To(Equal("ZGC"))
+		Expect(err).To(BeNil(), "Rendering should succeed when using ZGC with Cassandra 4.0")
+	})
 })
 
 func verifyMedusaVolumeMounts(container *corev1.Container) {

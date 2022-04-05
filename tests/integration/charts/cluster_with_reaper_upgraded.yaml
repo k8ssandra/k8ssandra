@@ -2,6 +2,9 @@ cassandra:
   heap:
     size: 505M
     newGenSize: 201M
+  gc:
+    g1:
+      enabled: true
   datacenters:
     - name: dc1
       size: 3

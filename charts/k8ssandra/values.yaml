@@ -228,6 +228,9 @@ cassandra:
   gc:
     # -- GC configuration for the CMS collector.
     cms: {}
+    # CMS cannot be used with Cassandra 4.0 and later due to cass-operator dependencies.
+    # Even if marked as enabled here, G1 will be used.
+    #
     # -- Enables the CMS garbage collector
     # enabled: true
 
@@ -248,29 +251,38 @@ cassandra:
 
     # -- GC configuration for the G1 collector.
     g1: {}
+    # Default for Apache Cassandra 4.0 and later.
     # -- Enabled the G1 garbage collector.
     # enabled: true
-  # -- Determines the percentage of total garbage collection time that
-  # should be spent in the Update RS phase updating any remaining
-  # remembered sets. G1 controls the amount of concurrent remembered set
-  # updates using this setting.
-  # setUpdatingPauseTimePercent: 5
+    # -- Determines the percentage of total garbage collection time that
+    # should be spent in the Update RS phase updating any remaining
+    # remembered sets. G1 controls the amount of concurrent remembered set
+    # updates using this setting.
+    # setUpdatingPauseTimePercent: 5
 
-  # -- Sets a target value for desired maximum pause time.
-  # maxGcPauseMillis: 500
+    # -- Sets a target value for desired maximum pause time.
+    # maxGcPauseMillis: 500
 
-  # -- Sets the heap occupancy threshold that triggers a marking cycle.
-  # initiatingHeapOccupancyPercent: 70
+    # -- Sets the heap occupancy threshold that triggers a marking cycle.
+    # initiatingHeapOccupancyPercent: 70
 
-  # -- Set the number of stop the world (STW) worker threads.
-  # parallelGcThreads: 16
+    # -- Set the number of stop the world (STW) worker threads.
+    # parallelGcThreads: 16
 
-  # -- Set the number of stop the world (STW) worker threads.
-  # concurrentGcThreads: 16
+    # -- Set the number of stop the world (STW) worker threads.
+    # concurrentGcThreads: 16
 
-  # -- Resource requests for each Cassandra pod. See
-  # https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
-  # for background on managing resources.
+    # -- Resource requests for each Cassandra pod. See
+    # https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
+    # for background on managing resources.
+
+    # -- GC configuration for the ZGC collector.
+    zgc: {}
+    # Only for Apache Cassandra 4.0 and later.
+    # -- Enable the ZGC garbage collector.
+    # enabled: true
+
+
   resources: {}
   # Tolerations to apply to the Cassandra pods. See
   # https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/ for background.

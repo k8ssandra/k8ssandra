@@ -175,9 +175,9 @@ var _ = Describe("Verify 4x features are created in template", func() {
 			var dcCfg map[string]interface{}
 			json.Unmarshal(cassDC.Spec.Config, &dcCfg)
 
-			jvmOpts, ok := dcCfg["jvm-server-options"]
+			jvmOpts, ok := dcCfg["jvm11-server-options"]
 			if !ok {
-				Fail("couldn't index jvm-server-options in dc config")
+				Fail("couldn't index jvm11-server-options in dc config")
 			}
 
 			additionalOpts, ok := jvmOpts.(map[string]interface{})["additional-jvm-opts"]
