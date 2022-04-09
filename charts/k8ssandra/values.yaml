@@ -281,8 +281,6 @@ cassandra:
     # Only for Apache Cassandra 4.0 and later.
     # -- Enable the ZGC garbage collector.
     # enabled: true
-
-
   resources: {}
   # Tolerations to apply to the Cassandra pods. See
   # https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/ for background.
@@ -693,7 +691,7 @@ medusa:
     # -- Image repository for medusa
     repository: k8ssandra/medusa
     # -- Tag of the medusa image to pull from
-    tag: 0.12.1
+    tag: 0.12.2
     # -- Pull policy for the medusa container
     pullPolicy: IfNotPresent
   # -- Configures the Cassandra user used by Medusa when authentication is
