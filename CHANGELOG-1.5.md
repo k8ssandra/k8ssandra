@@ -19,6 +19,7 @@ and date `## vX.Y.Z - YYYY-MM-DD` and create a new placeholder section for  `unr
 ## unreleased
 
 * [FEATURE] Enable the use of ZGC (Z Garbage Collector) for Cassandra 4.0
+* [CHANGE] Upgrade cass-operator to v1.10.3
 * [CHANGE] Upgrade Stargate to v1.0.52
 * [CHANGE] Upgrade Medusa to v0.12.2
 * [CHANGE] Upgrade Reaper to v3.1.1
