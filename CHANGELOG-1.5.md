@@ -16,7 +16,7 @@ last).
 When cutting a new release of the parent `k8ssandra` chart update the `unreleased` heading to the tag being generated 
 and date `## vX.Y.Z - YYYY-MM-DD` and create a new placeholder section for  `unreleased` entries.
 
-## unreleased
+## v1.5.0 - 2022-04-09
 
 * [FEATURE] Enable the use of ZGC (Z Garbage Collector) for Cassandra 4.0
 * [CHANGE] Upgrade cass-operator to v1.10.3
