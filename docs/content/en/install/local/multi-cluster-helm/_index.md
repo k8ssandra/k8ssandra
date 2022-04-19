@@ -229,10 +229,11 @@ helm install k8ssandra-operator k8ssandra/k8ssandra-operator -n k8ssandra-operat
 kubectx kind-k8ssandra-2
 helm install k8ssandra-operator k8ssandra/k8ssandra-operator -n k8ssandra-operator \
  --create-namespace --set controlPlane=false
+ ```
 
 ### Verify control-plane configuration
 
-```
+```bash
 kubectx kind-k8ssandra-0
 
 kubectl -n k8ssandra-operator get deployment k8ssandra-operator \
@@ -446,9 +447,7 @@ In the **earlier** deployment phases, you may notice statuses such as:
 **Output:**
 
 ```bash
-   .
-   .
-   .
+   ...
 dc1:
       Cassandra:
         Cassandra Operator Progress:  Ready
@@ -471,12 +470,10 @@ dc1:
           Last Transition Time:    2022-01-31T19:02:40Z
           Message:
           Reason:
-   .
-   .
-   .
+   ...
 ```
 
-This behavior is expected for the deployments-in-progress. If you're curious, you can continue to check status bu submitting the command again. When the deployments have been completed, for example, here's the command again and a portion of its completed output:
+This behavior is expected for the deployments-in-progress. If you're curious, you can continue to check status by submitting the command again. When the deployments have been completed, for example, here's the command again and a portion of its completed output:
 
 ```bash
 kubectl describe k8cs demo -n k8ssandra-operator
@@ -485,9 +482,7 @@ kubectl describe k8cs demo -n k8ssandra-operator
 **Output subset:**
 
 ```bash
-   .
-   .
-   .
+   ...
 dc2:
       Cassandra:
         Cassandra Operator Progress:  Ready
