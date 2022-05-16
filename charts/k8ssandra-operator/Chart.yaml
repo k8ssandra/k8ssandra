@@ -3,8 +3,8 @@ name: k8ssandra-operator
 description: |
   Kubernetes operator which handles the provisioning and management of K8ssandra clusters.
 type: application
-version: 0.37.2
-appVersion: 1.0.2
+version: 0.37.3
+appVersion: 1.1.0
 dependencies:
   - name: k8ssandra-common
     version: 0.28.4
