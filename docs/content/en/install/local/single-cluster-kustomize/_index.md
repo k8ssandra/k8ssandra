@@ -46,7 +46,7 @@ kubectl apply -f https://github.com/jetstack/cert-manager/releases/download/v1.7
 Install with:
 
 ```console
-kustomize build "github.com/k8ssandra/k8ssandra-operator/config/deployments/control-plane?ref=v1.0.0" | k apply --server-side -f -
+kustomize build "github.com/k8ssandra/k8ssandra-operator/config/deployments/control-plane?ref=v1.1.1" | k apply --server-side -f -
 
 Verify that the following CRDs are installed:
 
@@ -92,7 +92,7 @@ metadata:
   name: demo
 spec:
   cassandra:
-    serverVersion: "4.0.1"
+    serverVersion: "4.0.3"
     datacenters:
       - metadata:
           name: dc1

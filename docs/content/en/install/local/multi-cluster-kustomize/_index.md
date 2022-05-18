@@ -85,7 +85,7 @@ kubectx kind-k8ssandra-0
 Now install the operator:
 
 ```console
-kustomize build "github.com/k8ssandra/k8ssandra-operator/config/deployments/control-plane?ref=v1.0.0" | k apply --server-side -f -
+kustomize build "github.com/k8ssandra/k8ssandra-operator/config/deployments/control-plane?ref=v1.1.1" | k apply --server-side -f -
 ```
 
 This installs the operator in the `k8ssandra-operator` namespace.
@@ -137,7 +137,7 @@ kubectx kind-k8ssandra-1
 Now install the operator:
 
 ```console
-kustomize build "github.com/k8ssandra/k8ssandra-operator/config/deployments/data-plane?ref=v1.0.0" | k apply --server-side -f -
+kustomize build "github.com/k8ssandra/k8ssandra-operator/config/deployments/data-plane?ref=v1.1.1" | k apply --server-side -f -
 ```
 
 This installs the operator in the `k8ssandra-operator` namespace.
@@ -218,7 +218,7 @@ metadata:
   name: demo
 spec:
   cassandra:
-    serverVersion: "4.0.1"
+    serverVersion: "4.0.3"
     storageConfig:
       cassandraDataVolumeClaimSpec:
         storageClassName: standard
