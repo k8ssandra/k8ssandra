@@ -6,227 +6,269 @@ weight: 1
 description: How to migrate an existing Cassandra cluster that's running in Kubernetes to K8ssandra Operator.
 ---
 
-## Migrating an existing K8ssandra v1 cluster to a K8ssandra Operator cluster
+## Migrating an existing Apache Cassandra&copy; or K8ssandra v1 cluster to K8ssandra-operator
 
-{{< tbs >}}
+There’s a lot of overlap between both Cassandra, K8ssandra v1.x and K8ssandra-operator, but there are also some incompatibilities which currently prevent you from performing an in-place upgrade.
 
-The steps to migrate an existing K8ssandra v1 cluster to a K8ssandra Operator cluster will be provided in an upcoming Blog post. When available, this topic will link to the blog. Other details in this topic will be updated accordingly. The strategy to perform this migration to K8ssandra Operator will focus on datacenter migration.
+We’ll use a datacenter (DC) switch, instead, creating a new DC with K8ssandra-operator that will expand the cluster, then we’ll decommission the old DC. The whole procedure can be achieved without any downtime.
 
-## The environment
+For the rest of this document, we'll refer to the pre-existing datacenter as `dc1` and the newly created one running on K8ssandra-operator as `dc2`. 
 
-It's assumed that the Cassandra cluster is running in the same Kubernetes cluster in which K8ssandra will run. The Cassandra cluster may have been installed with another operator (such as [CassKop](https://github.com/Orange-OpenSource/casskop)), a Helm chart (such as [bitnami/cassandra](https://github.com/bitnami/charts/tree/master/bitnami/cassandra)), or by directly creating the YAML manfiests for the StatefulSets and any other objects that were created.
+## Pre-requisites
 
-{{% alert title="Tip" color="success" %}}
-See <https://thelastpickle.com/blog/2019/02/26/data-center-switch.html> for a thorough guide on how to migrate to a new datacenter.
-{{% /alert %}}
+Pod IP addresses must be routable between all Kubernetes clusters involved in the migration, as well as Cassandra nodes when migrating from a non Kubernetes setup.
 
-## Check the replication strategies of keyspaces
+## Install K8ssandra-operator
 
-Confirm that the user-defined keyspaces and each of the `system_auth`, `system_distributed`, and `system_traces` are using `NetworkTopologyStrategy`.
-
-{{% alert title="Tip" color="success" %}}
-The `system_*` keyspaces include `system_auth`, `system_schema`, `system_distributed`, and `system_traces`.
-{{% /alert %}}
-
-It is generally recommended to use a replication factor of `3`. If your keyspaces currently use `SimpleStrategy` and assuming you have at least 3 Cassandra nodes, then you would change the replication factor for `system_auth` as follows:
-
-```cql
-ALTER KEYSPACE system_auth WITH replication = {'class': 'NetworkTopologyStrategy', 'dc1': 3}
-```
-
-`dc1` is the name of the datacenter as defined in `cassandra-rackdc.properties`, which you can find in the `/etc/cassandra/` directory of your Cassandra installation.
-
-
-Changing the recommendation may result in a topology change; that is, a token ownership change. 
-
-{{% alert title="Recommendation" color="success" %}}
-If you change the replication strategy of a keyspace, run a full, cluster-wide repair on it using whatever solution you have for scheduling and running repairs. If you do not already have another solution, you can run `nodetool repair -full` on each Cassandra node, one at a time. Repairs can be both time consuming and resource intensive. It is best to run them during a scheduled maintenance window. 
-{{% /alert %}}
-
-## Check the endpoint snitch
-
-Make sure that `GossipingPropertyFileSnitch` is used, and not `SimpleSnitch`.
-
-{{% alert title="Recommendation" color="success" %}}
-If you change the snitch, run a full, cluster-wide repair.
-{{% /alert %}}
-
-## Client changes
-
-Make sure client services are using a `LoadBalancingPolicy` that will route requests to the local datacenter. Also make sure your clients are using `LOCAL_*` and not `QUORUM` consistency levels.  
-
-Here is an example `application.conf` file for version 4.11 of the Java driver that configures the `LoadBalancingPolicy` and the default consistency level:
-
-```conf
-# application.conf
-
-datastax-java-driver {
-    basic.load-balancing-policy {
-        local-datacenter = dc1
-    }
-
-    basic.request {
-        consistency = LOCAL_QUORUM
-    }
-}
-```
-
-## Install K8ssandra
-
-Before installing K8ssandra, make a note of the IP addresses of the seed nodes of the current datacenter. You will use the following to configure the `additionalSeeds` property in the k8ssandra chart. Here is an example chart properties overrides file named `k8ssandra-values.yaml` that we can use to install k8ssandra:
-
-```yaml
-#k8ssandra-values.yaml
-#
-# Note this only demonstrates usage of the additionalSeeds property.
-# relrefer to the chart documentation for other properties you may want
-# to configure.
-cassandra:
-  # The cluster name needs to match the cluster name in the original
-  # datacenter.
-  clusterName: cassandra
-  datacenters:
-  - name: dc2
-    size: 3
-  additionalSeeds:
-  # The following should be replaced with actual IP addresses or
-  # hostnames of pods in the original datacenter.
-  - <dc1-seed>
-  - <dc1-seed>
-  - <dc1-seed>
-```
-
-Install k8ssandra as follows. Replace `my-k8ssandra` with whatever name you prefer:
+First, install cert-manager, which will be used by cass-operator:
 
 ```bash
-helm install my-k8ssandra k8ssandra/k8ssandra -f k8ssandra-values.yaml
+kubectl apply -f https://github.com/jetstack/cert-manager/releases/download/v1.7.1/cert-manager.yaml
 ```
 
-Run `nodetool status <keyspace-name>` to verify that the nodes in the new datacenter are gossiping with the old datacenter. For the keyspace argument, you can specify a user-defined one or `system_auth`.  Here is some example output:
+Using [kustomize.io](https://kustomize.io) or [helm](https://github.com/helm/helm), install k8ssandra-operator and cass-operator in a dedicated namespace (we’ll use k8ssandra-operator here):
 
-```bash
-nodetool status system_auth
+### Using Helm
+
+```
+helm repo add k8ssandra https://helm.k8ssandra.io/stable
+helm repo update
+helm install k8ssandra-operator k8ssandra/k8ssandra-operator -n k8ssandra-operator --create-namespace
 ```
 
-**Output:**
+### Using Kustomize
 
-```bash
+```
+kustomize build github.com/k8ssandra/k8ssandra-operator/config/deployments/control-plane\?ref\=v1.1.1 | kubectl apply --server-side --force-conflicts -f -
+```
+
+**Note: Modify the version in the URL above to match your target version.**
+
+## Copy secrets from K8ssandra 1.x
+
+Secrets can only be referenced in pods if they exist in the same namespace. Therefore when migrating from K8ssandra 1.x, the secrets that were created in the original k8ssandra namespace need to be copied over to the k8ssandra-operator namespace.
+
+That includes the following secrets:
+
+- Superuser
+- Reaper (CQL)
+- Reaper JMX
+- Medusa
+- Medusa bucket key
+- Stargate
+
+There is no automation to copy secrets in kubernetes, so they need to be fully recreated either manually or through CD automation.
+
+When migrating from Cassandra, check the [security]({{< relref "/tasks/secure" >}}) section of our documentation to read about the expected secrets and create them accordingly.
+
+## Alter your keyspaces replication strategy
+
+Before spinning up the new datacenter, make sure all user created keyspaces are using `NetworkTopologyStrategy` (NTS). If not, alter them to use NTS and set the same number of replicas as currently on the existing DC:
+
+```
+ALTER KEYSPACE <my-keyspace> WITH replication = {'class': 'NetworkTopologyStrategy', 'dc1':3};
+```
+
+Alter the following keyspaces in the same way:
+
+- `system_auth`
+- `system_distributed`
+- `system_traces`
+- `data_endpoint_auth` (Stargate)
+- `reaper_db` (Reaper)
+
+
+## Restrict traffic to dc1
+
+Client traffic should be restricted to `dc1` by selecting it as local datacenter and using only `LOCAL_` consistency levels. This will ensure consistency during the expansion to a new datacenter.
+
+## Create a K8ssandraCluster resource
+The cluster is now ready for the expansion to a new datacenter created by k8ssandra-operator.
+
+We’ll need to create a `K8ssandraCluster` (k8c) object with the right settings and secret references. Here’s an example `k8c` object with Reaper, Medusa and Stargate enabled:
+
+```
+apiVersion: k8ssandra.io/v1alpha1
+kind: K8ssandraCluster
+metadata:
+  name: my-cluster
+spec:
+  cassandra:
+    serverVersion: "4.0.1"
+    resources:
+      requests:
+        memory: 16Gi
+    additionalSeeds:
+      - "10.x.x.1"
+      - "10.x.x.2"
+    datacenters:
+      - metadata:
+          name: dc2
+        size: 3
+        storageConfig:
+          cassandraDataVolumeClaimSpec:
+            storageClassName: standard
+            accessModes:
+              - ReadWriteOnce
+            resources:
+              requests:
+                storage: 4096Gi
+        config:
+          jvmOptions:
+            heapSize: 8Gi
+            heapNewGenSize: 3Gi
+    mgmtAPIHeap: 64Mi
+    superuserSecretRef:
+      name: superuser-secret
+    externalDatacenters:
+      - "dc1"
+  reaper:
+    autoScheduling:
+      enabled: true
+    cassandraUserSecretRef:
+      name: reaper-secret
+    jmxUserSecretRef:
+      name: reaper-jmx-secret
+    uiUserSecretRef:
+      name: reaper-ui-secret
+  medusa:
+    storageProperties:
+      storageProvider: google_storage
+      bucketName: cluster-backups
+      storageSecretRef: medusa-bucket-key
+      prefix: my-cluster
+      maxBackupCount: 10
+    cassandraUserSecretRef:
+      name: medusa-secret
+  stargate:
+    size: 1
+    heapSize: 4Gi
+```
+
+`metadata.name` needs to match the existing Cassandra cluster name so that the datacenters can connect together.
+
+The `additionalSeeds` section requires the IPs of a couple Cassandra nodes (or pods) from the existing datacenter. Those IPs must be reachable on port 7001, which is Cassandra’s storage port used by nodes to communicate with each other.
+
+K8ssandra-operator automatically manages the replication strategy for several keyspaces, such as `system_auth`, `data_endpoint_auth` or `reaper_db`, based on the list of datacenters in a k8c object. It allows safe automation for operations such as expansions to new datacenters. A migration involves one or more datacenters which are not referenced in the k8c object, requiring the addition of extra datacenters in the replication settings. This is what the `externalDatacenters` entry stands for, allowing us to keep replicas on the datacenters we are migrating from.
+
+Create the object in the same namespace as the operator:
+
+```
+kubectl apply -f k8ssandra-cluster.yaml -n k8ssandra-operator
+```
+
+The K8ssandraCluster objects can be listed using the long CRD name, K8ssandraCluster, but also their short name, k8c:
+
+```
+$ kubectl get k8c -n k8ssandra-operator
+NAME         AGE
+my-cluster   1m
+```
+
+Wait for the operator to proceed and create the requested resources.
+
+Check the `server-system-logger` containers logs of the -sts pods to follow the bootstrapping process and see if they successfully join the cluster.
+
+Connect to a pod’s Cassandra container and run the following command to check the topology, which at the end should show two distinct datacenters (`dc1` and `dc2` in our case):
+
+```
+$ nodetool -u <superuser name> -pw <superuser password> status
 Datacenter: dc1
-=======================
+===============
 Status=Up/Down
 |/ State=Normal/Leaving/Joining/Moving
---  Address     Load        Tokens       Owns (effective)  Host ID                               Rack
-UN  10.40.4.16  236 KiB     256          100.0%            f659967d-07b8-49b8-9ca8-bd02e2a58911  rack1
-UN  10.40.5.2   318.03 KiB  256          100.0%            4b58ef5a-5578-4126-b1b6-4fb9a2d2cd40  rack1
-UN  10.40.2.2   341.91 KiB  256          100.0%            380848f0-297b-47fd-9509-56d70835f410  rack1
+--  Address     Load      Tokens  Owns (effective)  Host ID                               Rack   
+UN  10.xx.xx.57  7.58 MiB  16      100.0%            9299e226-d2fa-4c2e-9fba-3b344d5d47b7  default
+UN  10.xx.xx.7   7.54 MiB  16      100.0%            51c2fb0e-7fad-4b6e-8e4d-2108dc204cd5  default
+UN  10.xx.xx.4   7.89 MiB  16      100.0%            6a92531f-a086-4c40-9067-50899b8974a0  default
+
 Datacenter: dc2
 ===============
 Status=Up/Down
 |/ State=Normal/Leaving/Joining/Moving
---  Address     Load        Tokens       Owns (effective)  Host ID                               Rack
-UN  10.40.3.42  71.04 KiB   256          0.0%              0380fb66-2697-4a90-80a3-cf6f4b1f3476  default
-UN  10.40.4.19  97.22 KiB   256          0.0%              1fd067c8-6eb2-4fd6-bd88-f6fbb72e8ede  default
-UN  10.40.5.4   97.21 KiB   256          0.0%              2a986937-856b-4758-9026-146dc4620eb4  default
+--  Address     Load      Tokens  Owns (effective)  Host ID                               Rack   
+UN  10.xx.xx.36  6.97 MiB  16      100.0%            eba0964a-835f-4c76-978e-f25eda0b49ad  default
+UN  10.xx.xx.20  6.81 MiB  16      100.0%            d15f93f4-248d-478f-8832-b87b4e3981d2  default
+UN  10.xx.xx.80  6.71 MiB  16      100.0%            db09fd06-e011-11ec-9d64-0242ac120002  default
 ```
 
-You should expect to see 0.0% ownership for the nodes in the new datacenter. This is because we are not yet replicating to the new datacenter.
+## Alter the keyspaces and rebuild the nodes
 
-{{% alert title="Tip" color="success" %}}
-If you run `nodetool status` without the keyspace argument, you may find that nodes in the new datacenter report something greater than 0.0% for the token ownership. This happens because, when Stargate is installed, a keyspace named `data_endpoint_auth` is created.
-{{% /alert %}}
+k8ssandra-operator will fail fully going through with the expansion because `dc2` won’t have any replica for the `system_auth` keyspace. Cassandra will start but Reaper and Stargate won’t as long as replication wasn’t altered and rebuild was done.
 
-## Update replication strategy
+Once all nodes in the new DC have joined the cluster, alter the user created keyspaces to NTS with the same number of replicas on both DCs:
 
-For each keyspace that uses `NetworkTopologyStrategy`, update the replication strategy to include the new datacenter as follows:
-
-```cql
-ALTER KEYSPACE system_auth WITH replication = {'class': 'NetworkTopologyStrategy', 'dc1': 3, 'dc2': 3}
+```
+ALTER KEYSPACE <keyspace-name> WITH replication = {'class': 'NetworkTopologyStrategy', 'dc1':3, 'dc2': 3};
 ```
 
-Run the same `nodetool status` command that you ran previously. You should see that the token ownership has changed for the nodes in the new datacenter.
+Run the above statement for the following keyspaces as well:
 
-At this point nodes in the new datacenter will start receiving writes.
+- system_auth
+- system_distributed
+- system_traces
+- data_endpoint_auth (Stargate)
+- reaper_db (Reaper)
 
-## Stream data to the new nodes
+Run the rebuild command in all the Cassandra pods (from the Cassandra container) in the new datacenter:
 
-Next you need to stream data from the original datacenter to the new datacenter to get the latter caught up with past writes. This can be done with the `nodetool rebuild` command. It needs to be run on each node in the new datacenter as follows:
-
-```bash
-nodetool rebuild <old-datacenter-name>
+```
+nodetool -u <superuser-name> -pw <superuser-password> rebuild dc1
 ```
 
-## Stop sending traffic to the old datacenter
+Replace the `<...>` placeholders with the appropriate values in the above command.
 
-To stop sending traffic to the old datacenter, there are two steps:
+## Add dc2’s cassandra service to Reaper
+Reaper already has the cluster registered with `dc1`’s Cassandra pods service as seed host.
 
-1. Route clients to the new datacenter
-2. Update replication strategies
+The operator will not, in its current form, add `dc2`’s service to the seed hosts. This makes it impossible for Reaper in `dc2` to discover the cluster (see this [ticket](https://github.com/k8ssandra/k8ssandra-operator/issues/403) for more information).
 
-### Route clients to the new datacenter
+Connect to Reaper’s UI in `dc1`, and re-register the cluster, specifying both datacenters Cassandra services as seed nodes:
 
-Update the `LoadBalancingPolicy` of client services to route requests to the new datacenter. Here is an example for v4.11 of the Java driver where the new datacenter is named dc2:
+![How to re-register the cluster in Reaper’s UI](add-dc2-k8ssandra-operator.png)
 
-```yaml
-# application.conf
+Change the values to match your deployment settings, knowing that the Cassandra service is named as follows by K8ssandra: `<cluster name>-<dc name>-service`.
 
-datastax-java-driver {
-    basic.load-balancing-policy {
-        local-datacenter = dc2
-    }
+## Restrict traffic to dc2
+Client traffic should be restricted to dc2 by selecting it as local datacenter and using only `LOCAL_` consistency levels (or `QUORUM`). This will prevent nodes from connecting to `dc1` as we decommission it.
 
-    basic.request {
-        consistency = LOCAL_QUORUM
-    }
-}
+## Decommission dc1
+Update the K8ssandraCluster object definition by removing the externalDatacenters and additionalSeeds sections. Only after that, alter all keyspaces to remove replicas from dc1 (if you do it before, the operator will re-alter some keyspaces replication):
+
+```
+ALTER KEYSPACE <my-keyspace> WITH replication = {'class': 'NetworkTopologyStrategy', 'dc2': 3};
 ```
 
-{{% alert title="Recommendation" color="success" %}}
-Verify that there are no client connections to nodes in the old datacenter.
-{{% /alert %}}
+Stop all nodes from `dc1` by deleting its helm release (in the case of a K8ssandra 1.x cluster) or stopping all Cassandra processes (in the case of a non-k8s Cassandra cluster).
 
-### Update replication strategies
+Connect to one of the Cassandra pods from `dc2`, in the Cassandra container, and remove nodes from `dc1` one by one using their host id which shows up in the `nodetool status` output.
 
-Next we need to stop replicating data to nodes in the old datacenter. For each keyspace that was previously updated, we need to update it again. This time we will remove the old datacenter. 
+In our example, we will run the following commands:
 
-Here is an example that specifies the `system_auth keyspace`:
+```
+$ nodetool -u <superuser-name> -pw <superuser-password> removenode 9299e226-d2fa-4c2e-9fba-3b344d5d47b7
 
-```cql
-ALTER KEYSPACE system_auth WITH replication = {'class': 'NetworkTopologyStrategy', 'dc2': 3}
+$ nodetool -u <superuser-name> -pw <superuser-password> removenode 51c2fb0e-7fad-4b6e-8e4d-2108dc204cd5
+
+$ nodetool -u <superuser-name> -pw <superuser-password> removenode 6a92531f-a086-4c40-9067-50899b8974a0
 ```
 
-## Remove the old datacenter
+The `nodetool status` output should then be:
 
-Now we are ready to do some cleanup and remove the old datacenter and associated resources that are no longer in use. There are three steps:
-
-1. Decommission nodes
-2. Remove old seed nodes
-3. Delete old datacenter resources from Kubernetes
-
-### Decommission nodes
-
-Run the following on each node in the old datacenter:
-
-```bash
-nodetool decommission
+```
+$ nodetool -u <superuser name> -pw <superuser password> status
+Datacenter: dc2
+===============
+Status=Up/Down
+|/ State=Normal/Leaving/Joining/Moving
+--  Address     Load      Tokens  Owns (effective)  Host ID                               Rack   
+UN  10.xx.xx.36  6.97 MiB  16      100.0%            eba0964a-835f-4c76-978e-f25eda0b49ad  default
+UN  10.xx.xx.20  6.81 MiB  16      100.0%            d15f93f4-248d-478f-8832-b87b4e3981d2  default
+UN  10.xx.xx.80  6.71 MiB  16      100.0%            6bca9cdf-03f8-4658-84b9-28c5395235ba  default
 ```
 
-{{% alert title="Note" color="success" %}}
-Decommissioning should be done serially, one node at a time.
-{{% /alert %}}
-
-### Remove the old seed nodes
-
-Remove the seeds nodes from the `additionalSeeds` chart property. You can simply remove the `additionaSeeds` property from the chart overrides file (see again the sample file shown in the [Install K8ssandra](#install-k8ssandra) section above). Edit your version of the values file, and then run a `helm upgrade` for the changes to take effect. Assuming that the edited chart properties are stored in `k8ssandra-values.yaml`:
-
-```bash
-helm upgrade <release-name> k8ssandra/k8ssandra -f k8ssandra-values.yaml
-```
-
-The command above will trigger a statefulset update, which in effect is a cluster-wide (with respect to Cassandra) rolling restart.
-
-### Delete the old datacenter resources from Kubernetes
-
-The steps necessary here will vary depending on how you installed and managed the old datacenter. You want to make sure that the StatefulSets, PersistentVolumeClaims, PersistentVolumes, and any other objects created in association with the old datacenter are deleted in the Kubernetes cluster.
+## Remove dc1’s cassandra service from Reaper
+Connect to Reaper’s UI in `dc2`, and re-register the cluster, specifying only dc2's Cassandra service as seed node.
 
 ## Next steps
 
