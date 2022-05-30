@@ -39,7 +39,7 @@ helm install k8ssandra-operator k8ssandra/k8ssandra-operator -n k8ssandra-operat
 ### Using Kustomize
 
 ```
-kustomize build github.com/k8ssandra/k8ssandra-operator/config/deployments/control-plane\?ref\=v1.0.1 | kubectl apply --server-side --force-conflicts -f -
+kustomize build github.com/k8ssandra/k8ssandra-operator/config/deployments/control-plane\?ref\=v1.1.1 | kubectl apply --server-side --force-conflicts -f -
 ```
 
 **Note: Modify the version in the URL above to match your target version.**
@@ -80,7 +80,7 @@ Alter the following keyspaces in the same way:
 
 ## Restrict traffic to dc1
 
-Client traffic should be restricted to `dc1` by selecting it as local datacenter and using only `LOCAL_` consistency levels (or `QUORUM`). This will ensure consistency during the expansion to a new datacenter.
+Client traffic should be restricted to `dc1` by selecting it as local datacenter and using only `LOCAL_` consistency levels. This will ensure consistency during the expansion to a new datacenter.
 
 ## Create a K8ssandraCluster resource
 The cluster is now ready for the expansion to a new datacenter created by k8ssandra-operator.
@@ -93,23 +93,14 @@ kind: K8ssandraCluster
 metadata:
   name: my-cluster
 spec:
-  reaper:
-    autoScheduling:
-      enabled: true
-    cassandraUserSecretRef:
-      name: reaper-secret
-    jmxUserSecretRef:
-      name: reaper-jmx-secret
-    uiUserSecretRef:
-      name: reaper-ui-secret
   cassandra:
     serverVersion: "4.0.1"
     resources:
       requests:
         memory: 16Gi
     additionalSeeds:
-      - "10.10.1.1"
-      - "10.10.1.2"
+      - "10.x.x.1"
+      - "10.x.x.2"
     datacenters:
       - metadata:
           name: dc2
@@ -119,6 +110,39 @@ spec:
             storageClassName: standard
             accessModes:
               - ReadWriteOnce
+            resources:
+              requests:
+                storage: 4096Gi
+        config:
+          jvmOptions:
+            heapSize: 8Gi
+            heapNewGenSize: 3Gi
+    mgmtAPIHeap: 64Mi
+    superuserSecretRef:
+      name: superuser-secret
+    externalDatacenters:
+    - "dc1"
+  reaper:
+    autoScheduling:
+      enabled: true
+    cassandraUserSecretRef:
+      name: reaper-secret
+    jmxUserSecretRef:
+      name: reaper-jmx-secret
+    uiUserSecretRef:
+      name: reaper-ui-secret
+  medusa:
+    storageProperties:
+      storageProvider: google_storage
+      bucketName: cluster-backups
+      storageSecretRef: medusa-bucket-key
+      prefix: my-cluster
+      maxBackupCount: 10
+    cassandraUserSecretRef:
+      name: medusa-secret
+  stargate:
+    size: 1
+    heapSize: 4Gi
 ```
 
 `metadata.name` needs to match the existing Cassandra cluster name so that the datacenters can connect together.
@@ -165,7 +189,7 @@ Status=Up/Down
 --  Address     Load      Tokens  Owns (effective)  Host ID                               Rack   
 UN  10.xx.xx.36  6.97 MiB  16      100.0%            eba0964a-835f-4c76-978e-f25eda0b49ad  default
 UN  10.xx.xx.20  6.81 MiB  16      100.0%            d15f93f4-248d-478f-8832-b87b4e3981d2  default
-UN  10.xx.xx.80  6.71 MiB  16      100.0%    
+UN  10.xx.xx.80  6.71 MiB  16      100.0%            db09fd06-e011-11ec-9d64-0242ac120002  default
 ```
 
 ## Alter the keyspaces and rebuild the nodes
@@ -243,8 +267,8 @@ UN  10.xx.xx.20  6.81 MiB  16      100.0%            d15f93f4-248d-478f-8832-b87
 UN  10.xx.xx.80  6.71 MiB  16      100.0%            6bca9cdf-03f8-4658-84b9-28c5395235ba  default
 ```
 
-
-
+## Remove dc1’s cassandra service from Reaper
+Connect to Reaper’s UI in `dc2`, and re-register the cluster, specifying only dc2's Cassandra service as seed node.
 
 ## Next steps
 
