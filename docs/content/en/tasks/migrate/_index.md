@@ -121,7 +121,7 @@ spec:
     superuserSecretRef:
       name: superuser-secret
     externalDatacenters:
-    - "dc1"
+      - "dc1"
   reaper:
     autoScheduling:
       enabled: true
