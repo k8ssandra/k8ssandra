@@ -217,7 +217,7 @@ ALTER KEYSPACE <my-keyspace> WITH replication = {'class': 'NetworkTopologyStrate
 
 Stop all nodes from `dc1` by deleting its helm release (in the case of a K8ssandra 1.x cluster) or stopping all Cassandra processes (in the case of a non-k8s Cassandra cluster).
 
-Connect to one of the Cassandra pods in the Cassandra container, and remove nodes from `dc1` one by one using their host id which shows up in the `nodetool status` output.
+Connect to one of the Cassandra pods from `dc2`, in the Cassandra container, and remove nodes from `dc1` one by one using their host id which shows up in the `nodetool status` output.
 
 In our example, we will run the following commands:
 
