@@ -21,7 +21,7 @@ Helper library containing functions used by many of the K8ssandra stack Helm cha
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://charts.bitnami.com/bitnami | common | 1.3.4 |
+| https://charts.bitnami.com/bitnami | common | 1.16.0 |
 
 ## Values
 
