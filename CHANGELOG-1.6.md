@@ -18,4 +18,5 @@ and date `## vX.Y.Z - YYYY-MM-DD` and create a new placeholder section for  `unr
 
 ## unreleased
 
+* [ENHANCEMENT] Added s3_rgw support
 * [CHANGE] Upgrade cass-operator to v1.11.0
