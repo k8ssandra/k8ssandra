@@ -1,4 +1,4 @@
-{{- $storageTypes :=  list "s3" "s3_compatible" "google_storage" "azure_blobs" "local" -}}
+{{- $storageTypes :=  list "s3" "s3_compatible" "s3_rgw" "google_storage" "azure_blobs" "local" -}}
 
 {{- if .Values.medusa.enabled }}
 apiVersion: v1
@@ -38,7 +38,7 @@ data:
   {{- else }}
     bucket_name = {{ .Values.medusa.bucketName }}
   {{- end }}
-  {{- if or (eq .Values.medusa.storage "s3") (eq .Values.medusa.storage "s3_compatible") }}
+  {{- if or (eq .Values.medusa.storage "s3") (eq .Values.medusa.storage "s3_compatible") (eq .Values.medusa.storage "s3_rgw") }}
     key_file = /etc/medusa-secrets/medusa_s3_credentials
   {{- else if (eq .Values.medusa.storage "google_storage") }}
     key_file = /etc/medusa-secrets/medusa_gcp_key.json
