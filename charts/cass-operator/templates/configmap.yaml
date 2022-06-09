@@ -1,3 +1,10 @@
+{{- $certmanager := .Capabilities.APIVersions.Has "cert-manager.io/v1" -}}
+{{- $webhooks := .Values.admissionWebhooks.enabled -}}
+
+{{- if and $webhooks (not $certmanager) -}}
+  {{- fail (print "cass-operator webhooks require cert-manager to be installed in the cluster") }}
+{{- end -}}
+
 kind: ConfigMap
 metadata:
   name: {{ include "k8ssandra-common.fullname" . }}-manager-config
@@ -16,11 +23,10 @@ data:
     leaderElection:
       leaderElect: true
       resourceName: b569adb7.cassandra.datastax.com
-{{- if .Values.admissionWebhooks.enabled }}
+{{- if $webhooks }}
     disableWebhooks: false
 {{- else }}
     disableWebhooks: true
-
 {{- end }}
     imageConfigFile: /configs/image_config.yaml
   image_config.yaml: |

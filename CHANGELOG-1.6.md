@@ -20,3 +20,4 @@ and date `## vX.Y.Z - YYYY-MM-DD` and create a new placeholder section for  `unr
 
 * [ENHANCEMENT] Added s3_rgw support
 * [CHANGE] Upgrade cass-operator to v1.11.0
+* [ENHANCEMENT] Enable webhook functionality in cass-operator if cert-manager is installed.
