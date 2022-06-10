@@ -17,3 +17,7 @@ When cutting a new release of the parent `k8ssandra` chart update the `unrelease
 and date `## vX.Y.Z - YYYY-MM-DD` and create a new placeholder section for  `unreleased` entries.
 
 ## unreleased
+
+* [ENHANCEMENT] Added s3_rgw support
+* [CHANGE] Upgrade cass-operator to v1.11.0
+* [ENHANCEMENT] Enable webhook functionality in cass-operator if cert-manager is installed.

@@ -6,7 +6,7 @@ type: library
 version: 0.28.5
 dependencies:
   - name: common
-    version: 1.3.4
+    version: 1.16.0
     repository: https://charts.bitnami.com/bitnami
 home: https://k8ssandra.io/
 sources:

@@ -1,0 +1,60 @@
+{{- $certmanager := .Capabilities.APIVersions.Has "cert-manager.io/v1" -}}
+{{- $webhooks := .Values.admissionWebhooks.enabled -}}
+
+{{- if and $webhooks (not $certmanager) -}}
+  {{- fail (print "cass-operator webhooks require cert-manager to be installed in the cluster") }}
+{{- end -}}
+---
+{{ if $webhooks }}
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingWebhookConfiguration
+metadata:
+  name: {{ .Release.Name }}-validating-webhook-configuration
+  labels: {{ include "k8ssandra-common.labels" . | indent 4 }}
+  annotations:
+    cert-manager.io/inject-ca-from: {{ include "cass-operator-certificate" . }}
+webhooks:
+- admissionReviewVersions:
+  - v1
+  clientConfig:
+    service:
+      name: {{ .Release.Name }}-webhook-service
+      namespace: {{ .Release.Namespace }}
+      path: /validate-cassandra-datastax-com-v1beta1-cassandradatacenter
+  failurePolicy: Fail
+  name: vcassandradatacenter.kb.io
+  rules:
+  - apiGroups:
+    - cassandra.datastax.com
+    apiVersions:
+    - v1beta1
+    operations:
+    - CREATE
+    - UPDATE
+    resources:
+    - cassandradatacenters
+  sideEffects: None
+{{ end }}
+{{ if $webhooks }}
+---
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: {{ .Release.Name }}-selfsigned-issuer
+spec:
+  selfSigned: {}
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: {{ .Release.Name }}-serving-cert  # this name should match the one appeared in kustomizeconfig.yaml
+spec:
+  # $(SERVICE_NAME) and $(SERVICE_NAMESPACE) will be substituted by kustomize
+  dnsNames:
+  - {{ printf "%s-webhook-service.%s.svc" .Release.Name .Release.Namespace }}
+  - {{ printf "%s-webhook-service.%s.svc.cluster.local" .Release.Name .Release.Namespace }}
+  issuerRef:
+    kind: Issuer
+    name: {{ .Release.Name }}-selfsigned-issuer
+  secretName: {{ .Release.Name }}-webhook-server-cert # this secret will not be prefixed, since it's not managed by kustomize
+{{ end }}
