@@ -22,3 +22,4 @@ and date `## vX.Y.Z - YYYY-MM-DD` and create a new placeholder section for  `unr
 * [CHANGE] Upgrade cass-operator to v1.11.0
 * [CHANGE] cass-operator HELM-Chart: Upgrade requires manual action if registryOverride was used before. registryOverride is now repositoryOverride.
 * [ENHANCEMENT] Enable webhook functionality in cass-operator if cert-manager is installed.
+* [CHANGE] cass-operator HELM-Chart: Upgrade requires manual action if registryOverride was used before. registryOverride is now repositoryOverride.
