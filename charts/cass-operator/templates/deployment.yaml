@@ -1,8 +1,16 @@
+{{- $certmanager := .Capabilities.APIVersions.Has "cert-manager.io/v1" -}}
+{{- $webhooks := .Values.admissionWebhooks.enabled -}}
+
+{{- if and $webhooks (not $certmanager) -}}
+  {{- fail (print "cass-operator webhooks require cert-manager to be installed in the cluster") }}
+{{- end -}}
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ include "k8ssandra-common.fullname" . }}
   labels: {{ include "k8ssandra-common.labels" . | indent 4 }}
+    control-plane: {{ .Release.Name }}-controller-manager
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
@@ -15,6 +23,7 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels: {{- include "k8ssandra-common.labels" . | indent 8 }}
+        control-plane: {{ .Release.Name }}-controller-manager
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
@@ -33,14 +42,14 @@ spec:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: {{ include "k8ssandra-common.flattenedImage" .Values.image }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          {{- if .Values.admissionWebhooks.enabled }}
+          {{- if $webhooks }}
           ports:
             - containerPort: 9443
               name: webhook-server
               protocol: TCP
           {{- end }}
           volumeMounts:
-            {{- if .Values.admissionWebhooks.enabled }}
+            {{- if $webhooks }}
             - mountPath: /tmp/k8s-webhook-server/serving-certs
               name: cass-operator-certs-volume
               readOnly: true
@@ -76,11 +85,11 @@ spec:
                   fieldPath: metadata.namespace
             {{- end }}
       volumes:
-      {{- if .Values.admissionWebhooks.enabled }}
+      {{- if $webhooks }}
         - name: cass-operator-certs-volume
           secret:
             defaultMode: 420
-            secretName: {{ .Release.Name }}-webhook
+            secretName: {{ .Release.Name }}-webhook-server-cert
       {{- end }}
         - configMap:
             name: {{ include "k8ssandra-common.fullname" . }}-manager-config
