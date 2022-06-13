@@ -43,8 +43,8 @@ data:
 {{- if .Values.image.registryOverride }}
     imageRegistry: {{ .Values.image.registryOverride }}
 {{- end }}
-{{- with .Values.imagePullSecrets }}
-    imagePullSecrets:
+{{- with .Values.imagePullSecret }}
+    imagePullSecret:
       {{- toYaml . | nindent 8 }}
 {{- end }}
 {{- if .Values.image.pullPolicy }}
