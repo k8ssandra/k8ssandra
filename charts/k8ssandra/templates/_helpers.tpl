@@ -407,7 +407,7 @@ Add garbage collection settings based on the following rules in the order listed
 {{- end -}}
 
 {{- define "k8ssandra.gcG1" -}}
-{{- indent 2 "garbage_collector: G1" -}}
+{{- indent 2 "garbage_collector: G1GC" -}}
 {{- if .setUpdatingPauseTimePercent }}
   {{ indent 4 (cat "g1r_set_updating_pause_time_percent:" .setUpdatingPauseTimePercent) }}
 {{- end }}
