@@ -44,7 +44,7 @@ data:
     imageRegistry: {{ .Values.image.registryOverride }}
 {{- end }}
 {{- if .Values.imagePullSecret }}
-    imagePullSecret: {{ .Values.image.imagePullSecret }}
+    imagePullSecret: {{ .Values.imagePullSecret }}
 {{- end }}
 {{- if .Values.image.pullPolicy }}
     {{ (cat "imagePullPolicy:" .Values.image.pullPolicy) }}
