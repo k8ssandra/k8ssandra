@@ -18,7 +18,7 @@ dependencies:
     repository: file://../medusa-operator
     condition: medusa.enabled
   - name: k8ssandra-common
-    version: 0.28.5
+    version: 0.28.6
     repository: file://../k8ssandra-common
   - name: kube-prometheus-stack
     version: 20.0.1
