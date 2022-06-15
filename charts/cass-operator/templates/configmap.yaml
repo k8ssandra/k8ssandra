@@ -35,15 +35,19 @@ data:
     images:
       system-logger: "k8ssandra/system-logger:v1.10.0"
       config-builder: "datastax/cass-config-builder:1.0.4-ubi7"
-{{- if .Values.image.registryOverride }}
-    {{ indent 2 (cat "imageRegistry:" .Values.image.registryOverride) }}
+{{- if .Values.image.repositoryOverride }}
+    {{- with .Values.image.repositoryOverride }}
+      {{- toYaml . | nindent 6 }}
+    {{- end }}
 {{- end }}
-{{- with .Values.imagePullSecrets }}
-    imagePullSecrets:
-      {{- toYaml . | nindent 8 }}
+{{- if .Values.image.registryOverride }}
+    imageRegistry: {{ .Values.image.registryOverride }}
+{{- end }}
+{{- if .Values.imagePullSecret }}
+    imagePullSecret: {{ .Values.imagePullSecret }}
 {{- end }}
 {{- if .Values.image.pullPolicy }}
-    {{ indent 2 (cat "imagePullPolicy:" .Values.image.pullPolicy) }}
+    {{ (cat "imagePullPolicy:" .Values.image.pullPolicy) }}
 {{- end }}
     defaults:
       # Note, postfix is ignored if repository is not set

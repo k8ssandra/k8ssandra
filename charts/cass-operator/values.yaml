@@ -33,10 +33,17 @@ image:
   # -- Docker registry containing all cass-operator related images. Setting this
   # allows for usage of an internal registry without specifying serverImage,
   # configBuilderImage, and busyboxImage on all CassandraDatacenter objects.
+  repositoryOverride:
+  #   cassandra:
+  #     "4.0.0": "k8ssandra/cassandra-ubi:latest"
+  #   dse:
+  #     "6.8.999": "datastax/dse-server-prototype:latest"
+  # Overrides the global Image repository for Cassandra container
   registryOverride:
+
 # -- References to secrets to use when pulling images. See:
 # https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
-imagePullSecrets: []
+# imagePullSecret: []
 serviceAccount:
   # -- Annotations to add to the service account.
   annotations: {}

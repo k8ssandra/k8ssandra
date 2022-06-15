@@ -39,7 +39,8 @@ Kubernetes operator which handles the provisioning and management of Apache Cass
 | image.repository | string | `"k8ssandra/cass-operator"` | Docker repository for cass-operator |
 | image.pullPolicy | string | `"IfNotPresent"` | Pull policy for the operator container |
 | image.tag | string | `"v1.10.0"` | Tag of the cass-operator image to pull from image.repository |
-| image.registryOverride | string | `nil` | Docker registry containing all cass-operator related images. Setting this allows for usage of an internal registry without specifying serverImage, configBuilderImage, and busyboxImage on all CassandraDatacenter objects. |
+| image.repositoryOverride | object | `{}` | Docker repositories containing all cass-operator related custom images. Setting this allows for usage of an internal registry without specifying serverImage, configBuilderImage, and busyboxImage on all CassandraDatacenter objects. |
+| image.registryOverride | string | `nil` | Docker registry where to Pull all cass-operator related images from. |
 | imagePullSecrets | list | `[]` | References to secrets to use when pulling images. See: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/ |
 | serviceAccount.annotations | object | `{}` | Annotations to add to the service account. |
 | podAnnotations | object | `{}` | Annotations for the cass-operator pod. |
