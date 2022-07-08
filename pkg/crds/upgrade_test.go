@@ -62,7 +62,7 @@ func TestUpgradingCRDs(t *testing.T) {
 	g.Expect(err).Should(Succeed())
 
 	By("Upgrading / installing 1.0.0")
-	crds, err := u.Upgrade("1.0.0")
+	crds, err := u.Upgrade("k8ssandra", "1.0.0")
 	g.Expect(err).Should(Succeed())
 
 	testOptions := envtest.CRDInstallOptions{
@@ -88,7 +88,7 @@ func TestUpgradingCRDs(t *testing.T) {
 	g.Expect(found).To(BeFalse())
 
 	By("Upgrading to 1.1.0")
-	crds, err = u.Upgrade("1.1.0")
+	crds, err = u.Upgrade("k8ssandra", "1.1.0")
 	g.Expect(err).Should(Succeed())
 
 	objs = []runtime.Object{}
@@ -103,7 +103,7 @@ func TestUpgradingCRDs(t *testing.T) {
 	ver = cassdcCRD.GetResourceVersion()
 
 	By("Upgrading to 1.2.0-20210514022645-da7547a5")
-	crds, err = u.Upgrade("1.2.0-20210514022645-da7547a5")
+	crds, err = u.Upgrade("k8ssandra", "1.2.0-20210514022645-da7547a5")
 	g.Expect(err).Should(Succeed())
 
 	objs = []runtime.Object{}

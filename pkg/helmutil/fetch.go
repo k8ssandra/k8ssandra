@@ -19,8 +19,6 @@ const (
 	ReleaseAnnotation = "meta.helm.sh/release-name"
 
 	RepoURL = "https://helm.k8ssandra.io/"
-	// ChartName is the name of k8ssandra's helm repo chart
-	ChartName = "k8ssandra"
 )
 
 func GetChartTargetDir(targetVersion string) (string, error) {
@@ -35,7 +33,7 @@ func GetChartTargetDir(targetVersion string) (string, error) {
 }
 
 // DownloadChartRelease fetches the k8ssandra target version and extracts it to a directory which path is returned
-func DownloadChartRelease(targetVersion string) (string, error) {
+func DownloadChartRelease(chartName string, targetVersion string) (string, error) {
 	// Unfortunately, the helm's chart pull command uses "internal" marked structs, so it can't be used for
 	// pulling the data. Thus, we need to replicate the implementation here and use our own cache
 
@@ -58,7 +56,7 @@ func DownloadChartRelease(targetVersion string) (string, error) {
 
 	// helm repo add k8ssandra https://helm.k8ssandra.io/
 	r, err := repo.NewChartRepository(&repo.Entry{
-		Name: ChartName,
+		Name: chartName,
 		URL:  RepoURL,
 	}, getter.All(settings))
 
@@ -79,7 +77,7 @@ func DownloadChartRelease(targetVersion string) (string, error) {
 	}
 
 	// chart name, chart version
-	cv, err := repoIndex.Get(ChartName, targetVersion)
+	cv, err := repoIndex.Get(chartName, targetVersion)
 	if err != nil {
 		return "", err
 	}
