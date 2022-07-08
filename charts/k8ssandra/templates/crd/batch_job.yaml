@@ -28,3 +28,5 @@ spec:
             - -upgradecrds
             - --targetVersion
             - {{ .Chart.Version }}
+            - --chartName
+            - {{ .Chart.Name }}
