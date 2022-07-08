@@ -17,6 +17,9 @@ When cutting a new release of the parent `k8ssandra` chart update the `unrelease
 and date `## vX.Y.Z - YYYY-MM-DD` and create a new placeholder section for  `unreleased` entries.
 
 ## unreleased
+
+## v1.5.1 - 2022-07-08
+
 * [CHANGE] Upgrade cass-operator to v1.10.4
 
 ## v1.5.0 - 2022-04-09
