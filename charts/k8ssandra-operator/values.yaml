@@ -55,3 +55,40 @@ securityContext:
 # `requests` and `limits` for `cpu` and `memory` while removing the existing
 # `{}`
 resources: {}
+
+# -- The cleaner is a pre-delete hook that that ensures objects with finalizers
+# get deleted. For example, cass-operator sets a finalizer on the
+# CassandraDatacenter. Kubernetes blocks deletion of an object until all of its
+# finalizers are cleared. In the case of the CassandraDatacenter object,
+# cass-operator removes the finalizer. The problem is that there are no
+# ordering guarantees with helm uninstall which means that the cass-operator
+# deployment could be deleted before the CassandraDatacenter. The cleaner
+# ensures that the CassandraDatacenter is deleted before cass-operator.
+cleaner:
+  # -- Uncomment to specify the name of the service account to use for the
+  # cleaner. Defaults to <release-name>-cleaner-k8ssandra
+  # serviceAccount:
+  image:
+    # -- Image registry for the cleaner
+    registry: docker.io
+    # -- Image repository for the cleaner
+    repository: k8ssandra/k8ssandra-tools
+    # -- Tag of the cleaner image to pull from
+    tag: latest
+    # -- Pull policy for the cleaner container
+    pullPolicy: IfNotPresent
+# -- k8ssandra-client provides CLI utilities, but also certain functions such as
+# upgradecrds that allow modifying the running instances
+client:
+  # -- Uncomment to specify the name of the service account to use for the
+  # client tools image. Defaults to <release-name>-crd-upgrader-k8ssandra.
+  # serviceAccount:
+  image:
+    # -- Image registry for the client
+    registry: docker.io
+    # -- Image repository for the client
+    repository: k8ssandra/k8ssandra-tools
+    # -- Tag of the client image to pull from
+    tag: latest
+    # -- Pull policy for the client container
+    pullPolicy: IfNotPresent
