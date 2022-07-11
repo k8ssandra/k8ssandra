@@ -56,8 +56,6 @@ func TestUpgradingCRDs(t *testing.T) {
 	}
 	g.Expect(k8sClient.Create(context.Background(), testNamespace)).Should(Succeed())
 
-	cassdcCRD := &unstructured.Unstructured{}
-
 	By("creating new upgrader")
 	u, err := NewWithClient(k8sClient)
 	g.Expect(err).Should(Succeed())
@@ -71,24 +69,24 @@ func TestUpgradingCRDs(t *testing.T) {
 		MaxTime:      10 * time.Second,
 	}
 
+	unstructuredCRD := &unstructured.Unstructured{}
+	cassDCCRD := &apiextensions.CustomResourceDefinition{}
 	objs := []apiextensions.CustomResourceDefinition{}
-	for _, unstructuredCRD := range crds {
-		cassDCCRD := &apiextensions.CustomResourceDefinition{}
-		if unstructuredCRD.GetName() == "cassandradatacenters.cassandra.datastax.com" {
-			unstructuredCRD.DeepCopy()
-			err = runtime.DefaultUnstructuredConverter.FromUnstructured(unstructuredCRD.UnstructuredContent(), cassDCCRD)
+	for _, crd := range crds {
+		if crd.GetName() == "cassandradatacenters.cassandra.datastax.com" {
+			unstructuredCRD = crd.DeepCopy()
+			err = runtime.DefaultUnstructuredConverter.FromUnstructured(crd.UnstructuredContent(), cassDCCRD)
 			g.Expect(err).ShouldNot(HaveOccurred())
-
 		}
 		objs = append(objs, *cassDCCRD)
 	}
 
 	envtest.WaitForCRDs(cfg, objs, testOptions)
-	err = k8sClient.Get(context.TODO(), client.ObjectKey{Name: cassdcCRD.GetName()}, cassdcCRD)
-	ver := cassdcCRD.GetResourceVersion()
+	err = k8sClient.Get(context.TODO(), client.ObjectKey{Name: cassDCCRD.GetName()}, cassDCCRD)
+	ver := cassDCCRD.GetResourceVersion()
 	g.Expect(err).Should(Succeed())
 
-	_, found, err := unstructured.NestedFieldNoCopy(cassdcCRD.Object, "spec", "validation", "openAPIV3Schema", "properties", "spec", "properties", "configSecret")
+	_, found, err := unstructured.NestedFieldNoCopy(unstructuredCRD.Object, "spec", "validation", "openAPIV3Schema", "properties", "spec", "properties", "configSecret")
 	g.Expect(err).Should(Succeed())
 	g.Expect(found).To(BeFalse())
 
@@ -97,39 +95,47 @@ func TestUpgradingCRDs(t *testing.T) {
 	g.Expect(err).Should(Succeed())
 
 	objs = []apiextensions.CustomResourceDefinition{}
-	for _, unstructuredCRD := range crds {
-		cassDCCRD := &apiextensions.CustomResourceDefinition{}
-		unstructuredCRD.DeepCopy()
-		err = runtime.DefaultUnstructuredConverter.FromUnstructured(unstructuredCRD.UnstructuredContent(), cassDCCRD)
-		g.Expect(err).ShouldNot(HaveOccurred())
-		objs = append(objs, *cassDCCRD)
+	for _, crd := range crds {
+		if crd.GetName() == "cassandradatacenters.cassandra.datastax.com" {
+			unstructuredCRD = crd.DeepCopy()
+			err = runtime.DefaultUnstructuredConverter.FromUnstructured(crd.UnstructuredContent(), cassDCCRD)
+			g.Expect(err).ShouldNot(HaveOccurred())
+			objs = append(objs, *cassDCCRD)
+		}
 	}
 
 	envtest.WaitForCRDs(cfg, objs, testOptions)
-	err = k8sClient.Get(context.TODO(), client.ObjectKey{Name: cassdcCRD.GetName()}, cassdcCRD)
+	err = k8sClient.Get(context.TODO(), client.ObjectKey{Name: cassDCCRD.GetName()}, cassDCCRD)
 	g.Expect(err).Should(Succeed())
-	g.Expect(cassdcCRD.GetResourceVersion()).ToNot(Equal(ver))
-	ver = cassdcCRD.GetResourceVersion()
+	g.Eventually(func() bool {
+		return cassDCCRD.GetResourceVersion() != ver
+	}).WithTimeout(time.Minute * 10).WithPolling(time.Second * 5).Should(BeTrue())
+	ver = cassDCCRD.GetResourceVersion()
 
-	By("Upgrading to 1.2.0-20210514022645-da7547a5")
-	crds, err = u.Upgrade("k8ssandra", "1.2.0-20210514022645-da7547a5")
+	By("Upgrading to 1.5.1")
+	crds, err = u.Upgrade("k8ssandra", "1.5.1")
 	g.Expect(err).Should(Succeed())
 
 	objs = []apiextensions.CustomResourceDefinition{}
-	for _, unstructuredCRD := range crds {
-		cassDCCRD := &apiextensions.CustomResourceDefinition{}
-		unstructuredCRD.DeepCopy()
-		err = runtime.DefaultUnstructuredConverter.FromUnstructured(unstructuredCRD.UnstructuredContent(), cassDCCRD)
-		g.Expect(err).ShouldNot(HaveOccurred())
-		objs = append(objs, *cassDCCRD)
+	for _, crd := range crds {
+		if crd.GetName() == "cassandradatacenters.cassandra.datastax.com" {
+			unstructuredCRD = crd.DeepCopy()
+			err = runtime.DefaultUnstructuredConverter.FromUnstructured(crd.UnstructuredContent(), cassDCCRD)
+			g.Expect(err).ShouldNot(HaveOccurred())
+			objs = append(objs, *cassDCCRD)
+		}
 	}
 
 	envtest.WaitForCRDs(cfg, objs, testOptions)
-	err = k8sClient.Get(context.TODO(), client.ObjectKey{Name: cassdcCRD.GetName()}, cassdcCRD)
+	err = k8sClient.Get(context.TODO(), client.ObjectKey{Name: cassDCCRD.GetName()}, cassDCCRD)
 	g.Expect(err).Should(Succeed())
-	g.Expect(cassdcCRD.GetResourceVersion()).ToNot(Equal(ver))
+	g.Eventually(func() bool {
+		return cassDCCRD.GetResourceVersion() != ver
+	}).WithTimeout(time.Minute * 10).WithPolling(time.Second * 5).Should(BeTrue())
 
-	_, found, err = unstructured.NestedFieldNoCopy(cassdcCRD.Object, "spec", "validation", "openAPIV3Schema", "properties", "spec", "properties", "configSecret")
+	versionsSlice, found, err := unstructured.NestedSlice(unstructuredCRD.Object, "spec", "versions")
+	_, found, err = unstructured.NestedFieldNoCopy(versionsSlice[0].(map[string]interface{}), "schema", "openAPIV3Schema", "properties", "spec", "properties", "configSecret")
+
 	g.Expect(err).Should(Succeed())
 	g.Expect(found).To(BeTrue())
 

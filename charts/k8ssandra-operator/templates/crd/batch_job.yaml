@@ -14,7 +14,7 @@ spec:
       labels: {{ include "k8ssandra-common.labels" . | indent 8 }}
     spec:
       restartPolicy: OnFailure
-      serviceAccountName: {{ default (print .Release.Name "-crd-upgrader-k8ssandra") .Values.client.serviceAccount }}
+      serviceAccountName: {{ include "k8ssandra-common.fullname" . }}-crd-upgrader-k8ssandra
       containers:
         - name: crd-upgrade-job-k8ssandra
           image: {{ include "k8ssandra-common.flattenedImage" .Values.client.image }}
