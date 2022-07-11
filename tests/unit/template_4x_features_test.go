@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 
 	"github.com/gruntwork-io/terratest/modules/helm"
-	cassdcv1beta1 "github.com/k8ssandra/cass-operator/operator/pkg/apis/cassandra/v1beta1"
+	cassdcv1beta1 "github.com/k8ssandra/cass-operator/apis/cassandra/v1beta1"
 	helmUtils "github.com/k8ssandra/k8ssandra/tests/unit/utils/helm"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
