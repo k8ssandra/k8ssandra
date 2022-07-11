@@ -9,6 +9,7 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/onsi/gomega/gexec"
 	corev1 "k8s.io/api/core/v1"
+	apiextensions "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -55,7 +56,7 @@ func TestUpgradingCRDs(t *testing.T) {
 	}
 	g.Expect(k8sClient.Create(context.Background(), testNamespace)).Should(Succeed())
 
-	var cassdcCRD *unstructured.Unstructured
+	cassdcCRD := &unstructured.Unstructured{}
 
 	By("creating new upgrader")
 	u, err := NewWithClient(k8sClient)
@@ -70,12 +71,16 @@ func TestUpgradingCRDs(t *testing.T) {
 		MaxTime:      10 * time.Second,
 	}
 
-	var objs []runtime.Object
-	for _, crd := range crds {
-		if crd.GetName() == "cassandradatacenters.cassandra.datastax.com" {
-			cassdcCRD = crd.DeepCopy()
+	objs := []apiextensions.CustomResourceDefinition{}
+	for _, unstructuredCRD := range crds {
+		cassDCCRD := &apiextensions.CustomResourceDefinition{}
+		if unstructuredCRD.GetName() == "cassandradatacenters.cassandra.datastax.com" {
+			unstructuredCRD.DeepCopy()
+			err = runtime.DefaultUnstructuredConverter.FromUnstructured(unstructuredCRD.UnstructuredContent(), cassDCCRD)
+			g.Expect(err).ShouldNot(HaveOccurred())
+
 		}
-		objs = append(objs, &crd)
+		objs = append(objs, *cassDCCRD)
 	}
 
 	envtest.WaitForCRDs(cfg, objs, testOptions)
@@ -91,9 +96,13 @@ func TestUpgradingCRDs(t *testing.T) {
 	crds, err = u.Upgrade("k8ssandra", "1.1.0")
 	g.Expect(err).Should(Succeed())
 
-	objs = []runtime.Object{}
-	for _, crd := range crds {
-		objs = append(objs, &crd)
+	objs = []apiextensions.CustomResourceDefinition{}
+	for _, unstructuredCRD := range crds {
+		cassDCCRD := &apiextensions.CustomResourceDefinition{}
+		unstructuredCRD.DeepCopy()
+		err = runtime.DefaultUnstructuredConverter.FromUnstructured(unstructuredCRD.UnstructuredContent(), cassDCCRD)
+		g.Expect(err).ShouldNot(HaveOccurred())
+		objs = append(objs, *cassDCCRD)
 	}
 
 	envtest.WaitForCRDs(cfg, objs, testOptions)
@@ -106,9 +115,13 @@ func TestUpgradingCRDs(t *testing.T) {
 	crds, err = u.Upgrade("k8ssandra", "1.2.0-20210514022645-da7547a5")
 	g.Expect(err).Should(Succeed())
 
-	objs = []runtime.Object{}
-	for _, crd := range crds {
-		objs = append(objs, &crd)
+	objs = []apiextensions.CustomResourceDefinition{}
+	for _, unstructuredCRD := range crds {
+		cassDCCRD := &apiextensions.CustomResourceDefinition{}
+		unstructuredCRD.DeepCopy()
+		err = runtime.DefaultUnstructuredConverter.FromUnstructured(unstructuredCRD.UnstructuredContent(), cassDCCRD)
+		g.Expect(err).ShouldNot(HaveOccurred())
+		objs = append(objs, *cassDCCRD)
 	}
 
 	envtest.WaitForCRDs(cfg, objs, testOptions)
