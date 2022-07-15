@@ -61,7 +61,12 @@ func TestUpgradingCRDs(t *testing.T) {
 	g.Expect(err).Should(Succeed())
 
 	By("Upgrading / installing 1.0.0")
-	crds, err := u.Upgrade("k8ssandra", "1.0.0")
+	var crds []unstructured.Unstructured
+	g.Eventually(func() bool {
+		crds, err = u.Upgrade("k8ssandra", "1.0.0")
+		return err == nil
+	}).WithTimeout(time.Minute * 10).WithPolling(time.Second * 5).Should(BeTrue())
+
 	g.Expect(err).Should(Succeed())
 
 	testOptions := envtest.CRDInstallOptions{
@@ -91,8 +96,13 @@ func TestUpgradingCRDs(t *testing.T) {
 	g.Expect(found).To(BeFalse())
 
 	By("Upgrading to 1.1.0")
-	crds, err = u.Upgrade("k8ssandra", "1.1.0")
-	g.Expect(err).Should(Succeed())
+	g.Eventually(func() bool {
+		crds, err = u.Upgrade("k8ssandra", "1.1.0")
+		if err != nil {
+			println(err.Error())
+		}
+		return err == nil
+	}).WithTimeout(time.Minute * 10).WithPolling(time.Second * 5).Should(BeTrue())
 
 	objs = []apiextensions.CustomResourceDefinition{}
 	for _, crd := range crds {
