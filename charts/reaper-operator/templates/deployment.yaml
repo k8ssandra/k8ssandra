@@ -10,6 +10,7 @@ spec:
   template:
     metadata:
       labels: {{- include "k8ssandra-common.labels" . | indent 8 }}
+      annotations:  {{- toYaml .Values.podAnnotations | nindent 8 }}
     spec:
       serviceAccountName: {{ include "k8ssandra-common.serviceAccountName" . }}
       securityContext: {{- toYaml .Values.podSecurityContext | nindent 8 }}

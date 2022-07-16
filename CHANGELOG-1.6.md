@@ -27,3 +27,4 @@ and date `## vX.Y.Z - YYYY-MM-DD` and create a new placeholder section for  `unr
 * [BUGFIX] [#1380](https://github.com/k8ssandra/k8ssandra/issues/1380) Enable webhook functionality in cass-operator if cert-manager is installed.
 * [BUGFIX] [#1404](https://github.com/k8ssandra/k8ssandra/issues/1404) Fix `garbage_collector` property to use G1GC
 * [ENHANCEMENT] [#1135](https://github.com/k8ssandra/k8ssandra/issues/1135)  Add support for service account annotations in helm chart.
+* [BUGFIX] Add podAnnotation to medusa operator and reaper operator in helm chart.
