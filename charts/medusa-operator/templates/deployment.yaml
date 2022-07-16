@@ -11,8 +11,8 @@ spec:
   template:
     metadata:
       labels: {{- include "k8ssandra-common.labels" . | indent 8 }}
-      {{- with .Values.podAnnotations }}
       annotations:
+      {{- with .Values.podAnnotations }}
         {{- toYaml . | nindent 8 }}
       {{- end }}
     spec:
