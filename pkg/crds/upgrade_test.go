@@ -2,6 +2,7 @@ package crds
 
 import (
 	"context"
+	"fmt"
 	"testing"
 	"time"
 
@@ -95,33 +96,6 @@ func TestUpgradingCRDs(t *testing.T) {
 	g.Expect(err).Should(Succeed())
 	g.Expect(found).To(BeFalse())
 
-	By("Upgrading to 1.1.0")
-	g.Eventually(func() bool {
-		crds, err = u.Upgrade("k8ssandra", "1.1.0")
-		if err != nil {
-			println(err.Error())
-		}
-		return err == nil
-	}).WithTimeout(time.Minute * 10).WithPolling(time.Second * 5).Should(BeTrue())
-
-	objs = []apiextensions.CustomResourceDefinition{}
-	for _, crd := range crds {
-		if crd.GetName() == "cassandradatacenters.cassandra.datastax.com" {
-			unstructuredCRD = crd.DeepCopy()
-			err = runtime.DefaultUnstructuredConverter.FromUnstructured(crd.UnstructuredContent(), cassDCCRD)
-			g.Expect(err).ShouldNot(HaveOccurred())
-			objs = append(objs, *cassDCCRD)
-		}
-	}
-
-	envtest.WaitForCRDs(cfg, objs, testOptions)
-	err = k8sClient.Get(context.TODO(), client.ObjectKey{Name: cassDCCRD.GetName()}, cassDCCRD)
-	g.Expect(err).Should(Succeed())
-	g.Eventually(func() bool {
-		return cassDCCRD.GetResourceVersion() != ver
-	}).WithTimeout(time.Minute * 10).WithPolling(time.Second * 5).Should(BeTrue())
-	ver = cassDCCRD.GetResourceVersion()
-
 	By("Upgrading to 1.5.1")
 	crds, err = u.Upgrade("k8ssandra", "1.5.1")
 	g.Expect(err).Should(Succeed())
@@ -140,10 +114,14 @@ func TestUpgradingCRDs(t *testing.T) {
 	err = k8sClient.Get(context.TODO(), client.ObjectKey{Name: cassDCCRD.GetName()}, cassDCCRD)
 	g.Expect(err).Should(Succeed())
 	g.Eventually(func() bool {
-		return cassDCCRD.GetResourceVersion() != ver
-	}).WithTimeout(time.Minute * 10).WithPolling(time.Second * 5).Should(BeTrue())
+		newver := cassDCCRD.GetResourceVersion()
+		eq := newver == ver
+		println(fmt.Sprintf("equality: %t, current resourceVersion: %s, old resourceVersion: %s", eq, newver, ver))
+		return eq
+	}).WithTimeout(time.Minute * 10).WithPolling(time.Second * 5).Should(BeFalse())
 
 	versionsSlice, found, err := unstructured.NestedSlice(unstructuredCRD.Object, "spec", "versions")
+	g.Expect(found).To(BeTrue())
 	_, found, err = unstructured.NestedFieldNoCopy(versionsSlice[0].(map[string]interface{}), "schema", "openAPIV3Schema", "properties", "spec", "properties", "configSecret")
 
 	g.Expect(err).Should(Succeed())
