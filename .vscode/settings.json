@@ -18,8 +18,10 @@
     "ssandra's",
     "templating"
   ],
+  "go.testTimeout": "1200s",
+  "go.logging.level": "verbose",
   "go.testEnvVars": {
-    "PATH": "/usr/local/go/bin:/Users/milesgarnsey/go/bin/:/Users/milesgarnsey/.cargo/bin/cargo:/usr/local/opt/go@1.17/bin:/Users/milesgarnsey/.pyenv/shims:/Users/milesgarnsey/.pyenv/bin:/usr/local/opt/gnu-getopt/bin:/Users/milesgarnsey/google-cloud-sdk/bin:/Users/milesgarnsey/.sdkman/candidates/scala/current/bin:/Users/milesgarnsey/.sdkman/candidates/sbt/current/bin:/Users/milesgarnsey/.sdkman/candidates/maven/current/bin:/Users/milesgarnsey/.sdkman/candidates/kotlin/current/bin:/Users/milesgarnsey/.sdkman/candidates/gradle/current/bin:/usr/local/opt/grep/libexec/gnubin:/usr/local/opt/openjdk@11/bin:/Users/milesgarnsey/.local/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/go/bin:/usr/local/share/dotnet:~/.dotnet/tools:/Applications/Wireshark.app/Contents/MacOS:/Users/milesgarnsey/.nix-profile/bin:/Users/milesgarnsey/.cargo/bin:/Users/milesgarnsey/.dotnet/tools:/Users/milesgarnsey/.krew/bin",
-    "KUBEBUILDER_ASSETS": "/Users/milesgarnsey/Library/Application Support/io.kubebuilder.envtest/k8s/1.21.4-darwin-amd64"
+    // "PATH": 
+    // "KUBEBUILDER_ASSETS"
   },
 }
