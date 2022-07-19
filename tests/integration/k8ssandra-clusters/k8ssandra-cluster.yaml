@@ -8,7 +8,7 @@ spec:
     datacenters:
       - metadata:
           name: dc1
-        size: 1
+        size: 2
         storageConfig:
           cassandraDataVolumeClaimSpec:
             storageClassName: standard

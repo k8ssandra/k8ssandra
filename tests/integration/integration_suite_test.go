@@ -34,7 +34,7 @@ const (
 // "" means latest stable version in the Helm repo
 var (
 	upgradeStartVersions         = []string{"v1.0.0", "latest"}
-	operatorUpgradeStartVersions = []string{"0.37.0", "latest"}
+	operatorUpgradeStartVersions = []string{"0.34.0"}
 )
 
 func TestMain(m *testing.M) {
@@ -420,23 +420,22 @@ func TestUpgradeK8ssandraOperatorScenario(t *testing.T) {
 	for _, startVersion := range operatorUpgradeStartVersions {
 		namespace := initializeCluster(t)
 		success := t.Run(fmt.Sprintf("Upgrade from %s", startVersion), func(t *testing.T) {
-
 			// Install older version
 			DeployK8ssandraOperatorCluster(t, namespace, "k8ssandra-cluster.yaml", false, false, startVersion)
 			// Get CRD versions
-			cassDCCRD := &apiextensions.CustomResourceDefinition{}
-			err = k8sClient.Get(context.TODO(), client.ObjectKey{Name: "cassandradatacenters.cassandra.datastax.com"}, cassDCCRD)
+			k8ssandraClusterCRD := &apiextensions.CustomResourceDefinition{}
+			err = k8sClient.Get(context.TODO(), client.ObjectKey{Name: "k8ssandraclusters.k8ssandra.io"}, k8ssandraClusterCRD)
 			g.Expect(err).ToNot(HaveOccurred())
-			ver := cassDCCRD.GetResourceVersion()
+			ver := k8ssandraClusterCRD.GetResourceVersion()
 
 			// Upgrade to current local version
 			DeployK8ssandraOperatorCluster(t, namespace, "k8ssandra-cluster.yaml", true, true, "")
 			g.Eventually(func() bool {
-				err = k8sClient.Get(context.TODO(), client.ObjectKey{Name: "cassandradatacenters.cassandra.datastax.com"}, cassDCCRD)
+				err = k8sClient.Get(context.TODO(), client.ObjectKey{Name: "k8ssandraclusters.k8ssandra.io"}, k8ssandraClusterCRD)
 				if err != nil {
 					return false
 				}
-				return ver != cassDCCRD.GetResourceVersion()
+				return ver != k8ssandraClusterCRD.GetResourceVersion()
 			}).WithTimeout(time.Minute * 10).WithPolling(time.Second * 5).Should(BeTrue())
 		})
 
