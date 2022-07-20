@@ -18,9 +18,9 @@ and date `## vX.Y.Z - YYYY-MM-DD` and create a new placeholder section for  `unr
 
 ## unreleased
 
+* [CHANGE] Upgrade cass-operator to v1.12.0
 * [CHANGE] Upgrade Reaper to v3.2.0
 * [ENHANCEMENT] Added s3_rgw support
-* [CHANGE] Upgrade cass-operator to v1.11.0
 * [CHANGE] cass-operator HELM-Chart: Upgrade requires manual action if registryOverride was used before. registryOverride is now repositoryOverride.
 * [ENHANCEMENT] Enable webhook functionality in cass-operator if cert-manager is installed.
 * [CHANGE] [#1409](https://github.com/k8ssandra/k8ssandra/pull/1409) Upgrade cass-operator to v1.11.0
