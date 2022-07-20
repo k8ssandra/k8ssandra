@@ -437,8 +437,9 @@ func TestUpgradeK8ssandraOperatorScenario(t *testing.T) {
 				}
 				return ver != k8ssandraClusterCRD.GetResourceVersion()
 			}).WithTimeout(time.Minute * 10).WithPolling(time.Second * 5).Should(BeTrue())
-		})
+			DeleteK8ssandraCluster(t, namespace, "k8ssandra-cluster.yaml")
 
+		})
 		cleanupCluster(t, namespace, success)
 		if !success {
 			t.FailNow()

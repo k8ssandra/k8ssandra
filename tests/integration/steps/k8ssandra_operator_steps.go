@@ -52,3 +52,17 @@ func DeployK8ssandraOperatorCluster(t *testing.T, namespace string, k8ssandraClu
 	// Wait for CassandraDatacenter to be ready..
 	WaitForCassDcToBeReady(t, namespace)
 }
+
+func DeleteK8ssandraCluster(t *testing.T, namespace string, k8ssandraCluster string) {
+	stdout, stderr, err := kubectl.
+		DeleteFromFiles("../../tests/integration/k8ssandra-clusters/" + k8ssandraCluster).
+		InNamespace(namespace).
+		ExecVCapture()
+	println(stdout)
+	println(stderr)
+	if err != nil {
+		println(err)
+		t.FailNow()
+	}
+	WaitForCassandraDatacenterDeletion(t, namespace)
+}
