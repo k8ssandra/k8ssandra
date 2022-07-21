@@ -48,6 +48,15 @@ Cassandra may be deployed in a number of environments. This includes on bare met
 
 K8ssandra Operator focuses on deploying Cassandra within Kubernetes. Kubernetes was chosen as it allows for the consumption of a common, versioned, set of APIs and tooling across multiple cloud platforms and environments.
 
+## Compatibility matrix
+
+| Kubernetes                  | **v1.17** | **v1.18** | **v1.19** | **v1.20** | **v1.21** | **v1.22** | **v1.23** | **v1.24** |
+|-----------------------------|:---------:|:---------:|:---------:|:---------:|:---------:|:---------:|:---------:|:---------:|
+| **K8ssandra v1.5**          |     ✅     |     ✅     |     ✅     |     ✅     |     ✅     |     ✅     |     ✅     |     ✅     |
+| **K8ssandra-operator v1.0** |     ✅     |     ✅     |     ✅     |     ✅     |     ✅     |     ✅     |     ✅     |     ✅     |
+| **K8ssandra-operator v1.1** |           |           |           |           |     ✅     |     ✅     |     ✅     |     ✅     |
+| **K8ssandra-operator v1.2** |           |           |           |           |     ✅     |     ✅     |     ✅     |     ✅     |
+
 ## Why do I want K8ssandra Operator?
 
 Apache Cassandra is _the_ NoSQL database for applications that require resilience and scalability. Unfortunately this comes with the same burdens as other distributed systems. There are multiple nodes replicating data all the time. Understanding the health of these systems requires advanced tooling and knowledge of the constituent parts. Users could spend time investigating and building out solutions to ensure operational stability of their Cassandra clusters. K8ssandra Operator looks to provide those integrations from the start in a simple easy to deploy package.
