@@ -18,7 +18,7 @@ jobs:
       name: Checkout code w/ submodules
       with:
         submodules: recursive
-    - uses: google-github-actions/setup-gcloud@master
+    - uses: google-github-actions/setup-gcloud@v0.6.0
       name: Setup gcloud
       with:
         project_id: ${{ secrets.GCP_DOCS_PROD_PROJECT_ID }}
