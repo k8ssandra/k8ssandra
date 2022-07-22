@@ -144,15 +144,7 @@ jobs:
 
       - name: Kind kube-proxy issue workaround
         run: sudo sysctl net/netfilter/nf_conntrack_max=524288
-      # We Are delecting this step to make because this leads to a smoother local workflow where you can run a single make 
-      # target to get a cluster and run the tests.
-      # - name: Create Kind Cluster
-      #   uses: helm/kind-action@v1.1.0
-      #   with: 
-      #     version: v0.11.1
-      #     node_image: kindest/node:${{ matrix.k8s_version }}
-      #     cluster_name: kind
-      #     config: tests/integration/kind/kind_config_3_workers.yaml
+      
 
       - name: Download k8ssandra-tools image
         uses: actions/download-artifact@v2
@@ -163,11 +155,6 @@ jobs:
       - name: Load Docker images
         run: |
           docker load --input /tmp/k8ssandra-tools.tar
-      # We Are delecting this step to make because this leads to a smoother local workflow where you can run a single make 
-      # target to get a cluster and run the tests.
-      # - name: Load image on the nodes of the cluster
-      #   run: |
-      #     kind load docker-image --name=kind k8ssandra/k8ssandra-tools:latest
 
       - name: Install Dependencies
         run: |
