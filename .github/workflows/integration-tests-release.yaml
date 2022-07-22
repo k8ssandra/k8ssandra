@@ -111,7 +111,7 @@ jobs:
           - "TestRestoreAfterUpgrade"
           - "TestUpgradeScenario"
           - "TestCustomCassandraConfiguration"
-          - "TestUpgradeK8ssandraOperatorScenario"
+          #- "TestUpgradeK8ssandraOperatorScenario"
         exclude:
           - scenario: "TestUpgradeScenario"
             k8s_version: "v1.22.2"
