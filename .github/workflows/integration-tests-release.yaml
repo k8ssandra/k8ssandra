@@ -111,6 +111,7 @@ jobs:
           - "TestRestoreAfterUpgrade"
           - "TestUpgradeScenario"
           - "TestCustomCassandraConfiguration"
+          - "TestUpgradeK8ssandraOperatorScenario"
         exclude:
           - scenario: "TestUpgradeScenario"
             k8s_version: "v1.22.2"
@@ -143,14 +144,7 @@ jobs:
 
       - name: Kind kube-proxy issue workaround
         run: sudo sysctl net/netfilter/nf_conntrack_max=524288
-
-      - name: Create Kind Cluster
-        uses: helm/kind-action@v1.1.0
-        with: 
-          version: v0.11.1
-          node_image: kindest/node:${{ matrix.k8s_version }}
-          cluster_name: kind
-          config: tests/integration/kind/kind_config_3_workers.yaml
+      
 
       - name: Download k8ssandra-tools image
         uses: actions/download-artifact@v2
@@ -161,10 +155,6 @@ jobs:
       - name: Load Docker images
         run: |
           docker load --input /tmp/k8ssandra-tools.tar
-
-      - name: Load image on the nodes of the cluster
-        run: |
-          kind load docker-image --name=kind k8ssandra/k8ssandra-tools:latest
 
       - name: Install Dependencies
         run: |
@@ -211,7 +201,7 @@ jobs:
         run: |
           # Set a valid name for the artifacts in case of failure
           echo "ARTIFACT_NAME=k8s-artifacts-${K8SSANDRA_CASSANDRA_VERSION}-$(echo $SCENARIO|tr '":/' '___')" >> $GITHUB_ENV
-          make integ-test TESTS="$SCENARIO" GO_FLAGS="-v" CLUSTER_CLEANUP="success"
+          make kind-integ-test TESTS="$SCENARIO" GO_FLAGS="-v" CLUSTER_CLEANUP="success"
 
       - name: Collect artifacts
         if: ${{ failure() }}

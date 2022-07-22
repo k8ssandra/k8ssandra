@@ -1,11 +1,17 @@
 package integration
 
 import (
+	"context"
 	"log"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"github.com/gruntwork-io/terratest/modules/k8s"
+	apiextensions "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1"
+	"k8s.io/client-go/kubernetes/scheme"
+	"k8s.io/client-go/tools/clientcmd"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 
 	"github.com/google/uuid"
 
@@ -26,7 +32,10 @@ const (
 )
 
 // "" means latest stable version in the Helm repo
-var upgradeStartVersions = []string{"v1.0.0", "latest"}
+var (
+	upgradeStartVersions         = []string{"v1.0.0", "latest"}
+	operatorUpgradeStartVersions = []string{"0.34.0"}
+)
 
 func TestMain(m *testing.M) {
 	err := InitTestClient()
@@ -388,6 +397,49 @@ func TestUpgradeScenario(t *testing.T) {
 			checkReaperRegistered(t, namespace)
 		})
 
+		cleanupCluster(t, namespace, success)
+		if !success {
+			t.FailNow()
+		}
+	}
+}
+
+// TestUpgradeK8ssandraOperatorScenario tests that we can upgrade from all versions > 1.5 to the current version, while
+// a cluster is running, and that CRDs are upgraded appropriately.
+func TestUpgradeK8ssandraOperatorScenario(t *testing.T) {
+	g := NewWithT(t)
+	kubeconfig := filepath.Join(
+		os.Getenv("HOME"), ".kube", "config",
+	)
+	config, err := clientcmd.BuildConfigFromFlags("", kubeconfig)
+	g.Expect(err).ToNot(HaveOccurred())
+	testScheme := scheme.Scheme
+	apiextensions.AddToScheme(testScheme)
+	k8sClient, err := client.New(config, client.Options{Scheme: testScheme})
+	g.Expect(err).ToNot(HaveOccurred())
+	for _, startVersion := range operatorUpgradeStartVersions {
+		namespace := initializeCluster(t)
+		success := t.Run(fmt.Sprintf("Upgrade from %s", startVersion), func(t *testing.T) {
+			// Install older version
+			DeployK8ssandraOperatorCluster(t, namespace, "k8ssandra-cluster.yaml", false, false, startVersion)
+			// Get CRD versions
+			k8ssandraClusterCRD := &apiextensions.CustomResourceDefinition{}
+			err = k8sClient.Get(context.TODO(), client.ObjectKey{Name: "k8ssandraclusters.k8ssandra.io"}, k8ssandraClusterCRD)
+			g.Expect(err).ToNot(HaveOccurred())
+			ver := k8ssandraClusterCRD.GetResourceVersion()
+
+			// Upgrade to current local version
+			DeployK8ssandraOperatorCluster(t, namespace, "k8ssandra-cluster.yaml", true, true, "")
+			g.Eventually(func() bool {
+				err = k8sClient.Get(context.TODO(), client.ObjectKey{Name: "k8ssandraclusters.k8ssandra.io"}, k8ssandraClusterCRD)
+				if err != nil {
+					return false
+				}
+				return ver != k8ssandraClusterCRD.GetResourceVersion()
+			}).WithTimeout(time.Minute * 10).WithPolling(time.Second * 5).Should(BeTrue())
+			DeleteK8ssandraCluster(t, namespace, "k8ssandra-cluster.yaml")
+
+		})
 		cleanupCluster(t, namespace, success)
 		if !success {
 			t.FailNow()

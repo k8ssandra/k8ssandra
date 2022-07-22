@@ -26,7 +26,12 @@ func main() {
 
 	var targetVersion string
 	flag.StringVar(&targetVersion, "targetVersion", "", "Defines the targetVersion to be upgraded to")
+
+	var chartName string
+	flag.StringVar(&chartName, "chartName", "", "Defines the chart name to be upgraded")
+
 	upgradeCRDs := flag.Bool("upgradecrds", false, "Upgrade CRDs to target version")
+
 	flag.Parse()
 
 	// Add flags for parsing stuff
@@ -64,7 +69,7 @@ func main() {
 			return
 		}
 
-		_, err = u.Upgrade(targetVersion)
+		_, err = u.Upgrade(chartName, targetVersion)
 		if err != nil {
 			log.Fatalf("Failed to update CRDs: %v", err)
 			return

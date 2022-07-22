@@ -1,7 +1,7 @@
 package cassdc
 
 import (
-	cassop "github.com/k8ssandra/cass-operator/operator/pkg/apis/cassandra/v1beta1"
+	cassop "github.com/k8ssandra/cass-operator/apis/cassandra/v1beta1"
 	. "github.com/k8ssandra/k8ssandra/tests/unit/utils/kubeapi"
 	. "github.com/onsi/gomega"
 	corev1 "k8s.io/api/core/v1"
