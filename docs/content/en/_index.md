@@ -25,6 +25,15 @@ Be sure to leave us a <a class="github-button" href="https://github.com/k8ssandr
 
 If you're using K8ssandra v1.4.x, you may continue to do so. Or consider stepping up to the project's latest implementation with K8ssandra Operator.
 
+## Compatibility matrix
+
+| Kubernetes                  | **v1.17** | **v1.18** | **v1.19** | **v1.20** | **v1.21** | **v1.22** | **v1.23** | **v1.24** |
+|-----------------------------|:---------:|:---------:|:---------:|:---------:|:---------:|:---------:|:---------:|:---------:|
+| **K8ssandra v1.5**          |     ✅     |     ✅     |     ✅     |     ✅     |     ✅     |     ✅     |     ✅     |     ✅     |
+| **K8ssandra-operator v1.0** |     ✅     |     ✅     |     ✅     |     ✅     |     ✅     |     ✅     |     ✅     |     ✅     |
+| **K8ssandra-operator v1.1** |           |           |           |           |     ✅     |     ✅     |     ✅     |     ✅     |
+| **K8ssandra-operator v1.2** |           |           |           |           |     ✅     |     ✅     |     ✅     |     ✅     |
+
 ## Next steps
 
 We encourage you to actively participate in the [K8ssandra community](https://k8ssandra.io/community/).
