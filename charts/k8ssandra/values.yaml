@@ -445,7 +445,7 @@ stargate:
   enabled: true
   # -- version of Stargate to deploy. This is used in conjunction with cassandra.version to select the Stargate container image.
   # If stargate.image is set, this value has no effect.
-  version: "1.0.52"
+  version: "1.0.61"
   # -- Sets the Stargate container image. This value must be compatible
   # with the value provided for stargate.clusterVersion. If left blank (recommended),
   # k8ssandra will derive an appropriate image based on cassandra.clusterVersion.
