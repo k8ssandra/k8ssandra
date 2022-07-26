@@ -1,0 +1,49 @@
+name: Release Helm Charts
+
+# Do not change this
+concurrency: release-helm
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          path: 'src'
+          fetch-depth: 0
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          path: 'dest'
+          ref: 'gh-pages'
+          fetch-depth: 0
+
+      - name: Install Helm
+        uses: azure/setup-helm@v1
+
+      - name: Package Helm Charts
+        shell: bash
+        run: |
+          find src/charts/ -type f -name 'Chart.yaml' | sed -r 's|/[^/]+$||' | sort | uniq | xargs -L 1 helm dep up
+          for d in src/charts/*/ ; do
+              echo "$d"
+              helm package "$d" -u -d dest
+          done
+      - name: Push New Files
+        shell: bash
+        working-directory: dest
+        run: |
+          helm repo index . --url https://raw.githubusercontent.com/A-Lynch/k8ssandraTest/gh-pages/
+          git config user.name "Helm Updater"
+          git config user.email "actions@users.noreply.github.com"
+          git add $(git ls-files -o --exclude-standard)
+          git add index.yaml
+          git commit -m "Updated from ref: $GITHUB_SHA"
+          git push
