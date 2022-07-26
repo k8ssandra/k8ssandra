@@ -1,0 +1,205 @@
+apiVersion: v1
+entries:
+  backup:
+  - apiVersion: v2
+    created: "2022-07-26T16:43:49.624595599Z"
+    description: 'Creates a CassandraBackup custom resource instance. This chart should
+      be used in conjunction with the Medusa Operator chart. '
+    digest: d0a6b3015c8597f4c9e6ed1306fa59c64722e3863c2cfdf023736db76fd0daba
+    home: https://k8ssandra.io/
+    maintainers:
+    - email: k8ssandra-developers@googlegroups.com
+      name: K8ssandra Team
+      url: https://github.com/k8ssandra
+    name: backup
+    sources:
+    - https://github.com/k8ssandra/medusa-operator
+    - https://github.com/k8ssandra/k8ssandra/tree/main/charts/backup
+    type: application
+    urls:
+    - https://raw.githubusercontent.com/A-Lynch/k8ssandraTest/gh-pages/backup-0.26.0.tgz
+    version: 0.26.0
+  cass-operator:
+  - apiVersion: v2
+    appVersion: 1.12.0
+    created: "2022-07-26T16:43:49.635401916Z"
+    dependencies:
+    - name: k8ssandra-common
+      repository: file://../k8ssandra-common
+      version: 0.28.6
+    description: 'Kubernetes operator which handles the provisioning and management
+      of Apache Cassandra clusters. '
+    digest: af8fdd1ea47f5cd3a7939773352b1a54795140a75751cb4814e3bd179e380ba2
+    home: https://github.com/k8ssandra/cass-operator
+    maintainers:
+    - email: cass-operator@datastax.com
+      name: Cass Operator Team
+      url: https://github.com/k8ssandra/cass-operator
+    - email: k8ssandra-developers@googlegroups.com
+      name: K8ssandra Team
+      url: https://github.com/k8ssandra
+    name: cass-operator
+    sources:
+    - https://github.com/k8ssandra/cass-operator
+    - https://github.com/k8ssandra/k8ssandra/tree/main/charts/cass-operator
+    type: application
+    urls:
+    - https://raw.githubusercontent.com/A-Lynch/k8ssandraTest/gh-pages/cass-operator-0.37.1.tgz
+    version: 0.37.1
+  k8ssandra:
+  - apiVersion: v2
+    created: "2022-07-26T16:43:49.683795095Z"
+    dependencies:
+    - condition: cass-operator.enabled
+      name: cass-operator
+      repository: file://../cass-operator
+      version: 0.37.1
+    - condition: reaper-operator.enabled
+      name: reaper-operator
+      repository: file://../reaper-operator
+      version: 0.32.3
+    - condition: medusa.enabled
+      name: medusa-operator
+      repository: file://../medusa-operator
+      version: 0.32.0
+    - name: k8ssandra-common
+      repository: file://../k8ssandra-common
+      version: 0.28.6
+    - condition: kube-prometheus-stack.enabled
+      name: kube-prometheus-stack
+      repository: https://prometheus-community.github.io/helm-charts
+      version: 20.0.1
+    description: 'Provisions and configures an instance of the entire K8ssandra stack.
+      This includes Apache Cassandra, Stargate, Reaper, Medusa, Prometheus, and Grafana. '
+    digest: 2278ef1ca24023bc820230c3c5fd2ed7180070b6bc8d1aba47a6da2424c0e66f
+    home: https://k8ssandra.io/
+    maintainers:
+    - email: k8ssandra-developers@googlegroups.com
+      name: K8ssandra Team
+      url: https://github.com/k8ssandra
+    name: k8ssandra
+    sources:
+    - https://github.com/k8ssandra/k8ssandra
+    - https://github.com/k8ssandra/k8ssandra/tree/main/charts/k8ssandra
+    type: application
+    urls:
+    - https://raw.githubusercontent.com/A-Lynch/k8ssandraTest/gh-pages/k8ssandra-1.6.0-SNAPSHOT.tgz
+    version: 1.6.0-SNAPSHOT
+  k8ssandra-common:
+  - apiVersion: v2
+    created: "2022-07-26T16:43:49.691826508Z"
+    dependencies:
+    - name: common
+      repository: https://charts.bitnami.com/bitnami
+      version: 1.16.0
+    description: 'Helper library containing functions used by many of the K8ssandra
+      stack Helm charts. '
+    digest: 521bbb8c986dbb312ad4802f182d430e0cfcdba6429bcf703a3b3b588ef887d4
+    home: https://k8ssandra.io/
+    maintainers:
+    - email: k8ssandra-developers@googlegroups.com
+      name: K8ssandra Team
+      url: https://github.com/k8ssandra
+    name: k8ssandra-common
+    sources:
+    - https://github.com/k8ssandra/k8ssandra
+    - https://github.com/k8ssandra/k8ssandra/tree/main/charts/k8ssandra-common
+    type: library
+    urls:
+    - https://raw.githubusercontent.com/A-Lynch/k8ssandraTest/gh-pages/k8ssandra-common-0.28.6.tgz
+    version: 0.28.6
+  k8ssandra-operator:
+  - apiVersion: v2
+    appVersion: 1.2.0
+    created: "2022-07-26T16:43:49.721399256Z"
+    dependencies:
+    - name: k8ssandra-common
+      repository: file://../k8ssandra-common
+      version: 0.28.6
+    - name: cass-operator
+      repository: file://../cass-operator
+      version: 0.37.1
+    description: 'Kubernetes operator which handles the provisioning and management
+      of K8ssandra clusters. '
+    digest: 3afd4d8c99261a4a10f17f1e0d0f5fd62c5c13adb6c389c2c1754c8e7b98eb82
+    home: https://github.com/k8ssandra/k8ssandra-operator
+    maintainers:
+    - email: k8ssandra-developers@googlegroups.com
+      name: K8ssandra Team
+      url: https://github.com/k8ssandra
+    name: k8ssandra-operator
+    sources:
+    - https://github.com/k8ssandra/k8ssandra-operator
+    - https://github.com/k8ssandra/k8ssandra/tree/main/charts/k8ssandra-operator
+    type: application
+    urls:
+    - https://raw.githubusercontent.com/A-Lynch/k8ssandraTest/gh-pages/k8ssandra-operator-0.38.0.tgz
+    version: 0.38.0
+  medusa-operator:
+  - apiVersion: v2
+    appVersion: 0.1.0
+    created: "2022-07-26T16:43:49.726303264Z"
+    dependencies:
+    - name: k8ssandra-common
+      repository: file://../k8ssandra-common
+      version: 0.28.6
+    description: 'Installs and configures the Medusa Operator for managing Apache
+      Cassandra backups '
+    digest: 66f79965d6f272b74b5e6d056361d75bec2643a7b12f012afb29d5746df6640c
+    home: https://k8ssandra.io/
+    maintainers:
+    - email: k8ssandra-developers@googlegroups.com
+      name: K8ssandra Team
+      url: https://github.com/k8ssandra
+    name: medusa-operator
+    sources:
+    - https://github.com/k8ssandra/medusa-operator
+    - https://github.com/k8ssandra/k8ssandra/tree/main/charts/medusa-operator
+    type: application
+    urls:
+    - https://raw.githubusercontent.com/A-Lynch/k8ssandraTest/gh-pages/medusa-operator-0.32.0.tgz
+    version: 0.32.0
+  reaper-operator:
+  - apiVersion: v2
+    appVersion: 0.1.0
+    created: "2022-07-26T16:43:49.728040966Z"
+    dependencies:
+    - name: k8ssandra-common
+      repository: file://../k8ssandra-common
+      version: 0.28.6
+    description: 'Configures and installs the Reaper Operator for Apache Cassandra.
+      This tool  manages an external repair process for Apache Cassandra clusters. '
+    digest: e5ea4873b0db68c4b073a1d961160c0afa9b1c4bc29de56ad411b89c9d4bd0b5
+    home: https://k8ssandra.io/
+    maintainers:
+    - email: k8ssandra-developers@googlegroups.com
+      name: K8ssandra Team
+      url: https://github.com/k8ssandra
+    name: reaper-operator
+    sources:
+    - https://github.com/k8ssandra/reaper-operator
+    - https://github.com/k8ssandra/k8ssandra/tree/main/charts/reaper-operator
+    type: application
+    urls:
+    - https://raw.githubusercontent.com/A-Lynch/k8ssandraTest/gh-pages/reaper-operator-0.32.3.tgz
+    version: 0.32.3
+  restore:
+  - apiVersion: v2
+    created: "2022-07-26T16:43:49.728466867Z"
+    description: 'Creates a CassandraRestore custom resource instance. This chart
+      should be  used in conjunction with the k8ssandra/medusa-operator chart. '
+    digest: 717d9c99ff799af8361e69dd8b1669048d535024d50250de0c823dd3c136be6a
+    home: https://k8ssandra.io/
+    maintainers:
+    - email: k8ssandra-developers@googlegroups.com
+      name: K8ssandra Team
+      url: https://github.com/k8ssandra
+    name: restore
+    sources:
+    - https://github.com/k8ssandra/k8ssandra
+    - https://github.com/k8ssandra/k8ssandra/tree/main/charts/restore
+    type: application
+    urls:
+    - https://raw.githubusercontent.com/A-Lynch/k8ssandraTest/gh-pages/restore-0.27.1.tgz
+    version: 0.27.1
+generated: "2022-07-26T16:43:49.624179398Z"
