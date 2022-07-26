@@ -5,7 +5,7 @@ weight: 1
 description: K8ssandra Operator deploys Stargate to provide APIs that interact with Apache Cassandra&reg; databases.
 ---
 
-Stargate provides a data gateway with REST, GraphQL, and Document APIs in front of your K8ssandra-managed Cassandra database. Stargate is deployed by a K8ssandra Operator install, based on the [Stargate]({{< relref "/reference/crd/stargate/" >}}) Custom Resource Definition (CRD).
+Stargate provides a data gateway with REST, GraphQL, and Document APIs in front of your K8ssandra-managed Cassandra database. Stargate is deployed by a K8ssandra Operator install, based on the [Stargate]({{< relref "/reference/crd" >}}) Custom Resource Definition (CRD).
 
 If you haven't already installed a K8ssandraCluster using K8ssandra Operator, see the [local install]({{< relref "/install/local" >}}) topic.
 

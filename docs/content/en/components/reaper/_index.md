@@ -5,7 +5,7 @@ weight: 3
 description: K8ssandra Operator deploys Reaper to enable anti-entropy repair operations on Apache Cassandra&reg; data.
 ---
 
-Reaper for Apache Cassandra&reg; is deployed by a K8ssandra Operator install, based on the [Reaper]({{< relref "/reference/crd/reaper/" >}}) Custom Resource Definition (CRD).
+Reaper for Apache Cassandra&reg; is deployed by a K8ssandra Operator install, based on the [Reaper]({{< relref "/reference/crd" >}}) Custom Resource Definition (CRD).
 
 If you haven't already installed a K8ssandraCluster using K8ssandra Operator, see the [local install]({{< relref "/install/local" >}}) topic.
 

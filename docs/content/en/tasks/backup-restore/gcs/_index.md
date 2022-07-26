@@ -255,7 +255,5 @@ Success! You’ve successfully restored your lost data in just a few commands.
 
 See the following Custom Resource Definition (CRD) reference topics:
 
-* [Medusa CRD]({{< relref "/reference/crd/medusa" >}})
-* [CassandraBackup CRD]({{< relref "/reference/crd/cassandrabackup" >}})
-* [CassansdraRestore CRD]({{< relref "/reference/crd/cassandrarestore" >}})
+* [K8ssandra-operator CRDs]({{< relref "/reference/crd" >}})
 
