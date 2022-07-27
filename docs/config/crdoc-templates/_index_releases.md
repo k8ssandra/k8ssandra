@@ -1,7 +1,7 @@
 ---
 title: "Older releases"
 linkTitle: "Reference"
-weight: 2
+weight: 10
 description: >
-   K8ssandra-operator and cass-operatr CRD reference by release.
+   K8ssandra-operator and cass-operator CRD reference by release.
 ---
