@@ -16,21 +16,30 @@ jobs:
           repository: k8ssandra/k8ssandra-operator
           ref: main
           path: k8ssandra-operator
+      - name: Checkout cass-operator
+        uses: actions/checkout@v2
+        with:
+          repository: k8ssandra/cass-operator
+          ref: master
+          path: cass-operator
       - name: Checkout K8ssandra
         uses: actions/checkout@v2
         with:
           #ref: docs-v2
           path: k8ssandra
+      
       - name: Install crdoc
         run: |
           go install fybrik.io/crdoc@latest
       - name: Generate CRD reference for each K8ssandra-operator release
         run: |
+          rm -rf ../k8ssandra/docs/content/en/reference/crd/*
+          cp ../k8ssandra/docs/config/crdoc-templates/_index.md ../k8ssandra/docs/content/en/reference/crd/_index.md
+          
           cd k8ssandra-operator
           git fetch
-          releases=$(git branch -r |grep -E "release/[0-9]{1,2}.[0-9]{1,2}")
-          rm -rf ../k8ssandra/docs/content/en/reference/crd/*/
-          for branch in $releases
+          k8c_releases=$(git branch -r |grep -E "release/[0-9]{1,2}.[0-9]{1,2}")
+          for branch in $k8c_releases
           do 
             git checkout -f $branch
             version=$(echo $branch | sed 's/origin\/release\///g')
@@ -38,7 +47,36 @@ jobs:
             ~/go/bin/crdoc --resources config/crd/bases --output ../k8ssandra/docs/content/en/reference/crd/k8ssandra-operator-crds-$version/_index.md --template ../k8ssandra/docs/config/crdoc-templates/k8c.tmpl
             sed -i "s/RELEASE_VERSION/$version/g" ../k8ssandra/docs/content/en/reference/crd/k8ssandra-operator-crds-$version/_index.md
           done
-          versions_hash=$(echo $releases | sed 's/origin\/release\///g' | sort | sha256sum | awk '{print $1}' | head -c 8)
+
+          # Generate CRD reference for K8ssandra-operator latest
+          git checkout -f main
+          k8c_latest=$(git rev-parse --short HEAD)
+          ~/go/bin/crdoc --resources config/crd/bases --output ../k8ssandra/docs/content/en/reference/crd/k8ssandra-operator-crds-latest/_index.md --template ../k8ssandra/docs/config/crdoc-templates/k8c.tmpl
+          sed -i "s/vRELEASE_VERSION/latest/g" ../k8ssandra/docs/content/en/reference/crd/k8ssandra-operator-crds-latest/_index.md
+
+          # Generate CRD reference for cass-operator
+          cd ../cass-operator
+          git fetch
+          cass_releases=$(git branch -r |grep -E "[0-9]{1,2}.[0-9]{1,2}.x")
+          for branch in $cass_releases
+          do 
+            git checkout -f $branch
+            version=$(echo $branch | sed 's/origin\///g')
+            if [ -d "config/crd/bases" ]; then
+              mkdir -p ../k8ssandra/docs/content/en/reference/crd/cass-operator-crds-$version > /dev/null 2>&1
+              ~/go/bin/crdoc --resources config/crd/bases --output ../k8ssandra/docs/content/en/reference/crd/cass-operator-crds-$version/_index.md --template ../k8ssandra/docs/config/crdoc-templates/cassdc.tmpl
+              sed -i "s/RELEASE_VERSION/$version/g" ../k8ssandra/docs/content/en/reference/crd/cass-operator-crds-$version/_index.md
+            fi
+          done
+
+          # Generate CRD reference for cass-operator latest
+          git checkout -f master
+          cass_latest=$(git rev-parse --short HEAD)
+          cass_latest="master"
+          ~/go/bin/crdoc --resources config/crd/bases --output ../k8ssandra/docs/content/en/reference/crd/cass-operator-crds-latest/_index.md --template ../k8ssandra/docs/config/crdoc-templates/cassdc.tmpl
+          sed -i "s/vRELEASE_VERSION/latest/g" ../k8ssandra/docs/content/en/reference/crd/cass-operator-crds-latest/_index.md
+
+          versions_hash=$(echo "${k8c_releases}-${k8c_latest}-${cass_releases}-${cass_latest}" | sha256sum | awk '{print $1}' | head -c 8)
           echo "PR_BRANCH=$versions_hash" >> $GITHUB_ENV
       - name: Check if a closed PR exists for the same version
         run: |
@@ -54,6 +92,8 @@ jobs:
         if: ${{ env.PR_EXISTS == 'no' }}
         uses: peter-evans/create-pull-request@v3
         with:
+          add-paths: |
+            k8ssandra/docs/content/en/reference/crd/
           path: k8ssandra
           token: ${{ secrets.CREATE_PR_TOKEN }}
           commit-message: Upgrade CRD reference
