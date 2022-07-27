@@ -1,14 +1,15 @@
 ---
-title: "cass-operator CRDs v1.8.x"
-linkTitle: "cass-operator CRDs v1.8.x"
-weight: 1
+title: "cass-operator CRDs v1.10.x"
+linkTitle: "cass-operator CRDs v1.10.x"
+weight: 5
 description: >
-  Configuration reference for the CRDs used with cass-operator v1.8.x.  
+  Configuration reference for the CRDs used with cass-operator v1.10.x.  
 ---
 
 Packages:
 
 - [cassandra.datastax.com/v1beta1](#cassandradatastaxcomv1beta1)
+- [control.k8ssandra.io/v1alpha1](#controlk8ssandraiov1alpha1)
 
 ## cassandra.datastax.com/v1beta1
 
@@ -130,6 +131,13 @@ CassandraDatacenterSpec defines the desired state of a CassandraDatacenter
         </td>
         <td>true</td>
       </tr><tr>
+        <td><b>additionalLabels</b></td>
+        <td>map[string]string</td>
+        <td>
+          Additional Labels allows to define additional labels that will be included in all objects created by the operator. Note, user can override values set by default from the cass-operator and doing so could break cass-operator functionality.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
         <td><b>additionalSeeds</b></td>
         <td>[]string</td>
         <td>
@@ -194,7 +202,7 @@ CassandraDatacenterSpec defines the desired state of a CassandraDatacenter
         <td>string</td>
         <td>
           ConfigSecret is the name of a secret that contains configuration for Cassandra. The secret is expected to have a property named config whose value should be a JSON formatted string that should look like this: 
-    config: |-      {        "cassandra-yaml": {          "read_request_timeout_in_ms": 10000        },        "jmv-options": {          "max_heap_size": 1024M        }      } 
+ config: |- { "cassandra-yaml": { "read_request_timeout_in_ms": 10000 }, "jmv-options": { "max_heap_size": 1024M } } 
  ConfigSecret is mutually exclusive with Config. ConfigSecret takes precedence and will be used exclusively if both properties are set. The operator sets a watch such that an update to the secret will trigger an update of the StatefulSets.<br/>
         </td>
         <td>false</td>
@@ -388,7 +396,7 @@ Describes the persistent storage request of each server node
 
 
 
-StorageConfig defines additional storage configurations
+AdditionalVolumes StorageConfig defines additional storage configurations
 
 <table>
     <thead>
@@ -451,7 +459,14 @@ Persistent volume claim spec
         <td><b><a href="#cassandradatacenterspecstorageconfigadditionalvolumesindexpvcspecdatasource">dataSource</a></b></td>
         <td>object</td>
         <td>
-          This field can be used to specify either: * An existing VolumeSnapshot object (snapshot.storage.k8s.io/VolumeSnapshot) * An existing PVC (PersistentVolumeClaim) * An existing custom resource that implements data population (Alpha) In order to use custom resource types that implement data population, the AnyVolumeDataSource feature gate must be enabled. If the provisioner or an external controller can support the specified data source, it will create a new volume based on the contents of the specified data source.<br/>
+          This field can be used to specify either: * An existing VolumeSnapshot object (snapshot.storage.k8s.io/VolumeSnapshot) * An existing PVC (PersistentVolumeClaim) If the provisioner or an external controller can support the specified data source, it will create a new volume based on the contents of the specified data source. If the AnyVolumeDataSource feature gate is enabled, this field will always have the same contents as the DataSourceRef field.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#cassandradatacenterspecstorageconfigadditionalvolumesindexpvcspecdatasourceref">dataSourceRef</a></b></td>
+        <td>object</td>
+        <td>
+          Specifies the object from which to populate the volume with data, if a non-empty volume is desired. This may be any local object from a non-empty API group (non core object) or a PersistentVolumeClaim object. When this field is specified, volume binding will only succeed if the type of the specified object matches some installed volume populator or dynamic provisioner. This field will replace the functionality of the DataSource field and as such if both fields are non-empty, they must have the same value. For backwards compatibility, both fields (DataSource and DataSourceRef) will be set to the same value automatically if one of them is empty and the other is non-empty. There are two important differences between DataSource and DataSourceRef: * While DataSource only allows two specific types of objects, DataSourceRef allows any non-core object, as well as PersistentVolumeClaim objects. * While DataSource ignores disallowed values (dropping them), DataSourceRef preserves all values, and generates an error if a disallowed value is specified. (Alpha) Using this field requires the AnyVolumeDataSource feature gate to be enabled.<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -498,7 +513,48 @@ Persistent volume claim spec
 
 
 
-This field can be used to specify either: * An existing VolumeSnapshot object (snapshot.storage.k8s.io/VolumeSnapshot) * An existing PVC (PersistentVolumeClaim) * An existing custom resource that implements data population (Alpha) In order to use custom resource types that implement data population, the AnyVolumeDataSource feature gate must be enabled. If the provisioner or an external controller can support the specified data source, it will create a new volume based on the contents of the specified data source.
+This field can be used to specify either: * An existing VolumeSnapshot object (snapshot.storage.k8s.io/VolumeSnapshot) * An existing PVC (PersistentVolumeClaim) If the provisioner or an external controller can support the specified data source, it will create a new volume based on the contents of the specified data source. If the AnyVolumeDataSource feature gate is enabled, this field will always have the same contents as the DataSourceRef field.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>kind</b></td>
+        <td>string</td>
+        <td>
+          Kind is the type of resource being referenced<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>name</b></td>
+        <td>string</td>
+        <td>
+          Name is the name of resource being referenced<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>apiGroup</b></td>
+        <td>string</td>
+        <td>
+          APIGroup is the group for the resource being referenced. If APIGroup is not specified, the specified Kind must be in the core API group. For any other third-party types, APIGroup is required.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### CassandraDatacenter.spec.storageConfig.additionalVolumes[index].pvcSpec.dataSourceRef
+<sup><sup>[↩ Parent](#cassandradatacenterspecstorageconfigadditionalvolumesindexpvcspec)</sup></sup>
+
+
+
+Specifies the object from which to populate the volume with data, if a non-empty volume is desired. This may be any local object from a non-empty API group (non core object) or a PersistentVolumeClaim object. When this field is specified, volume binding will only succeed if the type of the specified object matches some installed volume populator or dynamic provisioner. This field will replace the functionality of the DataSource field and as such if both fields are non-empty, they must have the same value. For backwards compatibility, both fields (DataSource and DataSourceRef) will be set to the same value automatically if one of them is empty and the other is non-empty. There are two important differences between DataSource and DataSourceRef: * While DataSource only allows two specific types of objects, DataSourceRef allows any non-core object, as well as PersistentVolumeClaim objects. * While DataSource ignores disallowed values (dropping them), DataSourceRef preserves all values, and generates an error if a disallowed value is specified. (Alpha) Using this field requires the AnyVolumeDataSource feature gate to be enabled.
 
 <table>
     <thead>
@@ -670,7 +726,14 @@ PersistentVolumeClaimSpec describes the common attributes of storage devices and
         <td><b><a href="#cassandradatacenterspecstorageconfigcassandradatavolumeclaimspecdatasource">dataSource</a></b></td>
         <td>object</td>
         <td>
-          This field can be used to specify either: * An existing VolumeSnapshot object (snapshot.storage.k8s.io/VolumeSnapshot) * An existing PVC (PersistentVolumeClaim) * An existing custom resource that implements data population (Alpha) In order to use custom resource types that implement data population, the AnyVolumeDataSource feature gate must be enabled. If the provisioner or an external controller can support the specified data source, it will create a new volume based on the contents of the specified data source.<br/>
+          This field can be used to specify either: * An existing VolumeSnapshot object (snapshot.storage.k8s.io/VolumeSnapshot) * An existing PVC (PersistentVolumeClaim) If the provisioner or an external controller can support the specified data source, it will create a new volume based on the contents of the specified data source. If the AnyVolumeDataSource feature gate is enabled, this field will always have the same contents as the DataSourceRef field.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#cassandradatacenterspecstorageconfigcassandradatavolumeclaimspecdatasourceref">dataSourceRef</a></b></td>
+        <td>object</td>
+        <td>
+          Specifies the object from which to populate the volume with data, if a non-empty volume is desired. This may be any local object from a non-empty API group (non core object) or a PersistentVolumeClaim object. When this field is specified, volume binding will only succeed if the type of the specified object matches some installed volume populator or dynamic provisioner. This field will replace the functionality of the DataSource field and as such if both fields are non-empty, they must have the same value. For backwards compatibility, both fields (DataSource and DataSourceRef) will be set to the same value automatically if one of them is empty and the other is non-empty. There are two important differences between DataSource and DataSourceRef: * While DataSource only allows two specific types of objects, DataSourceRef allows any non-core object, as well as PersistentVolumeClaim objects. * While DataSource ignores disallowed values (dropping them), DataSourceRef preserves all values, and generates an error if a disallowed value is specified. (Alpha) Using this field requires the AnyVolumeDataSource feature gate to be enabled.<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -717,7 +780,48 @@ PersistentVolumeClaimSpec describes the common attributes of storage devices and
 
 
 
-This field can be used to specify either: * An existing VolumeSnapshot object (snapshot.storage.k8s.io/VolumeSnapshot) * An existing PVC (PersistentVolumeClaim) * An existing custom resource that implements data population (Alpha) In order to use custom resource types that implement data population, the AnyVolumeDataSource feature gate must be enabled. If the provisioner or an external controller can support the specified data source, it will create a new volume based on the contents of the specified data source.
+This field can be used to specify either: * An existing VolumeSnapshot object (snapshot.storage.k8s.io/VolumeSnapshot) * An existing PVC (PersistentVolumeClaim) If the provisioner or an external controller can support the specified data source, it will create a new volume based on the contents of the specified data source. If the AnyVolumeDataSource feature gate is enabled, this field will always have the same contents as the DataSourceRef field.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>kind</b></td>
+        <td>string</td>
+        <td>
+          Kind is the type of resource being referenced<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>name</b></td>
+        <td>string</td>
+        <td>
+          Name is the name of resource being referenced<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>apiGroup</b></td>
+        <td>string</td>
+        <td>
+          APIGroup is the group for the resource being referenced. If APIGroup is not specified, the specified Kind must be in the core API group. For any other third-party types, APIGroup is required.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### CassandraDatacenter.spec.storageConfig.cassandraDataVolumeClaimSpec.dataSourceRef
+<sup><sup>[↩ Parent](#cassandradatacenterspecstorageconfigcassandradatavolumeclaimspec)</sup></sup>
+
+
+
+Specifies the object from which to populate the volume with data, if a non-empty volume is desired. This may be any local object from a non-empty API group (non core object) or a PersistentVolumeClaim object. When this field is specified, volume binding will only succeed if the type of the specified object matches some installed volume populator or dynamic provisioner. This field will replace the functionality of the DataSource field and as such if both fields are non-empty, they must have the same value. For backwards compatibility, both fields (DataSource and DataSourceRef) will be set to the same value automatically if one of them is empty and the other is non-empty. There are two important differences between DataSource and DataSourceRef: * While DataSource only allows two specific types of objects, DataSourceRef allows any non-core object, as well as PersistentVolumeClaim objects. * While DataSource ignores disallowed values (dropping them), DataSourceRef preserves all values, and generates an error if a disallowed value is specified. (Alpha) Using this field requires the AnyVolumeDataSource feature gate to be enabled.
 
 <table>
     <thead>
@@ -1336,7 +1440,7 @@ PodTemplate provides customisation options (labels, annotations, affinity rules,
         </tr>
     </thead>
     <tbody><tr>
-        <td><b>metadata</b></td>
+        <td><b><a href="#cassandradatacenterspecpodtemplatespecmetadata">metadata</a></b></td>
         <td>object</td>
         <td>
           Standard object's metadata. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata<br/>
@@ -1347,6 +1451,61 @@ PodTemplate provides customisation options (labels, annotations, affinity rules,
         <td>object</td>
         <td>
           Specification of the desired behavior of the pod. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#spec-and-status<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### CassandraDatacenter.spec.podTemplateSpec.metadata
+<sup><sup>[↩ Parent](#cassandradatacenterspecpodtemplatespec)</sup></sup>
+
+
+
+Standard object's metadata. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>annotations</b></td>
+        <td>map[string]string</td>
+        <td>
+          <br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>finalizers</b></td>
+        <td>[]string</td>
+        <td>
+          <br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>labels</b></td>
+        <td>map[string]string</td>
+        <td>
+          <br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>name</b></td>
+        <td>string</td>
+        <td>
+          <br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>namespace</b></td>
+        <td>string</td>
+        <td>
+          <br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -1494,7 +1653,7 @@ Specification of the desired behavior of the pod. More info: https://git.k8s.io/
         <td><b>overhead</b></td>
         <td>map[string]int or string</td>
         <td>
-          Overhead represents the resource overhead associated with running a pod for a given RuntimeClass. This field will be autopopulated at admission time by the RuntimeClass admission controller. If the RuntimeClass admission controller is enabled, overhead must not be set in Pod create requests. The RuntimeClass admission controller will reject Pod create requests which have the overhead already set. If RuntimeClass is configured and selected in the PodSpec, Overhead will be set to the value defined in the corresponding RuntimeClass, otherwise it will remain unset and treated as zero. More info: https://git.k8s.io/enhancements/keps/sig-node/20190226-pod-overhead.md This field is alpha-level as of Kubernetes v1.16, and is only honored by servers that enable the PodOverhead feature.<br/>
+          Overhead represents the resource overhead associated with running a pod for a given RuntimeClass. This field will be autopopulated at admission time by the RuntimeClass admission controller. If the RuntimeClass admission controller is enabled, overhead must not be set in Pod create requests. The RuntimeClass admission controller will reject Pod create requests which have the overhead already set. If RuntimeClass is configured and selected in the PodSpec, Overhead will be set to the value defined in the corresponding RuntimeClass, otherwise it will remain unset and treated as zero. More info: https://git.k8s.io/enhancements/keps/sig-node/688-pod-overhead/README.md This field is beta-level as of Kubernetes v1.18, and is only honored by servers that enable the PodOverhead feature.<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -1524,7 +1683,7 @@ Specification of the desired behavior of the pod. More info: https://git.k8s.io/
         <td><b><a href="#cassandradatacenterspecpodtemplatespecspecreadinessgatesindex">readinessGates</a></b></td>
         <td>[]object</td>
         <td>
-          If specified, all readiness gates will be evaluated for pod readiness. A pod is ready when all its containers are ready AND all conditions specified in the readiness gates have status equal to "True" More info: https://git.k8s.io/enhancements/keps/sig-network/0007-pod-ready%2B%2B.md<br/>
+          If specified, all readiness gates will be evaluated for pod readiness. A pod is ready when all its containers are ready AND all conditions specified in the readiness gates have status equal to "True" More info: https://git.k8s.io/enhancements/keps/sig-network/580-pod-readiness-gates<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -1538,7 +1697,7 @@ Specification of the desired behavior of the pod. More info: https://git.k8s.io/
         <td><b>runtimeClassName</b></td>
         <td>string</td>
         <td>
-          RuntimeClassName refers to a RuntimeClass object in the node.k8s.io group, which should be used to run this pod.  If no RuntimeClass resource matches the named class, the pod will not be run. If unset or empty, the "legacy" RuntimeClass will be used, which is an implicit class with an empty definition that uses the default runtime handler. More info: https://git.k8s.io/enhancements/keps/sig-node/runtime-class.md This is a beta feature as of Kubernetes v1.14.<br/>
+          RuntimeClassName refers to a RuntimeClass object in the node.k8s.io group, which should be used to run this pod.  If no RuntimeClass resource matches the named class, the pod will not be run. If unset or empty, the "legacy" RuntimeClass will be used, which is an implicit class with an empty definition that uses the default runtime handler. More info: https://git.k8s.io/enhancements/keps/sig-node/585-runtime-class This is a beta feature as of Kubernetes v1.14.<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -1651,14 +1810,14 @@ A single application container that you want to run within a pod.
         <td><b>args</b></td>
         <td>[]string</td>
         <td>
-          Arguments to the entrypoint. The docker image's CMD is used if this is not provided. Variable references $(VAR_NAME) are expanded using the container's environment. If a variable cannot be resolved, the reference in the input string will be unchanged. The $(VAR_NAME) syntax can be escaped with a double $$, ie: $$(VAR_NAME). Escaped references will never be expanded, regardless of whether the variable exists or not. Cannot be updated. More info: https://kubernetes.io/docs/tasks/inject-data-application/define-command-argument-container/#running-a-command-in-a-shell<br/>
+          Arguments to the entrypoint. The docker image's CMD is used if this is not provided. Variable references $(VAR_NAME) are expanded using the container's environment. If a variable cannot be resolved, the reference in the input string will be unchanged. Double $$ are reduced to a single $, which allows for escaping the $(VAR_NAME) syntax: i.e. "$$(VAR_NAME)" will produce the string literal "$(VAR_NAME)". Escaped references will never be expanded, regardless of whether the variable exists or not. Cannot be updated. More info: https://kubernetes.io/docs/tasks/inject-data-application/define-command-argument-container/#running-a-command-in-a-shell<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>command</b></td>
         <td>[]string</td>
         <td>
-          Entrypoint array. Not executed within a shell. The docker image's ENTRYPOINT is used if this is not provided. Variable references $(VAR_NAME) are expanded using the container's environment. If a variable cannot be resolved, the reference in the input string will be unchanged. The $(VAR_NAME) syntax can be escaped with a double $$, ie: $$(VAR_NAME). Escaped references will never be expanded, regardless of whether the variable exists or not. Cannot be updated. More info: https://kubernetes.io/docs/tasks/inject-data-application/define-command-argument-container/#running-a-command-in-a-shell<br/>
+          Entrypoint array. Not executed within a shell. The docker image's ENTRYPOINT is used if this is not provided. Variable references $(VAR_NAME) are expanded using the container's environment. If a variable cannot be resolved, the reference in the input string will be unchanged. Double $$ are reduced to a single $, which allows for escaping the $(VAR_NAME) syntax: i.e. "$$(VAR_NAME)" will produce the string literal "$(VAR_NAME)". Escaped references will never be expanded, regardless of whether the variable exists or not. Cannot be updated. More info: https://kubernetes.io/docs/tasks/inject-data-application/define-command-argument-container/#running-a-command-in-a-shell<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -1728,7 +1887,7 @@ A single application container that you want to run within a pod.
         <td><b><a href="#cassandradatacenterspecpodtemplatespecspeccontainersindexsecuritycontext">securityContext</a></b></td>
         <td>object</td>
         <td>
-          Security options the pod should run with. More info: https://kubernetes.io/docs/concepts/policy/security-context/ More info: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/<br/>
+          SecurityContext defines the security options the container should be run with. If set, the fields of SecurityContext override the equivalent fields of PodSecurityContext. More info: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -1825,7 +1984,7 @@ EnvVar represents an environment variable present in a Container.
         <td><b>value</b></td>
         <td>string</td>
         <td>
-          Variable references $(VAR_NAME) are expanded using the previous defined environment variables in the container and any service environment variables. If a variable cannot be resolved, the reference in the input string will be unchanged. The $(VAR_NAME) syntax can be escaped with a double $$, ie: $$(VAR_NAME). Escaped references will never be expanded, regardless of whether the variable exists or not. Defaults to "".<br/>
+          Variable references $(VAR_NAME) are expanded using the previously defined environment variables in the container and any service environment variables. If a variable cannot be resolved, the reference in the input string will be unchanged. Double $$ are reduced to a single $, which allows for escaping the $(VAR_NAME) syntax: i.e. "$$(VAR_NAME)" will produce the string literal "$(VAR_NAME)". Escaped references will never be expanded, regardless of whether the variable exists or not. Defaults to "".<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -2646,7 +2805,7 @@ Periodic probe of container liveness. Container will be restarted if the probe f
         <td><b>terminationGracePeriodSeconds</b></td>
         <td>integer</td>
         <td>
-          Optional duration in seconds the pod needs to terminate gracefully upon probe failure. The grace period is the duration in seconds after the processes running in the pod are sent a termination signal and the time when the processes are forcibly halted with a kill signal. Set this value longer than the expected cleanup time for your process. If this value is nil, the pod's terminationGracePeriodSeconds will be used. Otherwise, this value overrides the value provided by the pod spec. Value must be non-negative integer. The value zero indicates stop immediately via the kill signal (no opportunity to shut down). This is an alpha field and requires enabling ProbeTerminationGracePeriod feature gate.<br/>
+          Optional duration in seconds the pod needs to terminate gracefully upon probe failure. The grace period is the duration in seconds after the processes running in the pod are sent a termination signal and the time when the processes are forcibly halted with a kill signal. Set this value longer than the expected cleanup time for your process. If this value is nil, the pod's terminationGracePeriodSeconds will be used. Otherwise, this value overrides the value provided by the pod spec. Value must be non-negative integer. The value zero indicates stop immediately via the kill signal (no opportunity to shut down). This is a beta field and requires enabling ProbeTerminationGracePeriod feature gate. Minimum value is 1. spec.terminationGracePeriodSeconds is used if unset.<br/>
           <br/>
             <i>Format</i>: int64<br/>
         </td>
@@ -2952,7 +3111,7 @@ Periodic probe of container service readiness. Container will be removed from se
         <td><b>terminationGracePeriodSeconds</b></td>
         <td>integer</td>
         <td>
-          Optional duration in seconds the pod needs to terminate gracefully upon probe failure. The grace period is the duration in seconds after the processes running in the pod are sent a termination signal and the time when the processes are forcibly halted with a kill signal. Set this value longer than the expected cleanup time for your process. If this value is nil, the pod's terminationGracePeriodSeconds will be used. Otherwise, this value overrides the value provided by the pod spec. Value must be non-negative integer. The value zero indicates stop immediately via the kill signal (no opportunity to shut down). This is an alpha field and requires enabling ProbeTerminationGracePeriod feature gate.<br/>
+          Optional duration in seconds the pod needs to terminate gracefully upon probe failure. The grace period is the duration in seconds after the processes running in the pod are sent a termination signal and the time when the processes are forcibly halted with a kill signal. Set this value longer than the expected cleanup time for your process. If this value is nil, the pod's terminationGracePeriodSeconds will be used. Otherwise, this value overrides the value provided by the pod spec. Value must be non-negative integer. The value zero indicates stop immediately via the kill signal (no opportunity to shut down). This is a beta field and requires enabling ProbeTerminationGracePeriod feature gate. Minimum value is 1. spec.terminationGracePeriodSeconds is used if unset.<br/>
           <br/>
             <i>Format</i>: int64<br/>
         </td>
@@ -3159,7 +3318,7 @@ Compute Resources required by this container. Cannot be updated. More info: http
 
 
 
-Security options the pod should run with. More info: https://kubernetes.io/docs/concepts/policy/security-context/ More info: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/
+SecurityContext defines the security options the container should be run with. If set, the fields of SecurityContext override the equivalent fields of PodSecurityContext. More info: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/
 
 <table>
     <thead>
@@ -3403,6 +3562,13 @@ The Windows specific settings applied to all containers. If unspecified, the opt
         </td>
         <td>false</td>
       </tr><tr>
+        <td><b>hostProcess</b></td>
+        <td>boolean</td>
+        <td>
+          HostProcess determines if a container should be run as a 'Host Process' container. This field is alpha-level and will only be honored by components that enable the WindowsHostProcessContainers feature flag. Setting this field without the feature flag will result in errors when validating the Pod. All of a Pod's containers must have the same effective HostProcess value (it is not allowed to have a mix of HostProcess containers and non-HostProcess containers).  In addition, if HostProcess is true then HostNetwork must also be set to true.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
         <td><b>runAsUserName</b></td>
         <td>string</td>
         <td>
@@ -3490,7 +3656,7 @@ StartupProbe indicates that the Pod has successfully initialized. If specified, 
         <td><b>terminationGracePeriodSeconds</b></td>
         <td>integer</td>
         <td>
-          Optional duration in seconds the pod needs to terminate gracefully upon probe failure. The grace period is the duration in seconds after the processes running in the pod are sent a termination signal and the time when the processes are forcibly halted with a kill signal. Set this value longer than the expected cleanup time for your process. If this value is nil, the pod's terminationGracePeriodSeconds will be used. Otherwise, this value overrides the value provided by the pod spec. Value must be non-negative integer. The value zero indicates stop immediately via the kill signal (no opportunity to shut down). This is an alpha field and requires enabling ProbeTerminationGracePeriod feature gate.<br/>
+          Optional duration in seconds the pod needs to terminate gracefully upon probe failure. The grace period is the duration in seconds after the processes running in the pod are sent a termination signal and the time when the processes are forcibly halted with a kill signal. Set this value longer than the expected cleanup time for your process. If this value is nil, the pod's terminationGracePeriodSeconds will be used. Otherwise, this value overrides the value provided by the pod spec. Value must be non-negative integer. The value zero indicates stop immediately via the kill signal (no opportunity to shut down). This is a beta field and requires enabling ProbeTerminationGracePeriod feature gate. Minimum value is 1. spec.terminationGracePeriodSeconds is used if unset.<br/>
           <br/>
             <i>Format</i>: int64<br/>
         </td>
@@ -4228,7 +4394,7 @@ Required. A pod affinity term, associated with the corresponding weight.
         <td><b><a href="#cassandradatacenterspecpodtemplatespecspecaffinitypodaffinitypreferredduringschedulingignoredduringexecutionindexpodaffinitytermnamespaceselector">namespaceSelector</a></b></td>
         <td>object</td>
         <td>
-          A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces. This field is alpha-level and is only honored when PodAffinityNamespaceSelector feature is enabled.<br/>
+          A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces. This field is beta-level and is only honored when PodAffinityNamespaceSelector feature is enabled.<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -4322,7 +4488,7 @@ A label selector requirement is a selector that contains values, a key, and an o
 
 
 
-A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces. This field is alpha-level and is only honored when PodAffinityNamespaceSelector feature is enabled.
+A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces. This field is beta-level and is only honored when PodAffinityNamespaceSelector feature is enabled.
 
 <table>
     <thead>
@@ -4426,7 +4592,7 @@ Defines a set of pods (namely those matching the labelSelector relative to the g
         <td><b><a href="#cassandradatacenterspecpodtemplatespecspecaffinitypodaffinityrequiredduringschedulingignoredduringexecutionindexnamespaceselector">namespaceSelector</a></b></td>
         <td>object</td>
         <td>
-          A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces. This field is alpha-level and is only honored when PodAffinityNamespaceSelector feature is enabled.<br/>
+          A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces. This field is beta-level and is only honored when PodAffinityNamespaceSelector feature is enabled.<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -4520,7 +4686,7 @@ A label selector requirement is a selector that contains values, a key, and an o
 
 
 
-A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces. This field is alpha-level and is only honored when PodAffinityNamespaceSelector feature is enabled.
+A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces. This field is beta-level and is only honored when PodAffinityNamespaceSelector feature is enabled.
 
 <table>
     <thead>
@@ -4694,7 +4860,7 @@ Required. A pod affinity term, associated with the corresponding weight.
         <td><b><a href="#cassandradatacenterspecpodtemplatespecspecaffinitypodantiaffinitypreferredduringschedulingignoredduringexecutionindexpodaffinitytermnamespaceselector">namespaceSelector</a></b></td>
         <td>object</td>
         <td>
-          A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces. This field is alpha-level and is only honored when PodAffinityNamespaceSelector feature is enabled.<br/>
+          A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces. This field is beta-level and is only honored when PodAffinityNamespaceSelector feature is enabled.<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -4788,7 +4954,7 @@ A label selector requirement is a selector that contains values, a key, and an o
 
 
 
-A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces. This field is alpha-level and is only honored when PodAffinityNamespaceSelector feature is enabled.
+A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces. This field is beta-level and is only honored when PodAffinityNamespaceSelector feature is enabled.
 
 <table>
     <thead>
@@ -4892,7 +5058,7 @@ Defines a set of pods (namely those matching the labelSelector relative to the g
         <td><b><a href="#cassandradatacenterspecpodtemplatespecspecaffinitypodantiaffinityrequiredduringschedulingignoredduringexecutionindexnamespaceselector">namespaceSelector</a></b></td>
         <td>object</td>
         <td>
-          A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces. This field is alpha-level and is only honored when PodAffinityNamespaceSelector feature is enabled.<br/>
+          A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces. This field is beta-level and is only honored when PodAffinityNamespaceSelector feature is enabled.<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -4986,7 +5152,7 @@ A label selector requirement is a selector that contains values, a key, and an o
 
 
 
-A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces. This field is alpha-level and is only honored when PodAffinityNamespaceSelector feature is enabled.
+A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces. This field is beta-level and is only honored when PodAffinityNamespaceSelector feature is enabled.
 
 <table>
     <thead>
@@ -5158,14 +5324,14 @@ An EphemeralContainer is a container that may be added temporarily to an existin
         <td><b>args</b></td>
         <td>[]string</td>
         <td>
-          Arguments to the entrypoint. The docker image's CMD is used if this is not provided. Variable references $(VAR_NAME) are expanded using the container's environment. If a variable cannot be resolved, the reference in the input string will be unchanged. The $(VAR_NAME) syntax can be escaped with a double $$, ie: $$(VAR_NAME). Escaped references will never be expanded, regardless of whether the variable exists or not. Cannot be updated. More info: https://kubernetes.io/docs/tasks/inject-data-application/define-command-argument-container/#running-a-command-in-a-shell<br/>
+          Arguments to the entrypoint. The docker image's CMD is used if this is not provided. Variable references $(VAR_NAME) are expanded using the container's environment. If a variable cannot be resolved, the reference in the input string will be unchanged. Double $$ are reduced to a single $, which allows for escaping the $(VAR_NAME) syntax: i.e. "$$(VAR_NAME)" will produce the string literal "$(VAR_NAME)". Escaped references will never be expanded, regardless of whether the variable exists or not. Cannot be updated. More info: https://kubernetes.io/docs/tasks/inject-data-application/define-command-argument-container/#running-a-command-in-a-shell<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>command</b></td>
         <td>[]string</td>
         <td>
-          Entrypoint array. Not executed within a shell. The docker image's ENTRYPOINT is used if this is not provided. Variable references $(VAR_NAME) are expanded using the container's environment. If a variable cannot be resolved, the reference in the input string will be unchanged. The $(VAR_NAME) syntax can be escaped with a double $$, ie: $$(VAR_NAME). Escaped references will never be expanded, regardless of whether the variable exists or not. Cannot be updated. More info: https://kubernetes.io/docs/tasks/inject-data-application/define-command-argument-container/#running-a-command-in-a-shell<br/>
+          Entrypoint array. Not executed within a shell. The docker image's ENTRYPOINT is used if this is not provided. Variable references $(VAR_NAME) are expanded using the container's environment. If a variable cannot be resolved, the reference in the input string will be unchanged. Double $$ are reduced to a single $, which allows for escaping the $(VAR_NAME) syntax: i.e. "$$(VAR_NAME)" will produce the string literal "$(VAR_NAME)". Escaped references will never be expanded, regardless of whether the variable exists or not. Cannot be updated. More info: https://kubernetes.io/docs/tasks/inject-data-application/define-command-argument-container/#running-a-command-in-a-shell<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -5235,7 +5401,7 @@ An EphemeralContainer is a container that may be added temporarily to an existin
         <td><b><a href="#cassandradatacenterspecpodtemplatespecspecephemeralcontainersindexsecuritycontext">securityContext</a></b></td>
         <td>object</td>
         <td>
-          SecurityContext is not allowed for ephemeral containers.<br/>
+          Optional: SecurityContext defines the security options the ephemeral container should be run with. If set, the fields of SecurityContext override the equivalent fields of PodSecurityContext.<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -5339,7 +5505,7 @@ EnvVar represents an environment variable present in a Container.
         <td><b>value</b></td>
         <td>string</td>
         <td>
-          Variable references $(VAR_NAME) are expanded using the previous defined environment variables in the container and any service environment variables. If a variable cannot be resolved, the reference in the input string will be unchanged. The $(VAR_NAME) syntax can be escaped with a double $$, ie: $$(VAR_NAME). Escaped references will never be expanded, regardless of whether the variable exists or not. Defaults to "".<br/>
+          Variable references $(VAR_NAME) are expanded using the previously defined environment variables in the container and any service environment variables. If a variable cannot be resolved, the reference in the input string will be unchanged. Double $$ are reduced to a single $, which allows for escaping the $(VAR_NAME) syntax: i.e. "$$(VAR_NAME)" will produce the string literal "$(VAR_NAME)". Escaped references will never be expanded, regardless of whether the variable exists or not. Defaults to "".<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -6160,7 +6326,7 @@ Probes are not allowed for ephemeral containers.
         <td><b>terminationGracePeriodSeconds</b></td>
         <td>integer</td>
         <td>
-          Optional duration in seconds the pod needs to terminate gracefully upon probe failure. The grace period is the duration in seconds after the processes running in the pod are sent a termination signal and the time when the processes are forcibly halted with a kill signal. Set this value longer than the expected cleanup time for your process. If this value is nil, the pod's terminationGracePeriodSeconds will be used. Otherwise, this value overrides the value provided by the pod spec. Value must be non-negative integer. The value zero indicates stop immediately via the kill signal (no opportunity to shut down). This is an alpha field and requires enabling ProbeTerminationGracePeriod feature gate.<br/>
+          Optional duration in seconds the pod needs to terminate gracefully upon probe failure. The grace period is the duration in seconds after the processes running in the pod are sent a termination signal and the time when the processes are forcibly halted with a kill signal. Set this value longer than the expected cleanup time for your process. If this value is nil, the pod's terminationGracePeriodSeconds will be used. Otherwise, this value overrides the value provided by the pod spec. Value must be non-negative integer. The value zero indicates stop immediately via the kill signal (no opportunity to shut down). This is a beta field and requires enabling ProbeTerminationGracePeriod feature gate. Minimum value is 1. spec.terminationGracePeriodSeconds is used if unset.<br/>
           <br/>
             <i>Format</i>: int64<br/>
         </td>
@@ -6466,7 +6632,7 @@ Probes are not allowed for ephemeral containers.
         <td><b>terminationGracePeriodSeconds</b></td>
         <td>integer</td>
         <td>
-          Optional duration in seconds the pod needs to terminate gracefully upon probe failure. The grace period is the duration in seconds after the processes running in the pod are sent a termination signal and the time when the processes are forcibly halted with a kill signal. Set this value longer than the expected cleanup time for your process. If this value is nil, the pod's terminationGracePeriodSeconds will be used. Otherwise, this value overrides the value provided by the pod spec. Value must be non-negative integer. The value zero indicates stop immediately via the kill signal (no opportunity to shut down). This is an alpha field and requires enabling ProbeTerminationGracePeriod feature gate.<br/>
+          Optional duration in seconds the pod needs to terminate gracefully upon probe failure. The grace period is the duration in seconds after the processes running in the pod are sent a termination signal and the time when the processes are forcibly halted with a kill signal. Set this value longer than the expected cleanup time for your process. If this value is nil, the pod's terminationGracePeriodSeconds will be used. Otherwise, this value overrides the value provided by the pod spec. Value must be non-negative integer. The value zero indicates stop immediately via the kill signal (no opportunity to shut down). This is a beta field and requires enabling ProbeTerminationGracePeriod feature gate. Minimum value is 1. spec.terminationGracePeriodSeconds is used if unset.<br/>
           <br/>
             <i>Format</i>: int64<br/>
         </td>
@@ -6673,7 +6839,7 @@ Resources are not allowed for ephemeral containers. Ephemeral containers use spa
 
 
 
-SecurityContext is not allowed for ephemeral containers.
+Optional: SecurityContext defines the security options the ephemeral container should be run with. If set, the fields of SecurityContext override the equivalent fields of PodSecurityContext.
 
 <table>
     <thead>
@@ -6917,6 +7083,13 @@ The Windows specific settings applied to all containers. If unspecified, the opt
         </td>
         <td>false</td>
       </tr><tr>
+        <td><b>hostProcess</b></td>
+        <td>boolean</td>
+        <td>
+          HostProcess determines if a container should be run as a 'Host Process' container. This field is alpha-level and will only be honored by components that enable the WindowsHostProcessContainers feature flag. Setting this field without the feature flag will result in errors when validating the Pod. All of a Pod's containers must have the same effective HostProcess value (it is not allowed to have a mix of HostProcess containers and non-HostProcess containers).  In addition, if HostProcess is true then HostNetwork must also be set to true.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
         <td><b>runAsUserName</b></td>
         <td>string</td>
         <td>
@@ -7004,7 +7177,7 @@ Probes are not allowed for ephemeral containers.
         <td><b>terminationGracePeriodSeconds</b></td>
         <td>integer</td>
         <td>
-          Optional duration in seconds the pod needs to terminate gracefully upon probe failure. The grace period is the duration in seconds after the processes running in the pod are sent a termination signal and the time when the processes are forcibly halted with a kill signal. Set this value longer than the expected cleanup time for your process. If this value is nil, the pod's terminationGracePeriodSeconds will be used. Otherwise, this value overrides the value provided by the pod spec. Value must be non-negative integer. The value zero indicates stop immediately via the kill signal (no opportunity to shut down). This is an alpha field and requires enabling ProbeTerminationGracePeriod feature gate.<br/>
+          Optional duration in seconds the pod needs to terminate gracefully upon probe failure. The grace period is the duration in seconds after the processes running in the pod are sent a termination signal and the time when the processes are forcibly halted with a kill signal. Set this value longer than the expected cleanup time for your process. If this value is nil, the pod's terminationGracePeriodSeconds will be used. Otherwise, this value overrides the value provided by the pod spec. Value must be non-negative integer. The value zero indicates stop immediately via the kill signal (no opportunity to shut down). This is a beta field and requires enabling ProbeTerminationGracePeriod feature gate. Minimum value is 1. spec.terminationGracePeriodSeconds is used if unset.<br/>
           <br/>
             <i>Format</i>: int64<br/>
         </td>
@@ -7356,14 +7529,14 @@ A single application container that you want to run within a pod.
         <td><b>args</b></td>
         <td>[]string</td>
         <td>
-          Arguments to the entrypoint. The docker image's CMD is used if this is not provided. Variable references $(VAR_NAME) are expanded using the container's environment. If a variable cannot be resolved, the reference in the input string will be unchanged. The $(VAR_NAME) syntax can be escaped with a double $$, ie: $$(VAR_NAME). Escaped references will never be expanded, regardless of whether the variable exists or not. Cannot be updated. More info: https://kubernetes.io/docs/tasks/inject-data-application/define-command-argument-container/#running-a-command-in-a-shell<br/>
+          Arguments to the entrypoint. The docker image's CMD is used if this is not provided. Variable references $(VAR_NAME) are expanded using the container's environment. If a variable cannot be resolved, the reference in the input string will be unchanged. Double $$ are reduced to a single $, which allows for escaping the $(VAR_NAME) syntax: i.e. "$$(VAR_NAME)" will produce the string literal "$(VAR_NAME)". Escaped references will never be expanded, regardless of whether the variable exists or not. Cannot be updated. More info: https://kubernetes.io/docs/tasks/inject-data-application/define-command-argument-container/#running-a-command-in-a-shell<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>command</b></td>
         <td>[]string</td>
         <td>
-          Entrypoint array. Not executed within a shell. The docker image's ENTRYPOINT is used if this is not provided. Variable references $(VAR_NAME) are expanded using the container's environment. If a variable cannot be resolved, the reference in the input string will be unchanged. The $(VAR_NAME) syntax can be escaped with a double $$, ie: $$(VAR_NAME). Escaped references will never be expanded, regardless of whether the variable exists or not. Cannot be updated. More info: https://kubernetes.io/docs/tasks/inject-data-application/define-command-argument-container/#running-a-command-in-a-shell<br/>
+          Entrypoint array. Not executed within a shell. The docker image's ENTRYPOINT is used if this is not provided. Variable references $(VAR_NAME) are expanded using the container's environment. If a variable cannot be resolved, the reference in the input string will be unchanged. Double $$ are reduced to a single $, which allows for escaping the $(VAR_NAME) syntax: i.e. "$$(VAR_NAME)" will produce the string literal "$(VAR_NAME)". Escaped references will never be expanded, regardless of whether the variable exists or not. Cannot be updated. More info: https://kubernetes.io/docs/tasks/inject-data-application/define-command-argument-container/#running-a-command-in-a-shell<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -7433,7 +7606,7 @@ A single application container that you want to run within a pod.
         <td><b><a href="#cassandradatacenterspecpodtemplatespecspecinitcontainersindexsecuritycontext">securityContext</a></b></td>
         <td>object</td>
         <td>
-          Security options the pod should run with. More info: https://kubernetes.io/docs/concepts/policy/security-context/ More info: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/<br/>
+          SecurityContext defines the security options the container should be run with. If set, the fields of SecurityContext override the equivalent fields of PodSecurityContext. More info: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -7530,7 +7703,7 @@ EnvVar represents an environment variable present in a Container.
         <td><b>value</b></td>
         <td>string</td>
         <td>
-          Variable references $(VAR_NAME) are expanded using the previous defined environment variables in the container and any service environment variables. If a variable cannot be resolved, the reference in the input string will be unchanged. The $(VAR_NAME) syntax can be escaped with a double $$, ie: $$(VAR_NAME). Escaped references will never be expanded, regardless of whether the variable exists or not. Defaults to "".<br/>
+          Variable references $(VAR_NAME) are expanded using the previously defined environment variables in the container and any service environment variables. If a variable cannot be resolved, the reference in the input string will be unchanged. Double $$ are reduced to a single $, which allows for escaping the $(VAR_NAME) syntax: i.e. "$$(VAR_NAME)" will produce the string literal "$(VAR_NAME)". Escaped references will never be expanded, regardless of whether the variable exists or not. Defaults to "".<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -8351,7 +8524,7 @@ Periodic probe of container liveness. Container will be restarted if the probe f
         <td><b>terminationGracePeriodSeconds</b></td>
         <td>integer</td>
         <td>
-          Optional duration in seconds the pod needs to terminate gracefully upon probe failure. The grace period is the duration in seconds after the processes running in the pod are sent a termination signal and the time when the processes are forcibly halted with a kill signal. Set this value longer than the expected cleanup time for your process. If this value is nil, the pod's terminationGracePeriodSeconds will be used. Otherwise, this value overrides the value provided by the pod spec. Value must be non-negative integer. The value zero indicates stop immediately via the kill signal (no opportunity to shut down). This is an alpha field and requires enabling ProbeTerminationGracePeriod feature gate.<br/>
+          Optional duration in seconds the pod needs to terminate gracefully upon probe failure. The grace period is the duration in seconds after the processes running in the pod are sent a termination signal and the time when the processes are forcibly halted with a kill signal. Set this value longer than the expected cleanup time for your process. If this value is nil, the pod's terminationGracePeriodSeconds will be used. Otherwise, this value overrides the value provided by the pod spec. Value must be non-negative integer. The value zero indicates stop immediately via the kill signal (no opportunity to shut down). This is a beta field and requires enabling ProbeTerminationGracePeriod feature gate. Minimum value is 1. spec.terminationGracePeriodSeconds is used if unset.<br/>
           <br/>
             <i>Format</i>: int64<br/>
         </td>
@@ -8657,7 +8830,7 @@ Periodic probe of container service readiness. Container will be removed from se
         <td><b>terminationGracePeriodSeconds</b></td>
         <td>integer</td>
         <td>
-          Optional duration in seconds the pod needs to terminate gracefully upon probe failure. The grace period is the duration in seconds after the processes running in the pod are sent a termination signal and the time when the processes are forcibly halted with a kill signal. Set this value longer than the expected cleanup time for your process. If this value is nil, the pod's terminationGracePeriodSeconds will be used. Otherwise, this value overrides the value provided by the pod spec. Value must be non-negative integer. The value zero indicates stop immediately via the kill signal (no opportunity to shut down). This is an alpha field and requires enabling ProbeTerminationGracePeriod feature gate.<br/>
+          Optional duration in seconds the pod needs to terminate gracefully upon probe failure. The grace period is the duration in seconds after the processes running in the pod are sent a termination signal and the time when the processes are forcibly halted with a kill signal. Set this value longer than the expected cleanup time for your process. If this value is nil, the pod's terminationGracePeriodSeconds will be used. Otherwise, this value overrides the value provided by the pod spec. Value must be non-negative integer. The value zero indicates stop immediately via the kill signal (no opportunity to shut down). This is a beta field and requires enabling ProbeTerminationGracePeriod feature gate. Minimum value is 1. spec.terminationGracePeriodSeconds is used if unset.<br/>
           <br/>
             <i>Format</i>: int64<br/>
         </td>
@@ -8864,7 +9037,7 @@ Compute Resources required by this container. Cannot be updated. More info: http
 
 
 
-Security options the pod should run with. More info: https://kubernetes.io/docs/concepts/policy/security-context/ More info: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/
+SecurityContext defines the security options the container should be run with. If set, the fields of SecurityContext override the equivalent fields of PodSecurityContext. More info: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/
 
 <table>
     <thead>
@@ -9108,6 +9281,13 @@ The Windows specific settings applied to all containers. If unspecified, the opt
         </td>
         <td>false</td>
       </tr><tr>
+        <td><b>hostProcess</b></td>
+        <td>boolean</td>
+        <td>
+          HostProcess determines if a container should be run as a 'Host Process' container. This field is alpha-level and will only be honored by components that enable the WindowsHostProcessContainers feature flag. Setting this field without the feature flag will result in errors when validating the Pod. All of a Pod's containers must have the same effective HostProcess value (it is not allowed to have a mix of HostProcess containers and non-HostProcess containers).  In addition, if HostProcess is true then HostNetwork must also be set to true.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
         <td><b>runAsUserName</b></td>
         <td>string</td>
         <td>
@@ -9195,7 +9375,7 @@ StartupProbe indicates that the Pod has successfully initialized. If specified, 
         <td><b>terminationGracePeriodSeconds</b></td>
         <td>integer</td>
         <td>
-          Optional duration in seconds the pod needs to terminate gracefully upon probe failure. The grace period is the duration in seconds after the processes running in the pod are sent a termination signal and the time when the processes are forcibly halted with a kill signal. Set this value longer than the expected cleanup time for your process. If this value is nil, the pod's terminationGracePeriodSeconds will be used. Otherwise, this value overrides the value provided by the pod spec. Value must be non-negative integer. The value zero indicates stop immediately via the kill signal (no opportunity to shut down). This is an alpha field and requires enabling ProbeTerminationGracePeriod feature gate.<br/>
+          Optional duration in seconds the pod needs to terminate gracefully upon probe failure. The grace period is the duration in seconds after the processes running in the pod are sent a termination signal and the time when the processes are forcibly halted with a kill signal. Set this value longer than the expected cleanup time for your process. If this value is nil, the pod's terminationGracePeriodSeconds will be used. Otherwise, this value overrides the value provided by the pod spec. Value must be non-negative integer. The value zero indicates stop immediately via the kill signal (no opportunity to shut down). This is a beta field and requires enabling ProbeTerminationGracePeriod feature gate. Minimum value is 1. spec.terminationGracePeriodSeconds is used if unset.<br/>
           <br/>
             <i>Format</i>: int64<br/>
         </td>
@@ -9732,6 +9912,13 @@ The Windows specific settings applied to all containers. If unspecified, the opt
         </td>
         <td>false</td>
       </tr><tr>
+        <td><b>hostProcess</b></td>
+        <td>boolean</td>
+        <td>
+          HostProcess determines if a container should be run as a 'Host Process' container. This field is alpha-level and will only be honored by components that enable the WindowsHostProcessContainers feature flag. Setting this field without the feature flag will result in errors when validating the Pod. All of a Pod's containers must have the same effective HostProcess value (it is not allowed to have a mix of HostProcess containers and non-HostProcess containers).  In addition, if HostProcess is true then HostNetwork must also be set to true.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
         <td><b>runAsUserName</b></td>
         <td>string</td>
         <td>
@@ -9835,7 +10022,7 @@ TopologySpreadConstraint specifies how to spread matching pods among the given t
         <td><b>whenUnsatisfiable</b></td>
         <td>string</td>
         <td>
-          WhenUnsatisfiable indicates how to deal with a pod if it doesn't satisfy the spread constraint. - DoNotSchedule (default) tells the scheduler not to schedule it. - ScheduleAnyway tells the scheduler to schedule the pod in any location,   but giving higher precedence to topologies that would help reduce the   skew. A constraint is considered "Unsatisfiable" for an incoming pod if and only if every possible node assigment for that pod would violate "MaxSkew" on some topology. For example, in a 3-zone cluster, MaxSkew is set to 1, and pods with the same labelSelector spread as 3/1/1: | zone1 | zone2 | zone3 | | P P P |   P   |   P   | If WhenUnsatisfiable is set to DoNotSchedule, incoming pod can only be scheduled to zone2(zone3) to become 3/2/1(3/1/2) as ActualSkew(2-1) on zone2(zone3) satisfies MaxSkew(1). In other words, the cluster can still be imbalanced, but scheduler won't make it *more* imbalanced. It's a required field.<br/>
+          WhenUnsatisfiable indicates how to deal with a pod if it doesn't satisfy the spread constraint. - DoNotSchedule (default) tells the scheduler not to schedule it. - ScheduleAnyway tells the scheduler to schedule the pod in any location, but giving higher precedence to topologies that would help reduce the skew. A constraint is considered "Unsatisfiable" for an incoming pod if and only if every possible node assigment for that pod would violate "MaxSkew" on some topology. For example, in a 3-zone cluster, MaxSkew is set to 1, and pods with the same labelSelector spread as 3/1/1: | zone1 | zone2 | zone3 | | P P P |   P   |   P   | If WhenUnsatisfiable is set to DoNotSchedule, incoming pod can only be scheduled to zone2(zone3) to become 3/2/1(3/1/2) as ActualSkew(2-1) on zone2(zone3) satisfies MaxSkew(1). In other words, the cluster can still be imbalanced, but scheduler won't make it *more* imbalanced. It's a required field.<br/>
         </td>
         <td>true</td>
       </tr><tr>
@@ -10015,7 +10202,7 @@ Volume represents a named volume in a pod that may be accessed by any container 
         <td>object</td>
         <td>
           Ephemeral represents a volume that is handled by a cluster storage driver. The volume's lifecycle is tied to the pod that defines it - it will be created before the pod starts, and deleted when the pod is removed. 
- Use this if: a) the volume is only needed while the pod runs, b) features of normal volumes like restoring from snapshot or capacity    tracking are needed, c) the storage driver is specified through a storage class, and d) the storage driver supports dynamic volume provisioning through    a PersistentVolumeClaim (see EphemeralVolumeSource for more    information on the connection between this volume type    and PersistentVolumeClaim). 
+ Use this if: a) the volume is only needed while the pod runs, b) features of normal volumes like restoring from snapshot or capacity tracking are needed, c) the storage driver is specified through a storage class, and d) the storage driver supports dynamic volume provisioning through a PersistentVolumeClaim (see EphemeralVolumeSource for more information on the connection between this volume type and PersistentVolumeClaim). 
  Use PersistentVolumeClaim or one of the vendor-specific APIs for volumes that persist for longer than the lifecycle of an individual pod. 
  Use CSI for light-weight local ephemeral volumes if the CSI driver is meant to be used that way - see the documentation of the driver for more information. 
  A pod can use both types of ephemeral volumes and persistent volumes at the same time. 
@@ -10852,7 +11039,7 @@ EmptyDir represents a temporary directory that shares a pod's lifetime. More inf
 
 
 Ephemeral represents a volume that is handled by a cluster storage driver. The volume's lifecycle is tied to the pod that defines it - it will be created before the pod starts, and deleted when the pod is removed. 
- Use this if: a) the volume is only needed while the pod runs, b) features of normal volumes like restoring from snapshot or capacity    tracking are needed, c) the storage driver is specified through a storage class, and d) the storage driver supports dynamic volume provisioning through    a PersistentVolumeClaim (see EphemeralVolumeSource for more    information on the connection between this volume type    and PersistentVolumeClaim). 
+ Use this if: a) the volume is only needed while the pod runs, b) features of normal volumes like restoring from snapshot or capacity tracking are needed, c) the storage driver is specified through a storage class, and d) the storage driver supports dynamic volume provisioning through a PersistentVolumeClaim (see EphemeralVolumeSource for more information on the connection between this volume type and PersistentVolumeClaim). 
  Use PersistentVolumeClaim or one of the vendor-specific APIs for volumes that persist for longer than the lifecycle of an individual pod. 
  Use CSI for light-weight local ephemeral volumes if the CSI driver is meant to be used that way - see the documentation of the driver for more information. 
  A pod can use both types of ephemeral volumes and persistent volumes at the same time. 
@@ -10908,7 +11095,7 @@ Will be used to create a stand-alone PVC to provision the volume. The pod in whi
         </td>
         <td>true</td>
       </tr><tr>
-        <td><b>metadata</b></td>
+        <td><b><a href="#cassandradatacenterspecpodtemplatespecspecvolumesindexephemeralvolumeclaimtemplatemetadata">metadata</a></b></td>
         <td>object</td>
         <td>
           May contain labels and annotations that will be copied into the PVC when creating it. No other fields are allowed and will be rejected during validation.<br/>
@@ -10945,7 +11132,14 @@ The specification for the PersistentVolumeClaim. The entire content is copied un
         <td><b><a href="#cassandradatacenterspecpodtemplatespecspecvolumesindexephemeralvolumeclaimtemplatespecdatasource">dataSource</a></b></td>
         <td>object</td>
         <td>
-          This field can be used to specify either: * An existing VolumeSnapshot object (snapshot.storage.k8s.io/VolumeSnapshot) * An existing PVC (PersistentVolumeClaim) * An existing custom resource that implements data population (Alpha) In order to use custom resource types that implement data population, the AnyVolumeDataSource feature gate must be enabled. If the provisioner or an external controller can support the specified data source, it will create a new volume based on the contents of the specified data source.<br/>
+          This field can be used to specify either: * An existing VolumeSnapshot object (snapshot.storage.k8s.io/VolumeSnapshot) * An existing PVC (PersistentVolumeClaim) If the provisioner or an external controller can support the specified data source, it will create a new volume based on the contents of the specified data source. If the AnyVolumeDataSource feature gate is enabled, this field will always have the same contents as the DataSourceRef field.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#cassandradatacenterspecpodtemplatespecspecvolumesindexephemeralvolumeclaimtemplatespecdatasourceref">dataSourceRef</a></b></td>
+        <td>object</td>
+        <td>
+          Specifies the object from which to populate the volume with data, if a non-empty volume is desired. This may be any local object from a non-empty API group (non core object) or a PersistentVolumeClaim object. When this field is specified, volume binding will only succeed if the type of the specified object matches some installed volume populator or dynamic provisioner. This field will replace the functionality of the DataSource field and as such if both fields are non-empty, they must have the same value. For backwards compatibility, both fields (DataSource and DataSourceRef) will be set to the same value automatically if one of them is empty and the other is non-empty. There are two important differences between DataSource and DataSourceRef: * While DataSource only allows two specific types of objects, DataSourceRef allows any non-core object, as well as PersistentVolumeClaim objects. * While DataSource ignores disallowed values (dropping them), DataSourceRef preserves all values, and generates an error if a disallowed value is specified. (Alpha) Using this field requires the AnyVolumeDataSource feature gate to be enabled.<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -10992,7 +11186,48 @@ The specification for the PersistentVolumeClaim. The entire content is copied un
 
 
 
-This field can be used to specify either: * An existing VolumeSnapshot object (snapshot.storage.k8s.io/VolumeSnapshot) * An existing PVC (PersistentVolumeClaim) * An existing custom resource that implements data population (Alpha) In order to use custom resource types that implement data population, the AnyVolumeDataSource feature gate must be enabled. If the provisioner or an external controller can support the specified data source, it will create a new volume based on the contents of the specified data source.
+This field can be used to specify either: * An existing VolumeSnapshot object (snapshot.storage.k8s.io/VolumeSnapshot) * An existing PVC (PersistentVolumeClaim) If the provisioner or an external controller can support the specified data source, it will create a new volume based on the contents of the specified data source. If the AnyVolumeDataSource feature gate is enabled, this field will always have the same contents as the DataSourceRef field.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>kind</b></td>
+        <td>string</td>
+        <td>
+          Kind is the type of resource being referenced<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>name</b></td>
+        <td>string</td>
+        <td>
+          Name is the name of resource being referenced<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>apiGroup</b></td>
+        <td>string</td>
+        <td>
+          APIGroup is the group for the resource being referenced. If APIGroup is not specified, the specified Kind must be in the core API group. For any other third-party types, APIGroup is required.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### CassandraDatacenter.spec.podTemplateSpec.spec.volumes[index].ephemeral.volumeClaimTemplate.spec.dataSourceRef
+<sup><sup>[↩ Parent](#cassandradatacenterspecpodtemplatespecspecvolumesindexephemeralvolumeclaimtemplatespec)</sup></sup>
+
+
+
+Specifies the object from which to populate the volume with data, if a non-empty volume is desired. This may be any local object from a non-empty API group (non core object) or a PersistentVolumeClaim object. When this field is specified, volume binding will only succeed if the type of the specified object matches some installed volume populator or dynamic provisioner. This field will replace the functionality of the DataSource field and as such if both fields are non-empty, they must have the same value. For backwards compatibility, both fields (DataSource and DataSourceRef) will be set to the same value automatically if one of them is empty and the other is non-empty. There are two important differences between DataSource and DataSourceRef: * While DataSource only allows two specific types of objects, DataSourceRef allows any non-core object, as well as PersistentVolumeClaim objects. * While DataSource ignores disallowed values (dropping them), DataSourceRef preserves all values, and generates an error if a disallowed value is specified. (Alpha) Using this field requires the AnyVolumeDataSource feature gate to be enabled.
 
 <table>
     <thead>
@@ -11131,6 +11366,61 @@ A label selector requirement is a selector that contains values, a key, and an o
         <td>[]string</td>
         <td>
           values is an array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. This array is replaced during a strategic merge patch.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### CassandraDatacenter.spec.podTemplateSpec.spec.volumes[index].ephemeral.volumeClaimTemplate.metadata
+<sup><sup>[↩ Parent](#cassandradatacenterspecpodtemplatespecspecvolumesindexephemeralvolumeclaimtemplate)</sup></sup>
+
+
+
+May contain labels and annotations that will be copied into the PVC when creating it. No other fields are allowed and will be rejected during validation.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>annotations</b></td>
+        <td>map[string]string</td>
+        <td>
+          <br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>finalizers</b></td>
+        <td>[]string</td>
+        <td>
+          <br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>labels</b></td>
+        <td>map[string]string</td>
+        <td>
+          <br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>name</b></td>
+        <td>string</td>
+        <td>
+          <br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>namespace</b></td>
+        <td>string</td>
+        <td>
+          <br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -12994,6 +13284,13 @@ CassandraDatacenterStatus defines the observed state of CassandraDatacenter
         </td>
         <td>false</td>
       </tr><tr>
+        <td><b><a href="#cassandradatacenterstatustrackedtasksindex">trackedTasks</a></b></td>
+        <td>[]object</td>
+        <td>
+          TrackedTasks tracks the tasks for completion that were created by the cass-operator<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
         <td><b>usersUpserted</b></td>
         <td>string</td>
         <td>
@@ -13084,6 +13381,445 @@ CassandraDatacenterStatus defines the observed state of CassandraDatacenter
         <td>string</td>
         <td>
           <br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### CassandraDatacenter.status.trackedTasks[index]
+<sup><sup>[↩ Parent](#cassandradatacenterstatus)</sup></sup>
+
+
+
+ObjectReference contains enough information to let you inspect or modify the referred object. --- New uses of this type are discouraged because of difficulty describing its usage when embedded in APIs. 1. Ignored fields.  It includes many fields which are not generally honored.  For instance, ResourceVersion and FieldPath are both very rarely valid in actual usage. 2. Invalid usage help.  It is impossible to add specific help for individual usage.  In most embedded usages, there are particular restrictions like, "must refer only to types A and B" or "UID not honored" or "name must be restricted". Those cannot be well described when embedded. 3. Inconsistent validation.  Because the usages are different, the validation rules are different by usage, which makes it hard for users to predict what will happen. 4. The fields are both imprecise and overly precise.  Kind is not a precise mapping to a URL. This can produce ambiguity during interpretation and require a REST mapping.  In most cases, the dependency is on the group,resource tuple and the version of the actual struct is irrelevant. 5. We cannot easily change it.  Because this type is embedded in many locations, updates to this type will affect numerous schemas.  Don't make new APIs embed an underspecified API type they do not control. Instead of using this type, create a locally provided and used type that is well-focused on your reference. For example, ServiceReferences for admission registration: https://github.com/kubernetes/api/blob/release-1.17/admissionregistration/v1/types.go#L533 .
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>apiVersion</b></td>
+        <td>string</td>
+        <td>
+          API version of the referent.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>fieldPath</b></td>
+        <td>string</td>
+        <td>
+          If referring to a piece of an object instead of an entire object, this string should contain a valid JSON/Go field access statement, such as desiredState.manifest.containers[2]. For example, if the object reference is to a container within a pod, this would take on a value like: "spec.containers{name}" (where "name" refers to the name of the container that triggered the event) or if no container name is specified "spec.containers[2]" (container with index 2 in this pod). This syntax is chosen only to have some well-defined way of referencing a part of an object. TODO: this design is not final and this field is subject to change in the future.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>kind</b></td>
+        <td>string</td>
+        <td>
+          Kind of the referent. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>name</b></td>
+        <td>string</td>
+        <td>
+          Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>namespace</b></td>
+        <td>string</td>
+        <td>
+          Namespace of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>resourceVersion</b></td>
+        <td>string</td>
+        <td>
+          Specific resourceVersion to which this reference is made, if any. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#concurrency-control-and-consistency<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>uid</b></td>
+        <td>string</td>
+        <td>
+          UID of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#uids<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+## control.k8ssandra.io/v1alpha1
+
+Resource Types:
+
+- [CassandraTask](#cassandratask)
+
+
+
+
+### CassandraTask
+<sup><sup>[↩ Parent](#controlk8ssandraiov1alpha1 )</sup></sup>
+
+
+
+
+
+
+CassandraTask is the Schema for the cassandrajobs API
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+      <td><b>apiVersion</b></td>
+      <td>string</td>
+      <td>control.k8ssandra.io/v1alpha1</td>
+      <td>true</td>
+      </tr>
+      <tr>
+      <td><b>kind</b></td>
+      <td>string</td>
+      <td>CassandraTask</td>
+      <td>true</td>
+      </tr>
+      <tr>
+      <td><b><a href="https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#objectmeta-v1-meta">metadata</a></b></td>
+      <td>object</td>
+      <td>Refer to the Kubernetes API documentation for the fields of the `metadata` field.</td>
+      <td>true</td>
+      </tr><tr>
+        <td><b><a href="#cassandrataskspec">spec</a></b></td>
+        <td>object</td>
+        <td>
+          CassandraTaskSpec defines the desired state of CassandraTask<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#cassandrataskstatus">status</a></b></td>
+        <td>object</td>
+        <td>
+          CassandraTaskStatus defines the observed state of CassandraJob<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### CassandraTask.spec
+<sup><sup>[↩ Parent](#cassandratask)</sup></sup>
+
+
+
+CassandraTaskSpec defines the desired state of CassandraTask
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>concurrencyPolicy</b></td>
+        <td>string</td>
+        <td>
+          Specifics if this task can be run concurrently with other active tasks. Valid values are: - "Allow": allows multiple Tasks to run concurrently on Cassandra cluster - "Forbid" (default): only a single task is executed at once The "Allow" property is only valid if all the other active Tasks have "Allow" as well.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#cassandrataskspecdatacenter">datacenter</a></b></td>
+        <td>object</td>
+        <td>
+          Which datacenter this task is targetting. Note, this must be a datacenter which the current cass-operator can access<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#cassandrataskspecjobsindex">jobs</a></b></td>
+        <td>[]object</td>
+        <td>
+          Jobs defines the jobs this task will execute (and their order)<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>restartPolicy</b></td>
+        <td>string</td>
+        <td>
+          RestartPolicy indicates the behavior n case of failure. Default is Never.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>scheduledTime</b></td>
+        <td>string</td>
+        <td>
+          ScheduledTime indicates the earliest possible time this task is executed. This does not necessarily equal to the time it is actually executed (if other tasks are blocking for example). If not set, the task will be executed immediately.<br/>
+          <br/>
+            <i>Format</i>: date-time<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>ttlSecondsAfterFinished</b></td>
+        <td>integer</td>
+        <td>
+          TTLSecondsAfterFinished defines how long the completed job will kept before being cleaned up. If set to 0 the task will not be cleaned up by the cass-operator. If unset, the default time (86400s) is used.<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### CassandraTask.spec.datacenter
+<sup><sup>[↩ Parent](#cassandrataskspec)</sup></sup>
+
+
+
+Which datacenter this task is targetting. Note, this must be a datacenter which the current cass-operator can access
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>apiVersion</b></td>
+        <td>string</td>
+        <td>
+          API version of the referent.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>fieldPath</b></td>
+        <td>string</td>
+        <td>
+          If referring to a piece of an object instead of an entire object, this string should contain a valid JSON/Go field access statement, such as desiredState.manifest.containers[2]. For example, if the object reference is to a container within a pod, this would take on a value like: "spec.containers{name}" (where "name" refers to the name of the container that triggered the event) or if no container name is specified "spec.containers[2]" (container with index 2 in this pod). This syntax is chosen only to have some well-defined way of referencing a part of an object. TODO: this design is not final and this field is subject to change in the future.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>kind</b></td>
+        <td>string</td>
+        <td>
+          Kind of the referent. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>name</b></td>
+        <td>string</td>
+        <td>
+          Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>namespace</b></td>
+        <td>string</td>
+        <td>
+          Namespace of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>resourceVersion</b></td>
+        <td>string</td>
+        <td>
+          Specific resourceVersion to which this reference is made, if any. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#concurrency-control-and-consistency<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>uid</b></td>
+        <td>string</td>
+        <td>
+          UID of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#uids<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### CassandraTask.spec.jobs[index]
+<sup><sup>[↩ Parent](#cassandrataskspec)</sup></sup>
+
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>command</b></td>
+        <td>string</td>
+        <td>
+          Command defines what is run against Cassandra pods<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>name</b></td>
+        <td>string</td>
+        <td>
+          <br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>args</b></td>
+        <td>map[string]string</td>
+        <td>
+          <br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### CassandraTask.status
+<sup><sup>[↩ Parent](#cassandratask)</sup></sup>
+
+
+
+CassandraTaskStatus defines the observed state of CassandraJob
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>active</b></td>
+        <td>integer</td>
+        <td>
+          The number of actively running pods.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>completionTime</b></td>
+        <td>string</td>
+        <td>
+          Represents time when the job was completed. It is not guaranteed to be set in happens-before order across separate operations. It is represented in RFC3339 form and is in UTC. The completion time is only set when the job finishes successfully.<br/>
+          <br/>
+            <i>Format</i>: date-time<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#cassandrataskstatusconditionsindex">conditions</a></b></td>
+        <td>[]object</td>
+        <td>
+          The latest available observations of an object's current state. When a Job fails, one of the conditions will have type "Failed" and status true. When a Job is suspended, one of the conditions will have type "Suspended" and status true; when the Job is resumed, the status of this condition will become false. When a Job is completed, one of the conditions will have type "Complete" and status true. More info: https://kubernetes.io/docs/concepts/workloads/controllers/jobs-run-to-completion/<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>failed</b></td>
+        <td>integer</td>
+        <td>
+          The number of pods which reached phase Failed.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>startTime</b></td>
+        <td>string</td>
+        <td>
+          Represents time when the job controller started processing a job. When a Job is created in the suspended state, this field is not set until the first time it is resumed. This field is reset every time a Job is resumed from suspension. It is represented in RFC3339 form and is in UTC.<br/>
+          <br/>
+            <i>Format</i>: date-time<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>succeeded</b></td>
+        <td>integer</td>
+        <td>
+          The number of pods which reached phase Succeeded.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### CassandraTask.status.conditions[index]
+<sup><sup>[↩ Parent](#cassandrataskstatus)</sup></sup>
+
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>status</b></td>
+        <td>string</td>
+        <td>
+          Status of the condition, one of True, False, Unknown.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>type</b></td>
+        <td>string</td>
+        <td>
+          Type of job condition, Complete or Failed.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>lastProbeTime</b></td>
+        <td>string</td>
+        <td>
+          Last time the condition was checked.<br/>
+          <br/>
+            <i>Format</i>: date-time<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>lastTransitionTime</b></td>
+        <td>string</td>
+        <td>
+          Last time the condition transit from one status to another.<br/>
+          <br/>
+            <i>Format</i>: date-time<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>message</b></td>
+        <td>string</td>
+        <td>
+          Human readable message indicating details about last transition.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>reason</b></td>
+        <td>string</td>
+        <td>
+          (brief) reason for the condition's last transition.<br/>
         </td>
         <td>false</td>
       </tr></tbody>
