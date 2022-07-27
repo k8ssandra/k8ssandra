@@ -37,6 +37,8 @@ jobs:
           set -x
           crd_dir_current_hash=$(find k8ssandra/docs/content/en/reference/crd/ -type f -exec md5sum {} + | LC_ALL=C sort | md5sum | head -c 8)
           rm -rf k8ssandra/docs/content/en/reference/crd/*/
+          mkdir -p k8ssandra/docs/content/en/reference/crd/releases
+          cp k8ssandra/docs/config/crdoc-templates/_index_releases.md k8ssandra/docs/content/en/reference/crd/releases/_index.md
           
           cd k8ssandra-operator
           git fetch
@@ -45,18 +47,18 @@ jobs:
           do 
             git checkout -f $branch
             version=$(echo $branch | sed 's/origin\/release\///g')
-            mkdir -p ../k8ssandra/docs/content/en/reference/crd/k8ssandra-operator-releases/k8ssandra-operator-crds-$version > /dev/null 2>&1
-            ~/go/bin/crdoc --resources config/crd/bases --output ../k8ssandra/docs/content/en/reference/crd/k8ssandra-operator-releases/k8ssandra-operator-crds-$version/_index.md --template ../k8ssandra/docs/config/crdoc-templates/k8c.tmpl
-            sed -i "s/RELEASE_VERSION/$version/g" ../k8ssandra/docs/content/en/reference/crd/k8ssandra-operator-releases/k8ssandra-operator-crds-$version/_index.md
+            mkdir -p ../k8ssandra/docs/content/en/reference/crd/releases/k8ssandra-operator-releases/k8ssandra-operator-crds-$version > /dev/null 2>&1
+            ~/go/bin/crdoc --resources config/crd/bases --output ../k8ssandra/docs/content/en/reference/crd/releases/k8ssandra-operator-releases/k8ssandra-operator-crds-$version/_index.md --template ../k8ssandra/docs/config/crdoc-templates/k8c.tmpl
+            sed -i "s/RELEASE_VERSION/$version/g" ../k8ssandra/docs/content/en/reference/crd/releases/k8ssandra-operator-releases/k8ssandra-operator-crds-$version/_index.md
           done
 
           # Generate CRD reference for K8ssandra-operator latest
           git checkout -f main
           mkdir -p ../k8ssandra/docs/content/en/reference/crd/k8ssandra-operator-crds-latest/ > /dev/null 2>&1
           ~/go/bin/crdoc --resources config/crd/bases --output ../k8ssandra/docs/content/en/reference/crd/k8ssandra-operator-crds-latest/_index.md --template ../k8ssandra/docs/config/crdoc-templates/k8c.tmpl
-          sed -i "s/vRELEASE_VERSION/latest/g" ../k8ssandra/docs/content/en/reference/crd/k8ssandra-operator-crds-latest/_index.md
+          sed -i "s/vRELEASE_VERSION/latest build/g" ../k8ssandra/docs/content/en/reference/crd/k8ssandra-operator-crds-latest/_index.md
 
-          cp ../k8ssandra/docs/config/crdoc-templates/_index_k8ssandra_operator_crds.md ../k8ssandra/docs/content/en/reference/crd/k8ssandra-operator-releases/_index.md
+          cp ../k8ssandra/docs/config/crdoc-templates/_index_k8ssandra_operator_crds.md ../k8ssandra/docs/content/en/reference/crd/releases/k8ssandra-operator-releases/_index.md
 
           # Generate CRD reference for cass-operator
           cd ../cass-operator
@@ -67,9 +69,9 @@ jobs:
             git checkout -f $branch
             version=$(echo $branch | sed 's/origin\///g')
             if [ -d "config/crd/bases" ]; then
-              mkdir -p ../k8ssandra/docs/content/en/reference/crd/cass-operator-releases/cass-operator-crds-$version > /dev/null 2>&1
-              ~/go/bin/crdoc --resources config/crd/bases --output ../k8ssandra/docs/content/en/reference/crd/cass-operator-releases/cass-operator-crds-$version/_index.md --template ../k8ssandra/docs/config/crdoc-templates/cassdc.tmpl
-              sed -i "s/RELEASE_VERSION/$version/g" ../k8ssandra/docs/content/en/reference/crd/cass-operator-releases/cass-operator-crds-$version/_index.md
+              mkdir -p ../k8ssandra/docs/content/en/reference/crd/releases/cass-operator-releases/cass-operator-crds-$version > /dev/null 2>&1
+              ~/go/bin/crdoc --resources config/crd/bases --output ../k8ssandra/docs/content/en/reference/crd/releases/cass-operator-releases/cass-operator-crds-$version/_index.md --template ../k8ssandra/docs/config/crdoc-templates/cassdc.tmpl
+              sed -i "s/RELEASE_VERSION/$version/g" ../k8ssandra/docs/content/en/reference/crd/releases/cass-operator-releases/cass-operator-crds-$version/_index.md
             fi
           done
 
@@ -77,9 +79,9 @@ jobs:
           git checkout -f master
           mkdir -p ../k8ssandra/docs/content/en/reference/crd/cass-operator-crds-latest/ > /dev/null 2>&1
           ~/go/bin/crdoc --resources config/crd/bases --output ../k8ssandra/docs/content/en/reference/crd/cass-operator-crds-latest/_index.md --template ../k8ssandra/docs/config/crdoc-templates/cassdc.tmpl
-          sed -i "s/vRELEASE_VERSION/latest/g" ../k8ssandra/docs/content/en/reference/crd/cass-operator-crds-latest/_index.md
+          sed -i "s/vRELEASE_VERSION/latest build/g" ../k8ssandra/docs/content/en/reference/crd/cass-operator-crds-latest/_index.md
 
-          cp ../k8ssandra/docs/config/crdoc-templates/_index_cass_operator_crds.md ../k8ssandra/docs/content/en/reference/crd/cass-operator-releases/_index.md
+          cp ../k8ssandra/docs/config/crdoc-templates/_index_cass_operator_crds.md ../k8ssandra/docs/content/en/reference/crd/releases/cass-operator-releases/_index.md
 
           crd_dir_new_hash=$(find ../k8ssandra/docs/content/en/reference/crd/ -type f -exec md5sum {} + | LC_ALL=C sort | md5sum | head -c 8)
           echo "PR_BRANCH=$crd_dir_current_hash-$crd_dir_new_hash" >> $GITHUB_ENV

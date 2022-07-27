@@ -1,7 +1,7 @@
 ---
-title: "K8ssandra Operator CRD reference"
+title: "K8ssandra Operator releases"
 linkTitle: "Reference"
-weight: 6
+weight: 2
 description: >
    K8ssandra-operator CRD reference by release.
 ---

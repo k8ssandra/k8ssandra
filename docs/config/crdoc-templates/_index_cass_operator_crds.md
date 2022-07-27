@@ -1,5 +1,5 @@
 ---
-title: "cass-operator reference"
+title: "cass-operator releases"
 linkTitle: "Reference"
 weight: 6
 description: >
