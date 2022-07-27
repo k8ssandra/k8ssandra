@@ -33,8 +33,7 @@ jobs:
           go install fybrik.io/crdoc@latest
       - name: Generate CRD reference for each K8ssandra-operator release
         run: |
-          rm -rf ../k8ssandra/docs/content/en/reference/crd/*
-          cp ../k8ssandra/docs/config/crdoc-templates/_index.md ../k8ssandra/docs/content/en/reference/crd/_index.md
+          rm -rf k8ssandra/docs/content/en/reference/crd/*/
           
           cd k8ssandra-operator
           git fetch
@@ -92,8 +91,6 @@ jobs:
         if: ${{ env.PR_EXISTS == 'no' }}
         uses: peter-evans/create-pull-request@v3
         with:
-          add-paths: |
-            k8ssandra/docs/content/en/reference/crd/
           path: k8ssandra
           token: ${{ secrets.CREATE_PR_TOKEN }}
           commit-message: Upgrade CRD reference
