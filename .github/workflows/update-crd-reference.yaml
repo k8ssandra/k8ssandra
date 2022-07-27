@@ -1,0 +1,120 @@
+name: Update CRD Reference
+
+on:
+  push:
+    branches:
+      - update-crd-ref-workflow
+  workflow_dispatch:
+
+jobs:
+  update-crd-reference:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout K8ssandra-operator
+        uses: actions/checkout@v2
+        with:
+          repository: k8ssandra/k8ssandra-operator
+          ref: main
+          path: k8ssandra-operator
+      - name: Checkout K8ssandra
+        uses: actions/checkout@v2
+        with:
+          #ref: docs-v2
+          path: k8ssandra
+      - name: Install crdoc
+        run: |
+          go install fybrik.io/crdoc@latest
+      - name: Generate CRD reference for each K8ssandra-operator release
+        run: |
+          cd k8ssandra-operator
+          git fetch
+          releases=$(git branch -r |grep -E "release/[0-9]{1,2}.[0-9]{1,2}")
+          rm -rf ../k8ssandra/docs/content/en/reference/crd/*/
+          for branch in $releases
+          do 
+            git checkout -f $branch
+            version=$(echo $branch | sed 's/origin\/release\///g')
+            mkdir -p ../k8ssandra/docs/content/en/reference/crd/k8ssandra-operator-crds-$version > /dev/null 2>&1
+            ~/go/bin/crdoc --resources config/crd/bases --output ../k8ssandra/docs/content/en/reference/crd/k8ssandra-operator-crds-$version/_index.md --template ../k8ssandra/docs/config/crdoc-templates/k8c.tmpl
+            sed -i "s/RELEASE_VERSION/$version/g" ../k8ssandra/docs/content/en/reference/crd/k8ssandra-operator-crds-$version/_index.md
+          done
+          versions_hash=$(echo $releases | sed 's/origin\/release\///g' | sort | sha256sum | awk '{print $1}' | head -c 8)
+          echo "PR_BRANCH=$versions_hash" >> $GITHUB_ENV
+      - name: Check if a closed PR exists for the same version
+        run: |
+          cd k8ssandra
+          CLOSED_UPGRADE_PR=$(curl -L -s "https://api.github.com/repos/k8ssandra/k8ssandra/pulls?state=closed"|jq -c '.[] | select( .title == "Upgrade CRD reference ${{ env.PR_BRANCH }}" )'|jq -r '.title')
+          
+          if [ -z "$CLOSED_UPGRADE_PR" ]; then
+            echo "PR_EXISTS=no" >> $GITHUB_ENV
+          else
+            echo "PR_EXISTS=yes" >> $GITHUB_ENV
+          fi
+      - name: Send CRD reference update PR
+        if: ${{ env.PR_EXISTS == 'no' }}
+        uses: peter-evans/create-pull-request@v3
+        with:
+          path: k8ssandra
+          token: ${{ secrets.CREATE_PR_TOKEN }}
+          commit-message: Upgrade CRD reference
+          delete-branch: true
+          branch: upgrade-crd-reference-${{ env.PR_BRANCH }}
+          base: docs-v2
+          title: Upgrade CRD reference ${{ env.PR_BRANCH }}
+          body: |
+            This is an auto-generated PR from the K8ssandra CRD reference update GHA workflow.
+      - name: Setup tmate session
+        if: "failure()"
+        uses: mxschmitt/action-tmate@v3
+        timeout-minutes: 30
+      #- name: Get current dependencies versions
+      #  run: |
+      #    
+      #    if [ "${{ matrix.operator }}" == "true" ]; then
+      #      CURRENT=$(yq e '${{ matrix.app_version_path }}' ${{ matrix.chart_file }})
+      #    else
+      #      CURRENT=$(yq e '${{ matrix.version_path }}' charts/k8ssandra/values.yaml)
+      #    fi
+      #    echo "CURRENT_VERSION=${CURRENT}" >> $GITHUB_ENV
+      #    
+      #- name: Get latest released versions
+      #  run: |
+      #    LATEST=$(curl -L -s '${{ matrix.docker_hub_url }}'|jq -r '.results[]["name"]'|grep -Ei "^[v]{0,1}[0-9]{1,2}\.[0-9]{1,2}\.[0-9]{1,2}$"|head -1|sed s/v//)
+#
+      #    echo "LATEST_VERSION=${LATEST}" >> $GITHUB_ENV
+      #    
+      #- name: Check if a closed PR exists for the same version
+      #  run: |
+      #    CLOSED_UPGRADE_PR=$(curl -L -s "https://api.github.com/repos/k8ssandra/k8ssandra/pulls?state=closed"|jq -c '.[] | select( .title == "Upgrade ${{ matrix.dependency }} dependency ${{ env.CURRENT_VERSION }} -> ${{ env.LATEST_VERSION }}" )'|jq -r '.title')
+      #    
+      #    if [ -z "$CLOSED_UPGRADE_PR" ] && [ "${{ env.CURRENT_VERSION }}" != "${{ env.LATEST_VERSION }}" ]; then
+      #      if [ "${{ matrix.operator }}" == "true" ]; then
+      #        CHART_VERSION=$(yq eval '${{ matrix.chart_version_path }}' ${{ matrix.chart_file }})
+      #        NEW_CHART_VERSION=$(echo "$CHART_VERSION"|awk -F. -v OFS=. '{$NF += 1 ; print}')
+      #        yq eval "${{ matrix.app_version_path }} |= \"${{ env.LATEST_VERSION }}\"" ${{ matrix.chart_file }} -i
+      #        yq eval "${{ matrix.chart_version_path }} |= \"${NEW_CHART_VERSION}\"" ${{ matrix.chart_file }} -i
+      #        yq eval "(.dependencies.[]| select(.name == \"${{ matrix.dependency }}\")| ${{ matrix.chart_version_path }}) |= \"${NEW_CHART_VERSION}\"" charts/k8ssandra/Chart.yaml -i
+      #        if [ "${{ matrix.dependency }}" == "cass-operator" ]; then
+      #          # Update the cass-operator chart version in the k8ssandra-operator chart
+      #          yq eval "(.dependencies.[]| select(.name == \"cass-operator\")| .version) |= \"${NEW_CHART_VERSION}\"" charts/k8ssandra-operator/Chart.yaml -i
+      #        fi
+      #      fi
+      #      yq eval "${{ matrix.version_path }} |= \"${{ matrix.version_character }}${{ env.LATEST_VERSION }}\"" ${{ matrix.values_file }} -i
+      #      echo "PR_EXISTS=no" >> $GITHUB_ENV
+      #    else
+      #      echo "PR_EXISTS=yes" >> $GITHUB_ENV
+      #    fi
+#
+      #- name: Send PR for upgrade
+      #  if: ${{ env.PR_EXISTS == 'no' && env.CURRENT_VERSION != env.LATEST_VERSION }}
+      #  uses: peter-evans/create-pull-request@v3
+      #  with:
+      #    token: ${{ secrets.CREATE_PR_TOKEN }}
+      #    commit-message: Upgrade ${{ matrix.dependency }} dependency from ${{ env.CURRENT_VERSION }} to ${{ env.LATEST_VERSION }}
+      #    delete-branch: true
+      #    branch: upgrade-${{ matrix.dependency }}-${{ env.CURRENT_VERSION }}-${{ env.LATEST_VERSION }}
+      #    base: main
+      #    title: Upgrade ${{ matrix.dependency }} dependency ${{ env.CURRENT_VERSION }} -> ${{ env.LATEST_VERSION }}
+      #    body: |
+      #      This is auto-generated update from the K8ssandra upgrade GHA workflow.
+      #      Check that CI passes correctly before merging this PR.
