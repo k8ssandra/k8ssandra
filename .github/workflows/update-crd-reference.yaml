@@ -34,6 +34,7 @@ jobs:
           go install fybrik.io/crdoc@latest
       - name: Generate CRD reference for each K8ssandra-operator release
         run: |
+          set -x
           crd_dir_current_hash=$(find k8ssandra/docs/content/en/reference/crd/ -type f -exec md5sum {} + | LC_ALL=C sort | md5sum | head -c 8)
           rm -rf k8ssandra/docs/content/en/reference/crd/*/
           
