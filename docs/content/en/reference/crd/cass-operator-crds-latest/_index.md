@@ -1,9 +1,9 @@
 ---
-title: "cass-operator CRDs latest"
-linkTitle: "cass-operator CRDs latest"
-weight: 1
+title: "cass-operator CRDs latest build"
+linkTitle: "cass-operator CRDs latest build"
+weight: 5
 description: >
-  Configuration reference for the CRDs used with cass-operator latest.  
+  Configuration reference for the CRDs used with cass-operator latest build.  
 ---
 
 Packages:
