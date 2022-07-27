@@ -5,7 +5,7 @@ weight: 4
 description: K8ssandra Operator deploys Medusa to support backup and restore operations of Apache Cassandra&reg; tables.
 ---
 
-Medusa for Apache Cassandra&reg; is deployed by a K8ssandra Operator install, based on the [Medusa]({{< relref "/reference/crd/medusa/" >}}) Custom Resource Definition (CRD).
+Medusa for Apache Cassandra&reg; is deployed by a K8ssandra Operator install, based on the [Medusa]({{< relref "/reference/crd" >}}) Custom Resource Definition (CRD).
 
 If you haven't already installed a K8ssandraCluster using K8ssandra Operator, see the [local install]({{< relref "/install/local" >}}) topic.
 

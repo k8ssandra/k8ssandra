@@ -377,6 +377,6 @@ An alternative to an Amazon S3 bucket is MinIO, which is S3 compatible and also 
 
 Also see the following Custom Resource Definition (CRD) reference topics:
 
-* [Medusa CRD]({{< relref "/reference/crd/medusa" >}})
-* [CassandraBackup CRD]({{< relref "/reference/crd/cassandrabackup" >}})
-* [CassansdraRestore CRD]({{< relref "/reference/crd/cassandrarestore" >}})
+* [Medusa CRD]({{< relref "/reference/crd" >}})
+* [CassandraBackup CRD]({{< relref "/reference/crd" >}})
+* [CassansdraRestore CRD]({{< relref "/reference/crd" >}})
