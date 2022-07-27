@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - update-crd-ref-workflow
+
   workflow_dispatch:
 
 jobs:
@@ -33,6 +34,7 @@ jobs:
           go install fybrik.io/crdoc@latest
       - name: Generate CRD reference for each K8ssandra-operator release
         run: |
+          crd_dir_current_hash=$(find k8ssandra/docs/content/en/reference/crd/ -type f -exec md5sum {} + | LC_ALL=C sort | md5sum | head -c 8)
           rm -rf k8ssandra/docs/content/en/reference/crd/*/
           
           cd k8ssandra-operator
@@ -42,16 +44,18 @@ jobs:
           do 
             git checkout -f $branch
             version=$(echo $branch | sed 's/origin\/release\///g')
-            mkdir -p ../k8ssandra/docs/content/en/reference/crd/k8ssandra-operator-crds-$version > /dev/null 2>&1
-            ~/go/bin/crdoc --resources config/crd/bases --output ../k8ssandra/docs/content/en/reference/crd/k8ssandra-operator-crds-$version/_index.md --template ../k8ssandra/docs/config/crdoc-templates/k8c.tmpl
-            sed -i "s/RELEASE_VERSION/$version/g" ../k8ssandra/docs/content/en/reference/crd/k8ssandra-operator-crds-$version/_index.md
+            mkdir -p ../k8ssandra/docs/content/en/reference/crd/k8ssandra-operator-releases/k8ssandra-operator-crds-$version > /dev/null 2>&1
+            ~/go/bin/crdoc --resources config/crd/bases --output ../k8ssandra/docs/content/en/reference/crd/k8ssandra-operator-releases/k8ssandra-operator-crds-$version/_index.md --template ../k8ssandra/docs/config/crdoc-templates/k8c.tmpl
+            sed -i "s/RELEASE_VERSION/$version/g" ../k8ssandra/docs/content/en/reference/crd/k8ssandra-operator-releases/k8ssandra-operator-crds-$version/_index.md
           done
 
           # Generate CRD reference for K8ssandra-operator latest
           git checkout -f main
-          k8c_latest=$(git rev-parse --short HEAD)
+          mkdir -p ../k8ssandra/docs/content/en/reference/crd/k8ssandra-operator-crds-latest/ > /dev/null 2>&1
           ~/go/bin/crdoc --resources config/crd/bases --output ../k8ssandra/docs/content/en/reference/crd/k8ssandra-operator-crds-latest/_index.md --template ../k8ssandra/docs/config/crdoc-templates/k8c.tmpl
           sed -i "s/vRELEASE_VERSION/latest/g" ../k8ssandra/docs/content/en/reference/crd/k8ssandra-operator-crds-latest/_index.md
+
+          cp ../k8ssandra/docs/config/crdoc-templates/_index_k8ssandra_operator_crds.md ../k8ssandra/docs/content/en/reference/crd/k8ssandra-operator-releases/_index.md
 
           # Generate CRD reference for cass-operator
           cd ../cass-operator
@@ -62,27 +66,29 @@ jobs:
             git checkout -f $branch
             version=$(echo $branch | sed 's/origin\///g')
             if [ -d "config/crd/bases" ]; then
-              mkdir -p ../k8ssandra/docs/content/en/reference/crd/cass-operator-crds-$version > /dev/null 2>&1
-              ~/go/bin/crdoc --resources config/crd/bases --output ../k8ssandra/docs/content/en/reference/crd/cass-operator-crds-$version/_index.md --template ../k8ssandra/docs/config/crdoc-templates/cassdc.tmpl
-              sed -i "s/RELEASE_VERSION/$version/g" ../k8ssandra/docs/content/en/reference/crd/cass-operator-crds-$version/_index.md
+              mkdir -p ../k8ssandra/docs/content/en/reference/crd/cass-operator-releases/cass-operator-crds-$version > /dev/null 2>&1
+              ~/go/bin/crdoc --resources config/crd/bases --output ../k8ssandra/docs/content/en/reference/crd/cass-operator-releases/cass-operator-crds-$version/_index.md --template ../k8ssandra/docs/config/crdoc-templates/cassdc.tmpl
+              sed -i "s/RELEASE_VERSION/$version/g" ../k8ssandra/docs/content/en/reference/crd/cass-operator-releases/cass-operator-crds-$version/_index.md
             fi
           done
 
           # Generate CRD reference for cass-operator latest
           git checkout -f master
-          cass_latest=$(git rev-parse --short HEAD)
-          cass_latest="master"
+          mkdir -p ../k8ssandra/docs/content/en/reference/crd/cass-operator-crds-latest/ > /dev/null 2>&1
           ~/go/bin/crdoc --resources config/crd/bases --output ../k8ssandra/docs/content/en/reference/crd/cass-operator-crds-latest/_index.md --template ../k8ssandra/docs/config/crdoc-templates/cassdc.tmpl
           sed -i "s/vRELEASE_VERSION/latest/g" ../k8ssandra/docs/content/en/reference/crd/cass-operator-crds-latest/_index.md
 
-          versions_hash=$(echo "${k8c_releases}-${k8c_latest}-${cass_releases}-${cass_latest}" | sha256sum | awk '{print $1}' | head -c 8)
-          echo "PR_BRANCH=$versions_hash" >> $GITHUB_ENV
+          cp ../k8ssandra/docs/config/crdoc-templates/_index_cass_operator_crds.md ../k8ssandra/docs/content/en/reference/crd/cass-operator-releases/_index.md
+
+          crd_dir_new_hash=$(find ../k8ssandra/docs/content/en/reference/crd/ -type f -exec md5sum {} + | LC_ALL=C sort | md5sum | head -c 8)
+          echo "PR_BRANCH=$crd_dir_current_hash-$crd_dir_new_hash" >> $GITHUB_ENV
       - name: Check if a closed PR exists for the same version
         run: |
+          set -x
           cd k8ssandra
           CLOSED_UPGRADE_PR=$(curl -L -s "https://api.github.com/repos/k8ssandra/k8ssandra/pulls?state=closed"|jq -c '.[] | select( .title == "Upgrade CRD reference ${{ env.PR_BRANCH }}" )'|jq -r '.title')
           
-          if [ -z "$CLOSED_UPGRADE_PR" ]; then
+          if ([ -z "$CLOSED_UPGRADE_PR" ] && [ $crd_dir_current_hash != $crd_dir_new_hash ]); then
             echo "PR_EXISTS=no" >> $GITHUB_ENV
           else
             echo "PR_EXISTS=yes" >> $GITHUB_ENV
@@ -101,7 +107,6 @@ jobs:
           body: |
             This is an auto-generated PR from the K8ssandra CRD reference update GHA workflow.
       - name: Setup tmate session
-        if: "failure()"
         uses: mxschmitt/action-tmate@v3
         timeout-minutes: 30
       #- name: Get current dependencies versions
