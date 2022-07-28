@@ -1,9 +1,9 @@
 ---
-title: "K8ssandra-operator CRDs latest"
-linkTitle: "K8ssandra-operator CRDs latest"
+title: "K8ssandra-operator CRDs latest build"
+linkTitle: "K8ssandra-operator CRDs latest build"
 weight: 1
 description: >
-  Configuration reference for the CRDs used with K8ssandra-operator latest.  
+  Configuration reference for the CRDs used with K8ssandra-operator latest build.  
 ---
 
 Packages:
