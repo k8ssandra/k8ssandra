@@ -1,6 +1,6 @@
 ---
 title: "cass-operator releases"
-linkTitle: "Reference"
+linkTitle: "cass-operator releases"
 weight: 6
 description: >
   cass-operator CRD reference by release.
