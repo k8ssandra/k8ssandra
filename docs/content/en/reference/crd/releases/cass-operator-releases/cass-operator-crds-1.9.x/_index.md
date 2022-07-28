@@ -1,7 +1,7 @@
 ---
 title: "cass-operator CRDs v1.9.x"
 linkTitle: "cass-operator CRDs v1.9.x"
-weight: 1
+weight: 5
 description: >
   Configuration reference for the CRDs used with cass-operator v1.9.x.  
 ---
