@@ -89,7 +89,7 @@ spec:
       #   size: 100Mi
 ```
 
-The definition above requires a `medusa-bucket-key` to be created in the target namespace before the `K8ssandraCluster` object gets created. Use the following format for this secret: 
+The definition above requires a secret named `medusa-bucket-key` to be created in the target namespace before the `K8ssandraCluster` object gets created. Use the following format for this secret: 
 
 ```yaml
 apiVersion: v1
@@ -107,11 +107,11 @@ stringData:
 
 The file should always specify `credentials` as shown in the example above; in that section, provide the expected format and credential values that are expected by Medusa for the chosen storage backend. For more, refer to the [Medusa documentation](https://github.com/thelastpickle/cassandra-medusa/blob/master/docs/Installation.md) to know which file format should used for each supported storage backend.
 
-A successful deployment should inject a new init container named `medusa-restore` and a new container named `medusa` in the Cassandra STS pods.  
+A successful deployment should inject a new init container named `medusa-restore` and a new container named `medusa` in the Cassandra StatefulSet pods.  
 
 ## Creating a Backup
 
-To perform a backup of a Cassandra datacenter, create the following custom resource in the namespace where K8ssandra was deployed:
+To perform a backup of a Cassandra datacenter, create the following custom resource in the same namespace and Kubernetes cluster as the CassandraDatacenter resource, `cassandradatacenter/dc1` in this case :
 
 ```yaml
 apiVersion: medusa.k8ssandra.io/v1alpha1
@@ -126,7 +126,7 @@ spec:
 
 K8ssandra Operator will detect the `MedusaBackupJob` object creation and trigger a backup asynchronously.
 
-To monitor the backup completion, check if the `finishTime` value isn't empty in the `MedusaBackupJob` object status. Example:
+To monitor the backup completion, check if the `finishTime` is set in the `MedusaBackupJob` object status. Example:
 
 ```sh
 % kubectl get medusabackupjob/medusa-backup1 -o yaml
@@ -150,7 +150,7 @@ status:
 
 All pods having completed the backup will be in the `finished` list.
 At the end of the backup operation, a `MedusaBackup` custom resource will be created with the same name as the `MedusaBackupJob` object. It materializes the backup locally on the Kubernetes cluster.
-For a restore to be possible, a `MedusaBackup` object should exist.
+For a restore to be possible, a `MedusaBackup` object must exist.
 
 
 ## Creating a Backup Schedule
@@ -171,6 +171,7 @@ spec:
   disabled: false
 ```
 
+This resource must be created in the same Kubernetes cluster and namespace as the `CassandraDatacenter` resource referenced in the spec, here `cassandradatacenter/dc1`.  
 The above definition would trigger a differential backup of `dc1` every day at 1:30 AM. The status of the backup schedule will be updated with the last execution and next execution times:
 
 ```yaml
@@ -185,7 +186,7 @@ The `MedusaBackupJob` and `MedusaBackup` objects will be created with the name o
 
 ## Restoring a Backup
 
-To restore an existing backup for a Cassandra datacenter, create the following custom resource in the namespace where K8ssandra was deployed. Example:
+To restore an existing backup for a Cassandra datacenter, create the following custom resource in the same namespace as the referenced CassandraDatacenter resource, `cassandradatacenter/dc1` in this case :
 
 ```yaml
 apiVersion: medusa.k8ssandra.io/v1alpha1
@@ -205,7 +206,7 @@ Once the K8ssandra Operator detects on the `MedusaRestoreJob` object creation, i
 
 To monitor the restore completion, check if the `finishTime` value isn't empty in the `MedusaRestoreJob` object status. Example:
 
-```sh
+```yaml
 % kubectl get cassandrarestore/restore-backup1 -o yaml
 
 apiVersion: medusa.k8ssandra.io/v1alpha1
@@ -225,8 +226,8 @@ status:
 
 ## Synchronizing MedusaBackup objects with a Medusa storage backend (S3, GCS, etc.)
 
-In order to restore a backup taken on a different cluster, a synchronization task must be executed to create the corresponding `MedusaBackup` objects locally.  
-This can be achieved by creating a `MedusaTask` custom resource in the namespace where K8ssandra was deployed, with a `sync` operation:
+In order to restore a backup taken on a different Cassandra cluster, a synchronization task must be executed to create the corresponding `MedusaBackup` objects locally.  
+This can be achieved by creating a `MedusaTask` custom resource in the Kubernetes cluster and namespace where the referenced `CassandraDatacenter` was deployed, using a `sync` operation:
 
 ```yaml
 apiVersion: medusa.k8ssandra.io/v1alpha1
@@ -239,6 +240,9 @@ spec:
   operation: sync
 ```
 
+Such backups can come from Apache Cassandra clusters running outside of Kubernetes as well as clusters running in Kubernetes, as long as they were created using Medusa.  
+**Warning:** backups created with K8ssandra-operator v1.0 and K8ssandra up to v1.5 are not suitable for remote restores due to pod name resolving issues in these versions.
+  
 Reconciliation will be triggered by the `MedusaTask` object creation, executing the following operations:
 
 - Backups will be listed in the remote storage system
@@ -261,7 +265,7 @@ status:
 
 Medusa has two settings to control the retention of backups: `max_backup_age` and `max_backup_count`.
 These settings are used by the `medusa purge` operation to determine which backups to delete.
-In order to trigger a purge, a `MedusaTask` custom resource should be created in the namespace where K8ssandra was deployed, with the `purge` operation:
+In order to trigger a purge, a `MedusaTask` custom resource should be created in the same Kubernetes cluster and namespace where the referenced `CassandraDatacenter` was created, using the `purge` operation:
 
 ```yaml
 apiVersion: medusa.k8ssandra.io/v1alpha1
