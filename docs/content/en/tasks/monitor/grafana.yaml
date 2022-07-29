@@ -1,0 +1,79 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    run: grafana
+  name: grafana
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: grafana
+  template:
+    metadata:
+      labels:
+        app: grafana
+    spec:
+      containers:
+      - env:
+        - name: GF_INSTALL_PLUGINS
+          value: grafana-polystat-panel
+        - name: GF_SECURITY_ADMIN_PASSWORD
+          value: admin123
+        image: grafana/grafana:7.5.15
+        name: grafana
+        ports:
+        - containerPort: 3000
+        volumeMounts:
+        - mountPath: /var/lib/grafana
+          name: grafana-storage
+        - mountPath: /etc/grafana/provisioning/datasources
+          name: grafana-datasources
+        - name: grafana-dashboard-providers
+          mountPath: /etc/grafana/provisioning/dashboards
+        - name: grafana-dashboard-stargate
+          mountPath: /var/lib/grafana/dashboards-stargate
+        - name: grafana-overview-dashboard
+          mountPath: /var/lib/grafana/dashboards-overview
+        - name: grafana-condensed-dashboard
+          mountPath: /var/lib/grafana/dashboards-condensed
+      volumes:
+        - name: grafana-storage
+          emptyDir: {}
+        - name: grafana-datasources
+          configMap:
+            name: prometheus-datasource
+        - name: grafana-dashboard-providers
+          configMap:
+            name: grafana-dashboard-providers
+        - name: grafana-dashboard-stargate
+          configMap:
+            name: k8ssandra-stargate-dashboard
+        - name: grafana-overview-dashboard
+          configMap:
+            name: k8ssandra-cassandra-overview-dashboard
+        - name: grafana-condensed-dashboard
+          configMap:
+            name: k8ssandra-cassandra-condensed-dashboard
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 100%
+      maxSurge: 25%
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: grafana-service
+spec:
+  ports:
+    - name: native
+      protocol: TCP
+      port: 3000
+      targetPort: 3000
+  selector:
+    app: grafana
+  type: ClusterIP
+  sessionAffinity: None
