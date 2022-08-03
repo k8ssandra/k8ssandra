@@ -58,6 +58,10 @@ func New(namespace string) (*Upgrader, error) {
 
 // Upgrade installs the missing CRDs or updates them if they exists already
 func (u *Upgrader) Upgrade(chartName string, targetVersion string) ([]unstructured.Unstructured, error) {
+	chartNameToUpgrade := chartName
+	if chartName == "" {
+		chartNameToUpgrade = helmutil.DefaultChartName
+	}
 	extractDir, err := helmutil.GetChartTargetDir(targetVersion)
 	if err != nil {
 		return nil, err
@@ -66,7 +70,7 @@ func (u *Upgrader) Upgrade(chartName string, targetVersion string) ([]unstructur
 	// If the targetCacheDirectory does not exist, download the chart
 	if _, err := os.Stat(extractDir); os.IsNotExist(err) {
 		log.Printf("Downloading release %s from Helm repository", targetVersion)
-		extractDir, err = helmutil.DownloadChartRelease(chartName, targetVersion)
+		extractDir, err = helmutil.DownloadChartRelease(chartNameToUpgrade, targetVersion)
 		if err != nil {
 			return nil, err
 		}
