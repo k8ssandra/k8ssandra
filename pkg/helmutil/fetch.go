@@ -18,7 +18,8 @@ const (
 	ManagedLabelValue = "Helm"
 	ReleaseAnnotation = "meta.helm.sh/release-name"
 
-	RepoURL = "https://helm.k8ssandra.io/"
+	RepoURL          = "https://helm.k8ssandra.io/"
+	DefaultChartName = "k8ssandra"
 )
 
 func GetChartTargetDir(targetVersion string) (string, error) {
