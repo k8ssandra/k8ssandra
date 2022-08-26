@@ -8,17 +8,17 @@ description: "Access tools to monitor your Apache Cassandra® cluster running in
 
 # Monitoring using Prometheus
 
-While K8ssandra v1 managed the deployment of the kube-prometheus stack, that ability was removed in K8ssandra-operator. Both Prometheus and Grafana installations are to be handled separately.
-The following guide will show you how to install Prometheus and Grafana on your Kubernetes cluster using the Prometheus-operator and a Grafana custom deployment, but this can be achieved using the kube-prometheus stack as well.
+While K8ssandra v1 managed the deployment of the kube-prometheus stack, that ability was removed in k8ssandra-operator. Both Prometheus and Grafana installations are to be handled separately.
+The following guide will show you how to install Prometheus and Grafana on your Kubernetes cluster using the prometheus-operator and a Grafana custom deployment, but this can be achieved using the kube-prometheus stack as well.
 
 ## Installing and configuring Prometheus for monitoring
 
 `k8ssandra-operator` has integrations with Prometheus which allow for the simple rollout of Prometheus ServiceMonitors for both Stargate, Cassandra Datacenters and Reaper.
-ServiceMonitor are custom resources of [prometheus-operator](https://github.com/prometheus-operator/prometheus-operator) which describe the set of targets to be monitored by Prometheus.
+ServiceMonitors are custom resources of [prometheus-operator](https://github.com/prometheus-operator/prometheus-operator) which describe the set of targets to be monitored by Prometheus.
 
 ### Prerequisites
 
-The following guide assumes K8ssandra-operator is already installed, and a K8ssandraCluster object was created with the following manifest, in the `k8ssandra-operator` namespace:
+The following guide assumes k8ssandra-operator is already installed, and a K8ssandraCluster object was created with the following manifest, in the `k8ssandra-operator` namespace:
 
 ```yaml
 apiVersion: k8ssandra.io/v1alpha1
@@ -41,8 +41,6 @@ spec:
     config:
       jvmOptions:
         heapSize: 512M
-    networking: 
-      hostNetwork: false
     datacenters:
       - metadata:
           name: dc1
@@ -57,12 +55,12 @@ spec:
 
 Wait for the pods to come up in the `k8ssandra-operator` namespace and fully start.
 
-To use Prometheus for monitoring, you need to have the Prometheus-operator installed on your Kubernetes (k8s) cluster.
-The Prometheus-operator installs the ServiceMonitor CRD, which is the integration point we use to tell Prometheus how to find the Stargate and Cassandra pods and what endpoints on those pods to scrape.
+To use Prometheus for monitoring, you need to have the prometheus-operator installed on your Kubernetes (k8s) cluster.
+The prometheus-operator installs the ServiceMonitor CRD, which is the integration point we use to tell Prometheus how to find the Stargate and Cassandra pods and what endpoints on those pods to scrape.
 
-### Install Prometheus-operator
+### Install prometheus-operator
 
-*Skip to the next section if you already have the Prometheus-operator installed*  
+*Skip to the next section if you already have the prometheus-operator installed*  
   
 Install the Prometheus operator by running the following command:
 
