@@ -18,7 +18,7 @@ and date `## vX.Y.Z - YYYY-MM-DD` and create a new placeholder section for  `unr
 
 ## unreleased
 
-* [CHANGE] Upgrade Stargate to v1.0.61
+* [CHANGE] Upgrade Stargate to v1.0.63
 * [CHANGE] Upgrade cass-operator to v1.12.0
 * [CHANGE] Upgrade Reaper to v3.2.0
 * [ENHANCEMENT] Added s3_rgw support
