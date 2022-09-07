@@ -9,7 +9,7 @@ description: Develop clients to interact with Apache Cassandra® data via Starga
 
 This topic provides information about accessing the various API endpoints provided by Stargate.
 
-While this document will help get you up and going quickly with Stargate, more detailed information about using Stargate can be found in the [Stargate docs](https://stargate.io/docs/stargate/1.0/quickstart/quickstart.html).
+While this document will help get you up and going quickly with Stargate, more detailed information about using Stargate can be found in the [Stargate docs](https://stargate.io/docs/latest/quickstart/quickstart.html).
 
 ## Tools
 
@@ -34,7 +34,7 @@ Replace `STARGATE_AUTH_DOMAIN` in the example above with the DNS name and port. 
 
 http://localhost:8081/v1/auth
 
-Detailed information about the Stargate auth API can be found in the [Stargate docs](https://stargate.io/docs/stargate/1.0/developers-guide/auth.html).
+Detailed information about the Stargate auth API can be found in the [Stargate docs](https://stargate.io/docs/latest/secure/auth.html).
 
 ### Extracting Cassandra username/password Secrets
 
@@ -72,7 +72,7 @@ Stargate supports authorization within the data APIs through a custom HTTP heade
 
 ## Access Document Data API
 
-The Stargate document APIs provide a way schemaless way to store and interact with data inside of Cassandra. The first step is to [create a namespace](https://stargate.io/docs/stargate/1.0/quickstart/quick_start-document.html#_creating_schema). That can be done with a request to the `/v2/schemas/namespaces` API:
+The Stargate document APIs provide a way schemaless way to store and interact with data inside of Cassandra. The first step is to [create a namespace](https://stargate.io/docs/latest/quickstart/qs-document.html#creating-schema). That can be done with a request to the `/v2/schemas/namespaces` API:
 
 ```bash
 curl --location --request POST 'http://STARGATE_REST_DOMAIN/v2/schemas/namespaces' \
@@ -97,7 +97,7 @@ Additional information related to using the Document APIs can be found in the St
 
 ## Access REST Data API
 
-The Stargate REST APIs provide a RESTful way to store and interact with data inside of Cassandra that should feel familiar to developers. Unlike the document APIs, some understanding of Cassandra data modeling will be required. The first step is to [create a keyspace](https://stargate.io/docs/stargate/1.0/quickstart/quick_start-rest.html#_creating_schema). That can be done with a request to the `/v2/schemas/keyspaces` API:
+The Stargate REST APIs provide a RESTful way to store and interact with data inside of Cassandra that should feel familiar to developers. Unlike the document APIs, some understanding of Cassandra data modeling will be required. The first step is to [create a keyspace](https://stargate.io/docs/latest/quickstart/qs-rest.html#creating-schema). That can be done with a request to the `/v2/schemas/keyspaces` API:
 
 ```bash
 curl --location --request POST 'http://STARGATE_REST_DOMAIN/v2/schemas/keyspaces' \
@@ -118,15 +118,15 @@ The POST request will use the auth token previously generated to request the cre
 {"name":"mykeyspace"}
 ```
 
-Additional information related to using the Document APIs can be found in the [Stargate docs](https://stargate.io/docs/stargate/1.0/quickstart/quick_start-rest.html).
+Additional information related to using the Document APIs can be found in the [Stargate docs](https://stargate.io/docs/latest/quickstart/qs-rest.html#creating-schema).
 
 ## Access GraphQL Data API
 
-The Stargate GraphQL APIs provide a way to store and interact with data inside of Cassandra using the powerful GraphQL query language and tooling ecosystem. Like the REST APIs, this does require some additional Cassandra data modeling understanding. Like the REST APIs, The first step to using the GraphQL APIs is to [create a keyspace](https://stargate.io/docs/stargate/1.0/quickstart/quick_start-graphql.html#_creating_schema).
+The Stargate GraphQL APIs provide a way to store and interact with data inside of Cassandra using the powerful GraphQL query language and tooling ecosystem. Like the REST APIs, this does require some additional Cassandra data modeling understanding. Like the REST APIs, The first step to using the GraphQL APIs is to [create a keyspace](https://stargate.io/docs/latest/quickstart/qs-graphql-cql-first.html#create-a-keyspace).
 
 The easiest way to get started with the GraphQL APIs is to use the built-in GraphQL playground described in the next section.
 
-Additional information related to using the Document APIs can be found in the [Stargate docs](https://stargate.io/docs/stargate/1.0/quickstart/quick_start-graphql.html).
+Additional information related to using the Document APIs can be found in the [Stargate docs](https://stargate.io/docs/latest/quickstart/qs-graphql-cql-first.html).
 
 ### Access GraphQL playground
 
@@ -138,12 +138,12 @@ Replace `STARGATE_GRAPHQL_DOMAIN` in the example above with the DNS name and por
 
 http://localhost:8080/playground
 
-Detailed information related to using the GraphQL playground can be found in the [Stargate docs](https://stargate.io/docs/stargate/1.0/developers-guide/graphql-using.html#_using_the_graphql_playground).
+Detailed information related to using the GraphQL playground can be found in the [Stargate docs](https://stargate.io/docs/latest/develop/tooling.html#using-the-graphql-playground).
 
 ## Next steps
 
 * For comprehensive information about Stargate, visit the [stargate.io](https://stargate.io/) site.
-* For details on the API calls, see the Stargate [API reference](https://stargate.io/docs/stargate/1.0/developers-guide/api_ref/apiref.html).
+* For details on the API calls, see the Stargate [API reference](https://stargate.io/docs/latest/api.html).
 * For information about using a superuser and secrets with Stargate authentication, see [Stargate security]({{< relref "/tasks/secure/#stargate-security" >}}).
 * Also see the topics covering other [components]({{< relref "/components/" >}}) deployed by K8ssandra. 
 * For information on using additional deployed components, see the [Tasks]({{< relref "/tasks/" >}}) topics.
