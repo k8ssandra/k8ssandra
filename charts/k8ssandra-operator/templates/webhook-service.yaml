@@ -1,4 +1,3 @@
-{{- if .Values.controlPlane }}
 apiVersion: v1
 kind: Service
 metadata:
@@ -11,4 +10,3 @@ spec:
       targetPort: 9443
   selector:
     control-plane: k8ssandra-operator
-{{- end }}
