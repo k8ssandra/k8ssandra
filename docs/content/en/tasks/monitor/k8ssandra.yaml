@@ -7,6 +7,9 @@ spec:
   cassandra:
     serverVersion: "4.0.3"
     serverImage: k8ssandra/cass-management-api:4.0.3
+    telemetry:
+      prometheus:
+        enabled: true
     storageConfig:
       cassandraDataVolumeClaimSpec:
         storageClassName: standard
@@ -27,5 +30,11 @@ spec:
     mgmtAPIHeap: 64Mi 
   stargate:
     size: 1
+    telemetry:
+      prometheus:
+        enabled: true
   reaper:
     keyspace: reaper_db
+    telemetry:
+      prometheus:
+        enabled: true
