@@ -5,168 +5,199 @@ weight: 6
 description: "Access tools to monitor your Apache Cassandra® cluster running in Kubernetes."
 ---
 
-{{< tbs >}}
 
-When you used Helm to install a `k8ssandra` instance in Kubernetes, one of the key features provided was a set of preconfigured Grafana dashboards. They visualize data collected about your environment by the Prometheus Operator, which is also packaged with K8ssandra. Use the Grafana dashboards to monitor your K8ssandra cluster's health and traffic metrics.  
+# Monitoring using the kube-prometheus-stack
 
-After you've met the prerequisites identified below, access the preconfigured Grafana dashboards. For example:
-
-[http://grafana.localhost:8080/](http://grafana.localhost:8080/)
-
-## Tools
-
-* Web browser
+While K8ssandra v1 managed the deployment of the kube-prometheus stack, that ability was removed in k8ssandra-operator.  
+The following guide will show you how to install Prometheus and Grafana on your Kubernetes cluster using the kube-prometheus-stack set of Helm charts.
 
 ## Prerequisites
 
-1. Kubernetes cluster with the following elements deployed:
-   * [K8ssandra]({{< relref "/quickstarts#install-k8ssandra" >}})
-   * [Ingress Controller]({{< relref "/tasks/connect/ingress" >}})
-1. DNS name for the Grafana service 
-1. DNS name for the Prometheus service
+The k8ssandra-operator should be installed in the `k8ssanda-operator` namespace.  
+See the [installation documentation]({{< relref "/install" >}}) for more information.
 
-{{% alert title="Tip" color="success" %}}
-As an alternative to configuring an Ingress, consider port forwarding. It's another way to provide external access to resources that have been deployed by K8ssandra in your Kubernetes environment. Those resources could include Prometheus metrics, pre-configured Grafana dashboards, and the Reaper web interface for repairs of Cassandra&reg; data. The `kubectl port-forward` command does not require an Ingress/Traefik to work. 
+## Installing and configuring the kube-prometheus-stack
 
-* Developers, see [Set up port forwarding]({{< relref "/quickstarts/developer/#set-up-port-forwarding" >}}).  
-* Site reliability engineers, see [Configure port forwarding]({{< relref "/quickstarts/site-reliability-engineer/#port-forwarding" >}}). 
-{{% /alert %}}
+`k8ssandra-operator` has integrations with Prometheus which allow for the simple rollout of Prometheus ServiceMonitors for Stargate, Cassandra and Reaper.
+ServiceMonitors are custom resources of [prometheus-operator](https://github.com/prometheus-operator/prometheus-operator) which describe the set of targets to be scraped by Prometheus.
+The prometheus-operator is a core component of the kube-prometheus-stack.
 
-## Access Grafana Interface
+### Install the kube-prometheus-stack
 
-If you haven't already, upgrade an existing `k8ssandra` by enabling the Traefik Ingress and passing in Prometheus and Grafana host flags. 
-Command-line examples when the host is local, and `k8ssandra` is the cluster-name:
-
-```bash
-helm upgrade k8ssandra k8ssandra/k8ssandra --set prometheus.ingress.enabled=true,prometheus.ingress.host=localhost
-helm upgrade k8ssandra k8ssandra/k8ssandra --set grafana.ingress.enabled=true,grafana.ingress.host=localhost
-```
-
-To check the installed or upgraded pods' ready status, without having to submit multiple `kubectl get pods` commands, use `kubectl rollout status`. The command waits up to ten minutes (timeout is configurable) and gives a line of output as one or more pods in the set become ready. The format to check a statefulset (sts) is: 
-
-`kubectl rollout status statefulset ${CLUSTERNAME}-${DATACENTER}-default-sts`
-
-An example where the `CLUSTERNAME` from the prior `helm install` or `helm upgrade` was `k8ssandra`:
-
-```bash
-kubectl rollout status statefulset k8ssandra-dc1-default-sts
-```
-
-**Output:**
-
-```bash
-Waiting for 1 pods to be ready...
-Waiting for 1 pods to be ready...
-partitioned roll out complete: 1 new pods have been updated...
-```
-
-If you submit the command above too quickly after the `helm install` or `helm upgrade` you may get an error that no statefulset with that name exists; in which case, you can run the `kubectl rollout status` command again.  
-
-You should also check the `stargate` pod status before proceeding. Example:
-
-```bash
-kubectl rollout status deployment k8ssandra-dc1-stargate
-```
-
-**Output:**
-
-```bash
-Waiting for 1 pods to be ready...
-Waiting for 1 pods to be ready...
-Waiting for 1 pods to be ready...
-partitioned roll out complete: 1 new pods have been updated...
-```
-
-Then check the overall status of the deployed pods.
-
-```bash
-kubectl get pods
-```
-
-**Output**:
-
-```bash
-NAME                                                READY   STATUS      RESTARTS   AGE
-k8ssandra-cass-operator-766849b497-klgwf            1/1     Running     0          7m33s
-k8ssandra-dc1-default-sts-0                         2/2     Running     0          7m5s
-k8ssandra-dc1-stargate-5c46975f66-pxl84             1/1     Running     0          7m32s
-k8ssandra-grafana-679b4bbd74-wj769                  2/2     Running     0          7m32s
-k8ssandra-kube-prometheus-operator-85695ffb-ft8f8   1/1     Running     0          7m32s
-k8ssandra-reaper-655fc7dfc6-n9svw                   1/1     Running     0          4m52s
-k8ssandra-reaper-operator-79fd5b4655-748rv          1/1     Running     0          7m33s
-k8ssandra-reaper-schema-dxvmm                       0/1     Completed   0          5m3s
-prometheus-k8ssandra-kube-prometheus-prometheus-0   2/2     Running     1          7m27s
-```
-
-Notice that Grafana is running, as well as other services such as Prometheus.
-
-If you are in a local Kubernetes environment, you can now access the Grafana dashboard with a URL such as:
-
-<http://grafana.localhost:8080>
-
-### Grafana credentials
-
-The default configured credentials for Grafana are:
+We will install the kube-prometheus-stack in the same `k8ssandra-operator` namespace in order to simplify this guide.  
+Create the following `kube-prom-stack-values.yaml` file:
 
 ```yaml
+prometheus:
+  prometheusSpec:
+    serviceMonitorSelectorNilUsesHelmValues: false
+    serviceMonitorSelector: {}
+    serviceMonitorNamespaceSelector: {}
 grafana:
+  enabled: true
   adminUser: admin
   adminPassword: secret
+  defaultDashboardsEnabled: false
+  # -- Additional plugins to be installed during Grafana startup,
+  # `grafana-polystat-panel` is used by the default Cassandra dashboards.
+  plugins:
+    - grafana-polystat-panel
+  grafana.ini: {}
+  image:
+    repository: grafana/grafana
+    tag: 7.5.11
+    sha: ""
+    pullPolicy: IfNotPresent
 ```
 
-Refer to: <https://github.com/k8ssandra/k8ssandra/blob/main/charts/k8ssandra/values.yaml>
+*Download this file [here](kube-prom-stack-values.yaml).*
 
-You can change the credentials in several ways:
+Add the prometheus-community Helm repository:
 
-* In the Grafana admin UI. See: <http://grafana.localhost:8080/profile/password>
+```bash
+helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+helm repo update
+```
 
-* Or edit a **copy** of [values.yaml](https://github.com/k8ssandra/k8ssandra/blob/main/charts/k8ssandra/values.yaml); update the credentials; submit a `helm upgrade` command to the cluster. Example: 
+Then, install the kube-prometheus-stack using the following command, and referencing the `kube-prom-stack-values.yaml` file:
 
-    ```bash
-    helm upgrade cluster-name k8ssandra/k8ssandra -f my-values.yaml`
-    ```
+```bash
+helm install prometheus-grafana prometheus-community/kube-prometheus-stack -n k8ssandra-operator -f kube-prom-stack-values.yaml
+```
 
-* Or pass in a `--set grafana.adminPassword` flag. Example:
+This will install all the monitoring components in the `k8ssandra-operator` namespace.
 
-    ```bash
-    `helm upgrade cluster-name k8ssandra/k8ssandra --set  grafana.adminPassword=NewpAssw0rd!`
-    ```
+### Creating a K8ssandraCluster with telemetry enabled
 
-### Navigating in Grafana
+The following guide assumes k8ssandra-operator is already installed, and a K8ssandraCluster object was created with the following manifest, in the `k8ssandra-operator` namespace:
 
-From the Grafana start page, <http://grafana.localhost:8080> in local installs, click the Dashboards icon shown below and select the **Manage** pane:
+```yaml
+apiVersion: k8ssandra.io/v1alpha1
+kind: K8ssandraCluster
+metadata:
+  name: test
+  namespace: k8ssandra-operator
+spec:
+  cassandra:
+    serverVersion: "4.0.3"
+    serverImage: k8ssandra/cass-management-api:4.0.3
+    telemetry:
+      prometheus:
+        enabled: true
+    storageConfig:
+      cassandraDataVolumeClaimSpec:
+        storageClassName: standard
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 1Gi
+    config:
+      jvmOptions:
+        heapSize: 512M
+    datacenters:
+      - metadata:
+          name: dc1
+        size: 3
+    mgmtAPIHeap: 64Mi 
+  stargate:
+    size: 1
+    telemetry:
+      prometheus:
+        enabled: true
+  reaper:
+    keyspace: reaper_db
+    telemetry:
+      prometheus:
+        enabled: true
+```
+*Download this manifest [here](k8ssandra.yaml).*
 
-![OK](grafana-dashboards-icon.png)
+Setting `telemetry.prometheus.enabled` to `true` on the `.spec.cassandra`, `.spec.stargate` and `.spec.reaper` sections of the K8ssandraCluster CR will automatically create the ServiceMonitors.  
+*Note: Reaper's telemetry block was added in K8ssandra v1.2.0 and Reaper v3.2.0.*  
+  
+You can selectively enable service monitor creation for each component without any requirement to enable them all.  
+Wait for the pods to come up in the `k8ssandra-operator` namespace and fully start.
 
-Grafana loads its dashboard options:
+Running `kubectl get servicemonitor -n k8ssandra-operator` should return three ServiceMonitor resources once all the pods are up and running.  
+You should get the following output:
 
-1. Enable the **Default** checkbox.
-1. Click the checkbox for one of the dashboards that K8ssandra created when you installed the `k8ssandra` instance
-1. To open the selected dashboard, click on its text link. In this example, you'd click on `Cassandra Cluster Condensed`:
+```bash
+% kubectl get servicemonitors -n k8ssandra-operator
+NAME                                                 AGE
+prometheus-grafana                                   7m41s
+prometheus-grafana-kube-pr-alertmanager              7m41s
+prometheus-grafana-kube-pr-apiserver                 7m41s
+prometheus-grafana-kube-pr-coredns                   7m41s
+prometheus-grafana-kube-pr-kube-controller-manager   7m41s
+prometheus-grafana-kube-pr-kube-etcd                 7m41s
+prometheus-grafana-kube-pr-kube-proxy                7m41s
+prometheus-grafana-kube-pr-kube-scheduler            7m41s
+prometheus-grafana-kube-pr-kubelet                   7m41s
+prometheus-grafana-kube-pr-operator                  7m41s
+prometheus-grafana-kube-pr-prometheus                7m41s
+prometheus-grafana-kube-state-metrics                7m41s
+prometheus-grafana-prometheus-node-exporter          7m41s
+test-dc1-cass-servicemonitor                         5m47s
+test-dc1-reaper-reaper-servicemonitor                5m47s
+test-dc1-stargate-stargate-servicemonitor            5m47s
+```
 
-![OK](grafana-dashboards-default-selected1.png)
+### Install the Grafana dashboards
 
-Here's an example of the `Cassandra Cluster Condensed` dashboard in Grafana:
+Grafana will pick up dashboards passed as configmaps that have the label `grafana_dashboard: "1"`.  
+Create the overview, condensed and stargate dashboards (download the manifest [here](grafana-dashboards.yaml)) configmaps:
 
-![OK](grafana-cass-cluster-condensed.png)
+```bash
+kubectl apply -f grafana-dashboards.yaml -n k8ssandra-operator
+``` 
 
-### What can I do in Grafana?
+You can port-forward the Grafana service to access the dashboard at [http://localhost:3000](http://localhost:3000): `kubectl port-forward svc/grafana-service 3000:3000`
+Log in with the credentials defined in the values file: `admin` / `secret`
 
-* Cluster health
-* Traffic metrics
+You should then see the following list of available dashboards:
+![Dashboard list](grafana-dashboard-list.png)
 
-## Access Prometheus Interface
+Clicking on the Overview Dashboard should get you to a screen similar to this:
+![Overview Dashboard](grafana-overview-dashboard.png)
 
-![Prometheus UI](prometheus-example.png)
+### Filtering metrics
 
-Prometheus is available at the following address if running locally:
+Cassandra provides a lot of metrics which can create some overload, especially when there are many tables in a cluster. [Filtering rules for MCAC](https://github.com/datastax/metric-collector-for-apache-cassandra/blob/master/config/metric-collector.yaml#L9-L72) can be defined in the telemetry spec:
 
-<http://prometheus.localhost:8080>
+```
+apiVersion: k8ssandra.io/v1alpha1
+kind: K8ssandraCluster
+metadata:
+  name: test
+spec:
+  cassandra:
+    telemetry: 
+      prometheus:
+        enabled: true
+        mcacMetricFilters:
+          - "deny:org.apache.cassandra.metrics.Table"
+          - "allow:org.apache.cassandra.metrics.Table.LiveSSTableCount"
+```
 
-### What can I do in Prometheus?
+When no filter is explicitly defined in the spec, default K8ssandra v1.x filters will be applied:
 
-* Validate servers being scraped
-* Confirm metrics collection
+```
+ - "deny:org.apache.cassandra.metrics.Table"
+ - "deny:org.apache.cassandra.metrics.table"
+ - "allow:org.apache.cassandra.metrics.table.live_ss_table_count"
+ - "allow:org.apache.cassandra.metrics.Table.LiveSSTableCount"
+ - "allow:org.apache.cassandra.metrics.table.live_disk_space_used"
+ - "allow:org.apache.cassandra.metrics.table.LiveDiskSpaceUsed"
+ - "allow:org.apache.cassandra.metrics.Table.Pending"
+ - "allow:org.apache.cassandra.metrics.Table.Memtable"
+ - "allow:org.apache.cassandra.metrics.Table.Compaction"
+ - "allow:org.apache.cassandra.metrics.table.read"
+ - "allow:org.apache.cassandra.metrics.table.write"
+ - "allow:org.apache.cassandra.metrics.table.range"
+ - "allow:org.apache.cassandra.metrics.table.coordinator"
+ - "allow:org.apache.cassandra.metrics.table.dropped_mutations"
+```
 
 ## Next steps
 
