@@ -73,7 +73,7 @@ For instance, all nodes in the cluster may be scheduled and start their manageme
 
 ## Next steps
 
-* For information about using a superuser and secrets with Cassandra authentication, see [Cassandra security]({{< relref "/tasks/secure/#cassandra-security" >}}).
-* For reference details, see the [K8ssandra]({{< relref "/reference/helm-charts/k8ssandra/" >}}) Helm chart.
-* Also see the topics covering other [components]({{< relref "/components/" >}}) deployed by K8ssandra. 
-* For information on using other deployed components, see the [Tasks]({{< relref "/tasks/" >}}) topics.
+* For information about using a superuser and secrets with Cassandra authentication, see [Cassandra security](https://docs-v2.k8ssandra.io/tasks/secure/#cassandra-security).
+* For reference details, see the [cass-operator Custom Resource Definitions](https://docs-v2.k8ssandra.io/reference/crd/releases/cass-operator-releases/) (CRDs).
+* See the topic covering [K8ssandra Operator](https://docs-v2.k8ssandra.io/components/k8ssandra-operator/).
+* For information on using K8ssandra Operator components, see the [Tasks](https://docs-v2.k8ssandra.io/tasks/) topics.
