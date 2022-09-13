@@ -120,8 +120,8 @@ spec:
     mgmtAPIHeap: 64Mi
     superuserSecretRef:
       name: superuser-secret
-    externalDatacenters:
-      - "dc1"
+  externalDatacenters:
+    - "dc1"
   reaper:
     autoScheduling:
       enabled: true
