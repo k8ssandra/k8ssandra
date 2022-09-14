@@ -188,6 +188,46 @@ The StatefulSet controller manages the deletion of Cassandra pods. It deletes on
 This means for example that `my-k8ssandra-dc1-default-sts-3` will be deleted before `my-k8ssandra-dc1-default-sts-2`.
 {{% /alert %}}
 
+## Bootstrap and decommission order
+
+A K8ssandra cluster will always bootstrap new nodes and decommission existing nodes in a strictly
+deterministic order that strives to achieve balanced racks.
+
+When scaling up, the operator will add new nodes to the racks with the fewest nodes. When scaling
+down, the operator will remove nodes from the racks with the most nodes. If two racks have the same
+number of nodes, the operator will start with the rack that comes first in the datacenter
+definition.
+
+Let's take a look at an example. Suppose we have a 3 node cluster with the following racks:
+
+* `rack1` with 1 node
+* `rack2` with 1 node
+* `rack3` with 1 node
+
+Now let's scale up to, say, 8 nodes. The operator will bootstrap 5 new nodes, exactly in the
+following order:
+
+* `rack1` will scale up from 1 to 2 nodes; the total number of nodes in the cluster is now 4;
+* `rack2` will scale up from 1 to 2 nodes; the total number of nodes in the cluster is now 5;
+* `rack3` will scale up from 1 to 2 nodes; the total number of nodes in the cluster is now 6;
+* `rack1` will scale up from 2 to 3 nodes; the total number of nodes in the cluster is now 7;
+* `rack2` will scale up from 2 to 3 nodes; the total number of nodes in the cluster is now 8.
+
+The resulting topology will be as follows:
+
+* `rack1` with 3 nodes
+* `rack2` with 3 nodes
+* `rack3` with 2 nodes
+
+Now let's scale down back to 3 nodes. The operator will decommission 5 nodes, exactly in the
+following order:
+
+* `rack1` will scale down from 3 to 2 nodes; the total number of nodes in the cluster is now 7;
+* `rack2` will scale down from 3 to 2 nodes; the total number of nodes in the cluster is now 6;
+* `rack1` will scale down from 2 to 1 nodes; the total number of nodes in the cluster is now 5;
+* `rack2` will scale down from 2 to 1 nodes; the total number of nodes in the cluster is now 4;
+* `rack3` will scale down from 2 to 1 nodes; the total number of nodes in the cluster is now 3.
+
 ## Next steps
 
 * Explore other K8ssandra Operator [tasks]({{< relref "/tasks" >}}).
