@@ -198,7 +198,7 @@ down, the operator will remove nodes from the racks with the most nodes. If two 
 number of nodes, the operator will start with the rack that comes first in the datacenter
 definition.
 
-Let's take a look at an example. Suppose we have a 3 node cluster with the following racks:
+Let's take a look at an example. Suppose we have a 3-node datacenter with the following racks:
 
 * `rack1` with 1 node
 * `rack2` with 1 node
@@ -218,6 +218,8 @@ The resulting topology will be as follows:
 * `rack1` with 3 nodes
 * `rack2` with 3 nodes
 * `rack3` with 2 nodes
+
+This is indeed the most balanced topology we could have achieved with 8 nodes and 3 racks.
 
 Now let's scale down back to 3 nodes. The operator will decommission 5 nodes, exactly in the
 following order:
