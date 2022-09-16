@@ -339,9 +339,12 @@ When this cluster is created, the target topology according to the rules above w
 To achieve this, the operator will assign each rack its own `StatefulSet`:
 
 ```bash
-kubectl get sts
+kubectl get statefulsets
+```
 
-Output should look like this:
+**Output:**
+
+```text
 NAME                         READY   AGE
 my-k8ssandra-dc1-rack1-sts   2/2     7m21s
 my-k8ssandra-dc1-rack2-sts   1/1     7m21s
@@ -376,9 +379,12 @@ When the scale up operation is complete, the target topology will be as follows:
 The StatefulSets will be updated accordingly:
 
 ```bash
-kubectl get sts                      
+kubectl get statefulsets                      
+```
 
-Output should look like this:
+**Output:**
+
+```text
 NAME                         READY   AGE
 my-k8ssandra-dc1-rack1-sts   3/3     19m
 my-k8ssandra-dc1-rack2-sts   3/3     19m
