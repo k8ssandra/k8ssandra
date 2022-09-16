@@ -113,7 +113,12 @@ Alternatively, we can also patch the existing object with a `kubectl patch` comm
 kubectl patch k8c my-k8ssandra --type='json' -p='[{"op": "replace", "path": "/spec/cassandra/datacenters/0/size", "value": 4}]'
 ```
 
-### Underlying considerations when increasing size values
+### Underlying considerations when scaling up
+
+After the new nodes are up and running, `nodetool cleanup` should run on all of the nodes except the
+new ones to remove keys and data that no longer belong to those nodes. There is no need to do this
+manually. The cass-operator deployment, which again is installed with K8ssandra, automatically runs
+`nodetool cleanup` for you.
 
 By default, cass-operator configures the Cassandra pods so that Kubernetes will not schedule
 multiple Cassandra pods on the same worker node. If you try to increase the cluster size beyond the
@@ -205,32 +210,32 @@ When applied, this configuration updates the size property of the `CassandraData
 cass-operator will in turn update the underlying `StatefulSet`, allowing more than one Cassandra
 node to sit on the same worker node.
 
-After the new nodes are up and running, `nodetool cleanup` should run on all of the nodes except the
-new ones to remove keys and data that no longer belong to those nodes. There is no need to do this
-manually. The cass-operator deployment, which again is installed with K8ssandra, automatically runs
-`nodetool cleanup` for you.
-
-### Datacenter status and conditions when scaling up
+### Conditions and events when scaling up
 
 If you check the status of the `CassandraDatacenter` object, there should be a `ScalingUp` condition
-with its status set to `true`. It should look like this:
+with its status set to `true`. You should also see one or more `ScalingUpRack` events, one per rack:
 
 ```bash
- kubectl get cassandradatacenter dc1 -o yaml
+ kubectl describe cassandradatacenter dc1
 ```
 
 **Output:**
 
 ```text
 ...
-status:
-  cassandraOperatorProgress: Updating
-  conditions:
-  - lastTransitionTime: "2021-03-30T22:01:48Z"
-    message: ""
-    reason: ""
-    status: "True"
-    type: ScalingUp
+Status:
+  Cassandra Operator Progress:  Updating
+  Conditions:
+    Last Transition Time:    2022-09-16T11:39:35Z
+    Message:                 
+    Reason:                  
+    Status:                  True
+    Type:                    ScalingUp
+
+Events:
+  Type    Reason               Age        From           Message
+  ----    ------               ----       ----           -------
+  Normal  ScalingUpRack        4m         cass-operator  Scaling up rack default
 ...
 ```
 
@@ -239,7 +244,7 @@ status:
 Just like with adding nodes, removing nodes is simply a matter of changing the configured `size`
 property. Then cass-operator does a few things when you decrease the datacenter size (see below).
 
-### Underlying considerations when lowering size values
+### Underlying considerations when scaling down
 
 First, cass-operator checks that the remaining nodes have enough capacity to handle the increased
 storage capacity. If cass-operator determines that there is insufficient capacity, it will log a
@@ -274,31 +279,38 @@ Cassandra pods. It deletes one pod at a time, in reverse order with respect to i
 This means for example that `my-k8ssandra-dc1-default-sts-3` will be deleted before
 `my-k8ssandra-dc1-default-sts-2`. {{% /alert %}}
 
-### Datacenter status and conditions when scaling down
+### Conditions and events when scaling down
 
-If you check the status of the `CassandraDatacenter` object, there should be a `ScalingDown` condition
-with its status set to `true`. It should look like this:
+If you check the status of the `CassandraDatacenter` object, there should be a `ScalingDown`
+condition with its status set to `true`. You should also see one or more `ScalingDownRack` events,
+one per rack:
 
 ```bash
- kubectl get cassandradatacenter dc1 -o yaml
+ kubectl describe cassandradatacenter dc1
 ```
 
 **Output:**
 
 ```text
 ...
-status:
-  cassandraOperatorProgress: Updating
-  conditions:
-  - lastTransitionTime: "2021-03-30T22:01:48Z"
-    message: ""
-    reason: ""
-    status: "True"
-    type: ScalingDown
+Status:
+  Cassandra Operator Progress:  Updating
+  Conditions:
+    Last Transition Time:    2022-09-16T11:51:20Z
+    Message:                 
+    Reason:                  
+    Status:                  True
+    Type:                    ScalingDown
+
+Events:
+  Type    Reason                 Age        From           Message
+  ----    ------                 ----       ----           -------
+  Normal  ScalingDownRack        40m        cass-operator  Scaling down rack default
+
 ...
 ```
 
-## Bootstrap order when multiple racks are present
+## Scaling with multiple racks
 
 The above `K8ssandraCluster` example has a single rack. When multiple racks are present, the
 operator will always bootstrap new nodes and decommission existing nodes in a strictly deterministic
