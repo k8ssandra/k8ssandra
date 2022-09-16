@@ -417,9 +417,12 @@ When the scale down operation is complete, the cluster will reach the following 
 The StatefulSets will be updated accordingly:
 
 ```bash
-kubectl get sts                      
+kubectl get statefulsets                      
+```
 
-Output should look like this:
+**Output:**
+
+```text
 NAME                         READY   AGE
 my-k8ssandra-dc1-rack1-sts   1/1     30m
 my-k8ssandra-dc1-rack2-sts   1/1     30m
