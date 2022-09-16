@@ -44,35 +44,32 @@ We can create this cluster with the following command:
 kubectl apply -f k8ssandra.yaml
 ```
 
-Check that the cluster was created:
-
-```bash
-kubectl get k8ssandraclusters 
-```
-
-**Output:**
-
-```text
-NAME           AGE
-my-k8ssandra   2m30s
-```
-
 The above definition will result in the creation of a `CassandraDatacenter` object named `dc1` with
-the size set to 3. The cass-operator deployment that's installed by K8ssandra will in turn create
-the underlying `StatefulSet` that has 3 Cassandra pods:
+the size set to 3. 
 
 ```bash
-kubectl get cassandradatacenters,statefulsets
+kubectl get cassandradatacenter dc1
 ```
 
 **Output:**
 
 ```text
-NAME                                             AGE
-cassandradatacenter.cassandra.datastax.com/dc1   7m24s
+NAME   AGE
+dc1    3m35s
+```
 
-NAME                                            READY   AGE
-statefulset.apps/my-k8ssandra-dc1-default-sts   3/3     7m24s
+The cass-operator deployment that's installed by K8ssandra will in turn create the underlying
+`StatefulSet` that has 3 Cassandra pods:
+
+```bash
+kubectl get statefulsets -l cassandra.datastax.com/datacenter=dc1
+```
+
+**Output:**
+
+```text
+NAME                           READY   AGE
+my-k8ssandra-dc1-default-sts   3/3     7m35s
 ```
 
 ## Add nodes
