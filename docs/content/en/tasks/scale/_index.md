@@ -4,68 +4,125 @@ linkTitle: "Scale"
 description: "Steps to provision and scale up/down an Apache Cassandra® cluster in Kubernetes."
 ---
 
-{{< tbs >}}
-
 This topic explains how to add and remove Cassandra nodes in a Kubernetes cluster, as well as insights into the underlying operations that occur with scaling. 
 
 ## Prerequisites
 
-* A Kubernetes environment.
-* [Helm](https://helm.sh/docs/intro/install/) is installed.
-* K8ssandra is installed and running in Kubernetes - see the [Quick starts]({{< relref "quickstarts" >}}).
+1. Kubernetes cluster with the K8ssandra operators deployed:
+    * If you haven't already installed a `K8ssandraCluster` using K8ssandra Operator, see the [local install]({{< relref "/install/local" >}}) topic.
 
 ## Create a cluster
 
-Suppose we install K8ssandra as follows:
-
-```bash
-helm install my-k8ssandra k8ssandra/k8ssandra -f k8ssandra-values.yaml
-```
-
-Assume that `k8ssandra-values.yaml` has these properties:
+Suppose we have the below `K8ssandraCluster` object, stored in a k8ssandra.yaml file:
 
 ```yaml
-cassandra:
-  clusterName: my-k8ssandra
-  datacenters:
-  - name: dc1
-    size: 3
+apiVersion: k8ssandra.io/v1alpha1
+kind: K8ssandraCluster
+metadata:
+   name: my-k8ssandra
+spec:
+   cassandra:
+      serverVersion: "4.0.5"
+      datacenters:
+         - metadata:
+              name: dc1
+           size: 3
+      storageConfig:
+         cassandraDataVolumeClaimSpec:
+            storageClassName: standard
+            accessModes:
+               - ReadWriteOnce
+            resources:
+               requests:
+                  storage: 5Gi
+
 ```
 
-The `helm install` command will result in the creation of a `CassandraDatacenter` object with the size set to 3. The cass-operator deployment that's installed by K8ssandra will in turn create the underlying StatefulSet that has 3 Cassandra pods.
+We can create this cluster with the following command:
+
+```bash
+kubectl apply -f k8ssandra.yaml
+```
+
+Check that the cluster was created:
+
+```bash
+kubectl get k8ssandraclusters 
+```
+
+**Output:**
+
+```text
+NAME           AGE
+my-k8ssandra   2m30s
+```
+
+The above definition will result in the creation of a `CassandraDatacenter` object named `dc1` with
+the size set to 3. The cass-operator deployment that's installed by K8ssandra will in turn create
+the underlying `StatefulSet` that has 3 Cassandra pods:
+
+```bash
+kubectl get cassandradatacenters,statefulsets
+```
+
+**Output:**
+
+```text
+NAME                                             AGE
+cassandradatacenter.cassandra.datastax.com/dc1   7m24s
+
+NAME                                            READY   AGE
+statefulset.apps/my-k8ssandra-dc1-default-sts   3/3     7m24s
+```
 
 ## Add nodes
 
-Add nodes by updating the size property of the datacenter. Example values file:
+Add nodes by updating the size property of the `K8ssandraCluster` spec:
 
 ```yaml
-cassandra:
-  clusterName: my-k8ssandra
-  datacenters:
-  - name: dc1
-    size: 4
+apiVersion: k8ssandra.io/v1alpha1
+kind: K8ssandraCluster
+metadata:
+   name: my-k8ssandra
+spec:
+   cassandra:
+      serverVersion: "4.0.5"
+      datacenters:
+         - metadata:
+              name: dc1
+           size: 4 # change this from 3 to 4  
+      storageConfig:
+         cassandraDataVolumeClaimSpec:
+            storageClassName: standard
+            accessModes:
+               - ReadWriteOnce
+            resources:
+               requests:
+                  storage: 5Gi
 ```
 
-Apply the changes with `helm upgrade`:
+We can then update the cluster by running `kubectl apply` again:
 
 ```bash
-helm upgrade my-k8ssandra k8ssandra/k8ssandra -f k8ssandra-values.yaml
+kubectl apply -f k8ssandra.yaml
 ```
 
-{{% alert title="Tip" color="success" %}}
-Another way to upgrade your K8ssandra cluster is by passing in a `--set` parameter. Also include a `--reuse-values` parameter so that Helm will reuse previous values (other than the one you're overriding with each `--set` parameter). Without `--reuse-values` it's easy to make a mistake if you have other, additional properties that you previously set.  
+Alternatively, we can also patch the existing object with a `kubectl patch` command:
 
 ```bash
-helm upgrade my-k8ssandra k8ssandra/k8ssandra --reuse-values --set cassandra.datacenters\[0\].size=4,cassandra.datacenters\[0\].name=dc1
+kubectl patch k8c my-k8ssandra --type='json' -p='[{"op": "replace", "path": "/spec/cassandra/datacenters/0/size", "value": 4}]'
 ```
 
 {{% /alert %}}
 
 ## Underlying considerations when increasing size values
 
-By default, cass-operator configures the Cassandra pods so that Kubernetes will not schedule multiple Cassandra pods on the same worker node. If you try to increase the cluster size beyond the number of available worker nodes, you may find that the additional pods do not deploy. 
+By default, cass-operator configures the Cassandra pods so that Kubernetes will not schedule
+multiple Cassandra pods on the same worker node. If you try to increase the cluster size beyond the
+number of available worker nodes, you may find that the additional pods do not deploy.
 
-Look at this example output from `kubectl get pods` with a test cluster whose size was increased to 6. Assume that this value is beyond the number of available worker nodes:
+Look at this example output from `kubectl get pods` with a `K8ssandraCluster` whose size was
+increased to 6. Assume that this value is beyond the number of available worker nodes:
 
 ```bash
 kubectl get pods
@@ -73,26 +130,27 @@ kubectl get pods
 
 **Output:**
 
-```bash
+```text
 NAME                                   READY   STATUS      RESTARTS   AGE
-test-dc1-default-sts-0                 2/2     Running     0          87m
-test-dc1-default-sts-1                 2/2     Running     0          87m
-test-dc1-default-sts-2                 2/2     Running     0          87m
-test-dc1-default-sts-3                 2/2     Running     0          87m
-test-dc1-default-sts-4                 2/2     Running     0          87m
-test-dc1-default-sts-5                 2/2     Running     0          87m
-test-dc1-default-sts-6                 0/2     Pending     0          3m6s
+my-k8ssandra-dc1-default-sts-0         2/2     Running     0          87m
+my-k8ssandra-dc1-default-sts-1         2/2     Running     0          87m
+my-k8ssandra-dc1-default-sts-2         2/2     Running     0          87m
+my-k8ssandra-dc1-default-sts-3         2/2     Running     0          87m
+my-k8ssandra-dc1-default-sts-4         2/2     Running     0          87m
+my-k8ssandra-dc1-default-sts-5         2/2     Running     0          87m
+my-k8ssandra-dc1-default-sts-6         0/2     Pending     0          3m6s
 ```
 
-Notice that the `test-dc1-default-sts-6` pod has a status of `Pending`. We can use `kubectl describe pod` to get more details about the pod:
+Notice that the `my-k8ssandra-dc1-default-sts-6` pod has a status of `Pending`. We can use `kubectl
+describe pod` to get more details about the pod:
 
 ```bash
-kubectl describe pod test-dc1-default-sts-6
+kubectl describe pod my-k8ssandra-dc1-default-sts-6
 ```
 
 **Output:**
 
-```bash
+```text
 ...
 Events:
   Type     Reason            Age                   From               Message
@@ -102,34 +160,55 @@ Events:
 
 The output reveals a `FailedScheduling` event.
 
-To resolve the mismatch between the configured size and the available nodes, consider the following option to set the `allowMultipleNodesPerWorker` property to relax the constraint of only allowing one Cassandra pod per Kubernetes worker node.
+To resolve the mismatch between the configured size and the available nodes, consider setting the
+`softPodAntiAffinity` property to true in order to relax the constraint of only allowing one
+Cassandra pod per Kubernetes worker node. This is useful in test/dev scenarios to minimise the
+number of nodes required, but should not be done in production clusters.
 
-Here is an updated k8ssandra-values.yaml with `allowMultipleNodesPerWorker`:
+Here is an updated `K8ssandraCluster` with `softPodAntiAffinity`:
 
 ```yaml
-cassandra:
-  clusterName: my-k8ssandra
-  allowMultipleNodesPerWorker: true
-  # resources must be set when allowMultipleNodesPerWorker is true.   
-  resources: 
-    requests:
-      cpu: 2
-      memory: 2Gi
-    limits:
-      cpu: 2
-      memory: 2Gi
-  # It is not required to set the heap but is recommended.
-  heap:
-    size: 1024M
-    newGenSize: 512M
-  datacenters:
-  - name: dc1
-    size: 3
+apiVersion: k8ssandra.io/v1alpha1
+kind: K8ssandraCluster
+metadata:
+   name: my-k8ssandra
+spec:
+   cassandra:
+      serverVersion: "4.0.5"
+      datacenters:
+         - metadata:
+              name: dc1
+           size: 6
+      softPodAntiAffinity: true
+      # Resources must be specified for each Cassandra node when using softPodAntiAffinity
+      resources:
+         requests:
+            cpu: 1
+            memory: 2Gi
+         limits:
+            cpu: 2
+            memory: 2Gi
+      # It is also recommended to set the JVM heap size
+      config:
+         jvmOptions:
+            heap_initial_size: 1G
+            heap_max_size: 1G
+      storageConfig:
+         cassandraDataVolumeClaimSpec:
+            storageClassName: standard
+            accessModes:
+               - ReadWriteOnce
+            resources:
+               requests:
+                  storage: 5Gi
 ```
 
-When applied to the test cluster, this configuration updates the size property of the `CassandraDatacenter`. Then cass-operator will in turn update the underlying `StatefulSet`.
+When applied, this configuration updates the size property of the `CassandraDatacenter` to 6. Then
+cass-operator will in turn update the underlying `StatefulSet`, allowing more than one Cassandra
+node to sit on the same worker node.
 
-If you check the status of the `CassandraDatacenter` object, there should be a `ScalingUp` condition with its status set to `true`. It should look like this:
+If you check the status of the `CassandraDatacenter` object, there should be a `ScalingUp` condition
+with its status set to `true`. It should look like this:
 
 ```bash
  kubectl get cassandradatacenter dc1 -o yaml
@@ -137,7 +216,7 @@ If you check the status of the `CassandraDatacenter` object, there should be a `
 
 **Output:**
 
-```bash
+```text
 ...
 status:
   cassandraOperatorProgress: Updating
@@ -150,15 +229,21 @@ status:
 ...
 ```
 
-After the new nodes are up and running, `nodetool cleanup` should run on all of the nodes except the new ones to remove keys and data that no longer belong to those nodes. There is no need to do this manually. The cass-operator deployment, which again is installed with K8ssandra, automatically runs `nodetool cleanup` for you.
+After the new nodes are up and running, `nodetool cleanup` should run on all of the nodes except the
+new ones to remove keys and data that no longer belong to those nodes. There is no need to do this
+manually. The cass-operator deployment, which again is installed with K8ssandra, automatically runs
+`nodetool cleanup` for you.
 
 ## Remove nodes
 
-Just like with adding nodes, removing nodes is simply a matter of changing the configured `size` property. The cass-operator does a few things when you decrease the datacenter size.
+Just like with adding nodes, removing nodes is simply a matter of changing the configured `size`
+property. Then cass-operator does a few things when you decrease the datacenter size (see below).
 
 ## Underlying considerations when lowering size values
 
-First, cass-operator checks that the remaining nodes have enough capacity to handle the increased storage capacity. If cass-operator determines that there is insufficient capacity, it will log a message. Example:
+First, cass-operator checks that the remaining nodes have enough capacity to handle the increased
+storage capacity. If cass-operator determines that there is insufficient capacity, it will log a
+message. Example:
 
 ```text
 Not enough free space available to decommission. my-k8ssandra-dc1-default-sts-3 has 12345 free space, but 67891 is needed.
@@ -179,58 +264,132 @@ status:
 ...
 ```
 
-Next, cass-operator runs `nodetool decommission` on the node to be removed. This step is done automatically on your behalf.
+Next, cass-operator runs `nodetool decommission` on the node to be removed. This step is done
+automatically on your behalf.
 
 Lastly, the pod is terminated.
 
-{{% alert title="Note" color="success" %}}
-The StatefulSet controller manages the deletion of Cassandra pods. It deletes one pod at a time, in reverse order with respect to its ordinal index. 
-This means for example that `my-k8ssandra-dc1-default-sts-3` will be deleted before `my-k8ssandra-dc1-default-sts-2`.
-{{% /alert %}}
+{{% alert title="Note" color="success" %}} The StatefulSet controller manages the deletion of
+Cassandra pods. It deletes one pod at a time, in reverse order with respect to its ordinal index.
+This means for example that `my-k8ssandra-dc1-default-sts-3` will be deleted before
+`my-k8ssandra-dc1-default-sts-2`. {{% /alert %}}
 
-## Bootstrap and decommission order
+## Bootstrap and decommission order when multiple racks are present
 
-A K8ssandra cluster will always bootstrap new nodes and decommission existing nodes in a strictly
-deterministic order that strives to achieve balanced racks.
+The above `K8ssandraCluster` example has a single rack. When multiple racks are present, the
+operator will always bootstrap new nodes and decommission existing nodes in a strictly deterministic
+order that strives to achieve balanced racks.
 
 When scaling up, the operator will add new nodes to the racks with the fewest nodes. When scaling
 down, the operator will remove nodes from the racks with the most nodes. If two racks have the same
 number of nodes, the operator will start with the rack that comes first in the datacenter
 definition.
 
-Let's take a look at an example. Suppose we have a 3-node datacenter with the following racks:
+Let's take a look at an example. Suppose we create a 4-node `K8ssandraCluster` with 3 racks:
 
-* `rack1` with 1 node
-* `rack2` with 1 node
-* `rack3` with 1 node
+```yaml
+apiVersion: k8ssandra.io/v1alpha1
+kind: K8ssandraCluster
+metadata:
+  name: my-k8ssandra
+spec:
+  cassandra:
+    serverVersion: "4.0.5"
+    datacenters:
+      - metadata:
+          name: dc1
+        size: 4
+        racks:
+          - name: rack1
+          - name: rack2
+          - name: rack3
+```
 
-Now let's scale up to, say, 8 nodes. The operator will bootstrap 5 new nodes, exactly in the
+When this cluster is created, the target topology according to the rules above will be as follows:
+
+* `rack1` should have 2 nodes
+* `rack2` should have 1 node
+* `rack3` should have 1 node
+
+To achieve this, the operator will assign each rack its own `StatefulSet`:
+
+```bash
+kubectl get sts
+
+Output should look like this:
+NAME                         READY   AGE
+my-k8ssandra-dc1-rack1-sts   2/2     7m21s
+my-k8ssandra-dc1-rack2-sts   1/1     7m21s
+my-k8ssandra-dc1-rack3-sts   1/1     7m21s
+```
+
+When all the pods in all StatefulSets are ready to be started, the operator will then bootstrap the
+Cassandra nodes rack by rack, in this exact order:
+
+* `rack1`: `my-k8ssandra-dc1-rack1-sts-0` gets bootstrapped first and becomes a seed;
+* `rack2`: `my-k8ssandra-dc1-rack2-sts-0` gets bootstrapped next and becomes a seed;
+* `rack3`: `my-k8ssandra-dc1-rack3-sts-0` gets bootstrapped next.
+* `rack1`: `my-k8ssandra-dc1-rack1-sts-1` gets bootstrapped last.
+
+This is indeed the most balanced topology we could have achieved with 4 nodes and 3 racks.
+
+Now let's scale up to, say, 8 nodes. The operator will bootstrap 4 new nodes, exactly in the
 following order:
 
-* `rack1` will scale up from 1 to 2 nodes; the total number of nodes in the cluster is now 4;
-* `rack2` will scale up from 1 to 2 nodes; the total number of nodes in the cluster is now 5;
-* `rack3` will scale up from 1 to 2 nodes; the total number of nodes in the cluster is now 6;
-* `rack1` will scale up from 2 to 3 nodes; the total number of nodes in the cluster is now 7;
-* `rack2` will scale up from 2 to 3 nodes; the total number of nodes in the cluster is now 8.
+* `rack2` will scale up from 1 to 2 nodes and `my-k8ssandra-dc1-rack2-sts-1` gets bootstrapped;
+* `rack3` will scale up from 1 to 2 nodes and `my-k8ssandra-dc1-rack3-sts-1` gets bootstrapped;
+* `rack1` will scale up from 2 to 3 nodes and `my-k8ssandra-dc1-rack1-sts-2` gets bootstrapped;
+* `rack2` will scale up from 2 to 3 nodes and `my-k8ssandra-dc1-rack2-sts-2` gets bootstrapped.
 
-The resulting topology will be as follows:
+When the scale up operation is complete, the target topology will be as follows:
 
-* `rack1` with 3 nodes
-* `rack2` with 3 nodes
-* `rack3` with 2 nodes
+* `rack1` will have 3 nodes, among which 1 seed;
+* `rack2` will have 3 nodes, among which 1 seed;
+* `rack3` will have 2 nodes.
 
-This is indeed the most balanced topology we could have achieved with 8 nodes and 3 racks.
+The StatefulSets will be updated accordingly:
 
-Now let's scale down back to 3 nodes. The operator will decommission 5 nodes, exactly in the
+```bash
+kubectl get sts                      
+
+Output should look like this:
+NAME                         READY   AGE
+my-k8ssandra-dc1-rack1-sts   3/3     19m
+my-k8ssandra-dc1-rack2-sts   3/3     19m
+my-k8ssandra-dc1-rack3-sts   2/2     19m
+```
+
+This is again the most balanced topology we could have achieved with 8 nodes and 3 racks.
+
+Now let's scale down to 3 nodes. The operator will decommission 5 nodes, exactly in the
 following order:
 
-* `rack1` will scale down from 3 to 2 nodes; the total number of nodes in the cluster is now 7;
-* `rack2` will scale down from 3 to 2 nodes; the total number of nodes in the cluster is now 6;
-* `rack1` will scale down from 2 to 1 nodes; the total number of nodes in the cluster is now 5;
-* `rack2` will scale down from 2 to 1 nodes; the total number of nodes in the cluster is now 4;
-* `rack3` will scale down from 2 to 1 nodes; the total number of nodes in the cluster is now 3.
+* `rack1` will scale down from 3 to 2 nodes and `my-k8ssandra-dc1-rack1-sts-2` gets decommissioned;
+* `rack2` will scale down from 3 to 2 nodes and `my-k8ssandra-dc1-rack2-sts-2` gets decommissioned;
+* `rack1` will scale down from 2 to 1 node and `my-k8ssandra-dc1-rack1-sts-1` gets decommissioned;
+* `rack2` will scale down from 2 to 1 node and `my-k8ssandra-dc1-rack2-sts-1` gets decommissioned;
+* `rack3` will scale down from 2 to 1 node and `my-k8ssandra-dc1-rack3-sts-1` gets decommissioned.
+
+When the scale down operation is complete, the cluster will reach the following topology:
+
+* `rack1` will have 1 node, among which 1 seed;
+* `rack2` will have 1 node, among which 1 seed;
+* `rack3` will have 1 node.
+
+The StatefulSets will be updated accordingly:
+
+```bash
+kubectl get sts                      
+
+Output should look like this:
+NAME                         READY   AGE
+my-k8ssandra-dc1-rack1-sts   1/1     30m
+my-k8ssandra-dc1-rack2-sts   1/1     30m
+my-k8ssandra-dc1-rack3-sts   1/1     30m
+```
 
 ## Next steps
 
 * Explore other K8ssandra Operator [tasks]({{< relref "/tasks" >}}).
-* See the [Reference]({{< relref "/reference" >}}) topics for information about K8ssandra Operator Custom Resource Definitions (CRDs) and the single K8ssandra Operator Helm chart. 
+* See the [Reference]({{< relref "/reference" >}}) topics for information about K8ssandra Operator
+  Custom Resource Definitions (CRDs) and the single K8ssandra Operator Helm chart.
