@@ -113,9 +113,7 @@ Alternatively, we can also patch the existing object with a `kubectl patch` comm
 kubectl patch k8c my-k8ssandra --type='json' -p='[{"op": "replace", "path": "/spec/cassandra/datacenters/0/size", "value": 4}]'
 ```
 
-{{% /alert %}}
-
-## Underlying considerations when increasing size values
+### Underlying considerations when increasing size values
 
 By default, cass-operator configures the Cassandra pods so that Kubernetes will not schedule
 multiple Cassandra pods on the same worker node. If you try to increase the cluster size beyond the
@@ -207,6 +205,13 @@ When applied, this configuration updates the size property of the `CassandraData
 cass-operator will in turn update the underlying `StatefulSet`, allowing more than one Cassandra
 node to sit on the same worker node.
 
+After the new nodes are up and running, `nodetool cleanup` should run on all of the nodes except the
+new ones to remove keys and data that no longer belong to those nodes. There is no need to do this
+manually. The cass-operator deployment, which again is installed with K8ssandra, automatically runs
+`nodetool cleanup` for you.
+
+### Datacenter status and conditions when scaling up
+
 If you check the status of the `CassandraDatacenter` object, there should be a `ScalingUp` condition
 with its status set to `true`. It should look like this:
 
@@ -229,17 +234,12 @@ status:
 ...
 ```
 
-After the new nodes are up and running, `nodetool cleanup` should run on all of the nodes except the
-new ones to remove keys and data that no longer belong to those nodes. There is no need to do this
-manually. The cass-operator deployment, which again is installed with K8ssandra, automatically runs
-`nodetool cleanup` for you.
-
 ## Remove nodes
 
 Just like with adding nodes, removing nodes is simply a matter of changing the configured `size`
 property. Then cass-operator does a few things when you decrease the datacenter size (see below).
 
-## Underlying considerations when lowering size values
+### Underlying considerations when lowering size values
 
 First, cass-operator checks that the remaining nodes have enough capacity to handle the increased
 storage capacity. If cass-operator determines that there is insufficient capacity, it will log a
@@ -274,16 +274,41 @@ Cassandra pods. It deletes one pod at a time, in reverse order with respect to i
 This means for example that `my-k8ssandra-dc1-default-sts-3` will be deleted before
 `my-k8ssandra-dc1-default-sts-2`. {{% /alert %}}
 
-## Bootstrap and decommission order when multiple racks are present
+### Datacenter status and conditions when scaling down
+
+If you check the status of the `CassandraDatacenter` object, there should be a `ScalingDown` condition
+with its status set to `true`. It should look like this:
+
+```bash
+ kubectl get cassandradatacenter dc1 -o yaml
+```
+
+**Output:**
+
+```text
+...
+status:
+  cassandraOperatorProgress: Updating
+  conditions:
+  - lastTransitionTime: "2021-03-30T22:01:48Z"
+    message: ""
+    reason: ""
+    status: "True"
+    type: ScalingDown
+...
+```
+
+## Bootstrap order when multiple racks are present
 
 The above `K8ssandraCluster` example has a single rack. When multiple racks are present, the
 operator will always bootstrap new nodes and decommission existing nodes in a strictly deterministic
 order that strives to achieve balanced racks.
 
-When scaling up, the operator will add new nodes to the racks with the fewest nodes. When scaling
-down, the operator will remove nodes from the racks with the most nodes. If two racks have the same
-number of nodes, the operator will start with the rack that comes first in the datacenter
-definition.
+### Scaling up with multiple racks
+
+When scaling up, the operator will add new nodes to the racks with the fewest nodes. If two racks
+have the same number of nodes, the operator will start with the rack that comes *first* in the
+datacenter definition.
 
 Let's take a look at an example. Suppose we create a 4-node `K8ssandraCluster` with 3 racks:
 
@@ -331,7 +356,8 @@ Cassandra nodes rack by rack, in this exact order:
 * `rack3`: `my-k8ssandra-dc1-rack3-sts-0` gets bootstrapped next.
 * `rack1`: `my-k8ssandra-dc1-rack1-sts-1` gets bootstrapped last.
 
-This is indeed the most balanced topology we could have achieved with 4 nodes and 3 racks.
+This is indeed the most balanced topology we could have achieved with 4 nodes and 3 racks, and the
+bootstrap order makes it so that no rack could have 2 nodes bootstrapped before the others.
 
 Now let's scale up to, say, 8 nodes. The operator will bootstrap 4 new nodes, exactly in the
 following order:
@@ -361,14 +387,20 @@ my-k8ssandra-dc1-rack3-sts   2/2     19m
 
 This is again the most balanced topology we could have achieved with 8 nodes and 3 racks.
 
-Now let's scale down to 3 nodes. The operator will decommission 5 nodes, exactly in the
-following order:
+### Scaling down with multiple racks
 
-* `rack1` will scale down from 3 to 2 nodes and `my-k8ssandra-dc1-rack1-sts-2` gets decommissioned;
+When scaling down, the operator will remove nodes from the racks with the most nodes. If two racks
+have the same number of nodes, the operator will start with the rack that comes *last* in the
+datacenter definition.
+
+Now let's scale down the above cluster to 3 nodes. The operator will decommission 5 nodes, exactly
+in the following order:
+
 * `rack2` will scale down from 3 to 2 nodes and `my-k8ssandra-dc1-rack2-sts-2` gets decommissioned;
-* `rack1` will scale down from 2 to 1 node and `my-k8ssandra-dc1-rack1-sts-1` gets decommissioned;
+* `rack1` will scale down from 3 to 2 nodes and `my-k8ssandra-dc1-rack1-sts-2` gets decommissioned;
+* `rack3` will scale down from 2 to 1 node and `my-k8ssandra-dc1-rack3-sts-1` gets decommissioned;
 * `rack2` will scale down from 2 to 1 node and `my-k8ssandra-dc1-rack2-sts-1` gets decommissioned;
-* `rack3` will scale down from 2 to 1 node and `my-k8ssandra-dc1-rack3-sts-1` gets decommissioned.
+* `rack1` will scale down from 2 to 1 node and `my-k8ssandra-dc1-rack1-sts-1` gets decommissioned.
 
 When the scale down operation is complete, the cluster will reach the following topology:
 
