@@ -212,8 +212,11 @@ node to sit on the same worker node.
 
 ### Conditions and events when scaling up
 
-If you check the status of the `CassandraDatacenter` object, there should be a `ScalingUp` condition
-with its status set to `true`. You should also see one or more `ScalingUpRack` events, one per rack:
+If you describe the `CassandraDatacenter` object, there should be a `ScalingUp` condition with its
+status set to `true`. You should also see one or more `ScalingUpRack` events, one per rack; and
+finally, you should also see `StartedCassandra` events, one per pod:
+
+```bash
 
 ```bash
  kubectl describe cassandradatacenter dc1
@@ -233,10 +236,18 @@ Status:
     Type:                    ScalingUp
 
 Events:
-  Type    Reason               Age        From           Message
-  ----    ------               ----       ----           -------
-  Normal  ScalingUpRack        4m         cass-operator  Scaling up rack default
+  Type     Reason                       Age       From           Message
+  ----     ------                       ----      ----           -------
+  Normal   ScalingUpRack                8m45s     cass-operator  Scaling up rack default
+  Normal   StartedCassandra             2m11s     cass-operator  Started Cassandra for pod my-k8ssandra-dc1-default-sts-1
 ...
+```
+
+You can wait for the scale up operation to be finished by checking the value of the `ScalingUp`
+condition. This can also be done with the following `kubectl wait` command:
+
+```bash
+kubectl wait --for=condition=ScalingUp=false cassandradatacenter dc1 --timeout=30m
 ```
 
 ## Remove nodes
@@ -281,9 +292,10 @@ This means for example that `my-k8ssandra-dc1-default-sts-3` will be deleted bef
 
 ### Conditions and events when scaling down
 
-If you check the status of the `CassandraDatacenter` object, there should be a `ScalingDown`
-condition with its status set to `true`. You should also see one or more `ScalingDownRack` events,
-one per rack:
+If you describe the `CassandraDatacenter` object, there should be a `ScalingDown` condition with its
+status set to `true`. You should also see one or more `ScalingDownRack` events, one per rack; and
+finally, for each pod being decommissioned, you should also see one `LabeledPodAsDecommissioning`
+and one `DeletedPvc` event:
 
 ```bash
  kubectl describe cassandradatacenter dc1
@@ -303,14 +315,22 @@ Status:
     Type:                    ScalingDown
 
 Events:
-  Type    Reason                 Age        From           Message
-  ----    ------                 ----       ----           -------
-  Normal  ScalingDownRack        40m        cass-operator  Scaling down rack default
-
+  Type     Reason                       Age        From           Message
+  ----     ------                       ----       ----           -------
+  Normal   LabeledPodAsDecommissioning  82m        cass-operator  Labeled node as decommissioning my-k8ssandra-dc1-default-sts-1
+  Normal   ScalingDownRack              82m        cass-operator  Scaling down rack rack1
+  Normal   DeletedPvc                   80m        cass-operator  Claim Name: server-data-my-k8ssandra-dc1-default-sts-1
 ...
 ```
 
-## Scaling with multiple racks
+You can wait for the scale down operation to be finished by checking the value of the `ScalingDown`
+condition. This can also be done with the following `kubectl wait` command:
+
+```bash
+kubectl wait --for=condition=ScalingDown=false cassandradatacenter dc1 --timeout=30m
+```
+
+## Scaling a multi-rack datacenter
 
 The above `K8ssandraCluster` example has a single rack. When multiple racks are present, the
 operator will always bootstrap new nodes and decommission existing nodes in a strictly deterministic
