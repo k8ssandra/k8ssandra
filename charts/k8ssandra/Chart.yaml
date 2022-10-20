@@ -14,7 +14,7 @@ dependencies:
     repository: file://../reaper-operator
     condition: reaper-operator.enabled
   - name: medusa-operator
-    version: 0.32.0
+    version: 0.32.1
     repository: file://../medusa-operator
     condition: medusa.enabled
   - name: k8ssandra-common
