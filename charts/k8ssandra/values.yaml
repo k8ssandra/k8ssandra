@@ -691,7 +691,7 @@ medusa:
     # -- Image repository for medusa
     repository: k8ssandra/medusa
     # -- Tag of the medusa image to pull from
-    tag: 0.12.2
+    tag: 0.13.4
     # -- Pull policy for the medusa container
     pullPolicy: IfNotPresent
   # -- Configures the Cassandra user used by Medusa when authentication is
