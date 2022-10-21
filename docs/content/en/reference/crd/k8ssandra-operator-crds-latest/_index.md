@@ -248,6 +248,16 @@ K8ssandraClusterSpec defines the desired state of K8ssandraCluster
         </td>
         <td>false</td>
       </tr><tr>
+        <td><b>secretsProvider</b></td>
+        <td>enum</td>
+        <td>
+          SecretsProvider defines whether the secrets used for credentials and certs will be backed by an external secret backend (e.g. vault). This moves the responsibility of generating and storing secrets from the operators to the user and will rely on a mutating webhook to inject the secrets into the necessary resources<br/>
+          <br/>
+            <i>Enum</i>: internal, external<br/>
+            <i>Default</i>: internal<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
         <td><b><a href="#k8ssandraclusterspecstargate">stargate</a></b></td>
         <td>object</td>
         <td>
@@ -306,7 +316,7 @@ Cassandra is a specification of the Cassandra cluster. This includes everything 
         <td><b><a href="#k8ssandraclusterspeccassandraconfig">config</a></b></td>
         <td>object</td>
         <td>
-          CassandraConfig is configuration settings that are applied to cassandra.yaml and the various jvm*.options files.<br/>
+          CassandraConfig contains configuration settings that are applied to cassandra.yaml, dse.yaml and the various jvm*.options files.<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -321,6 +331,13 @@ Cassandra is a specification of the Cassandra cluster. This includes everything 
         <td>[]object</td>
         <td>
           Datacenters a list of the DCs in the cluster.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#k8ssandraclusterspeccassandradseworkloads">dseWorkloads</a></b></td>
+        <td>object</td>
+        <td>
+          <br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -389,10 +406,20 @@ Cassandra is a specification of the Cassandra cluster. This includes everything 
         </td>
         <td>false</td>
       </tr><tr>
+        <td><b>serverType</b></td>
+        <td>enum</td>
+        <td>
+          Server type: "cassandra" or "dse".<br/>
+          <br/>
+            <i>Enum</i>: cassandra, dse<br/>
+            <i>Default</i>: cassandra<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
         <td><b>serverVersion</b></td>
         <td>string</td>
         <td>
-          ServerVersion is the Cassandra version.<br/>
+          ServerVersion is the Cassandra or DSE version. The following versions are supported: - Cassandra: 3.11.X and 4.0.X - DSE: 6.8.X<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -628,16 +655,30 @@ Client encryption stores which are used by Cassandra and Reaper.
         <td><b><a href="#k8ssandraclusterspeccassandraclientencryptionstoreskeystoresecretref">keystoreSecretRef</a></b></td>
         <td>object</td>
         <td>
-          ref to the secret that contains the keystore and its password the expected format of the secret is a "keystore" entry and a "keystore-password" entry<br/>
+          ref to the secret that contains the keystore and optionally its password (which can also be specified through the keystorePasswordSecretRef field) if keys are not specified, "keystore" entry and a "keystore-password" entry will be used<br/>
         </td>
         <td>true</td>
       </tr><tr>
         <td><b><a href="#k8ssandraclusterspeccassandraclientencryptionstorestruststoresecretref">truststoreSecretRef</a></b></td>
         <td>object</td>
         <td>
-          ref to the secret that contains the truststore and its password the expected format of the secret is a "truststore" entry and a "truststore-password" entry<br/>
+          ref to the secret that contains the truststore and optionally its password (which can also be specified through the truststorePasswordSecretRef field) if keys are not specified explicitly, "keystore" entry and a "keystore-password" entry will be used<br/>
         </td>
         <td>true</td>
+      </tr><tr>
+        <td><b><a href="#k8ssandraclusterspeccassandraclientencryptionstoreskeystorepasswordsecretref">keystorePasswordSecretRef</a></b></td>
+        <td>object</td>
+        <td>
+          ref to the secret that contains the keystore password if password stored in different secret than keystoreSecretRef if key isn't specified explicitly, "keystore-password" entry will be used<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#k8ssandraclusterspeccassandraclientencryptionstorestruststorepasswordsecretref">truststorePasswordSecretRef</a></b></td>
+        <td>object</td>
+        <td>
+          ref to the secret that contains the truststore password if password stored in different secret than keystoreSecretRef if key isn't specified  explicitly, "truststore-password" entry will be used<br/>
+        </td>
+        <td>false</td>
       </tr></tbody>
 </table>
 
@@ -647,7 +688,7 @@ Client encryption stores which are used by Cassandra and Reaper.
 
 
 
-ref to the secret that contains the keystore and its password the expected format of the secret is a "keystore" entry and a "keystore-password" entry
+ref to the secret that contains the keystore and optionally its password (which can also be specified through the keystorePasswordSecretRef field) if keys are not specified, "keystore" entry and a "keystore-password" entry will be used
 
 <table>
     <thead>
@@ -659,6 +700,13 @@ ref to the secret that contains the keystore and its password the expected forma
         </tr>
     </thead>
     <tbody><tr>
+        <td><b>key</b></td>
+        <td>string</td>
+        <td>
+          The key of the entry in the Secret resource's `data` field to be used.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
         <td><b>name</b></td>
         <td>string</td>
         <td>
@@ -674,7 +722,7 @@ ref to the secret that contains the keystore and its password the expected forma
 
 
 
-ref to the secret that contains the truststore and its password the expected format of the secret is a "truststore" entry and a "truststore-password" entry
+ref to the secret that contains the truststore and optionally its password (which can also be specified through the truststorePasswordSecretRef field) if keys are not specified explicitly, "keystore" entry and a "keystore-password" entry will be used
 
 <table>
     <thead>
@@ -686,6 +734,81 @@ ref to the secret that contains the truststore and its password the expected for
         </tr>
     </thead>
     <tbody><tr>
+        <td><b>key</b></td>
+        <td>string</td>
+        <td>
+          The key of the entry in the Secret resource's `data` field to be used.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>name</b></td>
+        <td>string</td>
+        <td>
+          Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### K8ssandraCluster.spec.cassandra.clientEncryptionStores.keystorePasswordSecretRef
+<sup><sup>[↩ Parent](#k8ssandraclusterspeccassandraclientencryptionstores)</sup></sup>
+
+
+
+ref to the secret that contains the keystore password if password stored in different secret than keystoreSecretRef if key isn't specified explicitly, "keystore-password" entry will be used
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>key</b></td>
+        <td>string</td>
+        <td>
+          The key of the entry in the Secret resource's `data` field to be used.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>name</b></td>
+        <td>string</td>
+        <td>
+          Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### K8ssandraCluster.spec.cassandra.clientEncryptionStores.truststorePasswordSecretRef
+<sup><sup>[↩ Parent](#k8ssandraclusterspeccassandraclientencryptionstores)</sup></sup>
+
+
+
+ref to the secret that contains the truststore password if password stored in different secret than keystoreSecretRef if key isn't specified  explicitly, "truststore-password" entry will be used
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>key</b></td>
+        <td>string</td>
+        <td>
+          The key of the entry in the Secret resource's `data` field to be used.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
         <td><b>name</b></td>
         <td>string</td>
         <td>
@@ -701,7 +824,7 @@ ref to the secret that contains the truststore and its password the expected for
 
 
 
-CassandraConfig is configuration settings that are applied to cassandra.yaml and the various jvm*.options files.
+CassandraConfig contains configuration settings that are applied to cassandra.yaml, dse.yaml and the various jvm*.options files.
 
 <table>
     <thead>
@@ -713,2373 +836,22 @@ CassandraConfig is configuration settings that are applied to cassandra.yaml and
         </tr>
     </thead>
     <tbody><tr>
-        <td><b><a href="#k8ssandraclusterspeccassandraconfigcassandrayaml">cassandraYaml</a></b></td>
+        <td><b>cassandraYaml</b></td>
         <td>object</td>
         <td>
-          CassandraYaml defines the contents of the cassandra.yaml file. For more info see: https://cassandra.apache.org/doc/latest/cassandra/configuration/cass_yaml_file.html<br/>
+          <br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>dseYaml</b></td>
+        <td>object</td>
+        <td>
+          <br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#k8ssandraclusterspeccassandraconfigjvmoptions">jvmOptions</a></b></td>
         <td>object</td>
-        <td>
-          <br/>
-        </td>
-        <td>false</td>
-      </tr></tbody>
-</table>
-
-
-#### K8ssandraCluster.spec.cassandra.config.cassandraYaml
-<sup><sup>[↩ Parent](#k8ssandraclusterspeccassandraconfig)</sup></sup>
-
-
-
-CassandraYaml defines the contents of the cassandra.yaml file. For more info see: https://cassandra.apache.org/doc/latest/cassandra/configuration/cass_yaml_file.html
-
-<table>
-    <thead>
-        <tr>
-            <th>Name</th>
-            <th>Type</th>
-            <th>Description</th>
-            <th>Required</th>
-        </tr>
-    </thead>
-    <tbody><tr>
-        <td><b>allocate_tokens_for_keyspace</b></td>
-        <td>string</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>allocate_tokens_for_local_replication_factor</b></td>
-        <td>integer</td>
-        <td>
-          Exists in: 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b><a href="#k8ssandraclusterspeccassandraconfigcassandrayamlaudit_logging_options">audit_logging_options</a></b></td>
-        <td>object</td>
-        <td>
-          Exists in: 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>auth_read_consistency_level</b></td>
-        <td>enum</td>
-        <td>
-          Exists in trunk<br/>
-          <br/>
-            <i>Enum</i>: ANY, ONE, TWO, THREE, QUORUM, ALL, LOCAL_QUORUM, EACH_QUORUM, SERIAL, LOCAL_SERIAL, LOCAL_ONE, NODE_LOCAL<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>auth_write_consistency_level</b></td>
-        <td>enum</td>
-        <td>
-          Exists in trunk<br/>
-          <br/>
-            <i>Enum</i>: ANY, ONE, TWO, THREE, QUORUM, ALL, LOCAL_QUORUM, EACH_QUORUM, SERIAL, LOCAL_SERIAL, LOCAL_ONE, NODE_LOCAL<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>authenticator</b></td>
-        <td>string</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>authorizer</b></td>
-        <td>string</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>auto_hints_cleanup_enabled</b></td>
-        <td>boolean</td>
-        <td>
-          Exists in trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>auto_optimise_full_repair_streams</b></td>
-        <td>boolean</td>
-        <td>
-          Exists in: 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>auto_optimise_inc_repair_streams</b></td>
-        <td>boolean</td>
-        <td>
-          Exists in: 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>auto_optimise_preview_repair_streams</b></td>
-        <td>boolean</td>
-        <td>
-          Exists in: 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>auto_snapshot</b></td>
-        <td>boolean</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>autocompaction_on_startup_enabled</b></td>
-        <td>boolean</td>
-        <td>
-          Exists in: 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>automatic_sstable_upgrade</b></td>
-        <td>boolean</td>
-        <td>
-          Exists in: 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>available_processors</b></td>
-        <td>integer</td>
-        <td>
-          Exists in trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>back_pressure_enabled</b></td>
-        <td>boolean</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b><a href="#k8ssandraclusterspeccassandraconfigcassandrayamlback_pressure_strategy">back_pressure_strategy</a></b></td>
-        <td>object</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>batch_size_fail_threshold_in_kb</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>batch_size_warn_threshold_in_kb</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>batchlog_replay_throttle_in_kb</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>block_for_peers_in_remote_dcs</b></td>
-        <td>boolean</td>
-        <td>
-          Exists in: 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>block_for_peers_timeout_in_secs</b></td>
-        <td>integer</td>
-        <td>
-          Exists in: 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>buffer_pool_use_heap_if_exhausted</b></td>
-        <td>boolean</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>cas_contention_timeout_in_ms</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>cdc_enabled</b></td>
-        <td>boolean</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>cdc_free_space_check_interval_ms</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>cdc_raw_directory</b></td>
-        <td>string</td>
-        <td>
-          Exists in 3.11, 4.0, trunk TODO mountable directory<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>cdc_total_space_in_mb</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>check_for_duplicate_rows_during_compaction</b></td>
-        <td>boolean</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>check_for_duplicate_rows_during_reads</b></td>
-        <td>boolean</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b><a href="#k8ssandraclusterspeccassandraconfigcassandrayamlclient_encryption_options">client_encryption_options</a></b></td>
-        <td>object</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b><a href="#k8ssandraclusterspeccassandraconfigcassandrayamlclient_error_reporting_exclusions">client_error_reporting_exclusions</a></b></td>
-        <td>object</td>
-        <td>
-          Exists in trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>column_index_cache_size_in_kb</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>column_index_size_in_kb</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b><a href="#k8ssandraclusterspeccassandraconfigcassandrayamlcommitlog_compression">commitlog_compression</a></b></td>
-        <td>object</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>commitlog_max_compression_buffers_in_pool</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>commitlog_periodic_queue_size</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>commitlog_segment_size_in_mb</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>commitlog_sync</b></td>
-        <td>enum</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-          <br/>
-            <i>Enum</i>: periodic, batch, group<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>commitlog_sync_batch_window_in_ms</b></td>
-        <td>string</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>commitlog_sync_group_window_in_ms</b></td>
-        <td>integer</td>
-        <td>
-          Exists in: 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>commitlog_sync_period_in_ms</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>commitlog_total_space_in_mb</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>compaction_large_partition_warning_threshold_mb</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>compaction_throughput_mb_per_sec</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>compaction_tombstone_warning_threshold</b></td>
-        <td>integer</td>
-        <td>
-          Exists in trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>concurrent_compactors</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>concurrent_counter_writes</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>concurrent_materialized_view_builders</b></td>
-        <td>integer</td>
-        <td>
-          Exists in: 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>concurrent_materialized_view_writes</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>concurrent_reads</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>concurrent_replicates</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>concurrent_validations</b></td>
-        <td>integer</td>
-        <td>
-          Exists in: 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>concurrent_writes</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>consecutive_message_errors_threshold</b></td>
-        <td>integer</td>
-        <td>
-          Exists in: 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>corrupted_tombstone_strategy</b></td>
-        <td>enum</td>
-        <td>
-          Exists in: 4.0, trunk<br/>
-          <br/>
-            <i>Enum</i>: disabled, warn, exception<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>counter_cache_keys_to_save</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>counter_cache_save_period</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>counter_cache_size_in_mb</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>counter_write_request_timeout_in_ms</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>credentials_cache_max_entries</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>credentials_update_interval_in_ms</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>credentials_validity_in_ms</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>cross_node_timeout</b></td>
-        <td>boolean</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>default_keyspace_rf</b></td>
-        <td>integer</td>
-        <td>
-          Exists in trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>denylist_consistency_level</b></td>
-        <td>enum</td>
-        <td>
-          Exists in trunk<br/>
-          <br/>
-            <i>Enum</i>: ANY, ONE, TWO, THREE, QUORUM, ALL, LOCAL_QUORUM, EACH_QUORUM, SERIAL, LOCAL_SERIAL, LOCAL_ONE, NODE_LOCAL<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>denylist_initial_load_retry_seconds</b></td>
-        <td>integer</td>
-        <td>
-          Exists in trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>denylist_max_keys_per_table</b></td>
-        <td>integer</td>
-        <td>
-          Exists in trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>denylist_max_keys_total</b></td>
-        <td>integer</td>
-        <td>
-          Exists in trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>denylist_refresh_seconds</b></td>
-        <td>integer</td>
-        <td>
-          Exists in trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>diagnostic_events_enabled</b></td>
-        <td>boolean</td>
-        <td>
-          Exists in: 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>disk_access_mode</b></td>
-        <td>enum</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-          <br/>
-            <i>Enum</i>: auto, mmap, mmap_index_only, standard<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>disk_optimization_estimate_percentile</b></td>
-        <td>string</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>disk_optimization_page_cross_chance</b></td>
-        <td>string</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>disk_optimization_strategy</b></td>
-        <td>enum</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-          <br/>
-            <i>Enum</i>: ssd, spinning<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>dynamic_snitch</b></td>
-        <td>boolean</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>dynamic_snitch_badness_threshold</b></td>
-        <td>string</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>dynamic_snitch_reset_interval_in_ms</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>dynamic_snitch_update_interval_in_ms</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>enable_denylist_range_reads</b></td>
-        <td>boolean</td>
-        <td>
-          Exists in trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>enable_denylist_reads</b></td>
-        <td>boolean</td>
-        <td>
-          Exists in trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>enable_denylist_writes</b></td>
-        <td>boolean</td>
-        <td>
-          Exists in trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>enable_drop_compact_storage</b></td>
-        <td>boolean</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>enable_materialized_views</b></td>
-        <td>boolean</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>enable_partition_denylist</b></td>
-        <td>boolean</td>
-        <td>
-          Exists in trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>enable_sasi_indexes</b></td>
-        <td>boolean</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>enable_scripted_user_defined_functions</b></td>
-        <td>boolean</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>enable_transient_replication</b></td>
-        <td>boolean</td>
-        <td>
-          Exists in: 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>enable_user_defined_functions</b></td>
-        <td>boolean</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>enable_user_defined_functions_threads</b></td>
-        <td>boolean</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>endpoint_snitch</b></td>
-        <td>string</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>failure_detector</b></td>
-        <td>string</td>
-        <td>
-          Exists in trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>file_cache_enabled</b></td>
-        <td>boolean</td>
-        <td>
-          Exists in: 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>file_cache_round_up</b></td>
-        <td>boolean</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>file_cache_size_in_mb</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>flush_compression</b></td>
-        <td>enum</td>
-        <td>
-          Exists in: 4.0, trunk<br/>
-          <br/>
-            <i>Enum</i>: none, fast, table<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b><a href="#k8ssandraclusterspeccassandraconfigcassandrayamlfull_query_logging_options">full_query_logging_options</a></b></td>
-        <td>object</td>
-        <td>
-          Exists in: 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>gc_log_threshold_in_ms</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>gc_warn_threshold_in_ms</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>hint_window_persistent_enabled</b></td>
-        <td>boolean</td>
-        <td>
-          Exists in trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>hinted_handoff_disabled_datacenters</b></td>
-        <td>[]string</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>hinted_handoff_enabled</b></td>
-        <td>boolean</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>hinted_handoff_throttle_in_kb</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b><a href="#k8ssandraclusterspeccassandraconfigcassandrayamlhints_compression">hints_compression</a></b></td>
-        <td>object</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>hints_flush_period_in_ms</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>ideal_consistency_level</b></td>
-        <td>enum</td>
-        <td>
-          Exists in: 4.0, trunk<br/>
-          <br/>
-            <i>Enum</i>: ANY, ONE, TWO, THREE, QUORUM, ALL, LOCAL_QUORUM, EACH_QUORUM, SERIAL, LOCAL_SERIAL, LOCAL_ONE, NODE_LOCAL<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>index_interval</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>index_summary_capacity_in_mb</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>index_summary_resize_interval_in_minutes</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>initial_range_tombstone_list_allocation_size</b></td>
-        <td>integer</td>
-        <td>
-          Exists in: 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>inter_dc_stream_throughput_outbound_megabits_per_sec</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>inter_dc_tcp_nodelay</b></td>
-        <td>boolean</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>internode_application_receive_queue_capacity_in_bytes</b></td>
-        <td>integer</td>
-        <td>
-          Exists in: 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>internode_application_receive_queue_reserve_endpoint_capacity_in_bytes</b></td>
-        <td>integer</td>
-        <td>
-          Exists in: 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>internode_application_receive_queue_reserve_global_capacity_in_bytes</b></td>
-        <td>integer</td>
-        <td>
-          Exists in: 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>internode_application_send_queue_capacity_in_bytes</b></td>
-        <td>integer</td>
-        <td>
-          Exists in: 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>internode_application_send_queue_reserve_endpoint_capacity_in_bytes</b></td>
-        <td>integer</td>
-        <td>
-          Exists in: 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>internode_application_send_queue_reserve_global_capacity_in_bytes</b></td>
-        <td>integer</td>
-        <td>
-          Exists in: 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>internode_authenticator</b></td>
-        <td>string</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>internode_compression</b></td>
-        <td>enum</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-          <br/>
-            <i>Enum</i>: all, none, dc<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b><a href="#k8ssandraclusterspeccassandraconfigcassandrayamlinternode_error_reporting_exclusions">internode_error_reporting_exclusions</a></b></td>
-        <td>object</td>
-        <td>
-          Exists in trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>internode_max_message_size_in_bytes</b></td>
-        <td>integer</td>
-        <td>
-          Exists in: 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>internode_recv_buff_size_in_bytes</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>internode_send_buff_size_in_bytes</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>internode_socket_receive_buffer_size_in_bytes</b></td>
-        <td>integer</td>
-        <td>
-          Exists in: 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>internode_socket_send_buffer_size_in_bytes</b></td>
-        <td>integer</td>
-        <td>
-          Exists in: 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>internode_streaming_tcp_user_timeout_in_ms</b></td>
-        <td>integer</td>
-        <td>
-          Exists in: 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>internode_tcp_connect_timeout_in_ms</b></td>
-        <td>integer</td>
-        <td>
-          Exists in: 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>internode_tcp_user_timeout_in_ms</b></td>
-        <td>integer</td>
-        <td>
-          Exists in: 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>key_cache_keys_to_save</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>key_cache_migrate_during_compaction</b></td>
-        <td>boolean</td>
-        <td>
-          Exists in: 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>key_cache_save_period</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>key_cache_size_in_mb</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>keyspace_count_warn_threshold</b></td>
-        <td>integer</td>
-        <td>
-          Exists in: 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>max_concurrent_automatic_sstable_upgrades</b></td>
-        <td>integer</td>
-        <td>
-          Exists in: 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>max_hint_window_in_ms</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>max_hints_delivery_threads</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>max_hints_file_size_in_mb</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>max_mutation_size_in_kb</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>max_streaming_retries</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>max_value_size_in_mb</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>memtable_allocation_type</b></td>
-        <td>enum</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-          <br/>
-            <i>Enum</i>: unslabbed_heap_buffers, unslabbed_heap_buffers_logged, heap_buffers, offheap_buffers, offheap_objects<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>memtable_cleanup_threshold</b></td>
-        <td>string</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>memtable_flush_writers</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>memtable_heap_space_in_mb</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>memtable_offheap_space_in_mb</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>min_free_space_per_drive_in_mb</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>minimum_keyspace_rf</b></td>
-        <td>integer</td>
-        <td>
-          Exists in trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>native_transport_allow_older_protocols</b></td>
-        <td>boolean</td>
-        <td>
-          Exists in: 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>native_transport_flush_in_batches_legacy</b></td>
-        <td>boolean</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>native_transport_idle_timeout_in_ms</b></td>
-        <td>integer</td>
-        <td>
-          Exists in: 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>native_transport_max_concurrent_connections</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>native_transport_max_concurrent_connections_per_ip</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>native_transport_max_concurrent_requests_in_bytes</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>native_transport_max_concurrent_requests_in_bytes_per_ip</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>native_transport_max_frame_size_in_mb</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>native_transport_max_negotiable_protocol_version</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>native_transport_max_requests_per_second</b></td>
-        <td>integer</td>
-        <td>
-          Exists in trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>native_transport_max_threads</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>native_transport_rate_limiting_enabled</b></td>
-        <td>boolean</td>
-        <td>
-          Exists in trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>native_transport_receive_queue_capacity_in_bytes</b></td>
-        <td>integer</td>
-        <td>
-          Exists in: 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>network_authorizer</b></td>
-        <td>string</td>
-        <td>
-          Exists in: 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>networking_cache_size_in_mb</b></td>
-        <td>integer</td>
-        <td>
-          Exists in: 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>num_tokens</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>otc_backlog_expiration_interval_ms</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>otc_coalescing_enough_coalesced_messages</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>otc_coalescing_strategy</b></td>
-        <td>string</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>otc_coalescing_window_us</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>paxos_cache_size_in_mb</b></td>
-        <td>integer</td>
-        <td>
-          Exists in trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>periodic_commitlog_sync_lag_block_in_ms</b></td>
-        <td>integer</td>
-        <td>
-          Exists in: 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>permissions_cache_max_entries</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>permissions_update_interval_in_ms</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>permissions_validity_in_ms</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>phi_convict_threshold</b></td>
-        <td>string</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>prepared_statements_cache_size_mb</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>range_request_timeout_in_ms</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>range_tombstone_list_growth_factor</b></td>
-        <td>string</td>
-        <td>
-          Exists in: 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>read_request_timeout_in_ms</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>reject_repair_compaction_threshold</b></td>
-        <td>integer</td>
-        <td>
-          Exists in: 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>repair_command_pool_full_strategy</b></td>
-        <td>enum</td>
-        <td>
-          Exists in: 4.0, trunk<br/>
-          <br/>
-            <i>Enum</i>: queue, reject<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>repair_command_pool_size</b></td>
-        <td>integer</td>
-        <td>
-          Exists in: 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>repair_session_max_tree_depth</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>repair_session_space_in_mb</b></td>
-        <td>integer</td>
-        <td>
-          Exists in: 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>repaired_data_tracking_for_partition_reads_enabled</b></td>
-        <td>boolean</td>
-        <td>
-          Exists in: 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>repaired_data_tracking_for_range_reads_enabled</b></td>
-        <td>boolean</td>
-        <td>
-          Exists in: 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b><a href="#k8ssandraclusterspeccassandraconfigcassandrayamlreplica_filtering_protection">replica_filtering_protection</a></b></td>
-        <td>object</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>report_unconfirmed_repaired_data_mismatches</b></td>
-        <td>boolean</td>
-        <td>
-          Exists in: 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>request_scheduler</b></td>
-        <td>string</td>
-        <td>
-          Exists in 3.11<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>request_scheduler_id</b></td>
-        <td>enum</td>
-        <td>
-          Exists in 3.11<br/>
-          <br/>
-            <i>Enum</i>: keyspace<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b><a href="#k8ssandraclusterspeccassandraconfigcassandrayamlrequest_scheduler_options">request_scheduler_options</a></b></td>
-        <td>object</td>
-        <td>
-          Exists in 3.11<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>request_timeout_in_ms</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>role_manager</b></td>
-        <td>string</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>roles_cache_max_entries</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>roles_update_interval_in_ms</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>roles_validity_in_ms</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>row_cache_class_name</b></td>
-        <td>string</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>row_cache_keys_to_save</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>row_cache_save_period</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>row_cache_size_in_mb</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b><a href="#k8ssandraclusterspeccassandraconfigcassandrayamlserver_encryption_options">server_encryption_options</a></b></td>
-        <td>object</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>slow_query_log_timeout_in_ms</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>snapshot_before_compaction</b></td>
-        <td>boolean</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>snapshot_links_per_second</b></td>
-        <td>integer</td>
-        <td>
-          Exists in: 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>snapshot_on_duplicate_row_detection</b></td>
-        <td>boolean</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>snapshot_on_repaired_data_mismatch</b></td>
-        <td>boolean</td>
-        <td>
-          Exists in: 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>sstable_preemptive_open_interval_in_mb</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>stream_entire_sstables</b></td>
-        <td>boolean</td>
-        <td>
-          Exists in: 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>stream_throughput_outbound_megabits_per_sec</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>streaming_connections_per_host</b></td>
-        <td>integer</td>
-        <td>
-          Exists in: 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>streaming_keep_alive_period_in_secs</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>streaming_socket_timeout_in_ms</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>table_count_warn_threshold</b></td>
-        <td>integer</td>
-        <td>
-          Exists in: 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>thrift_framed_transport_size_in_mb</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>thrift_max_message_length_in_mb</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>thrift_prepared_statements_cache_size_mb</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>tombstone_failure_threshold</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>tombstone_warn_threshold</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>tracetype_query_ttl</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>tracetype_repair_ttl</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b><a href="#k8ssandraclusterspeccassandraconfigcassandrayamltrack_warnings">track_warnings</a></b></td>
-        <td>object</td>
-        <td>
-          Exists in trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>traverse_auth_from_root</b></td>
-        <td>boolean</td>
-        <td>
-          Exists in trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>trickle_fsync</b></td>
-        <td>boolean</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>trickle_fsync_interval_in_kb</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>truncate_request_timeout_in_ms</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>unlogged_batch_across_partitions_warn_threshold</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>use_deterministic_table_id</b></td>
-        <td>boolean</td>
-        <td>
-          Exists in trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>use_offheap_merkle_trees</b></td>
-        <td>boolean</td>
-        <td>
-          Exists in: 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>user_defined_function_fail_timeout</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>user_defined_function_warn_timeout</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>user_function_timeout_policy</b></td>
-        <td>enum</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-          <br/>
-            <i>Enum</i>: ignore, die, die_immediate<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>validation_preview_purge_head_start_in_sec</b></td>
-        <td>integer</td>
-        <td>
-          Exists in: 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>windows_timer_interval</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>write_request_timeout_in_ms</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr></tbody>
-</table>
-
-
-#### K8ssandraCluster.spec.cassandra.config.cassandraYaml.audit_logging_options
-<sup><sup>[↩ Parent](#k8ssandraclusterspeccassandraconfigcassandrayaml)</sup></sup>
-
-
-
-Exists in: 4.0, trunk
-
-<table>
-    <thead>
-        <tr>
-            <th>Name</th>
-            <th>Type</th>
-            <th>Description</th>
-            <th>Required</th>
-        </tr>
-    </thead>
-    <tbody><tr>
-        <td><b>enabled</b></td>
-        <td>boolean</td>
-        <td>
-          <br/>
-        </td>
-        <td>true</td>
-      </tr><tr>
-        <td><b>archive_command</b></td>
-        <td>string</td>
-        <td>
-          <br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>block</b></td>
-        <td>boolean</td>
-        <td>
-          <br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>excluded_categories</b></td>
-        <td>string</td>
-        <td>
-          <br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>excluded_keyspaces</b></td>
-        <td>string</td>
-        <td>
-          <br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>excluded_users</b></td>
-        <td>string</td>
-        <td>
-          <br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>included_categories</b></td>
-        <td>string</td>
-        <td>
-          <br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>included_keyspaces</b></td>
-        <td>string</td>
-        <td>
-          <br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>included_users</b></td>
-        <td>string</td>
-        <td>
-          <br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b><a href="#k8ssandraclusterspeccassandraconfigcassandrayamlaudit_logging_optionslogger">logger</a></b></td>
-        <td>object</td>
-        <td>
-          <br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>max_archive_retries</b></td>
-        <td>integer</td>
-        <td>
-          <br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>max_log_size</b></td>
-        <td>integer</td>
-        <td>
-          <br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>max_queue_weight</b></td>
-        <td>integer</td>
-        <td>
-          <br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>roll_cycle</b></td>
-        <td>string</td>
-        <td>
-          <br/>
-        </td>
-        <td>false</td>
-      </tr></tbody>
-</table>
-
-
-#### K8ssandraCluster.spec.cassandra.config.cassandraYaml.audit_logging_options.logger
-<sup><sup>[↩ Parent](#k8ssandraclusterspeccassandraconfigcassandrayamlaudit_logging_options)</sup></sup>
-
-
-
-
-
-<table>
-    <thead>
-        <tr>
-            <th>Name</th>
-            <th>Type</th>
-            <th>Description</th>
-            <th>Required</th>
-        </tr>
-    </thead>
-    <tbody><tr>
-        <td><b>class_name</b></td>
-        <td>string</td>
-        <td>
-          <br/>
-        </td>
-        <td>true</td>
-      </tr><tr>
-        <td><b>parameters</b></td>
-        <td>map[string]string</td>
-        <td>
-          <br/>
-        </td>
-        <td>false</td>
-      </tr></tbody>
-</table>
-
-
-#### K8ssandraCluster.spec.cassandra.config.cassandraYaml.back_pressure_strategy
-<sup><sup>[↩ Parent](#k8ssandraclusterspeccassandraconfigcassandrayaml)</sup></sup>
-
-
-
-Exists in 3.11, 4.0, trunk
-
-<table>
-    <thead>
-        <tr>
-            <th>Name</th>
-            <th>Type</th>
-            <th>Description</th>
-            <th>Required</th>
-        </tr>
-    </thead>
-    <tbody><tr>
-        <td><b>class_name</b></td>
-        <td>string</td>
-        <td>
-          <br/>
-        </td>
-        <td>true</td>
-      </tr><tr>
-        <td><b>parameters</b></td>
-        <td>map[string]string</td>
-        <td>
-          <br/>
-        </td>
-        <td>false</td>
-      </tr></tbody>
-</table>
-
-
-#### K8ssandraCluster.spec.cassandra.config.cassandraYaml.client_encryption_options
-<sup><sup>[↩ Parent](#k8ssandraclusterspeccassandraconfigcassandrayaml)</sup></sup>
-
-
-
-Exists in 3.11, 4.0, trunk
-
-<table>
-    <thead>
-        <tr>
-            <th>Name</th>
-            <th>Type</th>
-            <th>Description</th>
-            <th>Required</th>
-        </tr>
-    </thead>
-    <tbody><tr>
-        <td><b>enabled</b></td>
-        <td>boolean</td>
-        <td>
-          <br/>
-        </td>
-        <td>true</td>
-      </tr><tr>
-        <td><b>accepted_protocols</b></td>
-        <td>[]string</td>
-        <td>
-          <br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>algorithm</b></td>
-        <td>string</td>
-        <td>
-          <br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>cipher_suites</b></td>
-        <td>[]string</td>
-        <td>
-          <br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>optional</b></td>
-        <td>boolean</td>
-        <td>
-          <br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>protocol</b></td>
-        <td>string</td>
-        <td>
-          <br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>require_client_auth</b></td>
-        <td>boolean</td>
-        <td>
-          <br/>
-          <br/>
-            <i>Default</i>: false<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>store_type</b></td>
-        <td>string</td>
-        <td>
-          <br/>
-        </td>
-        <td>false</td>
-      </tr></tbody>
-</table>
-
-
-#### K8ssandraCluster.spec.cassandra.config.cassandraYaml.client_error_reporting_exclusions
-<sup><sup>[↩ Parent](#k8ssandraclusterspeccassandraconfigcassandrayaml)</sup></sup>
-
-
-
-Exists in trunk
-
-<table>
-    <thead>
-        <tr>
-            <th>Name</th>
-            <th>Type</th>
-            <th>Description</th>
-            <th>Required</th>
-        </tr>
-    </thead>
-    <tbody><tr>
-        <td><b>subnets</b></td>
-        <td>[]string</td>
-        <td>
-          <br/>
-        </td>
-        <td>true</td>
-      </tr></tbody>
-</table>
-
-
-#### K8ssandraCluster.spec.cassandra.config.cassandraYaml.commitlog_compression
-<sup><sup>[↩ Parent](#k8ssandraclusterspeccassandraconfigcassandrayaml)</sup></sup>
-
-
-
-Exists in 3.11, 4.0, trunk
-
-<table>
-    <thead>
-        <tr>
-            <th>Name</th>
-            <th>Type</th>
-            <th>Description</th>
-            <th>Required</th>
-        </tr>
-    </thead>
-    <tbody><tr>
-        <td><b>class_name</b></td>
-        <td>string</td>
-        <td>
-          <br/>
-        </td>
-        <td>true</td>
-      </tr><tr>
-        <td><b>parameters</b></td>
-        <td>map[string]string</td>
-        <td>
-          <br/>
-        </td>
-        <td>false</td>
-      </tr></tbody>
-</table>
-
-
-#### K8ssandraCluster.spec.cassandra.config.cassandraYaml.full_query_logging_options
-<sup><sup>[↩ Parent](#k8ssandraclusterspeccassandraconfigcassandrayaml)</sup></sup>
-
-
-
-Exists in: 4.0, trunk
-
-<table>
-    <thead>
-        <tr>
-            <th>Name</th>
-            <th>Type</th>
-            <th>Description</th>
-            <th>Required</th>
-        </tr>
-    </thead>
-    <tbody><tr>
-        <td><b>archive_command</b></td>
-        <td>string</td>
-        <td>
-          <br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>block</b></td>
-        <td>boolean</td>
-        <td>
-          <br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>log_dir</b></td>
-        <td>string</td>
-        <td>
-          <br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>max_archive_retries</b></td>
-        <td>integer</td>
-        <td>
-          <br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>max_log_size</b></td>
-        <td>integer</td>
-        <td>
-          <br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>max_queue_weight</b></td>
-        <td>integer</td>
-        <td>
-          <br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>roll_cycle</b></td>
-        <td>string</td>
-        <td>
-          <br/>
-        </td>
-        <td>false</td>
-      </tr></tbody>
-</table>
-
-
-#### K8ssandraCluster.spec.cassandra.config.cassandraYaml.hints_compression
-<sup><sup>[↩ Parent](#k8ssandraclusterspeccassandraconfigcassandrayaml)</sup></sup>
-
-
-
-Exists in 3.11, 4.0, trunk
-
-<table>
-    <thead>
-        <tr>
-            <th>Name</th>
-            <th>Type</th>
-            <th>Description</th>
-            <th>Required</th>
-        </tr>
-    </thead>
-    <tbody><tr>
-        <td><b>class_name</b></td>
-        <td>string</td>
-        <td>
-          <br/>
-        </td>
-        <td>true</td>
-      </tr><tr>
-        <td><b>parameters</b></td>
-        <td>map[string]string</td>
-        <td>
-          <br/>
-        </td>
-        <td>false</td>
-      </tr></tbody>
-</table>
-
-
-#### K8ssandraCluster.spec.cassandra.config.cassandraYaml.internode_error_reporting_exclusions
-<sup><sup>[↩ Parent](#k8ssandraclusterspeccassandraconfigcassandrayaml)</sup></sup>
-
-
-
-Exists in trunk
-
-<table>
-    <thead>
-        <tr>
-            <th>Name</th>
-            <th>Type</th>
-            <th>Description</th>
-            <th>Required</th>
-        </tr>
-    </thead>
-    <tbody><tr>
-        <td><b>subnets</b></td>
-        <td>[]string</td>
-        <td>
-          <br/>
-        </td>
-        <td>true</td>
-      </tr></tbody>
-</table>
-
-
-#### K8ssandraCluster.spec.cassandra.config.cassandraYaml.replica_filtering_protection
-<sup><sup>[↩ Parent](#k8ssandraclusterspeccassandraconfigcassandrayaml)</sup></sup>
-
-
-
-Exists in 3.11, 4.0, trunk
-
-<table>
-    <thead>
-        <tr>
-            <th>Name</th>
-            <th>Type</th>
-            <th>Description</th>
-            <th>Required</th>
-        </tr>
-    </thead>
-    <tbody><tr>
-        <td><b>cached_rows_fail_threshold</b></td>
-        <td>integer</td>
-        <td>
-          <br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>cached_rows_warn_threshold</b></td>
-        <td>integer</td>
-        <td>
-          <br/>
-        </td>
-        <td>false</td>
-      </tr></tbody>
-</table>
-
-
-#### K8ssandraCluster.spec.cassandra.config.cassandraYaml.request_scheduler_options
-<sup><sup>[↩ Parent](#k8ssandraclusterspeccassandraconfigcassandrayaml)</sup></sup>
-
-
-
-Exists in 3.11
-
-<table>
-    <thead>
-        <tr>
-            <th>Name</th>
-            <th>Type</th>
-            <th>Description</th>
-            <th>Required</th>
-        </tr>
-    </thead>
-    <tbody><tr>
-        <td><b>default_weight</b></td>
-        <td>integer</td>
-        <td>
-          <br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>throttle_limit</b></td>
-        <td>integer</td>
-        <td>
-          <br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>weights</b></td>
-        <td>map[string]integer</td>
-        <td>
-          <br/>
-        </td>
-        <td>false</td>
-      </tr></tbody>
-</table>
-
-
-#### K8ssandraCluster.spec.cassandra.config.cassandraYaml.server_encryption_options
-<sup><sup>[↩ Parent](#k8ssandraclusterspeccassandraconfigcassandrayaml)</sup></sup>
-
-
-
-Exists in 3.11, 4.0, trunk
-
-<table>
-    <thead>
-        <tr>
-            <th>Name</th>
-            <th>Type</th>
-            <th>Description</th>
-            <th>Required</th>
-        </tr>
-    </thead>
-    <tbody><tr>
-        <td><b>accepted_protocols</b></td>
-        <td>[]string</td>
-        <td>
-          <br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>algorithm</b></td>
-        <td>string</td>
-        <td>
-          <br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>cipher_suites</b></td>
-        <td>[]string</td>
-        <td>
-          <br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>enable_legacy_ssl_storage_port</b></td>
-        <td>boolean</td>
-        <td>
-          <br/>
-          <br/>
-            <i>Default</i>: false<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>internode_encryption</b></td>
-        <td>enum</td>
-        <td>
-          <br/>
-          <br/>
-            <i>Enum</i>: none, dc, rack, all<br/>
-            <i>Default</i>: none<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>optional</b></td>
-        <td>boolean</td>
-        <td>
-          <br/>
-          <br/>
-            <i>Default</i>: false<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>protocol</b></td>
-        <td>string</td>
-        <td>
-          <br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>require_client_auth</b></td>
-        <td>boolean</td>
-        <td>
-          <br/>
-          <br/>
-            <i>Default</i>: false<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>require_endpoint_verification</b></td>
-        <td>boolean</td>
-        <td>
-          <br/>
-          <br/>
-            <i>Default</i>: false<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>store_type</b></td>
-        <td>string</td>
-        <td>
-          <br/>
-        </td>
-        <td>false</td>
-      </tr></tbody>
-</table>
-
-
-#### K8ssandraCluster.spec.cassandra.config.cassandraYaml.track_warnings
-<sup><sup>[↩ Parent](#k8ssandraclusterspeccassandraconfigcassandrayaml)</sup></sup>
-
-
-
-Exists in trunk
-
-<table>
-    <thead>
-        <tr>
-            <th>Name</th>
-            <th>Type</th>
-            <th>Description</th>
-            <th>Required</th>
-        </tr>
-    </thead>
-    <tbody><tr>
-        <td><b>enabled</b></td>
-        <td>boolean</td>
-        <td>
-          <br/>
-        </td>
-        <td>true</td>
-      </tr><tr>
-        <td><b>coordinator_read_size</b></td>
-        <td>integer</td>
-        <td>
-          <br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>local_read_size</b></td>
-        <td>integer</td>
-        <td>
-          <br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>row_index_size</b></td>
-        <td>integer</td>
         <td>
           <br/>
         </td>
@@ -3651,14 +1423,14 @@ A single application container that you want to run within a pod.
         <td><b>args</b></td>
         <td>[]string</td>
         <td>
-          Arguments to the entrypoint. The docker image's CMD is used if this is not provided. Variable references $(VAR_NAME) are expanded using the container's environment. If a variable cannot be resolved, the reference in the input string will be unchanged. Double $$ are reduced to a single $, which allows for escaping the $(VAR_NAME) syntax: i.e. "$$(VAR_NAME)" will produce the string literal "$(VAR_NAME)". Escaped references will never be expanded, regardless of whether the variable exists or not. Cannot be updated. More info: https://kubernetes.io/docs/tasks/inject-data-application/define-command-argument-container/#running-a-command-in-a-shell<br/>
+          Arguments to the entrypoint. The container image's CMD is used if this is not provided. Variable references $(VAR_NAME) are expanded using the container's environment. If a variable cannot be resolved, the reference in the input string will be unchanged. Double $$ are reduced to a single $, which allows for escaping the $(VAR_NAME) syntax: i.e. "$$(VAR_NAME)" will produce the string literal "$(VAR_NAME)". Escaped references will never be expanded, regardless of whether the variable exists or not. Cannot be updated. More info: https://kubernetes.io/docs/tasks/inject-data-application/define-command-argument-container/#running-a-command-in-a-shell<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>command</b></td>
         <td>[]string</td>
         <td>
-          Entrypoint array. Not executed within a shell. The docker image's ENTRYPOINT is used if this is not provided. Variable references $(VAR_NAME) are expanded using the container's environment. If a variable cannot be resolved, the reference in the input string will be unchanged. Double $$ are reduced to a single $, which allows for escaping the $(VAR_NAME) syntax: i.e. "$$(VAR_NAME)" will produce the string literal "$(VAR_NAME)". Escaped references will never be expanded, regardless of whether the variable exists or not. Cannot be updated. More info: https://kubernetes.io/docs/tasks/inject-data-application/define-command-argument-container/#running-a-command-in-a-shell<br/>
+          Entrypoint array. Not executed within a shell. The container image's ENTRYPOINT is used if this is not provided. Variable references $(VAR_NAME) are expanded using the container's environment. If a variable cannot be resolved, the reference in the input string will be unchanged. Double $$ are reduced to a single $, which allows for escaping the $(VAR_NAME) syntax: i.e. "$$(VAR_NAME)" will produce the string literal "$(VAR_NAME)". Escaped references will never be expanded, regardless of whether the variable exists or not. Cannot be updated. More info: https://kubernetes.io/docs/tasks/inject-data-application/define-command-argument-container/#running-a-command-in-a-shell<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -3679,7 +1451,7 @@ A single application container that you want to run within a pod.
         <td><b>image</b></td>
         <td>string</td>
         <td>
-          Docker image name. More info: https://kubernetes.io/docs/concepts/containers/images This field is optional to allow higher level config management to default or override container images in workload controllers like Deployments and StatefulSets.<br/>
+          Container image name. More info: https://kubernetes.io/docs/concepts/containers/images This field is optional to allow higher level config management to default or override container images in workload controllers like Deployments and StatefulSets.<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -4605,7 +2377,7 @@ Periodic probe of container liveness. Container will be restarted if the probe f
         <td><b><a href="#k8ssandraclusterspeccassandracontainersindexlivenessprobegrpc">grpc</a></b></td>
         <td>object</td>
         <td>
-          GRPC specifies an action involving a GRPC port. This is an alpha field and requires enabling GRPCContainerProbe feature gate.<br/>
+          GRPC specifies an action involving a GRPC port. This is a beta field and requires enabling GRPCContainerProbe feature gate.<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -4703,7 +2475,7 @@ Exec specifies the action to take.
 
 
 
-GRPC specifies an action involving a GRPC port. This is an alpha field and requires enabling GRPCContainerProbe feature gate.
+GRPC specifies an action involving a GRPC port. This is a beta field and requires enabling GRPCContainerProbe feature gate.
 
 <table>
     <thead>
@@ -4955,7 +2727,7 @@ Periodic probe of container service readiness. Container will be removed from se
         <td><b><a href="#k8ssandraclusterspeccassandracontainersindexreadinessprobegrpc">grpc</a></b></td>
         <td>object</td>
         <td>
-          GRPC specifies an action involving a GRPC port. This is an alpha field and requires enabling GRPCContainerProbe feature gate.<br/>
+          GRPC specifies an action involving a GRPC port. This is a beta field and requires enabling GRPCContainerProbe feature gate.<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -5053,7 +2825,7 @@ Exec specifies the action to take.
 
 
 
-GRPC specifies an action involving a GRPC port. This is an alpha field and requires enabling GRPCContainerProbe feature gate.
+GRPC specifies an action involving a GRPC port. This is a beta field and requires enabling GRPCContainerProbe feature gate.
 
 <table>
     <thead>
@@ -5544,7 +3316,7 @@ StartupProbe indicates that the Pod has successfully initialized. If specified, 
         <td><b><a href="#k8ssandraclusterspeccassandracontainersindexstartupprobegrpc">grpc</a></b></td>
         <td>object</td>
         <td>
-          GRPC specifies an action involving a GRPC port. This is an alpha field and requires enabling GRPCContainerProbe feature gate.<br/>
+          GRPC specifies an action involving a GRPC port. This is a beta field and requires enabling GRPCContainerProbe feature gate.<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -5642,7 +3414,7 @@ Exec specifies the action to take.
 
 
 
-GRPC specifies an action involving a GRPC port. This is an alpha field and requires enabling GRPCContainerProbe feature gate.
+GRPC specifies an action involving a GRPC port. This is a beta field and requires enabling GRPCContainerProbe feature gate.
 
 <table>
     <thead>
@@ -5930,7 +3702,7 @@ VolumeMount describes a mounting of a Volume within a container.
         <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexconfig">config</a></b></td>
         <td>object</td>
         <td>
-          CassandraConfig is configuration settings that are applied to cassandra.yaml and the various jvm*.options files.<br/>
+          CassandraConfig contains configuration settings that are applied to cassandra.yaml, dse.yaml and the various jvm*.options files.<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -5938,6 +3710,13 @@ VolumeMount describes a mounting of a Volume within a container.
         <td>[]object</td>
         <td>
           Containers defines containers to be deployed in each Cassandra pod. K8ssandra-operator and cass-operator will create their own containers, which can be referenced here to override specific settings, such as mounts or resources request/limits for example. Example: containers: - name: server-system-logger - name: custom-container image: busybox - name: cassandra<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexdseworkloads">dseWorkloads</a></b></td>
+        <td>object</td>
+        <td>
+          <br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -6016,7 +3795,7 @@ VolumeMount describes a mounting of a Volume within a container.
         <td><b>serverVersion</b></td>
         <td>string</td>
         <td>
-          ServerVersion is the Cassandra version.<br/>
+          ServerVersion is the Cassandra or DSE version. The following versions are supported: - Cassandra: 3.11.X and 4.0.X - DSE: 6.8.X<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -6246,7 +4025,7 @@ CDC defines the desired state for CDC integrations. It can be used to feed mutat
 
 
 
-CassandraConfig is configuration settings that are applied to cassandra.yaml and the various jvm*.options files.
+CassandraConfig contains configuration settings that are applied to cassandra.yaml, dse.yaml and the various jvm*.options files.
 
 <table>
     <thead>
@@ -6258,2373 +4037,22 @@ CassandraConfig is configuration settings that are applied to cassandra.yaml and
         </tr>
     </thead>
     <tbody><tr>
-        <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexconfigcassandrayaml">cassandraYaml</a></b></td>
+        <td><b>cassandraYaml</b></td>
         <td>object</td>
         <td>
-          CassandraYaml defines the contents of the cassandra.yaml file. For more info see: https://cassandra.apache.org/doc/latest/cassandra/configuration/cass_yaml_file.html<br/>
+          <br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>dseYaml</b></td>
+        <td>object</td>
+        <td>
+          <br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexconfigjvmoptions">jvmOptions</a></b></td>
         <td>object</td>
-        <td>
-          <br/>
-        </td>
-        <td>false</td>
-      </tr></tbody>
-</table>
-
-
-#### K8ssandraCluster.spec.cassandra.datacenters[index].config.cassandraYaml
-<sup><sup>[↩ Parent](#k8ssandraclusterspeccassandradatacentersindexconfig)</sup></sup>
-
-
-
-CassandraYaml defines the contents of the cassandra.yaml file. For more info see: https://cassandra.apache.org/doc/latest/cassandra/configuration/cass_yaml_file.html
-
-<table>
-    <thead>
-        <tr>
-            <th>Name</th>
-            <th>Type</th>
-            <th>Description</th>
-            <th>Required</th>
-        </tr>
-    </thead>
-    <tbody><tr>
-        <td><b>allocate_tokens_for_keyspace</b></td>
-        <td>string</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>allocate_tokens_for_local_replication_factor</b></td>
-        <td>integer</td>
-        <td>
-          Exists in: 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexconfigcassandrayamlaudit_logging_options">audit_logging_options</a></b></td>
-        <td>object</td>
-        <td>
-          Exists in: 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>auth_read_consistency_level</b></td>
-        <td>enum</td>
-        <td>
-          Exists in trunk<br/>
-          <br/>
-            <i>Enum</i>: ANY, ONE, TWO, THREE, QUORUM, ALL, LOCAL_QUORUM, EACH_QUORUM, SERIAL, LOCAL_SERIAL, LOCAL_ONE, NODE_LOCAL<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>auth_write_consistency_level</b></td>
-        <td>enum</td>
-        <td>
-          Exists in trunk<br/>
-          <br/>
-            <i>Enum</i>: ANY, ONE, TWO, THREE, QUORUM, ALL, LOCAL_QUORUM, EACH_QUORUM, SERIAL, LOCAL_SERIAL, LOCAL_ONE, NODE_LOCAL<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>authenticator</b></td>
-        <td>string</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>authorizer</b></td>
-        <td>string</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>auto_hints_cleanup_enabled</b></td>
-        <td>boolean</td>
-        <td>
-          Exists in trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>auto_optimise_full_repair_streams</b></td>
-        <td>boolean</td>
-        <td>
-          Exists in: 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>auto_optimise_inc_repair_streams</b></td>
-        <td>boolean</td>
-        <td>
-          Exists in: 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>auto_optimise_preview_repair_streams</b></td>
-        <td>boolean</td>
-        <td>
-          Exists in: 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>auto_snapshot</b></td>
-        <td>boolean</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>autocompaction_on_startup_enabled</b></td>
-        <td>boolean</td>
-        <td>
-          Exists in: 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>automatic_sstable_upgrade</b></td>
-        <td>boolean</td>
-        <td>
-          Exists in: 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>available_processors</b></td>
-        <td>integer</td>
-        <td>
-          Exists in trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>back_pressure_enabled</b></td>
-        <td>boolean</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexconfigcassandrayamlback_pressure_strategy">back_pressure_strategy</a></b></td>
-        <td>object</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>batch_size_fail_threshold_in_kb</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>batch_size_warn_threshold_in_kb</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>batchlog_replay_throttle_in_kb</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>block_for_peers_in_remote_dcs</b></td>
-        <td>boolean</td>
-        <td>
-          Exists in: 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>block_for_peers_timeout_in_secs</b></td>
-        <td>integer</td>
-        <td>
-          Exists in: 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>buffer_pool_use_heap_if_exhausted</b></td>
-        <td>boolean</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>cas_contention_timeout_in_ms</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>cdc_enabled</b></td>
-        <td>boolean</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>cdc_free_space_check_interval_ms</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>cdc_raw_directory</b></td>
-        <td>string</td>
-        <td>
-          Exists in 3.11, 4.0, trunk TODO mountable directory<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>cdc_total_space_in_mb</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>check_for_duplicate_rows_during_compaction</b></td>
-        <td>boolean</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>check_for_duplicate_rows_during_reads</b></td>
-        <td>boolean</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexconfigcassandrayamlclient_encryption_options">client_encryption_options</a></b></td>
-        <td>object</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexconfigcassandrayamlclient_error_reporting_exclusions">client_error_reporting_exclusions</a></b></td>
-        <td>object</td>
-        <td>
-          Exists in trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>column_index_cache_size_in_kb</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>column_index_size_in_kb</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexconfigcassandrayamlcommitlog_compression">commitlog_compression</a></b></td>
-        <td>object</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>commitlog_max_compression_buffers_in_pool</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>commitlog_periodic_queue_size</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>commitlog_segment_size_in_mb</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>commitlog_sync</b></td>
-        <td>enum</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-          <br/>
-            <i>Enum</i>: periodic, batch, group<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>commitlog_sync_batch_window_in_ms</b></td>
-        <td>string</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>commitlog_sync_group_window_in_ms</b></td>
-        <td>integer</td>
-        <td>
-          Exists in: 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>commitlog_sync_period_in_ms</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>commitlog_total_space_in_mb</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>compaction_large_partition_warning_threshold_mb</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>compaction_throughput_mb_per_sec</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>compaction_tombstone_warning_threshold</b></td>
-        <td>integer</td>
-        <td>
-          Exists in trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>concurrent_compactors</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>concurrent_counter_writes</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>concurrent_materialized_view_builders</b></td>
-        <td>integer</td>
-        <td>
-          Exists in: 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>concurrent_materialized_view_writes</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>concurrent_reads</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>concurrent_replicates</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>concurrent_validations</b></td>
-        <td>integer</td>
-        <td>
-          Exists in: 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>concurrent_writes</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>consecutive_message_errors_threshold</b></td>
-        <td>integer</td>
-        <td>
-          Exists in: 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>corrupted_tombstone_strategy</b></td>
-        <td>enum</td>
-        <td>
-          Exists in: 4.0, trunk<br/>
-          <br/>
-            <i>Enum</i>: disabled, warn, exception<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>counter_cache_keys_to_save</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>counter_cache_save_period</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>counter_cache_size_in_mb</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>counter_write_request_timeout_in_ms</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>credentials_cache_max_entries</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>credentials_update_interval_in_ms</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>credentials_validity_in_ms</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>cross_node_timeout</b></td>
-        <td>boolean</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>default_keyspace_rf</b></td>
-        <td>integer</td>
-        <td>
-          Exists in trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>denylist_consistency_level</b></td>
-        <td>enum</td>
-        <td>
-          Exists in trunk<br/>
-          <br/>
-            <i>Enum</i>: ANY, ONE, TWO, THREE, QUORUM, ALL, LOCAL_QUORUM, EACH_QUORUM, SERIAL, LOCAL_SERIAL, LOCAL_ONE, NODE_LOCAL<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>denylist_initial_load_retry_seconds</b></td>
-        <td>integer</td>
-        <td>
-          Exists in trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>denylist_max_keys_per_table</b></td>
-        <td>integer</td>
-        <td>
-          Exists in trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>denylist_max_keys_total</b></td>
-        <td>integer</td>
-        <td>
-          Exists in trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>denylist_refresh_seconds</b></td>
-        <td>integer</td>
-        <td>
-          Exists in trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>diagnostic_events_enabled</b></td>
-        <td>boolean</td>
-        <td>
-          Exists in: 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>disk_access_mode</b></td>
-        <td>enum</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-          <br/>
-            <i>Enum</i>: auto, mmap, mmap_index_only, standard<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>disk_optimization_estimate_percentile</b></td>
-        <td>string</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>disk_optimization_page_cross_chance</b></td>
-        <td>string</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>disk_optimization_strategy</b></td>
-        <td>enum</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-          <br/>
-            <i>Enum</i>: ssd, spinning<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>dynamic_snitch</b></td>
-        <td>boolean</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>dynamic_snitch_badness_threshold</b></td>
-        <td>string</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>dynamic_snitch_reset_interval_in_ms</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>dynamic_snitch_update_interval_in_ms</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>enable_denylist_range_reads</b></td>
-        <td>boolean</td>
-        <td>
-          Exists in trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>enable_denylist_reads</b></td>
-        <td>boolean</td>
-        <td>
-          Exists in trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>enable_denylist_writes</b></td>
-        <td>boolean</td>
-        <td>
-          Exists in trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>enable_drop_compact_storage</b></td>
-        <td>boolean</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>enable_materialized_views</b></td>
-        <td>boolean</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>enable_partition_denylist</b></td>
-        <td>boolean</td>
-        <td>
-          Exists in trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>enable_sasi_indexes</b></td>
-        <td>boolean</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>enable_scripted_user_defined_functions</b></td>
-        <td>boolean</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>enable_transient_replication</b></td>
-        <td>boolean</td>
-        <td>
-          Exists in: 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>enable_user_defined_functions</b></td>
-        <td>boolean</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>enable_user_defined_functions_threads</b></td>
-        <td>boolean</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>endpoint_snitch</b></td>
-        <td>string</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>failure_detector</b></td>
-        <td>string</td>
-        <td>
-          Exists in trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>file_cache_enabled</b></td>
-        <td>boolean</td>
-        <td>
-          Exists in: 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>file_cache_round_up</b></td>
-        <td>boolean</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>file_cache_size_in_mb</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>flush_compression</b></td>
-        <td>enum</td>
-        <td>
-          Exists in: 4.0, trunk<br/>
-          <br/>
-            <i>Enum</i>: none, fast, table<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexconfigcassandrayamlfull_query_logging_options">full_query_logging_options</a></b></td>
-        <td>object</td>
-        <td>
-          Exists in: 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>gc_log_threshold_in_ms</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>gc_warn_threshold_in_ms</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>hint_window_persistent_enabled</b></td>
-        <td>boolean</td>
-        <td>
-          Exists in trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>hinted_handoff_disabled_datacenters</b></td>
-        <td>[]string</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>hinted_handoff_enabled</b></td>
-        <td>boolean</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>hinted_handoff_throttle_in_kb</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexconfigcassandrayamlhints_compression">hints_compression</a></b></td>
-        <td>object</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>hints_flush_period_in_ms</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>ideal_consistency_level</b></td>
-        <td>enum</td>
-        <td>
-          Exists in: 4.0, trunk<br/>
-          <br/>
-            <i>Enum</i>: ANY, ONE, TWO, THREE, QUORUM, ALL, LOCAL_QUORUM, EACH_QUORUM, SERIAL, LOCAL_SERIAL, LOCAL_ONE, NODE_LOCAL<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>index_interval</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>index_summary_capacity_in_mb</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>index_summary_resize_interval_in_minutes</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>initial_range_tombstone_list_allocation_size</b></td>
-        <td>integer</td>
-        <td>
-          Exists in: 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>inter_dc_stream_throughput_outbound_megabits_per_sec</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>inter_dc_tcp_nodelay</b></td>
-        <td>boolean</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>internode_application_receive_queue_capacity_in_bytes</b></td>
-        <td>integer</td>
-        <td>
-          Exists in: 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>internode_application_receive_queue_reserve_endpoint_capacity_in_bytes</b></td>
-        <td>integer</td>
-        <td>
-          Exists in: 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>internode_application_receive_queue_reserve_global_capacity_in_bytes</b></td>
-        <td>integer</td>
-        <td>
-          Exists in: 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>internode_application_send_queue_capacity_in_bytes</b></td>
-        <td>integer</td>
-        <td>
-          Exists in: 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>internode_application_send_queue_reserve_endpoint_capacity_in_bytes</b></td>
-        <td>integer</td>
-        <td>
-          Exists in: 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>internode_application_send_queue_reserve_global_capacity_in_bytes</b></td>
-        <td>integer</td>
-        <td>
-          Exists in: 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>internode_authenticator</b></td>
-        <td>string</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>internode_compression</b></td>
-        <td>enum</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-          <br/>
-            <i>Enum</i>: all, none, dc<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexconfigcassandrayamlinternode_error_reporting_exclusions">internode_error_reporting_exclusions</a></b></td>
-        <td>object</td>
-        <td>
-          Exists in trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>internode_max_message_size_in_bytes</b></td>
-        <td>integer</td>
-        <td>
-          Exists in: 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>internode_recv_buff_size_in_bytes</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>internode_send_buff_size_in_bytes</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>internode_socket_receive_buffer_size_in_bytes</b></td>
-        <td>integer</td>
-        <td>
-          Exists in: 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>internode_socket_send_buffer_size_in_bytes</b></td>
-        <td>integer</td>
-        <td>
-          Exists in: 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>internode_streaming_tcp_user_timeout_in_ms</b></td>
-        <td>integer</td>
-        <td>
-          Exists in: 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>internode_tcp_connect_timeout_in_ms</b></td>
-        <td>integer</td>
-        <td>
-          Exists in: 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>internode_tcp_user_timeout_in_ms</b></td>
-        <td>integer</td>
-        <td>
-          Exists in: 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>key_cache_keys_to_save</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>key_cache_migrate_during_compaction</b></td>
-        <td>boolean</td>
-        <td>
-          Exists in: 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>key_cache_save_period</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>key_cache_size_in_mb</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>keyspace_count_warn_threshold</b></td>
-        <td>integer</td>
-        <td>
-          Exists in: 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>max_concurrent_automatic_sstable_upgrades</b></td>
-        <td>integer</td>
-        <td>
-          Exists in: 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>max_hint_window_in_ms</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>max_hints_delivery_threads</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>max_hints_file_size_in_mb</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>max_mutation_size_in_kb</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>max_streaming_retries</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>max_value_size_in_mb</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>memtable_allocation_type</b></td>
-        <td>enum</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-          <br/>
-            <i>Enum</i>: unslabbed_heap_buffers, unslabbed_heap_buffers_logged, heap_buffers, offheap_buffers, offheap_objects<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>memtable_cleanup_threshold</b></td>
-        <td>string</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>memtable_flush_writers</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>memtable_heap_space_in_mb</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>memtable_offheap_space_in_mb</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>min_free_space_per_drive_in_mb</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>minimum_keyspace_rf</b></td>
-        <td>integer</td>
-        <td>
-          Exists in trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>native_transport_allow_older_protocols</b></td>
-        <td>boolean</td>
-        <td>
-          Exists in: 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>native_transport_flush_in_batches_legacy</b></td>
-        <td>boolean</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>native_transport_idle_timeout_in_ms</b></td>
-        <td>integer</td>
-        <td>
-          Exists in: 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>native_transport_max_concurrent_connections</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>native_transport_max_concurrent_connections_per_ip</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>native_transport_max_concurrent_requests_in_bytes</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>native_transport_max_concurrent_requests_in_bytes_per_ip</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>native_transport_max_frame_size_in_mb</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>native_transport_max_negotiable_protocol_version</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>native_transport_max_requests_per_second</b></td>
-        <td>integer</td>
-        <td>
-          Exists in trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>native_transport_max_threads</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>native_transport_rate_limiting_enabled</b></td>
-        <td>boolean</td>
-        <td>
-          Exists in trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>native_transport_receive_queue_capacity_in_bytes</b></td>
-        <td>integer</td>
-        <td>
-          Exists in: 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>network_authorizer</b></td>
-        <td>string</td>
-        <td>
-          Exists in: 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>networking_cache_size_in_mb</b></td>
-        <td>integer</td>
-        <td>
-          Exists in: 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>num_tokens</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>otc_backlog_expiration_interval_ms</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>otc_coalescing_enough_coalesced_messages</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>otc_coalescing_strategy</b></td>
-        <td>string</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>otc_coalescing_window_us</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>paxos_cache_size_in_mb</b></td>
-        <td>integer</td>
-        <td>
-          Exists in trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>periodic_commitlog_sync_lag_block_in_ms</b></td>
-        <td>integer</td>
-        <td>
-          Exists in: 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>permissions_cache_max_entries</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>permissions_update_interval_in_ms</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>permissions_validity_in_ms</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>phi_convict_threshold</b></td>
-        <td>string</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>prepared_statements_cache_size_mb</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>range_request_timeout_in_ms</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>range_tombstone_list_growth_factor</b></td>
-        <td>string</td>
-        <td>
-          Exists in: 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>read_request_timeout_in_ms</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>reject_repair_compaction_threshold</b></td>
-        <td>integer</td>
-        <td>
-          Exists in: 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>repair_command_pool_full_strategy</b></td>
-        <td>enum</td>
-        <td>
-          Exists in: 4.0, trunk<br/>
-          <br/>
-            <i>Enum</i>: queue, reject<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>repair_command_pool_size</b></td>
-        <td>integer</td>
-        <td>
-          Exists in: 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>repair_session_max_tree_depth</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>repair_session_space_in_mb</b></td>
-        <td>integer</td>
-        <td>
-          Exists in: 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>repaired_data_tracking_for_partition_reads_enabled</b></td>
-        <td>boolean</td>
-        <td>
-          Exists in: 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>repaired_data_tracking_for_range_reads_enabled</b></td>
-        <td>boolean</td>
-        <td>
-          Exists in: 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexconfigcassandrayamlreplica_filtering_protection">replica_filtering_protection</a></b></td>
-        <td>object</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>report_unconfirmed_repaired_data_mismatches</b></td>
-        <td>boolean</td>
-        <td>
-          Exists in: 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>request_scheduler</b></td>
-        <td>string</td>
-        <td>
-          Exists in 3.11<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>request_scheduler_id</b></td>
-        <td>enum</td>
-        <td>
-          Exists in 3.11<br/>
-          <br/>
-            <i>Enum</i>: keyspace<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexconfigcassandrayamlrequest_scheduler_options">request_scheduler_options</a></b></td>
-        <td>object</td>
-        <td>
-          Exists in 3.11<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>request_timeout_in_ms</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>role_manager</b></td>
-        <td>string</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>roles_cache_max_entries</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>roles_update_interval_in_ms</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>roles_validity_in_ms</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>row_cache_class_name</b></td>
-        <td>string</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>row_cache_keys_to_save</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>row_cache_save_period</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>row_cache_size_in_mb</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexconfigcassandrayamlserver_encryption_options">server_encryption_options</a></b></td>
-        <td>object</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>slow_query_log_timeout_in_ms</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>snapshot_before_compaction</b></td>
-        <td>boolean</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>snapshot_links_per_second</b></td>
-        <td>integer</td>
-        <td>
-          Exists in: 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>snapshot_on_duplicate_row_detection</b></td>
-        <td>boolean</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>snapshot_on_repaired_data_mismatch</b></td>
-        <td>boolean</td>
-        <td>
-          Exists in: 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>sstable_preemptive_open_interval_in_mb</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>stream_entire_sstables</b></td>
-        <td>boolean</td>
-        <td>
-          Exists in: 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>stream_throughput_outbound_megabits_per_sec</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>streaming_connections_per_host</b></td>
-        <td>integer</td>
-        <td>
-          Exists in: 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>streaming_keep_alive_period_in_secs</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>streaming_socket_timeout_in_ms</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>table_count_warn_threshold</b></td>
-        <td>integer</td>
-        <td>
-          Exists in: 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>thrift_framed_transport_size_in_mb</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>thrift_max_message_length_in_mb</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>thrift_prepared_statements_cache_size_mb</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>tombstone_failure_threshold</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>tombstone_warn_threshold</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>tracetype_query_ttl</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>tracetype_repair_ttl</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexconfigcassandrayamltrack_warnings">track_warnings</a></b></td>
-        <td>object</td>
-        <td>
-          Exists in trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>traverse_auth_from_root</b></td>
-        <td>boolean</td>
-        <td>
-          Exists in trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>trickle_fsync</b></td>
-        <td>boolean</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>trickle_fsync_interval_in_kb</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>truncate_request_timeout_in_ms</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>unlogged_batch_across_partitions_warn_threshold</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>use_deterministic_table_id</b></td>
-        <td>boolean</td>
-        <td>
-          Exists in trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>use_offheap_merkle_trees</b></td>
-        <td>boolean</td>
-        <td>
-          Exists in: 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>user_defined_function_fail_timeout</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>user_defined_function_warn_timeout</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>user_function_timeout_policy</b></td>
-        <td>enum</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-          <br/>
-            <i>Enum</i>: ignore, die, die_immediate<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>validation_preview_purge_head_start_in_sec</b></td>
-        <td>integer</td>
-        <td>
-          Exists in: 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>windows_timer_interval</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>write_request_timeout_in_ms</b></td>
-        <td>integer</td>
-        <td>
-          Exists in 3.11, 4.0, trunk<br/>
-        </td>
-        <td>false</td>
-      </tr></tbody>
-</table>
-
-
-#### K8ssandraCluster.spec.cassandra.datacenters[index].config.cassandraYaml.audit_logging_options
-<sup><sup>[↩ Parent](#k8ssandraclusterspeccassandradatacentersindexconfigcassandrayaml)</sup></sup>
-
-
-
-Exists in: 4.0, trunk
-
-<table>
-    <thead>
-        <tr>
-            <th>Name</th>
-            <th>Type</th>
-            <th>Description</th>
-            <th>Required</th>
-        </tr>
-    </thead>
-    <tbody><tr>
-        <td><b>enabled</b></td>
-        <td>boolean</td>
-        <td>
-          <br/>
-        </td>
-        <td>true</td>
-      </tr><tr>
-        <td><b>archive_command</b></td>
-        <td>string</td>
-        <td>
-          <br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>block</b></td>
-        <td>boolean</td>
-        <td>
-          <br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>excluded_categories</b></td>
-        <td>string</td>
-        <td>
-          <br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>excluded_keyspaces</b></td>
-        <td>string</td>
-        <td>
-          <br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>excluded_users</b></td>
-        <td>string</td>
-        <td>
-          <br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>included_categories</b></td>
-        <td>string</td>
-        <td>
-          <br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>included_keyspaces</b></td>
-        <td>string</td>
-        <td>
-          <br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>included_users</b></td>
-        <td>string</td>
-        <td>
-          <br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexconfigcassandrayamlaudit_logging_optionslogger">logger</a></b></td>
-        <td>object</td>
-        <td>
-          <br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>max_archive_retries</b></td>
-        <td>integer</td>
-        <td>
-          <br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>max_log_size</b></td>
-        <td>integer</td>
-        <td>
-          <br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>max_queue_weight</b></td>
-        <td>integer</td>
-        <td>
-          <br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>roll_cycle</b></td>
-        <td>string</td>
-        <td>
-          <br/>
-        </td>
-        <td>false</td>
-      </tr></tbody>
-</table>
-
-
-#### K8ssandraCluster.spec.cassandra.datacenters[index].config.cassandraYaml.audit_logging_options.logger
-<sup><sup>[↩ Parent](#k8ssandraclusterspeccassandradatacentersindexconfigcassandrayamlaudit_logging_options)</sup></sup>
-
-
-
-
-
-<table>
-    <thead>
-        <tr>
-            <th>Name</th>
-            <th>Type</th>
-            <th>Description</th>
-            <th>Required</th>
-        </tr>
-    </thead>
-    <tbody><tr>
-        <td><b>class_name</b></td>
-        <td>string</td>
-        <td>
-          <br/>
-        </td>
-        <td>true</td>
-      </tr><tr>
-        <td><b>parameters</b></td>
-        <td>map[string]string</td>
-        <td>
-          <br/>
-        </td>
-        <td>false</td>
-      </tr></tbody>
-</table>
-
-
-#### K8ssandraCluster.spec.cassandra.datacenters[index].config.cassandraYaml.back_pressure_strategy
-<sup><sup>[↩ Parent](#k8ssandraclusterspeccassandradatacentersindexconfigcassandrayaml)</sup></sup>
-
-
-
-Exists in 3.11, 4.0, trunk
-
-<table>
-    <thead>
-        <tr>
-            <th>Name</th>
-            <th>Type</th>
-            <th>Description</th>
-            <th>Required</th>
-        </tr>
-    </thead>
-    <tbody><tr>
-        <td><b>class_name</b></td>
-        <td>string</td>
-        <td>
-          <br/>
-        </td>
-        <td>true</td>
-      </tr><tr>
-        <td><b>parameters</b></td>
-        <td>map[string]string</td>
-        <td>
-          <br/>
-        </td>
-        <td>false</td>
-      </tr></tbody>
-</table>
-
-
-#### K8ssandraCluster.spec.cassandra.datacenters[index].config.cassandraYaml.client_encryption_options
-<sup><sup>[↩ Parent](#k8ssandraclusterspeccassandradatacentersindexconfigcassandrayaml)</sup></sup>
-
-
-
-Exists in 3.11, 4.0, trunk
-
-<table>
-    <thead>
-        <tr>
-            <th>Name</th>
-            <th>Type</th>
-            <th>Description</th>
-            <th>Required</th>
-        </tr>
-    </thead>
-    <tbody><tr>
-        <td><b>enabled</b></td>
-        <td>boolean</td>
-        <td>
-          <br/>
-        </td>
-        <td>true</td>
-      </tr><tr>
-        <td><b>accepted_protocols</b></td>
-        <td>[]string</td>
-        <td>
-          <br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>algorithm</b></td>
-        <td>string</td>
-        <td>
-          <br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>cipher_suites</b></td>
-        <td>[]string</td>
-        <td>
-          <br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>optional</b></td>
-        <td>boolean</td>
-        <td>
-          <br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>protocol</b></td>
-        <td>string</td>
-        <td>
-          <br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>require_client_auth</b></td>
-        <td>boolean</td>
-        <td>
-          <br/>
-          <br/>
-            <i>Default</i>: false<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>store_type</b></td>
-        <td>string</td>
-        <td>
-          <br/>
-        </td>
-        <td>false</td>
-      </tr></tbody>
-</table>
-
-
-#### K8ssandraCluster.spec.cassandra.datacenters[index].config.cassandraYaml.client_error_reporting_exclusions
-<sup><sup>[↩ Parent](#k8ssandraclusterspeccassandradatacentersindexconfigcassandrayaml)</sup></sup>
-
-
-
-Exists in trunk
-
-<table>
-    <thead>
-        <tr>
-            <th>Name</th>
-            <th>Type</th>
-            <th>Description</th>
-            <th>Required</th>
-        </tr>
-    </thead>
-    <tbody><tr>
-        <td><b>subnets</b></td>
-        <td>[]string</td>
-        <td>
-          <br/>
-        </td>
-        <td>true</td>
-      </tr></tbody>
-</table>
-
-
-#### K8ssandraCluster.spec.cassandra.datacenters[index].config.cassandraYaml.commitlog_compression
-<sup><sup>[↩ Parent](#k8ssandraclusterspeccassandradatacentersindexconfigcassandrayaml)</sup></sup>
-
-
-
-Exists in 3.11, 4.0, trunk
-
-<table>
-    <thead>
-        <tr>
-            <th>Name</th>
-            <th>Type</th>
-            <th>Description</th>
-            <th>Required</th>
-        </tr>
-    </thead>
-    <tbody><tr>
-        <td><b>class_name</b></td>
-        <td>string</td>
-        <td>
-          <br/>
-        </td>
-        <td>true</td>
-      </tr><tr>
-        <td><b>parameters</b></td>
-        <td>map[string]string</td>
-        <td>
-          <br/>
-        </td>
-        <td>false</td>
-      </tr></tbody>
-</table>
-
-
-#### K8ssandraCluster.spec.cassandra.datacenters[index].config.cassandraYaml.full_query_logging_options
-<sup><sup>[↩ Parent](#k8ssandraclusterspeccassandradatacentersindexconfigcassandrayaml)</sup></sup>
-
-
-
-Exists in: 4.0, trunk
-
-<table>
-    <thead>
-        <tr>
-            <th>Name</th>
-            <th>Type</th>
-            <th>Description</th>
-            <th>Required</th>
-        </tr>
-    </thead>
-    <tbody><tr>
-        <td><b>archive_command</b></td>
-        <td>string</td>
-        <td>
-          <br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>block</b></td>
-        <td>boolean</td>
-        <td>
-          <br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>log_dir</b></td>
-        <td>string</td>
-        <td>
-          <br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>max_archive_retries</b></td>
-        <td>integer</td>
-        <td>
-          <br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>max_log_size</b></td>
-        <td>integer</td>
-        <td>
-          <br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>max_queue_weight</b></td>
-        <td>integer</td>
-        <td>
-          <br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>roll_cycle</b></td>
-        <td>string</td>
-        <td>
-          <br/>
-        </td>
-        <td>false</td>
-      </tr></tbody>
-</table>
-
-
-#### K8ssandraCluster.spec.cassandra.datacenters[index].config.cassandraYaml.hints_compression
-<sup><sup>[↩ Parent](#k8ssandraclusterspeccassandradatacentersindexconfigcassandrayaml)</sup></sup>
-
-
-
-Exists in 3.11, 4.0, trunk
-
-<table>
-    <thead>
-        <tr>
-            <th>Name</th>
-            <th>Type</th>
-            <th>Description</th>
-            <th>Required</th>
-        </tr>
-    </thead>
-    <tbody><tr>
-        <td><b>class_name</b></td>
-        <td>string</td>
-        <td>
-          <br/>
-        </td>
-        <td>true</td>
-      </tr><tr>
-        <td><b>parameters</b></td>
-        <td>map[string]string</td>
-        <td>
-          <br/>
-        </td>
-        <td>false</td>
-      </tr></tbody>
-</table>
-
-
-#### K8ssandraCluster.spec.cassandra.datacenters[index].config.cassandraYaml.internode_error_reporting_exclusions
-<sup><sup>[↩ Parent](#k8ssandraclusterspeccassandradatacentersindexconfigcassandrayaml)</sup></sup>
-
-
-
-Exists in trunk
-
-<table>
-    <thead>
-        <tr>
-            <th>Name</th>
-            <th>Type</th>
-            <th>Description</th>
-            <th>Required</th>
-        </tr>
-    </thead>
-    <tbody><tr>
-        <td><b>subnets</b></td>
-        <td>[]string</td>
-        <td>
-          <br/>
-        </td>
-        <td>true</td>
-      </tr></tbody>
-</table>
-
-
-#### K8ssandraCluster.spec.cassandra.datacenters[index].config.cassandraYaml.replica_filtering_protection
-<sup><sup>[↩ Parent](#k8ssandraclusterspeccassandradatacentersindexconfigcassandrayaml)</sup></sup>
-
-
-
-Exists in 3.11, 4.0, trunk
-
-<table>
-    <thead>
-        <tr>
-            <th>Name</th>
-            <th>Type</th>
-            <th>Description</th>
-            <th>Required</th>
-        </tr>
-    </thead>
-    <tbody><tr>
-        <td><b>cached_rows_fail_threshold</b></td>
-        <td>integer</td>
-        <td>
-          <br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>cached_rows_warn_threshold</b></td>
-        <td>integer</td>
-        <td>
-          <br/>
-        </td>
-        <td>false</td>
-      </tr></tbody>
-</table>
-
-
-#### K8ssandraCluster.spec.cassandra.datacenters[index].config.cassandraYaml.request_scheduler_options
-<sup><sup>[↩ Parent](#k8ssandraclusterspeccassandradatacentersindexconfigcassandrayaml)</sup></sup>
-
-
-
-Exists in 3.11
-
-<table>
-    <thead>
-        <tr>
-            <th>Name</th>
-            <th>Type</th>
-            <th>Description</th>
-            <th>Required</th>
-        </tr>
-    </thead>
-    <tbody><tr>
-        <td><b>default_weight</b></td>
-        <td>integer</td>
-        <td>
-          <br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>throttle_limit</b></td>
-        <td>integer</td>
-        <td>
-          <br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>weights</b></td>
-        <td>map[string]integer</td>
-        <td>
-          <br/>
-        </td>
-        <td>false</td>
-      </tr></tbody>
-</table>
-
-
-#### K8ssandraCluster.spec.cassandra.datacenters[index].config.cassandraYaml.server_encryption_options
-<sup><sup>[↩ Parent](#k8ssandraclusterspeccassandradatacentersindexconfigcassandrayaml)</sup></sup>
-
-
-
-Exists in 3.11, 4.0, trunk
-
-<table>
-    <thead>
-        <tr>
-            <th>Name</th>
-            <th>Type</th>
-            <th>Description</th>
-            <th>Required</th>
-        </tr>
-    </thead>
-    <tbody><tr>
-        <td><b>accepted_protocols</b></td>
-        <td>[]string</td>
-        <td>
-          <br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>algorithm</b></td>
-        <td>string</td>
-        <td>
-          <br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>cipher_suites</b></td>
-        <td>[]string</td>
-        <td>
-          <br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>enable_legacy_ssl_storage_port</b></td>
-        <td>boolean</td>
-        <td>
-          <br/>
-          <br/>
-            <i>Default</i>: false<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>internode_encryption</b></td>
-        <td>enum</td>
-        <td>
-          <br/>
-          <br/>
-            <i>Enum</i>: none, dc, rack, all<br/>
-            <i>Default</i>: none<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>optional</b></td>
-        <td>boolean</td>
-        <td>
-          <br/>
-          <br/>
-            <i>Default</i>: false<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>protocol</b></td>
-        <td>string</td>
-        <td>
-          <br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>require_client_auth</b></td>
-        <td>boolean</td>
-        <td>
-          <br/>
-          <br/>
-            <i>Default</i>: false<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>require_endpoint_verification</b></td>
-        <td>boolean</td>
-        <td>
-          <br/>
-          <br/>
-            <i>Default</i>: false<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>store_type</b></td>
-        <td>string</td>
-        <td>
-          <br/>
-        </td>
-        <td>false</td>
-      </tr></tbody>
-</table>
-
-
-#### K8ssandraCluster.spec.cassandra.datacenters[index].config.cassandraYaml.track_warnings
-<sup><sup>[↩ Parent](#k8ssandraclusterspeccassandradatacentersindexconfigcassandrayaml)</sup></sup>
-
-
-
-Exists in trunk
-
-<table>
-    <thead>
-        <tr>
-            <th>Name</th>
-            <th>Type</th>
-            <th>Description</th>
-            <th>Required</th>
-        </tr>
-    </thead>
-    <tbody><tr>
-        <td><b>enabled</b></td>
-        <td>boolean</td>
-        <td>
-          <br/>
-        </td>
-        <td>true</td>
-      </tr><tr>
-        <td><b>coordinator_read_size</b></td>
-        <td>integer</td>
-        <td>
-          <br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>local_read_size</b></td>
-        <td>integer</td>
-        <td>
-          <br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>row_index_size</b></td>
-        <td>integer</td>
         <td>
           <br/>
         </td>
@@ -9196,14 +4624,14 @@ A single application container that you want to run within a pod.
         <td><b>args</b></td>
         <td>[]string</td>
         <td>
-          Arguments to the entrypoint. The docker image's CMD is used if this is not provided. Variable references $(VAR_NAME) are expanded using the container's environment. If a variable cannot be resolved, the reference in the input string will be unchanged. Double $$ are reduced to a single $, which allows for escaping the $(VAR_NAME) syntax: i.e. "$$(VAR_NAME)" will produce the string literal "$(VAR_NAME)". Escaped references will never be expanded, regardless of whether the variable exists or not. Cannot be updated. More info: https://kubernetes.io/docs/tasks/inject-data-application/define-command-argument-container/#running-a-command-in-a-shell<br/>
+          Arguments to the entrypoint. The container image's CMD is used if this is not provided. Variable references $(VAR_NAME) are expanded using the container's environment. If a variable cannot be resolved, the reference in the input string will be unchanged. Double $$ are reduced to a single $, which allows for escaping the $(VAR_NAME) syntax: i.e. "$$(VAR_NAME)" will produce the string literal "$(VAR_NAME)". Escaped references will never be expanded, regardless of whether the variable exists or not. Cannot be updated. More info: https://kubernetes.io/docs/tasks/inject-data-application/define-command-argument-container/#running-a-command-in-a-shell<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>command</b></td>
         <td>[]string</td>
         <td>
-          Entrypoint array. Not executed within a shell. The docker image's ENTRYPOINT is used if this is not provided. Variable references $(VAR_NAME) are expanded using the container's environment. If a variable cannot be resolved, the reference in the input string will be unchanged. Double $$ are reduced to a single $, which allows for escaping the $(VAR_NAME) syntax: i.e. "$$(VAR_NAME)" will produce the string literal "$(VAR_NAME)". Escaped references will never be expanded, regardless of whether the variable exists or not. Cannot be updated. More info: https://kubernetes.io/docs/tasks/inject-data-application/define-command-argument-container/#running-a-command-in-a-shell<br/>
+          Entrypoint array. Not executed within a shell. The container image's ENTRYPOINT is used if this is not provided. Variable references $(VAR_NAME) are expanded using the container's environment. If a variable cannot be resolved, the reference in the input string will be unchanged. Double $$ are reduced to a single $, which allows for escaping the $(VAR_NAME) syntax: i.e. "$$(VAR_NAME)" will produce the string literal "$(VAR_NAME)". Escaped references will never be expanded, regardless of whether the variable exists or not. Cannot be updated. More info: https://kubernetes.io/docs/tasks/inject-data-application/define-command-argument-container/#running-a-command-in-a-shell<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -9224,7 +4652,7 @@ A single application container that you want to run within a pod.
         <td><b>image</b></td>
         <td>string</td>
         <td>
-          Docker image name. More info: https://kubernetes.io/docs/concepts/containers/images This field is optional to allow higher level config management to default or override container images in workload controllers like Deployments and StatefulSets.<br/>
+          Container image name. More info: https://kubernetes.io/docs/concepts/containers/images This field is optional to allow higher level config management to default or override container images in workload controllers like Deployments and StatefulSets.<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -10150,7 +5578,7 @@ Periodic probe of container liveness. Container will be restarted if the probe f
         <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexcontainersindexlivenessprobegrpc">grpc</a></b></td>
         <td>object</td>
         <td>
-          GRPC specifies an action involving a GRPC port. This is an alpha field and requires enabling GRPCContainerProbe feature gate.<br/>
+          GRPC specifies an action involving a GRPC port. This is a beta field and requires enabling GRPCContainerProbe feature gate.<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -10248,7 +5676,7 @@ Exec specifies the action to take.
 
 
 
-GRPC specifies an action involving a GRPC port. This is an alpha field and requires enabling GRPCContainerProbe feature gate.
+GRPC specifies an action involving a GRPC port. This is a beta field and requires enabling GRPCContainerProbe feature gate.
 
 <table>
     <thead>
@@ -10500,7 +5928,7 @@ Periodic probe of container service readiness. Container will be removed from se
         <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexcontainersindexreadinessprobegrpc">grpc</a></b></td>
         <td>object</td>
         <td>
-          GRPC specifies an action involving a GRPC port. This is an alpha field and requires enabling GRPCContainerProbe feature gate.<br/>
+          GRPC specifies an action involving a GRPC port. This is a beta field and requires enabling GRPCContainerProbe feature gate.<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -10598,7 +6026,7 @@ Exec specifies the action to take.
 
 
 
-GRPC specifies an action involving a GRPC port. This is an alpha field and requires enabling GRPCContainerProbe feature gate.
+GRPC specifies an action involving a GRPC port. This is a beta field and requires enabling GRPCContainerProbe feature gate.
 
 <table>
     <thead>
@@ -11089,7 +6517,7 @@ StartupProbe indicates that the Pod has successfully initialized. If specified, 
         <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexcontainersindexstartupprobegrpc">grpc</a></b></td>
         <td>object</td>
         <td>
-          GRPC specifies an action involving a GRPC port. This is an alpha field and requires enabling GRPCContainerProbe feature gate.<br/>
+          GRPC specifies an action involving a GRPC port. This is a beta field and requires enabling GRPCContainerProbe feature gate.<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -11187,7 +6615,7 @@ Exec specifies the action to take.
 
 
 
-GRPC specifies an action involving a GRPC port. This is an alpha field and requires enabling GRPCContainerProbe feature gate.
+GRPC specifies an action involving a GRPC port. This is a beta field and requires enabling GRPCContainerProbe feature gate.
 
 <table>
     <thead>
@@ -11438,6 +6866,47 @@ VolumeMount describes a mounting of a Volume within a container.
 </table>
 
 
+#### K8ssandraCluster.spec.cassandra.datacenters[index].dseWorkloads
+<sup><sup>[↩ Parent](#k8ssandraclusterspeccassandradatacentersindex)</sup></sup>
+
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>analyticsEnabled</b></td>
+        <td>boolean</td>
+        <td>
+          <br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>graphEnabled</b></td>
+        <td>boolean</td>
+        <td>
+          <br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>searchEnabled</b></td>
+        <td>boolean</td>
+        <td>
+          <br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
 #### K8ssandraCluster.spec.cassandra.datacenters[index].extraVolumes
 <sup><sup>[↩ Parent](#k8ssandraclusterspeccassandradatacentersindex)</sup></sup>
 
@@ -11477,7 +6946,7 @@ Volumes defines additional volumes to be added to each Cassandra pod. If the vol
 
 
 
-AdditionalVolumes StorageConfig defines additional storage configurations
+AdditionalVolumes defines additional storage configurations
 
 <table>
     <thead>
@@ -11533,42 +7002,42 @@ Persistent volume claim spec
         <td><b>accessModes</b></td>
         <td>[]string</td>
         <td>
-          AccessModes contains the desired access modes the volume should have. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#access-modes-1<br/>
+          accessModes contains the desired access modes the volume should have. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#access-modes-1<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexextravolumespvcsindexpvcspecdatasource">dataSource</a></b></td>
         <td>object</td>
         <td>
-          This field can be used to specify either: * An existing VolumeSnapshot object (snapshot.storage.k8s.io/VolumeSnapshot) * An existing PVC (PersistentVolumeClaim) If the provisioner or an external controller can support the specified data source, it will create a new volume based on the contents of the specified data source. If the AnyVolumeDataSource feature gate is enabled, this field will always have the same contents as the DataSourceRef field.<br/>
+          dataSource field can be used to specify either: * An existing VolumeSnapshot object (snapshot.storage.k8s.io/VolumeSnapshot) * An existing PVC (PersistentVolumeClaim) If the provisioner or an external controller can support the specified data source, it will create a new volume based on the contents of the specified data source. If the AnyVolumeDataSource feature gate is enabled, this field will always have the same contents as the DataSourceRef field.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexextravolumespvcsindexpvcspecdatasourceref">dataSourceRef</a></b></td>
         <td>object</td>
         <td>
-          Specifies the object from which to populate the volume with data, if a non-empty volume is desired. This may be any local object from a non-empty API group (non core object) or a PersistentVolumeClaim object. When this field is specified, volume binding will only succeed if the type of the specified object matches some installed volume populator or dynamic provisioner. This field will replace the functionality of the DataSource field and as such if both fields are non-empty, they must have the same value. For backwards compatibility, both fields (DataSource and DataSourceRef) will be set to the same value automatically if one of them is empty and the other is non-empty. There are two important differences between DataSource and DataSourceRef: * While DataSource only allows two specific types of objects, DataSourceRef allows any non-core object, as well as PersistentVolumeClaim objects. * While DataSource ignores disallowed values (dropping them), DataSourceRef preserves all values, and generates an error if a disallowed value is specified. (Alpha) Using this field requires the AnyVolumeDataSource feature gate to be enabled.<br/>
+          dataSourceRef specifies the object from which to populate the volume with data, if a non-empty volume is desired. This may be any local object from a non-empty API group (non core object) or a PersistentVolumeClaim object. When this field is specified, volume binding will only succeed if the type of the specified object matches some installed volume populator or dynamic provisioner. This field will replace the functionality of the DataSource field and as such if both fields are non-empty, they must have the same value. For backwards compatibility, both fields (DataSource and DataSourceRef) will be set to the same value automatically if one of them is empty and the other is non-empty. There are two important differences between DataSource and DataSourceRef: * While DataSource only allows two specific types of objects, DataSourceRef allows any non-core object, as well as PersistentVolumeClaim objects. * While DataSource ignores disallowed values (dropping them), DataSourceRef preserves all values, and generates an error if a disallowed value is specified. (Beta) Using this field requires the AnyVolumeDataSource feature gate to be enabled.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexextravolumespvcsindexpvcspecresources">resources</a></b></td>
         <td>object</td>
         <td>
-          Resources represents the minimum resources the volume should have. If RecoverVolumeExpansionFailure feature is enabled users are allowed to specify resource requirements that are lower than previous value but must still be higher than capacity recorded in the status field of the claim. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#resources<br/>
+          resources represents the minimum resources the volume should have. If RecoverVolumeExpansionFailure feature is enabled users are allowed to specify resource requirements that are lower than previous value but must still be higher than capacity recorded in the status field of the claim. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#resources<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexextravolumespvcsindexpvcspecselector">selector</a></b></td>
         <td>object</td>
         <td>
-          A label query over volumes to consider for binding.<br/>
+          selector is a label query over volumes to consider for binding.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>storageClassName</b></td>
         <td>string</td>
         <td>
-          Name of the StorageClass required by the claim. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#class-1<br/>
+          storageClassName is the name of the StorageClass required by the claim. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#class-1<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -11582,7 +7051,7 @@ Persistent volume claim spec
         <td><b>volumeName</b></td>
         <td>string</td>
         <td>
-          VolumeName is the binding reference to the PersistentVolume backing this claim.<br/>
+          volumeName is the binding reference to the PersistentVolume backing this claim.<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -11594,7 +7063,7 @@ Persistent volume claim spec
 
 
 
-This field can be used to specify either: * An existing VolumeSnapshot object (snapshot.storage.k8s.io/VolumeSnapshot) * An existing PVC (PersistentVolumeClaim) If the provisioner or an external controller can support the specified data source, it will create a new volume based on the contents of the specified data source. If the AnyVolumeDataSource feature gate is enabled, this field will always have the same contents as the DataSourceRef field.
+dataSource field can be used to specify either: * An existing VolumeSnapshot object (snapshot.storage.k8s.io/VolumeSnapshot) * An existing PVC (PersistentVolumeClaim) If the provisioner or an external controller can support the specified data source, it will create a new volume based on the contents of the specified data source. If the AnyVolumeDataSource feature gate is enabled, this field will always have the same contents as the DataSourceRef field.
 
 <table>
     <thead>
@@ -11635,7 +7104,7 @@ This field can be used to specify either: * An existing VolumeSnapshot object (s
 
 
 
-Specifies the object from which to populate the volume with data, if a non-empty volume is desired. This may be any local object from a non-empty API group (non core object) or a PersistentVolumeClaim object. When this field is specified, volume binding will only succeed if the type of the specified object matches some installed volume populator or dynamic provisioner. This field will replace the functionality of the DataSource field and as such if both fields are non-empty, they must have the same value. For backwards compatibility, both fields (DataSource and DataSourceRef) will be set to the same value automatically if one of them is empty and the other is non-empty. There are two important differences between DataSource and DataSourceRef: * While DataSource only allows two specific types of objects, DataSourceRef allows any non-core object, as well as PersistentVolumeClaim objects. * While DataSource ignores disallowed values (dropping them), DataSourceRef preserves all values, and generates an error if a disallowed value is specified. (Alpha) Using this field requires the AnyVolumeDataSource feature gate to be enabled.
+dataSourceRef specifies the object from which to populate the volume with data, if a non-empty volume is desired. This may be any local object from a non-empty API group (non core object) or a PersistentVolumeClaim object. When this field is specified, volume binding will only succeed if the type of the specified object matches some installed volume populator or dynamic provisioner. This field will replace the functionality of the DataSource field and as such if both fields are non-empty, they must have the same value. For backwards compatibility, both fields (DataSource and DataSourceRef) will be set to the same value automatically if one of them is empty and the other is non-empty. There are two important differences between DataSource and DataSourceRef: * While DataSource only allows two specific types of objects, DataSourceRef allows any non-core object, as well as PersistentVolumeClaim objects. * While DataSource ignores disallowed values (dropping them), DataSourceRef preserves all values, and generates an error if a disallowed value is specified. (Beta) Using this field requires the AnyVolumeDataSource feature gate to be enabled.
 
 <table>
     <thead>
@@ -11676,7 +7145,7 @@ Specifies the object from which to populate the volume with data, if a non-empty
 
 
 
-Resources represents the minimum resources the volume should have. If RecoverVolumeExpansionFailure feature is enabled users are allowed to specify resource requirements that are lower than previous value but must still be higher than capacity recorded in the status field of the claim. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#resources
+resources represents the minimum resources the volume should have. If RecoverVolumeExpansionFailure feature is enabled users are allowed to specify resource requirements that are lower than previous value but must still be higher than capacity recorded in the status field of the claim. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#resources
 
 <table>
     <thead>
@@ -11710,7 +7179,7 @@ Resources represents the minimum resources the volume should have. If RecoverVol
 
 
 
-A label query over volumes to consider for binding.
+selector is a label query over volumes to consider for binding.
 
 <table>
     <thead>
@@ -11800,77 +7269,77 @@ Volume represents a named volume in a pod that may be accessed by any container 
         <td><b>name</b></td>
         <td>string</td>
         <td>
-          Volume's name. Must be a DNS_LABEL and unique within the pod. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names<br/>
+          name of the volume. Must be a DNS_LABEL and unique within the pod. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names<br/>
         </td>
         <td>true</td>
       </tr><tr>
         <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexextravolumesvolumesindexawselasticblockstore">awsElasticBlockStore</a></b></td>
         <td>object</td>
         <td>
-          AWSElasticBlockStore represents an AWS Disk resource that is attached to a kubelet's host machine and then exposed to the pod. More info: https://kubernetes.io/docs/concepts/storage/volumes#awselasticblockstore<br/>
+          awsElasticBlockStore represents an AWS Disk resource that is attached to a kubelet's host machine and then exposed to the pod. More info: https://kubernetes.io/docs/concepts/storage/volumes#awselasticblockstore<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexextravolumesvolumesindexazuredisk">azureDisk</a></b></td>
         <td>object</td>
         <td>
-          AzureDisk represents an Azure Data Disk mount on the host and bind mount to the pod.<br/>
+          azureDisk represents an Azure Data Disk mount on the host and bind mount to the pod.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexextravolumesvolumesindexazurefile">azureFile</a></b></td>
         <td>object</td>
         <td>
-          AzureFile represents an Azure File Service mount on the host and bind mount to the pod.<br/>
+          azureFile represents an Azure File Service mount on the host and bind mount to the pod.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexextravolumesvolumesindexcephfs">cephfs</a></b></td>
         <td>object</td>
         <td>
-          CephFS represents a Ceph FS mount on the host that shares a pod's lifetime<br/>
+          cephFS represents a Ceph FS mount on the host that shares a pod's lifetime<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexextravolumesvolumesindexcinder">cinder</a></b></td>
         <td>object</td>
         <td>
-          Cinder represents a cinder volume attached and mounted on kubelets host machine. More info: https://examples.k8s.io/mysql-cinder-pd/README.md<br/>
+          cinder represents a cinder volume attached and mounted on kubelets host machine. More info: https://examples.k8s.io/mysql-cinder-pd/README.md<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexextravolumesvolumesindexconfigmap">configMap</a></b></td>
         <td>object</td>
         <td>
-          ConfigMap represents a configMap that should populate this volume<br/>
+          configMap represents a configMap that should populate this volume<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexextravolumesvolumesindexcsi">csi</a></b></td>
         <td>object</td>
         <td>
-          CSI (Container Storage Interface) represents ephemeral storage that is handled by certain external CSI drivers (Beta feature).<br/>
+          csi (Container Storage Interface) represents ephemeral storage that is handled by certain external CSI drivers (Beta feature).<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexextravolumesvolumesindexdownwardapi">downwardAPI</a></b></td>
         <td>object</td>
         <td>
-          DownwardAPI represents downward API about the pod that should populate this volume<br/>
+          downwardAPI represents downward API about the pod that should populate this volume<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexextravolumesvolumesindexemptydir">emptyDir</a></b></td>
         <td>object</td>
         <td>
-          EmptyDir represents a temporary directory that shares a pod's lifetime. More info: https://kubernetes.io/docs/concepts/storage/volumes#emptydir<br/>
+          emptyDir represents a temporary directory that shares a pod's lifetime. More info: https://kubernetes.io/docs/concepts/storage/volumes#emptydir<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexextravolumesvolumesindexephemeral">ephemeral</a></b></td>
         <td>object</td>
         <td>
-          Ephemeral represents a volume that is handled by a cluster storage driver. The volume's lifecycle is tied to the pod that defines it - it will be created before the pod starts, and deleted when the pod is removed. 
+          ephemeral represents a volume that is handled by a cluster storage driver. The volume's lifecycle is tied to the pod that defines it - it will be created before the pod starts, and deleted when the pod is removed. 
  Use this if: a) the volume is only needed while the pod runs, b) features of normal volumes like restoring from snapshot or capacity tracking are needed, c) the storage driver is specified through a storage class, and d) the storage driver supports dynamic volume provisioning through a PersistentVolumeClaim (see EphemeralVolumeSource for more information on the connection between this volume type and PersistentVolumeClaim). 
  Use PersistentVolumeClaim or one of the vendor-specific APIs for volumes that persist for longer than the lifecycle of an individual pod. 
  Use CSI for light-weight local ephemeral volumes if the CSI driver is meant to be used that way - see the documentation of the driver for more information. 
@@ -11881,133 +7350,133 @@ Volume represents a named volume in a pod that may be accessed by any container 
         <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexextravolumesvolumesindexfc">fc</a></b></td>
         <td>object</td>
         <td>
-          FC represents a Fibre Channel resource that is attached to a kubelet's host machine and then exposed to the pod.<br/>
+          fc represents a Fibre Channel resource that is attached to a kubelet's host machine and then exposed to the pod.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexextravolumesvolumesindexflexvolume">flexVolume</a></b></td>
         <td>object</td>
         <td>
-          FlexVolume represents a generic volume resource that is provisioned/attached using an exec based plugin.<br/>
+          flexVolume represents a generic volume resource that is provisioned/attached using an exec based plugin.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexextravolumesvolumesindexflocker">flocker</a></b></td>
         <td>object</td>
         <td>
-          Flocker represents a Flocker volume attached to a kubelet's host machine. This depends on the Flocker control service being running<br/>
+          flocker represents a Flocker volume attached to a kubelet's host machine. This depends on the Flocker control service being running<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexextravolumesvolumesindexgcepersistentdisk">gcePersistentDisk</a></b></td>
         <td>object</td>
         <td>
-          GCEPersistentDisk represents a GCE Disk resource that is attached to a kubelet's host machine and then exposed to the pod. More info: https://kubernetes.io/docs/concepts/storage/volumes#gcepersistentdisk<br/>
+          gcePersistentDisk represents a GCE Disk resource that is attached to a kubelet's host machine and then exposed to the pod. More info: https://kubernetes.io/docs/concepts/storage/volumes#gcepersistentdisk<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexextravolumesvolumesindexgitrepo">gitRepo</a></b></td>
         <td>object</td>
         <td>
-          GitRepo represents a git repository at a particular revision. DEPRECATED: GitRepo is deprecated. To provision a container with a git repo, mount an EmptyDir into an InitContainer that clones the repo using git, then mount the EmptyDir into the Pod's container.<br/>
+          gitRepo represents a git repository at a particular revision. DEPRECATED: GitRepo is deprecated. To provision a container with a git repo, mount an EmptyDir into an InitContainer that clones the repo using git, then mount the EmptyDir into the Pod's container.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexextravolumesvolumesindexglusterfs">glusterfs</a></b></td>
         <td>object</td>
         <td>
-          Glusterfs represents a Glusterfs mount on the host that shares a pod's lifetime. More info: https://examples.k8s.io/volumes/glusterfs/README.md<br/>
+          glusterfs represents a Glusterfs mount on the host that shares a pod's lifetime. More info: https://examples.k8s.io/volumes/glusterfs/README.md<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexextravolumesvolumesindexhostpath">hostPath</a></b></td>
         <td>object</td>
         <td>
-          HostPath represents a pre-existing file or directory on the host machine that is directly exposed to the container. This is generally used for system agents or other privileged things that are allowed to see the host machine. Most containers will NOT need this. More info: https://kubernetes.io/docs/concepts/storage/volumes#hostpath --- TODO(jonesdl) We need to restrict who can use host directory mounts and who can/can not mount host directories as read/write.<br/>
+          hostPath represents a pre-existing file or directory on the host machine that is directly exposed to the container. This is generally used for system agents or other privileged things that are allowed to see the host machine. Most containers will NOT need this. More info: https://kubernetes.io/docs/concepts/storage/volumes#hostpath --- TODO(jonesdl) We need to restrict who can use host directory mounts and who can/can not mount host directories as read/write.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexextravolumesvolumesindexiscsi">iscsi</a></b></td>
         <td>object</td>
         <td>
-          ISCSI represents an ISCSI Disk resource that is attached to a kubelet's host machine and then exposed to the pod. More info: https://examples.k8s.io/volumes/iscsi/README.md<br/>
+          iscsi represents an ISCSI Disk resource that is attached to a kubelet's host machine and then exposed to the pod. More info: https://examples.k8s.io/volumes/iscsi/README.md<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexextravolumesvolumesindexnfs">nfs</a></b></td>
         <td>object</td>
         <td>
-          NFS represents an NFS mount on the host that shares a pod's lifetime More info: https://kubernetes.io/docs/concepts/storage/volumes#nfs<br/>
+          nfs represents an NFS mount on the host that shares a pod's lifetime More info: https://kubernetes.io/docs/concepts/storage/volumes#nfs<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexextravolumesvolumesindexpersistentvolumeclaim">persistentVolumeClaim</a></b></td>
         <td>object</td>
         <td>
-          PersistentVolumeClaimVolumeSource represents a reference to a PersistentVolumeClaim in the same namespace. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#persistentvolumeclaims<br/>
+          persistentVolumeClaimVolumeSource represents a reference to a PersistentVolumeClaim in the same namespace. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#persistentvolumeclaims<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexextravolumesvolumesindexphotonpersistentdisk">photonPersistentDisk</a></b></td>
         <td>object</td>
         <td>
-          PhotonPersistentDisk represents a PhotonController persistent disk attached and mounted on kubelets host machine<br/>
+          photonPersistentDisk represents a PhotonController persistent disk attached and mounted on kubelets host machine<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexextravolumesvolumesindexportworxvolume">portworxVolume</a></b></td>
         <td>object</td>
         <td>
-          PortworxVolume represents a portworx volume attached and mounted on kubelets host machine<br/>
+          portworxVolume represents a portworx volume attached and mounted on kubelets host machine<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexextravolumesvolumesindexprojected">projected</a></b></td>
         <td>object</td>
         <td>
-          Items for all in one resources secrets, configmaps, and downward API<br/>
+          projected items for all in one resources secrets, configmaps, and downward API<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexextravolumesvolumesindexquobyte">quobyte</a></b></td>
         <td>object</td>
         <td>
-          Quobyte represents a Quobyte mount on the host that shares a pod's lifetime<br/>
+          quobyte represents a Quobyte mount on the host that shares a pod's lifetime<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexextravolumesvolumesindexrbd">rbd</a></b></td>
         <td>object</td>
         <td>
-          RBD represents a Rados Block Device mount on the host that shares a pod's lifetime. More info: https://examples.k8s.io/volumes/rbd/README.md<br/>
+          rbd represents a Rados Block Device mount on the host that shares a pod's lifetime. More info: https://examples.k8s.io/volumes/rbd/README.md<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexextravolumesvolumesindexscaleio">scaleIO</a></b></td>
         <td>object</td>
         <td>
-          ScaleIO represents a ScaleIO persistent volume attached and mounted on Kubernetes nodes.<br/>
+          scaleIO represents a ScaleIO persistent volume attached and mounted on Kubernetes nodes.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexextravolumesvolumesindexsecret">secret</a></b></td>
         <td>object</td>
         <td>
-          Secret represents a secret that should populate this volume. More info: https://kubernetes.io/docs/concepts/storage/volumes#secret<br/>
+          secret represents a secret that should populate this volume. More info: https://kubernetes.io/docs/concepts/storage/volumes#secret<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexextravolumesvolumesindexstorageos">storageos</a></b></td>
         <td>object</td>
         <td>
-          StorageOS represents a StorageOS volume attached and mounted on Kubernetes nodes.<br/>
+          storageOS represents a StorageOS volume attached and mounted on Kubernetes nodes.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexextravolumesvolumesindexvspherevolume">vsphereVolume</a></b></td>
         <td>object</td>
         <td>
-          VsphereVolume represents a vSphere volume attached and mounted on kubelets host machine<br/>
+          vsphereVolume represents a vSphere volume attached and mounted on kubelets host machine<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -12019,7 +7488,7 @@ Volume represents a named volume in a pod that may be accessed by any container 
 
 
 
-AWSElasticBlockStore represents an AWS Disk resource that is attached to a kubelet's host machine and then exposed to the pod. More info: https://kubernetes.io/docs/concepts/storage/volumes#awselasticblockstore
+awsElasticBlockStore represents an AWS Disk resource that is attached to a kubelet's host machine and then exposed to the pod. More info: https://kubernetes.io/docs/concepts/storage/volumes#awselasticblockstore
 
 <table>
     <thead>
@@ -12034,21 +7503,21 @@ AWSElasticBlockStore represents an AWS Disk resource that is attached to a kubel
         <td><b>volumeID</b></td>
         <td>string</td>
         <td>
-          Unique ID of the persistent disk resource in AWS (Amazon EBS volume). More info: https://kubernetes.io/docs/concepts/storage/volumes#awselasticblockstore<br/>
+          volumeID is unique ID of the persistent disk resource in AWS (Amazon EBS volume). More info: https://kubernetes.io/docs/concepts/storage/volumes#awselasticblockstore<br/>
         </td>
         <td>true</td>
       </tr><tr>
         <td><b>fsType</b></td>
         <td>string</td>
         <td>
-          Filesystem type of the volume that you want to mount. Tip: Ensure that the filesystem type is supported by the host operating system. Examples: "ext4", "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified. More info: https://kubernetes.io/docs/concepts/storage/volumes#awselasticblockstore TODO: how do we prevent errors in the filesystem from compromising the machine<br/>
+          fsType is the filesystem type of the volume that you want to mount. Tip: Ensure that the filesystem type is supported by the host operating system. Examples: "ext4", "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified. More info: https://kubernetes.io/docs/concepts/storage/volumes#awselasticblockstore TODO: how do we prevent errors in the filesystem from compromising the machine<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>partition</b></td>
         <td>integer</td>
         <td>
-          The partition in the volume that you want to mount. If omitted, the default is to mount by volume name. Examples: For volume /dev/sda1, you specify the partition as "1". Similarly, the volume partition for /dev/sda is "0" (or you can leave the property empty).<br/>
+          partition is the partition in the volume that you want to mount. If omitted, the default is to mount by volume name. Examples: For volume /dev/sda1, you specify the partition as "1". Similarly, the volume partition for /dev/sda is "0" (or you can leave the property empty).<br/>
           <br/>
             <i>Format</i>: int32<br/>
         </td>
@@ -12057,7 +7526,7 @@ AWSElasticBlockStore represents an AWS Disk resource that is attached to a kubel
         <td><b>readOnly</b></td>
         <td>boolean</td>
         <td>
-          Specify "true" to force and set the ReadOnly property in VolumeMounts to "true". If omitted, the default is "false". More info: https://kubernetes.io/docs/concepts/storage/volumes#awselasticblockstore<br/>
+          readOnly value true will force the readOnly setting in VolumeMounts. More info: https://kubernetes.io/docs/concepts/storage/volumes#awselasticblockstore<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -12069,7 +7538,7 @@ AWSElasticBlockStore represents an AWS Disk resource that is attached to a kubel
 
 
 
-AzureDisk represents an Azure Data Disk mount on the host and bind mount to the pod.
+azureDisk represents an Azure Data Disk mount on the host and bind mount to the pod.
 
 <table>
     <thead>
@@ -12084,42 +7553,42 @@ AzureDisk represents an Azure Data Disk mount on the host and bind mount to the 
         <td><b>diskName</b></td>
         <td>string</td>
         <td>
-          The Name of the data disk in the blob storage<br/>
+          diskName is the Name of the data disk in the blob storage<br/>
         </td>
         <td>true</td>
       </tr><tr>
         <td><b>diskURI</b></td>
         <td>string</td>
         <td>
-          The URI the data disk in the blob storage<br/>
+          diskURI is the URI of data disk in the blob storage<br/>
         </td>
         <td>true</td>
       </tr><tr>
         <td><b>cachingMode</b></td>
         <td>string</td>
         <td>
-          Host Caching mode: None, Read Only, Read Write.<br/>
+          cachingMode is the Host Caching mode: None, Read Only, Read Write.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>fsType</b></td>
         <td>string</td>
         <td>
-          Filesystem type to mount. Must be a filesystem type supported by the host operating system. Ex. "ext4", "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified.<br/>
+          fsType is Filesystem type to mount. Must be a filesystem type supported by the host operating system. Ex. "ext4", "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>kind</b></td>
         <td>string</td>
         <td>
-          Expected values Shared: multiple blob disks per storage account  Dedicated: single blob disk per storage account  Managed: azure managed data disk (only in managed availability set). defaults to shared<br/>
+          kind expected values are Shared: multiple blob disks per storage account  Dedicated: single blob disk per storage account  Managed: azure managed data disk (only in managed availability set). defaults to shared<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>readOnly</b></td>
         <td>boolean</td>
         <td>
-          Defaults to false (read/write). ReadOnly here will force the ReadOnly setting in VolumeMounts.<br/>
+          readOnly Defaults to false (read/write). ReadOnly here will force the ReadOnly setting in VolumeMounts.<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -12131,7 +7600,7 @@ AzureDisk represents an Azure Data Disk mount on the host and bind mount to the 
 
 
 
-AzureFile represents an Azure File Service mount on the host and bind mount to the pod.
+azureFile represents an Azure File Service mount on the host and bind mount to the pod.
 
 <table>
     <thead>
@@ -12146,21 +7615,21 @@ AzureFile represents an Azure File Service mount on the host and bind mount to t
         <td><b>secretName</b></td>
         <td>string</td>
         <td>
-          the name of secret that contains Azure Storage Account Name and Key<br/>
+          secretName is the  name of secret that contains Azure Storage Account Name and Key<br/>
         </td>
         <td>true</td>
       </tr><tr>
         <td><b>shareName</b></td>
         <td>string</td>
         <td>
-          Share Name<br/>
+          shareName is the azure share Name<br/>
         </td>
         <td>true</td>
       </tr><tr>
         <td><b>readOnly</b></td>
         <td>boolean</td>
         <td>
-          Defaults to false (read/write). ReadOnly here will force the ReadOnly setting in VolumeMounts.<br/>
+          readOnly defaults to false (read/write). ReadOnly here will force the ReadOnly setting in VolumeMounts.<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -12172,7 +7641,7 @@ AzureFile represents an Azure File Service mount on the host and bind mount to t
 
 
 
-CephFS represents a Ceph FS mount on the host that shares a pod's lifetime
+cephFS represents a Ceph FS mount on the host that shares a pod's lifetime
 
 <table>
     <thead>
@@ -12187,42 +7656,42 @@ CephFS represents a Ceph FS mount on the host that shares a pod's lifetime
         <td><b>monitors</b></td>
         <td>[]string</td>
         <td>
-          Required: Monitors is a collection of Ceph monitors More info: https://examples.k8s.io/volumes/cephfs/README.md#how-to-use-it<br/>
+          monitors is Required: Monitors is a collection of Ceph monitors More info: https://examples.k8s.io/volumes/cephfs/README.md#how-to-use-it<br/>
         </td>
         <td>true</td>
       </tr><tr>
         <td><b>path</b></td>
         <td>string</td>
         <td>
-          Optional: Used as the mounted root, rather than the full Ceph tree, default is /<br/>
+          path is Optional: Used as the mounted root, rather than the full Ceph tree, default is /<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>readOnly</b></td>
         <td>boolean</td>
         <td>
-          Optional: Defaults to false (read/write). ReadOnly here will force the ReadOnly setting in VolumeMounts. More info: https://examples.k8s.io/volumes/cephfs/README.md#how-to-use-it<br/>
+          readOnly is Optional: Defaults to false (read/write). ReadOnly here will force the ReadOnly setting in VolumeMounts. More info: https://examples.k8s.io/volumes/cephfs/README.md#how-to-use-it<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>secretFile</b></td>
         <td>string</td>
         <td>
-          Optional: SecretFile is the path to key ring for User, default is /etc/ceph/user.secret More info: https://examples.k8s.io/volumes/cephfs/README.md#how-to-use-it<br/>
+          secretFile is Optional: SecretFile is the path to key ring for User, default is /etc/ceph/user.secret More info: https://examples.k8s.io/volumes/cephfs/README.md#how-to-use-it<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexextravolumesvolumesindexcephfssecretref">secretRef</a></b></td>
         <td>object</td>
         <td>
-          Optional: SecretRef is reference to the authentication secret for User, default is empty. More info: https://examples.k8s.io/volumes/cephfs/README.md#how-to-use-it<br/>
+          secretRef is Optional: SecretRef is reference to the authentication secret for User, default is empty. More info: https://examples.k8s.io/volumes/cephfs/README.md#how-to-use-it<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>user</b></td>
         <td>string</td>
         <td>
-          Optional: User is the rados user name, default is admin More info: https://examples.k8s.io/volumes/cephfs/README.md#how-to-use-it<br/>
+          user is optional: User is the rados user name, default is admin More info: https://examples.k8s.io/volumes/cephfs/README.md#how-to-use-it<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -12234,7 +7703,7 @@ CephFS represents a Ceph FS mount on the host that shares a pod's lifetime
 
 
 
-Optional: SecretRef is reference to the authentication secret for User, default is empty. More info: https://examples.k8s.io/volumes/cephfs/README.md#how-to-use-it
+secretRef is Optional: SecretRef is reference to the authentication secret for User, default is empty. More info: https://examples.k8s.io/volumes/cephfs/README.md#how-to-use-it
 
 <table>
     <thead>
@@ -12261,7 +7730,7 @@ Optional: SecretRef is reference to the authentication secret for User, default 
 
 
 
-Cinder represents a cinder volume attached and mounted on kubelets host machine. More info: https://examples.k8s.io/mysql-cinder-pd/README.md
+cinder represents a cinder volume attached and mounted on kubelets host machine. More info: https://examples.k8s.io/mysql-cinder-pd/README.md
 
 <table>
     <thead>
@@ -12276,28 +7745,28 @@ Cinder represents a cinder volume attached and mounted on kubelets host machine.
         <td><b>volumeID</b></td>
         <td>string</td>
         <td>
-          volume id used to identify the volume in cinder. More info: https://examples.k8s.io/mysql-cinder-pd/README.md<br/>
+          volumeID used to identify the volume in cinder. More info: https://examples.k8s.io/mysql-cinder-pd/README.md<br/>
         </td>
         <td>true</td>
       </tr><tr>
         <td><b>fsType</b></td>
         <td>string</td>
         <td>
-          Filesystem type to mount. Must be a filesystem type supported by the host operating system. Examples: "ext4", "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified. More info: https://examples.k8s.io/mysql-cinder-pd/README.md<br/>
+          fsType is the filesystem type to mount. Must be a filesystem type supported by the host operating system. Examples: "ext4", "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified. More info: https://examples.k8s.io/mysql-cinder-pd/README.md<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>readOnly</b></td>
         <td>boolean</td>
         <td>
-          Optional: Defaults to false (read/write). ReadOnly here will force the ReadOnly setting in VolumeMounts. More info: https://examples.k8s.io/mysql-cinder-pd/README.md<br/>
+          readOnly defaults to false (read/write). ReadOnly here will force the ReadOnly setting in VolumeMounts. More info: https://examples.k8s.io/mysql-cinder-pd/README.md<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexextravolumesvolumesindexcindersecretref">secretRef</a></b></td>
         <td>object</td>
         <td>
-          Optional: points to a secret object containing parameters used to connect to OpenStack.<br/>
+          secretRef is optional: points to a secret object containing parameters used to connect to OpenStack.<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -12309,7 +7778,7 @@ Cinder represents a cinder volume attached and mounted on kubelets host machine.
 
 
 
-Optional: points to a secret object containing parameters used to connect to OpenStack.
+secretRef is optional: points to a secret object containing parameters used to connect to OpenStack.
 
 <table>
     <thead>
@@ -12336,7 +7805,7 @@ Optional: points to a secret object containing parameters used to connect to Ope
 
 
 
-ConfigMap represents a configMap that should populate this volume
+configMap represents a configMap that should populate this volume
 
 <table>
     <thead>
@@ -12351,7 +7820,7 @@ ConfigMap represents a configMap that should populate this volume
         <td><b>defaultMode</b></td>
         <td>integer</td>
         <td>
-          Optional: mode bits used to set permissions on created files by default. Must be an octal value between 0000 and 0777 or a decimal value between 0 and 511. YAML accepts both octal and decimal values, JSON requires decimal values for mode bits. Defaults to 0644. Directories within the path are not affected by this setting. This might be in conflict with other options that affect the file mode, like fsGroup, and the result can be other mode bits set.<br/>
+          defaultMode is optional: mode bits used to set permissions on created files by default. Must be an octal value between 0000 and 0777 or a decimal value between 0 and 511. YAML accepts both octal and decimal values, JSON requires decimal values for mode bits. Defaults to 0644. Directories within the path are not affected by this setting. This might be in conflict with other options that affect the file mode, like fsGroup, and the result can be other mode bits set.<br/>
           <br/>
             <i>Format</i>: int32<br/>
         </td>
@@ -12360,7 +7829,7 @@ ConfigMap represents a configMap that should populate this volume
         <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexextravolumesvolumesindexconfigmapitemsindex">items</a></b></td>
         <td>[]object</td>
         <td>
-          If unspecified, each key-value pair in the Data field of the referenced ConfigMap will be projected into the volume as a file whose name is the key and content is the value. If specified, the listed keys will be projected into the specified paths, and unlisted keys will not be present. If a key is specified which is not present in the ConfigMap, the volume setup will error unless it is marked optional. Paths must be relative and may not contain the '..' path or start with '..'.<br/>
+          items if unspecified, each key-value pair in the Data field of the referenced ConfigMap will be projected into the volume as a file whose name is the key and content is the value. If specified, the listed keys will be projected into the specified paths, and unlisted keys will not be present. If a key is specified which is not present in the ConfigMap, the volume setup will error unless it is marked optional. Paths must be relative and may not contain the '..' path or start with '..'.<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -12374,7 +7843,7 @@ ConfigMap represents a configMap that should populate this volume
         <td><b>optional</b></td>
         <td>boolean</td>
         <td>
-          Specify whether the ConfigMap or its keys must be defined<br/>
+          optional specify whether the ConfigMap or its keys must be defined<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -12401,21 +7870,21 @@ Maps a string key to a path within a volume.
         <td><b>key</b></td>
         <td>string</td>
         <td>
-          The key to project.<br/>
+          key is the key to project.<br/>
         </td>
         <td>true</td>
       </tr><tr>
         <td><b>path</b></td>
         <td>string</td>
         <td>
-          The relative path of the file to map the key to. May not be an absolute path. May not contain the path element '..'. May not start with the string '..'.<br/>
+          path is the relative path of the file to map the key to. May not be an absolute path. May not contain the path element '..'. May not start with the string '..'.<br/>
         </td>
         <td>true</td>
       </tr><tr>
         <td><b>mode</b></td>
         <td>integer</td>
         <td>
-          Optional: mode bits used to set permissions on this file. Must be an octal value between 0000 and 0777 or a decimal value between 0 and 511. YAML accepts both octal and decimal values, JSON requires decimal values for mode bits. If not specified, the volume defaultMode will be used. This might be in conflict with other options that affect the file mode, like fsGroup, and the result can be other mode bits set.<br/>
+          mode is Optional: mode bits used to set permissions on this file. Must be an octal value between 0000 and 0777 or a decimal value between 0 and 511. YAML accepts both octal and decimal values, JSON requires decimal values for mode bits. If not specified, the volume defaultMode will be used. This might be in conflict with other options that affect the file mode, like fsGroup, and the result can be other mode bits set.<br/>
           <br/>
             <i>Format</i>: int32<br/>
         </td>
@@ -12429,7 +7898,7 @@ Maps a string key to a path within a volume.
 
 
 
-CSI (Container Storage Interface) represents ephemeral storage that is handled by certain external CSI drivers (Beta feature).
+csi (Container Storage Interface) represents ephemeral storage that is handled by certain external CSI drivers (Beta feature).
 
 <table>
     <thead>
@@ -12444,35 +7913,35 @@ CSI (Container Storage Interface) represents ephemeral storage that is handled b
         <td><b>driver</b></td>
         <td>string</td>
         <td>
-          Driver is the name of the CSI driver that handles this volume. Consult with your admin for the correct name as registered in the cluster.<br/>
+          driver is the name of the CSI driver that handles this volume. Consult with your admin for the correct name as registered in the cluster.<br/>
         </td>
         <td>true</td>
       </tr><tr>
         <td><b>fsType</b></td>
         <td>string</td>
         <td>
-          Filesystem type to mount. Ex. "ext4", "xfs", "ntfs". If not provided, the empty value is passed to the associated CSI driver which will determine the default filesystem to apply.<br/>
+          fsType to mount. Ex. "ext4", "xfs", "ntfs". If not provided, the empty value is passed to the associated CSI driver which will determine the default filesystem to apply.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexextravolumesvolumesindexcsinodepublishsecretref">nodePublishSecretRef</a></b></td>
         <td>object</td>
         <td>
-          NodePublishSecretRef is a reference to the secret object containing sensitive information to pass to the CSI driver to complete the CSI NodePublishVolume and NodeUnpublishVolume calls. This field is optional, and  may be empty if no secret is required. If the secret object contains more than one secret, all secret references are passed.<br/>
+          nodePublishSecretRef is a reference to the secret object containing sensitive information to pass to the CSI driver to complete the CSI NodePublishVolume and NodeUnpublishVolume calls. This field is optional, and  may be empty if no secret is required. If the secret object contains more than one secret, all secret references are passed.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>readOnly</b></td>
         <td>boolean</td>
         <td>
-          Specifies a read-only configuration for the volume. Defaults to false (read/write).<br/>
+          readOnly specifies a read-only configuration for the volume. Defaults to false (read/write).<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>volumeAttributes</b></td>
         <td>map[string]string</td>
         <td>
-          VolumeAttributes stores driver-specific properties that are passed to the CSI driver. Consult your driver's documentation for supported values.<br/>
+          volumeAttributes stores driver-specific properties that are passed to the CSI driver. Consult your driver's documentation for supported values.<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -12484,7 +7953,7 @@ CSI (Container Storage Interface) represents ephemeral storage that is handled b
 
 
 
-NodePublishSecretRef is a reference to the secret object containing sensitive information to pass to the CSI driver to complete the CSI NodePublishVolume and NodeUnpublishVolume calls. This field is optional, and  may be empty if no secret is required. If the secret object contains more than one secret, all secret references are passed.
+nodePublishSecretRef is a reference to the secret object containing sensitive information to pass to the CSI driver to complete the CSI NodePublishVolume and NodeUnpublishVolume calls. This field is optional, and  may be empty if no secret is required. If the secret object contains more than one secret, all secret references are passed.
 
 <table>
     <thead>
@@ -12511,7 +7980,7 @@ NodePublishSecretRef is a reference to the secret object containing sensitive in
 
 
 
-DownwardAPI represents downward API about the pod that should populate this volume
+downwardAPI represents downward API about the pod that should populate this volume
 
 <table>
     <thead>
@@ -12672,7 +8141,7 @@ Selects a resource of the container: only resources limits and requests (limits.
 
 
 
-EmptyDir represents a temporary directory that shares a pod's lifetime. More info: https://kubernetes.io/docs/concepts/storage/volumes#emptydir
+emptyDir represents a temporary directory that shares a pod's lifetime. More info: https://kubernetes.io/docs/concepts/storage/volumes#emptydir
 
 <table>
     <thead>
@@ -12687,14 +8156,14 @@ EmptyDir represents a temporary directory that shares a pod's lifetime. More inf
         <td><b>medium</b></td>
         <td>string</td>
         <td>
-          What type of storage medium should back this directory. The default is "" which means to use the node's default medium. Must be an empty string (default) or Memory. More info: https://kubernetes.io/docs/concepts/storage/volumes#emptydir<br/>
+          medium represents what type of storage medium should back this directory. The default is "" which means to use the node's default medium. Must be an empty string (default) or Memory. More info: https://kubernetes.io/docs/concepts/storage/volumes#emptydir<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>sizeLimit</b></td>
         <td>int or string</td>
         <td>
-          Total amount of local storage required for this EmptyDir volume. The size limit is also applicable for memory medium. The maximum usage on memory medium EmptyDir would be the minimum value between the SizeLimit specified here and the sum of memory limits of all containers in a pod. The default is nil which means that the limit is undefined. More info: http://kubernetes.io/docs/user-guide/volumes#emptydir<br/>
+          sizeLimit is the total amount of local storage required for this EmptyDir volume. The size limit is also applicable for memory medium. The maximum usage on memory medium EmptyDir would be the minimum value between the SizeLimit specified here and the sum of memory limits of all containers in a pod. The default is nil which means that the limit is undefined. More info: http://kubernetes.io/docs/user-guide/volumes#emptydir<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -12706,7 +8175,7 @@ EmptyDir represents a temporary directory that shares a pod's lifetime. More inf
 
 
 
-Ephemeral represents a volume that is handled by a cluster storage driver. The volume's lifecycle is tied to the pod that defines it - it will be created before the pod starts, and deleted when the pod is removed. 
+ephemeral represents a volume that is handled by a cluster storage driver. The volume's lifecycle is tied to the pod that defines it - it will be created before the pod starts, and deleted when the pod is removed. 
  Use this if: a) the volume is only needed while the pod runs, b) features of normal volumes like restoring from snapshot or capacity tracking are needed, c) the storage driver is specified through a storage class, and d) the storage driver supports dynamic volume provisioning through a PersistentVolumeClaim (see EphemeralVolumeSource for more information on the connection between this volume type and PersistentVolumeClaim). 
  Use PersistentVolumeClaim or one of the vendor-specific APIs for volumes that persist for longer than the lifecycle of an individual pod. 
  Use CSI for light-weight local ephemeral volumes if the CSI driver is meant to be used that way - see the documentation of the driver for more information. 
@@ -12792,42 +8261,42 @@ The specification for the PersistentVolumeClaim. The entire content is copied un
         <td><b>accessModes</b></td>
         <td>[]string</td>
         <td>
-          AccessModes contains the desired access modes the volume should have. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#access-modes-1<br/>
+          accessModes contains the desired access modes the volume should have. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#access-modes-1<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexextravolumesvolumesindexephemeralvolumeclaimtemplatespecdatasource">dataSource</a></b></td>
         <td>object</td>
         <td>
-          This field can be used to specify either: * An existing VolumeSnapshot object (snapshot.storage.k8s.io/VolumeSnapshot) * An existing PVC (PersistentVolumeClaim) If the provisioner or an external controller can support the specified data source, it will create a new volume based on the contents of the specified data source. If the AnyVolumeDataSource feature gate is enabled, this field will always have the same contents as the DataSourceRef field.<br/>
+          dataSource field can be used to specify either: * An existing VolumeSnapshot object (snapshot.storage.k8s.io/VolumeSnapshot) * An existing PVC (PersistentVolumeClaim) If the provisioner or an external controller can support the specified data source, it will create a new volume based on the contents of the specified data source. If the AnyVolumeDataSource feature gate is enabled, this field will always have the same contents as the DataSourceRef field.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexextravolumesvolumesindexephemeralvolumeclaimtemplatespecdatasourceref">dataSourceRef</a></b></td>
         <td>object</td>
         <td>
-          Specifies the object from which to populate the volume with data, if a non-empty volume is desired. This may be any local object from a non-empty API group (non core object) or a PersistentVolumeClaim object. When this field is specified, volume binding will only succeed if the type of the specified object matches some installed volume populator or dynamic provisioner. This field will replace the functionality of the DataSource field and as such if both fields are non-empty, they must have the same value. For backwards compatibility, both fields (DataSource and DataSourceRef) will be set to the same value automatically if one of them is empty and the other is non-empty. There are two important differences between DataSource and DataSourceRef: * While DataSource only allows two specific types of objects, DataSourceRef allows any non-core object, as well as PersistentVolumeClaim objects. * While DataSource ignores disallowed values (dropping them), DataSourceRef preserves all values, and generates an error if a disallowed value is specified. (Alpha) Using this field requires the AnyVolumeDataSource feature gate to be enabled.<br/>
+          dataSourceRef specifies the object from which to populate the volume with data, if a non-empty volume is desired. This may be any local object from a non-empty API group (non core object) or a PersistentVolumeClaim object. When this field is specified, volume binding will only succeed if the type of the specified object matches some installed volume populator or dynamic provisioner. This field will replace the functionality of the DataSource field and as such if both fields are non-empty, they must have the same value. For backwards compatibility, both fields (DataSource and DataSourceRef) will be set to the same value automatically if one of them is empty and the other is non-empty. There are two important differences between DataSource and DataSourceRef: * While DataSource only allows two specific types of objects, DataSourceRef allows any non-core object, as well as PersistentVolumeClaim objects. * While DataSource ignores disallowed values (dropping them), DataSourceRef preserves all values, and generates an error if a disallowed value is specified. (Beta) Using this field requires the AnyVolumeDataSource feature gate to be enabled.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexextravolumesvolumesindexephemeralvolumeclaimtemplatespecresources">resources</a></b></td>
         <td>object</td>
         <td>
-          Resources represents the minimum resources the volume should have. If RecoverVolumeExpansionFailure feature is enabled users are allowed to specify resource requirements that are lower than previous value but must still be higher than capacity recorded in the status field of the claim. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#resources<br/>
+          resources represents the minimum resources the volume should have. If RecoverVolumeExpansionFailure feature is enabled users are allowed to specify resource requirements that are lower than previous value but must still be higher than capacity recorded in the status field of the claim. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#resources<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexextravolumesvolumesindexephemeralvolumeclaimtemplatespecselector">selector</a></b></td>
         <td>object</td>
         <td>
-          A label query over volumes to consider for binding.<br/>
+          selector is a label query over volumes to consider for binding.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>storageClassName</b></td>
         <td>string</td>
         <td>
-          Name of the StorageClass required by the claim. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#class-1<br/>
+          storageClassName is the name of the StorageClass required by the claim. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#class-1<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -12841,7 +8310,7 @@ The specification for the PersistentVolumeClaim. The entire content is copied un
         <td><b>volumeName</b></td>
         <td>string</td>
         <td>
-          VolumeName is the binding reference to the PersistentVolume backing this claim.<br/>
+          volumeName is the binding reference to the PersistentVolume backing this claim.<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -12853,7 +8322,7 @@ The specification for the PersistentVolumeClaim. The entire content is copied un
 
 
 
-This field can be used to specify either: * An existing VolumeSnapshot object (snapshot.storage.k8s.io/VolumeSnapshot) * An existing PVC (PersistentVolumeClaim) If the provisioner or an external controller can support the specified data source, it will create a new volume based on the contents of the specified data source. If the AnyVolumeDataSource feature gate is enabled, this field will always have the same contents as the DataSourceRef field.
+dataSource field can be used to specify either: * An existing VolumeSnapshot object (snapshot.storage.k8s.io/VolumeSnapshot) * An existing PVC (PersistentVolumeClaim) If the provisioner or an external controller can support the specified data source, it will create a new volume based on the contents of the specified data source. If the AnyVolumeDataSource feature gate is enabled, this field will always have the same contents as the DataSourceRef field.
 
 <table>
     <thead>
@@ -12894,7 +8363,7 @@ This field can be used to specify either: * An existing VolumeSnapshot object (s
 
 
 
-Specifies the object from which to populate the volume with data, if a non-empty volume is desired. This may be any local object from a non-empty API group (non core object) or a PersistentVolumeClaim object. When this field is specified, volume binding will only succeed if the type of the specified object matches some installed volume populator or dynamic provisioner. This field will replace the functionality of the DataSource field and as such if both fields are non-empty, they must have the same value. For backwards compatibility, both fields (DataSource and DataSourceRef) will be set to the same value automatically if one of them is empty and the other is non-empty. There are two important differences between DataSource and DataSourceRef: * While DataSource only allows two specific types of objects, DataSourceRef allows any non-core object, as well as PersistentVolumeClaim objects. * While DataSource ignores disallowed values (dropping them), DataSourceRef preserves all values, and generates an error if a disallowed value is specified. (Alpha) Using this field requires the AnyVolumeDataSource feature gate to be enabled.
+dataSourceRef specifies the object from which to populate the volume with data, if a non-empty volume is desired. This may be any local object from a non-empty API group (non core object) or a PersistentVolumeClaim object. When this field is specified, volume binding will only succeed if the type of the specified object matches some installed volume populator or dynamic provisioner. This field will replace the functionality of the DataSource field and as such if both fields are non-empty, they must have the same value. For backwards compatibility, both fields (DataSource and DataSourceRef) will be set to the same value automatically if one of them is empty and the other is non-empty. There are two important differences between DataSource and DataSourceRef: * While DataSource only allows two specific types of objects, DataSourceRef allows any non-core object, as well as PersistentVolumeClaim objects. * While DataSource ignores disallowed values (dropping them), DataSourceRef preserves all values, and generates an error if a disallowed value is specified. (Beta) Using this field requires the AnyVolumeDataSource feature gate to be enabled.
 
 <table>
     <thead>
@@ -12935,7 +8404,7 @@ Specifies the object from which to populate the volume with data, if a non-empty
 
 
 
-Resources represents the minimum resources the volume should have. If RecoverVolumeExpansionFailure feature is enabled users are allowed to specify resource requirements that are lower than previous value but must still be higher than capacity recorded in the status field of the claim. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#resources
+resources represents the minimum resources the volume should have. If RecoverVolumeExpansionFailure feature is enabled users are allowed to specify resource requirements that are lower than previous value but must still be higher than capacity recorded in the status field of the claim. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#resources
 
 <table>
     <thead>
@@ -12969,7 +8438,7 @@ Resources represents the minimum resources the volume should have. If RecoverVol
 
 
 
-A label query over volumes to consider for binding.
+selector is a label query over volumes to consider for binding.
 
 <table>
     <thead>
@@ -13044,7 +8513,7 @@ A label selector requirement is a selector that contains values, a key, and an o
 
 
 
-FC represents a Fibre Channel resource that is attached to a kubelet's host machine and then exposed to the pod.
+fc represents a Fibre Channel resource that is attached to a kubelet's host machine and then exposed to the pod.
 
 <table>
     <thead>
@@ -13059,14 +8528,14 @@ FC represents a Fibre Channel resource that is attached to a kubelet's host mach
         <td><b>fsType</b></td>
         <td>string</td>
         <td>
-          Filesystem type to mount. Must be a filesystem type supported by the host operating system. Ex. "ext4", "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified. TODO: how do we prevent errors in the filesystem from compromising the machine<br/>
+          fsType is the filesystem type to mount. Must be a filesystem type supported by the host operating system. Ex. "ext4", "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified. TODO: how do we prevent errors in the filesystem from compromising the machine<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>lun</b></td>
         <td>integer</td>
         <td>
-          Optional: FC target lun number<br/>
+          lun is Optional: FC target lun number<br/>
           <br/>
             <i>Format</i>: int32<br/>
         </td>
@@ -13075,21 +8544,21 @@ FC represents a Fibre Channel resource that is attached to a kubelet's host mach
         <td><b>readOnly</b></td>
         <td>boolean</td>
         <td>
-          Optional: Defaults to false (read/write). ReadOnly here will force the ReadOnly setting in VolumeMounts.<br/>
+          readOnly is Optional: Defaults to false (read/write). ReadOnly here will force the ReadOnly setting in VolumeMounts.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>targetWWNs</b></td>
         <td>[]string</td>
         <td>
-          Optional: FC target worldwide names (WWNs)<br/>
+          targetWWNs is Optional: FC target worldwide names (WWNs)<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>wwids</b></td>
         <td>[]string</td>
         <td>
-          Optional: FC volume world wide identifiers (wwids) Either wwids or combination of targetWWNs and lun must be set, but not both simultaneously.<br/>
+          wwids Optional: FC volume world wide identifiers (wwids) Either wwids or combination of targetWWNs and lun must be set, but not both simultaneously.<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -13101,7 +8570,7 @@ FC represents a Fibre Channel resource that is attached to a kubelet's host mach
 
 
 
-FlexVolume represents a generic volume resource that is provisioned/attached using an exec based plugin.
+flexVolume represents a generic volume resource that is provisioned/attached using an exec based plugin.
 
 <table>
     <thead>
@@ -13116,35 +8585,35 @@ FlexVolume represents a generic volume resource that is provisioned/attached usi
         <td><b>driver</b></td>
         <td>string</td>
         <td>
-          Driver is the name of the driver to use for this volume.<br/>
+          driver is the name of the driver to use for this volume.<br/>
         </td>
         <td>true</td>
       </tr><tr>
         <td><b>fsType</b></td>
         <td>string</td>
         <td>
-          Filesystem type to mount. Must be a filesystem type supported by the host operating system. Ex. "ext4", "xfs", "ntfs". The default filesystem depends on FlexVolume script.<br/>
+          fsType is the filesystem type to mount. Must be a filesystem type supported by the host operating system. Ex. "ext4", "xfs", "ntfs". The default filesystem depends on FlexVolume script.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>options</b></td>
         <td>map[string]string</td>
         <td>
-          Optional: Extra command options if any.<br/>
+          options is Optional: this field holds extra command options if any.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>readOnly</b></td>
         <td>boolean</td>
         <td>
-          Optional: Defaults to false (read/write). ReadOnly here will force the ReadOnly setting in VolumeMounts.<br/>
+          readOnly is Optional: defaults to false (read/write). ReadOnly here will force the ReadOnly setting in VolumeMounts.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexextravolumesvolumesindexflexvolumesecretref">secretRef</a></b></td>
         <td>object</td>
         <td>
-          Optional: SecretRef is reference to the secret object containing sensitive information to pass to the plugin scripts. This may be empty if no secret object is specified. If the secret object contains more than one secret, all secrets are passed to the plugin scripts.<br/>
+          secretRef is Optional: secretRef is reference to the secret object containing sensitive information to pass to the plugin scripts. This may be empty if no secret object is specified. If the secret object contains more than one secret, all secrets are passed to the plugin scripts.<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -13156,7 +8625,7 @@ FlexVolume represents a generic volume resource that is provisioned/attached usi
 
 
 
-Optional: SecretRef is reference to the secret object containing sensitive information to pass to the plugin scripts. This may be empty if no secret object is specified. If the secret object contains more than one secret, all secrets are passed to the plugin scripts.
+secretRef is Optional: secretRef is reference to the secret object containing sensitive information to pass to the plugin scripts. This may be empty if no secret object is specified. If the secret object contains more than one secret, all secrets are passed to the plugin scripts.
 
 <table>
     <thead>
@@ -13183,7 +8652,7 @@ Optional: SecretRef is reference to the secret object containing sensitive infor
 
 
 
-Flocker represents a Flocker volume attached to a kubelet's host machine. This depends on the Flocker control service being running
+flocker represents a Flocker volume attached to a kubelet's host machine. This depends on the Flocker control service being running
 
 <table>
     <thead>
@@ -13198,14 +8667,14 @@ Flocker represents a Flocker volume attached to a kubelet's host machine. This d
         <td><b>datasetName</b></td>
         <td>string</td>
         <td>
-          Name of the dataset stored as metadata -> name on the dataset for Flocker should be considered as deprecated<br/>
+          datasetName is Name of the dataset stored as metadata -> name on the dataset for Flocker should be considered as deprecated<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>datasetUUID</b></td>
         <td>string</td>
         <td>
-          UUID of the dataset. This is unique identifier of a Flocker dataset<br/>
+          datasetUUID is the UUID of the dataset. This is unique identifier of a Flocker dataset<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -13217,7 +8686,7 @@ Flocker represents a Flocker volume attached to a kubelet's host machine. This d
 
 
 
-GCEPersistentDisk represents a GCE Disk resource that is attached to a kubelet's host machine and then exposed to the pod. More info: https://kubernetes.io/docs/concepts/storage/volumes#gcepersistentdisk
+gcePersistentDisk represents a GCE Disk resource that is attached to a kubelet's host machine and then exposed to the pod. More info: https://kubernetes.io/docs/concepts/storage/volumes#gcepersistentdisk
 
 <table>
     <thead>
@@ -13232,21 +8701,21 @@ GCEPersistentDisk represents a GCE Disk resource that is attached to a kubelet's
         <td><b>pdName</b></td>
         <td>string</td>
         <td>
-          Unique name of the PD resource in GCE. Used to identify the disk in GCE. More info: https://kubernetes.io/docs/concepts/storage/volumes#gcepersistentdisk<br/>
+          pdName is unique name of the PD resource in GCE. Used to identify the disk in GCE. More info: https://kubernetes.io/docs/concepts/storage/volumes#gcepersistentdisk<br/>
         </td>
         <td>true</td>
       </tr><tr>
         <td><b>fsType</b></td>
         <td>string</td>
         <td>
-          Filesystem type of the volume that you want to mount. Tip: Ensure that the filesystem type is supported by the host operating system. Examples: "ext4", "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified. More info: https://kubernetes.io/docs/concepts/storage/volumes#gcepersistentdisk TODO: how do we prevent errors in the filesystem from compromising the machine<br/>
+          fsType is filesystem type of the volume that you want to mount. Tip: Ensure that the filesystem type is supported by the host operating system. Examples: "ext4", "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified. More info: https://kubernetes.io/docs/concepts/storage/volumes#gcepersistentdisk TODO: how do we prevent errors in the filesystem from compromising the machine<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>partition</b></td>
         <td>integer</td>
         <td>
-          The partition in the volume that you want to mount. If omitted, the default is to mount by volume name. Examples: For volume /dev/sda1, you specify the partition as "1". Similarly, the volume partition for /dev/sda is "0" (or you can leave the property empty). More info: https://kubernetes.io/docs/concepts/storage/volumes#gcepersistentdisk<br/>
+          partition is the partition in the volume that you want to mount. If omitted, the default is to mount by volume name. Examples: For volume /dev/sda1, you specify the partition as "1". Similarly, the volume partition for /dev/sda is "0" (or you can leave the property empty). More info: https://kubernetes.io/docs/concepts/storage/volumes#gcepersistentdisk<br/>
           <br/>
             <i>Format</i>: int32<br/>
         </td>
@@ -13255,7 +8724,7 @@ GCEPersistentDisk represents a GCE Disk resource that is attached to a kubelet's
         <td><b>readOnly</b></td>
         <td>boolean</td>
         <td>
-          ReadOnly here will force the ReadOnly setting in VolumeMounts. Defaults to false. More info: https://kubernetes.io/docs/concepts/storage/volumes#gcepersistentdisk<br/>
+          readOnly here will force the ReadOnly setting in VolumeMounts. Defaults to false. More info: https://kubernetes.io/docs/concepts/storage/volumes#gcepersistentdisk<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -13267,7 +8736,7 @@ GCEPersistentDisk represents a GCE Disk resource that is attached to a kubelet's
 
 
 
-GitRepo represents a git repository at a particular revision. DEPRECATED: GitRepo is deprecated. To provision a container with a git repo, mount an EmptyDir into an InitContainer that clones the repo using git, then mount the EmptyDir into the Pod's container.
+gitRepo represents a git repository at a particular revision. DEPRECATED: GitRepo is deprecated. To provision a container with a git repo, mount an EmptyDir into an InitContainer that clones the repo using git, then mount the EmptyDir into the Pod's container.
 
 <table>
     <thead>
@@ -13282,21 +8751,21 @@ GitRepo represents a git repository at a particular revision. DEPRECATED: GitRep
         <td><b>repository</b></td>
         <td>string</td>
         <td>
-          Repository URL<br/>
+          repository is the URL<br/>
         </td>
         <td>true</td>
       </tr><tr>
         <td><b>directory</b></td>
         <td>string</td>
         <td>
-          Target directory name. Must not contain or start with '..'.  If '.' is supplied, the volume directory will be the git repository.  Otherwise, if specified, the volume will contain the git repository in the subdirectory with the given name.<br/>
+          directory is the target directory name. Must not contain or start with '..'.  If '.' is supplied, the volume directory will be the git repository.  Otherwise, if specified, the volume will contain the git repository in the subdirectory with the given name.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>revision</b></td>
         <td>string</td>
         <td>
-          Commit hash for the specified revision.<br/>
+          revision is the commit hash for the specified revision.<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -13308,7 +8777,7 @@ GitRepo represents a git repository at a particular revision. DEPRECATED: GitRep
 
 
 
-Glusterfs represents a Glusterfs mount on the host that shares a pod's lifetime. More info: https://examples.k8s.io/volumes/glusterfs/README.md
+glusterfs represents a Glusterfs mount on the host that shares a pod's lifetime. More info: https://examples.k8s.io/volumes/glusterfs/README.md
 
 <table>
     <thead>
@@ -13323,21 +8792,21 @@ Glusterfs represents a Glusterfs mount on the host that shares a pod's lifetime.
         <td><b>endpoints</b></td>
         <td>string</td>
         <td>
-          EndpointsName is the endpoint name that details Glusterfs topology. More info: https://examples.k8s.io/volumes/glusterfs/README.md#create-a-pod<br/>
+          endpoints is the endpoint name that details Glusterfs topology. More info: https://examples.k8s.io/volumes/glusterfs/README.md#create-a-pod<br/>
         </td>
         <td>true</td>
       </tr><tr>
         <td><b>path</b></td>
         <td>string</td>
         <td>
-          Path is the Glusterfs volume path. More info: https://examples.k8s.io/volumes/glusterfs/README.md#create-a-pod<br/>
+          path is the Glusterfs volume path. More info: https://examples.k8s.io/volumes/glusterfs/README.md#create-a-pod<br/>
         </td>
         <td>true</td>
       </tr><tr>
         <td><b>readOnly</b></td>
         <td>boolean</td>
         <td>
-          ReadOnly here will force the Glusterfs volume to be mounted with read-only permissions. Defaults to false. More info: https://examples.k8s.io/volumes/glusterfs/README.md#create-a-pod<br/>
+          readOnly here will force the Glusterfs volume to be mounted with read-only permissions. Defaults to false. More info: https://examples.k8s.io/volumes/glusterfs/README.md#create-a-pod<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -13349,7 +8818,7 @@ Glusterfs represents a Glusterfs mount on the host that shares a pod's lifetime.
 
 
 
-HostPath represents a pre-existing file or directory on the host machine that is directly exposed to the container. This is generally used for system agents or other privileged things that are allowed to see the host machine. Most containers will NOT need this. More info: https://kubernetes.io/docs/concepts/storage/volumes#hostpath --- TODO(jonesdl) We need to restrict who can use host directory mounts and who can/can not mount host directories as read/write.
+hostPath represents a pre-existing file or directory on the host machine that is directly exposed to the container. This is generally used for system agents or other privileged things that are allowed to see the host machine. Most containers will NOT need this. More info: https://kubernetes.io/docs/concepts/storage/volumes#hostpath --- TODO(jonesdl) We need to restrict who can use host directory mounts and who can/can not mount host directories as read/write.
 
 <table>
     <thead>
@@ -13364,14 +8833,14 @@ HostPath represents a pre-existing file or directory on the host machine that is
         <td><b>path</b></td>
         <td>string</td>
         <td>
-          Path of the directory on the host. If the path is a symlink, it will follow the link to the real path. More info: https://kubernetes.io/docs/concepts/storage/volumes#hostpath<br/>
+          path of the directory on the host. If the path is a symlink, it will follow the link to the real path. More info: https://kubernetes.io/docs/concepts/storage/volumes#hostpath<br/>
         </td>
         <td>true</td>
       </tr><tr>
         <td><b>type</b></td>
         <td>string</td>
         <td>
-          Type for HostPath Volume Defaults to "" More info: https://kubernetes.io/docs/concepts/storage/volumes#hostpath<br/>
+          type for HostPath Volume Defaults to "" More info: https://kubernetes.io/docs/concepts/storage/volumes#hostpath<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -13383,7 +8852,7 @@ HostPath represents a pre-existing file or directory on the host machine that is
 
 
 
-ISCSI represents an ISCSI Disk resource that is attached to a kubelet's host machine and then exposed to the pod. More info: https://examples.k8s.io/volumes/iscsi/README.md
+iscsi represents an ISCSI Disk resource that is attached to a kubelet's host machine and then exposed to the pod. More info: https://examples.k8s.io/volumes/iscsi/README.md
 
 <table>
     <thead>
@@ -13398,14 +8867,14 @@ ISCSI represents an ISCSI Disk resource that is attached to a kubelet's host mac
         <td><b>iqn</b></td>
         <td>string</td>
         <td>
-          Target iSCSI Qualified Name.<br/>
+          iqn is the target iSCSI Qualified Name.<br/>
         </td>
         <td>true</td>
       </tr><tr>
         <td><b>lun</b></td>
         <td>integer</td>
         <td>
-          iSCSI Target Lun number.<br/>
+          lun represents iSCSI Target Lun number.<br/>
           <br/>
             <i>Format</i>: int32<br/>
         </td>
@@ -13414,63 +8883,63 @@ ISCSI represents an ISCSI Disk resource that is attached to a kubelet's host mac
         <td><b>targetPortal</b></td>
         <td>string</td>
         <td>
-          iSCSI Target Portal. The Portal is either an IP or ip_addr:port if the port is other than default (typically TCP ports 860 and 3260).<br/>
+          targetPortal is iSCSI Target Portal. The Portal is either an IP or ip_addr:port if the port is other than default (typically TCP ports 860 and 3260).<br/>
         </td>
         <td>true</td>
       </tr><tr>
         <td><b>chapAuthDiscovery</b></td>
         <td>boolean</td>
         <td>
-          whether support iSCSI Discovery CHAP authentication<br/>
+          chapAuthDiscovery defines whether support iSCSI Discovery CHAP authentication<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>chapAuthSession</b></td>
         <td>boolean</td>
         <td>
-          whether support iSCSI Session CHAP authentication<br/>
+          chapAuthSession defines whether support iSCSI Session CHAP authentication<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>fsType</b></td>
         <td>string</td>
         <td>
-          Filesystem type of the volume that you want to mount. Tip: Ensure that the filesystem type is supported by the host operating system. Examples: "ext4", "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified. More info: https://kubernetes.io/docs/concepts/storage/volumes#iscsi TODO: how do we prevent errors in the filesystem from compromising the machine<br/>
+          fsType is the filesystem type of the volume that you want to mount. Tip: Ensure that the filesystem type is supported by the host operating system. Examples: "ext4", "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified. More info: https://kubernetes.io/docs/concepts/storage/volumes#iscsi TODO: how do we prevent errors in the filesystem from compromising the machine<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>initiatorName</b></td>
         <td>string</td>
         <td>
-          Custom iSCSI Initiator Name. If initiatorName is specified with iscsiInterface simultaneously, new iSCSI interface <target portal>:<volume name> will be created for the connection.<br/>
+          initiatorName is the custom iSCSI Initiator Name. If initiatorName is specified with iscsiInterface simultaneously, new iSCSI interface <target portal>:<volume name> will be created for the connection.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>iscsiInterface</b></td>
         <td>string</td>
         <td>
-          iSCSI Interface Name that uses an iSCSI transport. Defaults to 'default' (tcp).<br/>
+          iscsiInterface is the interface Name that uses an iSCSI transport. Defaults to 'default' (tcp).<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>portals</b></td>
         <td>[]string</td>
         <td>
-          iSCSI Target Portal List. The portal is either an IP or ip_addr:port if the port is other than default (typically TCP ports 860 and 3260).<br/>
+          portals is the iSCSI Target Portal List. The portal is either an IP or ip_addr:port if the port is other than default (typically TCP ports 860 and 3260).<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>readOnly</b></td>
         <td>boolean</td>
         <td>
-          ReadOnly here will force the ReadOnly setting in VolumeMounts. Defaults to false.<br/>
+          readOnly here will force the ReadOnly setting in VolumeMounts. Defaults to false.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexextravolumesvolumesindexiscsisecretref">secretRef</a></b></td>
         <td>object</td>
         <td>
-          CHAP Secret for iSCSI target and initiator authentication<br/>
+          secretRef is the CHAP Secret for iSCSI target and initiator authentication<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -13482,7 +8951,7 @@ ISCSI represents an ISCSI Disk resource that is attached to a kubelet's host mac
 
 
 
-CHAP Secret for iSCSI target and initiator authentication
+secretRef is the CHAP Secret for iSCSI target and initiator authentication
 
 <table>
     <thead>
@@ -13509,7 +8978,7 @@ CHAP Secret for iSCSI target and initiator authentication
 
 
 
-NFS represents an NFS mount on the host that shares a pod's lifetime More info: https://kubernetes.io/docs/concepts/storage/volumes#nfs
+nfs represents an NFS mount on the host that shares a pod's lifetime More info: https://kubernetes.io/docs/concepts/storage/volumes#nfs
 
 <table>
     <thead>
@@ -13524,21 +8993,21 @@ NFS represents an NFS mount on the host that shares a pod's lifetime More info: 
         <td><b>path</b></td>
         <td>string</td>
         <td>
-          Path that is exported by the NFS server. More info: https://kubernetes.io/docs/concepts/storage/volumes#nfs<br/>
+          path that is exported by the NFS server. More info: https://kubernetes.io/docs/concepts/storage/volumes#nfs<br/>
         </td>
         <td>true</td>
       </tr><tr>
         <td><b>server</b></td>
         <td>string</td>
         <td>
-          Server is the hostname or IP address of the NFS server. More info: https://kubernetes.io/docs/concepts/storage/volumes#nfs<br/>
+          server is the hostname or IP address of the NFS server. More info: https://kubernetes.io/docs/concepts/storage/volumes#nfs<br/>
         </td>
         <td>true</td>
       </tr><tr>
         <td><b>readOnly</b></td>
         <td>boolean</td>
         <td>
-          ReadOnly here will force the NFS export to be mounted with read-only permissions. Defaults to false. More info: https://kubernetes.io/docs/concepts/storage/volumes#nfs<br/>
+          readOnly here will force the NFS export to be mounted with read-only permissions. Defaults to false. More info: https://kubernetes.io/docs/concepts/storage/volumes#nfs<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -13550,7 +9019,7 @@ NFS represents an NFS mount on the host that shares a pod's lifetime More info: 
 
 
 
-PersistentVolumeClaimVolumeSource represents a reference to a PersistentVolumeClaim in the same namespace. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#persistentvolumeclaims
+persistentVolumeClaimVolumeSource represents a reference to a PersistentVolumeClaim in the same namespace. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#persistentvolumeclaims
 
 <table>
     <thead>
@@ -13565,14 +9034,14 @@ PersistentVolumeClaimVolumeSource represents a reference to a PersistentVolumeCl
         <td><b>claimName</b></td>
         <td>string</td>
         <td>
-          ClaimName is the name of a PersistentVolumeClaim in the same namespace as the pod using this volume. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#persistentvolumeclaims<br/>
+          claimName is the name of a PersistentVolumeClaim in the same namespace as the pod using this volume. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#persistentvolumeclaims<br/>
         </td>
         <td>true</td>
       </tr><tr>
         <td><b>readOnly</b></td>
         <td>boolean</td>
         <td>
-          Will force the ReadOnly setting in VolumeMounts. Default false.<br/>
+          readOnly Will force the ReadOnly setting in VolumeMounts. Default false.<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -13584,7 +9053,7 @@ PersistentVolumeClaimVolumeSource represents a reference to a PersistentVolumeCl
 
 
 
-PhotonPersistentDisk represents a PhotonController persistent disk attached and mounted on kubelets host machine
+photonPersistentDisk represents a PhotonController persistent disk attached and mounted on kubelets host machine
 
 <table>
     <thead>
@@ -13599,14 +9068,14 @@ PhotonPersistentDisk represents a PhotonController persistent disk attached and 
         <td><b>pdID</b></td>
         <td>string</td>
         <td>
-          ID that identifies Photon Controller persistent disk<br/>
+          pdID is the ID that identifies Photon Controller persistent disk<br/>
         </td>
         <td>true</td>
       </tr><tr>
         <td><b>fsType</b></td>
         <td>string</td>
         <td>
-          Filesystem type to mount. Must be a filesystem type supported by the host operating system. Ex. "ext4", "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified.<br/>
+          fsType is the filesystem type to mount. Must be a filesystem type supported by the host operating system. Ex. "ext4", "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified.<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -13618,7 +9087,7 @@ PhotonPersistentDisk represents a PhotonController persistent disk attached and 
 
 
 
-PortworxVolume represents a portworx volume attached and mounted on kubelets host machine
+portworxVolume represents a portworx volume attached and mounted on kubelets host machine
 
 <table>
     <thead>
@@ -13633,21 +9102,21 @@ PortworxVolume represents a portworx volume attached and mounted on kubelets hos
         <td><b>volumeID</b></td>
         <td>string</td>
         <td>
-          VolumeID uniquely identifies a Portworx volume<br/>
+          volumeID uniquely identifies a Portworx volume<br/>
         </td>
         <td>true</td>
       </tr><tr>
         <td><b>fsType</b></td>
         <td>string</td>
         <td>
-          FSType represents the filesystem type to mount Must be a filesystem type supported by the host operating system. Ex. "ext4", "xfs". Implicitly inferred to be "ext4" if unspecified.<br/>
+          fSType represents the filesystem type to mount Must be a filesystem type supported by the host operating system. Ex. "ext4", "xfs". Implicitly inferred to be "ext4" if unspecified.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>readOnly</b></td>
         <td>boolean</td>
         <td>
-          Defaults to false (read/write). ReadOnly here will force the ReadOnly setting in VolumeMounts.<br/>
+          readOnly defaults to false (read/write). ReadOnly here will force the ReadOnly setting in VolumeMounts.<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -13659,7 +9128,7 @@ PortworxVolume represents a portworx volume attached and mounted on kubelets hos
 
 
 
-Items for all in one resources secrets, configmaps, and downward API
+projected items for all in one resources secrets, configmaps, and downward API
 
 <table>
     <thead>
@@ -13674,7 +9143,7 @@ Items for all in one resources secrets, configmaps, and downward API
         <td><b>defaultMode</b></td>
         <td>integer</td>
         <td>
-          Mode bits used to set permissions on created files by default. Must be an octal value between 0000 and 0777 or a decimal value between 0 and 511. YAML accepts both octal and decimal values, JSON requires decimal values for mode bits. Directories within the path are not affected by this setting. This might be in conflict with other options that affect the file mode, like fsGroup, and the result can be other mode bits set.<br/>
+          defaultMode are the mode bits used to set permissions on created files by default. Must be an octal value between 0000 and 0777 or a decimal value between 0 and 511. YAML accepts both octal and decimal values, JSON requires decimal values for mode bits. Directories within the path are not affected by this setting. This might be in conflict with other options that affect the file mode, like fsGroup, and the result can be other mode bits set.<br/>
           <br/>
             <i>Format</i>: int32<br/>
         </td>
@@ -13683,7 +9152,7 @@ Items for all in one resources secrets, configmaps, and downward API
         <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexextravolumesvolumesindexprojectedsourcesindex">sources</a></b></td>
         <td>[]object</td>
         <td>
-          list of volume projections<br/>
+          sources is the list of volume projections<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -13710,28 +9179,28 @@ Projection that may be projected along with other supported volume types
         <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexextravolumesvolumesindexprojectedsourcesindexconfigmap">configMap</a></b></td>
         <td>object</td>
         <td>
-          information about the configMap data to project<br/>
+          configMap information about the configMap data to project<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexextravolumesvolumesindexprojectedsourcesindexdownwardapi">downwardAPI</a></b></td>
         <td>object</td>
         <td>
-          information about the downwardAPI data to project<br/>
+          downwardAPI information about the downwardAPI data to project<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexextravolumesvolumesindexprojectedsourcesindexsecret">secret</a></b></td>
         <td>object</td>
         <td>
-          information about the secret data to project<br/>
+          secret information about the secret data to project<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexextravolumesvolumesindexprojectedsourcesindexserviceaccounttoken">serviceAccountToken</a></b></td>
         <td>object</td>
         <td>
-          information about the serviceAccountToken data to project<br/>
+          serviceAccountToken is information about the serviceAccountToken data to project<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -13743,7 +9212,7 @@ Projection that may be projected along with other supported volume types
 
 
 
-information about the configMap data to project
+configMap information about the configMap data to project
 
 <table>
     <thead>
@@ -13758,7 +9227,7 @@ information about the configMap data to project
         <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexextravolumesvolumesindexprojectedsourcesindexconfigmapitemsindex">items</a></b></td>
         <td>[]object</td>
         <td>
-          If unspecified, each key-value pair in the Data field of the referenced ConfigMap will be projected into the volume as a file whose name is the key and content is the value. If specified, the listed keys will be projected into the specified paths, and unlisted keys will not be present. If a key is specified which is not present in the ConfigMap, the volume setup will error unless it is marked optional. Paths must be relative and may not contain the '..' path or start with '..'.<br/>
+          items if unspecified, each key-value pair in the Data field of the referenced ConfigMap will be projected into the volume as a file whose name is the key and content is the value. If specified, the listed keys will be projected into the specified paths, and unlisted keys will not be present. If a key is specified which is not present in the ConfigMap, the volume setup will error unless it is marked optional. Paths must be relative and may not contain the '..' path or start with '..'.<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -13772,7 +9241,7 @@ information about the configMap data to project
         <td><b>optional</b></td>
         <td>boolean</td>
         <td>
-          Specify whether the ConfigMap or its keys must be defined<br/>
+          optional specify whether the ConfigMap or its keys must be defined<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -13799,21 +9268,21 @@ Maps a string key to a path within a volume.
         <td><b>key</b></td>
         <td>string</td>
         <td>
-          The key to project.<br/>
+          key is the key to project.<br/>
         </td>
         <td>true</td>
       </tr><tr>
         <td><b>path</b></td>
         <td>string</td>
         <td>
-          The relative path of the file to map the key to. May not be an absolute path. May not contain the path element '..'. May not start with the string '..'.<br/>
+          path is the relative path of the file to map the key to. May not be an absolute path. May not contain the path element '..'. May not start with the string '..'.<br/>
         </td>
         <td>true</td>
       </tr><tr>
         <td><b>mode</b></td>
         <td>integer</td>
         <td>
-          Optional: mode bits used to set permissions on this file. Must be an octal value between 0000 and 0777 or a decimal value between 0 and 511. YAML accepts both octal and decimal values, JSON requires decimal values for mode bits. If not specified, the volume defaultMode will be used. This might be in conflict with other options that affect the file mode, like fsGroup, and the result can be other mode bits set.<br/>
+          mode is Optional: mode bits used to set permissions on this file. Must be an octal value between 0000 and 0777 or a decimal value between 0 and 511. YAML accepts both octal and decimal values, JSON requires decimal values for mode bits. If not specified, the volume defaultMode will be used. This might be in conflict with other options that affect the file mode, like fsGroup, and the result can be other mode bits set.<br/>
           <br/>
             <i>Format</i>: int32<br/>
         </td>
@@ -13827,7 +9296,7 @@ Maps a string key to a path within a volume.
 
 
 
-information about the downwardAPI data to project
+downwardAPI information about the downwardAPI data to project
 
 <table>
     <thead>
@@ -13979,7 +9448,7 @@ Selects a resource of the container: only resources limits and requests (limits.
 
 
 
-information about the secret data to project
+secret information about the secret data to project
 
 <table>
     <thead>
@@ -13994,7 +9463,7 @@ information about the secret data to project
         <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexextravolumesvolumesindexprojectedsourcesindexsecretitemsindex">items</a></b></td>
         <td>[]object</td>
         <td>
-          If unspecified, each key-value pair in the Data field of the referenced Secret will be projected into the volume as a file whose name is the key and content is the value. If specified, the listed keys will be projected into the specified paths, and unlisted keys will not be present. If a key is specified which is not present in the Secret, the volume setup will error unless it is marked optional. Paths must be relative and may not contain the '..' path or start with '..'.<br/>
+          items if unspecified, each key-value pair in the Data field of the referenced Secret will be projected into the volume as a file whose name is the key and content is the value. If specified, the listed keys will be projected into the specified paths, and unlisted keys will not be present. If a key is specified which is not present in the Secret, the volume setup will error unless it is marked optional. Paths must be relative and may not contain the '..' path or start with '..'.<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -14008,7 +9477,7 @@ information about the secret data to project
         <td><b>optional</b></td>
         <td>boolean</td>
         <td>
-          Specify whether the Secret or its key must be defined<br/>
+          optional field specify whether the Secret or its key must be defined<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -14035,21 +9504,21 @@ Maps a string key to a path within a volume.
         <td><b>key</b></td>
         <td>string</td>
         <td>
-          The key to project.<br/>
+          key is the key to project.<br/>
         </td>
         <td>true</td>
       </tr><tr>
         <td><b>path</b></td>
         <td>string</td>
         <td>
-          The relative path of the file to map the key to. May not be an absolute path. May not contain the path element '..'. May not start with the string '..'.<br/>
+          path is the relative path of the file to map the key to. May not be an absolute path. May not contain the path element '..'. May not start with the string '..'.<br/>
         </td>
         <td>true</td>
       </tr><tr>
         <td><b>mode</b></td>
         <td>integer</td>
         <td>
-          Optional: mode bits used to set permissions on this file. Must be an octal value between 0000 and 0777 or a decimal value between 0 and 511. YAML accepts both octal and decimal values, JSON requires decimal values for mode bits. If not specified, the volume defaultMode will be used. This might be in conflict with other options that affect the file mode, like fsGroup, and the result can be other mode bits set.<br/>
+          mode is Optional: mode bits used to set permissions on this file. Must be an octal value between 0000 and 0777 or a decimal value between 0 and 511. YAML accepts both octal and decimal values, JSON requires decimal values for mode bits. If not specified, the volume defaultMode will be used. This might be in conflict with other options that affect the file mode, like fsGroup, and the result can be other mode bits set.<br/>
           <br/>
             <i>Format</i>: int32<br/>
         </td>
@@ -14063,7 +9532,7 @@ Maps a string key to a path within a volume.
 
 
 
-information about the serviceAccountToken data to project
+serviceAccountToken is information about the serviceAccountToken data to project
 
 <table>
     <thead>
@@ -14078,21 +9547,21 @@ information about the serviceAccountToken data to project
         <td><b>path</b></td>
         <td>string</td>
         <td>
-          Path is the path relative to the mount point of the file to project the token into.<br/>
+          path is the path relative to the mount point of the file to project the token into.<br/>
         </td>
         <td>true</td>
       </tr><tr>
         <td><b>audience</b></td>
         <td>string</td>
         <td>
-          Audience is the intended audience of the token. A recipient of a token must identify itself with an identifier specified in the audience of the token, and otherwise should reject the token. The audience defaults to the identifier of the apiserver.<br/>
+          audience is the intended audience of the token. A recipient of a token must identify itself with an identifier specified in the audience of the token, and otherwise should reject the token. The audience defaults to the identifier of the apiserver.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>expirationSeconds</b></td>
         <td>integer</td>
         <td>
-          ExpirationSeconds is the requested duration of validity of the service account token. As the token approaches expiration, the kubelet volume plugin will proactively rotate the service account token. The kubelet will start trying to rotate the token if the token is older than 80 percent of its time to live or if the token is older than 24 hours.Defaults to 1 hour and must be at least 10 minutes.<br/>
+          expirationSeconds is the requested duration of validity of the service account token. As the token approaches expiration, the kubelet volume plugin will proactively rotate the service account token. The kubelet will start trying to rotate the token if the token is older than 80 percent of its time to live or if the token is older than 24 hours.Defaults to 1 hour and must be at least 10 minutes.<br/>
           <br/>
             <i>Format</i>: int64<br/>
         </td>
@@ -14106,7 +9575,7 @@ information about the serviceAccountToken data to project
 
 
 
-Quobyte represents a Quobyte mount on the host that shares a pod's lifetime
+quobyte represents a Quobyte mount on the host that shares a pod's lifetime
 
 <table>
     <thead>
@@ -14121,42 +9590,42 @@ Quobyte represents a Quobyte mount on the host that shares a pod's lifetime
         <td><b>registry</b></td>
         <td>string</td>
         <td>
-          Registry represents a single or multiple Quobyte Registry services specified as a string as host:port pair (multiple entries are separated with commas) which acts as the central registry for volumes<br/>
+          registry represents a single or multiple Quobyte Registry services specified as a string as host:port pair (multiple entries are separated with commas) which acts as the central registry for volumes<br/>
         </td>
         <td>true</td>
       </tr><tr>
         <td><b>volume</b></td>
         <td>string</td>
         <td>
-          Volume is a string that references an already created Quobyte volume by name.<br/>
+          volume is a string that references an already created Quobyte volume by name.<br/>
         </td>
         <td>true</td>
       </tr><tr>
         <td><b>group</b></td>
         <td>string</td>
         <td>
-          Group to map volume access to Default is no group<br/>
+          group to map volume access to Default is no group<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>readOnly</b></td>
         <td>boolean</td>
         <td>
-          ReadOnly here will force the Quobyte volume to be mounted with read-only permissions. Defaults to false.<br/>
+          readOnly here will force the Quobyte volume to be mounted with read-only permissions. Defaults to false.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>tenant</b></td>
         <td>string</td>
         <td>
-          Tenant owning the given Quobyte volume in the Backend Used with dynamically provisioned Quobyte volumes, value is set by the plugin<br/>
+          tenant owning the given Quobyte volume in the Backend Used with dynamically provisioned Quobyte volumes, value is set by the plugin<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>user</b></td>
         <td>string</td>
         <td>
-          User to map volume access to Defaults to serivceaccount user<br/>
+          user to map volume access to Defaults to serivceaccount user<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -14168,7 +9637,7 @@ Quobyte represents a Quobyte mount on the host that shares a pod's lifetime
 
 
 
-RBD represents a Rados Block Device mount on the host that shares a pod's lifetime. More info: https://examples.k8s.io/volumes/rbd/README.md
+rbd represents a Rados Block Device mount on the host that shares a pod's lifetime. More info: https://examples.k8s.io/volumes/rbd/README.md
 
 <table>
     <thead>
@@ -14183,56 +9652,56 @@ RBD represents a Rados Block Device mount on the host that shares a pod's lifeti
         <td><b>image</b></td>
         <td>string</td>
         <td>
-          The rados image name. More info: https://examples.k8s.io/volumes/rbd/README.md#how-to-use-it<br/>
+          image is the rados image name. More info: https://examples.k8s.io/volumes/rbd/README.md#how-to-use-it<br/>
         </td>
         <td>true</td>
       </tr><tr>
         <td><b>monitors</b></td>
         <td>[]string</td>
         <td>
-          A collection of Ceph monitors. More info: https://examples.k8s.io/volumes/rbd/README.md#how-to-use-it<br/>
+          monitors is a collection of Ceph monitors. More info: https://examples.k8s.io/volumes/rbd/README.md#how-to-use-it<br/>
         </td>
         <td>true</td>
       </tr><tr>
         <td><b>fsType</b></td>
         <td>string</td>
         <td>
-          Filesystem type of the volume that you want to mount. Tip: Ensure that the filesystem type is supported by the host operating system. Examples: "ext4", "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified. More info: https://kubernetes.io/docs/concepts/storage/volumes#rbd TODO: how do we prevent errors in the filesystem from compromising the machine<br/>
+          fsType is the filesystem type of the volume that you want to mount. Tip: Ensure that the filesystem type is supported by the host operating system. Examples: "ext4", "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified. More info: https://kubernetes.io/docs/concepts/storage/volumes#rbd TODO: how do we prevent errors in the filesystem from compromising the machine<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>keyring</b></td>
         <td>string</td>
         <td>
-          Keyring is the path to key ring for RBDUser. Default is /etc/ceph/keyring. More info: https://examples.k8s.io/volumes/rbd/README.md#how-to-use-it<br/>
+          keyring is the path to key ring for RBDUser. Default is /etc/ceph/keyring. More info: https://examples.k8s.io/volumes/rbd/README.md#how-to-use-it<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>pool</b></td>
         <td>string</td>
         <td>
-          The rados pool name. Default is rbd. More info: https://examples.k8s.io/volumes/rbd/README.md#how-to-use-it<br/>
+          pool is the rados pool name. Default is rbd. More info: https://examples.k8s.io/volumes/rbd/README.md#how-to-use-it<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>readOnly</b></td>
         <td>boolean</td>
         <td>
-          ReadOnly here will force the ReadOnly setting in VolumeMounts. Defaults to false. More info: https://examples.k8s.io/volumes/rbd/README.md#how-to-use-it<br/>
+          readOnly here will force the ReadOnly setting in VolumeMounts. Defaults to false. More info: https://examples.k8s.io/volumes/rbd/README.md#how-to-use-it<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexextravolumesvolumesindexrbdsecretref">secretRef</a></b></td>
         <td>object</td>
         <td>
-          SecretRef is name of the authentication secret for RBDUser. If provided overrides keyring. Default is nil. More info: https://examples.k8s.io/volumes/rbd/README.md#how-to-use-it<br/>
+          secretRef is name of the authentication secret for RBDUser. If provided overrides keyring. Default is nil. More info: https://examples.k8s.io/volumes/rbd/README.md#how-to-use-it<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>user</b></td>
         <td>string</td>
         <td>
-          The rados user name. Default is admin. More info: https://examples.k8s.io/volumes/rbd/README.md#how-to-use-it<br/>
+          user is the rados user name. Default is admin. More info: https://examples.k8s.io/volumes/rbd/README.md#how-to-use-it<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -14244,7 +9713,7 @@ RBD represents a Rados Block Device mount on the host that shares a pod's lifeti
 
 
 
-SecretRef is name of the authentication secret for RBDUser. If provided overrides keyring. Default is nil. More info: https://examples.k8s.io/volumes/rbd/README.md#how-to-use-it
+secretRef is name of the authentication secret for RBDUser. If provided overrides keyring. Default is nil. More info: https://examples.k8s.io/volumes/rbd/README.md#how-to-use-it
 
 <table>
     <thead>
@@ -14271,7 +9740,7 @@ SecretRef is name of the authentication secret for RBDUser. If provided override
 
 
 
-ScaleIO represents a ScaleIO persistent volume attached and mounted on Kubernetes nodes.
+scaleIO represents a ScaleIO persistent volume attached and mounted on Kubernetes nodes.
 
 <table>
     <thead>
@@ -14286,70 +9755,70 @@ ScaleIO represents a ScaleIO persistent volume attached and mounted on Kubernete
         <td><b>gateway</b></td>
         <td>string</td>
         <td>
-          The host address of the ScaleIO API Gateway.<br/>
+          gateway is the host address of the ScaleIO API Gateway.<br/>
         </td>
         <td>true</td>
       </tr><tr>
         <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexextravolumesvolumesindexscaleiosecretref">secretRef</a></b></td>
         <td>object</td>
         <td>
-          SecretRef references to the secret for ScaleIO user and other sensitive information. If this is not provided, Login operation will fail.<br/>
+          secretRef references to the secret for ScaleIO user and other sensitive information. If this is not provided, Login operation will fail.<br/>
         </td>
         <td>true</td>
       </tr><tr>
         <td><b>system</b></td>
         <td>string</td>
         <td>
-          The name of the storage system as configured in ScaleIO.<br/>
+          system is the name of the storage system as configured in ScaleIO.<br/>
         </td>
         <td>true</td>
       </tr><tr>
         <td><b>fsType</b></td>
         <td>string</td>
         <td>
-          Filesystem type to mount. Must be a filesystem type supported by the host operating system. Ex. "ext4", "xfs", "ntfs". Default is "xfs".<br/>
+          fsType is the filesystem type to mount. Must be a filesystem type supported by the host operating system. Ex. "ext4", "xfs", "ntfs". Default is "xfs".<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>protectionDomain</b></td>
         <td>string</td>
         <td>
-          The name of the ScaleIO Protection Domain for the configured storage.<br/>
+          protectionDomain is the name of the ScaleIO Protection Domain for the configured storage.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>readOnly</b></td>
         <td>boolean</td>
         <td>
-          Defaults to false (read/write). ReadOnly here will force the ReadOnly setting in VolumeMounts.<br/>
+          readOnly Defaults to false (read/write). ReadOnly here will force the ReadOnly setting in VolumeMounts.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>sslEnabled</b></td>
         <td>boolean</td>
         <td>
-          Flag to enable/disable SSL communication with Gateway, default false<br/>
+          sslEnabled Flag enable/disable SSL communication with Gateway, default false<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>storageMode</b></td>
         <td>string</td>
         <td>
-          Indicates whether the storage for a volume should be ThickProvisioned or ThinProvisioned. Default is ThinProvisioned.<br/>
+          storageMode indicates whether the storage for a volume should be ThickProvisioned or ThinProvisioned. Default is ThinProvisioned.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>storagePool</b></td>
         <td>string</td>
         <td>
-          The ScaleIO Storage Pool associated with the protection domain.<br/>
+          storagePool is the ScaleIO Storage Pool associated with the protection domain.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>volumeName</b></td>
         <td>string</td>
         <td>
-          The name of a volume already created in the ScaleIO system that is associated with this volume source.<br/>
+          volumeName is the name of a volume already created in the ScaleIO system that is associated with this volume source.<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -14361,7 +9830,7 @@ ScaleIO represents a ScaleIO persistent volume attached and mounted on Kubernete
 
 
 
-SecretRef references to the secret for ScaleIO user and other sensitive information. If this is not provided, Login operation will fail.
+secretRef references to the secret for ScaleIO user and other sensitive information. If this is not provided, Login operation will fail.
 
 <table>
     <thead>
@@ -14388,7 +9857,7 @@ SecretRef references to the secret for ScaleIO user and other sensitive informat
 
 
 
-Secret represents a secret that should populate this volume. More info: https://kubernetes.io/docs/concepts/storage/volumes#secret
+secret represents a secret that should populate this volume. More info: https://kubernetes.io/docs/concepts/storage/volumes#secret
 
 <table>
     <thead>
@@ -14403,7 +9872,7 @@ Secret represents a secret that should populate this volume. More info: https://
         <td><b>defaultMode</b></td>
         <td>integer</td>
         <td>
-          Optional: mode bits used to set permissions on created files by default. Must be an octal value between 0000 and 0777 or a decimal value between 0 and 511. YAML accepts both octal and decimal values, JSON requires decimal values for mode bits. Defaults to 0644. Directories within the path are not affected by this setting. This might be in conflict with other options that affect the file mode, like fsGroup, and the result can be other mode bits set.<br/>
+          defaultMode is Optional: mode bits used to set permissions on created files by default. Must be an octal value between 0000 and 0777 or a decimal value between 0 and 511. YAML accepts both octal and decimal values, JSON requires decimal values for mode bits. Defaults to 0644. Directories within the path are not affected by this setting. This might be in conflict with other options that affect the file mode, like fsGroup, and the result can be other mode bits set.<br/>
           <br/>
             <i>Format</i>: int32<br/>
         </td>
@@ -14412,21 +9881,21 @@ Secret represents a secret that should populate this volume. More info: https://
         <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexextravolumesvolumesindexsecretitemsindex">items</a></b></td>
         <td>[]object</td>
         <td>
-          If unspecified, each key-value pair in the Data field of the referenced Secret will be projected into the volume as a file whose name is the key and content is the value. If specified, the listed keys will be projected into the specified paths, and unlisted keys will not be present. If a key is specified which is not present in the Secret, the volume setup will error unless it is marked optional. Paths must be relative and may not contain the '..' path or start with '..'.<br/>
+          items If unspecified, each key-value pair in the Data field of the referenced Secret will be projected into the volume as a file whose name is the key and content is the value. If specified, the listed keys will be projected into the specified paths, and unlisted keys will not be present. If a key is specified which is not present in the Secret, the volume setup will error unless it is marked optional. Paths must be relative and may not contain the '..' path or start with '..'.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>optional</b></td>
         <td>boolean</td>
         <td>
-          Specify whether the Secret or its keys must be defined<br/>
+          optional field specify whether the Secret or its keys must be defined<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>secretName</b></td>
         <td>string</td>
         <td>
-          Name of the secret in the pod's namespace to use. More info: https://kubernetes.io/docs/concepts/storage/volumes#secret<br/>
+          secretName is the name of the secret in the pod's namespace to use. More info: https://kubernetes.io/docs/concepts/storage/volumes#secret<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -14453,21 +9922,21 @@ Maps a string key to a path within a volume.
         <td><b>key</b></td>
         <td>string</td>
         <td>
-          The key to project.<br/>
+          key is the key to project.<br/>
         </td>
         <td>true</td>
       </tr><tr>
         <td><b>path</b></td>
         <td>string</td>
         <td>
-          The relative path of the file to map the key to. May not be an absolute path. May not contain the path element '..'. May not start with the string '..'.<br/>
+          path is the relative path of the file to map the key to. May not be an absolute path. May not contain the path element '..'. May not start with the string '..'.<br/>
         </td>
         <td>true</td>
       </tr><tr>
         <td><b>mode</b></td>
         <td>integer</td>
         <td>
-          Optional: mode bits used to set permissions on this file. Must be an octal value between 0000 and 0777 or a decimal value between 0 and 511. YAML accepts both octal and decimal values, JSON requires decimal values for mode bits. If not specified, the volume defaultMode will be used. This might be in conflict with other options that affect the file mode, like fsGroup, and the result can be other mode bits set.<br/>
+          mode is Optional: mode bits used to set permissions on this file. Must be an octal value between 0000 and 0777 or a decimal value between 0 and 511. YAML accepts both octal and decimal values, JSON requires decimal values for mode bits. If not specified, the volume defaultMode will be used. This might be in conflict with other options that affect the file mode, like fsGroup, and the result can be other mode bits set.<br/>
           <br/>
             <i>Format</i>: int32<br/>
         </td>
@@ -14481,7 +9950,7 @@ Maps a string key to a path within a volume.
 
 
 
-StorageOS represents a StorageOS volume attached and mounted on Kubernetes nodes.
+storageOS represents a StorageOS volume attached and mounted on Kubernetes nodes.
 
 <table>
     <thead>
@@ -14496,35 +9965,35 @@ StorageOS represents a StorageOS volume attached and mounted on Kubernetes nodes
         <td><b>fsType</b></td>
         <td>string</td>
         <td>
-          Filesystem type to mount. Must be a filesystem type supported by the host operating system. Ex. "ext4", "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified.<br/>
+          fsType is the filesystem type to mount. Must be a filesystem type supported by the host operating system. Ex. "ext4", "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>readOnly</b></td>
         <td>boolean</td>
         <td>
-          Defaults to false (read/write). ReadOnly here will force the ReadOnly setting in VolumeMounts.<br/>
+          readOnly defaults to false (read/write). ReadOnly here will force the ReadOnly setting in VolumeMounts.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexextravolumesvolumesindexstorageossecretref">secretRef</a></b></td>
         <td>object</td>
         <td>
-          SecretRef specifies the secret to use for obtaining the StorageOS API credentials.  If not specified, default values will be attempted.<br/>
+          secretRef specifies the secret to use for obtaining the StorageOS API credentials.  If not specified, default values will be attempted.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>volumeName</b></td>
         <td>string</td>
         <td>
-          VolumeName is the human-readable name of the StorageOS volume.  Volume names are only unique within a namespace.<br/>
+          volumeName is the human-readable name of the StorageOS volume.  Volume names are only unique within a namespace.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>volumeNamespace</b></td>
         <td>string</td>
         <td>
-          VolumeNamespace specifies the scope of the volume within StorageOS.  If no namespace is specified then the Pod's namespace will be used.  This allows the Kubernetes name scoping to be mirrored within StorageOS for tighter integration. Set VolumeName to any name to override the default behaviour. Set to "default" if you are not using namespaces within StorageOS. Namespaces that do not pre-exist within StorageOS will be created.<br/>
+          volumeNamespace specifies the scope of the volume within StorageOS.  If no namespace is specified then the Pod's namespace will be used.  This allows the Kubernetes name scoping to be mirrored within StorageOS for tighter integration. Set VolumeName to any name to override the default behaviour. Set to "default" if you are not using namespaces within StorageOS. Namespaces that do not pre-exist within StorageOS will be created.<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -14536,7 +10005,7 @@ StorageOS represents a StorageOS volume attached and mounted on Kubernetes nodes
 
 
 
-SecretRef specifies the secret to use for obtaining the StorageOS API credentials.  If not specified, default values will be attempted.
+secretRef specifies the secret to use for obtaining the StorageOS API credentials.  If not specified, default values will be attempted.
 
 <table>
     <thead>
@@ -14563,7 +10032,7 @@ SecretRef specifies the secret to use for obtaining the StorageOS API credential
 
 
 
-VsphereVolume represents a vSphere volume attached and mounted on kubelets host machine
+vsphereVolume represents a vSphere volume attached and mounted on kubelets host machine
 
 <table>
     <thead>
@@ -14578,28 +10047,28 @@ VsphereVolume represents a vSphere volume attached and mounted on kubelets host 
         <td><b>volumePath</b></td>
         <td>string</td>
         <td>
-          Path that identifies vSphere volume vmdk<br/>
+          volumePath is the path that identifies vSphere volume vmdk<br/>
         </td>
         <td>true</td>
       </tr><tr>
         <td><b>fsType</b></td>
         <td>string</td>
         <td>
-          Filesystem type to mount. Must be a filesystem type supported by the host operating system. Ex. "ext4", "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified.<br/>
+          fsType is filesystem type to mount. Must be a filesystem type supported by the host operating system. Ex. "ext4", "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>storagePolicyID</b></td>
         <td>string</td>
         <td>
-          Storage Policy Based Management (SPBM) profile ID associated with the StoragePolicyName.<br/>
+          storagePolicyID is the storage Policy Based Management (SPBM) profile ID associated with the StoragePolicyName.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>storagePolicyName</b></td>
         <td>string</td>
         <td>
-          Storage Policy Based Management (SPBM) profile name.<br/>
+          storagePolicyName is the storage Policy Based Management (SPBM) profile name.<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -14633,14 +10102,14 @@ A single application container that you want to run within a pod.
         <td><b>args</b></td>
         <td>[]string</td>
         <td>
-          Arguments to the entrypoint. The docker image's CMD is used if this is not provided. Variable references $(VAR_NAME) are expanded using the container's environment. If a variable cannot be resolved, the reference in the input string will be unchanged. Double $$ are reduced to a single $, which allows for escaping the $(VAR_NAME) syntax: i.e. "$$(VAR_NAME)" will produce the string literal "$(VAR_NAME)". Escaped references will never be expanded, regardless of whether the variable exists or not. Cannot be updated. More info: https://kubernetes.io/docs/tasks/inject-data-application/define-command-argument-container/#running-a-command-in-a-shell<br/>
+          Arguments to the entrypoint. The container image's CMD is used if this is not provided. Variable references $(VAR_NAME) are expanded using the container's environment. If a variable cannot be resolved, the reference in the input string will be unchanged. Double $$ are reduced to a single $, which allows for escaping the $(VAR_NAME) syntax: i.e. "$$(VAR_NAME)" will produce the string literal "$(VAR_NAME)". Escaped references will never be expanded, regardless of whether the variable exists or not. Cannot be updated. More info: https://kubernetes.io/docs/tasks/inject-data-application/define-command-argument-container/#running-a-command-in-a-shell<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>command</b></td>
         <td>[]string</td>
         <td>
-          Entrypoint array. Not executed within a shell. The docker image's ENTRYPOINT is used if this is not provided. Variable references $(VAR_NAME) are expanded using the container's environment. If a variable cannot be resolved, the reference in the input string will be unchanged. Double $$ are reduced to a single $, which allows for escaping the $(VAR_NAME) syntax: i.e. "$$(VAR_NAME)" will produce the string literal "$(VAR_NAME)". Escaped references will never be expanded, regardless of whether the variable exists or not. Cannot be updated. More info: https://kubernetes.io/docs/tasks/inject-data-application/define-command-argument-container/#running-a-command-in-a-shell<br/>
+          Entrypoint array. Not executed within a shell. The container image's ENTRYPOINT is used if this is not provided. Variable references $(VAR_NAME) are expanded using the container's environment. If a variable cannot be resolved, the reference in the input string will be unchanged. Double $$ are reduced to a single $, which allows for escaping the $(VAR_NAME) syntax: i.e. "$$(VAR_NAME)" will produce the string literal "$(VAR_NAME)". Escaped references will never be expanded, regardless of whether the variable exists or not. Cannot be updated. More info: https://kubernetes.io/docs/tasks/inject-data-application/define-command-argument-container/#running-a-command-in-a-shell<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -14661,7 +10130,7 @@ A single application container that you want to run within a pod.
         <td><b>image</b></td>
         <td>string</td>
         <td>
-          Docker image name. More info: https://kubernetes.io/docs/concepts/containers/images This field is optional to allow higher level config management to default or override container images in workload controllers like Deployments and StatefulSets.<br/>
+          Container image name. More info: https://kubernetes.io/docs/concepts/containers/images This field is optional to allow higher level config management to default or override container images in workload controllers like Deployments and StatefulSets.<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -15587,7 +11056,7 @@ Periodic probe of container liveness. Container will be restarted if the probe f
         <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexinitcontainersindexlivenessprobegrpc">grpc</a></b></td>
         <td>object</td>
         <td>
-          GRPC specifies an action involving a GRPC port. This is an alpha field and requires enabling GRPCContainerProbe feature gate.<br/>
+          GRPC specifies an action involving a GRPC port. This is a beta field and requires enabling GRPCContainerProbe feature gate.<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -15685,7 +11154,7 @@ Exec specifies the action to take.
 
 
 
-GRPC specifies an action involving a GRPC port. This is an alpha field and requires enabling GRPCContainerProbe feature gate.
+GRPC specifies an action involving a GRPC port. This is a beta field and requires enabling GRPCContainerProbe feature gate.
 
 <table>
     <thead>
@@ -15937,7 +11406,7 @@ Periodic probe of container service readiness. Container will be removed from se
         <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexinitcontainersindexreadinessprobegrpc">grpc</a></b></td>
         <td>object</td>
         <td>
-          GRPC specifies an action involving a GRPC port. This is an alpha field and requires enabling GRPCContainerProbe feature gate.<br/>
+          GRPC specifies an action involving a GRPC port. This is a beta field and requires enabling GRPCContainerProbe feature gate.<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -16035,7 +11504,7 @@ Exec specifies the action to take.
 
 
 
-GRPC specifies an action involving a GRPC port. This is an alpha field and requires enabling GRPCContainerProbe feature gate.
+GRPC specifies an action involving a GRPC port. This is a beta field and requires enabling GRPCContainerProbe feature gate.
 
 <table>
     <thead>
@@ -16526,7 +11995,7 @@ StartupProbe indicates that the Pod has successfully initialized. If specified, 
         <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexinitcontainersindexstartupprobegrpc">grpc</a></b></td>
         <td>object</td>
         <td>
-          GRPC specifies an action involving a GRPC port. This is an alpha field and requires enabling GRPCContainerProbe feature gate.<br/>
+          GRPC specifies an action involving a GRPC port. This is a beta field and requires enabling GRPCContainerProbe feature gate.<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -16624,7 +12093,7 @@ Exec specifies the action to take.
 
 
 
-GRPC specifies an action involving a GRPC port. This is an alpha field and requires enabling GRPCContainerProbe feature gate.
+GRPC specifies an action involving a GRPC port. This is a beta field and requires enabling GRPCContainerProbe feature gate.
 
 <table>
     <thead>
@@ -17286,6 +12755,16 @@ Stargate defines the desired deployment characteristics for Stargate in this dat
         </td>
         <td>false</td>
       </tr><tr>
+        <td><b>secretsProvider</b></td>
+        <td>enum</td>
+        <td>
+          SecretsProvider defines whether the secrets used for credentials and certs will be backed by an external secret backend. This moves the responsibility of generating and storing secrets from the operators to the user and will rely on a mutating webhook to inject the secrets into the necessary resources<br/>
+          <br/>
+            <i>Enum</i>: internal, external<br/>
+            <i>Default</i>: internal<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
         <td><b>serviceAccount</b></td>
         <td>string</td>
         <td>
@@ -17786,14 +13265,14 @@ Required. A pod affinity term, associated with the corresponding weight.
         <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexstargateaffinitypodaffinitypreferredduringschedulingignoredduringexecutionindexpodaffinitytermnamespaceselector">namespaceSelector</a></b></td>
         <td>object</td>
         <td>
-          A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces. This field is beta-level and is only honored when PodAffinityNamespaceSelector feature is enabled.<br/>
+          A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>namespaces</b></td>
         <td>[]string</td>
         <td>
-          namespaces specifies a static list of namespace names that the term applies to. The term is applied to the union of the namespaces listed in this field and the ones selected by namespaceSelector. null or empty namespaces list and null namespaceSelector means "this pod's namespace"<br/>
+          namespaces specifies a static list of namespace names that the term applies to. The term is applied to the union of the namespaces listed in this field and the ones selected by namespaceSelector. null or empty namespaces list and null namespaceSelector means "this pod's namespace".<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -17880,7 +13359,7 @@ A label selector requirement is a selector that contains values, a key, and an o
 
 
 
-A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces. This field is beta-level and is only honored when PodAffinityNamespaceSelector feature is enabled.
+A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces.
 
 <table>
     <thead>
@@ -17984,14 +13463,14 @@ Defines a set of pods (namely those matching the labelSelector relative to the g
         <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexstargateaffinitypodaffinityrequiredduringschedulingignoredduringexecutionindexnamespaceselector">namespaceSelector</a></b></td>
         <td>object</td>
         <td>
-          A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces. This field is beta-level and is only honored when PodAffinityNamespaceSelector feature is enabled.<br/>
+          A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>namespaces</b></td>
         <td>[]string</td>
         <td>
-          namespaces specifies a static list of namespace names that the term applies to. The term is applied to the union of the namespaces listed in this field and the ones selected by namespaceSelector. null or empty namespaces list and null namespaceSelector means "this pod's namespace"<br/>
+          namespaces specifies a static list of namespace names that the term applies to. The term is applied to the union of the namespaces listed in this field and the ones selected by namespaceSelector. null or empty namespaces list and null namespaceSelector means "this pod's namespace".<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -18078,7 +13557,7 @@ A label selector requirement is a selector that contains values, a key, and an o
 
 
 
-A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces. This field is beta-level and is only honored when PodAffinityNamespaceSelector feature is enabled.
+A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces.
 
 <table>
     <thead>
@@ -18252,14 +13731,14 @@ Required. A pod affinity term, associated with the corresponding weight.
         <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexstargateaffinitypodantiaffinitypreferredduringschedulingignoredduringexecutionindexpodaffinitytermnamespaceselector">namespaceSelector</a></b></td>
         <td>object</td>
         <td>
-          A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces. This field is beta-level and is only honored when PodAffinityNamespaceSelector feature is enabled.<br/>
+          A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>namespaces</b></td>
         <td>[]string</td>
         <td>
-          namespaces specifies a static list of namespace names that the term applies to. The term is applied to the union of the namespaces listed in this field and the ones selected by namespaceSelector. null or empty namespaces list and null namespaceSelector means "this pod's namespace"<br/>
+          namespaces specifies a static list of namespace names that the term applies to. The term is applied to the union of the namespaces listed in this field and the ones selected by namespaceSelector. null or empty namespaces list and null namespaceSelector means "this pod's namespace".<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -18346,7 +13825,7 @@ A label selector requirement is a selector that contains values, a key, and an o
 
 
 
-A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces. This field is beta-level and is only honored when PodAffinityNamespaceSelector feature is enabled.
+A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces.
 
 <table>
     <thead>
@@ -18450,14 +13929,14 @@ Defines a set of pods (namely those matching the labelSelector relative to the g
         <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexstargateaffinitypodantiaffinityrequiredduringschedulingignoredduringexecutionindexnamespaceselector">namespaceSelector</a></b></td>
         <td>object</td>
         <td>
-          A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces. This field is beta-level and is only honored when PodAffinityNamespaceSelector feature is enabled.<br/>
+          A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>namespaces</b></td>
         <td>[]string</td>
         <td>
-          namespaces specifies a static list of namespace names that the term applies to. The term is applied to the union of the namespaces listed in this field and the ones selected by namespaceSelector. null or empty namespaces list and null namespaceSelector means "this pod's namespace"<br/>
+          namespaces specifies a static list of namespace names that the term applies to. The term is applied to the union of the namespaces listed in this field and the ones selected by namespaceSelector. null or empty namespaces list and null namespaceSelector means "this pod's namespace".<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -18544,7 +14023,7 @@ A label selector requirement is a selector that contains values, a key, and an o
 
 
 
-A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces. This field is beta-level and is only honored when PodAffinityNamespaceSelector feature is enabled.
+A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces.
 
 <table>
     <thead>
@@ -18818,7 +14297,7 @@ LivenessProbe sets the Stargate liveness probe. Leave nil to use defaults.
         <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexstargatelivenessprobegrpc">grpc</a></b></td>
         <td>object</td>
         <td>
-          GRPC specifies an action involving a GRPC port. This is an alpha field and requires enabling GRPCContainerProbe feature gate.<br/>
+          GRPC specifies an action involving a GRPC port. This is a beta field and requires enabling GRPCContainerProbe feature gate.<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -18916,7 +14395,7 @@ Exec specifies the action to take.
 
 
 
-GRPC specifies an action involving a GRPC port. This is an alpha field and requires enabling GRPCContainerProbe feature gate.
+GRPC specifies an action involving a GRPC port. This is a beta field and requires enabling GRPCContainerProbe feature gate.
 
 <table>
     <thead>
@@ -19168,6 +14647,16 @@ StargateRackTemplate defines custom rules for Stargate pods in a given rack. The
         <td>object</td>
         <td>
           Resources is the Kubernetes resource requests and limits to apply, per Stargate pod. Leave nil to use defaults.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>secretsProvider</b></td>
+        <td>enum</td>
+        <td>
+          SecretsProvider defines whether the secrets used for credentials and certs will be backed by an external secret backend. This moves the responsibility of generating and storing secrets from the operators to the user and will rely on a mutating webhook to inject the secrets into the necessary resources<br/>
+          <br/>
+            <i>Enum</i>: internal, external<br/>
+            <i>Default</i>: internal<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -19671,14 +15160,14 @@ Required. A pod affinity term, associated with the corresponding weight.
         <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexstargateracksindexaffinitypodaffinitypreferredduringschedulingignoredduringexecutionindexpodaffinitytermnamespaceselector">namespaceSelector</a></b></td>
         <td>object</td>
         <td>
-          A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces. This field is beta-level and is only honored when PodAffinityNamespaceSelector feature is enabled.<br/>
+          A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>namespaces</b></td>
         <td>[]string</td>
         <td>
-          namespaces specifies a static list of namespace names that the term applies to. The term is applied to the union of the namespaces listed in this field and the ones selected by namespaceSelector. null or empty namespaces list and null namespaceSelector means "this pod's namespace"<br/>
+          namespaces specifies a static list of namespace names that the term applies to. The term is applied to the union of the namespaces listed in this field and the ones selected by namespaceSelector. null or empty namespaces list and null namespaceSelector means "this pod's namespace".<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -19765,7 +15254,7 @@ A label selector requirement is a selector that contains values, a key, and an o
 
 
 
-A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces. This field is beta-level and is only honored when PodAffinityNamespaceSelector feature is enabled.
+A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces.
 
 <table>
     <thead>
@@ -19869,14 +15358,14 @@ Defines a set of pods (namely those matching the labelSelector relative to the g
         <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexstargateracksindexaffinitypodaffinityrequiredduringschedulingignoredduringexecutionindexnamespaceselector">namespaceSelector</a></b></td>
         <td>object</td>
         <td>
-          A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces. This field is beta-level and is only honored when PodAffinityNamespaceSelector feature is enabled.<br/>
+          A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>namespaces</b></td>
         <td>[]string</td>
         <td>
-          namespaces specifies a static list of namespace names that the term applies to. The term is applied to the union of the namespaces listed in this field and the ones selected by namespaceSelector. null or empty namespaces list and null namespaceSelector means "this pod's namespace"<br/>
+          namespaces specifies a static list of namespace names that the term applies to. The term is applied to the union of the namespaces listed in this field and the ones selected by namespaceSelector. null or empty namespaces list and null namespaceSelector means "this pod's namespace".<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -19963,7 +15452,7 @@ A label selector requirement is a selector that contains values, a key, and an o
 
 
 
-A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces. This field is beta-level and is only honored when PodAffinityNamespaceSelector feature is enabled.
+A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces.
 
 <table>
     <thead>
@@ -20137,14 +15626,14 @@ Required. A pod affinity term, associated with the corresponding weight.
         <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexstargateracksindexaffinitypodantiaffinitypreferredduringschedulingignoredduringexecutionindexpodaffinitytermnamespaceselector">namespaceSelector</a></b></td>
         <td>object</td>
         <td>
-          A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces. This field is beta-level and is only honored when PodAffinityNamespaceSelector feature is enabled.<br/>
+          A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>namespaces</b></td>
         <td>[]string</td>
         <td>
-          namespaces specifies a static list of namespace names that the term applies to. The term is applied to the union of the namespaces listed in this field and the ones selected by namespaceSelector. null or empty namespaces list and null namespaceSelector means "this pod's namespace"<br/>
+          namespaces specifies a static list of namespace names that the term applies to. The term is applied to the union of the namespaces listed in this field and the ones selected by namespaceSelector. null or empty namespaces list and null namespaceSelector means "this pod's namespace".<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -20231,7 +15720,7 @@ A label selector requirement is a selector that contains values, a key, and an o
 
 
 
-A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces. This field is beta-level and is only honored when PodAffinityNamespaceSelector feature is enabled.
+A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces.
 
 <table>
     <thead>
@@ -20335,14 +15824,14 @@ Defines a set of pods (namely those matching the labelSelector relative to the g
         <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexstargateracksindexaffinitypodantiaffinityrequiredduringschedulingignoredduringexecutionindexnamespaceselector">namespaceSelector</a></b></td>
         <td>object</td>
         <td>
-          A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces. This field is beta-level and is only honored when PodAffinityNamespaceSelector feature is enabled.<br/>
+          A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>namespaces</b></td>
         <td>[]string</td>
         <td>
-          namespaces specifies a static list of namespace names that the term applies to. The term is applied to the union of the namespaces listed in this field and the ones selected by namespaceSelector. null or empty namespaces list and null namespaceSelector means "this pod's namespace"<br/>
+          namespaces specifies a static list of namespace names that the term applies to. The term is applied to the union of the namespaces listed in this field and the ones selected by namespaceSelector. null or empty namespaces list and null namespaceSelector means "this pod's namespace".<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -20429,7 +15918,7 @@ A label selector requirement is a selector that contains values, a key, and an o
 
 
 
-A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces. This field is beta-level and is only honored when PodAffinityNamespaceSelector feature is enabled.
+A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces.
 
 <table>
     <thead>
@@ -20703,7 +16192,7 @@ LivenessProbe sets the Stargate liveness probe. Leave nil to use defaults.
         <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexstargateracksindexlivenessprobegrpc">grpc</a></b></td>
         <td>object</td>
         <td>
-          GRPC specifies an action involving a GRPC port. This is an alpha field and requires enabling GRPCContainerProbe feature gate.<br/>
+          GRPC specifies an action involving a GRPC port. This is a beta field and requires enabling GRPCContainerProbe feature gate.<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -20801,7 +16290,7 @@ Exec specifies the action to take.
 
 
 
-GRPC specifies an action involving a GRPC port. This is an alpha field and requires enabling GRPCContainerProbe feature gate.
+GRPC specifies an action involving a GRPC port. This is a beta field and requires enabling GRPCContainerProbe feature gate.
 
 <table>
     <thead>
@@ -20992,7 +16481,7 @@ ReadinessProbe sets the Stargate readiness probe. Leave nil to use defaults.
         <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexstargateracksindexreadinessprobegrpc">grpc</a></b></td>
         <td>object</td>
         <td>
-          GRPC specifies an action involving a GRPC port. This is an alpha field and requires enabling GRPCContainerProbe feature gate.<br/>
+          GRPC specifies an action involving a GRPC port. This is a beta field and requires enabling GRPCContainerProbe feature gate.<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -21090,7 +16579,7 @@ Exec specifies the action to take.
 
 
 
-GRPC specifies an action involving a GRPC port. This is an alpha field and requires enabling GRPCContainerProbe feature gate.
+GRPC specifies an action involving a GRPC port. This is a beta field and requires enabling GRPCContainerProbe feature gate.
 
 <table>
     <thead>
@@ -21333,7 +16822,7 @@ Telemetry defines the desired telemetry integrations to deploy targeting the Sta
         <td><b>metricFilters</b></td>
         <td>[]string</td>
         <td>
-          MetricFilters allows passing filters to MCAC in order to reduce the amount of extracted metrics. Not setting this field will result in the default filters being used. Setting it to an empty list will result in all metrics being extracted. Examples: - "deny:org.apache.cassandra.metrics.Table" - "deny:org.apache.cassandra.metrics.table" - "allow:org.apache.cassandra.metrics.table.live_ss_table_count" - "allow:org.apache.cassandra.metrics.Table.LiveSSTableCount" - "allow:org.apache.cassandra.metrics.table.live_disk_space_used"<br/>
+          MetricFilters allows passing filters to MCAC in order to reduce the amount of extracted metrics. Not setting this field will result in the default filters being used: - "deny:org.apache.cassandra.metrics.Table" - "deny:org.apache.cassandra.metrics.table" - "allow:org.apache.cassandra.metrics.table.live_ss_table_count" - "allow:org.apache.cassandra.metrics.Table.LiveSSTableCount" - "allow:org.apache.cassandra.metrics.table.live_disk_space_used" - "allow:org.apache.cassandra.metrics.table.LiveDiskSpaceUsed" - "allow:org.apache.cassandra.metrics.Table.Pending" - "allow:org.apache.cassandra.metrics.Table.Memtable" - "allow:org.apache.cassandra.metrics.Table.Compaction" - "allow:org.apache.cassandra.metrics.table.read" - "allow:org.apache.cassandra.metrics.table.write" - "allow:org.apache.cassandra.metrics.table.range" - "allow:org.apache.cassandra.metrics.table.coordinator" - "allow:org.apache.cassandra.metrics.table.dropped_mutations" Setting it to an empty list will result in all metrics being extracted.<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -21467,7 +16956,7 @@ ReadinessProbe sets the Stargate readiness probe. Leave nil to use defaults.
         <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexstargatereadinessprobegrpc">grpc</a></b></td>
         <td>object</td>
         <td>
-          GRPC specifies an action involving a GRPC port. This is an alpha field and requires enabling GRPCContainerProbe feature gate.<br/>
+          GRPC specifies an action involving a GRPC port. This is a beta field and requires enabling GRPCContainerProbe feature gate.<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -21565,7 +17054,7 @@ Exec specifies the action to take.
 
 
 
-GRPC specifies an action involving a GRPC port. This is an alpha field and requires enabling GRPCContainerProbe feature gate.
+GRPC specifies an action involving a GRPC port. This is a beta field and requires enabling GRPCContainerProbe feature gate.
 
 <table>
     <thead>
@@ -21808,7 +17297,7 @@ Telemetry defines the desired telemetry integrations to deploy targeting the Sta
         <td><b>metricFilters</b></td>
         <td>[]string</td>
         <td>
-          MetricFilters allows passing filters to MCAC in order to reduce the amount of extracted metrics. Not setting this field will result in the default filters being used. Setting it to an empty list will result in all metrics being extracted. Examples: - "deny:org.apache.cassandra.metrics.Table" - "deny:org.apache.cassandra.metrics.table" - "allow:org.apache.cassandra.metrics.table.live_ss_table_count" - "allow:org.apache.cassandra.metrics.Table.LiveSSTableCount" - "allow:org.apache.cassandra.metrics.table.live_disk_space_used"<br/>
+          MetricFilters allows passing filters to MCAC in order to reduce the amount of extracted metrics. Not setting this field will result in the default filters being used: - "deny:org.apache.cassandra.metrics.Table" - "deny:org.apache.cassandra.metrics.table" - "allow:org.apache.cassandra.metrics.table.live_ss_table_count" - "allow:org.apache.cassandra.metrics.Table.LiveSSTableCount" - "allow:org.apache.cassandra.metrics.table.live_disk_space_used" - "allow:org.apache.cassandra.metrics.table.LiveDiskSpaceUsed" - "allow:org.apache.cassandra.metrics.Table.Pending" - "allow:org.apache.cassandra.metrics.Table.Memtable" - "allow:org.apache.cassandra.metrics.Table.Compaction" - "allow:org.apache.cassandra.metrics.table.read" - "allow:org.apache.cassandra.metrics.table.write" - "allow:org.apache.cassandra.metrics.table.range" - "allow:org.apache.cassandra.metrics.table.coordinator" - "allow:org.apache.cassandra.metrics.table.dropped_mutations" Setting it to an empty list will result in all metrics being extracted.<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -21945,7 +17434,7 @@ StorageConfig is the persistent storage requirements for each Cassandra pod. Thi
 
 
 
-AdditionalVolumes StorageConfig defines additional storage configurations
+AdditionalVolumes defines additional storage configurations
 
 <table>
     <thead>
@@ -22001,42 +17490,42 @@ Persistent volume claim spec
         <td><b>accessModes</b></td>
         <td>[]string</td>
         <td>
-          AccessModes contains the desired access modes the volume should have. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#access-modes-1<br/>
+          accessModes contains the desired access modes the volume should have. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#access-modes-1<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexstorageconfigadditionalvolumesindexpvcspecdatasource">dataSource</a></b></td>
         <td>object</td>
         <td>
-          This field can be used to specify either: * An existing VolumeSnapshot object (snapshot.storage.k8s.io/VolumeSnapshot) * An existing PVC (PersistentVolumeClaim) If the provisioner or an external controller can support the specified data source, it will create a new volume based on the contents of the specified data source. If the AnyVolumeDataSource feature gate is enabled, this field will always have the same contents as the DataSourceRef field.<br/>
+          dataSource field can be used to specify either: * An existing VolumeSnapshot object (snapshot.storage.k8s.io/VolumeSnapshot) * An existing PVC (PersistentVolumeClaim) If the provisioner or an external controller can support the specified data source, it will create a new volume based on the contents of the specified data source. If the AnyVolumeDataSource feature gate is enabled, this field will always have the same contents as the DataSourceRef field.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexstorageconfigadditionalvolumesindexpvcspecdatasourceref">dataSourceRef</a></b></td>
         <td>object</td>
         <td>
-          Specifies the object from which to populate the volume with data, if a non-empty volume is desired. This may be any local object from a non-empty API group (non core object) or a PersistentVolumeClaim object. When this field is specified, volume binding will only succeed if the type of the specified object matches some installed volume populator or dynamic provisioner. This field will replace the functionality of the DataSource field and as such if both fields are non-empty, they must have the same value. For backwards compatibility, both fields (DataSource and DataSourceRef) will be set to the same value automatically if one of them is empty and the other is non-empty. There are two important differences between DataSource and DataSourceRef: * While DataSource only allows two specific types of objects, DataSourceRef allows any non-core object, as well as PersistentVolumeClaim objects. * While DataSource ignores disallowed values (dropping them), DataSourceRef preserves all values, and generates an error if a disallowed value is specified. (Alpha) Using this field requires the AnyVolumeDataSource feature gate to be enabled.<br/>
+          dataSourceRef specifies the object from which to populate the volume with data, if a non-empty volume is desired. This may be any local object from a non-empty API group (non core object) or a PersistentVolumeClaim object. When this field is specified, volume binding will only succeed if the type of the specified object matches some installed volume populator or dynamic provisioner. This field will replace the functionality of the DataSource field and as such if both fields are non-empty, they must have the same value. For backwards compatibility, both fields (DataSource and DataSourceRef) will be set to the same value automatically if one of them is empty and the other is non-empty. There are two important differences between DataSource and DataSourceRef: * While DataSource only allows two specific types of objects, DataSourceRef allows any non-core object, as well as PersistentVolumeClaim objects. * While DataSource ignores disallowed values (dropping them), DataSourceRef preserves all values, and generates an error if a disallowed value is specified. (Beta) Using this field requires the AnyVolumeDataSource feature gate to be enabled.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexstorageconfigadditionalvolumesindexpvcspecresources">resources</a></b></td>
         <td>object</td>
         <td>
-          Resources represents the minimum resources the volume should have. If RecoverVolumeExpansionFailure feature is enabled users are allowed to specify resource requirements that are lower than previous value but must still be higher than capacity recorded in the status field of the claim. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#resources<br/>
+          resources represents the minimum resources the volume should have. If RecoverVolumeExpansionFailure feature is enabled users are allowed to specify resource requirements that are lower than previous value but must still be higher than capacity recorded in the status field of the claim. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#resources<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexstorageconfigadditionalvolumesindexpvcspecselector">selector</a></b></td>
         <td>object</td>
         <td>
-          A label query over volumes to consider for binding.<br/>
+          selector is a label query over volumes to consider for binding.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>storageClassName</b></td>
         <td>string</td>
         <td>
-          Name of the StorageClass required by the claim. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#class-1<br/>
+          storageClassName is the name of the StorageClass required by the claim. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#class-1<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -22050,7 +17539,7 @@ Persistent volume claim spec
         <td><b>volumeName</b></td>
         <td>string</td>
         <td>
-          VolumeName is the binding reference to the PersistentVolume backing this claim.<br/>
+          volumeName is the binding reference to the PersistentVolume backing this claim.<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -22062,7 +17551,7 @@ Persistent volume claim spec
 
 
 
-This field can be used to specify either: * An existing VolumeSnapshot object (snapshot.storage.k8s.io/VolumeSnapshot) * An existing PVC (PersistentVolumeClaim) If the provisioner or an external controller can support the specified data source, it will create a new volume based on the contents of the specified data source. If the AnyVolumeDataSource feature gate is enabled, this field will always have the same contents as the DataSourceRef field.
+dataSource field can be used to specify either: * An existing VolumeSnapshot object (snapshot.storage.k8s.io/VolumeSnapshot) * An existing PVC (PersistentVolumeClaim) If the provisioner or an external controller can support the specified data source, it will create a new volume based on the contents of the specified data source. If the AnyVolumeDataSource feature gate is enabled, this field will always have the same contents as the DataSourceRef field.
 
 <table>
     <thead>
@@ -22103,7 +17592,7 @@ This field can be used to specify either: * An existing VolumeSnapshot object (s
 
 
 
-Specifies the object from which to populate the volume with data, if a non-empty volume is desired. This may be any local object from a non-empty API group (non core object) or a PersistentVolumeClaim object. When this field is specified, volume binding will only succeed if the type of the specified object matches some installed volume populator or dynamic provisioner. This field will replace the functionality of the DataSource field and as such if both fields are non-empty, they must have the same value. For backwards compatibility, both fields (DataSource and DataSourceRef) will be set to the same value automatically if one of them is empty and the other is non-empty. There are two important differences between DataSource and DataSourceRef: * While DataSource only allows two specific types of objects, DataSourceRef allows any non-core object, as well as PersistentVolumeClaim objects. * While DataSource ignores disallowed values (dropping them), DataSourceRef preserves all values, and generates an error if a disallowed value is specified. (Alpha) Using this field requires the AnyVolumeDataSource feature gate to be enabled.
+dataSourceRef specifies the object from which to populate the volume with data, if a non-empty volume is desired. This may be any local object from a non-empty API group (non core object) or a PersistentVolumeClaim object. When this field is specified, volume binding will only succeed if the type of the specified object matches some installed volume populator or dynamic provisioner. This field will replace the functionality of the DataSource field and as such if both fields are non-empty, they must have the same value. For backwards compatibility, both fields (DataSource and DataSourceRef) will be set to the same value automatically if one of them is empty and the other is non-empty. There are two important differences between DataSource and DataSourceRef: * While DataSource only allows two specific types of objects, DataSourceRef allows any non-core object, as well as PersistentVolumeClaim objects. * While DataSource ignores disallowed values (dropping them), DataSourceRef preserves all values, and generates an error if a disallowed value is specified. (Beta) Using this field requires the AnyVolumeDataSource feature gate to be enabled.
 
 <table>
     <thead>
@@ -22144,7 +17633,7 @@ Specifies the object from which to populate the volume with data, if a non-empty
 
 
 
-Resources represents the minimum resources the volume should have. If RecoverVolumeExpansionFailure feature is enabled users are allowed to specify resource requirements that are lower than previous value but must still be higher than capacity recorded in the status field of the claim. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#resources
+resources represents the minimum resources the volume should have. If RecoverVolumeExpansionFailure feature is enabled users are allowed to specify resource requirements that are lower than previous value but must still be higher than capacity recorded in the status field of the claim. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#resources
 
 <table>
     <thead>
@@ -22178,7 +17667,7 @@ Resources represents the minimum resources the volume should have. If RecoverVol
 
 
 
-A label query over volumes to consider for binding.
+selector is a label query over volumes to consider for binding.
 
 <table>
     <thead>
@@ -22268,42 +17757,42 @@ PersistentVolumeClaimSpec describes the common attributes of storage devices and
         <td><b>accessModes</b></td>
         <td>[]string</td>
         <td>
-          AccessModes contains the desired access modes the volume should have. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#access-modes-1<br/>
+          accessModes contains the desired access modes the volume should have. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#access-modes-1<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexstorageconfigcassandradatavolumeclaimspecdatasource">dataSource</a></b></td>
         <td>object</td>
         <td>
-          This field can be used to specify either: * An existing VolumeSnapshot object (snapshot.storage.k8s.io/VolumeSnapshot) * An existing PVC (PersistentVolumeClaim) If the provisioner or an external controller can support the specified data source, it will create a new volume based on the contents of the specified data source. If the AnyVolumeDataSource feature gate is enabled, this field will always have the same contents as the DataSourceRef field.<br/>
+          dataSource field can be used to specify either: * An existing VolumeSnapshot object (snapshot.storage.k8s.io/VolumeSnapshot) * An existing PVC (PersistentVolumeClaim) If the provisioner or an external controller can support the specified data source, it will create a new volume based on the contents of the specified data source. If the AnyVolumeDataSource feature gate is enabled, this field will always have the same contents as the DataSourceRef field.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexstorageconfigcassandradatavolumeclaimspecdatasourceref">dataSourceRef</a></b></td>
         <td>object</td>
         <td>
-          Specifies the object from which to populate the volume with data, if a non-empty volume is desired. This may be any local object from a non-empty API group (non core object) or a PersistentVolumeClaim object. When this field is specified, volume binding will only succeed if the type of the specified object matches some installed volume populator or dynamic provisioner. This field will replace the functionality of the DataSource field and as such if both fields are non-empty, they must have the same value. For backwards compatibility, both fields (DataSource and DataSourceRef) will be set to the same value automatically if one of them is empty and the other is non-empty. There are two important differences between DataSource and DataSourceRef: * While DataSource only allows two specific types of objects, DataSourceRef allows any non-core object, as well as PersistentVolumeClaim objects. * While DataSource ignores disallowed values (dropping them), DataSourceRef preserves all values, and generates an error if a disallowed value is specified. (Alpha) Using this field requires the AnyVolumeDataSource feature gate to be enabled.<br/>
+          dataSourceRef specifies the object from which to populate the volume with data, if a non-empty volume is desired. This may be any local object from a non-empty API group (non core object) or a PersistentVolumeClaim object. When this field is specified, volume binding will only succeed if the type of the specified object matches some installed volume populator or dynamic provisioner. This field will replace the functionality of the DataSource field and as such if both fields are non-empty, they must have the same value. For backwards compatibility, both fields (DataSource and DataSourceRef) will be set to the same value automatically if one of them is empty and the other is non-empty. There are two important differences between DataSource and DataSourceRef: * While DataSource only allows two specific types of objects, DataSourceRef allows any non-core object, as well as PersistentVolumeClaim objects. * While DataSource ignores disallowed values (dropping them), DataSourceRef preserves all values, and generates an error if a disallowed value is specified. (Beta) Using this field requires the AnyVolumeDataSource feature gate to be enabled.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexstorageconfigcassandradatavolumeclaimspecresources">resources</a></b></td>
         <td>object</td>
         <td>
-          Resources represents the minimum resources the volume should have. If RecoverVolumeExpansionFailure feature is enabled users are allowed to specify resource requirements that are lower than previous value but must still be higher than capacity recorded in the status field of the claim. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#resources<br/>
+          resources represents the minimum resources the volume should have. If RecoverVolumeExpansionFailure feature is enabled users are allowed to specify resource requirements that are lower than previous value but must still be higher than capacity recorded in the status field of the claim. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#resources<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexstorageconfigcassandradatavolumeclaimspecselector">selector</a></b></td>
         <td>object</td>
         <td>
-          A label query over volumes to consider for binding.<br/>
+          selector is a label query over volumes to consider for binding.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>storageClassName</b></td>
         <td>string</td>
         <td>
-          Name of the StorageClass required by the claim. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#class-1<br/>
+          storageClassName is the name of the StorageClass required by the claim. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#class-1<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -22317,7 +17806,7 @@ PersistentVolumeClaimSpec describes the common attributes of storage devices and
         <td><b>volumeName</b></td>
         <td>string</td>
         <td>
-          VolumeName is the binding reference to the PersistentVolume backing this claim.<br/>
+          volumeName is the binding reference to the PersistentVolume backing this claim.<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -22329,7 +17818,7 @@ PersistentVolumeClaimSpec describes the common attributes of storage devices and
 
 
 
-This field can be used to specify either: * An existing VolumeSnapshot object (snapshot.storage.k8s.io/VolumeSnapshot) * An existing PVC (PersistentVolumeClaim) If the provisioner or an external controller can support the specified data source, it will create a new volume based on the contents of the specified data source. If the AnyVolumeDataSource feature gate is enabled, this field will always have the same contents as the DataSourceRef field.
+dataSource field can be used to specify either: * An existing VolumeSnapshot object (snapshot.storage.k8s.io/VolumeSnapshot) * An existing PVC (PersistentVolumeClaim) If the provisioner or an external controller can support the specified data source, it will create a new volume based on the contents of the specified data source. If the AnyVolumeDataSource feature gate is enabled, this field will always have the same contents as the DataSourceRef field.
 
 <table>
     <thead>
@@ -22370,7 +17859,7 @@ This field can be used to specify either: * An existing VolumeSnapshot object (s
 
 
 
-Specifies the object from which to populate the volume with data, if a non-empty volume is desired. This may be any local object from a non-empty API group (non core object) or a PersistentVolumeClaim object. When this field is specified, volume binding will only succeed if the type of the specified object matches some installed volume populator or dynamic provisioner. This field will replace the functionality of the DataSource field and as such if both fields are non-empty, they must have the same value. For backwards compatibility, both fields (DataSource and DataSourceRef) will be set to the same value automatically if one of them is empty and the other is non-empty. There are two important differences between DataSource and DataSourceRef: * While DataSource only allows two specific types of objects, DataSourceRef allows any non-core object, as well as PersistentVolumeClaim objects. * While DataSource ignores disallowed values (dropping them), DataSourceRef preserves all values, and generates an error if a disallowed value is specified. (Alpha) Using this field requires the AnyVolumeDataSource feature gate to be enabled.
+dataSourceRef specifies the object from which to populate the volume with data, if a non-empty volume is desired. This may be any local object from a non-empty API group (non core object) or a PersistentVolumeClaim object. When this field is specified, volume binding will only succeed if the type of the specified object matches some installed volume populator or dynamic provisioner. This field will replace the functionality of the DataSource field and as such if both fields are non-empty, they must have the same value. For backwards compatibility, both fields (DataSource and DataSourceRef) will be set to the same value automatically if one of them is empty and the other is non-empty. There are two important differences between DataSource and DataSourceRef: * While DataSource only allows two specific types of objects, DataSourceRef allows any non-core object, as well as PersistentVolumeClaim objects. * While DataSource ignores disallowed values (dropping them), DataSourceRef preserves all values, and generates an error if a disallowed value is specified. (Beta) Using this field requires the AnyVolumeDataSource feature gate to be enabled.
 
 <table>
     <thead>
@@ -22411,7 +17900,7 @@ Specifies the object from which to populate the volume with data, if a non-empty
 
 
 
-Resources represents the minimum resources the volume should have. If RecoverVolumeExpansionFailure feature is enabled users are allowed to specify resource requirements that are lower than previous value but must still be higher than capacity recorded in the status field of the claim. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#resources
+resources represents the minimum resources the volume should have. If RecoverVolumeExpansionFailure feature is enabled users are allowed to specify resource requirements that are lower than previous value but must still be higher than capacity recorded in the status field of the claim. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#resources
 
 <table>
     <thead>
@@ -22445,7 +17934,7 @@ Resources represents the minimum resources the volume should have. If RecoverVol
 
 
 
-A label query over volumes to consider for binding.
+selector is a label query over volumes to consider for binding.
 
 <table>
     <thead>
@@ -22569,7 +18058,7 @@ Telemetry defines the desired state for telemetry resources in this datacenter. 
         <td><b>metricFilters</b></td>
         <td>[]string</td>
         <td>
-          MetricFilters allows passing filters to MCAC in order to reduce the amount of extracted metrics. Not setting this field will result in the default filters being used. Setting it to an empty list will result in all metrics being extracted. Examples: - "deny:org.apache.cassandra.metrics.Table" - "deny:org.apache.cassandra.metrics.table" - "allow:org.apache.cassandra.metrics.table.live_ss_table_count" - "allow:org.apache.cassandra.metrics.Table.LiveSSTableCount" - "allow:org.apache.cassandra.metrics.table.live_disk_space_used"<br/>
+          MetricFilters allows passing filters to MCAC in order to reduce the amount of extracted metrics. Not setting this field will result in the default filters being used: - "deny:org.apache.cassandra.metrics.Table" - "deny:org.apache.cassandra.metrics.table" - "allow:org.apache.cassandra.metrics.table.live_ss_table_count" - "allow:org.apache.cassandra.metrics.Table.LiveSSTableCount" - "allow:org.apache.cassandra.metrics.table.live_disk_space_used" - "allow:org.apache.cassandra.metrics.table.LiveDiskSpaceUsed" - "allow:org.apache.cassandra.metrics.Table.Pending" - "allow:org.apache.cassandra.metrics.Table.Memtable" - "allow:org.apache.cassandra.metrics.Table.Compaction" - "allow:org.apache.cassandra.metrics.table.read" - "allow:org.apache.cassandra.metrics.table.write" - "allow:org.apache.cassandra.metrics.table.range" - "allow:org.apache.cassandra.metrics.table.coordinator" - "allow:org.apache.cassandra.metrics.table.dropped_mutations" Setting it to an empty list will result in all metrics being extracted.<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -22667,6 +18156,47 @@ The pod this Toleration is attached to tolerates any taint that matches the trip
 </table>
 
 
+#### K8ssandraCluster.spec.cassandra.dseWorkloads
+<sup><sup>[↩ Parent](#k8ssandraclusterspeccassandra)</sup></sup>
+
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>analyticsEnabled</b></td>
+        <td>boolean</td>
+        <td>
+          <br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>graphEnabled</b></td>
+        <td>boolean</td>
+        <td>
+          <br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>searchEnabled</b></td>
+        <td>boolean</td>
+        <td>
+          <br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
 #### K8ssandraCluster.spec.cassandra.extraVolumes
 <sup><sup>[↩ Parent](#k8ssandraclusterspeccassandra)</sup></sup>
 
@@ -22706,7 +18236,7 @@ Volumes defines additional volumes to be added to each Cassandra pod. If the vol
 
 
 
-AdditionalVolumes StorageConfig defines additional storage configurations
+AdditionalVolumes defines additional storage configurations
 
 <table>
     <thead>
@@ -22762,42 +18292,42 @@ Persistent volume claim spec
         <td><b>accessModes</b></td>
         <td>[]string</td>
         <td>
-          AccessModes contains the desired access modes the volume should have. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#access-modes-1<br/>
+          accessModes contains the desired access modes the volume should have. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#access-modes-1<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#k8ssandraclusterspeccassandraextravolumespvcsindexpvcspecdatasource">dataSource</a></b></td>
         <td>object</td>
         <td>
-          This field can be used to specify either: * An existing VolumeSnapshot object (snapshot.storage.k8s.io/VolumeSnapshot) * An existing PVC (PersistentVolumeClaim) If the provisioner or an external controller can support the specified data source, it will create a new volume based on the contents of the specified data source. If the AnyVolumeDataSource feature gate is enabled, this field will always have the same contents as the DataSourceRef field.<br/>
+          dataSource field can be used to specify either: * An existing VolumeSnapshot object (snapshot.storage.k8s.io/VolumeSnapshot) * An existing PVC (PersistentVolumeClaim) If the provisioner or an external controller can support the specified data source, it will create a new volume based on the contents of the specified data source. If the AnyVolumeDataSource feature gate is enabled, this field will always have the same contents as the DataSourceRef field.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#k8ssandraclusterspeccassandraextravolumespvcsindexpvcspecdatasourceref">dataSourceRef</a></b></td>
         <td>object</td>
         <td>
-          Specifies the object from which to populate the volume with data, if a non-empty volume is desired. This may be any local object from a non-empty API group (non core object) or a PersistentVolumeClaim object. When this field is specified, volume binding will only succeed if the type of the specified object matches some installed volume populator or dynamic provisioner. This field will replace the functionality of the DataSource field and as such if both fields are non-empty, they must have the same value. For backwards compatibility, both fields (DataSource and DataSourceRef) will be set to the same value automatically if one of them is empty and the other is non-empty. There are two important differences between DataSource and DataSourceRef: * While DataSource only allows two specific types of objects, DataSourceRef allows any non-core object, as well as PersistentVolumeClaim objects. * While DataSource ignores disallowed values (dropping them), DataSourceRef preserves all values, and generates an error if a disallowed value is specified. (Alpha) Using this field requires the AnyVolumeDataSource feature gate to be enabled.<br/>
+          dataSourceRef specifies the object from which to populate the volume with data, if a non-empty volume is desired. This may be any local object from a non-empty API group (non core object) or a PersistentVolumeClaim object. When this field is specified, volume binding will only succeed if the type of the specified object matches some installed volume populator or dynamic provisioner. This field will replace the functionality of the DataSource field and as such if both fields are non-empty, they must have the same value. For backwards compatibility, both fields (DataSource and DataSourceRef) will be set to the same value automatically if one of them is empty and the other is non-empty. There are two important differences between DataSource and DataSourceRef: * While DataSource only allows two specific types of objects, DataSourceRef allows any non-core object, as well as PersistentVolumeClaim objects. * While DataSource ignores disallowed values (dropping them), DataSourceRef preserves all values, and generates an error if a disallowed value is specified. (Beta) Using this field requires the AnyVolumeDataSource feature gate to be enabled.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#k8ssandraclusterspeccassandraextravolumespvcsindexpvcspecresources">resources</a></b></td>
         <td>object</td>
         <td>
-          Resources represents the minimum resources the volume should have. If RecoverVolumeExpansionFailure feature is enabled users are allowed to specify resource requirements that are lower than previous value but must still be higher than capacity recorded in the status field of the claim. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#resources<br/>
+          resources represents the minimum resources the volume should have. If RecoverVolumeExpansionFailure feature is enabled users are allowed to specify resource requirements that are lower than previous value but must still be higher than capacity recorded in the status field of the claim. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#resources<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#k8ssandraclusterspeccassandraextravolumespvcsindexpvcspecselector">selector</a></b></td>
         <td>object</td>
         <td>
-          A label query over volumes to consider for binding.<br/>
+          selector is a label query over volumes to consider for binding.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>storageClassName</b></td>
         <td>string</td>
         <td>
-          Name of the StorageClass required by the claim. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#class-1<br/>
+          storageClassName is the name of the StorageClass required by the claim. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#class-1<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -22811,7 +18341,7 @@ Persistent volume claim spec
         <td><b>volumeName</b></td>
         <td>string</td>
         <td>
-          VolumeName is the binding reference to the PersistentVolume backing this claim.<br/>
+          volumeName is the binding reference to the PersistentVolume backing this claim.<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -22823,7 +18353,7 @@ Persistent volume claim spec
 
 
 
-This field can be used to specify either: * An existing VolumeSnapshot object (snapshot.storage.k8s.io/VolumeSnapshot) * An existing PVC (PersistentVolumeClaim) If the provisioner or an external controller can support the specified data source, it will create a new volume based on the contents of the specified data source. If the AnyVolumeDataSource feature gate is enabled, this field will always have the same contents as the DataSourceRef field.
+dataSource field can be used to specify either: * An existing VolumeSnapshot object (snapshot.storage.k8s.io/VolumeSnapshot) * An existing PVC (PersistentVolumeClaim) If the provisioner or an external controller can support the specified data source, it will create a new volume based on the contents of the specified data source. If the AnyVolumeDataSource feature gate is enabled, this field will always have the same contents as the DataSourceRef field.
 
 <table>
     <thead>
@@ -22864,7 +18394,7 @@ This field can be used to specify either: * An existing VolumeSnapshot object (s
 
 
 
-Specifies the object from which to populate the volume with data, if a non-empty volume is desired. This may be any local object from a non-empty API group (non core object) or a PersistentVolumeClaim object. When this field is specified, volume binding will only succeed if the type of the specified object matches some installed volume populator or dynamic provisioner. This field will replace the functionality of the DataSource field and as such if both fields are non-empty, they must have the same value. For backwards compatibility, both fields (DataSource and DataSourceRef) will be set to the same value automatically if one of them is empty and the other is non-empty. There are two important differences between DataSource and DataSourceRef: * While DataSource only allows two specific types of objects, DataSourceRef allows any non-core object, as well as PersistentVolumeClaim objects. * While DataSource ignores disallowed values (dropping them), DataSourceRef preserves all values, and generates an error if a disallowed value is specified. (Alpha) Using this field requires the AnyVolumeDataSource feature gate to be enabled.
+dataSourceRef specifies the object from which to populate the volume with data, if a non-empty volume is desired. This may be any local object from a non-empty API group (non core object) or a PersistentVolumeClaim object. When this field is specified, volume binding will only succeed if the type of the specified object matches some installed volume populator or dynamic provisioner. This field will replace the functionality of the DataSource field and as such if both fields are non-empty, they must have the same value. For backwards compatibility, both fields (DataSource and DataSourceRef) will be set to the same value automatically if one of them is empty and the other is non-empty. There are two important differences between DataSource and DataSourceRef: * While DataSource only allows two specific types of objects, DataSourceRef allows any non-core object, as well as PersistentVolumeClaim objects. * While DataSource ignores disallowed values (dropping them), DataSourceRef preserves all values, and generates an error if a disallowed value is specified. (Beta) Using this field requires the AnyVolumeDataSource feature gate to be enabled.
 
 <table>
     <thead>
@@ -22905,7 +18435,7 @@ Specifies the object from which to populate the volume with data, if a non-empty
 
 
 
-Resources represents the minimum resources the volume should have. If RecoverVolumeExpansionFailure feature is enabled users are allowed to specify resource requirements that are lower than previous value but must still be higher than capacity recorded in the status field of the claim. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#resources
+resources represents the minimum resources the volume should have. If RecoverVolumeExpansionFailure feature is enabled users are allowed to specify resource requirements that are lower than previous value but must still be higher than capacity recorded in the status field of the claim. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#resources
 
 <table>
     <thead>
@@ -22939,7 +18469,7 @@ Resources represents the minimum resources the volume should have. If RecoverVol
 
 
 
-A label query over volumes to consider for binding.
+selector is a label query over volumes to consider for binding.
 
 <table>
     <thead>
@@ -23029,77 +18559,77 @@ Volume represents a named volume in a pod that may be accessed by any container 
         <td><b>name</b></td>
         <td>string</td>
         <td>
-          Volume's name. Must be a DNS_LABEL and unique within the pod. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names<br/>
+          name of the volume. Must be a DNS_LABEL and unique within the pod. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names<br/>
         </td>
         <td>true</td>
       </tr><tr>
         <td><b><a href="#k8ssandraclusterspeccassandraextravolumesvolumesindexawselasticblockstore">awsElasticBlockStore</a></b></td>
         <td>object</td>
         <td>
-          AWSElasticBlockStore represents an AWS Disk resource that is attached to a kubelet's host machine and then exposed to the pod. More info: https://kubernetes.io/docs/concepts/storage/volumes#awselasticblockstore<br/>
+          awsElasticBlockStore represents an AWS Disk resource that is attached to a kubelet's host machine and then exposed to the pod. More info: https://kubernetes.io/docs/concepts/storage/volumes#awselasticblockstore<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#k8ssandraclusterspeccassandraextravolumesvolumesindexazuredisk">azureDisk</a></b></td>
         <td>object</td>
         <td>
-          AzureDisk represents an Azure Data Disk mount on the host and bind mount to the pod.<br/>
+          azureDisk represents an Azure Data Disk mount on the host and bind mount to the pod.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#k8ssandraclusterspeccassandraextravolumesvolumesindexazurefile">azureFile</a></b></td>
         <td>object</td>
         <td>
-          AzureFile represents an Azure File Service mount on the host and bind mount to the pod.<br/>
+          azureFile represents an Azure File Service mount on the host and bind mount to the pod.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#k8ssandraclusterspeccassandraextravolumesvolumesindexcephfs">cephfs</a></b></td>
         <td>object</td>
         <td>
-          CephFS represents a Ceph FS mount on the host that shares a pod's lifetime<br/>
+          cephFS represents a Ceph FS mount on the host that shares a pod's lifetime<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#k8ssandraclusterspeccassandraextravolumesvolumesindexcinder">cinder</a></b></td>
         <td>object</td>
         <td>
-          Cinder represents a cinder volume attached and mounted on kubelets host machine. More info: https://examples.k8s.io/mysql-cinder-pd/README.md<br/>
+          cinder represents a cinder volume attached and mounted on kubelets host machine. More info: https://examples.k8s.io/mysql-cinder-pd/README.md<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#k8ssandraclusterspeccassandraextravolumesvolumesindexconfigmap">configMap</a></b></td>
         <td>object</td>
         <td>
-          ConfigMap represents a configMap that should populate this volume<br/>
+          configMap represents a configMap that should populate this volume<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#k8ssandraclusterspeccassandraextravolumesvolumesindexcsi">csi</a></b></td>
         <td>object</td>
         <td>
-          CSI (Container Storage Interface) represents ephemeral storage that is handled by certain external CSI drivers (Beta feature).<br/>
+          csi (Container Storage Interface) represents ephemeral storage that is handled by certain external CSI drivers (Beta feature).<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#k8ssandraclusterspeccassandraextravolumesvolumesindexdownwardapi">downwardAPI</a></b></td>
         <td>object</td>
         <td>
-          DownwardAPI represents downward API about the pod that should populate this volume<br/>
+          downwardAPI represents downward API about the pod that should populate this volume<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#k8ssandraclusterspeccassandraextravolumesvolumesindexemptydir">emptyDir</a></b></td>
         <td>object</td>
         <td>
-          EmptyDir represents a temporary directory that shares a pod's lifetime. More info: https://kubernetes.io/docs/concepts/storage/volumes#emptydir<br/>
+          emptyDir represents a temporary directory that shares a pod's lifetime. More info: https://kubernetes.io/docs/concepts/storage/volumes#emptydir<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#k8ssandraclusterspeccassandraextravolumesvolumesindexephemeral">ephemeral</a></b></td>
         <td>object</td>
         <td>
-          Ephemeral represents a volume that is handled by a cluster storage driver. The volume's lifecycle is tied to the pod that defines it - it will be created before the pod starts, and deleted when the pod is removed. 
+          ephemeral represents a volume that is handled by a cluster storage driver. The volume's lifecycle is tied to the pod that defines it - it will be created before the pod starts, and deleted when the pod is removed. 
  Use this if: a) the volume is only needed while the pod runs, b) features of normal volumes like restoring from snapshot or capacity tracking are needed, c) the storage driver is specified through a storage class, and d) the storage driver supports dynamic volume provisioning through a PersistentVolumeClaim (see EphemeralVolumeSource for more information on the connection between this volume type and PersistentVolumeClaim). 
  Use PersistentVolumeClaim or one of the vendor-specific APIs for volumes that persist for longer than the lifecycle of an individual pod. 
  Use CSI for light-weight local ephemeral volumes if the CSI driver is meant to be used that way - see the documentation of the driver for more information. 
@@ -23110,133 +18640,133 @@ Volume represents a named volume in a pod that may be accessed by any container 
         <td><b><a href="#k8ssandraclusterspeccassandraextravolumesvolumesindexfc">fc</a></b></td>
         <td>object</td>
         <td>
-          FC represents a Fibre Channel resource that is attached to a kubelet's host machine and then exposed to the pod.<br/>
+          fc represents a Fibre Channel resource that is attached to a kubelet's host machine and then exposed to the pod.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#k8ssandraclusterspeccassandraextravolumesvolumesindexflexvolume">flexVolume</a></b></td>
         <td>object</td>
         <td>
-          FlexVolume represents a generic volume resource that is provisioned/attached using an exec based plugin.<br/>
+          flexVolume represents a generic volume resource that is provisioned/attached using an exec based plugin.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#k8ssandraclusterspeccassandraextravolumesvolumesindexflocker">flocker</a></b></td>
         <td>object</td>
         <td>
-          Flocker represents a Flocker volume attached to a kubelet's host machine. This depends on the Flocker control service being running<br/>
+          flocker represents a Flocker volume attached to a kubelet's host machine. This depends on the Flocker control service being running<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#k8ssandraclusterspeccassandraextravolumesvolumesindexgcepersistentdisk">gcePersistentDisk</a></b></td>
         <td>object</td>
         <td>
-          GCEPersistentDisk represents a GCE Disk resource that is attached to a kubelet's host machine and then exposed to the pod. More info: https://kubernetes.io/docs/concepts/storage/volumes#gcepersistentdisk<br/>
+          gcePersistentDisk represents a GCE Disk resource that is attached to a kubelet's host machine and then exposed to the pod. More info: https://kubernetes.io/docs/concepts/storage/volumes#gcepersistentdisk<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#k8ssandraclusterspeccassandraextravolumesvolumesindexgitrepo">gitRepo</a></b></td>
         <td>object</td>
         <td>
-          GitRepo represents a git repository at a particular revision. DEPRECATED: GitRepo is deprecated. To provision a container with a git repo, mount an EmptyDir into an InitContainer that clones the repo using git, then mount the EmptyDir into the Pod's container.<br/>
+          gitRepo represents a git repository at a particular revision. DEPRECATED: GitRepo is deprecated. To provision a container with a git repo, mount an EmptyDir into an InitContainer that clones the repo using git, then mount the EmptyDir into the Pod's container.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#k8ssandraclusterspeccassandraextravolumesvolumesindexglusterfs">glusterfs</a></b></td>
         <td>object</td>
         <td>
-          Glusterfs represents a Glusterfs mount on the host that shares a pod's lifetime. More info: https://examples.k8s.io/volumes/glusterfs/README.md<br/>
+          glusterfs represents a Glusterfs mount on the host that shares a pod's lifetime. More info: https://examples.k8s.io/volumes/glusterfs/README.md<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#k8ssandraclusterspeccassandraextravolumesvolumesindexhostpath">hostPath</a></b></td>
         <td>object</td>
         <td>
-          HostPath represents a pre-existing file or directory on the host machine that is directly exposed to the container. This is generally used for system agents or other privileged things that are allowed to see the host machine. Most containers will NOT need this. More info: https://kubernetes.io/docs/concepts/storage/volumes#hostpath --- TODO(jonesdl) We need to restrict who can use host directory mounts and who can/can not mount host directories as read/write.<br/>
+          hostPath represents a pre-existing file or directory on the host machine that is directly exposed to the container. This is generally used for system agents or other privileged things that are allowed to see the host machine. Most containers will NOT need this. More info: https://kubernetes.io/docs/concepts/storage/volumes#hostpath --- TODO(jonesdl) We need to restrict who can use host directory mounts and who can/can not mount host directories as read/write.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#k8ssandraclusterspeccassandraextravolumesvolumesindexiscsi">iscsi</a></b></td>
         <td>object</td>
         <td>
-          ISCSI represents an ISCSI Disk resource that is attached to a kubelet's host machine and then exposed to the pod. More info: https://examples.k8s.io/volumes/iscsi/README.md<br/>
+          iscsi represents an ISCSI Disk resource that is attached to a kubelet's host machine and then exposed to the pod. More info: https://examples.k8s.io/volumes/iscsi/README.md<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#k8ssandraclusterspeccassandraextravolumesvolumesindexnfs">nfs</a></b></td>
         <td>object</td>
         <td>
-          NFS represents an NFS mount on the host that shares a pod's lifetime More info: https://kubernetes.io/docs/concepts/storage/volumes#nfs<br/>
+          nfs represents an NFS mount on the host that shares a pod's lifetime More info: https://kubernetes.io/docs/concepts/storage/volumes#nfs<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#k8ssandraclusterspeccassandraextravolumesvolumesindexpersistentvolumeclaim">persistentVolumeClaim</a></b></td>
         <td>object</td>
         <td>
-          PersistentVolumeClaimVolumeSource represents a reference to a PersistentVolumeClaim in the same namespace. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#persistentvolumeclaims<br/>
+          persistentVolumeClaimVolumeSource represents a reference to a PersistentVolumeClaim in the same namespace. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#persistentvolumeclaims<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#k8ssandraclusterspeccassandraextravolumesvolumesindexphotonpersistentdisk">photonPersistentDisk</a></b></td>
         <td>object</td>
         <td>
-          PhotonPersistentDisk represents a PhotonController persistent disk attached and mounted on kubelets host machine<br/>
+          photonPersistentDisk represents a PhotonController persistent disk attached and mounted on kubelets host machine<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#k8ssandraclusterspeccassandraextravolumesvolumesindexportworxvolume">portworxVolume</a></b></td>
         <td>object</td>
         <td>
-          PortworxVolume represents a portworx volume attached and mounted on kubelets host machine<br/>
+          portworxVolume represents a portworx volume attached and mounted on kubelets host machine<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#k8ssandraclusterspeccassandraextravolumesvolumesindexprojected">projected</a></b></td>
         <td>object</td>
         <td>
-          Items for all in one resources secrets, configmaps, and downward API<br/>
+          projected items for all in one resources secrets, configmaps, and downward API<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#k8ssandraclusterspeccassandraextravolumesvolumesindexquobyte">quobyte</a></b></td>
         <td>object</td>
         <td>
-          Quobyte represents a Quobyte mount on the host that shares a pod's lifetime<br/>
+          quobyte represents a Quobyte mount on the host that shares a pod's lifetime<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#k8ssandraclusterspeccassandraextravolumesvolumesindexrbd">rbd</a></b></td>
         <td>object</td>
         <td>
-          RBD represents a Rados Block Device mount on the host that shares a pod's lifetime. More info: https://examples.k8s.io/volumes/rbd/README.md<br/>
+          rbd represents a Rados Block Device mount on the host that shares a pod's lifetime. More info: https://examples.k8s.io/volumes/rbd/README.md<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#k8ssandraclusterspeccassandraextravolumesvolumesindexscaleio">scaleIO</a></b></td>
         <td>object</td>
         <td>
-          ScaleIO represents a ScaleIO persistent volume attached and mounted on Kubernetes nodes.<br/>
+          scaleIO represents a ScaleIO persistent volume attached and mounted on Kubernetes nodes.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#k8ssandraclusterspeccassandraextravolumesvolumesindexsecret">secret</a></b></td>
         <td>object</td>
         <td>
-          Secret represents a secret that should populate this volume. More info: https://kubernetes.io/docs/concepts/storage/volumes#secret<br/>
+          secret represents a secret that should populate this volume. More info: https://kubernetes.io/docs/concepts/storage/volumes#secret<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#k8ssandraclusterspeccassandraextravolumesvolumesindexstorageos">storageos</a></b></td>
         <td>object</td>
         <td>
-          StorageOS represents a StorageOS volume attached and mounted on Kubernetes nodes.<br/>
+          storageOS represents a StorageOS volume attached and mounted on Kubernetes nodes.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#k8ssandraclusterspeccassandraextravolumesvolumesindexvspherevolume">vsphereVolume</a></b></td>
         <td>object</td>
         <td>
-          VsphereVolume represents a vSphere volume attached and mounted on kubelets host machine<br/>
+          vsphereVolume represents a vSphere volume attached and mounted on kubelets host machine<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -23248,7 +18778,7 @@ Volume represents a named volume in a pod that may be accessed by any container 
 
 
 
-AWSElasticBlockStore represents an AWS Disk resource that is attached to a kubelet's host machine and then exposed to the pod. More info: https://kubernetes.io/docs/concepts/storage/volumes#awselasticblockstore
+awsElasticBlockStore represents an AWS Disk resource that is attached to a kubelet's host machine and then exposed to the pod. More info: https://kubernetes.io/docs/concepts/storage/volumes#awselasticblockstore
 
 <table>
     <thead>
@@ -23263,21 +18793,21 @@ AWSElasticBlockStore represents an AWS Disk resource that is attached to a kubel
         <td><b>volumeID</b></td>
         <td>string</td>
         <td>
-          Unique ID of the persistent disk resource in AWS (Amazon EBS volume). More info: https://kubernetes.io/docs/concepts/storage/volumes#awselasticblockstore<br/>
+          volumeID is unique ID of the persistent disk resource in AWS (Amazon EBS volume). More info: https://kubernetes.io/docs/concepts/storage/volumes#awselasticblockstore<br/>
         </td>
         <td>true</td>
       </tr><tr>
         <td><b>fsType</b></td>
         <td>string</td>
         <td>
-          Filesystem type of the volume that you want to mount. Tip: Ensure that the filesystem type is supported by the host operating system. Examples: "ext4", "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified. More info: https://kubernetes.io/docs/concepts/storage/volumes#awselasticblockstore TODO: how do we prevent errors in the filesystem from compromising the machine<br/>
+          fsType is the filesystem type of the volume that you want to mount. Tip: Ensure that the filesystem type is supported by the host operating system. Examples: "ext4", "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified. More info: https://kubernetes.io/docs/concepts/storage/volumes#awselasticblockstore TODO: how do we prevent errors in the filesystem from compromising the machine<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>partition</b></td>
         <td>integer</td>
         <td>
-          The partition in the volume that you want to mount. If omitted, the default is to mount by volume name. Examples: For volume /dev/sda1, you specify the partition as "1". Similarly, the volume partition for /dev/sda is "0" (or you can leave the property empty).<br/>
+          partition is the partition in the volume that you want to mount. If omitted, the default is to mount by volume name. Examples: For volume /dev/sda1, you specify the partition as "1". Similarly, the volume partition for /dev/sda is "0" (or you can leave the property empty).<br/>
           <br/>
             <i>Format</i>: int32<br/>
         </td>
@@ -23286,7 +18816,7 @@ AWSElasticBlockStore represents an AWS Disk resource that is attached to a kubel
         <td><b>readOnly</b></td>
         <td>boolean</td>
         <td>
-          Specify "true" to force and set the ReadOnly property in VolumeMounts to "true". If omitted, the default is "false". More info: https://kubernetes.io/docs/concepts/storage/volumes#awselasticblockstore<br/>
+          readOnly value true will force the readOnly setting in VolumeMounts. More info: https://kubernetes.io/docs/concepts/storage/volumes#awselasticblockstore<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -23298,7 +18828,7 @@ AWSElasticBlockStore represents an AWS Disk resource that is attached to a kubel
 
 
 
-AzureDisk represents an Azure Data Disk mount on the host and bind mount to the pod.
+azureDisk represents an Azure Data Disk mount on the host and bind mount to the pod.
 
 <table>
     <thead>
@@ -23313,42 +18843,42 @@ AzureDisk represents an Azure Data Disk mount on the host and bind mount to the 
         <td><b>diskName</b></td>
         <td>string</td>
         <td>
-          The Name of the data disk in the blob storage<br/>
+          diskName is the Name of the data disk in the blob storage<br/>
         </td>
         <td>true</td>
       </tr><tr>
         <td><b>diskURI</b></td>
         <td>string</td>
         <td>
-          The URI the data disk in the blob storage<br/>
+          diskURI is the URI of data disk in the blob storage<br/>
         </td>
         <td>true</td>
       </tr><tr>
         <td><b>cachingMode</b></td>
         <td>string</td>
         <td>
-          Host Caching mode: None, Read Only, Read Write.<br/>
+          cachingMode is the Host Caching mode: None, Read Only, Read Write.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>fsType</b></td>
         <td>string</td>
         <td>
-          Filesystem type to mount. Must be a filesystem type supported by the host operating system. Ex. "ext4", "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified.<br/>
+          fsType is Filesystem type to mount. Must be a filesystem type supported by the host operating system. Ex. "ext4", "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>kind</b></td>
         <td>string</td>
         <td>
-          Expected values Shared: multiple blob disks per storage account  Dedicated: single blob disk per storage account  Managed: azure managed data disk (only in managed availability set). defaults to shared<br/>
+          kind expected values are Shared: multiple blob disks per storage account  Dedicated: single blob disk per storage account  Managed: azure managed data disk (only in managed availability set). defaults to shared<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>readOnly</b></td>
         <td>boolean</td>
         <td>
-          Defaults to false (read/write). ReadOnly here will force the ReadOnly setting in VolumeMounts.<br/>
+          readOnly Defaults to false (read/write). ReadOnly here will force the ReadOnly setting in VolumeMounts.<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -23360,7 +18890,7 @@ AzureDisk represents an Azure Data Disk mount on the host and bind mount to the 
 
 
 
-AzureFile represents an Azure File Service mount on the host and bind mount to the pod.
+azureFile represents an Azure File Service mount on the host and bind mount to the pod.
 
 <table>
     <thead>
@@ -23375,21 +18905,21 @@ AzureFile represents an Azure File Service mount on the host and bind mount to t
         <td><b>secretName</b></td>
         <td>string</td>
         <td>
-          the name of secret that contains Azure Storage Account Name and Key<br/>
+          secretName is the  name of secret that contains Azure Storage Account Name and Key<br/>
         </td>
         <td>true</td>
       </tr><tr>
         <td><b>shareName</b></td>
         <td>string</td>
         <td>
-          Share Name<br/>
+          shareName is the azure share Name<br/>
         </td>
         <td>true</td>
       </tr><tr>
         <td><b>readOnly</b></td>
         <td>boolean</td>
         <td>
-          Defaults to false (read/write). ReadOnly here will force the ReadOnly setting in VolumeMounts.<br/>
+          readOnly defaults to false (read/write). ReadOnly here will force the ReadOnly setting in VolumeMounts.<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -23401,7 +18931,7 @@ AzureFile represents an Azure File Service mount on the host and bind mount to t
 
 
 
-CephFS represents a Ceph FS mount on the host that shares a pod's lifetime
+cephFS represents a Ceph FS mount on the host that shares a pod's lifetime
 
 <table>
     <thead>
@@ -23416,42 +18946,42 @@ CephFS represents a Ceph FS mount on the host that shares a pod's lifetime
         <td><b>monitors</b></td>
         <td>[]string</td>
         <td>
-          Required: Monitors is a collection of Ceph monitors More info: https://examples.k8s.io/volumes/cephfs/README.md#how-to-use-it<br/>
+          monitors is Required: Monitors is a collection of Ceph monitors More info: https://examples.k8s.io/volumes/cephfs/README.md#how-to-use-it<br/>
         </td>
         <td>true</td>
       </tr><tr>
         <td><b>path</b></td>
         <td>string</td>
         <td>
-          Optional: Used as the mounted root, rather than the full Ceph tree, default is /<br/>
+          path is Optional: Used as the mounted root, rather than the full Ceph tree, default is /<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>readOnly</b></td>
         <td>boolean</td>
         <td>
-          Optional: Defaults to false (read/write). ReadOnly here will force the ReadOnly setting in VolumeMounts. More info: https://examples.k8s.io/volumes/cephfs/README.md#how-to-use-it<br/>
+          readOnly is Optional: Defaults to false (read/write). ReadOnly here will force the ReadOnly setting in VolumeMounts. More info: https://examples.k8s.io/volumes/cephfs/README.md#how-to-use-it<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>secretFile</b></td>
         <td>string</td>
         <td>
-          Optional: SecretFile is the path to key ring for User, default is /etc/ceph/user.secret More info: https://examples.k8s.io/volumes/cephfs/README.md#how-to-use-it<br/>
+          secretFile is Optional: SecretFile is the path to key ring for User, default is /etc/ceph/user.secret More info: https://examples.k8s.io/volumes/cephfs/README.md#how-to-use-it<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#k8ssandraclusterspeccassandraextravolumesvolumesindexcephfssecretref">secretRef</a></b></td>
         <td>object</td>
         <td>
-          Optional: SecretRef is reference to the authentication secret for User, default is empty. More info: https://examples.k8s.io/volumes/cephfs/README.md#how-to-use-it<br/>
+          secretRef is Optional: SecretRef is reference to the authentication secret for User, default is empty. More info: https://examples.k8s.io/volumes/cephfs/README.md#how-to-use-it<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>user</b></td>
         <td>string</td>
         <td>
-          Optional: User is the rados user name, default is admin More info: https://examples.k8s.io/volumes/cephfs/README.md#how-to-use-it<br/>
+          user is optional: User is the rados user name, default is admin More info: https://examples.k8s.io/volumes/cephfs/README.md#how-to-use-it<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -23463,7 +18993,7 @@ CephFS represents a Ceph FS mount on the host that shares a pod's lifetime
 
 
 
-Optional: SecretRef is reference to the authentication secret for User, default is empty. More info: https://examples.k8s.io/volumes/cephfs/README.md#how-to-use-it
+secretRef is Optional: SecretRef is reference to the authentication secret for User, default is empty. More info: https://examples.k8s.io/volumes/cephfs/README.md#how-to-use-it
 
 <table>
     <thead>
@@ -23490,7 +19020,7 @@ Optional: SecretRef is reference to the authentication secret for User, default 
 
 
 
-Cinder represents a cinder volume attached and mounted on kubelets host machine. More info: https://examples.k8s.io/mysql-cinder-pd/README.md
+cinder represents a cinder volume attached and mounted on kubelets host machine. More info: https://examples.k8s.io/mysql-cinder-pd/README.md
 
 <table>
     <thead>
@@ -23505,28 +19035,28 @@ Cinder represents a cinder volume attached and mounted on kubelets host machine.
         <td><b>volumeID</b></td>
         <td>string</td>
         <td>
-          volume id used to identify the volume in cinder. More info: https://examples.k8s.io/mysql-cinder-pd/README.md<br/>
+          volumeID used to identify the volume in cinder. More info: https://examples.k8s.io/mysql-cinder-pd/README.md<br/>
         </td>
         <td>true</td>
       </tr><tr>
         <td><b>fsType</b></td>
         <td>string</td>
         <td>
-          Filesystem type to mount. Must be a filesystem type supported by the host operating system. Examples: "ext4", "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified. More info: https://examples.k8s.io/mysql-cinder-pd/README.md<br/>
+          fsType is the filesystem type to mount. Must be a filesystem type supported by the host operating system. Examples: "ext4", "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified. More info: https://examples.k8s.io/mysql-cinder-pd/README.md<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>readOnly</b></td>
         <td>boolean</td>
         <td>
-          Optional: Defaults to false (read/write). ReadOnly here will force the ReadOnly setting in VolumeMounts. More info: https://examples.k8s.io/mysql-cinder-pd/README.md<br/>
+          readOnly defaults to false (read/write). ReadOnly here will force the ReadOnly setting in VolumeMounts. More info: https://examples.k8s.io/mysql-cinder-pd/README.md<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#k8ssandraclusterspeccassandraextravolumesvolumesindexcindersecretref">secretRef</a></b></td>
         <td>object</td>
         <td>
-          Optional: points to a secret object containing parameters used to connect to OpenStack.<br/>
+          secretRef is optional: points to a secret object containing parameters used to connect to OpenStack.<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -23538,7 +19068,7 @@ Cinder represents a cinder volume attached and mounted on kubelets host machine.
 
 
 
-Optional: points to a secret object containing parameters used to connect to OpenStack.
+secretRef is optional: points to a secret object containing parameters used to connect to OpenStack.
 
 <table>
     <thead>
@@ -23565,7 +19095,7 @@ Optional: points to a secret object containing parameters used to connect to Ope
 
 
 
-ConfigMap represents a configMap that should populate this volume
+configMap represents a configMap that should populate this volume
 
 <table>
     <thead>
@@ -23580,7 +19110,7 @@ ConfigMap represents a configMap that should populate this volume
         <td><b>defaultMode</b></td>
         <td>integer</td>
         <td>
-          Optional: mode bits used to set permissions on created files by default. Must be an octal value between 0000 and 0777 or a decimal value between 0 and 511. YAML accepts both octal and decimal values, JSON requires decimal values for mode bits. Defaults to 0644. Directories within the path are not affected by this setting. This might be in conflict with other options that affect the file mode, like fsGroup, and the result can be other mode bits set.<br/>
+          defaultMode is optional: mode bits used to set permissions on created files by default. Must be an octal value between 0000 and 0777 or a decimal value between 0 and 511. YAML accepts both octal and decimal values, JSON requires decimal values for mode bits. Defaults to 0644. Directories within the path are not affected by this setting. This might be in conflict with other options that affect the file mode, like fsGroup, and the result can be other mode bits set.<br/>
           <br/>
             <i>Format</i>: int32<br/>
         </td>
@@ -23589,7 +19119,7 @@ ConfigMap represents a configMap that should populate this volume
         <td><b><a href="#k8ssandraclusterspeccassandraextravolumesvolumesindexconfigmapitemsindex">items</a></b></td>
         <td>[]object</td>
         <td>
-          If unspecified, each key-value pair in the Data field of the referenced ConfigMap will be projected into the volume as a file whose name is the key and content is the value. If specified, the listed keys will be projected into the specified paths, and unlisted keys will not be present. If a key is specified which is not present in the ConfigMap, the volume setup will error unless it is marked optional. Paths must be relative and may not contain the '..' path or start with '..'.<br/>
+          items if unspecified, each key-value pair in the Data field of the referenced ConfigMap will be projected into the volume as a file whose name is the key and content is the value. If specified, the listed keys will be projected into the specified paths, and unlisted keys will not be present. If a key is specified which is not present in the ConfigMap, the volume setup will error unless it is marked optional. Paths must be relative and may not contain the '..' path or start with '..'.<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -23603,7 +19133,7 @@ ConfigMap represents a configMap that should populate this volume
         <td><b>optional</b></td>
         <td>boolean</td>
         <td>
-          Specify whether the ConfigMap or its keys must be defined<br/>
+          optional specify whether the ConfigMap or its keys must be defined<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -23630,21 +19160,21 @@ Maps a string key to a path within a volume.
         <td><b>key</b></td>
         <td>string</td>
         <td>
-          The key to project.<br/>
+          key is the key to project.<br/>
         </td>
         <td>true</td>
       </tr><tr>
         <td><b>path</b></td>
         <td>string</td>
         <td>
-          The relative path of the file to map the key to. May not be an absolute path. May not contain the path element '..'. May not start with the string '..'.<br/>
+          path is the relative path of the file to map the key to. May not be an absolute path. May not contain the path element '..'. May not start with the string '..'.<br/>
         </td>
         <td>true</td>
       </tr><tr>
         <td><b>mode</b></td>
         <td>integer</td>
         <td>
-          Optional: mode bits used to set permissions on this file. Must be an octal value between 0000 and 0777 or a decimal value between 0 and 511. YAML accepts both octal and decimal values, JSON requires decimal values for mode bits. If not specified, the volume defaultMode will be used. This might be in conflict with other options that affect the file mode, like fsGroup, and the result can be other mode bits set.<br/>
+          mode is Optional: mode bits used to set permissions on this file. Must be an octal value between 0000 and 0777 or a decimal value between 0 and 511. YAML accepts both octal and decimal values, JSON requires decimal values for mode bits. If not specified, the volume defaultMode will be used. This might be in conflict with other options that affect the file mode, like fsGroup, and the result can be other mode bits set.<br/>
           <br/>
             <i>Format</i>: int32<br/>
         </td>
@@ -23658,7 +19188,7 @@ Maps a string key to a path within a volume.
 
 
 
-CSI (Container Storage Interface) represents ephemeral storage that is handled by certain external CSI drivers (Beta feature).
+csi (Container Storage Interface) represents ephemeral storage that is handled by certain external CSI drivers (Beta feature).
 
 <table>
     <thead>
@@ -23673,35 +19203,35 @@ CSI (Container Storage Interface) represents ephemeral storage that is handled b
         <td><b>driver</b></td>
         <td>string</td>
         <td>
-          Driver is the name of the CSI driver that handles this volume. Consult with your admin for the correct name as registered in the cluster.<br/>
+          driver is the name of the CSI driver that handles this volume. Consult with your admin for the correct name as registered in the cluster.<br/>
         </td>
         <td>true</td>
       </tr><tr>
         <td><b>fsType</b></td>
         <td>string</td>
         <td>
-          Filesystem type to mount. Ex. "ext4", "xfs", "ntfs". If not provided, the empty value is passed to the associated CSI driver which will determine the default filesystem to apply.<br/>
+          fsType to mount. Ex. "ext4", "xfs", "ntfs". If not provided, the empty value is passed to the associated CSI driver which will determine the default filesystem to apply.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#k8ssandraclusterspeccassandraextravolumesvolumesindexcsinodepublishsecretref">nodePublishSecretRef</a></b></td>
         <td>object</td>
         <td>
-          NodePublishSecretRef is a reference to the secret object containing sensitive information to pass to the CSI driver to complete the CSI NodePublishVolume and NodeUnpublishVolume calls. This field is optional, and  may be empty if no secret is required. If the secret object contains more than one secret, all secret references are passed.<br/>
+          nodePublishSecretRef is a reference to the secret object containing sensitive information to pass to the CSI driver to complete the CSI NodePublishVolume and NodeUnpublishVolume calls. This field is optional, and  may be empty if no secret is required. If the secret object contains more than one secret, all secret references are passed.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>readOnly</b></td>
         <td>boolean</td>
         <td>
-          Specifies a read-only configuration for the volume. Defaults to false (read/write).<br/>
+          readOnly specifies a read-only configuration for the volume. Defaults to false (read/write).<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>volumeAttributes</b></td>
         <td>map[string]string</td>
         <td>
-          VolumeAttributes stores driver-specific properties that are passed to the CSI driver. Consult your driver's documentation for supported values.<br/>
+          volumeAttributes stores driver-specific properties that are passed to the CSI driver. Consult your driver's documentation for supported values.<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -23713,7 +19243,7 @@ CSI (Container Storage Interface) represents ephemeral storage that is handled b
 
 
 
-NodePublishSecretRef is a reference to the secret object containing sensitive information to pass to the CSI driver to complete the CSI NodePublishVolume and NodeUnpublishVolume calls. This field is optional, and  may be empty if no secret is required. If the secret object contains more than one secret, all secret references are passed.
+nodePublishSecretRef is a reference to the secret object containing sensitive information to pass to the CSI driver to complete the CSI NodePublishVolume and NodeUnpublishVolume calls. This field is optional, and  may be empty if no secret is required. If the secret object contains more than one secret, all secret references are passed.
 
 <table>
     <thead>
@@ -23740,7 +19270,7 @@ NodePublishSecretRef is a reference to the secret object containing sensitive in
 
 
 
-DownwardAPI represents downward API about the pod that should populate this volume
+downwardAPI represents downward API about the pod that should populate this volume
 
 <table>
     <thead>
@@ -23901,7 +19431,7 @@ Selects a resource of the container: only resources limits and requests (limits.
 
 
 
-EmptyDir represents a temporary directory that shares a pod's lifetime. More info: https://kubernetes.io/docs/concepts/storage/volumes#emptydir
+emptyDir represents a temporary directory that shares a pod's lifetime. More info: https://kubernetes.io/docs/concepts/storage/volumes#emptydir
 
 <table>
     <thead>
@@ -23916,14 +19446,14 @@ EmptyDir represents a temporary directory that shares a pod's lifetime. More inf
         <td><b>medium</b></td>
         <td>string</td>
         <td>
-          What type of storage medium should back this directory. The default is "" which means to use the node's default medium. Must be an empty string (default) or Memory. More info: https://kubernetes.io/docs/concepts/storage/volumes#emptydir<br/>
+          medium represents what type of storage medium should back this directory. The default is "" which means to use the node's default medium. Must be an empty string (default) or Memory. More info: https://kubernetes.io/docs/concepts/storage/volumes#emptydir<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>sizeLimit</b></td>
         <td>int or string</td>
         <td>
-          Total amount of local storage required for this EmptyDir volume. The size limit is also applicable for memory medium. The maximum usage on memory medium EmptyDir would be the minimum value between the SizeLimit specified here and the sum of memory limits of all containers in a pod. The default is nil which means that the limit is undefined. More info: http://kubernetes.io/docs/user-guide/volumes#emptydir<br/>
+          sizeLimit is the total amount of local storage required for this EmptyDir volume. The size limit is also applicable for memory medium. The maximum usage on memory medium EmptyDir would be the minimum value between the SizeLimit specified here and the sum of memory limits of all containers in a pod. The default is nil which means that the limit is undefined. More info: http://kubernetes.io/docs/user-guide/volumes#emptydir<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -23935,7 +19465,7 @@ EmptyDir represents a temporary directory that shares a pod's lifetime. More inf
 
 
 
-Ephemeral represents a volume that is handled by a cluster storage driver. The volume's lifecycle is tied to the pod that defines it - it will be created before the pod starts, and deleted when the pod is removed. 
+ephemeral represents a volume that is handled by a cluster storage driver. The volume's lifecycle is tied to the pod that defines it - it will be created before the pod starts, and deleted when the pod is removed. 
  Use this if: a) the volume is only needed while the pod runs, b) features of normal volumes like restoring from snapshot or capacity tracking are needed, c) the storage driver is specified through a storage class, and d) the storage driver supports dynamic volume provisioning through a PersistentVolumeClaim (see EphemeralVolumeSource for more information on the connection between this volume type and PersistentVolumeClaim). 
  Use PersistentVolumeClaim or one of the vendor-specific APIs for volumes that persist for longer than the lifecycle of an individual pod. 
  Use CSI for light-weight local ephemeral volumes if the CSI driver is meant to be used that way - see the documentation of the driver for more information. 
@@ -24021,42 +19551,42 @@ The specification for the PersistentVolumeClaim. The entire content is copied un
         <td><b>accessModes</b></td>
         <td>[]string</td>
         <td>
-          AccessModes contains the desired access modes the volume should have. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#access-modes-1<br/>
+          accessModes contains the desired access modes the volume should have. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#access-modes-1<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#k8ssandraclusterspeccassandraextravolumesvolumesindexephemeralvolumeclaimtemplatespecdatasource">dataSource</a></b></td>
         <td>object</td>
         <td>
-          This field can be used to specify either: * An existing VolumeSnapshot object (snapshot.storage.k8s.io/VolumeSnapshot) * An existing PVC (PersistentVolumeClaim) If the provisioner or an external controller can support the specified data source, it will create a new volume based on the contents of the specified data source. If the AnyVolumeDataSource feature gate is enabled, this field will always have the same contents as the DataSourceRef field.<br/>
+          dataSource field can be used to specify either: * An existing VolumeSnapshot object (snapshot.storage.k8s.io/VolumeSnapshot) * An existing PVC (PersistentVolumeClaim) If the provisioner or an external controller can support the specified data source, it will create a new volume based on the contents of the specified data source. If the AnyVolumeDataSource feature gate is enabled, this field will always have the same contents as the DataSourceRef field.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#k8ssandraclusterspeccassandraextravolumesvolumesindexephemeralvolumeclaimtemplatespecdatasourceref">dataSourceRef</a></b></td>
         <td>object</td>
         <td>
-          Specifies the object from which to populate the volume with data, if a non-empty volume is desired. This may be any local object from a non-empty API group (non core object) or a PersistentVolumeClaim object. When this field is specified, volume binding will only succeed if the type of the specified object matches some installed volume populator or dynamic provisioner. This field will replace the functionality of the DataSource field and as such if both fields are non-empty, they must have the same value. For backwards compatibility, both fields (DataSource and DataSourceRef) will be set to the same value automatically if one of them is empty and the other is non-empty. There are two important differences between DataSource and DataSourceRef: * While DataSource only allows two specific types of objects, DataSourceRef allows any non-core object, as well as PersistentVolumeClaim objects. * While DataSource ignores disallowed values (dropping them), DataSourceRef preserves all values, and generates an error if a disallowed value is specified. (Alpha) Using this field requires the AnyVolumeDataSource feature gate to be enabled.<br/>
+          dataSourceRef specifies the object from which to populate the volume with data, if a non-empty volume is desired. This may be any local object from a non-empty API group (non core object) or a PersistentVolumeClaim object. When this field is specified, volume binding will only succeed if the type of the specified object matches some installed volume populator or dynamic provisioner. This field will replace the functionality of the DataSource field and as such if both fields are non-empty, they must have the same value. For backwards compatibility, both fields (DataSource and DataSourceRef) will be set to the same value automatically if one of them is empty and the other is non-empty. There are two important differences between DataSource and DataSourceRef: * While DataSource only allows two specific types of objects, DataSourceRef allows any non-core object, as well as PersistentVolumeClaim objects. * While DataSource ignores disallowed values (dropping them), DataSourceRef preserves all values, and generates an error if a disallowed value is specified. (Beta) Using this field requires the AnyVolumeDataSource feature gate to be enabled.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#k8ssandraclusterspeccassandraextravolumesvolumesindexephemeralvolumeclaimtemplatespecresources">resources</a></b></td>
         <td>object</td>
         <td>
-          Resources represents the minimum resources the volume should have. If RecoverVolumeExpansionFailure feature is enabled users are allowed to specify resource requirements that are lower than previous value but must still be higher than capacity recorded in the status field of the claim. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#resources<br/>
+          resources represents the minimum resources the volume should have. If RecoverVolumeExpansionFailure feature is enabled users are allowed to specify resource requirements that are lower than previous value but must still be higher than capacity recorded in the status field of the claim. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#resources<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#k8ssandraclusterspeccassandraextravolumesvolumesindexephemeralvolumeclaimtemplatespecselector">selector</a></b></td>
         <td>object</td>
         <td>
-          A label query over volumes to consider for binding.<br/>
+          selector is a label query over volumes to consider for binding.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>storageClassName</b></td>
         <td>string</td>
         <td>
-          Name of the StorageClass required by the claim. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#class-1<br/>
+          storageClassName is the name of the StorageClass required by the claim. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#class-1<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -24070,7 +19600,7 @@ The specification for the PersistentVolumeClaim. The entire content is copied un
         <td><b>volumeName</b></td>
         <td>string</td>
         <td>
-          VolumeName is the binding reference to the PersistentVolume backing this claim.<br/>
+          volumeName is the binding reference to the PersistentVolume backing this claim.<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -24082,7 +19612,7 @@ The specification for the PersistentVolumeClaim. The entire content is copied un
 
 
 
-This field can be used to specify either: * An existing VolumeSnapshot object (snapshot.storage.k8s.io/VolumeSnapshot) * An existing PVC (PersistentVolumeClaim) If the provisioner or an external controller can support the specified data source, it will create a new volume based on the contents of the specified data source. If the AnyVolumeDataSource feature gate is enabled, this field will always have the same contents as the DataSourceRef field.
+dataSource field can be used to specify either: * An existing VolumeSnapshot object (snapshot.storage.k8s.io/VolumeSnapshot) * An existing PVC (PersistentVolumeClaim) If the provisioner or an external controller can support the specified data source, it will create a new volume based on the contents of the specified data source. If the AnyVolumeDataSource feature gate is enabled, this field will always have the same contents as the DataSourceRef field.
 
 <table>
     <thead>
@@ -24123,7 +19653,7 @@ This field can be used to specify either: * An existing VolumeSnapshot object (s
 
 
 
-Specifies the object from which to populate the volume with data, if a non-empty volume is desired. This may be any local object from a non-empty API group (non core object) or a PersistentVolumeClaim object. When this field is specified, volume binding will only succeed if the type of the specified object matches some installed volume populator or dynamic provisioner. This field will replace the functionality of the DataSource field and as such if both fields are non-empty, they must have the same value. For backwards compatibility, both fields (DataSource and DataSourceRef) will be set to the same value automatically if one of them is empty and the other is non-empty. There are two important differences between DataSource and DataSourceRef: * While DataSource only allows two specific types of objects, DataSourceRef allows any non-core object, as well as PersistentVolumeClaim objects. * While DataSource ignores disallowed values (dropping them), DataSourceRef preserves all values, and generates an error if a disallowed value is specified. (Alpha) Using this field requires the AnyVolumeDataSource feature gate to be enabled.
+dataSourceRef specifies the object from which to populate the volume with data, if a non-empty volume is desired. This may be any local object from a non-empty API group (non core object) or a PersistentVolumeClaim object. When this field is specified, volume binding will only succeed if the type of the specified object matches some installed volume populator or dynamic provisioner. This field will replace the functionality of the DataSource field and as such if both fields are non-empty, they must have the same value. For backwards compatibility, both fields (DataSource and DataSourceRef) will be set to the same value automatically if one of them is empty and the other is non-empty. There are two important differences between DataSource and DataSourceRef: * While DataSource only allows two specific types of objects, DataSourceRef allows any non-core object, as well as PersistentVolumeClaim objects. * While DataSource ignores disallowed values (dropping them), DataSourceRef preserves all values, and generates an error if a disallowed value is specified. (Beta) Using this field requires the AnyVolumeDataSource feature gate to be enabled.
 
 <table>
     <thead>
@@ -24164,7 +19694,7 @@ Specifies the object from which to populate the volume with data, if a non-empty
 
 
 
-Resources represents the minimum resources the volume should have. If RecoverVolumeExpansionFailure feature is enabled users are allowed to specify resource requirements that are lower than previous value but must still be higher than capacity recorded in the status field of the claim. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#resources
+resources represents the minimum resources the volume should have. If RecoverVolumeExpansionFailure feature is enabled users are allowed to specify resource requirements that are lower than previous value but must still be higher than capacity recorded in the status field of the claim. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#resources
 
 <table>
     <thead>
@@ -24198,7 +19728,7 @@ Resources represents the minimum resources the volume should have. If RecoverVol
 
 
 
-A label query over volumes to consider for binding.
+selector is a label query over volumes to consider for binding.
 
 <table>
     <thead>
@@ -24273,7 +19803,7 @@ A label selector requirement is a selector that contains values, a key, and an o
 
 
 
-FC represents a Fibre Channel resource that is attached to a kubelet's host machine and then exposed to the pod.
+fc represents a Fibre Channel resource that is attached to a kubelet's host machine and then exposed to the pod.
 
 <table>
     <thead>
@@ -24288,14 +19818,14 @@ FC represents a Fibre Channel resource that is attached to a kubelet's host mach
         <td><b>fsType</b></td>
         <td>string</td>
         <td>
-          Filesystem type to mount. Must be a filesystem type supported by the host operating system. Ex. "ext4", "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified. TODO: how do we prevent errors in the filesystem from compromising the machine<br/>
+          fsType is the filesystem type to mount. Must be a filesystem type supported by the host operating system. Ex. "ext4", "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified. TODO: how do we prevent errors in the filesystem from compromising the machine<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>lun</b></td>
         <td>integer</td>
         <td>
-          Optional: FC target lun number<br/>
+          lun is Optional: FC target lun number<br/>
           <br/>
             <i>Format</i>: int32<br/>
         </td>
@@ -24304,21 +19834,21 @@ FC represents a Fibre Channel resource that is attached to a kubelet's host mach
         <td><b>readOnly</b></td>
         <td>boolean</td>
         <td>
-          Optional: Defaults to false (read/write). ReadOnly here will force the ReadOnly setting in VolumeMounts.<br/>
+          readOnly is Optional: Defaults to false (read/write). ReadOnly here will force the ReadOnly setting in VolumeMounts.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>targetWWNs</b></td>
         <td>[]string</td>
         <td>
-          Optional: FC target worldwide names (WWNs)<br/>
+          targetWWNs is Optional: FC target worldwide names (WWNs)<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>wwids</b></td>
         <td>[]string</td>
         <td>
-          Optional: FC volume world wide identifiers (wwids) Either wwids or combination of targetWWNs and lun must be set, but not both simultaneously.<br/>
+          wwids Optional: FC volume world wide identifiers (wwids) Either wwids or combination of targetWWNs and lun must be set, but not both simultaneously.<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -24330,7 +19860,7 @@ FC represents a Fibre Channel resource that is attached to a kubelet's host mach
 
 
 
-FlexVolume represents a generic volume resource that is provisioned/attached using an exec based plugin.
+flexVolume represents a generic volume resource that is provisioned/attached using an exec based plugin.
 
 <table>
     <thead>
@@ -24345,35 +19875,35 @@ FlexVolume represents a generic volume resource that is provisioned/attached usi
         <td><b>driver</b></td>
         <td>string</td>
         <td>
-          Driver is the name of the driver to use for this volume.<br/>
+          driver is the name of the driver to use for this volume.<br/>
         </td>
         <td>true</td>
       </tr><tr>
         <td><b>fsType</b></td>
         <td>string</td>
         <td>
-          Filesystem type to mount. Must be a filesystem type supported by the host operating system. Ex. "ext4", "xfs", "ntfs". The default filesystem depends on FlexVolume script.<br/>
+          fsType is the filesystem type to mount. Must be a filesystem type supported by the host operating system. Ex. "ext4", "xfs", "ntfs". The default filesystem depends on FlexVolume script.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>options</b></td>
         <td>map[string]string</td>
         <td>
-          Optional: Extra command options if any.<br/>
+          options is Optional: this field holds extra command options if any.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>readOnly</b></td>
         <td>boolean</td>
         <td>
-          Optional: Defaults to false (read/write). ReadOnly here will force the ReadOnly setting in VolumeMounts.<br/>
+          readOnly is Optional: defaults to false (read/write). ReadOnly here will force the ReadOnly setting in VolumeMounts.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#k8ssandraclusterspeccassandraextravolumesvolumesindexflexvolumesecretref">secretRef</a></b></td>
         <td>object</td>
         <td>
-          Optional: SecretRef is reference to the secret object containing sensitive information to pass to the plugin scripts. This may be empty if no secret object is specified. If the secret object contains more than one secret, all secrets are passed to the plugin scripts.<br/>
+          secretRef is Optional: secretRef is reference to the secret object containing sensitive information to pass to the plugin scripts. This may be empty if no secret object is specified. If the secret object contains more than one secret, all secrets are passed to the plugin scripts.<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -24385,7 +19915,7 @@ FlexVolume represents a generic volume resource that is provisioned/attached usi
 
 
 
-Optional: SecretRef is reference to the secret object containing sensitive information to pass to the plugin scripts. This may be empty if no secret object is specified. If the secret object contains more than one secret, all secrets are passed to the plugin scripts.
+secretRef is Optional: secretRef is reference to the secret object containing sensitive information to pass to the plugin scripts. This may be empty if no secret object is specified. If the secret object contains more than one secret, all secrets are passed to the plugin scripts.
 
 <table>
     <thead>
@@ -24412,7 +19942,7 @@ Optional: SecretRef is reference to the secret object containing sensitive infor
 
 
 
-Flocker represents a Flocker volume attached to a kubelet's host machine. This depends on the Flocker control service being running
+flocker represents a Flocker volume attached to a kubelet's host machine. This depends on the Flocker control service being running
 
 <table>
     <thead>
@@ -24427,14 +19957,14 @@ Flocker represents a Flocker volume attached to a kubelet's host machine. This d
         <td><b>datasetName</b></td>
         <td>string</td>
         <td>
-          Name of the dataset stored as metadata -> name on the dataset for Flocker should be considered as deprecated<br/>
+          datasetName is Name of the dataset stored as metadata -> name on the dataset for Flocker should be considered as deprecated<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>datasetUUID</b></td>
         <td>string</td>
         <td>
-          UUID of the dataset. This is unique identifier of a Flocker dataset<br/>
+          datasetUUID is the UUID of the dataset. This is unique identifier of a Flocker dataset<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -24446,7 +19976,7 @@ Flocker represents a Flocker volume attached to a kubelet's host machine. This d
 
 
 
-GCEPersistentDisk represents a GCE Disk resource that is attached to a kubelet's host machine and then exposed to the pod. More info: https://kubernetes.io/docs/concepts/storage/volumes#gcepersistentdisk
+gcePersistentDisk represents a GCE Disk resource that is attached to a kubelet's host machine and then exposed to the pod. More info: https://kubernetes.io/docs/concepts/storage/volumes#gcepersistentdisk
 
 <table>
     <thead>
@@ -24461,21 +19991,21 @@ GCEPersistentDisk represents a GCE Disk resource that is attached to a kubelet's
         <td><b>pdName</b></td>
         <td>string</td>
         <td>
-          Unique name of the PD resource in GCE. Used to identify the disk in GCE. More info: https://kubernetes.io/docs/concepts/storage/volumes#gcepersistentdisk<br/>
+          pdName is unique name of the PD resource in GCE. Used to identify the disk in GCE. More info: https://kubernetes.io/docs/concepts/storage/volumes#gcepersistentdisk<br/>
         </td>
         <td>true</td>
       </tr><tr>
         <td><b>fsType</b></td>
         <td>string</td>
         <td>
-          Filesystem type of the volume that you want to mount. Tip: Ensure that the filesystem type is supported by the host operating system. Examples: "ext4", "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified. More info: https://kubernetes.io/docs/concepts/storage/volumes#gcepersistentdisk TODO: how do we prevent errors in the filesystem from compromising the machine<br/>
+          fsType is filesystem type of the volume that you want to mount. Tip: Ensure that the filesystem type is supported by the host operating system. Examples: "ext4", "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified. More info: https://kubernetes.io/docs/concepts/storage/volumes#gcepersistentdisk TODO: how do we prevent errors in the filesystem from compromising the machine<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>partition</b></td>
         <td>integer</td>
         <td>
-          The partition in the volume that you want to mount. If omitted, the default is to mount by volume name. Examples: For volume /dev/sda1, you specify the partition as "1". Similarly, the volume partition for /dev/sda is "0" (or you can leave the property empty). More info: https://kubernetes.io/docs/concepts/storage/volumes#gcepersistentdisk<br/>
+          partition is the partition in the volume that you want to mount. If omitted, the default is to mount by volume name. Examples: For volume /dev/sda1, you specify the partition as "1". Similarly, the volume partition for /dev/sda is "0" (or you can leave the property empty). More info: https://kubernetes.io/docs/concepts/storage/volumes#gcepersistentdisk<br/>
           <br/>
             <i>Format</i>: int32<br/>
         </td>
@@ -24484,7 +20014,7 @@ GCEPersistentDisk represents a GCE Disk resource that is attached to a kubelet's
         <td><b>readOnly</b></td>
         <td>boolean</td>
         <td>
-          ReadOnly here will force the ReadOnly setting in VolumeMounts. Defaults to false. More info: https://kubernetes.io/docs/concepts/storage/volumes#gcepersistentdisk<br/>
+          readOnly here will force the ReadOnly setting in VolumeMounts. Defaults to false. More info: https://kubernetes.io/docs/concepts/storage/volumes#gcepersistentdisk<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -24496,7 +20026,7 @@ GCEPersistentDisk represents a GCE Disk resource that is attached to a kubelet's
 
 
 
-GitRepo represents a git repository at a particular revision. DEPRECATED: GitRepo is deprecated. To provision a container with a git repo, mount an EmptyDir into an InitContainer that clones the repo using git, then mount the EmptyDir into the Pod's container.
+gitRepo represents a git repository at a particular revision. DEPRECATED: GitRepo is deprecated. To provision a container with a git repo, mount an EmptyDir into an InitContainer that clones the repo using git, then mount the EmptyDir into the Pod's container.
 
 <table>
     <thead>
@@ -24511,21 +20041,21 @@ GitRepo represents a git repository at a particular revision. DEPRECATED: GitRep
         <td><b>repository</b></td>
         <td>string</td>
         <td>
-          Repository URL<br/>
+          repository is the URL<br/>
         </td>
         <td>true</td>
       </tr><tr>
         <td><b>directory</b></td>
         <td>string</td>
         <td>
-          Target directory name. Must not contain or start with '..'.  If '.' is supplied, the volume directory will be the git repository.  Otherwise, if specified, the volume will contain the git repository in the subdirectory with the given name.<br/>
+          directory is the target directory name. Must not contain or start with '..'.  If '.' is supplied, the volume directory will be the git repository.  Otherwise, if specified, the volume will contain the git repository in the subdirectory with the given name.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>revision</b></td>
         <td>string</td>
         <td>
-          Commit hash for the specified revision.<br/>
+          revision is the commit hash for the specified revision.<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -24537,7 +20067,7 @@ GitRepo represents a git repository at a particular revision. DEPRECATED: GitRep
 
 
 
-Glusterfs represents a Glusterfs mount on the host that shares a pod's lifetime. More info: https://examples.k8s.io/volumes/glusterfs/README.md
+glusterfs represents a Glusterfs mount on the host that shares a pod's lifetime. More info: https://examples.k8s.io/volumes/glusterfs/README.md
 
 <table>
     <thead>
@@ -24552,21 +20082,21 @@ Glusterfs represents a Glusterfs mount on the host that shares a pod's lifetime.
         <td><b>endpoints</b></td>
         <td>string</td>
         <td>
-          EndpointsName is the endpoint name that details Glusterfs topology. More info: https://examples.k8s.io/volumes/glusterfs/README.md#create-a-pod<br/>
+          endpoints is the endpoint name that details Glusterfs topology. More info: https://examples.k8s.io/volumes/glusterfs/README.md#create-a-pod<br/>
         </td>
         <td>true</td>
       </tr><tr>
         <td><b>path</b></td>
         <td>string</td>
         <td>
-          Path is the Glusterfs volume path. More info: https://examples.k8s.io/volumes/glusterfs/README.md#create-a-pod<br/>
+          path is the Glusterfs volume path. More info: https://examples.k8s.io/volumes/glusterfs/README.md#create-a-pod<br/>
         </td>
         <td>true</td>
       </tr><tr>
         <td><b>readOnly</b></td>
         <td>boolean</td>
         <td>
-          ReadOnly here will force the Glusterfs volume to be mounted with read-only permissions. Defaults to false. More info: https://examples.k8s.io/volumes/glusterfs/README.md#create-a-pod<br/>
+          readOnly here will force the Glusterfs volume to be mounted with read-only permissions. Defaults to false. More info: https://examples.k8s.io/volumes/glusterfs/README.md#create-a-pod<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -24578,7 +20108,7 @@ Glusterfs represents a Glusterfs mount on the host that shares a pod's lifetime.
 
 
 
-HostPath represents a pre-existing file or directory on the host machine that is directly exposed to the container. This is generally used for system agents or other privileged things that are allowed to see the host machine. Most containers will NOT need this. More info: https://kubernetes.io/docs/concepts/storage/volumes#hostpath --- TODO(jonesdl) We need to restrict who can use host directory mounts and who can/can not mount host directories as read/write.
+hostPath represents a pre-existing file or directory on the host machine that is directly exposed to the container. This is generally used for system agents or other privileged things that are allowed to see the host machine. Most containers will NOT need this. More info: https://kubernetes.io/docs/concepts/storage/volumes#hostpath --- TODO(jonesdl) We need to restrict who can use host directory mounts and who can/can not mount host directories as read/write.
 
 <table>
     <thead>
@@ -24593,14 +20123,14 @@ HostPath represents a pre-existing file or directory on the host machine that is
         <td><b>path</b></td>
         <td>string</td>
         <td>
-          Path of the directory on the host. If the path is a symlink, it will follow the link to the real path. More info: https://kubernetes.io/docs/concepts/storage/volumes#hostpath<br/>
+          path of the directory on the host. If the path is a symlink, it will follow the link to the real path. More info: https://kubernetes.io/docs/concepts/storage/volumes#hostpath<br/>
         </td>
         <td>true</td>
       </tr><tr>
         <td><b>type</b></td>
         <td>string</td>
         <td>
-          Type for HostPath Volume Defaults to "" More info: https://kubernetes.io/docs/concepts/storage/volumes#hostpath<br/>
+          type for HostPath Volume Defaults to "" More info: https://kubernetes.io/docs/concepts/storage/volumes#hostpath<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -24612,7 +20142,7 @@ HostPath represents a pre-existing file or directory on the host machine that is
 
 
 
-ISCSI represents an ISCSI Disk resource that is attached to a kubelet's host machine and then exposed to the pod. More info: https://examples.k8s.io/volumes/iscsi/README.md
+iscsi represents an ISCSI Disk resource that is attached to a kubelet's host machine and then exposed to the pod. More info: https://examples.k8s.io/volumes/iscsi/README.md
 
 <table>
     <thead>
@@ -24627,14 +20157,14 @@ ISCSI represents an ISCSI Disk resource that is attached to a kubelet's host mac
         <td><b>iqn</b></td>
         <td>string</td>
         <td>
-          Target iSCSI Qualified Name.<br/>
+          iqn is the target iSCSI Qualified Name.<br/>
         </td>
         <td>true</td>
       </tr><tr>
         <td><b>lun</b></td>
         <td>integer</td>
         <td>
-          iSCSI Target Lun number.<br/>
+          lun represents iSCSI Target Lun number.<br/>
           <br/>
             <i>Format</i>: int32<br/>
         </td>
@@ -24643,63 +20173,63 @@ ISCSI represents an ISCSI Disk resource that is attached to a kubelet's host mac
         <td><b>targetPortal</b></td>
         <td>string</td>
         <td>
-          iSCSI Target Portal. The Portal is either an IP or ip_addr:port if the port is other than default (typically TCP ports 860 and 3260).<br/>
+          targetPortal is iSCSI Target Portal. The Portal is either an IP or ip_addr:port if the port is other than default (typically TCP ports 860 and 3260).<br/>
         </td>
         <td>true</td>
       </tr><tr>
         <td><b>chapAuthDiscovery</b></td>
         <td>boolean</td>
         <td>
-          whether support iSCSI Discovery CHAP authentication<br/>
+          chapAuthDiscovery defines whether support iSCSI Discovery CHAP authentication<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>chapAuthSession</b></td>
         <td>boolean</td>
         <td>
-          whether support iSCSI Session CHAP authentication<br/>
+          chapAuthSession defines whether support iSCSI Session CHAP authentication<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>fsType</b></td>
         <td>string</td>
         <td>
-          Filesystem type of the volume that you want to mount. Tip: Ensure that the filesystem type is supported by the host operating system. Examples: "ext4", "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified. More info: https://kubernetes.io/docs/concepts/storage/volumes#iscsi TODO: how do we prevent errors in the filesystem from compromising the machine<br/>
+          fsType is the filesystem type of the volume that you want to mount. Tip: Ensure that the filesystem type is supported by the host operating system. Examples: "ext4", "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified. More info: https://kubernetes.io/docs/concepts/storage/volumes#iscsi TODO: how do we prevent errors in the filesystem from compromising the machine<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>initiatorName</b></td>
         <td>string</td>
         <td>
-          Custom iSCSI Initiator Name. If initiatorName is specified with iscsiInterface simultaneously, new iSCSI interface <target portal>:<volume name> will be created for the connection.<br/>
+          initiatorName is the custom iSCSI Initiator Name. If initiatorName is specified with iscsiInterface simultaneously, new iSCSI interface <target portal>:<volume name> will be created for the connection.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>iscsiInterface</b></td>
         <td>string</td>
         <td>
-          iSCSI Interface Name that uses an iSCSI transport. Defaults to 'default' (tcp).<br/>
+          iscsiInterface is the interface Name that uses an iSCSI transport. Defaults to 'default' (tcp).<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>portals</b></td>
         <td>[]string</td>
         <td>
-          iSCSI Target Portal List. The portal is either an IP or ip_addr:port if the port is other than default (typically TCP ports 860 and 3260).<br/>
+          portals is the iSCSI Target Portal List. The portal is either an IP or ip_addr:port if the port is other than default (typically TCP ports 860 and 3260).<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>readOnly</b></td>
         <td>boolean</td>
         <td>
-          ReadOnly here will force the ReadOnly setting in VolumeMounts. Defaults to false.<br/>
+          readOnly here will force the ReadOnly setting in VolumeMounts. Defaults to false.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#k8ssandraclusterspeccassandraextravolumesvolumesindexiscsisecretref">secretRef</a></b></td>
         <td>object</td>
         <td>
-          CHAP Secret for iSCSI target and initiator authentication<br/>
+          secretRef is the CHAP Secret for iSCSI target and initiator authentication<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -24711,7 +20241,7 @@ ISCSI represents an ISCSI Disk resource that is attached to a kubelet's host mac
 
 
 
-CHAP Secret for iSCSI target and initiator authentication
+secretRef is the CHAP Secret for iSCSI target and initiator authentication
 
 <table>
     <thead>
@@ -24738,7 +20268,7 @@ CHAP Secret for iSCSI target and initiator authentication
 
 
 
-NFS represents an NFS mount on the host that shares a pod's lifetime More info: https://kubernetes.io/docs/concepts/storage/volumes#nfs
+nfs represents an NFS mount on the host that shares a pod's lifetime More info: https://kubernetes.io/docs/concepts/storage/volumes#nfs
 
 <table>
     <thead>
@@ -24753,21 +20283,21 @@ NFS represents an NFS mount on the host that shares a pod's lifetime More info: 
         <td><b>path</b></td>
         <td>string</td>
         <td>
-          Path that is exported by the NFS server. More info: https://kubernetes.io/docs/concepts/storage/volumes#nfs<br/>
+          path that is exported by the NFS server. More info: https://kubernetes.io/docs/concepts/storage/volumes#nfs<br/>
         </td>
         <td>true</td>
       </tr><tr>
         <td><b>server</b></td>
         <td>string</td>
         <td>
-          Server is the hostname or IP address of the NFS server. More info: https://kubernetes.io/docs/concepts/storage/volumes#nfs<br/>
+          server is the hostname or IP address of the NFS server. More info: https://kubernetes.io/docs/concepts/storage/volumes#nfs<br/>
         </td>
         <td>true</td>
       </tr><tr>
         <td><b>readOnly</b></td>
         <td>boolean</td>
         <td>
-          ReadOnly here will force the NFS export to be mounted with read-only permissions. Defaults to false. More info: https://kubernetes.io/docs/concepts/storage/volumes#nfs<br/>
+          readOnly here will force the NFS export to be mounted with read-only permissions. Defaults to false. More info: https://kubernetes.io/docs/concepts/storage/volumes#nfs<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -24779,7 +20309,7 @@ NFS represents an NFS mount on the host that shares a pod's lifetime More info: 
 
 
 
-PersistentVolumeClaimVolumeSource represents a reference to a PersistentVolumeClaim in the same namespace. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#persistentvolumeclaims
+persistentVolumeClaimVolumeSource represents a reference to a PersistentVolumeClaim in the same namespace. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#persistentvolumeclaims
 
 <table>
     <thead>
@@ -24794,14 +20324,14 @@ PersistentVolumeClaimVolumeSource represents a reference to a PersistentVolumeCl
         <td><b>claimName</b></td>
         <td>string</td>
         <td>
-          ClaimName is the name of a PersistentVolumeClaim in the same namespace as the pod using this volume. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#persistentvolumeclaims<br/>
+          claimName is the name of a PersistentVolumeClaim in the same namespace as the pod using this volume. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#persistentvolumeclaims<br/>
         </td>
         <td>true</td>
       </tr><tr>
         <td><b>readOnly</b></td>
         <td>boolean</td>
         <td>
-          Will force the ReadOnly setting in VolumeMounts. Default false.<br/>
+          readOnly Will force the ReadOnly setting in VolumeMounts. Default false.<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -24813,7 +20343,7 @@ PersistentVolumeClaimVolumeSource represents a reference to a PersistentVolumeCl
 
 
 
-PhotonPersistentDisk represents a PhotonController persistent disk attached and mounted on kubelets host machine
+photonPersistentDisk represents a PhotonController persistent disk attached and mounted on kubelets host machine
 
 <table>
     <thead>
@@ -24828,14 +20358,14 @@ PhotonPersistentDisk represents a PhotonController persistent disk attached and 
         <td><b>pdID</b></td>
         <td>string</td>
         <td>
-          ID that identifies Photon Controller persistent disk<br/>
+          pdID is the ID that identifies Photon Controller persistent disk<br/>
         </td>
         <td>true</td>
       </tr><tr>
         <td><b>fsType</b></td>
         <td>string</td>
         <td>
-          Filesystem type to mount. Must be a filesystem type supported by the host operating system. Ex. "ext4", "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified.<br/>
+          fsType is the filesystem type to mount. Must be a filesystem type supported by the host operating system. Ex. "ext4", "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified.<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -24847,7 +20377,7 @@ PhotonPersistentDisk represents a PhotonController persistent disk attached and 
 
 
 
-PortworxVolume represents a portworx volume attached and mounted on kubelets host machine
+portworxVolume represents a portworx volume attached and mounted on kubelets host machine
 
 <table>
     <thead>
@@ -24862,21 +20392,21 @@ PortworxVolume represents a portworx volume attached and mounted on kubelets hos
         <td><b>volumeID</b></td>
         <td>string</td>
         <td>
-          VolumeID uniquely identifies a Portworx volume<br/>
+          volumeID uniquely identifies a Portworx volume<br/>
         </td>
         <td>true</td>
       </tr><tr>
         <td><b>fsType</b></td>
         <td>string</td>
         <td>
-          FSType represents the filesystem type to mount Must be a filesystem type supported by the host operating system. Ex. "ext4", "xfs". Implicitly inferred to be "ext4" if unspecified.<br/>
+          fSType represents the filesystem type to mount Must be a filesystem type supported by the host operating system. Ex. "ext4", "xfs". Implicitly inferred to be "ext4" if unspecified.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>readOnly</b></td>
         <td>boolean</td>
         <td>
-          Defaults to false (read/write). ReadOnly here will force the ReadOnly setting in VolumeMounts.<br/>
+          readOnly defaults to false (read/write). ReadOnly here will force the ReadOnly setting in VolumeMounts.<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -24888,7 +20418,7 @@ PortworxVolume represents a portworx volume attached and mounted on kubelets hos
 
 
 
-Items for all in one resources secrets, configmaps, and downward API
+projected items for all in one resources secrets, configmaps, and downward API
 
 <table>
     <thead>
@@ -24903,7 +20433,7 @@ Items for all in one resources secrets, configmaps, and downward API
         <td><b>defaultMode</b></td>
         <td>integer</td>
         <td>
-          Mode bits used to set permissions on created files by default. Must be an octal value between 0000 and 0777 or a decimal value between 0 and 511. YAML accepts both octal and decimal values, JSON requires decimal values for mode bits. Directories within the path are not affected by this setting. This might be in conflict with other options that affect the file mode, like fsGroup, and the result can be other mode bits set.<br/>
+          defaultMode are the mode bits used to set permissions on created files by default. Must be an octal value between 0000 and 0777 or a decimal value between 0 and 511. YAML accepts both octal and decimal values, JSON requires decimal values for mode bits. Directories within the path are not affected by this setting. This might be in conflict with other options that affect the file mode, like fsGroup, and the result can be other mode bits set.<br/>
           <br/>
             <i>Format</i>: int32<br/>
         </td>
@@ -24912,7 +20442,7 @@ Items for all in one resources secrets, configmaps, and downward API
         <td><b><a href="#k8ssandraclusterspeccassandraextravolumesvolumesindexprojectedsourcesindex">sources</a></b></td>
         <td>[]object</td>
         <td>
-          list of volume projections<br/>
+          sources is the list of volume projections<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -24939,28 +20469,28 @@ Projection that may be projected along with other supported volume types
         <td><b><a href="#k8ssandraclusterspeccassandraextravolumesvolumesindexprojectedsourcesindexconfigmap">configMap</a></b></td>
         <td>object</td>
         <td>
-          information about the configMap data to project<br/>
+          configMap information about the configMap data to project<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#k8ssandraclusterspeccassandraextravolumesvolumesindexprojectedsourcesindexdownwardapi">downwardAPI</a></b></td>
         <td>object</td>
         <td>
-          information about the downwardAPI data to project<br/>
+          downwardAPI information about the downwardAPI data to project<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#k8ssandraclusterspeccassandraextravolumesvolumesindexprojectedsourcesindexsecret">secret</a></b></td>
         <td>object</td>
         <td>
-          information about the secret data to project<br/>
+          secret information about the secret data to project<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#k8ssandraclusterspeccassandraextravolumesvolumesindexprojectedsourcesindexserviceaccounttoken">serviceAccountToken</a></b></td>
         <td>object</td>
         <td>
-          information about the serviceAccountToken data to project<br/>
+          serviceAccountToken is information about the serviceAccountToken data to project<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -24972,7 +20502,7 @@ Projection that may be projected along with other supported volume types
 
 
 
-information about the configMap data to project
+configMap information about the configMap data to project
 
 <table>
     <thead>
@@ -24987,7 +20517,7 @@ information about the configMap data to project
         <td><b><a href="#k8ssandraclusterspeccassandraextravolumesvolumesindexprojectedsourcesindexconfigmapitemsindex">items</a></b></td>
         <td>[]object</td>
         <td>
-          If unspecified, each key-value pair in the Data field of the referenced ConfigMap will be projected into the volume as a file whose name is the key and content is the value. If specified, the listed keys will be projected into the specified paths, and unlisted keys will not be present. If a key is specified which is not present in the ConfigMap, the volume setup will error unless it is marked optional. Paths must be relative and may not contain the '..' path or start with '..'.<br/>
+          items if unspecified, each key-value pair in the Data field of the referenced ConfigMap will be projected into the volume as a file whose name is the key and content is the value. If specified, the listed keys will be projected into the specified paths, and unlisted keys will not be present. If a key is specified which is not present in the ConfigMap, the volume setup will error unless it is marked optional. Paths must be relative and may not contain the '..' path or start with '..'.<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -25001,7 +20531,7 @@ information about the configMap data to project
         <td><b>optional</b></td>
         <td>boolean</td>
         <td>
-          Specify whether the ConfigMap or its keys must be defined<br/>
+          optional specify whether the ConfigMap or its keys must be defined<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -25028,21 +20558,21 @@ Maps a string key to a path within a volume.
         <td><b>key</b></td>
         <td>string</td>
         <td>
-          The key to project.<br/>
+          key is the key to project.<br/>
         </td>
         <td>true</td>
       </tr><tr>
         <td><b>path</b></td>
         <td>string</td>
         <td>
-          The relative path of the file to map the key to. May not be an absolute path. May not contain the path element '..'. May not start with the string '..'.<br/>
+          path is the relative path of the file to map the key to. May not be an absolute path. May not contain the path element '..'. May not start with the string '..'.<br/>
         </td>
         <td>true</td>
       </tr><tr>
         <td><b>mode</b></td>
         <td>integer</td>
         <td>
-          Optional: mode bits used to set permissions on this file. Must be an octal value between 0000 and 0777 or a decimal value between 0 and 511. YAML accepts both octal and decimal values, JSON requires decimal values for mode bits. If not specified, the volume defaultMode will be used. This might be in conflict with other options that affect the file mode, like fsGroup, and the result can be other mode bits set.<br/>
+          mode is Optional: mode bits used to set permissions on this file. Must be an octal value between 0000 and 0777 or a decimal value between 0 and 511. YAML accepts both octal and decimal values, JSON requires decimal values for mode bits. If not specified, the volume defaultMode will be used. This might be in conflict with other options that affect the file mode, like fsGroup, and the result can be other mode bits set.<br/>
           <br/>
             <i>Format</i>: int32<br/>
         </td>
@@ -25056,7 +20586,7 @@ Maps a string key to a path within a volume.
 
 
 
-information about the downwardAPI data to project
+downwardAPI information about the downwardAPI data to project
 
 <table>
     <thead>
@@ -25208,7 +20738,7 @@ Selects a resource of the container: only resources limits and requests (limits.
 
 
 
-information about the secret data to project
+secret information about the secret data to project
 
 <table>
     <thead>
@@ -25223,7 +20753,7 @@ information about the secret data to project
         <td><b><a href="#k8ssandraclusterspeccassandraextravolumesvolumesindexprojectedsourcesindexsecretitemsindex">items</a></b></td>
         <td>[]object</td>
         <td>
-          If unspecified, each key-value pair in the Data field of the referenced Secret will be projected into the volume as a file whose name is the key and content is the value. If specified, the listed keys will be projected into the specified paths, and unlisted keys will not be present. If a key is specified which is not present in the Secret, the volume setup will error unless it is marked optional. Paths must be relative and may not contain the '..' path or start with '..'.<br/>
+          items if unspecified, each key-value pair in the Data field of the referenced Secret will be projected into the volume as a file whose name is the key and content is the value. If specified, the listed keys will be projected into the specified paths, and unlisted keys will not be present. If a key is specified which is not present in the Secret, the volume setup will error unless it is marked optional. Paths must be relative and may not contain the '..' path or start with '..'.<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -25237,7 +20767,7 @@ information about the secret data to project
         <td><b>optional</b></td>
         <td>boolean</td>
         <td>
-          Specify whether the Secret or its key must be defined<br/>
+          optional field specify whether the Secret or its key must be defined<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -25264,21 +20794,21 @@ Maps a string key to a path within a volume.
         <td><b>key</b></td>
         <td>string</td>
         <td>
-          The key to project.<br/>
+          key is the key to project.<br/>
         </td>
         <td>true</td>
       </tr><tr>
         <td><b>path</b></td>
         <td>string</td>
         <td>
-          The relative path of the file to map the key to. May not be an absolute path. May not contain the path element '..'. May not start with the string '..'.<br/>
+          path is the relative path of the file to map the key to. May not be an absolute path. May not contain the path element '..'. May not start with the string '..'.<br/>
         </td>
         <td>true</td>
       </tr><tr>
         <td><b>mode</b></td>
         <td>integer</td>
         <td>
-          Optional: mode bits used to set permissions on this file. Must be an octal value between 0000 and 0777 or a decimal value between 0 and 511. YAML accepts both octal and decimal values, JSON requires decimal values for mode bits. If not specified, the volume defaultMode will be used. This might be in conflict with other options that affect the file mode, like fsGroup, and the result can be other mode bits set.<br/>
+          mode is Optional: mode bits used to set permissions on this file. Must be an octal value between 0000 and 0777 or a decimal value between 0 and 511. YAML accepts both octal and decimal values, JSON requires decimal values for mode bits. If not specified, the volume defaultMode will be used. This might be in conflict with other options that affect the file mode, like fsGroup, and the result can be other mode bits set.<br/>
           <br/>
             <i>Format</i>: int32<br/>
         </td>
@@ -25292,7 +20822,7 @@ Maps a string key to a path within a volume.
 
 
 
-information about the serviceAccountToken data to project
+serviceAccountToken is information about the serviceAccountToken data to project
 
 <table>
     <thead>
@@ -25307,21 +20837,21 @@ information about the serviceAccountToken data to project
         <td><b>path</b></td>
         <td>string</td>
         <td>
-          Path is the path relative to the mount point of the file to project the token into.<br/>
+          path is the path relative to the mount point of the file to project the token into.<br/>
         </td>
         <td>true</td>
       </tr><tr>
         <td><b>audience</b></td>
         <td>string</td>
         <td>
-          Audience is the intended audience of the token. A recipient of a token must identify itself with an identifier specified in the audience of the token, and otherwise should reject the token. The audience defaults to the identifier of the apiserver.<br/>
+          audience is the intended audience of the token. A recipient of a token must identify itself with an identifier specified in the audience of the token, and otherwise should reject the token. The audience defaults to the identifier of the apiserver.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>expirationSeconds</b></td>
         <td>integer</td>
         <td>
-          ExpirationSeconds is the requested duration of validity of the service account token. As the token approaches expiration, the kubelet volume plugin will proactively rotate the service account token. The kubelet will start trying to rotate the token if the token is older than 80 percent of its time to live or if the token is older than 24 hours.Defaults to 1 hour and must be at least 10 minutes.<br/>
+          expirationSeconds is the requested duration of validity of the service account token. As the token approaches expiration, the kubelet volume plugin will proactively rotate the service account token. The kubelet will start trying to rotate the token if the token is older than 80 percent of its time to live or if the token is older than 24 hours.Defaults to 1 hour and must be at least 10 minutes.<br/>
           <br/>
             <i>Format</i>: int64<br/>
         </td>
@@ -25335,7 +20865,7 @@ information about the serviceAccountToken data to project
 
 
 
-Quobyte represents a Quobyte mount on the host that shares a pod's lifetime
+quobyte represents a Quobyte mount on the host that shares a pod's lifetime
 
 <table>
     <thead>
@@ -25350,42 +20880,42 @@ Quobyte represents a Quobyte mount on the host that shares a pod's lifetime
         <td><b>registry</b></td>
         <td>string</td>
         <td>
-          Registry represents a single or multiple Quobyte Registry services specified as a string as host:port pair (multiple entries are separated with commas) which acts as the central registry for volumes<br/>
+          registry represents a single or multiple Quobyte Registry services specified as a string as host:port pair (multiple entries are separated with commas) which acts as the central registry for volumes<br/>
         </td>
         <td>true</td>
       </tr><tr>
         <td><b>volume</b></td>
         <td>string</td>
         <td>
-          Volume is a string that references an already created Quobyte volume by name.<br/>
+          volume is a string that references an already created Quobyte volume by name.<br/>
         </td>
         <td>true</td>
       </tr><tr>
         <td><b>group</b></td>
         <td>string</td>
         <td>
-          Group to map volume access to Default is no group<br/>
+          group to map volume access to Default is no group<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>readOnly</b></td>
         <td>boolean</td>
         <td>
-          ReadOnly here will force the Quobyte volume to be mounted with read-only permissions. Defaults to false.<br/>
+          readOnly here will force the Quobyte volume to be mounted with read-only permissions. Defaults to false.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>tenant</b></td>
         <td>string</td>
         <td>
-          Tenant owning the given Quobyte volume in the Backend Used with dynamically provisioned Quobyte volumes, value is set by the plugin<br/>
+          tenant owning the given Quobyte volume in the Backend Used with dynamically provisioned Quobyte volumes, value is set by the plugin<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>user</b></td>
         <td>string</td>
         <td>
-          User to map volume access to Defaults to serivceaccount user<br/>
+          user to map volume access to Defaults to serivceaccount user<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -25397,7 +20927,7 @@ Quobyte represents a Quobyte mount on the host that shares a pod's lifetime
 
 
 
-RBD represents a Rados Block Device mount on the host that shares a pod's lifetime. More info: https://examples.k8s.io/volumes/rbd/README.md
+rbd represents a Rados Block Device mount on the host that shares a pod's lifetime. More info: https://examples.k8s.io/volumes/rbd/README.md
 
 <table>
     <thead>
@@ -25412,56 +20942,56 @@ RBD represents a Rados Block Device mount on the host that shares a pod's lifeti
         <td><b>image</b></td>
         <td>string</td>
         <td>
-          The rados image name. More info: https://examples.k8s.io/volumes/rbd/README.md#how-to-use-it<br/>
+          image is the rados image name. More info: https://examples.k8s.io/volumes/rbd/README.md#how-to-use-it<br/>
         </td>
         <td>true</td>
       </tr><tr>
         <td><b>monitors</b></td>
         <td>[]string</td>
         <td>
-          A collection of Ceph monitors. More info: https://examples.k8s.io/volumes/rbd/README.md#how-to-use-it<br/>
+          monitors is a collection of Ceph monitors. More info: https://examples.k8s.io/volumes/rbd/README.md#how-to-use-it<br/>
         </td>
         <td>true</td>
       </tr><tr>
         <td><b>fsType</b></td>
         <td>string</td>
         <td>
-          Filesystem type of the volume that you want to mount. Tip: Ensure that the filesystem type is supported by the host operating system. Examples: "ext4", "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified. More info: https://kubernetes.io/docs/concepts/storage/volumes#rbd TODO: how do we prevent errors in the filesystem from compromising the machine<br/>
+          fsType is the filesystem type of the volume that you want to mount. Tip: Ensure that the filesystem type is supported by the host operating system. Examples: "ext4", "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified. More info: https://kubernetes.io/docs/concepts/storage/volumes#rbd TODO: how do we prevent errors in the filesystem from compromising the machine<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>keyring</b></td>
         <td>string</td>
         <td>
-          Keyring is the path to key ring for RBDUser. Default is /etc/ceph/keyring. More info: https://examples.k8s.io/volumes/rbd/README.md#how-to-use-it<br/>
+          keyring is the path to key ring for RBDUser. Default is /etc/ceph/keyring. More info: https://examples.k8s.io/volumes/rbd/README.md#how-to-use-it<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>pool</b></td>
         <td>string</td>
         <td>
-          The rados pool name. Default is rbd. More info: https://examples.k8s.io/volumes/rbd/README.md#how-to-use-it<br/>
+          pool is the rados pool name. Default is rbd. More info: https://examples.k8s.io/volumes/rbd/README.md#how-to-use-it<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>readOnly</b></td>
         <td>boolean</td>
         <td>
-          ReadOnly here will force the ReadOnly setting in VolumeMounts. Defaults to false. More info: https://examples.k8s.io/volumes/rbd/README.md#how-to-use-it<br/>
+          readOnly here will force the ReadOnly setting in VolumeMounts. Defaults to false. More info: https://examples.k8s.io/volumes/rbd/README.md#how-to-use-it<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#k8ssandraclusterspeccassandraextravolumesvolumesindexrbdsecretref">secretRef</a></b></td>
         <td>object</td>
         <td>
-          SecretRef is name of the authentication secret for RBDUser. If provided overrides keyring. Default is nil. More info: https://examples.k8s.io/volumes/rbd/README.md#how-to-use-it<br/>
+          secretRef is name of the authentication secret for RBDUser. If provided overrides keyring. Default is nil. More info: https://examples.k8s.io/volumes/rbd/README.md#how-to-use-it<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>user</b></td>
         <td>string</td>
         <td>
-          The rados user name. Default is admin. More info: https://examples.k8s.io/volumes/rbd/README.md#how-to-use-it<br/>
+          user is the rados user name. Default is admin. More info: https://examples.k8s.io/volumes/rbd/README.md#how-to-use-it<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -25473,7 +21003,7 @@ RBD represents a Rados Block Device mount on the host that shares a pod's lifeti
 
 
 
-SecretRef is name of the authentication secret for RBDUser. If provided overrides keyring. Default is nil. More info: https://examples.k8s.io/volumes/rbd/README.md#how-to-use-it
+secretRef is name of the authentication secret for RBDUser. If provided overrides keyring. Default is nil. More info: https://examples.k8s.io/volumes/rbd/README.md#how-to-use-it
 
 <table>
     <thead>
@@ -25500,7 +21030,7 @@ SecretRef is name of the authentication secret for RBDUser. If provided override
 
 
 
-ScaleIO represents a ScaleIO persistent volume attached and mounted on Kubernetes nodes.
+scaleIO represents a ScaleIO persistent volume attached and mounted on Kubernetes nodes.
 
 <table>
     <thead>
@@ -25515,70 +21045,70 @@ ScaleIO represents a ScaleIO persistent volume attached and mounted on Kubernete
         <td><b>gateway</b></td>
         <td>string</td>
         <td>
-          The host address of the ScaleIO API Gateway.<br/>
+          gateway is the host address of the ScaleIO API Gateway.<br/>
         </td>
         <td>true</td>
       </tr><tr>
         <td><b><a href="#k8ssandraclusterspeccassandraextravolumesvolumesindexscaleiosecretref">secretRef</a></b></td>
         <td>object</td>
         <td>
-          SecretRef references to the secret for ScaleIO user and other sensitive information. If this is not provided, Login operation will fail.<br/>
+          secretRef references to the secret for ScaleIO user and other sensitive information. If this is not provided, Login operation will fail.<br/>
         </td>
         <td>true</td>
       </tr><tr>
         <td><b>system</b></td>
         <td>string</td>
         <td>
-          The name of the storage system as configured in ScaleIO.<br/>
+          system is the name of the storage system as configured in ScaleIO.<br/>
         </td>
         <td>true</td>
       </tr><tr>
         <td><b>fsType</b></td>
         <td>string</td>
         <td>
-          Filesystem type to mount. Must be a filesystem type supported by the host operating system. Ex. "ext4", "xfs", "ntfs". Default is "xfs".<br/>
+          fsType is the filesystem type to mount. Must be a filesystem type supported by the host operating system. Ex. "ext4", "xfs", "ntfs". Default is "xfs".<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>protectionDomain</b></td>
         <td>string</td>
         <td>
-          The name of the ScaleIO Protection Domain for the configured storage.<br/>
+          protectionDomain is the name of the ScaleIO Protection Domain for the configured storage.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>readOnly</b></td>
         <td>boolean</td>
         <td>
-          Defaults to false (read/write). ReadOnly here will force the ReadOnly setting in VolumeMounts.<br/>
+          readOnly Defaults to false (read/write). ReadOnly here will force the ReadOnly setting in VolumeMounts.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>sslEnabled</b></td>
         <td>boolean</td>
         <td>
-          Flag to enable/disable SSL communication with Gateway, default false<br/>
+          sslEnabled Flag enable/disable SSL communication with Gateway, default false<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>storageMode</b></td>
         <td>string</td>
         <td>
-          Indicates whether the storage for a volume should be ThickProvisioned or ThinProvisioned. Default is ThinProvisioned.<br/>
+          storageMode indicates whether the storage for a volume should be ThickProvisioned or ThinProvisioned. Default is ThinProvisioned.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>storagePool</b></td>
         <td>string</td>
         <td>
-          The ScaleIO Storage Pool associated with the protection domain.<br/>
+          storagePool is the ScaleIO Storage Pool associated with the protection domain.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>volumeName</b></td>
         <td>string</td>
         <td>
-          The name of a volume already created in the ScaleIO system that is associated with this volume source.<br/>
+          volumeName is the name of a volume already created in the ScaleIO system that is associated with this volume source.<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -25590,7 +21120,7 @@ ScaleIO represents a ScaleIO persistent volume attached and mounted on Kubernete
 
 
 
-SecretRef references to the secret for ScaleIO user and other sensitive information. If this is not provided, Login operation will fail.
+secretRef references to the secret for ScaleIO user and other sensitive information. If this is not provided, Login operation will fail.
 
 <table>
     <thead>
@@ -25617,7 +21147,7 @@ SecretRef references to the secret for ScaleIO user and other sensitive informat
 
 
 
-Secret represents a secret that should populate this volume. More info: https://kubernetes.io/docs/concepts/storage/volumes#secret
+secret represents a secret that should populate this volume. More info: https://kubernetes.io/docs/concepts/storage/volumes#secret
 
 <table>
     <thead>
@@ -25632,7 +21162,7 @@ Secret represents a secret that should populate this volume. More info: https://
         <td><b>defaultMode</b></td>
         <td>integer</td>
         <td>
-          Optional: mode bits used to set permissions on created files by default. Must be an octal value between 0000 and 0777 or a decimal value between 0 and 511. YAML accepts both octal and decimal values, JSON requires decimal values for mode bits. Defaults to 0644. Directories within the path are not affected by this setting. This might be in conflict with other options that affect the file mode, like fsGroup, and the result can be other mode bits set.<br/>
+          defaultMode is Optional: mode bits used to set permissions on created files by default. Must be an octal value between 0000 and 0777 or a decimal value between 0 and 511. YAML accepts both octal and decimal values, JSON requires decimal values for mode bits. Defaults to 0644. Directories within the path are not affected by this setting. This might be in conflict with other options that affect the file mode, like fsGroup, and the result can be other mode bits set.<br/>
           <br/>
             <i>Format</i>: int32<br/>
         </td>
@@ -25641,21 +21171,21 @@ Secret represents a secret that should populate this volume. More info: https://
         <td><b><a href="#k8ssandraclusterspeccassandraextravolumesvolumesindexsecretitemsindex">items</a></b></td>
         <td>[]object</td>
         <td>
-          If unspecified, each key-value pair in the Data field of the referenced Secret will be projected into the volume as a file whose name is the key and content is the value. If specified, the listed keys will be projected into the specified paths, and unlisted keys will not be present. If a key is specified which is not present in the Secret, the volume setup will error unless it is marked optional. Paths must be relative and may not contain the '..' path or start with '..'.<br/>
+          items If unspecified, each key-value pair in the Data field of the referenced Secret will be projected into the volume as a file whose name is the key and content is the value. If specified, the listed keys will be projected into the specified paths, and unlisted keys will not be present. If a key is specified which is not present in the Secret, the volume setup will error unless it is marked optional. Paths must be relative and may not contain the '..' path or start with '..'.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>optional</b></td>
         <td>boolean</td>
         <td>
-          Specify whether the Secret or its keys must be defined<br/>
+          optional field specify whether the Secret or its keys must be defined<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>secretName</b></td>
         <td>string</td>
         <td>
-          Name of the secret in the pod's namespace to use. More info: https://kubernetes.io/docs/concepts/storage/volumes#secret<br/>
+          secretName is the name of the secret in the pod's namespace to use. More info: https://kubernetes.io/docs/concepts/storage/volumes#secret<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -25682,21 +21212,21 @@ Maps a string key to a path within a volume.
         <td><b>key</b></td>
         <td>string</td>
         <td>
-          The key to project.<br/>
+          key is the key to project.<br/>
         </td>
         <td>true</td>
       </tr><tr>
         <td><b>path</b></td>
         <td>string</td>
         <td>
-          The relative path of the file to map the key to. May not be an absolute path. May not contain the path element '..'. May not start with the string '..'.<br/>
+          path is the relative path of the file to map the key to. May not be an absolute path. May not contain the path element '..'. May not start with the string '..'.<br/>
         </td>
         <td>true</td>
       </tr><tr>
         <td><b>mode</b></td>
         <td>integer</td>
         <td>
-          Optional: mode bits used to set permissions on this file. Must be an octal value between 0000 and 0777 or a decimal value between 0 and 511. YAML accepts both octal and decimal values, JSON requires decimal values for mode bits. If not specified, the volume defaultMode will be used. This might be in conflict with other options that affect the file mode, like fsGroup, and the result can be other mode bits set.<br/>
+          mode is Optional: mode bits used to set permissions on this file. Must be an octal value between 0000 and 0777 or a decimal value between 0 and 511. YAML accepts both octal and decimal values, JSON requires decimal values for mode bits. If not specified, the volume defaultMode will be used. This might be in conflict with other options that affect the file mode, like fsGroup, and the result can be other mode bits set.<br/>
           <br/>
             <i>Format</i>: int32<br/>
         </td>
@@ -25710,7 +21240,7 @@ Maps a string key to a path within a volume.
 
 
 
-StorageOS represents a StorageOS volume attached and mounted on Kubernetes nodes.
+storageOS represents a StorageOS volume attached and mounted on Kubernetes nodes.
 
 <table>
     <thead>
@@ -25725,35 +21255,35 @@ StorageOS represents a StorageOS volume attached and mounted on Kubernetes nodes
         <td><b>fsType</b></td>
         <td>string</td>
         <td>
-          Filesystem type to mount. Must be a filesystem type supported by the host operating system. Ex. "ext4", "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified.<br/>
+          fsType is the filesystem type to mount. Must be a filesystem type supported by the host operating system. Ex. "ext4", "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>readOnly</b></td>
         <td>boolean</td>
         <td>
-          Defaults to false (read/write). ReadOnly here will force the ReadOnly setting in VolumeMounts.<br/>
+          readOnly defaults to false (read/write). ReadOnly here will force the ReadOnly setting in VolumeMounts.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#k8ssandraclusterspeccassandraextravolumesvolumesindexstorageossecretref">secretRef</a></b></td>
         <td>object</td>
         <td>
-          SecretRef specifies the secret to use for obtaining the StorageOS API credentials.  If not specified, default values will be attempted.<br/>
+          secretRef specifies the secret to use for obtaining the StorageOS API credentials.  If not specified, default values will be attempted.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>volumeName</b></td>
         <td>string</td>
         <td>
-          VolumeName is the human-readable name of the StorageOS volume.  Volume names are only unique within a namespace.<br/>
+          volumeName is the human-readable name of the StorageOS volume.  Volume names are only unique within a namespace.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>volumeNamespace</b></td>
         <td>string</td>
         <td>
-          VolumeNamespace specifies the scope of the volume within StorageOS.  If no namespace is specified then the Pod's namespace will be used.  This allows the Kubernetes name scoping to be mirrored within StorageOS for tighter integration. Set VolumeName to any name to override the default behaviour. Set to "default" if you are not using namespaces within StorageOS. Namespaces that do not pre-exist within StorageOS will be created.<br/>
+          volumeNamespace specifies the scope of the volume within StorageOS.  If no namespace is specified then the Pod's namespace will be used.  This allows the Kubernetes name scoping to be mirrored within StorageOS for tighter integration. Set VolumeName to any name to override the default behaviour. Set to "default" if you are not using namespaces within StorageOS. Namespaces that do not pre-exist within StorageOS will be created.<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -25765,7 +21295,7 @@ StorageOS represents a StorageOS volume attached and mounted on Kubernetes nodes
 
 
 
-SecretRef specifies the secret to use for obtaining the StorageOS API credentials.  If not specified, default values will be attempted.
+secretRef specifies the secret to use for obtaining the StorageOS API credentials.  If not specified, default values will be attempted.
 
 <table>
     <thead>
@@ -25792,7 +21322,7 @@ SecretRef specifies the secret to use for obtaining the StorageOS API credential
 
 
 
-VsphereVolume represents a vSphere volume attached and mounted on kubelets host machine
+vsphereVolume represents a vSphere volume attached and mounted on kubelets host machine
 
 <table>
     <thead>
@@ -25807,28 +21337,28 @@ VsphereVolume represents a vSphere volume attached and mounted on kubelets host 
         <td><b>volumePath</b></td>
         <td>string</td>
         <td>
-          Path that identifies vSphere volume vmdk<br/>
+          volumePath is the path that identifies vSphere volume vmdk<br/>
         </td>
         <td>true</td>
       </tr><tr>
         <td><b>fsType</b></td>
         <td>string</td>
         <td>
-          Filesystem type to mount. Must be a filesystem type supported by the host operating system. Ex. "ext4", "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified.<br/>
+          fsType is filesystem type to mount. Must be a filesystem type supported by the host operating system. Ex. "ext4", "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>storagePolicyID</b></td>
         <td>string</td>
         <td>
-          Storage Policy Based Management (SPBM) profile ID associated with the StoragePolicyName.<br/>
+          storagePolicyID is the storage Policy Based Management (SPBM) profile ID associated with the StoragePolicyName.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>storagePolicyName</b></td>
         <td>string</td>
         <td>
-          Storage Policy Based Management (SPBM) profile name.<br/>
+          storagePolicyName is the storage Policy Based Management (SPBM) profile name.<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -25862,14 +21392,14 @@ A single application container that you want to run within a pod.
         <td><b>args</b></td>
         <td>[]string</td>
         <td>
-          Arguments to the entrypoint. The docker image's CMD is used if this is not provided. Variable references $(VAR_NAME) are expanded using the container's environment. If a variable cannot be resolved, the reference in the input string will be unchanged. Double $$ are reduced to a single $, which allows for escaping the $(VAR_NAME) syntax: i.e. "$$(VAR_NAME)" will produce the string literal "$(VAR_NAME)". Escaped references will never be expanded, regardless of whether the variable exists or not. Cannot be updated. More info: https://kubernetes.io/docs/tasks/inject-data-application/define-command-argument-container/#running-a-command-in-a-shell<br/>
+          Arguments to the entrypoint. The container image's CMD is used if this is not provided. Variable references $(VAR_NAME) are expanded using the container's environment. If a variable cannot be resolved, the reference in the input string will be unchanged. Double $$ are reduced to a single $, which allows for escaping the $(VAR_NAME) syntax: i.e. "$$(VAR_NAME)" will produce the string literal "$(VAR_NAME)". Escaped references will never be expanded, regardless of whether the variable exists or not. Cannot be updated. More info: https://kubernetes.io/docs/tasks/inject-data-application/define-command-argument-container/#running-a-command-in-a-shell<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>command</b></td>
         <td>[]string</td>
         <td>
-          Entrypoint array. Not executed within a shell. The docker image's ENTRYPOINT is used if this is not provided. Variable references $(VAR_NAME) are expanded using the container's environment. If a variable cannot be resolved, the reference in the input string will be unchanged. Double $$ are reduced to a single $, which allows for escaping the $(VAR_NAME) syntax: i.e. "$$(VAR_NAME)" will produce the string literal "$(VAR_NAME)". Escaped references will never be expanded, regardless of whether the variable exists or not. Cannot be updated. More info: https://kubernetes.io/docs/tasks/inject-data-application/define-command-argument-container/#running-a-command-in-a-shell<br/>
+          Entrypoint array. Not executed within a shell. The container image's ENTRYPOINT is used if this is not provided. Variable references $(VAR_NAME) are expanded using the container's environment. If a variable cannot be resolved, the reference in the input string will be unchanged. Double $$ are reduced to a single $, which allows for escaping the $(VAR_NAME) syntax: i.e. "$$(VAR_NAME)" will produce the string literal "$(VAR_NAME)". Escaped references will never be expanded, regardless of whether the variable exists or not. Cannot be updated. More info: https://kubernetes.io/docs/tasks/inject-data-application/define-command-argument-container/#running-a-command-in-a-shell<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -25890,7 +21420,7 @@ A single application container that you want to run within a pod.
         <td><b>image</b></td>
         <td>string</td>
         <td>
-          Docker image name. More info: https://kubernetes.io/docs/concepts/containers/images This field is optional to allow higher level config management to default or override container images in workload controllers like Deployments and StatefulSets.<br/>
+          Container image name. More info: https://kubernetes.io/docs/concepts/containers/images This field is optional to allow higher level config management to default or override container images in workload controllers like Deployments and StatefulSets.<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -26816,7 +22346,7 @@ Periodic probe of container liveness. Container will be restarted if the probe f
         <td><b><a href="#k8ssandraclusterspeccassandrainitcontainersindexlivenessprobegrpc">grpc</a></b></td>
         <td>object</td>
         <td>
-          GRPC specifies an action involving a GRPC port. This is an alpha field and requires enabling GRPCContainerProbe feature gate.<br/>
+          GRPC specifies an action involving a GRPC port. This is a beta field and requires enabling GRPCContainerProbe feature gate.<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -26914,7 +22444,7 @@ Exec specifies the action to take.
 
 
 
-GRPC specifies an action involving a GRPC port. This is an alpha field and requires enabling GRPCContainerProbe feature gate.
+GRPC specifies an action involving a GRPC port. This is a beta field and requires enabling GRPCContainerProbe feature gate.
 
 <table>
     <thead>
@@ -27166,7 +22696,7 @@ Periodic probe of container service readiness. Container will be removed from se
         <td><b><a href="#k8ssandraclusterspeccassandrainitcontainersindexreadinessprobegrpc">grpc</a></b></td>
         <td>object</td>
         <td>
-          GRPC specifies an action involving a GRPC port. This is an alpha field and requires enabling GRPCContainerProbe feature gate.<br/>
+          GRPC specifies an action involving a GRPC port. This is a beta field and requires enabling GRPCContainerProbe feature gate.<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -27264,7 +22794,7 @@ Exec specifies the action to take.
 
 
 
-GRPC specifies an action involving a GRPC port. This is an alpha field and requires enabling GRPCContainerProbe feature gate.
+GRPC specifies an action involving a GRPC port. This is a beta field and requires enabling GRPCContainerProbe feature gate.
 
 <table>
     <thead>
@@ -27755,7 +23285,7 @@ StartupProbe indicates that the Pod has successfully initialized. If specified, 
         <td><b><a href="#k8ssandraclusterspeccassandrainitcontainersindexstartupprobegrpc">grpc</a></b></td>
         <td>object</td>
         <td>
-          GRPC specifies an action involving a GRPC port. This is an alpha field and requires enabling GRPCContainerProbe feature gate.<br/>
+          GRPC specifies an action involving a GRPC port. This is a beta field and requires enabling GRPCContainerProbe feature gate.<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -27853,7 +23383,7 @@ Exec specifies the action to take.
 
 
 
-GRPC specifies an action involving a GRPC port. This is an alpha field and requires enabling GRPCContainerProbe feature gate.
+GRPC specifies an action involving a GRPC port. This is a beta field and requires enabling GRPCContainerProbe feature gate.
 
 <table>
     <thead>
@@ -28376,16 +23906,30 @@ Internode encryption stores which are used by Cassandra and Stargate.
         <td><b><a href="#k8ssandraclusterspeccassandraserverencryptionstoreskeystoresecretref">keystoreSecretRef</a></b></td>
         <td>object</td>
         <td>
-          ref to the secret that contains the keystore and its password the expected format of the secret is a "keystore" entry and a "keystore-password" entry<br/>
+          ref to the secret that contains the keystore and optionally its password (which can also be specified through the keystorePasswordSecretRef field) if keys are not specified, "keystore" entry and a "keystore-password" entry will be used<br/>
         </td>
         <td>true</td>
       </tr><tr>
         <td><b><a href="#k8ssandraclusterspeccassandraserverencryptionstorestruststoresecretref">truststoreSecretRef</a></b></td>
         <td>object</td>
         <td>
-          ref to the secret that contains the truststore and its password the expected format of the secret is a "truststore" entry and a "truststore-password" entry<br/>
+          ref to the secret that contains the truststore and optionally its password (which can also be specified through the truststorePasswordSecretRef field) if keys are not specified explicitly, "keystore" entry and a "keystore-password" entry will be used<br/>
         </td>
         <td>true</td>
+      </tr><tr>
+        <td><b><a href="#k8ssandraclusterspeccassandraserverencryptionstoreskeystorepasswordsecretref">keystorePasswordSecretRef</a></b></td>
+        <td>object</td>
+        <td>
+          ref to the secret that contains the keystore password if password stored in different secret than keystoreSecretRef if key isn't specified explicitly, "keystore-password" entry will be used<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#k8ssandraclusterspeccassandraserverencryptionstorestruststorepasswordsecretref">truststorePasswordSecretRef</a></b></td>
+        <td>object</td>
+        <td>
+          ref to the secret that contains the truststore password if password stored in different secret than keystoreSecretRef if key isn't specified  explicitly, "truststore-password" entry will be used<br/>
+        </td>
+        <td>false</td>
       </tr></tbody>
 </table>
 
@@ -28395,7 +23939,7 @@ Internode encryption stores which are used by Cassandra and Stargate.
 
 
 
-ref to the secret that contains the keystore and its password the expected format of the secret is a "keystore" entry and a "keystore-password" entry
+ref to the secret that contains the keystore and optionally its password (which can also be specified through the keystorePasswordSecretRef field) if keys are not specified, "keystore" entry and a "keystore-password" entry will be used
 
 <table>
     <thead>
@@ -28407,6 +23951,13 @@ ref to the secret that contains the keystore and its password the expected forma
         </tr>
     </thead>
     <tbody><tr>
+        <td><b>key</b></td>
+        <td>string</td>
+        <td>
+          The key of the entry in the Secret resource's `data` field to be used.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
         <td><b>name</b></td>
         <td>string</td>
         <td>
@@ -28422,7 +23973,7 @@ ref to the secret that contains the keystore and its password the expected forma
 
 
 
-ref to the secret that contains the truststore and its password the expected format of the secret is a "truststore" entry and a "truststore-password" entry
+ref to the secret that contains the truststore and optionally its password (which can also be specified through the truststorePasswordSecretRef field) if keys are not specified explicitly, "keystore" entry and a "keystore-password" entry will be used
 
 <table>
     <thead>
@@ -28434,6 +23985,81 @@ ref to the secret that contains the truststore and its password the expected for
         </tr>
     </thead>
     <tbody><tr>
+        <td><b>key</b></td>
+        <td>string</td>
+        <td>
+          The key of the entry in the Secret resource's `data` field to be used.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>name</b></td>
+        <td>string</td>
+        <td>
+          Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### K8ssandraCluster.spec.cassandra.serverEncryptionStores.keystorePasswordSecretRef
+<sup><sup>[↩ Parent](#k8ssandraclusterspeccassandraserverencryptionstores)</sup></sup>
+
+
+
+ref to the secret that contains the keystore password if password stored in different secret than keystoreSecretRef if key isn't specified explicitly, "keystore-password" entry will be used
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>key</b></td>
+        <td>string</td>
+        <td>
+          The key of the entry in the Secret resource's `data` field to be used.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>name</b></td>
+        <td>string</td>
+        <td>
+          Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### K8ssandraCluster.spec.cassandra.serverEncryptionStores.truststorePasswordSecretRef
+<sup><sup>[↩ Parent](#k8ssandraclusterspeccassandraserverencryptionstores)</sup></sup>
+
+
+
+ref to the secret that contains the truststore password if password stored in different secret than keystoreSecretRef if key isn't specified  explicitly, "truststore-password" entry will be used
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>key</b></td>
+        <td>string</td>
+        <td>
+          The key of the entry in the Secret resource's `data` field to be used.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
         <td><b>name</b></td>
         <td>string</td>
         <td>
@@ -28483,7 +24109,7 @@ StorageConfig is the persistent storage requirements for each Cassandra pod. Thi
 
 
 
-AdditionalVolumes StorageConfig defines additional storage configurations
+AdditionalVolumes defines additional storage configurations
 
 <table>
     <thead>
@@ -28539,42 +24165,42 @@ Persistent volume claim spec
         <td><b>accessModes</b></td>
         <td>[]string</td>
         <td>
-          AccessModes contains the desired access modes the volume should have. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#access-modes-1<br/>
+          accessModes contains the desired access modes the volume should have. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#access-modes-1<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#k8ssandraclusterspeccassandrastorageconfigadditionalvolumesindexpvcspecdatasource">dataSource</a></b></td>
         <td>object</td>
         <td>
-          This field can be used to specify either: * An existing VolumeSnapshot object (snapshot.storage.k8s.io/VolumeSnapshot) * An existing PVC (PersistentVolumeClaim) If the provisioner or an external controller can support the specified data source, it will create a new volume based on the contents of the specified data source. If the AnyVolumeDataSource feature gate is enabled, this field will always have the same contents as the DataSourceRef field.<br/>
+          dataSource field can be used to specify either: * An existing VolumeSnapshot object (snapshot.storage.k8s.io/VolumeSnapshot) * An existing PVC (PersistentVolumeClaim) If the provisioner or an external controller can support the specified data source, it will create a new volume based on the contents of the specified data source. If the AnyVolumeDataSource feature gate is enabled, this field will always have the same contents as the DataSourceRef field.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#k8ssandraclusterspeccassandrastorageconfigadditionalvolumesindexpvcspecdatasourceref">dataSourceRef</a></b></td>
         <td>object</td>
         <td>
-          Specifies the object from which to populate the volume with data, if a non-empty volume is desired. This may be any local object from a non-empty API group (non core object) or a PersistentVolumeClaim object. When this field is specified, volume binding will only succeed if the type of the specified object matches some installed volume populator or dynamic provisioner. This field will replace the functionality of the DataSource field and as such if both fields are non-empty, they must have the same value. For backwards compatibility, both fields (DataSource and DataSourceRef) will be set to the same value automatically if one of them is empty and the other is non-empty. There are two important differences between DataSource and DataSourceRef: * While DataSource only allows two specific types of objects, DataSourceRef allows any non-core object, as well as PersistentVolumeClaim objects. * While DataSource ignores disallowed values (dropping them), DataSourceRef preserves all values, and generates an error if a disallowed value is specified. (Alpha) Using this field requires the AnyVolumeDataSource feature gate to be enabled.<br/>
+          dataSourceRef specifies the object from which to populate the volume with data, if a non-empty volume is desired. This may be any local object from a non-empty API group (non core object) or a PersistentVolumeClaim object. When this field is specified, volume binding will only succeed if the type of the specified object matches some installed volume populator or dynamic provisioner. This field will replace the functionality of the DataSource field and as such if both fields are non-empty, they must have the same value. For backwards compatibility, both fields (DataSource and DataSourceRef) will be set to the same value automatically if one of them is empty and the other is non-empty. There are two important differences between DataSource and DataSourceRef: * While DataSource only allows two specific types of objects, DataSourceRef allows any non-core object, as well as PersistentVolumeClaim objects. * While DataSource ignores disallowed values (dropping them), DataSourceRef preserves all values, and generates an error if a disallowed value is specified. (Beta) Using this field requires the AnyVolumeDataSource feature gate to be enabled.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#k8ssandraclusterspeccassandrastorageconfigadditionalvolumesindexpvcspecresources">resources</a></b></td>
         <td>object</td>
         <td>
-          Resources represents the minimum resources the volume should have. If RecoverVolumeExpansionFailure feature is enabled users are allowed to specify resource requirements that are lower than previous value but must still be higher than capacity recorded in the status field of the claim. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#resources<br/>
+          resources represents the minimum resources the volume should have. If RecoverVolumeExpansionFailure feature is enabled users are allowed to specify resource requirements that are lower than previous value but must still be higher than capacity recorded in the status field of the claim. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#resources<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#k8ssandraclusterspeccassandrastorageconfigadditionalvolumesindexpvcspecselector">selector</a></b></td>
         <td>object</td>
         <td>
-          A label query over volumes to consider for binding.<br/>
+          selector is a label query over volumes to consider for binding.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>storageClassName</b></td>
         <td>string</td>
         <td>
-          Name of the StorageClass required by the claim. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#class-1<br/>
+          storageClassName is the name of the StorageClass required by the claim. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#class-1<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -28588,7 +24214,7 @@ Persistent volume claim spec
         <td><b>volumeName</b></td>
         <td>string</td>
         <td>
-          VolumeName is the binding reference to the PersistentVolume backing this claim.<br/>
+          volumeName is the binding reference to the PersistentVolume backing this claim.<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -28600,7 +24226,7 @@ Persistent volume claim spec
 
 
 
-This field can be used to specify either: * An existing VolumeSnapshot object (snapshot.storage.k8s.io/VolumeSnapshot) * An existing PVC (PersistentVolumeClaim) If the provisioner or an external controller can support the specified data source, it will create a new volume based on the contents of the specified data source. If the AnyVolumeDataSource feature gate is enabled, this field will always have the same contents as the DataSourceRef field.
+dataSource field can be used to specify either: * An existing VolumeSnapshot object (snapshot.storage.k8s.io/VolumeSnapshot) * An existing PVC (PersistentVolumeClaim) If the provisioner or an external controller can support the specified data source, it will create a new volume based on the contents of the specified data source. If the AnyVolumeDataSource feature gate is enabled, this field will always have the same contents as the DataSourceRef field.
 
 <table>
     <thead>
@@ -28641,7 +24267,7 @@ This field can be used to specify either: * An existing VolumeSnapshot object (s
 
 
 
-Specifies the object from which to populate the volume with data, if a non-empty volume is desired. This may be any local object from a non-empty API group (non core object) or a PersistentVolumeClaim object. When this field is specified, volume binding will only succeed if the type of the specified object matches some installed volume populator or dynamic provisioner. This field will replace the functionality of the DataSource field and as such if both fields are non-empty, they must have the same value. For backwards compatibility, both fields (DataSource and DataSourceRef) will be set to the same value automatically if one of them is empty and the other is non-empty. There are two important differences between DataSource and DataSourceRef: * While DataSource only allows two specific types of objects, DataSourceRef allows any non-core object, as well as PersistentVolumeClaim objects. * While DataSource ignores disallowed values (dropping them), DataSourceRef preserves all values, and generates an error if a disallowed value is specified. (Alpha) Using this field requires the AnyVolumeDataSource feature gate to be enabled.
+dataSourceRef specifies the object from which to populate the volume with data, if a non-empty volume is desired. This may be any local object from a non-empty API group (non core object) or a PersistentVolumeClaim object. When this field is specified, volume binding will only succeed if the type of the specified object matches some installed volume populator or dynamic provisioner. This field will replace the functionality of the DataSource field and as such if both fields are non-empty, they must have the same value. For backwards compatibility, both fields (DataSource and DataSourceRef) will be set to the same value automatically if one of them is empty and the other is non-empty. There are two important differences between DataSource and DataSourceRef: * While DataSource only allows two specific types of objects, DataSourceRef allows any non-core object, as well as PersistentVolumeClaim objects. * While DataSource ignores disallowed values (dropping them), DataSourceRef preserves all values, and generates an error if a disallowed value is specified. (Beta) Using this field requires the AnyVolumeDataSource feature gate to be enabled.
 
 <table>
     <thead>
@@ -28682,7 +24308,7 @@ Specifies the object from which to populate the volume with data, if a non-empty
 
 
 
-Resources represents the minimum resources the volume should have. If RecoverVolumeExpansionFailure feature is enabled users are allowed to specify resource requirements that are lower than previous value but must still be higher than capacity recorded in the status field of the claim. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#resources
+resources represents the minimum resources the volume should have. If RecoverVolumeExpansionFailure feature is enabled users are allowed to specify resource requirements that are lower than previous value but must still be higher than capacity recorded in the status field of the claim. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#resources
 
 <table>
     <thead>
@@ -28716,7 +24342,7 @@ Resources represents the minimum resources the volume should have. If RecoverVol
 
 
 
-A label query over volumes to consider for binding.
+selector is a label query over volumes to consider for binding.
 
 <table>
     <thead>
@@ -28806,42 +24432,42 @@ PersistentVolumeClaimSpec describes the common attributes of storage devices and
         <td><b>accessModes</b></td>
         <td>[]string</td>
         <td>
-          AccessModes contains the desired access modes the volume should have. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#access-modes-1<br/>
+          accessModes contains the desired access modes the volume should have. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#access-modes-1<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#k8ssandraclusterspeccassandrastorageconfigcassandradatavolumeclaimspecdatasource">dataSource</a></b></td>
         <td>object</td>
         <td>
-          This field can be used to specify either: * An existing VolumeSnapshot object (snapshot.storage.k8s.io/VolumeSnapshot) * An existing PVC (PersistentVolumeClaim) If the provisioner or an external controller can support the specified data source, it will create a new volume based on the contents of the specified data source. If the AnyVolumeDataSource feature gate is enabled, this field will always have the same contents as the DataSourceRef field.<br/>
+          dataSource field can be used to specify either: * An existing VolumeSnapshot object (snapshot.storage.k8s.io/VolumeSnapshot) * An existing PVC (PersistentVolumeClaim) If the provisioner or an external controller can support the specified data source, it will create a new volume based on the contents of the specified data source. If the AnyVolumeDataSource feature gate is enabled, this field will always have the same contents as the DataSourceRef field.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#k8ssandraclusterspeccassandrastorageconfigcassandradatavolumeclaimspecdatasourceref">dataSourceRef</a></b></td>
         <td>object</td>
         <td>
-          Specifies the object from which to populate the volume with data, if a non-empty volume is desired. This may be any local object from a non-empty API group (non core object) or a PersistentVolumeClaim object. When this field is specified, volume binding will only succeed if the type of the specified object matches some installed volume populator or dynamic provisioner. This field will replace the functionality of the DataSource field and as such if both fields are non-empty, they must have the same value. For backwards compatibility, both fields (DataSource and DataSourceRef) will be set to the same value automatically if one of them is empty and the other is non-empty. There are two important differences between DataSource and DataSourceRef: * While DataSource only allows two specific types of objects, DataSourceRef allows any non-core object, as well as PersistentVolumeClaim objects. * While DataSource ignores disallowed values (dropping them), DataSourceRef preserves all values, and generates an error if a disallowed value is specified. (Alpha) Using this field requires the AnyVolumeDataSource feature gate to be enabled.<br/>
+          dataSourceRef specifies the object from which to populate the volume with data, if a non-empty volume is desired. This may be any local object from a non-empty API group (non core object) or a PersistentVolumeClaim object. When this field is specified, volume binding will only succeed if the type of the specified object matches some installed volume populator or dynamic provisioner. This field will replace the functionality of the DataSource field and as such if both fields are non-empty, they must have the same value. For backwards compatibility, both fields (DataSource and DataSourceRef) will be set to the same value automatically if one of them is empty and the other is non-empty. There are two important differences between DataSource and DataSourceRef: * While DataSource only allows two specific types of objects, DataSourceRef allows any non-core object, as well as PersistentVolumeClaim objects. * While DataSource ignores disallowed values (dropping them), DataSourceRef preserves all values, and generates an error if a disallowed value is specified. (Beta) Using this field requires the AnyVolumeDataSource feature gate to be enabled.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#k8ssandraclusterspeccassandrastorageconfigcassandradatavolumeclaimspecresources">resources</a></b></td>
         <td>object</td>
         <td>
-          Resources represents the minimum resources the volume should have. If RecoverVolumeExpansionFailure feature is enabled users are allowed to specify resource requirements that are lower than previous value but must still be higher than capacity recorded in the status field of the claim. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#resources<br/>
+          resources represents the minimum resources the volume should have. If RecoverVolumeExpansionFailure feature is enabled users are allowed to specify resource requirements that are lower than previous value but must still be higher than capacity recorded in the status field of the claim. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#resources<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#k8ssandraclusterspeccassandrastorageconfigcassandradatavolumeclaimspecselector">selector</a></b></td>
         <td>object</td>
         <td>
-          A label query over volumes to consider for binding.<br/>
+          selector is a label query over volumes to consider for binding.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>storageClassName</b></td>
         <td>string</td>
         <td>
-          Name of the StorageClass required by the claim. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#class-1<br/>
+          storageClassName is the name of the StorageClass required by the claim. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#class-1<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -28855,7 +24481,7 @@ PersistentVolumeClaimSpec describes the common attributes of storage devices and
         <td><b>volumeName</b></td>
         <td>string</td>
         <td>
-          VolumeName is the binding reference to the PersistentVolume backing this claim.<br/>
+          volumeName is the binding reference to the PersistentVolume backing this claim.<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -28867,7 +24493,7 @@ PersistentVolumeClaimSpec describes the common attributes of storage devices and
 
 
 
-This field can be used to specify either: * An existing VolumeSnapshot object (snapshot.storage.k8s.io/VolumeSnapshot) * An existing PVC (PersistentVolumeClaim) If the provisioner or an external controller can support the specified data source, it will create a new volume based on the contents of the specified data source. If the AnyVolumeDataSource feature gate is enabled, this field will always have the same contents as the DataSourceRef field.
+dataSource field can be used to specify either: * An existing VolumeSnapshot object (snapshot.storage.k8s.io/VolumeSnapshot) * An existing PVC (PersistentVolumeClaim) If the provisioner or an external controller can support the specified data source, it will create a new volume based on the contents of the specified data source. If the AnyVolumeDataSource feature gate is enabled, this field will always have the same contents as the DataSourceRef field.
 
 <table>
     <thead>
@@ -28908,7 +24534,7 @@ This field can be used to specify either: * An existing VolumeSnapshot object (s
 
 
 
-Specifies the object from which to populate the volume with data, if a non-empty volume is desired. This may be any local object from a non-empty API group (non core object) or a PersistentVolumeClaim object. When this field is specified, volume binding will only succeed if the type of the specified object matches some installed volume populator or dynamic provisioner. This field will replace the functionality of the DataSource field and as such if both fields are non-empty, they must have the same value. For backwards compatibility, both fields (DataSource and DataSourceRef) will be set to the same value automatically if one of them is empty and the other is non-empty. There are two important differences between DataSource and DataSourceRef: * While DataSource only allows two specific types of objects, DataSourceRef allows any non-core object, as well as PersistentVolumeClaim objects. * While DataSource ignores disallowed values (dropping them), DataSourceRef preserves all values, and generates an error if a disallowed value is specified. (Alpha) Using this field requires the AnyVolumeDataSource feature gate to be enabled.
+dataSourceRef specifies the object from which to populate the volume with data, if a non-empty volume is desired. This may be any local object from a non-empty API group (non core object) or a PersistentVolumeClaim object. When this field is specified, volume binding will only succeed if the type of the specified object matches some installed volume populator or dynamic provisioner. This field will replace the functionality of the DataSource field and as such if both fields are non-empty, they must have the same value. For backwards compatibility, both fields (DataSource and DataSourceRef) will be set to the same value automatically if one of them is empty and the other is non-empty. There are two important differences between DataSource and DataSourceRef: * While DataSource only allows two specific types of objects, DataSourceRef allows any non-core object, as well as PersistentVolumeClaim objects. * While DataSource ignores disallowed values (dropping them), DataSourceRef preserves all values, and generates an error if a disallowed value is specified. (Beta) Using this field requires the AnyVolumeDataSource feature gate to be enabled.
 
 <table>
     <thead>
@@ -28949,7 +24575,7 @@ Specifies the object from which to populate the volume with data, if a non-empty
 
 
 
-Resources represents the minimum resources the volume should have. If RecoverVolumeExpansionFailure feature is enabled users are allowed to specify resource requirements that are lower than previous value but must still be higher than capacity recorded in the status field of the claim. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#resources
+resources represents the minimum resources the volume should have. If RecoverVolumeExpansionFailure feature is enabled users are allowed to specify resource requirements that are lower than previous value but must still be higher than capacity recorded in the status field of the claim. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#resources
 
 <table>
     <thead>
@@ -28983,7 +24609,7 @@ Resources represents the minimum resources the volume should have. If RecoverVol
 
 
 
-A label query over volumes to consider for binding.
+selector is a label query over volumes to consider for binding.
 
 <table>
     <thead>
@@ -29134,7 +24760,7 @@ Telemetry defines the desired state for telemetry resources in this datacenter. 
         <td><b>metricFilters</b></td>
         <td>[]string</td>
         <td>
-          MetricFilters allows passing filters to MCAC in order to reduce the amount of extracted metrics. Not setting this field will result in the default filters being used. Setting it to an empty list will result in all metrics being extracted. Examples: - "deny:org.apache.cassandra.metrics.Table" - "deny:org.apache.cassandra.metrics.table" - "allow:org.apache.cassandra.metrics.table.live_ss_table_count" - "allow:org.apache.cassandra.metrics.Table.LiveSSTableCount" - "allow:org.apache.cassandra.metrics.table.live_disk_space_used"<br/>
+          MetricFilters allows passing filters to MCAC in order to reduce the amount of extracted metrics. Not setting this field will result in the default filters being used: - "deny:org.apache.cassandra.metrics.Table" - "deny:org.apache.cassandra.metrics.table" - "allow:org.apache.cassandra.metrics.table.live_ss_table_count" - "allow:org.apache.cassandra.metrics.Table.LiveSSTableCount" - "allow:org.apache.cassandra.metrics.table.live_disk_space_used" - "allow:org.apache.cassandra.metrics.table.LiveDiskSpaceUsed" - "allow:org.apache.cassandra.metrics.Table.Pending" - "allow:org.apache.cassandra.metrics.Table.Memtable" - "allow:org.apache.cassandra.metrics.Table.Compaction" - "allow:org.apache.cassandra.metrics.table.read" - "allow:org.apache.cassandra.metrics.table.write" - "allow:org.apache.cassandra.metrics.table.range" - "allow:org.apache.cassandra.metrics.table.coordinator" - "allow:org.apache.cassandra.metrics.table.dropped_mutations" Setting it to an empty list will result in all metrics being extracted.<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -30140,6 +25766,16 @@ Reaper defines the desired deployment characteristics for Reaper in this K8ssand
         </td>
         <td>false</td>
       </tr><tr>
+        <td><b>secretsProvider</b></td>
+        <td>enum</td>
+        <td>
+          SecretsProvider defines whether the secrets used for credentials and certs will be backed by an external secret backend. This moves the responsibility of generating and storing secrets from the operators to the user and will rely on a mutating webhook to inject the secrets into the necessary resources<br/>
+          <br/>
+            <i>Enum</i>: internal, external<br/>
+            <i>Default</i>: internal<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
         <td><b><a href="#k8ssandraclusterspecreapersecuritycontext">securityContext</a></b></td>
         <td>object</td>
         <td>
@@ -30645,14 +26281,14 @@ Required. A pod affinity term, associated with the corresponding weight.
         <td><b><a href="#k8ssandraclusterspecreaperaffinitypodaffinitypreferredduringschedulingignoredduringexecutionindexpodaffinitytermnamespaceselector">namespaceSelector</a></b></td>
         <td>object</td>
         <td>
-          A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces. This field is beta-level and is only honored when PodAffinityNamespaceSelector feature is enabled.<br/>
+          A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>namespaces</b></td>
         <td>[]string</td>
         <td>
-          namespaces specifies a static list of namespace names that the term applies to. The term is applied to the union of the namespaces listed in this field and the ones selected by namespaceSelector. null or empty namespaces list and null namespaceSelector means "this pod's namespace"<br/>
+          namespaces specifies a static list of namespace names that the term applies to. The term is applied to the union of the namespaces listed in this field and the ones selected by namespaceSelector. null or empty namespaces list and null namespaceSelector means "this pod's namespace".<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -30739,7 +26375,7 @@ A label selector requirement is a selector that contains values, a key, and an o
 
 
 
-A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces. This field is beta-level and is only honored when PodAffinityNamespaceSelector feature is enabled.
+A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces.
 
 <table>
     <thead>
@@ -30843,14 +26479,14 @@ Defines a set of pods (namely those matching the labelSelector relative to the g
         <td><b><a href="#k8ssandraclusterspecreaperaffinitypodaffinityrequiredduringschedulingignoredduringexecutionindexnamespaceselector">namespaceSelector</a></b></td>
         <td>object</td>
         <td>
-          A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces. This field is beta-level and is only honored when PodAffinityNamespaceSelector feature is enabled.<br/>
+          A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>namespaces</b></td>
         <td>[]string</td>
         <td>
-          namespaces specifies a static list of namespace names that the term applies to. The term is applied to the union of the namespaces listed in this field and the ones selected by namespaceSelector. null or empty namespaces list and null namespaceSelector means "this pod's namespace"<br/>
+          namespaces specifies a static list of namespace names that the term applies to. The term is applied to the union of the namespaces listed in this field and the ones selected by namespaceSelector. null or empty namespaces list and null namespaceSelector means "this pod's namespace".<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -30937,7 +26573,7 @@ A label selector requirement is a selector that contains values, a key, and an o
 
 
 
-A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces. This field is beta-level and is only honored when PodAffinityNamespaceSelector feature is enabled.
+A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces.
 
 <table>
     <thead>
@@ -31111,14 +26747,14 @@ Required. A pod affinity term, associated with the corresponding weight.
         <td><b><a href="#k8ssandraclusterspecreaperaffinitypodantiaffinitypreferredduringschedulingignoredduringexecutionindexpodaffinitytermnamespaceselector">namespaceSelector</a></b></td>
         <td>object</td>
         <td>
-          A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces. This field is beta-level and is only honored when PodAffinityNamespaceSelector feature is enabled.<br/>
+          A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>namespaces</b></td>
         <td>[]string</td>
         <td>
-          namespaces specifies a static list of namespace names that the term applies to. The term is applied to the union of the namespaces listed in this field and the ones selected by namespaceSelector. null or empty namespaces list and null namespaceSelector means "this pod's namespace"<br/>
+          namespaces specifies a static list of namespace names that the term applies to. The term is applied to the union of the namespaces listed in this field and the ones selected by namespaceSelector. null or empty namespaces list and null namespaceSelector means "this pod's namespace".<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -31205,7 +26841,7 @@ A label selector requirement is a selector that contains values, a key, and an o
 
 
 
-A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces. This field is beta-level and is only honored when PodAffinityNamespaceSelector feature is enabled.
+A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces.
 
 <table>
     <thead>
@@ -31309,14 +26945,14 @@ Defines a set of pods (namely those matching the labelSelector relative to the g
         <td><b><a href="#k8ssandraclusterspecreaperaffinitypodantiaffinityrequiredduringschedulingignoredduringexecutionindexnamespaceselector">namespaceSelector</a></b></td>
         <td>object</td>
         <td>
-          A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces. This field is beta-level and is only honored when PodAffinityNamespaceSelector feature is enabled.<br/>
+          A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>namespaces</b></td>
         <td>[]string</td>
         <td>
-          namespaces specifies a static list of namespace names that the term applies to. The term is applied to the union of the namespaces listed in this field and the ones selected by namespaceSelector. null or empty namespaces list and null namespaceSelector means "this pod's namespace"<br/>
+          namespaces specifies a static list of namespace names that the term applies to. The term is applied to the union of the namespaces listed in this field and the ones selected by namespaceSelector. null or empty namespaces list and null namespaceSelector means "this pod's namespace".<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -31403,7 +27039,7 @@ A label selector requirement is a selector that contains values, a key, and an o
 
 
 
-A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces. This field is beta-level and is only honored when PodAffinityNamespaceSelector feature is enabled.
+A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces.
 
 <table>
     <thead>
@@ -32153,7 +27789,7 @@ LivenessProbe sets the Reaper liveness probe. Leave nil to use defaults.
         <td><b><a href="#k8ssandraclusterspecreaperlivenessprobegrpc">grpc</a></b></td>
         <td>object</td>
         <td>
-          GRPC specifies an action involving a GRPC port. This is an alpha field and requires enabling GRPCContainerProbe feature gate.<br/>
+          GRPC specifies an action involving a GRPC port. This is a beta field and requires enabling GRPCContainerProbe feature gate.<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -32251,7 +27887,7 @@ Exec specifies the action to take.
 
 
 
-GRPC specifies an action involving a GRPC port. This is an alpha field and requires enabling GRPCContainerProbe feature gate.
+GRPC specifies an action involving a GRPC port. This is a beta field and requires enabling GRPCContainerProbe feature gate.
 
 <table>
     <thead>
@@ -32705,7 +28341,7 @@ ReadinessProbe sets the Reaper readiness probe. Leave nil to use defaults.
         <td><b><a href="#k8ssandraclusterspecreaperreadinessprobegrpc">grpc</a></b></td>
         <td>object</td>
         <td>
-          GRPC specifies an action involving a GRPC port. This is an alpha field and requires enabling GRPCContainerProbe feature gate.<br/>
+          GRPC specifies an action involving a GRPC port. This is a beta field and requires enabling GRPCContainerProbe feature gate.<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -32803,7 +28439,7 @@ Exec specifies the action to take.
 
 
 
-GRPC specifies an action involving a GRPC port. This is an alpha field and requires enabling GRPCContainerProbe feature gate.
+GRPC specifies an action involving a GRPC port. This is a beta field and requires enabling GRPCContainerProbe feature gate.
 
 <table>
     <thead>
@@ -33312,7 +28948,7 @@ Telemetry defines the desired telemetry integrations to deploy targeting the Rea
         <td><b>metricFilters</b></td>
         <td>[]string</td>
         <td>
-          MetricFilters allows passing filters to MCAC in order to reduce the amount of extracted metrics. Not setting this field will result in the default filters being used. Setting it to an empty list will result in all metrics being extracted. Examples: - "deny:org.apache.cassandra.metrics.Table" - "deny:org.apache.cassandra.metrics.table" - "allow:org.apache.cassandra.metrics.table.live_ss_table_count" - "allow:org.apache.cassandra.metrics.Table.LiveSSTableCount" - "allow:org.apache.cassandra.metrics.table.live_disk_space_used"<br/>
+          MetricFilters allows passing filters to MCAC in order to reduce the amount of extracted metrics. Not setting this field will result in the default filters being used: - "deny:org.apache.cassandra.metrics.Table" - "deny:org.apache.cassandra.metrics.table" - "allow:org.apache.cassandra.metrics.table.live_ss_table_count" - "allow:org.apache.cassandra.metrics.Table.LiveSSTableCount" - "allow:org.apache.cassandra.metrics.table.live_disk_space_used" - "allow:org.apache.cassandra.metrics.table.LiveDiskSpaceUsed" - "allow:org.apache.cassandra.metrics.Table.Pending" - "allow:org.apache.cassandra.metrics.Table.Memtable" - "allow:org.apache.cassandra.metrics.Table.Compaction" - "allow:org.apache.cassandra.metrics.table.read" - "allow:org.apache.cassandra.metrics.table.write" - "allow:org.apache.cassandra.metrics.table.range" - "allow:org.apache.cassandra.metrics.table.coordinator" - "allow:org.apache.cassandra.metrics.table.dropped_mutations" Setting it to an empty list will result in all metrics being extracted.<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -33538,6 +29174,16 @@ Stargate defines the desired deployment characteristics for Stargate in this K8s
         <td>object</td>
         <td>
           Resources is the Kubernetes resource requests and limits to apply, per Stargate pod. Leave nil to use defaults.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>secretsProvider</b></td>
+        <td>enum</td>
+        <td>
+          SecretsProvider defines whether the secrets used for credentials and certs will be backed by an external secret backend. This moves the responsibility of generating and storing secrets from the operators to the user and will rely on a mutating webhook to inject the secrets into the necessary resources<br/>
+          <br/>
+            <i>Enum</i>: internal, external<br/>
+            <i>Default</i>: internal<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -34041,14 +29687,14 @@ Required. A pod affinity term, associated with the corresponding weight.
         <td><b><a href="#k8ssandraclusterspecstargateaffinitypodaffinitypreferredduringschedulingignoredduringexecutionindexpodaffinitytermnamespaceselector">namespaceSelector</a></b></td>
         <td>object</td>
         <td>
-          A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces. This field is beta-level and is only honored when PodAffinityNamespaceSelector feature is enabled.<br/>
+          A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>namespaces</b></td>
         <td>[]string</td>
         <td>
-          namespaces specifies a static list of namespace names that the term applies to. The term is applied to the union of the namespaces listed in this field and the ones selected by namespaceSelector. null or empty namespaces list and null namespaceSelector means "this pod's namespace"<br/>
+          namespaces specifies a static list of namespace names that the term applies to. The term is applied to the union of the namespaces listed in this field and the ones selected by namespaceSelector. null or empty namespaces list and null namespaceSelector means "this pod's namespace".<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -34135,7 +29781,7 @@ A label selector requirement is a selector that contains values, a key, and an o
 
 
 
-A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces. This field is beta-level and is only honored when PodAffinityNamespaceSelector feature is enabled.
+A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces.
 
 <table>
     <thead>
@@ -34239,14 +29885,14 @@ Defines a set of pods (namely those matching the labelSelector relative to the g
         <td><b><a href="#k8ssandraclusterspecstargateaffinitypodaffinityrequiredduringschedulingignoredduringexecutionindexnamespaceselector">namespaceSelector</a></b></td>
         <td>object</td>
         <td>
-          A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces. This field is beta-level and is only honored when PodAffinityNamespaceSelector feature is enabled.<br/>
+          A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>namespaces</b></td>
         <td>[]string</td>
         <td>
-          namespaces specifies a static list of namespace names that the term applies to. The term is applied to the union of the namespaces listed in this field and the ones selected by namespaceSelector. null or empty namespaces list and null namespaceSelector means "this pod's namespace"<br/>
+          namespaces specifies a static list of namespace names that the term applies to. The term is applied to the union of the namespaces listed in this field and the ones selected by namespaceSelector. null or empty namespaces list and null namespaceSelector means "this pod's namespace".<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -34333,7 +29979,7 @@ A label selector requirement is a selector that contains values, a key, and an o
 
 
 
-A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces. This field is beta-level and is only honored when PodAffinityNamespaceSelector feature is enabled.
+A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces.
 
 <table>
     <thead>
@@ -34507,14 +30153,14 @@ Required. A pod affinity term, associated with the corresponding weight.
         <td><b><a href="#k8ssandraclusterspecstargateaffinitypodantiaffinitypreferredduringschedulingignoredduringexecutionindexpodaffinitytermnamespaceselector">namespaceSelector</a></b></td>
         <td>object</td>
         <td>
-          A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces. This field is beta-level and is only honored when PodAffinityNamespaceSelector feature is enabled.<br/>
+          A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>namespaces</b></td>
         <td>[]string</td>
         <td>
-          namespaces specifies a static list of namespace names that the term applies to. The term is applied to the union of the namespaces listed in this field and the ones selected by namespaceSelector. null or empty namespaces list and null namespaceSelector means "this pod's namespace"<br/>
+          namespaces specifies a static list of namespace names that the term applies to. The term is applied to the union of the namespaces listed in this field and the ones selected by namespaceSelector. null or empty namespaces list and null namespaceSelector means "this pod's namespace".<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -34601,7 +30247,7 @@ A label selector requirement is a selector that contains values, a key, and an o
 
 
 
-A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces. This field is beta-level and is only honored when PodAffinityNamespaceSelector feature is enabled.
+A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces.
 
 <table>
     <thead>
@@ -34705,14 +30351,14 @@ Defines a set of pods (namely those matching the labelSelector relative to the g
         <td><b><a href="#k8ssandraclusterspecstargateaffinitypodantiaffinityrequiredduringschedulingignoredduringexecutionindexnamespaceselector">namespaceSelector</a></b></td>
         <td>object</td>
         <td>
-          A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces. This field is beta-level and is only honored when PodAffinityNamespaceSelector feature is enabled.<br/>
+          A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>namespaces</b></td>
         <td>[]string</td>
         <td>
-          namespaces specifies a static list of namespace names that the term applies to. The term is applied to the union of the namespaces listed in this field and the ones selected by namespaceSelector. null or empty namespaces list and null namespaceSelector means "this pod's namespace"<br/>
+          namespaces specifies a static list of namespace names that the term applies to. The term is applied to the union of the namespaces listed in this field and the ones selected by namespaceSelector. null or empty namespaces list and null namespaceSelector means "this pod's namespace".<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -34799,7 +30445,7 @@ A label selector requirement is a selector that contains values, a key, and an o
 
 
 
-A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces. This field is beta-level and is only honored when PodAffinityNamespaceSelector feature is enabled.
+A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces.
 
 <table>
     <thead>
@@ -35073,7 +30719,7 @@ LivenessProbe sets the Stargate liveness probe. Leave nil to use defaults.
         <td><b><a href="#k8ssandraclusterspecstargatelivenessprobegrpc">grpc</a></b></td>
         <td>object</td>
         <td>
-          GRPC specifies an action involving a GRPC port. This is an alpha field and requires enabling GRPCContainerProbe feature gate.<br/>
+          GRPC specifies an action involving a GRPC port. This is a beta field and requires enabling GRPCContainerProbe feature gate.<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -35171,7 +30817,7 @@ Exec specifies the action to take.
 
 
 
-GRPC specifies an action involving a GRPC port. This is an alpha field and requires enabling GRPCContainerProbe feature gate.
+GRPC specifies an action involving a GRPC port. This is a beta field and requires enabling GRPCContainerProbe feature gate.
 
 <table>
     <thead>
@@ -35362,7 +31008,7 @@ ReadinessProbe sets the Stargate readiness probe. Leave nil to use defaults.
         <td><b><a href="#k8ssandraclusterspecstargatereadinessprobegrpc">grpc</a></b></td>
         <td>object</td>
         <td>
-          GRPC specifies an action involving a GRPC port. This is an alpha field and requires enabling GRPCContainerProbe feature gate.<br/>
+          GRPC specifies an action involving a GRPC port. This is a beta field and requires enabling GRPCContainerProbe feature gate.<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -35460,7 +31106,7 @@ Exec specifies the action to take.
 
 
 
-GRPC specifies an action involving a GRPC port. This is an alpha field and requires enabling GRPCContainerProbe feature gate.
+GRPC specifies an action involving a GRPC port. This is a beta field and requires enabling GRPCContainerProbe feature gate.
 
 <table>
     <thead>
@@ -35703,7 +31349,7 @@ Telemetry defines the desired telemetry integrations to deploy targeting the Sta
         <td><b>metricFilters</b></td>
         <td>[]string</td>
         <td>
-          MetricFilters allows passing filters to MCAC in order to reduce the amount of extracted metrics. Not setting this field will result in the default filters being used. Setting it to an empty list will result in all metrics being extracted. Examples: - "deny:org.apache.cassandra.metrics.Table" - "deny:org.apache.cassandra.metrics.table" - "allow:org.apache.cassandra.metrics.table.live_ss_table_count" - "allow:org.apache.cassandra.metrics.Table.LiveSSTableCount" - "allow:org.apache.cassandra.metrics.table.live_disk_space_used"<br/>
+          MetricFilters allows passing filters to MCAC in order to reduce the amount of extracted metrics. Not setting this field will result in the default filters being used: - "deny:org.apache.cassandra.metrics.Table" - "deny:org.apache.cassandra.metrics.table" - "allow:org.apache.cassandra.metrics.table.live_ss_table_count" - "allow:org.apache.cassandra.metrics.Table.LiveSSTableCount" - "allow:org.apache.cassandra.metrics.table.live_disk_space_used" - "allow:org.apache.cassandra.metrics.table.LiveDiskSpaceUsed" - "allow:org.apache.cassandra.metrics.Table.Pending" - "allow:org.apache.cassandra.metrics.Table.Memtable" - "allow:org.apache.cassandra.metrics.Table.Compaction" - "allow:org.apache.cassandra.metrics.table.read" - "allow:org.apache.cassandra.metrics.table.write" - "allow:org.apache.cassandra.metrics.table.range" - "allow:org.apache.cassandra.metrics.table.coordinator" - "allow:org.apache.cassandra.metrics.table.dropped_mutations" Setting it to an empty list will result in all metrics being extracted.<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -35830,6 +31476,15 @@ K8ssandraClusterStatus defines the observed state of K8ssandraCluster
         <td>
           Datacenters maps the CassandraDatacenter name to a K8ssandraStatus. The naming is a bit confusing but the mapping makes sense because we have a CassandraDatacenter and then define other components like Stargate and Reaper relative to it. I wanted to inline the field but when I do it won't serialize. 
  TODO Figure out how to inline this field<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>error</b></td>
+        <td>string</td>
+        <td>
+          <br/>
+          <br/>
+            <i>Default</i>: None<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -36677,7 +32332,7 @@ CassandraDatacenterSpec defines the desired state of a CassandraDatacenter
         <td><b><a href="#cassandrabackupstatuscassdctemplatespecspecstorageconfig">storageConfig</a></b></td>
         <td>object</td>
         <td>
-          Describes the persistent storage request of each server node<br/>
+          StorageConfig describes the persistent storage request of each server node<br/>
         </td>
         <td>true</td>
       </tr><tr>
@@ -36837,7 +32492,7 @@ CassandraDatacenterSpec defines the desired state of a CassandraDatacenter
         <td><b>replaceNodes</b></td>
         <td>[]string</td>
         <td>
-          A list of pod names that need to be replaced.<br/>
+          DEPRECATED Use CassandraTask replacenode to achieve correct node replacement. A list of pod names that need to be replaced.<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -36851,7 +32506,7 @@ CassandraDatacenterSpec defines the desired state of a CassandraDatacenter
         <td><b>rollingRestartRequested</b></td>
         <td>boolean</td>
         <td>
-          Whether to do a rolling restart at the next opportunity. The operator will set this back to false once the restart is in progress.<br/>
+          DEPRECATED. Use CassandraTask for rolling restarts. Whether to do a rolling restart at the next opportunity. The operator will set this back to false once the restart is in progress.<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -36919,7 +32574,7 @@ CassandraDatacenterSpec defines the desired state of a CassandraDatacenter
 
 
 
-Describes the persistent storage request of each server node
+StorageConfig describes the persistent storage request of each server node
 
 <table>
     <thead>
@@ -36953,7 +32608,7 @@ Describes the persistent storage request of each server node
 
 
 
-AdditionalVolumes StorageConfig defines additional storage configurations
+AdditionalVolumes defines additional storage configurations
 
 <table>
     <thead>
@@ -37009,42 +32664,42 @@ Persistent volume claim spec
         <td><b>accessModes</b></td>
         <td>[]string</td>
         <td>
-          AccessModes contains the desired access modes the volume should have. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#access-modes-1<br/>
+          accessModes contains the desired access modes the volume should have. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#access-modes-1<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#cassandrabackupstatuscassdctemplatespecspecstorageconfigadditionalvolumesindexpvcspecdatasource">dataSource</a></b></td>
         <td>object</td>
         <td>
-          This field can be used to specify either: * An existing VolumeSnapshot object (snapshot.storage.k8s.io/VolumeSnapshot) * An existing PVC (PersistentVolumeClaim) If the provisioner or an external controller can support the specified data source, it will create a new volume based on the contents of the specified data source. If the AnyVolumeDataSource feature gate is enabled, this field will always have the same contents as the DataSourceRef field.<br/>
+          dataSource field can be used to specify either: * An existing VolumeSnapshot object (snapshot.storage.k8s.io/VolumeSnapshot) * An existing PVC (PersistentVolumeClaim) If the provisioner or an external controller can support the specified data source, it will create a new volume based on the contents of the specified data source. If the AnyVolumeDataSource feature gate is enabled, this field will always have the same contents as the DataSourceRef field.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#cassandrabackupstatuscassdctemplatespecspecstorageconfigadditionalvolumesindexpvcspecdatasourceref">dataSourceRef</a></b></td>
         <td>object</td>
         <td>
-          Specifies the object from which to populate the volume with data, if a non-empty volume is desired. This may be any local object from a non-empty API group (non core object) or a PersistentVolumeClaim object. When this field is specified, volume binding will only succeed if the type of the specified object matches some installed volume populator or dynamic provisioner. This field will replace the functionality of the DataSource field and as such if both fields are non-empty, they must have the same value. For backwards compatibility, both fields (DataSource and DataSourceRef) will be set to the same value automatically if one of them is empty and the other is non-empty. There are two important differences between DataSource and DataSourceRef: * While DataSource only allows two specific types of objects, DataSourceRef allows any non-core object, as well as PersistentVolumeClaim objects. * While DataSource ignores disallowed values (dropping them), DataSourceRef preserves all values, and generates an error if a disallowed value is specified. (Alpha) Using this field requires the AnyVolumeDataSource feature gate to be enabled.<br/>
+          dataSourceRef specifies the object from which to populate the volume with data, if a non-empty volume is desired. This may be any local object from a non-empty API group (non core object) or a PersistentVolumeClaim object. When this field is specified, volume binding will only succeed if the type of the specified object matches some installed volume populator or dynamic provisioner. This field will replace the functionality of the DataSource field and as such if both fields are non-empty, they must have the same value. For backwards compatibility, both fields (DataSource and DataSourceRef) will be set to the same value automatically if one of them is empty and the other is non-empty. There are two important differences between DataSource and DataSourceRef: * While DataSource only allows two specific types of objects, DataSourceRef allows any non-core object, as well as PersistentVolumeClaim objects. * While DataSource ignores disallowed values (dropping them), DataSourceRef preserves all values, and generates an error if a disallowed value is specified. (Beta) Using this field requires the AnyVolumeDataSource feature gate to be enabled.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#cassandrabackupstatuscassdctemplatespecspecstorageconfigadditionalvolumesindexpvcspecresources">resources</a></b></td>
         <td>object</td>
         <td>
-          Resources represents the minimum resources the volume should have. If RecoverVolumeExpansionFailure feature is enabled users are allowed to specify resource requirements that are lower than previous value but must still be higher than capacity recorded in the status field of the claim. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#resources<br/>
+          resources represents the minimum resources the volume should have. If RecoverVolumeExpansionFailure feature is enabled users are allowed to specify resource requirements that are lower than previous value but must still be higher than capacity recorded in the status field of the claim. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#resources<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#cassandrabackupstatuscassdctemplatespecspecstorageconfigadditionalvolumesindexpvcspecselector">selector</a></b></td>
         <td>object</td>
         <td>
-          A label query over volumes to consider for binding.<br/>
+          selector is a label query over volumes to consider for binding.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>storageClassName</b></td>
         <td>string</td>
         <td>
-          Name of the StorageClass required by the claim. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#class-1<br/>
+          storageClassName is the name of the StorageClass required by the claim. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#class-1<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -37058,7 +32713,7 @@ Persistent volume claim spec
         <td><b>volumeName</b></td>
         <td>string</td>
         <td>
-          VolumeName is the binding reference to the PersistentVolume backing this claim.<br/>
+          volumeName is the binding reference to the PersistentVolume backing this claim.<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -37070,7 +32725,7 @@ Persistent volume claim spec
 
 
 
-This field can be used to specify either: * An existing VolumeSnapshot object (snapshot.storage.k8s.io/VolumeSnapshot) * An existing PVC (PersistentVolumeClaim) If the provisioner or an external controller can support the specified data source, it will create a new volume based on the contents of the specified data source. If the AnyVolumeDataSource feature gate is enabled, this field will always have the same contents as the DataSourceRef field.
+dataSource field can be used to specify either: * An existing VolumeSnapshot object (snapshot.storage.k8s.io/VolumeSnapshot) * An existing PVC (PersistentVolumeClaim) If the provisioner or an external controller can support the specified data source, it will create a new volume based on the contents of the specified data source. If the AnyVolumeDataSource feature gate is enabled, this field will always have the same contents as the DataSourceRef field.
 
 <table>
     <thead>
@@ -37111,7 +32766,7 @@ This field can be used to specify either: * An existing VolumeSnapshot object (s
 
 
 
-Specifies the object from which to populate the volume with data, if a non-empty volume is desired. This may be any local object from a non-empty API group (non core object) or a PersistentVolumeClaim object. When this field is specified, volume binding will only succeed if the type of the specified object matches some installed volume populator or dynamic provisioner. This field will replace the functionality of the DataSource field and as such if both fields are non-empty, they must have the same value. For backwards compatibility, both fields (DataSource and DataSourceRef) will be set to the same value automatically if one of them is empty and the other is non-empty. There are two important differences between DataSource and DataSourceRef: * While DataSource only allows two specific types of objects, DataSourceRef allows any non-core object, as well as PersistentVolumeClaim objects. * While DataSource ignores disallowed values (dropping them), DataSourceRef preserves all values, and generates an error if a disallowed value is specified. (Alpha) Using this field requires the AnyVolumeDataSource feature gate to be enabled.
+dataSourceRef specifies the object from which to populate the volume with data, if a non-empty volume is desired. This may be any local object from a non-empty API group (non core object) or a PersistentVolumeClaim object. When this field is specified, volume binding will only succeed if the type of the specified object matches some installed volume populator or dynamic provisioner. This field will replace the functionality of the DataSource field and as such if both fields are non-empty, they must have the same value. For backwards compatibility, both fields (DataSource and DataSourceRef) will be set to the same value automatically if one of them is empty and the other is non-empty. There are two important differences between DataSource and DataSourceRef: * While DataSource only allows two specific types of objects, DataSourceRef allows any non-core object, as well as PersistentVolumeClaim objects. * While DataSource ignores disallowed values (dropping them), DataSourceRef preserves all values, and generates an error if a disallowed value is specified. (Beta) Using this field requires the AnyVolumeDataSource feature gate to be enabled.
 
 <table>
     <thead>
@@ -37152,7 +32807,7 @@ Specifies the object from which to populate the volume with data, if a non-empty
 
 
 
-Resources represents the minimum resources the volume should have. If RecoverVolumeExpansionFailure feature is enabled users are allowed to specify resource requirements that are lower than previous value but must still be higher than capacity recorded in the status field of the claim. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#resources
+resources represents the minimum resources the volume should have. If RecoverVolumeExpansionFailure feature is enabled users are allowed to specify resource requirements that are lower than previous value but must still be higher than capacity recorded in the status field of the claim. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#resources
 
 <table>
     <thead>
@@ -37186,7 +32841,7 @@ Resources represents the minimum resources the volume should have. If RecoverVol
 
 
 
-A label query over volumes to consider for binding.
+selector is a label query over volumes to consider for binding.
 
 <table>
     <thead>
@@ -37276,42 +32931,42 @@ PersistentVolumeClaimSpec describes the common attributes of storage devices and
         <td><b>accessModes</b></td>
         <td>[]string</td>
         <td>
-          AccessModes contains the desired access modes the volume should have. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#access-modes-1<br/>
+          accessModes contains the desired access modes the volume should have. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#access-modes-1<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#cassandrabackupstatuscassdctemplatespecspecstorageconfigcassandradatavolumeclaimspecdatasource">dataSource</a></b></td>
         <td>object</td>
         <td>
-          This field can be used to specify either: * An existing VolumeSnapshot object (snapshot.storage.k8s.io/VolumeSnapshot) * An existing PVC (PersistentVolumeClaim) If the provisioner or an external controller can support the specified data source, it will create a new volume based on the contents of the specified data source. If the AnyVolumeDataSource feature gate is enabled, this field will always have the same contents as the DataSourceRef field.<br/>
+          dataSource field can be used to specify either: * An existing VolumeSnapshot object (snapshot.storage.k8s.io/VolumeSnapshot) * An existing PVC (PersistentVolumeClaim) If the provisioner or an external controller can support the specified data source, it will create a new volume based on the contents of the specified data source. If the AnyVolumeDataSource feature gate is enabled, this field will always have the same contents as the DataSourceRef field.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#cassandrabackupstatuscassdctemplatespecspecstorageconfigcassandradatavolumeclaimspecdatasourceref">dataSourceRef</a></b></td>
         <td>object</td>
         <td>
-          Specifies the object from which to populate the volume with data, if a non-empty volume is desired. This may be any local object from a non-empty API group (non core object) or a PersistentVolumeClaim object. When this field is specified, volume binding will only succeed if the type of the specified object matches some installed volume populator or dynamic provisioner. This field will replace the functionality of the DataSource field and as such if both fields are non-empty, they must have the same value. For backwards compatibility, both fields (DataSource and DataSourceRef) will be set to the same value automatically if one of them is empty and the other is non-empty. There are two important differences between DataSource and DataSourceRef: * While DataSource only allows two specific types of objects, DataSourceRef allows any non-core object, as well as PersistentVolumeClaim objects. * While DataSource ignores disallowed values (dropping them), DataSourceRef preserves all values, and generates an error if a disallowed value is specified. (Alpha) Using this field requires the AnyVolumeDataSource feature gate to be enabled.<br/>
+          dataSourceRef specifies the object from which to populate the volume with data, if a non-empty volume is desired. This may be any local object from a non-empty API group (non core object) or a PersistentVolumeClaim object. When this field is specified, volume binding will only succeed if the type of the specified object matches some installed volume populator or dynamic provisioner. This field will replace the functionality of the DataSource field and as such if both fields are non-empty, they must have the same value. For backwards compatibility, both fields (DataSource and DataSourceRef) will be set to the same value automatically if one of them is empty and the other is non-empty. There are two important differences between DataSource and DataSourceRef: * While DataSource only allows two specific types of objects, DataSourceRef allows any non-core object, as well as PersistentVolumeClaim objects. * While DataSource ignores disallowed values (dropping them), DataSourceRef preserves all values, and generates an error if a disallowed value is specified. (Beta) Using this field requires the AnyVolumeDataSource feature gate to be enabled.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#cassandrabackupstatuscassdctemplatespecspecstorageconfigcassandradatavolumeclaimspecresources">resources</a></b></td>
         <td>object</td>
         <td>
-          Resources represents the minimum resources the volume should have. If RecoverVolumeExpansionFailure feature is enabled users are allowed to specify resource requirements that are lower than previous value but must still be higher than capacity recorded in the status field of the claim. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#resources<br/>
+          resources represents the minimum resources the volume should have. If RecoverVolumeExpansionFailure feature is enabled users are allowed to specify resource requirements that are lower than previous value but must still be higher than capacity recorded in the status field of the claim. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#resources<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#cassandrabackupstatuscassdctemplatespecspecstorageconfigcassandradatavolumeclaimspecselector">selector</a></b></td>
         <td>object</td>
         <td>
-          A label query over volumes to consider for binding.<br/>
+          selector is a label query over volumes to consider for binding.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>storageClassName</b></td>
         <td>string</td>
         <td>
-          Name of the StorageClass required by the claim. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#class-1<br/>
+          storageClassName is the name of the StorageClass required by the claim. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#class-1<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -37325,7 +32980,7 @@ PersistentVolumeClaimSpec describes the common attributes of storage devices and
         <td><b>volumeName</b></td>
         <td>string</td>
         <td>
-          VolumeName is the binding reference to the PersistentVolume backing this claim.<br/>
+          volumeName is the binding reference to the PersistentVolume backing this claim.<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -37337,7 +32992,7 @@ PersistentVolumeClaimSpec describes the common attributes of storage devices and
 
 
 
-This field can be used to specify either: * An existing VolumeSnapshot object (snapshot.storage.k8s.io/VolumeSnapshot) * An existing PVC (PersistentVolumeClaim) If the provisioner or an external controller can support the specified data source, it will create a new volume based on the contents of the specified data source. If the AnyVolumeDataSource feature gate is enabled, this field will always have the same contents as the DataSourceRef field.
+dataSource field can be used to specify either: * An existing VolumeSnapshot object (snapshot.storage.k8s.io/VolumeSnapshot) * An existing PVC (PersistentVolumeClaim) If the provisioner or an external controller can support the specified data source, it will create a new volume based on the contents of the specified data source. If the AnyVolumeDataSource feature gate is enabled, this field will always have the same contents as the DataSourceRef field.
 
 <table>
     <thead>
@@ -37378,7 +33033,7 @@ This field can be used to specify either: * An existing VolumeSnapshot object (s
 
 
 
-Specifies the object from which to populate the volume with data, if a non-empty volume is desired. This may be any local object from a non-empty API group (non core object) or a PersistentVolumeClaim object. When this field is specified, volume binding will only succeed if the type of the specified object matches some installed volume populator or dynamic provisioner. This field will replace the functionality of the DataSource field and as such if both fields are non-empty, they must have the same value. For backwards compatibility, both fields (DataSource and DataSourceRef) will be set to the same value automatically if one of them is empty and the other is non-empty. There are two important differences between DataSource and DataSourceRef: * While DataSource only allows two specific types of objects, DataSourceRef allows any non-core object, as well as PersistentVolumeClaim objects. * While DataSource ignores disallowed values (dropping them), DataSourceRef preserves all values, and generates an error if a disallowed value is specified. (Alpha) Using this field requires the AnyVolumeDataSource feature gate to be enabled.
+dataSourceRef specifies the object from which to populate the volume with data, if a non-empty volume is desired. This may be any local object from a non-empty API group (non core object) or a PersistentVolumeClaim object. When this field is specified, volume binding will only succeed if the type of the specified object matches some installed volume populator or dynamic provisioner. This field will replace the functionality of the DataSource field and as such if both fields are non-empty, they must have the same value. For backwards compatibility, both fields (DataSource and DataSourceRef) will be set to the same value automatically if one of them is empty and the other is non-empty. There are two important differences between DataSource and DataSourceRef: * While DataSource only allows two specific types of objects, DataSourceRef allows any non-core object, as well as PersistentVolumeClaim objects. * While DataSource ignores disallowed values (dropping them), DataSourceRef preserves all values, and generates an error if a disallowed value is specified. (Beta) Using this field requires the AnyVolumeDataSource feature gate to be enabled.
 
 <table>
     <thead>
@@ -37419,7 +33074,7 @@ Specifies the object from which to populate the volume with data, if a non-empty
 
 
 
-Resources represents the minimum resources the volume should have. If RecoverVolumeExpansionFailure feature is enabled users are allowed to specify resource requirements that are lower than previous value but must still be higher than capacity recorded in the status field of the claim. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#resources
+resources represents the minimum resources the volume should have. If RecoverVolumeExpansionFailure feature is enabled users are allowed to specify resource requirements that are lower than previous value but must still be higher than capacity recorded in the status field of the claim. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#resources
 
 <table>
     <thead>
@@ -37453,7 +33108,7 @@ Resources represents the minimum resources the volume should have. If RecoverVol
 
 
 
-A label query over volumes to consider for binding.
+selector is a label query over volumes to consider for binding.
 
 <table>
     <thead>
@@ -38301,7 +33956,7 @@ Specification of the desired behavior of the pod. More info: https://git.k8s.io/
         <td><b><a href="#cassandrabackupstatuscassdctemplatespecspecpodtemplatespecspecimagepullsecretsindex">imagePullSecrets</a></b></td>
         <td>[]object</td>
         <td>
-          ImagePullSecrets is an optional list of references to secrets in the same namespace to use for pulling any of the images used by this PodSpec. If specified, these secrets will be passed to individual puller implementations for them to use. For example, in the case of docker, only DockerConfig type secrets are honored. More info: https://kubernetes.io/docs/concepts/containers/images#specifying-imagepullsecrets-on-a-pod<br/>
+          ImagePullSecrets is an optional list of references to secrets in the same namespace to use for pulling any of the images used by this PodSpec. If specified, these secrets will be passed to individual puller implementations for them to use. More info: https://kubernetes.io/docs/concepts/containers/images#specifying-imagepullsecrets-on-a-pod<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -38331,21 +33986,21 @@ Specification of the desired behavior of the pod. More info: https://git.k8s.io/
         <td>
           Specifies the OS of the containers in the pod. Some pod and container fields are restricted if this is set. 
  If the OS field is set to linux, the following fields must be unset: -securityContext.windowsOptions 
- If the OS field is set to windows, following fields must be unset: - spec.hostPID - spec.hostIPC - spec.securityContext.seLinuxOptions - spec.securityContext.seccompProfile - spec.securityContext.fsGroup - spec.securityContext.fsGroupChangePolicy - spec.securityContext.sysctls - spec.shareProcessNamespace - spec.securityContext.runAsUser - spec.securityContext.runAsGroup - spec.securityContext.supplementalGroups - spec.containers[*].securityContext.seLinuxOptions - spec.containers[*].securityContext.seccompProfile - spec.containers[*].securityContext.capabilities - spec.containers[*].securityContext.readOnlyRootFilesystem - spec.containers[*].securityContext.privileged - spec.containers[*].securityContext.allowPrivilegeEscalation - spec.containers[*].securityContext.procMount - spec.containers[*].securityContext.runAsUser - spec.containers[*].securityContext.runAsGroup This is an alpha field and requires the IdentifyPodOS feature<br/>
+ If the OS field is set to windows, following fields must be unset: - spec.hostPID - spec.hostIPC - spec.securityContext.seLinuxOptions - spec.securityContext.seccompProfile - spec.securityContext.fsGroup - spec.securityContext.fsGroupChangePolicy - spec.securityContext.sysctls - spec.shareProcessNamespace - spec.securityContext.runAsUser - spec.securityContext.runAsGroup - spec.securityContext.supplementalGroups - spec.containers[*].securityContext.seLinuxOptions - spec.containers[*].securityContext.seccompProfile - spec.containers[*].securityContext.capabilities - spec.containers[*].securityContext.readOnlyRootFilesystem - spec.containers[*].securityContext.privileged - spec.containers[*].securityContext.allowPrivilegeEscalation - spec.containers[*].securityContext.procMount - spec.containers[*].securityContext.runAsUser - spec.containers[*].securityContext.runAsGroup This is a beta field and requires the IdentifyPodOS feature<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>overhead</b></td>
         <td>map[string]int or string</td>
         <td>
-          Overhead represents the resource overhead associated with running a pod for a given RuntimeClass. This field will be autopopulated at admission time by the RuntimeClass admission controller. If the RuntimeClass admission controller is enabled, overhead must not be set in Pod create requests. The RuntimeClass admission controller will reject Pod create requests which have the overhead already set. If RuntimeClass is configured and selected in the PodSpec, Overhead will be set to the value defined in the corresponding RuntimeClass, otherwise it will remain unset and treated as zero. More info: https://git.k8s.io/enhancements/keps/sig-node/688-pod-overhead/README.md This field is beta-level as of Kubernetes v1.18, and is only honored by servers that enable the PodOverhead feature.<br/>
+          Overhead represents the resource overhead associated with running a pod for a given RuntimeClass. This field will be autopopulated at admission time by the RuntimeClass admission controller. If the RuntimeClass admission controller is enabled, overhead must not be set in Pod create requests. The RuntimeClass admission controller will reject Pod create requests which have the overhead already set. If RuntimeClass is configured and selected in the PodSpec, Overhead will be set to the value defined in the corresponding RuntimeClass, otherwise it will remain unset and treated as zero. More info: https://git.k8s.io/enhancements/keps/sig-node/688-pod-overhead/README.md<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>preemptionPolicy</b></td>
         <td>string</td>
         <td>
-          PreemptionPolicy is the Policy for preempting pods with lower priority. One of Never, PreemptLowerPriority. Defaults to PreemptLowerPriority if unset. This field is beta-level, gated by the NonPreemptingPriority feature-gate.<br/>
+          PreemptionPolicy is the Policy for preempting pods with lower priority. One of Never, PreemptLowerPriority. Defaults to PreemptLowerPriority if unset.<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -38382,7 +34037,7 @@ Specification of the desired behavior of the pod. More info: https://git.k8s.io/
         <td><b>runtimeClassName</b></td>
         <td>string</td>
         <td>
-          RuntimeClassName refers to a RuntimeClass object in the node.k8s.io group, which should be used to run this pod.  If no RuntimeClass resource matches the named class, the pod will not be run. If unset or empty, the "legacy" RuntimeClass will be used, which is an implicit class with an empty definition that uses the default runtime handler. More info: https://git.k8s.io/enhancements/keps/sig-node/585-runtime-class This is a beta feature as of Kubernetes v1.14.<br/>
+          RuntimeClassName refers to a RuntimeClass object in the node.k8s.io group, which should be used to run this pod.  If no RuntimeClass resource matches the named class, the pod will not be run. If unset or empty, the "legacy" RuntimeClass will be used, which is an implicit class with an empty definition that uses the default runtime handler. More info: https://git.k8s.io/enhancements/keps/sig-node/585-runtime-class<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -38495,14 +34150,14 @@ A single application container that you want to run within a pod.
         <td><b>args</b></td>
         <td>[]string</td>
         <td>
-          Arguments to the entrypoint. The docker image's CMD is used if this is not provided. Variable references $(VAR_NAME) are expanded using the container's environment. If a variable cannot be resolved, the reference in the input string will be unchanged. Double $$ are reduced to a single $, which allows for escaping the $(VAR_NAME) syntax: i.e. "$$(VAR_NAME)" will produce the string literal "$(VAR_NAME)". Escaped references will never be expanded, regardless of whether the variable exists or not. Cannot be updated. More info: https://kubernetes.io/docs/tasks/inject-data-application/define-command-argument-container/#running-a-command-in-a-shell<br/>
+          Arguments to the entrypoint. The container image's CMD is used if this is not provided. Variable references $(VAR_NAME) are expanded using the container's environment. If a variable cannot be resolved, the reference in the input string will be unchanged. Double $$ are reduced to a single $, which allows for escaping the $(VAR_NAME) syntax: i.e. "$$(VAR_NAME)" will produce the string literal "$(VAR_NAME)". Escaped references will never be expanded, regardless of whether the variable exists or not. Cannot be updated. More info: https://kubernetes.io/docs/tasks/inject-data-application/define-command-argument-container/#running-a-command-in-a-shell<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>command</b></td>
         <td>[]string</td>
         <td>
-          Entrypoint array. Not executed within a shell. The docker image's ENTRYPOINT is used if this is not provided. Variable references $(VAR_NAME) are expanded using the container's environment. If a variable cannot be resolved, the reference in the input string will be unchanged. Double $$ are reduced to a single $, which allows for escaping the $(VAR_NAME) syntax: i.e. "$$(VAR_NAME)" will produce the string literal "$(VAR_NAME)". Escaped references will never be expanded, regardless of whether the variable exists or not. Cannot be updated. More info: https://kubernetes.io/docs/tasks/inject-data-application/define-command-argument-container/#running-a-command-in-a-shell<br/>
+          Entrypoint array. Not executed within a shell. The container image's ENTRYPOINT is used if this is not provided. Variable references $(VAR_NAME) are expanded using the container's environment. If a variable cannot be resolved, the reference in the input string will be unchanged. Double $$ are reduced to a single $, which allows for escaping the $(VAR_NAME) syntax: i.e. "$$(VAR_NAME)" will produce the string literal "$(VAR_NAME)". Escaped references will never be expanded, regardless of whether the variable exists or not. Cannot be updated. More info: https://kubernetes.io/docs/tasks/inject-data-application/define-command-argument-container/#running-a-command-in-a-shell<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -38523,7 +34178,7 @@ A single application container that you want to run within a pod.
         <td><b>image</b></td>
         <td>string</td>
         <td>
-          Docker image name. More info: https://kubernetes.io/docs/concepts/containers/images This field is optional to allow higher level config management to default or override container images in workload controllers like Deployments and StatefulSets.<br/>
+          Container image name. More info: https://kubernetes.io/docs/concepts/containers/images This field is optional to allow higher level config management to default or override container images in workload controllers like Deployments and StatefulSets.<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -39449,7 +35104,7 @@ Periodic probe of container liveness. Container will be restarted if the probe f
         <td><b><a href="#cassandrabackupstatuscassdctemplatespecspecpodtemplatespecspeccontainersindexlivenessprobegrpc">grpc</a></b></td>
         <td>object</td>
         <td>
-          GRPC specifies an action involving a GRPC port. This is an alpha field and requires enabling GRPCContainerProbe feature gate.<br/>
+          GRPC specifies an action involving a GRPC port. This is a beta field and requires enabling GRPCContainerProbe feature gate.<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -39547,7 +35202,7 @@ Exec specifies the action to take.
 
 
 
-GRPC specifies an action involving a GRPC port. This is an alpha field and requires enabling GRPCContainerProbe feature gate.
+GRPC specifies an action involving a GRPC port. This is a beta field and requires enabling GRPCContainerProbe feature gate.
 
 <table>
     <thead>
@@ -39799,7 +35454,7 @@ Periodic probe of container service readiness. Container will be removed from se
         <td><b><a href="#cassandrabackupstatuscassdctemplatespecspecpodtemplatespecspeccontainersindexreadinessprobegrpc">grpc</a></b></td>
         <td>object</td>
         <td>
-          GRPC specifies an action involving a GRPC port. This is an alpha field and requires enabling GRPCContainerProbe feature gate.<br/>
+          GRPC specifies an action involving a GRPC port. This is a beta field and requires enabling GRPCContainerProbe feature gate.<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -39897,7 +35552,7 @@ Exec specifies the action to take.
 
 
 
-GRPC specifies an action involving a GRPC port. This is an alpha field and requires enabling GRPCContainerProbe feature gate.
+GRPC specifies an action involving a GRPC port. This is a beta field and requires enabling GRPCContainerProbe feature gate.
 
 <table>
     <thead>
@@ -40388,7 +36043,7 @@ StartupProbe indicates that the Pod has successfully initialized. If specified, 
         <td><b><a href="#cassandrabackupstatuscassdctemplatespecspecpodtemplatespecspeccontainersindexstartupprobegrpc">grpc</a></b></td>
         <td>object</td>
         <td>
-          GRPC specifies an action involving a GRPC port. This is an alpha field and requires enabling GRPCContainerProbe feature gate.<br/>
+          GRPC specifies an action involving a GRPC port. This is a beta field and requires enabling GRPCContainerProbe feature gate.<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -40486,7 +36141,7 @@ Exec specifies the action to take.
 
 
 
-GRPC specifies an action involving a GRPC port. This is an alpha field and requires enabling GRPCContainerProbe feature gate.
+GRPC specifies an action involving a GRPC port. This is a beta field and requires enabling GRPCContainerProbe feature gate.
 
 <table>
     <thead>
@@ -41211,14 +36866,14 @@ Required. A pod affinity term, associated with the corresponding weight.
         <td><b><a href="#cassandrabackupstatuscassdctemplatespecspecpodtemplatespecspecaffinitypodaffinitypreferredduringschedulingignoredduringexecutionindexpodaffinitytermnamespaceselector">namespaceSelector</a></b></td>
         <td>object</td>
         <td>
-          A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces. This field is beta-level and is only honored when PodAffinityNamespaceSelector feature is enabled.<br/>
+          A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>namespaces</b></td>
         <td>[]string</td>
         <td>
-          namespaces specifies a static list of namespace names that the term applies to. The term is applied to the union of the namespaces listed in this field and the ones selected by namespaceSelector. null or empty namespaces list and null namespaceSelector means "this pod's namespace"<br/>
+          namespaces specifies a static list of namespace names that the term applies to. The term is applied to the union of the namespaces listed in this field and the ones selected by namespaceSelector. null or empty namespaces list and null namespaceSelector means "this pod's namespace".<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -41305,7 +36960,7 @@ A label selector requirement is a selector that contains values, a key, and an o
 
 
 
-A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces. This field is beta-level and is only honored when PodAffinityNamespaceSelector feature is enabled.
+A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces.
 
 <table>
     <thead>
@@ -41409,14 +37064,14 @@ Defines a set of pods (namely those matching the labelSelector relative to the g
         <td><b><a href="#cassandrabackupstatuscassdctemplatespecspecpodtemplatespecspecaffinitypodaffinityrequiredduringschedulingignoredduringexecutionindexnamespaceselector">namespaceSelector</a></b></td>
         <td>object</td>
         <td>
-          A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces. This field is beta-level and is only honored when PodAffinityNamespaceSelector feature is enabled.<br/>
+          A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>namespaces</b></td>
         <td>[]string</td>
         <td>
-          namespaces specifies a static list of namespace names that the term applies to. The term is applied to the union of the namespaces listed in this field and the ones selected by namespaceSelector. null or empty namespaces list and null namespaceSelector means "this pod's namespace"<br/>
+          namespaces specifies a static list of namespace names that the term applies to. The term is applied to the union of the namespaces listed in this field and the ones selected by namespaceSelector. null or empty namespaces list and null namespaceSelector means "this pod's namespace".<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -41503,7 +37158,7 @@ A label selector requirement is a selector that contains values, a key, and an o
 
 
 
-A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces. This field is beta-level and is only honored when PodAffinityNamespaceSelector feature is enabled.
+A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces.
 
 <table>
     <thead>
@@ -41677,14 +37332,14 @@ Required. A pod affinity term, associated with the corresponding weight.
         <td><b><a href="#cassandrabackupstatuscassdctemplatespecspecpodtemplatespecspecaffinitypodantiaffinitypreferredduringschedulingignoredduringexecutionindexpodaffinitytermnamespaceselector">namespaceSelector</a></b></td>
         <td>object</td>
         <td>
-          A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces. This field is beta-level and is only honored when PodAffinityNamespaceSelector feature is enabled.<br/>
+          A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>namespaces</b></td>
         <td>[]string</td>
         <td>
-          namespaces specifies a static list of namespace names that the term applies to. The term is applied to the union of the namespaces listed in this field and the ones selected by namespaceSelector. null or empty namespaces list and null namespaceSelector means "this pod's namespace"<br/>
+          namespaces specifies a static list of namespace names that the term applies to. The term is applied to the union of the namespaces listed in this field and the ones selected by namespaceSelector. null or empty namespaces list and null namespaceSelector means "this pod's namespace".<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -41771,7 +37426,7 @@ A label selector requirement is a selector that contains values, a key, and an o
 
 
 
-A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces. This field is beta-level and is only honored when PodAffinityNamespaceSelector feature is enabled.
+A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces.
 
 <table>
     <thead>
@@ -41875,14 +37530,14 @@ Defines a set of pods (namely those matching the labelSelector relative to the g
         <td><b><a href="#cassandrabackupstatuscassdctemplatespecspecpodtemplatespecspecaffinitypodantiaffinityrequiredduringschedulingignoredduringexecutionindexnamespaceselector">namespaceSelector</a></b></td>
         <td>object</td>
         <td>
-          A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces. This field is beta-level and is only honored when PodAffinityNamespaceSelector feature is enabled.<br/>
+          A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>namespaces</b></td>
         <td>[]string</td>
         <td>
-          namespaces specifies a static list of namespace names that the term applies to. The term is applied to the union of the namespaces listed in this field and the ones selected by namespaceSelector. null or empty namespaces list and null namespaceSelector means "this pod's namespace"<br/>
+          namespaces specifies a static list of namespace names that the term applies to. The term is applied to the union of the namespaces listed in this field and the ones selected by namespaceSelector. null or empty namespaces list and null namespaceSelector means "this pod's namespace".<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -41969,7 +37624,7 @@ A label selector requirement is a selector that contains values, a key, and an o
 
 
 
-A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces. This field is beta-level and is only honored when PodAffinityNamespaceSelector feature is enabled.
+A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces.
 
 <table>
     <thead>
@@ -42143,14 +37798,14 @@ An EphemeralContainer is a temporary container that you may add to an existing P
         <td><b>args</b></td>
         <td>[]string</td>
         <td>
-          Arguments to the entrypoint. The docker image's CMD is used if this is not provided. Variable references $(VAR_NAME) are expanded using the container's environment. If a variable cannot be resolved, the reference in the input string will be unchanged. Double $$ are reduced to a single $, which allows for escaping the $(VAR_NAME) syntax: i.e. "$$(VAR_NAME)" will produce the string literal "$(VAR_NAME)". Escaped references will never be expanded, regardless of whether the variable exists or not. Cannot be updated. More info: https://kubernetes.io/docs/tasks/inject-data-application/define-command-argument-container/#running-a-command-in-a-shell<br/>
+          Arguments to the entrypoint. The image's CMD is used if this is not provided. Variable references $(VAR_NAME) are expanded using the container's environment. If a variable cannot be resolved, the reference in the input string will be unchanged. Double $$ are reduced to a single $, which allows for escaping the $(VAR_NAME) syntax: i.e. "$$(VAR_NAME)" will produce the string literal "$(VAR_NAME)". Escaped references will never be expanded, regardless of whether the variable exists or not. Cannot be updated. More info: https://kubernetes.io/docs/tasks/inject-data-application/define-command-argument-container/#running-a-command-in-a-shell<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>command</b></td>
         <td>[]string</td>
         <td>
-          Entrypoint array. Not executed within a shell. The docker image's ENTRYPOINT is used if this is not provided. Variable references $(VAR_NAME) are expanded using the container's environment. If a variable cannot be resolved, the reference in the input string will be unchanged. Double $$ are reduced to a single $, which allows for escaping the $(VAR_NAME) syntax: i.e. "$$(VAR_NAME)" will produce the string literal "$(VAR_NAME)". Escaped references will never be expanded, regardless of whether the variable exists or not. Cannot be updated. More info: https://kubernetes.io/docs/tasks/inject-data-application/define-command-argument-container/#running-a-command-in-a-shell<br/>
+          Entrypoint array. Not executed within a shell. The image's ENTRYPOINT is used if this is not provided. Variable references $(VAR_NAME) are expanded using the container's environment. If a variable cannot be resolved, the reference in the input string will be unchanged. Double $$ are reduced to a single $, which allows for escaping the $(VAR_NAME) syntax: i.e. "$$(VAR_NAME)" will produce the string literal "$(VAR_NAME)". Escaped references will never be expanded, regardless of whether the variable exists or not. Cannot be updated. More info: https://kubernetes.io/docs/tasks/inject-data-application/define-command-argument-container/#running-a-command-in-a-shell<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -42171,7 +37826,7 @@ An EphemeralContainer is a temporary container that you may add to an existing P
         <td><b>image</b></td>
         <td>string</td>
         <td>
-          Docker image name. More info: https://kubernetes.io/docs/concepts/containers/images<br/>
+          Container image name. More info: https://kubernetes.io/docs/concepts/containers/images<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -43105,7 +38760,7 @@ Probes are not allowed for ephemeral containers.
         <td><b><a href="#cassandrabackupstatuscassdctemplatespecspecpodtemplatespecspecephemeralcontainersindexlivenessprobegrpc">grpc</a></b></td>
         <td>object</td>
         <td>
-          GRPC specifies an action involving a GRPC port. This is an alpha field and requires enabling GRPCContainerProbe feature gate.<br/>
+          GRPC specifies an action involving a GRPC port. This is a beta field and requires enabling GRPCContainerProbe feature gate.<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -43203,7 +38858,7 @@ Exec specifies the action to take.
 
 
 
-GRPC specifies an action involving a GRPC port. This is an alpha field and requires enabling GRPCContainerProbe feature gate.
+GRPC specifies an action involving a GRPC port. This is a beta field and requires enabling GRPCContainerProbe feature gate.
 
 <table>
     <thead>
@@ -43455,7 +39110,7 @@ Probes are not allowed for ephemeral containers.
         <td><b><a href="#cassandrabackupstatuscassdctemplatespecspecpodtemplatespecspecephemeralcontainersindexreadinessprobegrpc">grpc</a></b></td>
         <td>object</td>
         <td>
-          GRPC specifies an action involving a GRPC port. This is an alpha field and requires enabling GRPCContainerProbe feature gate.<br/>
+          GRPC specifies an action involving a GRPC port. This is a beta field and requires enabling GRPCContainerProbe feature gate.<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -43553,7 +39208,7 @@ Exec specifies the action to take.
 
 
 
-GRPC specifies an action involving a GRPC port. This is an alpha field and requires enabling GRPCContainerProbe feature gate.
+GRPC specifies an action involving a GRPC port. This is a beta field and requires enabling GRPCContainerProbe feature gate.
 
 <table>
     <thead>
@@ -44044,7 +39699,7 @@ Probes are not allowed for ephemeral containers.
         <td><b><a href="#cassandrabackupstatuscassdctemplatespecspecpodtemplatespecspecephemeralcontainersindexstartupprobegrpc">grpc</a></b></td>
         <td>object</td>
         <td>
-          GRPC specifies an action involving a GRPC port. This is an alpha field and requires enabling GRPCContainerProbe feature gate.<br/>
+          GRPC specifies an action involving a GRPC port. This is a beta field and requires enabling GRPCContainerProbe feature gate.<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -44142,7 +39797,7 @@ Exec specifies the action to take.
 
 
 
-GRPC specifies an action involving a GRPC port. This is an alpha field and requires enabling GRPCContainerProbe feature gate.
+GRPC specifies an action involving a GRPC port. This is a beta field and requires enabling GRPCContainerProbe feature gate.
 
 <table>
     <thead>
@@ -44481,14 +40136,14 @@ A single application container that you want to run within a pod.
         <td><b>args</b></td>
         <td>[]string</td>
         <td>
-          Arguments to the entrypoint. The docker image's CMD is used if this is not provided. Variable references $(VAR_NAME) are expanded using the container's environment. If a variable cannot be resolved, the reference in the input string will be unchanged. Double $$ are reduced to a single $, which allows for escaping the $(VAR_NAME) syntax: i.e. "$$(VAR_NAME)" will produce the string literal "$(VAR_NAME)". Escaped references will never be expanded, regardless of whether the variable exists or not. Cannot be updated. More info: https://kubernetes.io/docs/tasks/inject-data-application/define-command-argument-container/#running-a-command-in-a-shell<br/>
+          Arguments to the entrypoint. The container image's CMD is used if this is not provided. Variable references $(VAR_NAME) are expanded using the container's environment. If a variable cannot be resolved, the reference in the input string will be unchanged. Double $$ are reduced to a single $, which allows for escaping the $(VAR_NAME) syntax: i.e. "$$(VAR_NAME)" will produce the string literal "$(VAR_NAME)". Escaped references will never be expanded, regardless of whether the variable exists or not. Cannot be updated. More info: https://kubernetes.io/docs/tasks/inject-data-application/define-command-argument-container/#running-a-command-in-a-shell<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>command</b></td>
         <td>[]string</td>
         <td>
-          Entrypoint array. Not executed within a shell. The docker image's ENTRYPOINT is used if this is not provided. Variable references $(VAR_NAME) are expanded using the container's environment. If a variable cannot be resolved, the reference in the input string will be unchanged. Double $$ are reduced to a single $, which allows for escaping the $(VAR_NAME) syntax: i.e. "$$(VAR_NAME)" will produce the string literal "$(VAR_NAME)". Escaped references will never be expanded, regardless of whether the variable exists or not. Cannot be updated. More info: https://kubernetes.io/docs/tasks/inject-data-application/define-command-argument-container/#running-a-command-in-a-shell<br/>
+          Entrypoint array. Not executed within a shell. The container image's ENTRYPOINT is used if this is not provided. Variable references $(VAR_NAME) are expanded using the container's environment. If a variable cannot be resolved, the reference in the input string will be unchanged. Double $$ are reduced to a single $, which allows for escaping the $(VAR_NAME) syntax: i.e. "$$(VAR_NAME)" will produce the string literal "$(VAR_NAME)". Escaped references will never be expanded, regardless of whether the variable exists or not. Cannot be updated. More info: https://kubernetes.io/docs/tasks/inject-data-application/define-command-argument-container/#running-a-command-in-a-shell<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -44509,7 +40164,7 @@ A single application container that you want to run within a pod.
         <td><b>image</b></td>
         <td>string</td>
         <td>
-          Docker image name. More info: https://kubernetes.io/docs/concepts/containers/images This field is optional to allow higher level config management to default or override container images in workload controllers like Deployments and StatefulSets.<br/>
+          Container image name. More info: https://kubernetes.io/docs/concepts/containers/images This field is optional to allow higher level config management to default or override container images in workload controllers like Deployments and StatefulSets.<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -45435,7 +41090,7 @@ Periodic probe of container liveness. Container will be restarted if the probe f
         <td><b><a href="#cassandrabackupstatuscassdctemplatespecspecpodtemplatespecspecinitcontainersindexlivenessprobegrpc">grpc</a></b></td>
         <td>object</td>
         <td>
-          GRPC specifies an action involving a GRPC port. This is an alpha field and requires enabling GRPCContainerProbe feature gate.<br/>
+          GRPC specifies an action involving a GRPC port. This is a beta field and requires enabling GRPCContainerProbe feature gate.<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -45533,7 +41188,7 @@ Exec specifies the action to take.
 
 
 
-GRPC specifies an action involving a GRPC port. This is an alpha field and requires enabling GRPCContainerProbe feature gate.
+GRPC specifies an action involving a GRPC port. This is a beta field and requires enabling GRPCContainerProbe feature gate.
 
 <table>
     <thead>
@@ -45785,7 +41440,7 @@ Periodic probe of container service readiness. Container will be removed from se
         <td><b><a href="#cassandrabackupstatuscassdctemplatespecspecpodtemplatespecspecinitcontainersindexreadinessprobegrpc">grpc</a></b></td>
         <td>object</td>
         <td>
-          GRPC specifies an action involving a GRPC port. This is an alpha field and requires enabling GRPCContainerProbe feature gate.<br/>
+          GRPC specifies an action involving a GRPC port. This is a beta field and requires enabling GRPCContainerProbe feature gate.<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -45883,7 +41538,7 @@ Exec specifies the action to take.
 
 
 
-GRPC specifies an action involving a GRPC port. This is an alpha field and requires enabling GRPCContainerProbe feature gate.
+GRPC specifies an action involving a GRPC port. This is a beta field and requires enabling GRPCContainerProbe feature gate.
 
 <table>
     <thead>
@@ -46374,7 +42029,7 @@ StartupProbe indicates that the Pod has successfully initialized. If specified, 
         <td><b><a href="#cassandrabackupstatuscassdctemplatespecspecpodtemplatespecspecinitcontainersindexstartupprobegrpc">grpc</a></b></td>
         <td>object</td>
         <td>
-          GRPC specifies an action involving a GRPC port. This is an alpha field and requires enabling GRPCContainerProbe feature gate.<br/>
+          GRPC specifies an action involving a GRPC port. This is a beta field and requires enabling GRPCContainerProbe feature gate.<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -46472,7 +42127,7 @@ Exec specifies the action to take.
 
 
 
-GRPC specifies an action involving a GRPC port. This is an alpha field and requires enabling GRPCContainerProbe feature gate.
+GRPC specifies an action involving a GRPC port. This is a beta field and requires enabling GRPCContainerProbe feature gate.
 
 <table>
     <thead>
@@ -46730,7 +42385,7 @@ VolumeMount describes a mounting of a Volume within a container.
 
 Specifies the OS of the containers in the pod. Some pod and container fields are restricted if this is set. 
  If the OS field is set to linux, the following fields must be unset: -securityContext.windowsOptions 
- If the OS field is set to windows, following fields must be unset: - spec.hostPID - spec.hostIPC - spec.securityContext.seLinuxOptions - spec.securityContext.seccompProfile - spec.securityContext.fsGroup - spec.securityContext.fsGroupChangePolicy - spec.securityContext.sysctls - spec.shareProcessNamespace - spec.securityContext.runAsUser - spec.securityContext.runAsGroup - spec.securityContext.supplementalGroups - spec.containers[*].securityContext.seLinuxOptions - spec.containers[*].securityContext.seccompProfile - spec.containers[*].securityContext.capabilities - spec.containers[*].securityContext.readOnlyRootFilesystem - spec.containers[*].securityContext.privileged - spec.containers[*].securityContext.allowPrivilegeEscalation - spec.containers[*].securityContext.procMount - spec.containers[*].securityContext.runAsUser - spec.containers[*].securityContext.runAsGroup This is an alpha field and requires the IdentifyPodOS feature
+ If the OS field is set to windows, following fields must be unset: - spec.hostPID - spec.hostIPC - spec.securityContext.seLinuxOptions - spec.securityContext.seccompProfile - spec.securityContext.fsGroup - spec.securityContext.fsGroupChangePolicy - spec.securityContext.sysctls - spec.shareProcessNamespace - spec.securityContext.runAsUser - spec.securityContext.runAsGroup - spec.securityContext.supplementalGroups - spec.containers[*].securityContext.seLinuxOptions - spec.containers[*].securityContext.seccompProfile - spec.containers[*].securityContext.capabilities - spec.containers[*].securityContext.readOnlyRootFilesystem - spec.containers[*].securityContext.privileged - spec.containers[*].securityContext.allowPrivilegeEscalation - spec.containers[*].securityContext.procMount - spec.containers[*].securityContext.runAsUser - spec.containers[*].securityContext.runAsGroup This is a beta field and requires the IdentifyPodOS feature
 
 <table>
     <thead>
@@ -47119,7 +42774,7 @@ TopologySpreadConstraint specifies how to spread matching pods among the given t
         <td><b>maxSkew</b></td>
         <td>integer</td>
         <td>
-          MaxSkew describes the degree to which pods may be unevenly distributed. When `whenUnsatisfiable=DoNotSchedule`, it is the maximum permitted difference between the number of matching pods in the target topology and the global minimum. For example, in a 3-zone cluster, MaxSkew is set to 1, and pods with the same labelSelector spread as 1/1/0: | zone1 | zone2 | zone3 | |   P   |   P   |       | - if MaxSkew is 1, incoming pod can only be scheduled to zone3 to become 1/1/1; scheduling it onto zone1(zone2) would make the ActualSkew(2-0) on zone1(zone2) violate MaxSkew(1). - if MaxSkew is 2, incoming pod can be scheduled onto any zone. When `whenUnsatisfiable=ScheduleAnyway`, it is used to give higher precedence to topologies that satisfy it. It's a required field. Default value is 1 and 0 is not allowed.<br/>
+          MaxSkew describes the degree to which pods may be unevenly distributed. When `whenUnsatisfiable=DoNotSchedule`, it is the maximum permitted difference between the number of matching pods in the target topology and the global minimum. The global minimum is the minimum number of matching pods in an eligible domain or zero if the number of eligible domains is less than MinDomains. For example, in a 3-zone cluster, MaxSkew is set to 1, and pods with the same labelSelector spread as 2/2/1: In this case, the global minimum is 1. | zone1 | zone2 | zone3 | |  P P  |  P P  |   P   | - if MaxSkew is 1, incoming pod can only be scheduled to zone3 to become 2/2/2; scheduling it onto zone1(zone2) would make the ActualSkew(3-1) on zone1(zone2) violate MaxSkew(1). - if MaxSkew is 2, incoming pod can be scheduled onto any zone. When `whenUnsatisfiable=ScheduleAnyway`, it is used to give higher precedence to topologies that satisfy it. It's a required field. Default value is 1 and 0 is not allowed.<br/>
           <br/>
             <i>Format</i>: int32<br/>
         </td>
@@ -47128,7 +42783,7 @@ TopologySpreadConstraint specifies how to spread matching pods among the given t
         <td><b>topologyKey</b></td>
         <td>string</td>
         <td>
-          TopologyKey is the key of node labels. Nodes that have a label with this key and identical values are considered to be in the same topology. We consider each <key, value> as a "bucket", and try to put balanced number of pods into each bucket. It's a required field.<br/>
+          TopologyKey is the key of node labels. Nodes that have a label with this key and identical values are considered to be in the same topology. We consider each <key, value> as a "bucket", and try to put balanced number of pods into each bucket. We define a domain as a particular instance of a topology. Also, we define an eligible domain as a domain whose nodes match the node selector. e.g. If TopologyKey is "kubernetes.io/hostname", each Node is a domain of that topology. And, if TopologyKey is "topology.kubernetes.io/zone", each zone is a domain of that topology. It's a required field.<br/>
         </td>
         <td>true</td>
       </tr><tr>
@@ -47143,6 +42798,17 @@ TopologySpreadConstraint specifies how to spread matching pods among the given t
         <td>object</td>
         <td>
           LabelSelector is used to find matching pods. Pods that match this label selector are counted to determine the number of pods in their corresponding topology domain.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>minDomains</b></td>
+        <td>integer</td>
+        <td>
+          MinDomains indicates a minimum number of eligible domains. When the number of eligible domains with matching topology keys is less than minDomains, Pod Topology Spread treats "global minimum" as 0, and then the calculation of Skew is performed. And when the number of eligible domains with matching topology keys equals or greater than minDomains, this value has no effect on scheduling. As a result, when the number of eligible domains is less than minDomains, scheduler won't schedule more than maxSkew Pods to those domains. If value is nil, the constraint behaves as if MinDomains is equal to 1. Valid values are integers greater than 0. When value is not nil, WhenUnsatisfiable must be DoNotSchedule. 
+ For example, in a 3-zone cluster, MaxSkew is set to 2, MinDomains is set to 5 and pods with the same labelSelector spread as 2/2/2: | zone1 | zone2 | zone3 | |  P P  |  P P  |  P P  | The number of domains is less than 5(MinDomains), so "global minimum" is treated as 0. In this situation, new pod with the same labelSelector cannot be scheduled, because computed skew will be 3(3 - 0) if new Pod is scheduled to any of the three zones, it will violate MaxSkew. 
+ This is an alpha field and requires enabling MinDomainsInPodTopologySpread feature gate.<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -47244,77 +42910,77 @@ Volume represents a named volume in a pod that may be accessed by any container 
         <td><b>name</b></td>
         <td>string</td>
         <td>
-          Volume's name. Must be a DNS_LABEL and unique within the pod. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names<br/>
+          name of the volume. Must be a DNS_LABEL and unique within the pod. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names<br/>
         </td>
         <td>true</td>
       </tr><tr>
         <td><b><a href="#cassandrabackupstatuscassdctemplatespecspecpodtemplatespecspecvolumesindexawselasticblockstore">awsElasticBlockStore</a></b></td>
         <td>object</td>
         <td>
-          AWSElasticBlockStore represents an AWS Disk resource that is attached to a kubelet's host machine and then exposed to the pod. More info: https://kubernetes.io/docs/concepts/storage/volumes#awselasticblockstore<br/>
+          awsElasticBlockStore represents an AWS Disk resource that is attached to a kubelet's host machine and then exposed to the pod. More info: https://kubernetes.io/docs/concepts/storage/volumes#awselasticblockstore<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#cassandrabackupstatuscassdctemplatespecspecpodtemplatespecspecvolumesindexazuredisk">azureDisk</a></b></td>
         <td>object</td>
         <td>
-          AzureDisk represents an Azure Data Disk mount on the host and bind mount to the pod.<br/>
+          azureDisk represents an Azure Data Disk mount on the host and bind mount to the pod.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#cassandrabackupstatuscassdctemplatespecspecpodtemplatespecspecvolumesindexazurefile">azureFile</a></b></td>
         <td>object</td>
         <td>
-          AzureFile represents an Azure File Service mount on the host and bind mount to the pod.<br/>
+          azureFile represents an Azure File Service mount on the host and bind mount to the pod.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#cassandrabackupstatuscassdctemplatespecspecpodtemplatespecspecvolumesindexcephfs">cephfs</a></b></td>
         <td>object</td>
         <td>
-          CephFS represents a Ceph FS mount on the host that shares a pod's lifetime<br/>
+          cephFS represents a Ceph FS mount on the host that shares a pod's lifetime<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#cassandrabackupstatuscassdctemplatespecspecpodtemplatespecspecvolumesindexcinder">cinder</a></b></td>
         <td>object</td>
         <td>
-          Cinder represents a cinder volume attached and mounted on kubelets host machine. More info: https://examples.k8s.io/mysql-cinder-pd/README.md<br/>
+          cinder represents a cinder volume attached and mounted on kubelets host machine. More info: https://examples.k8s.io/mysql-cinder-pd/README.md<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#cassandrabackupstatuscassdctemplatespecspecpodtemplatespecspecvolumesindexconfigmap">configMap</a></b></td>
         <td>object</td>
         <td>
-          ConfigMap represents a configMap that should populate this volume<br/>
+          configMap represents a configMap that should populate this volume<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#cassandrabackupstatuscassdctemplatespecspecpodtemplatespecspecvolumesindexcsi">csi</a></b></td>
         <td>object</td>
         <td>
-          CSI (Container Storage Interface) represents ephemeral storage that is handled by certain external CSI drivers (Beta feature).<br/>
+          csi (Container Storage Interface) represents ephemeral storage that is handled by certain external CSI drivers (Beta feature).<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#cassandrabackupstatuscassdctemplatespecspecpodtemplatespecspecvolumesindexdownwardapi">downwardAPI</a></b></td>
         <td>object</td>
         <td>
-          DownwardAPI represents downward API about the pod that should populate this volume<br/>
+          downwardAPI represents downward API about the pod that should populate this volume<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#cassandrabackupstatuscassdctemplatespecspecpodtemplatespecspecvolumesindexemptydir">emptyDir</a></b></td>
         <td>object</td>
         <td>
-          EmptyDir represents a temporary directory that shares a pod's lifetime. More info: https://kubernetes.io/docs/concepts/storage/volumes#emptydir<br/>
+          emptyDir represents a temporary directory that shares a pod's lifetime. More info: https://kubernetes.io/docs/concepts/storage/volumes#emptydir<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#cassandrabackupstatuscassdctemplatespecspecpodtemplatespecspecvolumesindexephemeral">ephemeral</a></b></td>
         <td>object</td>
         <td>
-          Ephemeral represents a volume that is handled by a cluster storage driver. The volume's lifecycle is tied to the pod that defines it - it will be created before the pod starts, and deleted when the pod is removed. 
+          ephemeral represents a volume that is handled by a cluster storage driver. The volume's lifecycle is tied to the pod that defines it - it will be created before the pod starts, and deleted when the pod is removed. 
  Use this if: a) the volume is only needed while the pod runs, b) features of normal volumes like restoring from snapshot or capacity tracking are needed, c) the storage driver is specified through a storage class, and d) the storage driver supports dynamic volume provisioning through a PersistentVolumeClaim (see EphemeralVolumeSource for more information on the connection between this volume type and PersistentVolumeClaim). 
  Use PersistentVolumeClaim or one of the vendor-specific APIs for volumes that persist for longer than the lifecycle of an individual pod. 
  Use CSI for light-weight local ephemeral volumes if the CSI driver is meant to be used that way - see the documentation of the driver for more information. 
@@ -47325,133 +42991,133 @@ Volume represents a named volume in a pod that may be accessed by any container 
         <td><b><a href="#cassandrabackupstatuscassdctemplatespecspecpodtemplatespecspecvolumesindexfc">fc</a></b></td>
         <td>object</td>
         <td>
-          FC represents a Fibre Channel resource that is attached to a kubelet's host machine and then exposed to the pod.<br/>
+          fc represents a Fibre Channel resource that is attached to a kubelet's host machine and then exposed to the pod.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#cassandrabackupstatuscassdctemplatespecspecpodtemplatespecspecvolumesindexflexvolume">flexVolume</a></b></td>
         <td>object</td>
         <td>
-          FlexVolume represents a generic volume resource that is provisioned/attached using an exec based plugin.<br/>
+          flexVolume represents a generic volume resource that is provisioned/attached using an exec based plugin.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#cassandrabackupstatuscassdctemplatespecspecpodtemplatespecspecvolumesindexflocker">flocker</a></b></td>
         <td>object</td>
         <td>
-          Flocker represents a Flocker volume attached to a kubelet's host machine. This depends on the Flocker control service being running<br/>
+          flocker represents a Flocker volume attached to a kubelet's host machine. This depends on the Flocker control service being running<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#cassandrabackupstatuscassdctemplatespecspecpodtemplatespecspecvolumesindexgcepersistentdisk">gcePersistentDisk</a></b></td>
         <td>object</td>
         <td>
-          GCEPersistentDisk represents a GCE Disk resource that is attached to a kubelet's host machine and then exposed to the pod. More info: https://kubernetes.io/docs/concepts/storage/volumes#gcepersistentdisk<br/>
+          gcePersistentDisk represents a GCE Disk resource that is attached to a kubelet's host machine and then exposed to the pod. More info: https://kubernetes.io/docs/concepts/storage/volumes#gcepersistentdisk<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#cassandrabackupstatuscassdctemplatespecspecpodtemplatespecspecvolumesindexgitrepo">gitRepo</a></b></td>
         <td>object</td>
         <td>
-          GitRepo represents a git repository at a particular revision. DEPRECATED: GitRepo is deprecated. To provision a container with a git repo, mount an EmptyDir into an InitContainer that clones the repo using git, then mount the EmptyDir into the Pod's container.<br/>
+          gitRepo represents a git repository at a particular revision. DEPRECATED: GitRepo is deprecated. To provision a container with a git repo, mount an EmptyDir into an InitContainer that clones the repo using git, then mount the EmptyDir into the Pod's container.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#cassandrabackupstatuscassdctemplatespecspecpodtemplatespecspecvolumesindexglusterfs">glusterfs</a></b></td>
         <td>object</td>
         <td>
-          Glusterfs represents a Glusterfs mount on the host that shares a pod's lifetime. More info: https://examples.k8s.io/volumes/glusterfs/README.md<br/>
+          glusterfs represents a Glusterfs mount on the host that shares a pod's lifetime. More info: https://examples.k8s.io/volumes/glusterfs/README.md<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#cassandrabackupstatuscassdctemplatespecspecpodtemplatespecspecvolumesindexhostpath">hostPath</a></b></td>
         <td>object</td>
         <td>
-          HostPath represents a pre-existing file or directory on the host machine that is directly exposed to the container. This is generally used for system agents or other privileged things that are allowed to see the host machine. Most containers will NOT need this. More info: https://kubernetes.io/docs/concepts/storage/volumes#hostpath --- TODO(jonesdl) We need to restrict who can use host directory mounts and who can/can not mount host directories as read/write.<br/>
+          hostPath represents a pre-existing file or directory on the host machine that is directly exposed to the container. This is generally used for system agents or other privileged things that are allowed to see the host machine. Most containers will NOT need this. More info: https://kubernetes.io/docs/concepts/storage/volumes#hostpath --- TODO(jonesdl) We need to restrict who can use host directory mounts and who can/can not mount host directories as read/write.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#cassandrabackupstatuscassdctemplatespecspecpodtemplatespecspecvolumesindexiscsi">iscsi</a></b></td>
         <td>object</td>
         <td>
-          ISCSI represents an ISCSI Disk resource that is attached to a kubelet's host machine and then exposed to the pod. More info: https://examples.k8s.io/volumes/iscsi/README.md<br/>
+          iscsi represents an ISCSI Disk resource that is attached to a kubelet's host machine and then exposed to the pod. More info: https://examples.k8s.io/volumes/iscsi/README.md<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#cassandrabackupstatuscassdctemplatespecspecpodtemplatespecspecvolumesindexnfs">nfs</a></b></td>
         <td>object</td>
         <td>
-          NFS represents an NFS mount on the host that shares a pod's lifetime More info: https://kubernetes.io/docs/concepts/storage/volumes#nfs<br/>
+          nfs represents an NFS mount on the host that shares a pod's lifetime More info: https://kubernetes.io/docs/concepts/storage/volumes#nfs<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#cassandrabackupstatuscassdctemplatespecspecpodtemplatespecspecvolumesindexpersistentvolumeclaim">persistentVolumeClaim</a></b></td>
         <td>object</td>
         <td>
-          PersistentVolumeClaimVolumeSource represents a reference to a PersistentVolumeClaim in the same namespace. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#persistentvolumeclaims<br/>
+          persistentVolumeClaimVolumeSource represents a reference to a PersistentVolumeClaim in the same namespace. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#persistentvolumeclaims<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#cassandrabackupstatuscassdctemplatespecspecpodtemplatespecspecvolumesindexphotonpersistentdisk">photonPersistentDisk</a></b></td>
         <td>object</td>
         <td>
-          PhotonPersistentDisk represents a PhotonController persistent disk attached and mounted on kubelets host machine<br/>
+          photonPersistentDisk represents a PhotonController persistent disk attached and mounted on kubelets host machine<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#cassandrabackupstatuscassdctemplatespecspecpodtemplatespecspecvolumesindexportworxvolume">portworxVolume</a></b></td>
         <td>object</td>
         <td>
-          PortworxVolume represents a portworx volume attached and mounted on kubelets host machine<br/>
+          portworxVolume represents a portworx volume attached and mounted on kubelets host machine<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#cassandrabackupstatuscassdctemplatespecspecpodtemplatespecspecvolumesindexprojected">projected</a></b></td>
         <td>object</td>
         <td>
-          Items for all in one resources secrets, configmaps, and downward API<br/>
+          projected items for all in one resources secrets, configmaps, and downward API<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#cassandrabackupstatuscassdctemplatespecspecpodtemplatespecspecvolumesindexquobyte">quobyte</a></b></td>
         <td>object</td>
         <td>
-          Quobyte represents a Quobyte mount on the host that shares a pod's lifetime<br/>
+          quobyte represents a Quobyte mount on the host that shares a pod's lifetime<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#cassandrabackupstatuscassdctemplatespecspecpodtemplatespecspecvolumesindexrbd">rbd</a></b></td>
         <td>object</td>
         <td>
-          RBD represents a Rados Block Device mount on the host that shares a pod's lifetime. More info: https://examples.k8s.io/volumes/rbd/README.md<br/>
+          rbd represents a Rados Block Device mount on the host that shares a pod's lifetime. More info: https://examples.k8s.io/volumes/rbd/README.md<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#cassandrabackupstatuscassdctemplatespecspecpodtemplatespecspecvolumesindexscaleio">scaleIO</a></b></td>
         <td>object</td>
         <td>
-          ScaleIO represents a ScaleIO persistent volume attached and mounted on Kubernetes nodes.<br/>
+          scaleIO represents a ScaleIO persistent volume attached and mounted on Kubernetes nodes.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#cassandrabackupstatuscassdctemplatespecspecpodtemplatespecspecvolumesindexsecret">secret</a></b></td>
         <td>object</td>
         <td>
-          Secret represents a secret that should populate this volume. More info: https://kubernetes.io/docs/concepts/storage/volumes#secret<br/>
+          secret represents a secret that should populate this volume. More info: https://kubernetes.io/docs/concepts/storage/volumes#secret<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#cassandrabackupstatuscassdctemplatespecspecpodtemplatespecspecvolumesindexstorageos">storageos</a></b></td>
         <td>object</td>
         <td>
-          StorageOS represents a StorageOS volume attached and mounted on Kubernetes nodes.<br/>
+          storageOS represents a StorageOS volume attached and mounted on Kubernetes nodes.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#cassandrabackupstatuscassdctemplatespecspecpodtemplatespecspecvolumesindexvspherevolume">vsphereVolume</a></b></td>
         <td>object</td>
         <td>
-          VsphereVolume represents a vSphere volume attached and mounted on kubelets host machine<br/>
+          vsphereVolume represents a vSphere volume attached and mounted on kubelets host machine<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -47463,7 +43129,7 @@ Volume represents a named volume in a pod that may be accessed by any container 
 
 
 
-AWSElasticBlockStore represents an AWS Disk resource that is attached to a kubelet's host machine and then exposed to the pod. More info: https://kubernetes.io/docs/concepts/storage/volumes#awselasticblockstore
+awsElasticBlockStore represents an AWS Disk resource that is attached to a kubelet's host machine and then exposed to the pod. More info: https://kubernetes.io/docs/concepts/storage/volumes#awselasticblockstore
 
 <table>
     <thead>
@@ -47478,21 +43144,21 @@ AWSElasticBlockStore represents an AWS Disk resource that is attached to a kubel
         <td><b>volumeID</b></td>
         <td>string</td>
         <td>
-          Unique ID of the persistent disk resource in AWS (Amazon EBS volume). More info: https://kubernetes.io/docs/concepts/storage/volumes#awselasticblockstore<br/>
+          volumeID is unique ID of the persistent disk resource in AWS (Amazon EBS volume). More info: https://kubernetes.io/docs/concepts/storage/volumes#awselasticblockstore<br/>
         </td>
         <td>true</td>
       </tr><tr>
         <td><b>fsType</b></td>
         <td>string</td>
         <td>
-          Filesystem type of the volume that you want to mount. Tip: Ensure that the filesystem type is supported by the host operating system. Examples: "ext4", "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified. More info: https://kubernetes.io/docs/concepts/storage/volumes#awselasticblockstore TODO: how do we prevent errors in the filesystem from compromising the machine<br/>
+          fsType is the filesystem type of the volume that you want to mount. Tip: Ensure that the filesystem type is supported by the host operating system. Examples: "ext4", "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified. More info: https://kubernetes.io/docs/concepts/storage/volumes#awselasticblockstore TODO: how do we prevent errors in the filesystem from compromising the machine<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>partition</b></td>
         <td>integer</td>
         <td>
-          The partition in the volume that you want to mount. If omitted, the default is to mount by volume name. Examples: For volume /dev/sda1, you specify the partition as "1". Similarly, the volume partition for /dev/sda is "0" (or you can leave the property empty).<br/>
+          partition is the partition in the volume that you want to mount. If omitted, the default is to mount by volume name. Examples: For volume /dev/sda1, you specify the partition as "1". Similarly, the volume partition for /dev/sda is "0" (or you can leave the property empty).<br/>
           <br/>
             <i>Format</i>: int32<br/>
         </td>
@@ -47501,7 +43167,7 @@ AWSElasticBlockStore represents an AWS Disk resource that is attached to a kubel
         <td><b>readOnly</b></td>
         <td>boolean</td>
         <td>
-          Specify "true" to force and set the ReadOnly property in VolumeMounts to "true". If omitted, the default is "false". More info: https://kubernetes.io/docs/concepts/storage/volumes#awselasticblockstore<br/>
+          readOnly value true will force the readOnly setting in VolumeMounts. More info: https://kubernetes.io/docs/concepts/storage/volumes#awselasticblockstore<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -47513,7 +43179,7 @@ AWSElasticBlockStore represents an AWS Disk resource that is attached to a kubel
 
 
 
-AzureDisk represents an Azure Data Disk mount on the host and bind mount to the pod.
+azureDisk represents an Azure Data Disk mount on the host and bind mount to the pod.
 
 <table>
     <thead>
@@ -47528,42 +43194,42 @@ AzureDisk represents an Azure Data Disk mount on the host and bind mount to the 
         <td><b>diskName</b></td>
         <td>string</td>
         <td>
-          The Name of the data disk in the blob storage<br/>
+          diskName is the Name of the data disk in the blob storage<br/>
         </td>
         <td>true</td>
       </tr><tr>
         <td><b>diskURI</b></td>
         <td>string</td>
         <td>
-          The URI the data disk in the blob storage<br/>
+          diskURI is the URI of data disk in the blob storage<br/>
         </td>
         <td>true</td>
       </tr><tr>
         <td><b>cachingMode</b></td>
         <td>string</td>
         <td>
-          Host Caching mode: None, Read Only, Read Write.<br/>
+          cachingMode is the Host Caching mode: None, Read Only, Read Write.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>fsType</b></td>
         <td>string</td>
         <td>
-          Filesystem type to mount. Must be a filesystem type supported by the host operating system. Ex. "ext4", "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified.<br/>
+          fsType is Filesystem type to mount. Must be a filesystem type supported by the host operating system. Ex. "ext4", "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>kind</b></td>
         <td>string</td>
         <td>
-          Expected values Shared: multiple blob disks per storage account  Dedicated: single blob disk per storage account  Managed: azure managed data disk (only in managed availability set). defaults to shared<br/>
+          kind expected values are Shared: multiple blob disks per storage account  Dedicated: single blob disk per storage account  Managed: azure managed data disk (only in managed availability set). defaults to shared<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>readOnly</b></td>
         <td>boolean</td>
         <td>
-          Defaults to false (read/write). ReadOnly here will force the ReadOnly setting in VolumeMounts.<br/>
+          readOnly Defaults to false (read/write). ReadOnly here will force the ReadOnly setting in VolumeMounts.<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -47575,7 +43241,7 @@ AzureDisk represents an Azure Data Disk mount on the host and bind mount to the 
 
 
 
-AzureFile represents an Azure File Service mount on the host and bind mount to the pod.
+azureFile represents an Azure File Service mount on the host and bind mount to the pod.
 
 <table>
     <thead>
@@ -47590,21 +43256,21 @@ AzureFile represents an Azure File Service mount on the host and bind mount to t
         <td><b>secretName</b></td>
         <td>string</td>
         <td>
-          the name of secret that contains Azure Storage Account Name and Key<br/>
+          secretName is the  name of secret that contains Azure Storage Account Name and Key<br/>
         </td>
         <td>true</td>
       </tr><tr>
         <td><b>shareName</b></td>
         <td>string</td>
         <td>
-          Share Name<br/>
+          shareName is the azure share Name<br/>
         </td>
         <td>true</td>
       </tr><tr>
         <td><b>readOnly</b></td>
         <td>boolean</td>
         <td>
-          Defaults to false (read/write). ReadOnly here will force the ReadOnly setting in VolumeMounts.<br/>
+          readOnly defaults to false (read/write). ReadOnly here will force the ReadOnly setting in VolumeMounts.<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -47616,7 +43282,7 @@ AzureFile represents an Azure File Service mount on the host and bind mount to t
 
 
 
-CephFS represents a Ceph FS mount on the host that shares a pod's lifetime
+cephFS represents a Ceph FS mount on the host that shares a pod's lifetime
 
 <table>
     <thead>
@@ -47631,42 +43297,42 @@ CephFS represents a Ceph FS mount on the host that shares a pod's lifetime
         <td><b>monitors</b></td>
         <td>[]string</td>
         <td>
-          Required: Monitors is a collection of Ceph monitors More info: https://examples.k8s.io/volumes/cephfs/README.md#how-to-use-it<br/>
+          monitors is Required: Monitors is a collection of Ceph monitors More info: https://examples.k8s.io/volumes/cephfs/README.md#how-to-use-it<br/>
         </td>
         <td>true</td>
       </tr><tr>
         <td><b>path</b></td>
         <td>string</td>
         <td>
-          Optional: Used as the mounted root, rather than the full Ceph tree, default is /<br/>
+          path is Optional: Used as the mounted root, rather than the full Ceph tree, default is /<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>readOnly</b></td>
         <td>boolean</td>
         <td>
-          Optional: Defaults to false (read/write). ReadOnly here will force the ReadOnly setting in VolumeMounts. More info: https://examples.k8s.io/volumes/cephfs/README.md#how-to-use-it<br/>
+          readOnly is Optional: Defaults to false (read/write). ReadOnly here will force the ReadOnly setting in VolumeMounts. More info: https://examples.k8s.io/volumes/cephfs/README.md#how-to-use-it<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>secretFile</b></td>
         <td>string</td>
         <td>
-          Optional: SecretFile is the path to key ring for User, default is /etc/ceph/user.secret More info: https://examples.k8s.io/volumes/cephfs/README.md#how-to-use-it<br/>
+          secretFile is Optional: SecretFile is the path to key ring for User, default is /etc/ceph/user.secret More info: https://examples.k8s.io/volumes/cephfs/README.md#how-to-use-it<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#cassandrabackupstatuscassdctemplatespecspecpodtemplatespecspecvolumesindexcephfssecretref">secretRef</a></b></td>
         <td>object</td>
         <td>
-          Optional: SecretRef is reference to the authentication secret for User, default is empty. More info: https://examples.k8s.io/volumes/cephfs/README.md#how-to-use-it<br/>
+          secretRef is Optional: SecretRef is reference to the authentication secret for User, default is empty. More info: https://examples.k8s.io/volumes/cephfs/README.md#how-to-use-it<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>user</b></td>
         <td>string</td>
         <td>
-          Optional: User is the rados user name, default is admin More info: https://examples.k8s.io/volumes/cephfs/README.md#how-to-use-it<br/>
+          user is optional: User is the rados user name, default is admin More info: https://examples.k8s.io/volumes/cephfs/README.md#how-to-use-it<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -47678,7 +43344,7 @@ CephFS represents a Ceph FS mount on the host that shares a pod's lifetime
 
 
 
-Optional: SecretRef is reference to the authentication secret for User, default is empty. More info: https://examples.k8s.io/volumes/cephfs/README.md#how-to-use-it
+secretRef is Optional: SecretRef is reference to the authentication secret for User, default is empty. More info: https://examples.k8s.io/volumes/cephfs/README.md#how-to-use-it
 
 <table>
     <thead>
@@ -47705,7 +43371,7 @@ Optional: SecretRef is reference to the authentication secret for User, default 
 
 
 
-Cinder represents a cinder volume attached and mounted on kubelets host machine. More info: https://examples.k8s.io/mysql-cinder-pd/README.md
+cinder represents a cinder volume attached and mounted on kubelets host machine. More info: https://examples.k8s.io/mysql-cinder-pd/README.md
 
 <table>
     <thead>
@@ -47720,28 +43386,28 @@ Cinder represents a cinder volume attached and mounted on kubelets host machine.
         <td><b>volumeID</b></td>
         <td>string</td>
         <td>
-          volume id used to identify the volume in cinder. More info: https://examples.k8s.io/mysql-cinder-pd/README.md<br/>
+          volumeID used to identify the volume in cinder. More info: https://examples.k8s.io/mysql-cinder-pd/README.md<br/>
         </td>
         <td>true</td>
       </tr><tr>
         <td><b>fsType</b></td>
         <td>string</td>
         <td>
-          Filesystem type to mount. Must be a filesystem type supported by the host operating system. Examples: "ext4", "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified. More info: https://examples.k8s.io/mysql-cinder-pd/README.md<br/>
+          fsType is the filesystem type to mount. Must be a filesystem type supported by the host operating system. Examples: "ext4", "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified. More info: https://examples.k8s.io/mysql-cinder-pd/README.md<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>readOnly</b></td>
         <td>boolean</td>
         <td>
-          Optional: Defaults to false (read/write). ReadOnly here will force the ReadOnly setting in VolumeMounts. More info: https://examples.k8s.io/mysql-cinder-pd/README.md<br/>
+          readOnly defaults to false (read/write). ReadOnly here will force the ReadOnly setting in VolumeMounts. More info: https://examples.k8s.io/mysql-cinder-pd/README.md<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#cassandrabackupstatuscassdctemplatespecspecpodtemplatespecspecvolumesindexcindersecretref">secretRef</a></b></td>
         <td>object</td>
         <td>
-          Optional: points to a secret object containing parameters used to connect to OpenStack.<br/>
+          secretRef is optional: points to a secret object containing parameters used to connect to OpenStack.<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -47753,7 +43419,7 @@ Cinder represents a cinder volume attached and mounted on kubelets host machine.
 
 
 
-Optional: points to a secret object containing parameters used to connect to OpenStack.
+secretRef is optional: points to a secret object containing parameters used to connect to OpenStack.
 
 <table>
     <thead>
@@ -47780,7 +43446,7 @@ Optional: points to a secret object containing parameters used to connect to Ope
 
 
 
-ConfigMap represents a configMap that should populate this volume
+configMap represents a configMap that should populate this volume
 
 <table>
     <thead>
@@ -47795,7 +43461,7 @@ ConfigMap represents a configMap that should populate this volume
         <td><b>defaultMode</b></td>
         <td>integer</td>
         <td>
-          Optional: mode bits used to set permissions on created files by default. Must be an octal value between 0000 and 0777 or a decimal value between 0 and 511. YAML accepts both octal and decimal values, JSON requires decimal values for mode bits. Defaults to 0644. Directories within the path are not affected by this setting. This might be in conflict with other options that affect the file mode, like fsGroup, and the result can be other mode bits set.<br/>
+          defaultMode is optional: mode bits used to set permissions on created files by default. Must be an octal value between 0000 and 0777 or a decimal value between 0 and 511. YAML accepts both octal and decimal values, JSON requires decimal values for mode bits. Defaults to 0644. Directories within the path are not affected by this setting. This might be in conflict with other options that affect the file mode, like fsGroup, and the result can be other mode bits set.<br/>
           <br/>
             <i>Format</i>: int32<br/>
         </td>
@@ -47804,7 +43470,7 @@ ConfigMap represents a configMap that should populate this volume
         <td><b><a href="#cassandrabackupstatuscassdctemplatespecspecpodtemplatespecspecvolumesindexconfigmapitemsindex">items</a></b></td>
         <td>[]object</td>
         <td>
-          If unspecified, each key-value pair in the Data field of the referenced ConfigMap will be projected into the volume as a file whose name is the key and content is the value. If specified, the listed keys will be projected into the specified paths, and unlisted keys will not be present. If a key is specified which is not present in the ConfigMap, the volume setup will error unless it is marked optional. Paths must be relative and may not contain the '..' path or start with '..'.<br/>
+          items if unspecified, each key-value pair in the Data field of the referenced ConfigMap will be projected into the volume as a file whose name is the key and content is the value. If specified, the listed keys will be projected into the specified paths, and unlisted keys will not be present. If a key is specified which is not present in the ConfigMap, the volume setup will error unless it is marked optional. Paths must be relative and may not contain the '..' path or start with '..'.<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -47818,7 +43484,7 @@ ConfigMap represents a configMap that should populate this volume
         <td><b>optional</b></td>
         <td>boolean</td>
         <td>
-          Specify whether the ConfigMap or its keys must be defined<br/>
+          optional specify whether the ConfigMap or its keys must be defined<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -47845,21 +43511,21 @@ Maps a string key to a path within a volume.
         <td><b>key</b></td>
         <td>string</td>
         <td>
-          The key to project.<br/>
+          key is the key to project.<br/>
         </td>
         <td>true</td>
       </tr><tr>
         <td><b>path</b></td>
         <td>string</td>
         <td>
-          The relative path of the file to map the key to. May not be an absolute path. May not contain the path element '..'. May not start with the string '..'.<br/>
+          path is the relative path of the file to map the key to. May not be an absolute path. May not contain the path element '..'. May not start with the string '..'.<br/>
         </td>
         <td>true</td>
       </tr><tr>
         <td><b>mode</b></td>
         <td>integer</td>
         <td>
-          Optional: mode bits used to set permissions on this file. Must be an octal value between 0000 and 0777 or a decimal value between 0 and 511. YAML accepts both octal and decimal values, JSON requires decimal values for mode bits. If not specified, the volume defaultMode will be used. This might be in conflict with other options that affect the file mode, like fsGroup, and the result can be other mode bits set.<br/>
+          mode is Optional: mode bits used to set permissions on this file. Must be an octal value between 0000 and 0777 or a decimal value between 0 and 511. YAML accepts both octal and decimal values, JSON requires decimal values for mode bits. If not specified, the volume defaultMode will be used. This might be in conflict with other options that affect the file mode, like fsGroup, and the result can be other mode bits set.<br/>
           <br/>
             <i>Format</i>: int32<br/>
         </td>
@@ -47873,7 +43539,7 @@ Maps a string key to a path within a volume.
 
 
 
-CSI (Container Storage Interface) represents ephemeral storage that is handled by certain external CSI drivers (Beta feature).
+csi (Container Storage Interface) represents ephemeral storage that is handled by certain external CSI drivers (Beta feature).
 
 <table>
     <thead>
@@ -47888,35 +43554,35 @@ CSI (Container Storage Interface) represents ephemeral storage that is handled b
         <td><b>driver</b></td>
         <td>string</td>
         <td>
-          Driver is the name of the CSI driver that handles this volume. Consult with your admin for the correct name as registered in the cluster.<br/>
+          driver is the name of the CSI driver that handles this volume. Consult with your admin for the correct name as registered in the cluster.<br/>
         </td>
         <td>true</td>
       </tr><tr>
         <td><b>fsType</b></td>
         <td>string</td>
         <td>
-          Filesystem type to mount. Ex. "ext4", "xfs", "ntfs". If not provided, the empty value is passed to the associated CSI driver which will determine the default filesystem to apply.<br/>
+          fsType to mount. Ex. "ext4", "xfs", "ntfs". If not provided, the empty value is passed to the associated CSI driver which will determine the default filesystem to apply.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#cassandrabackupstatuscassdctemplatespecspecpodtemplatespecspecvolumesindexcsinodepublishsecretref">nodePublishSecretRef</a></b></td>
         <td>object</td>
         <td>
-          NodePublishSecretRef is a reference to the secret object containing sensitive information to pass to the CSI driver to complete the CSI NodePublishVolume and NodeUnpublishVolume calls. This field is optional, and  may be empty if no secret is required. If the secret object contains more than one secret, all secret references are passed.<br/>
+          nodePublishSecretRef is a reference to the secret object containing sensitive information to pass to the CSI driver to complete the CSI NodePublishVolume and NodeUnpublishVolume calls. This field is optional, and  may be empty if no secret is required. If the secret object contains more than one secret, all secret references are passed.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>readOnly</b></td>
         <td>boolean</td>
         <td>
-          Specifies a read-only configuration for the volume. Defaults to false (read/write).<br/>
+          readOnly specifies a read-only configuration for the volume. Defaults to false (read/write).<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>volumeAttributes</b></td>
         <td>map[string]string</td>
         <td>
-          VolumeAttributes stores driver-specific properties that are passed to the CSI driver. Consult your driver's documentation for supported values.<br/>
+          volumeAttributes stores driver-specific properties that are passed to the CSI driver. Consult your driver's documentation for supported values.<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -47928,7 +43594,7 @@ CSI (Container Storage Interface) represents ephemeral storage that is handled b
 
 
 
-NodePublishSecretRef is a reference to the secret object containing sensitive information to pass to the CSI driver to complete the CSI NodePublishVolume and NodeUnpublishVolume calls. This field is optional, and  may be empty if no secret is required. If the secret object contains more than one secret, all secret references are passed.
+nodePublishSecretRef is a reference to the secret object containing sensitive information to pass to the CSI driver to complete the CSI NodePublishVolume and NodeUnpublishVolume calls. This field is optional, and  may be empty if no secret is required. If the secret object contains more than one secret, all secret references are passed.
 
 <table>
     <thead>
@@ -47955,7 +43621,7 @@ NodePublishSecretRef is a reference to the secret object containing sensitive in
 
 
 
-DownwardAPI represents downward API about the pod that should populate this volume
+downwardAPI represents downward API about the pod that should populate this volume
 
 <table>
     <thead>
@@ -48116,7 +43782,7 @@ Selects a resource of the container: only resources limits and requests (limits.
 
 
 
-EmptyDir represents a temporary directory that shares a pod's lifetime. More info: https://kubernetes.io/docs/concepts/storage/volumes#emptydir
+emptyDir represents a temporary directory that shares a pod's lifetime. More info: https://kubernetes.io/docs/concepts/storage/volumes#emptydir
 
 <table>
     <thead>
@@ -48131,14 +43797,14 @@ EmptyDir represents a temporary directory that shares a pod's lifetime. More inf
         <td><b>medium</b></td>
         <td>string</td>
         <td>
-          What type of storage medium should back this directory. The default is "" which means to use the node's default medium. Must be an empty string (default) or Memory. More info: https://kubernetes.io/docs/concepts/storage/volumes#emptydir<br/>
+          medium represents what type of storage medium should back this directory. The default is "" which means to use the node's default medium. Must be an empty string (default) or Memory. More info: https://kubernetes.io/docs/concepts/storage/volumes#emptydir<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>sizeLimit</b></td>
         <td>int or string</td>
         <td>
-          Total amount of local storage required for this EmptyDir volume. The size limit is also applicable for memory medium. The maximum usage on memory medium EmptyDir would be the minimum value between the SizeLimit specified here and the sum of memory limits of all containers in a pod. The default is nil which means that the limit is undefined. More info: http://kubernetes.io/docs/user-guide/volumes#emptydir<br/>
+          sizeLimit is the total amount of local storage required for this EmptyDir volume. The size limit is also applicable for memory medium. The maximum usage on memory medium EmptyDir would be the minimum value between the SizeLimit specified here and the sum of memory limits of all containers in a pod. The default is nil which means that the limit is undefined. More info: http://kubernetes.io/docs/user-guide/volumes#emptydir<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -48150,7 +43816,7 @@ EmptyDir represents a temporary directory that shares a pod's lifetime. More inf
 
 
 
-Ephemeral represents a volume that is handled by a cluster storage driver. The volume's lifecycle is tied to the pod that defines it - it will be created before the pod starts, and deleted when the pod is removed. 
+ephemeral represents a volume that is handled by a cluster storage driver. The volume's lifecycle is tied to the pod that defines it - it will be created before the pod starts, and deleted when the pod is removed. 
  Use this if: a) the volume is only needed while the pod runs, b) features of normal volumes like restoring from snapshot or capacity tracking are needed, c) the storage driver is specified through a storage class, and d) the storage driver supports dynamic volume provisioning through a PersistentVolumeClaim (see EphemeralVolumeSource for more information on the connection between this volume type and PersistentVolumeClaim). 
  Use PersistentVolumeClaim or one of the vendor-specific APIs for volumes that persist for longer than the lifecycle of an individual pod. 
  Use CSI for light-weight local ephemeral volumes if the CSI driver is meant to be used that way - see the documentation of the driver for more information. 
@@ -48236,42 +43902,42 @@ The specification for the PersistentVolumeClaim. The entire content is copied un
         <td><b>accessModes</b></td>
         <td>[]string</td>
         <td>
-          AccessModes contains the desired access modes the volume should have. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#access-modes-1<br/>
+          accessModes contains the desired access modes the volume should have. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#access-modes-1<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#cassandrabackupstatuscassdctemplatespecspecpodtemplatespecspecvolumesindexephemeralvolumeclaimtemplatespecdatasource">dataSource</a></b></td>
         <td>object</td>
         <td>
-          This field can be used to specify either: * An existing VolumeSnapshot object (snapshot.storage.k8s.io/VolumeSnapshot) * An existing PVC (PersistentVolumeClaim) If the provisioner or an external controller can support the specified data source, it will create a new volume based on the contents of the specified data source. If the AnyVolumeDataSource feature gate is enabled, this field will always have the same contents as the DataSourceRef field.<br/>
+          dataSource field can be used to specify either: * An existing VolumeSnapshot object (snapshot.storage.k8s.io/VolumeSnapshot) * An existing PVC (PersistentVolumeClaim) If the provisioner or an external controller can support the specified data source, it will create a new volume based on the contents of the specified data source. If the AnyVolumeDataSource feature gate is enabled, this field will always have the same contents as the DataSourceRef field.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#cassandrabackupstatuscassdctemplatespecspecpodtemplatespecspecvolumesindexephemeralvolumeclaimtemplatespecdatasourceref">dataSourceRef</a></b></td>
         <td>object</td>
         <td>
-          Specifies the object from which to populate the volume with data, if a non-empty volume is desired. This may be any local object from a non-empty API group (non core object) or a PersistentVolumeClaim object. When this field is specified, volume binding will only succeed if the type of the specified object matches some installed volume populator or dynamic provisioner. This field will replace the functionality of the DataSource field and as such if both fields are non-empty, they must have the same value. For backwards compatibility, both fields (DataSource and DataSourceRef) will be set to the same value automatically if one of them is empty and the other is non-empty. There are two important differences between DataSource and DataSourceRef: * While DataSource only allows two specific types of objects, DataSourceRef allows any non-core object, as well as PersistentVolumeClaim objects. * While DataSource ignores disallowed values (dropping them), DataSourceRef preserves all values, and generates an error if a disallowed value is specified. (Alpha) Using this field requires the AnyVolumeDataSource feature gate to be enabled.<br/>
+          dataSourceRef specifies the object from which to populate the volume with data, if a non-empty volume is desired. This may be any local object from a non-empty API group (non core object) or a PersistentVolumeClaim object. When this field is specified, volume binding will only succeed if the type of the specified object matches some installed volume populator or dynamic provisioner. This field will replace the functionality of the DataSource field and as such if both fields are non-empty, they must have the same value. For backwards compatibility, both fields (DataSource and DataSourceRef) will be set to the same value automatically if one of them is empty and the other is non-empty. There are two important differences between DataSource and DataSourceRef: * While DataSource only allows two specific types of objects, DataSourceRef allows any non-core object, as well as PersistentVolumeClaim objects. * While DataSource ignores disallowed values (dropping them), DataSourceRef preserves all values, and generates an error if a disallowed value is specified. (Beta) Using this field requires the AnyVolumeDataSource feature gate to be enabled.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#cassandrabackupstatuscassdctemplatespecspecpodtemplatespecspecvolumesindexephemeralvolumeclaimtemplatespecresources">resources</a></b></td>
         <td>object</td>
         <td>
-          Resources represents the minimum resources the volume should have. If RecoverVolumeExpansionFailure feature is enabled users are allowed to specify resource requirements that are lower than previous value but must still be higher than capacity recorded in the status field of the claim. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#resources<br/>
+          resources represents the minimum resources the volume should have. If RecoverVolumeExpansionFailure feature is enabled users are allowed to specify resource requirements that are lower than previous value but must still be higher than capacity recorded in the status field of the claim. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#resources<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#cassandrabackupstatuscassdctemplatespecspecpodtemplatespecspecvolumesindexephemeralvolumeclaimtemplatespecselector">selector</a></b></td>
         <td>object</td>
         <td>
-          A label query over volumes to consider for binding.<br/>
+          selector is a label query over volumes to consider for binding.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>storageClassName</b></td>
         <td>string</td>
         <td>
-          Name of the StorageClass required by the claim. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#class-1<br/>
+          storageClassName is the name of the StorageClass required by the claim. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#class-1<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -48285,7 +43951,7 @@ The specification for the PersistentVolumeClaim. The entire content is copied un
         <td><b>volumeName</b></td>
         <td>string</td>
         <td>
-          VolumeName is the binding reference to the PersistentVolume backing this claim.<br/>
+          volumeName is the binding reference to the PersistentVolume backing this claim.<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -48297,7 +43963,7 @@ The specification for the PersistentVolumeClaim. The entire content is copied un
 
 
 
-This field can be used to specify either: * An existing VolumeSnapshot object (snapshot.storage.k8s.io/VolumeSnapshot) * An existing PVC (PersistentVolumeClaim) If the provisioner or an external controller can support the specified data source, it will create a new volume based on the contents of the specified data source. If the AnyVolumeDataSource feature gate is enabled, this field will always have the same contents as the DataSourceRef field.
+dataSource field can be used to specify either: * An existing VolumeSnapshot object (snapshot.storage.k8s.io/VolumeSnapshot) * An existing PVC (PersistentVolumeClaim) If the provisioner or an external controller can support the specified data source, it will create a new volume based on the contents of the specified data source. If the AnyVolumeDataSource feature gate is enabled, this field will always have the same contents as the DataSourceRef field.
 
 <table>
     <thead>
@@ -48338,7 +44004,7 @@ This field can be used to specify either: * An existing VolumeSnapshot object (s
 
 
 
-Specifies the object from which to populate the volume with data, if a non-empty volume is desired. This may be any local object from a non-empty API group (non core object) or a PersistentVolumeClaim object. When this field is specified, volume binding will only succeed if the type of the specified object matches some installed volume populator or dynamic provisioner. This field will replace the functionality of the DataSource field and as such if both fields are non-empty, they must have the same value. For backwards compatibility, both fields (DataSource and DataSourceRef) will be set to the same value automatically if one of them is empty and the other is non-empty. There are two important differences between DataSource and DataSourceRef: * While DataSource only allows two specific types of objects, DataSourceRef allows any non-core object, as well as PersistentVolumeClaim objects. * While DataSource ignores disallowed values (dropping them), DataSourceRef preserves all values, and generates an error if a disallowed value is specified. (Alpha) Using this field requires the AnyVolumeDataSource feature gate to be enabled.
+dataSourceRef specifies the object from which to populate the volume with data, if a non-empty volume is desired. This may be any local object from a non-empty API group (non core object) or a PersistentVolumeClaim object. When this field is specified, volume binding will only succeed if the type of the specified object matches some installed volume populator or dynamic provisioner. This field will replace the functionality of the DataSource field and as such if both fields are non-empty, they must have the same value. For backwards compatibility, both fields (DataSource and DataSourceRef) will be set to the same value automatically if one of them is empty and the other is non-empty. There are two important differences between DataSource and DataSourceRef: * While DataSource only allows two specific types of objects, DataSourceRef allows any non-core object, as well as PersistentVolumeClaim objects. * While DataSource ignores disallowed values (dropping them), DataSourceRef preserves all values, and generates an error if a disallowed value is specified. (Beta) Using this field requires the AnyVolumeDataSource feature gate to be enabled.
 
 <table>
     <thead>
@@ -48379,7 +44045,7 @@ Specifies the object from which to populate the volume with data, if a non-empty
 
 
 
-Resources represents the minimum resources the volume should have. If RecoverVolumeExpansionFailure feature is enabled users are allowed to specify resource requirements that are lower than previous value but must still be higher than capacity recorded in the status field of the claim. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#resources
+resources represents the minimum resources the volume should have. If RecoverVolumeExpansionFailure feature is enabled users are allowed to specify resource requirements that are lower than previous value but must still be higher than capacity recorded in the status field of the claim. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#resources
 
 <table>
     <thead>
@@ -48413,7 +44079,7 @@ Resources represents the minimum resources the volume should have. If RecoverVol
 
 
 
-A label query over volumes to consider for binding.
+selector is a label query over volumes to consider for binding.
 
 <table>
     <thead>
@@ -48488,7 +44154,7 @@ A label selector requirement is a selector that contains values, a key, and an o
 
 
 
-FC represents a Fibre Channel resource that is attached to a kubelet's host machine and then exposed to the pod.
+fc represents a Fibre Channel resource that is attached to a kubelet's host machine and then exposed to the pod.
 
 <table>
     <thead>
@@ -48503,14 +44169,14 @@ FC represents a Fibre Channel resource that is attached to a kubelet's host mach
         <td><b>fsType</b></td>
         <td>string</td>
         <td>
-          Filesystem type to mount. Must be a filesystem type supported by the host operating system. Ex. "ext4", "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified. TODO: how do we prevent errors in the filesystem from compromising the machine<br/>
+          fsType is the filesystem type to mount. Must be a filesystem type supported by the host operating system. Ex. "ext4", "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified. TODO: how do we prevent errors in the filesystem from compromising the machine<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>lun</b></td>
         <td>integer</td>
         <td>
-          Optional: FC target lun number<br/>
+          lun is Optional: FC target lun number<br/>
           <br/>
             <i>Format</i>: int32<br/>
         </td>
@@ -48519,21 +44185,21 @@ FC represents a Fibre Channel resource that is attached to a kubelet's host mach
         <td><b>readOnly</b></td>
         <td>boolean</td>
         <td>
-          Optional: Defaults to false (read/write). ReadOnly here will force the ReadOnly setting in VolumeMounts.<br/>
+          readOnly is Optional: Defaults to false (read/write). ReadOnly here will force the ReadOnly setting in VolumeMounts.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>targetWWNs</b></td>
         <td>[]string</td>
         <td>
-          Optional: FC target worldwide names (WWNs)<br/>
+          targetWWNs is Optional: FC target worldwide names (WWNs)<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>wwids</b></td>
         <td>[]string</td>
         <td>
-          Optional: FC volume world wide identifiers (wwids) Either wwids or combination of targetWWNs and lun must be set, but not both simultaneously.<br/>
+          wwids Optional: FC volume world wide identifiers (wwids) Either wwids or combination of targetWWNs and lun must be set, but not both simultaneously.<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -48545,7 +44211,7 @@ FC represents a Fibre Channel resource that is attached to a kubelet's host mach
 
 
 
-FlexVolume represents a generic volume resource that is provisioned/attached using an exec based plugin.
+flexVolume represents a generic volume resource that is provisioned/attached using an exec based plugin.
 
 <table>
     <thead>
@@ -48560,35 +44226,35 @@ FlexVolume represents a generic volume resource that is provisioned/attached usi
         <td><b>driver</b></td>
         <td>string</td>
         <td>
-          Driver is the name of the driver to use for this volume.<br/>
+          driver is the name of the driver to use for this volume.<br/>
         </td>
         <td>true</td>
       </tr><tr>
         <td><b>fsType</b></td>
         <td>string</td>
         <td>
-          Filesystem type to mount. Must be a filesystem type supported by the host operating system. Ex. "ext4", "xfs", "ntfs". The default filesystem depends on FlexVolume script.<br/>
+          fsType is the filesystem type to mount. Must be a filesystem type supported by the host operating system. Ex. "ext4", "xfs", "ntfs". The default filesystem depends on FlexVolume script.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>options</b></td>
         <td>map[string]string</td>
         <td>
-          Optional: Extra command options if any.<br/>
+          options is Optional: this field holds extra command options if any.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>readOnly</b></td>
         <td>boolean</td>
         <td>
-          Optional: Defaults to false (read/write). ReadOnly here will force the ReadOnly setting in VolumeMounts.<br/>
+          readOnly is Optional: defaults to false (read/write). ReadOnly here will force the ReadOnly setting in VolumeMounts.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#cassandrabackupstatuscassdctemplatespecspecpodtemplatespecspecvolumesindexflexvolumesecretref">secretRef</a></b></td>
         <td>object</td>
         <td>
-          Optional: SecretRef is reference to the secret object containing sensitive information to pass to the plugin scripts. This may be empty if no secret object is specified. If the secret object contains more than one secret, all secrets are passed to the plugin scripts.<br/>
+          secretRef is Optional: secretRef is reference to the secret object containing sensitive information to pass to the plugin scripts. This may be empty if no secret object is specified. If the secret object contains more than one secret, all secrets are passed to the plugin scripts.<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -48600,7 +44266,7 @@ FlexVolume represents a generic volume resource that is provisioned/attached usi
 
 
 
-Optional: SecretRef is reference to the secret object containing sensitive information to pass to the plugin scripts. This may be empty if no secret object is specified. If the secret object contains more than one secret, all secrets are passed to the plugin scripts.
+secretRef is Optional: secretRef is reference to the secret object containing sensitive information to pass to the plugin scripts. This may be empty if no secret object is specified. If the secret object contains more than one secret, all secrets are passed to the plugin scripts.
 
 <table>
     <thead>
@@ -48627,7 +44293,7 @@ Optional: SecretRef is reference to the secret object containing sensitive infor
 
 
 
-Flocker represents a Flocker volume attached to a kubelet's host machine. This depends on the Flocker control service being running
+flocker represents a Flocker volume attached to a kubelet's host machine. This depends on the Flocker control service being running
 
 <table>
     <thead>
@@ -48642,14 +44308,14 @@ Flocker represents a Flocker volume attached to a kubelet's host machine. This d
         <td><b>datasetName</b></td>
         <td>string</td>
         <td>
-          Name of the dataset stored as metadata -> name on the dataset for Flocker should be considered as deprecated<br/>
+          datasetName is Name of the dataset stored as metadata -> name on the dataset for Flocker should be considered as deprecated<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>datasetUUID</b></td>
         <td>string</td>
         <td>
-          UUID of the dataset. This is unique identifier of a Flocker dataset<br/>
+          datasetUUID is the UUID of the dataset. This is unique identifier of a Flocker dataset<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -48661,7 +44327,7 @@ Flocker represents a Flocker volume attached to a kubelet's host machine. This d
 
 
 
-GCEPersistentDisk represents a GCE Disk resource that is attached to a kubelet's host machine and then exposed to the pod. More info: https://kubernetes.io/docs/concepts/storage/volumes#gcepersistentdisk
+gcePersistentDisk represents a GCE Disk resource that is attached to a kubelet's host machine and then exposed to the pod. More info: https://kubernetes.io/docs/concepts/storage/volumes#gcepersistentdisk
 
 <table>
     <thead>
@@ -48676,21 +44342,21 @@ GCEPersistentDisk represents a GCE Disk resource that is attached to a kubelet's
         <td><b>pdName</b></td>
         <td>string</td>
         <td>
-          Unique name of the PD resource in GCE. Used to identify the disk in GCE. More info: https://kubernetes.io/docs/concepts/storage/volumes#gcepersistentdisk<br/>
+          pdName is unique name of the PD resource in GCE. Used to identify the disk in GCE. More info: https://kubernetes.io/docs/concepts/storage/volumes#gcepersistentdisk<br/>
         </td>
         <td>true</td>
       </tr><tr>
         <td><b>fsType</b></td>
         <td>string</td>
         <td>
-          Filesystem type of the volume that you want to mount. Tip: Ensure that the filesystem type is supported by the host operating system. Examples: "ext4", "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified. More info: https://kubernetes.io/docs/concepts/storage/volumes#gcepersistentdisk TODO: how do we prevent errors in the filesystem from compromising the machine<br/>
+          fsType is filesystem type of the volume that you want to mount. Tip: Ensure that the filesystem type is supported by the host operating system. Examples: "ext4", "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified. More info: https://kubernetes.io/docs/concepts/storage/volumes#gcepersistentdisk TODO: how do we prevent errors in the filesystem from compromising the machine<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>partition</b></td>
         <td>integer</td>
         <td>
-          The partition in the volume that you want to mount. If omitted, the default is to mount by volume name. Examples: For volume /dev/sda1, you specify the partition as "1". Similarly, the volume partition for /dev/sda is "0" (or you can leave the property empty). More info: https://kubernetes.io/docs/concepts/storage/volumes#gcepersistentdisk<br/>
+          partition is the partition in the volume that you want to mount. If omitted, the default is to mount by volume name. Examples: For volume /dev/sda1, you specify the partition as "1". Similarly, the volume partition for /dev/sda is "0" (or you can leave the property empty). More info: https://kubernetes.io/docs/concepts/storage/volumes#gcepersistentdisk<br/>
           <br/>
             <i>Format</i>: int32<br/>
         </td>
@@ -48699,7 +44365,7 @@ GCEPersistentDisk represents a GCE Disk resource that is attached to a kubelet's
         <td><b>readOnly</b></td>
         <td>boolean</td>
         <td>
-          ReadOnly here will force the ReadOnly setting in VolumeMounts. Defaults to false. More info: https://kubernetes.io/docs/concepts/storage/volumes#gcepersistentdisk<br/>
+          readOnly here will force the ReadOnly setting in VolumeMounts. Defaults to false. More info: https://kubernetes.io/docs/concepts/storage/volumes#gcepersistentdisk<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -48711,7 +44377,7 @@ GCEPersistentDisk represents a GCE Disk resource that is attached to a kubelet's
 
 
 
-GitRepo represents a git repository at a particular revision. DEPRECATED: GitRepo is deprecated. To provision a container with a git repo, mount an EmptyDir into an InitContainer that clones the repo using git, then mount the EmptyDir into the Pod's container.
+gitRepo represents a git repository at a particular revision. DEPRECATED: GitRepo is deprecated. To provision a container with a git repo, mount an EmptyDir into an InitContainer that clones the repo using git, then mount the EmptyDir into the Pod's container.
 
 <table>
     <thead>
@@ -48726,21 +44392,21 @@ GitRepo represents a git repository at a particular revision. DEPRECATED: GitRep
         <td><b>repository</b></td>
         <td>string</td>
         <td>
-          Repository URL<br/>
+          repository is the URL<br/>
         </td>
         <td>true</td>
       </tr><tr>
         <td><b>directory</b></td>
         <td>string</td>
         <td>
-          Target directory name. Must not contain or start with '..'.  If '.' is supplied, the volume directory will be the git repository.  Otherwise, if specified, the volume will contain the git repository in the subdirectory with the given name.<br/>
+          directory is the target directory name. Must not contain or start with '..'.  If '.' is supplied, the volume directory will be the git repository.  Otherwise, if specified, the volume will contain the git repository in the subdirectory with the given name.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>revision</b></td>
         <td>string</td>
         <td>
-          Commit hash for the specified revision.<br/>
+          revision is the commit hash for the specified revision.<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -48752,7 +44418,7 @@ GitRepo represents a git repository at a particular revision. DEPRECATED: GitRep
 
 
 
-Glusterfs represents a Glusterfs mount on the host that shares a pod's lifetime. More info: https://examples.k8s.io/volumes/glusterfs/README.md
+glusterfs represents a Glusterfs mount on the host that shares a pod's lifetime. More info: https://examples.k8s.io/volumes/glusterfs/README.md
 
 <table>
     <thead>
@@ -48767,21 +44433,21 @@ Glusterfs represents a Glusterfs mount on the host that shares a pod's lifetime.
         <td><b>endpoints</b></td>
         <td>string</td>
         <td>
-          EndpointsName is the endpoint name that details Glusterfs topology. More info: https://examples.k8s.io/volumes/glusterfs/README.md#create-a-pod<br/>
+          endpoints is the endpoint name that details Glusterfs topology. More info: https://examples.k8s.io/volumes/glusterfs/README.md#create-a-pod<br/>
         </td>
         <td>true</td>
       </tr><tr>
         <td><b>path</b></td>
         <td>string</td>
         <td>
-          Path is the Glusterfs volume path. More info: https://examples.k8s.io/volumes/glusterfs/README.md#create-a-pod<br/>
+          path is the Glusterfs volume path. More info: https://examples.k8s.io/volumes/glusterfs/README.md#create-a-pod<br/>
         </td>
         <td>true</td>
       </tr><tr>
         <td><b>readOnly</b></td>
         <td>boolean</td>
         <td>
-          ReadOnly here will force the Glusterfs volume to be mounted with read-only permissions. Defaults to false. More info: https://examples.k8s.io/volumes/glusterfs/README.md#create-a-pod<br/>
+          readOnly here will force the Glusterfs volume to be mounted with read-only permissions. Defaults to false. More info: https://examples.k8s.io/volumes/glusterfs/README.md#create-a-pod<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -48793,7 +44459,7 @@ Glusterfs represents a Glusterfs mount on the host that shares a pod's lifetime.
 
 
 
-HostPath represents a pre-existing file or directory on the host machine that is directly exposed to the container. This is generally used for system agents or other privileged things that are allowed to see the host machine. Most containers will NOT need this. More info: https://kubernetes.io/docs/concepts/storage/volumes#hostpath --- TODO(jonesdl) We need to restrict who can use host directory mounts and who can/can not mount host directories as read/write.
+hostPath represents a pre-existing file or directory on the host machine that is directly exposed to the container. This is generally used for system agents or other privileged things that are allowed to see the host machine. Most containers will NOT need this. More info: https://kubernetes.io/docs/concepts/storage/volumes#hostpath --- TODO(jonesdl) We need to restrict who can use host directory mounts and who can/can not mount host directories as read/write.
 
 <table>
     <thead>
@@ -48808,14 +44474,14 @@ HostPath represents a pre-existing file or directory on the host machine that is
         <td><b>path</b></td>
         <td>string</td>
         <td>
-          Path of the directory on the host. If the path is a symlink, it will follow the link to the real path. More info: https://kubernetes.io/docs/concepts/storage/volumes#hostpath<br/>
+          path of the directory on the host. If the path is a symlink, it will follow the link to the real path. More info: https://kubernetes.io/docs/concepts/storage/volumes#hostpath<br/>
         </td>
         <td>true</td>
       </tr><tr>
         <td><b>type</b></td>
         <td>string</td>
         <td>
-          Type for HostPath Volume Defaults to "" More info: https://kubernetes.io/docs/concepts/storage/volumes#hostpath<br/>
+          type for HostPath Volume Defaults to "" More info: https://kubernetes.io/docs/concepts/storage/volumes#hostpath<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -48827,7 +44493,7 @@ HostPath represents a pre-existing file or directory on the host machine that is
 
 
 
-ISCSI represents an ISCSI Disk resource that is attached to a kubelet's host machine and then exposed to the pod. More info: https://examples.k8s.io/volumes/iscsi/README.md
+iscsi represents an ISCSI Disk resource that is attached to a kubelet's host machine and then exposed to the pod. More info: https://examples.k8s.io/volumes/iscsi/README.md
 
 <table>
     <thead>
@@ -48842,14 +44508,14 @@ ISCSI represents an ISCSI Disk resource that is attached to a kubelet's host mac
         <td><b>iqn</b></td>
         <td>string</td>
         <td>
-          Target iSCSI Qualified Name.<br/>
+          iqn is the target iSCSI Qualified Name.<br/>
         </td>
         <td>true</td>
       </tr><tr>
         <td><b>lun</b></td>
         <td>integer</td>
         <td>
-          iSCSI Target Lun number.<br/>
+          lun represents iSCSI Target Lun number.<br/>
           <br/>
             <i>Format</i>: int32<br/>
         </td>
@@ -48858,63 +44524,63 @@ ISCSI represents an ISCSI Disk resource that is attached to a kubelet's host mac
         <td><b>targetPortal</b></td>
         <td>string</td>
         <td>
-          iSCSI Target Portal. The Portal is either an IP or ip_addr:port if the port is other than default (typically TCP ports 860 and 3260).<br/>
+          targetPortal is iSCSI Target Portal. The Portal is either an IP or ip_addr:port if the port is other than default (typically TCP ports 860 and 3260).<br/>
         </td>
         <td>true</td>
       </tr><tr>
         <td><b>chapAuthDiscovery</b></td>
         <td>boolean</td>
         <td>
-          whether support iSCSI Discovery CHAP authentication<br/>
+          chapAuthDiscovery defines whether support iSCSI Discovery CHAP authentication<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>chapAuthSession</b></td>
         <td>boolean</td>
         <td>
-          whether support iSCSI Session CHAP authentication<br/>
+          chapAuthSession defines whether support iSCSI Session CHAP authentication<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>fsType</b></td>
         <td>string</td>
         <td>
-          Filesystem type of the volume that you want to mount. Tip: Ensure that the filesystem type is supported by the host operating system. Examples: "ext4", "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified. More info: https://kubernetes.io/docs/concepts/storage/volumes#iscsi TODO: how do we prevent errors in the filesystem from compromising the machine<br/>
+          fsType is the filesystem type of the volume that you want to mount. Tip: Ensure that the filesystem type is supported by the host operating system. Examples: "ext4", "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified. More info: https://kubernetes.io/docs/concepts/storage/volumes#iscsi TODO: how do we prevent errors in the filesystem from compromising the machine<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>initiatorName</b></td>
         <td>string</td>
         <td>
-          Custom iSCSI Initiator Name. If initiatorName is specified with iscsiInterface simultaneously, new iSCSI interface <target portal>:<volume name> will be created for the connection.<br/>
+          initiatorName is the custom iSCSI Initiator Name. If initiatorName is specified with iscsiInterface simultaneously, new iSCSI interface <target portal>:<volume name> will be created for the connection.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>iscsiInterface</b></td>
         <td>string</td>
         <td>
-          iSCSI Interface Name that uses an iSCSI transport. Defaults to 'default' (tcp).<br/>
+          iscsiInterface is the interface Name that uses an iSCSI transport. Defaults to 'default' (tcp).<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>portals</b></td>
         <td>[]string</td>
         <td>
-          iSCSI Target Portal List. The portal is either an IP or ip_addr:port if the port is other than default (typically TCP ports 860 and 3260).<br/>
+          portals is the iSCSI Target Portal List. The portal is either an IP or ip_addr:port if the port is other than default (typically TCP ports 860 and 3260).<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>readOnly</b></td>
         <td>boolean</td>
         <td>
-          ReadOnly here will force the ReadOnly setting in VolumeMounts. Defaults to false.<br/>
+          readOnly here will force the ReadOnly setting in VolumeMounts. Defaults to false.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#cassandrabackupstatuscassdctemplatespecspecpodtemplatespecspecvolumesindexiscsisecretref">secretRef</a></b></td>
         <td>object</td>
         <td>
-          CHAP Secret for iSCSI target and initiator authentication<br/>
+          secretRef is the CHAP Secret for iSCSI target and initiator authentication<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -48926,7 +44592,7 @@ ISCSI represents an ISCSI Disk resource that is attached to a kubelet's host mac
 
 
 
-CHAP Secret for iSCSI target and initiator authentication
+secretRef is the CHAP Secret for iSCSI target and initiator authentication
 
 <table>
     <thead>
@@ -48953,7 +44619,7 @@ CHAP Secret for iSCSI target and initiator authentication
 
 
 
-NFS represents an NFS mount on the host that shares a pod's lifetime More info: https://kubernetes.io/docs/concepts/storage/volumes#nfs
+nfs represents an NFS mount on the host that shares a pod's lifetime More info: https://kubernetes.io/docs/concepts/storage/volumes#nfs
 
 <table>
     <thead>
@@ -48968,21 +44634,21 @@ NFS represents an NFS mount on the host that shares a pod's lifetime More info: 
         <td><b>path</b></td>
         <td>string</td>
         <td>
-          Path that is exported by the NFS server. More info: https://kubernetes.io/docs/concepts/storage/volumes#nfs<br/>
+          path that is exported by the NFS server. More info: https://kubernetes.io/docs/concepts/storage/volumes#nfs<br/>
         </td>
         <td>true</td>
       </tr><tr>
         <td><b>server</b></td>
         <td>string</td>
         <td>
-          Server is the hostname or IP address of the NFS server. More info: https://kubernetes.io/docs/concepts/storage/volumes#nfs<br/>
+          server is the hostname or IP address of the NFS server. More info: https://kubernetes.io/docs/concepts/storage/volumes#nfs<br/>
         </td>
         <td>true</td>
       </tr><tr>
         <td><b>readOnly</b></td>
         <td>boolean</td>
         <td>
-          ReadOnly here will force the NFS export to be mounted with read-only permissions. Defaults to false. More info: https://kubernetes.io/docs/concepts/storage/volumes#nfs<br/>
+          readOnly here will force the NFS export to be mounted with read-only permissions. Defaults to false. More info: https://kubernetes.io/docs/concepts/storage/volumes#nfs<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -48994,7 +44660,7 @@ NFS represents an NFS mount on the host that shares a pod's lifetime More info: 
 
 
 
-PersistentVolumeClaimVolumeSource represents a reference to a PersistentVolumeClaim in the same namespace. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#persistentvolumeclaims
+persistentVolumeClaimVolumeSource represents a reference to a PersistentVolumeClaim in the same namespace. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#persistentvolumeclaims
 
 <table>
     <thead>
@@ -49009,14 +44675,14 @@ PersistentVolumeClaimVolumeSource represents a reference to a PersistentVolumeCl
         <td><b>claimName</b></td>
         <td>string</td>
         <td>
-          ClaimName is the name of a PersistentVolumeClaim in the same namespace as the pod using this volume. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#persistentvolumeclaims<br/>
+          claimName is the name of a PersistentVolumeClaim in the same namespace as the pod using this volume. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#persistentvolumeclaims<br/>
         </td>
         <td>true</td>
       </tr><tr>
         <td><b>readOnly</b></td>
         <td>boolean</td>
         <td>
-          Will force the ReadOnly setting in VolumeMounts. Default false.<br/>
+          readOnly Will force the ReadOnly setting in VolumeMounts. Default false.<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -49028,7 +44694,7 @@ PersistentVolumeClaimVolumeSource represents a reference to a PersistentVolumeCl
 
 
 
-PhotonPersistentDisk represents a PhotonController persistent disk attached and mounted on kubelets host machine
+photonPersistentDisk represents a PhotonController persistent disk attached and mounted on kubelets host machine
 
 <table>
     <thead>
@@ -49043,14 +44709,14 @@ PhotonPersistentDisk represents a PhotonController persistent disk attached and 
         <td><b>pdID</b></td>
         <td>string</td>
         <td>
-          ID that identifies Photon Controller persistent disk<br/>
+          pdID is the ID that identifies Photon Controller persistent disk<br/>
         </td>
         <td>true</td>
       </tr><tr>
         <td><b>fsType</b></td>
         <td>string</td>
         <td>
-          Filesystem type to mount. Must be a filesystem type supported by the host operating system. Ex. "ext4", "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified.<br/>
+          fsType is the filesystem type to mount. Must be a filesystem type supported by the host operating system. Ex. "ext4", "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified.<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -49062,7 +44728,7 @@ PhotonPersistentDisk represents a PhotonController persistent disk attached and 
 
 
 
-PortworxVolume represents a portworx volume attached and mounted on kubelets host machine
+portworxVolume represents a portworx volume attached and mounted on kubelets host machine
 
 <table>
     <thead>
@@ -49077,21 +44743,21 @@ PortworxVolume represents a portworx volume attached and mounted on kubelets hos
         <td><b>volumeID</b></td>
         <td>string</td>
         <td>
-          VolumeID uniquely identifies a Portworx volume<br/>
+          volumeID uniquely identifies a Portworx volume<br/>
         </td>
         <td>true</td>
       </tr><tr>
         <td><b>fsType</b></td>
         <td>string</td>
         <td>
-          FSType represents the filesystem type to mount Must be a filesystem type supported by the host operating system. Ex. "ext4", "xfs". Implicitly inferred to be "ext4" if unspecified.<br/>
+          fSType represents the filesystem type to mount Must be a filesystem type supported by the host operating system. Ex. "ext4", "xfs". Implicitly inferred to be "ext4" if unspecified.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>readOnly</b></td>
         <td>boolean</td>
         <td>
-          Defaults to false (read/write). ReadOnly here will force the ReadOnly setting in VolumeMounts.<br/>
+          readOnly defaults to false (read/write). ReadOnly here will force the ReadOnly setting in VolumeMounts.<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -49103,7 +44769,7 @@ PortworxVolume represents a portworx volume attached and mounted on kubelets hos
 
 
 
-Items for all in one resources secrets, configmaps, and downward API
+projected items for all in one resources secrets, configmaps, and downward API
 
 <table>
     <thead>
@@ -49118,7 +44784,7 @@ Items for all in one resources secrets, configmaps, and downward API
         <td><b>defaultMode</b></td>
         <td>integer</td>
         <td>
-          Mode bits used to set permissions on created files by default. Must be an octal value between 0000 and 0777 or a decimal value between 0 and 511. YAML accepts both octal and decimal values, JSON requires decimal values for mode bits. Directories within the path are not affected by this setting. This might be in conflict with other options that affect the file mode, like fsGroup, and the result can be other mode bits set.<br/>
+          defaultMode are the mode bits used to set permissions on created files by default. Must be an octal value between 0000 and 0777 or a decimal value between 0 and 511. YAML accepts both octal and decimal values, JSON requires decimal values for mode bits. Directories within the path are not affected by this setting. This might be in conflict with other options that affect the file mode, like fsGroup, and the result can be other mode bits set.<br/>
           <br/>
             <i>Format</i>: int32<br/>
         </td>
@@ -49127,7 +44793,7 @@ Items for all in one resources secrets, configmaps, and downward API
         <td><b><a href="#cassandrabackupstatuscassdctemplatespecspecpodtemplatespecspecvolumesindexprojectedsourcesindex">sources</a></b></td>
         <td>[]object</td>
         <td>
-          list of volume projections<br/>
+          sources is the list of volume projections<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -49154,28 +44820,28 @@ Projection that may be projected along with other supported volume types
         <td><b><a href="#cassandrabackupstatuscassdctemplatespecspecpodtemplatespecspecvolumesindexprojectedsourcesindexconfigmap">configMap</a></b></td>
         <td>object</td>
         <td>
-          information about the configMap data to project<br/>
+          configMap information about the configMap data to project<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#cassandrabackupstatuscassdctemplatespecspecpodtemplatespecspecvolumesindexprojectedsourcesindexdownwardapi">downwardAPI</a></b></td>
         <td>object</td>
         <td>
-          information about the downwardAPI data to project<br/>
+          downwardAPI information about the downwardAPI data to project<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#cassandrabackupstatuscassdctemplatespecspecpodtemplatespecspecvolumesindexprojectedsourcesindexsecret">secret</a></b></td>
         <td>object</td>
         <td>
-          information about the secret data to project<br/>
+          secret information about the secret data to project<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#cassandrabackupstatuscassdctemplatespecspecpodtemplatespecspecvolumesindexprojectedsourcesindexserviceaccounttoken">serviceAccountToken</a></b></td>
         <td>object</td>
         <td>
-          information about the serviceAccountToken data to project<br/>
+          serviceAccountToken is information about the serviceAccountToken data to project<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -49187,7 +44853,7 @@ Projection that may be projected along with other supported volume types
 
 
 
-information about the configMap data to project
+configMap information about the configMap data to project
 
 <table>
     <thead>
@@ -49202,7 +44868,7 @@ information about the configMap data to project
         <td><b><a href="#cassandrabackupstatuscassdctemplatespecspecpodtemplatespecspecvolumesindexprojectedsourcesindexconfigmapitemsindex">items</a></b></td>
         <td>[]object</td>
         <td>
-          If unspecified, each key-value pair in the Data field of the referenced ConfigMap will be projected into the volume as a file whose name is the key and content is the value. If specified, the listed keys will be projected into the specified paths, and unlisted keys will not be present. If a key is specified which is not present in the ConfigMap, the volume setup will error unless it is marked optional. Paths must be relative and may not contain the '..' path or start with '..'.<br/>
+          items if unspecified, each key-value pair in the Data field of the referenced ConfigMap will be projected into the volume as a file whose name is the key and content is the value. If specified, the listed keys will be projected into the specified paths, and unlisted keys will not be present. If a key is specified which is not present in the ConfigMap, the volume setup will error unless it is marked optional. Paths must be relative and may not contain the '..' path or start with '..'.<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -49216,7 +44882,7 @@ information about the configMap data to project
         <td><b>optional</b></td>
         <td>boolean</td>
         <td>
-          Specify whether the ConfigMap or its keys must be defined<br/>
+          optional specify whether the ConfigMap or its keys must be defined<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -49243,21 +44909,21 @@ Maps a string key to a path within a volume.
         <td><b>key</b></td>
         <td>string</td>
         <td>
-          The key to project.<br/>
+          key is the key to project.<br/>
         </td>
         <td>true</td>
       </tr><tr>
         <td><b>path</b></td>
         <td>string</td>
         <td>
-          The relative path of the file to map the key to. May not be an absolute path. May not contain the path element '..'. May not start with the string '..'.<br/>
+          path is the relative path of the file to map the key to. May not be an absolute path. May not contain the path element '..'. May not start with the string '..'.<br/>
         </td>
         <td>true</td>
       </tr><tr>
         <td><b>mode</b></td>
         <td>integer</td>
         <td>
-          Optional: mode bits used to set permissions on this file. Must be an octal value between 0000 and 0777 or a decimal value between 0 and 511. YAML accepts both octal and decimal values, JSON requires decimal values for mode bits. If not specified, the volume defaultMode will be used. This might be in conflict with other options that affect the file mode, like fsGroup, and the result can be other mode bits set.<br/>
+          mode is Optional: mode bits used to set permissions on this file. Must be an octal value between 0000 and 0777 or a decimal value between 0 and 511. YAML accepts both octal and decimal values, JSON requires decimal values for mode bits. If not specified, the volume defaultMode will be used. This might be in conflict with other options that affect the file mode, like fsGroup, and the result can be other mode bits set.<br/>
           <br/>
             <i>Format</i>: int32<br/>
         </td>
@@ -49271,7 +44937,7 @@ Maps a string key to a path within a volume.
 
 
 
-information about the downwardAPI data to project
+downwardAPI information about the downwardAPI data to project
 
 <table>
     <thead>
@@ -49423,7 +45089,7 @@ Selects a resource of the container: only resources limits and requests (limits.
 
 
 
-information about the secret data to project
+secret information about the secret data to project
 
 <table>
     <thead>
@@ -49438,7 +45104,7 @@ information about the secret data to project
         <td><b><a href="#cassandrabackupstatuscassdctemplatespecspecpodtemplatespecspecvolumesindexprojectedsourcesindexsecretitemsindex">items</a></b></td>
         <td>[]object</td>
         <td>
-          If unspecified, each key-value pair in the Data field of the referenced Secret will be projected into the volume as a file whose name is the key and content is the value. If specified, the listed keys will be projected into the specified paths, and unlisted keys will not be present. If a key is specified which is not present in the Secret, the volume setup will error unless it is marked optional. Paths must be relative and may not contain the '..' path or start with '..'.<br/>
+          items if unspecified, each key-value pair in the Data field of the referenced Secret will be projected into the volume as a file whose name is the key and content is the value. If specified, the listed keys will be projected into the specified paths, and unlisted keys will not be present. If a key is specified which is not present in the Secret, the volume setup will error unless it is marked optional. Paths must be relative and may not contain the '..' path or start with '..'.<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -49452,7 +45118,7 @@ information about the secret data to project
         <td><b>optional</b></td>
         <td>boolean</td>
         <td>
-          Specify whether the Secret or its key must be defined<br/>
+          optional field specify whether the Secret or its key must be defined<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -49479,21 +45145,21 @@ Maps a string key to a path within a volume.
         <td><b>key</b></td>
         <td>string</td>
         <td>
-          The key to project.<br/>
+          key is the key to project.<br/>
         </td>
         <td>true</td>
       </tr><tr>
         <td><b>path</b></td>
         <td>string</td>
         <td>
-          The relative path of the file to map the key to. May not be an absolute path. May not contain the path element '..'. May not start with the string '..'.<br/>
+          path is the relative path of the file to map the key to. May not be an absolute path. May not contain the path element '..'. May not start with the string '..'.<br/>
         </td>
         <td>true</td>
       </tr><tr>
         <td><b>mode</b></td>
         <td>integer</td>
         <td>
-          Optional: mode bits used to set permissions on this file. Must be an octal value between 0000 and 0777 or a decimal value between 0 and 511. YAML accepts both octal and decimal values, JSON requires decimal values for mode bits. If not specified, the volume defaultMode will be used. This might be in conflict with other options that affect the file mode, like fsGroup, and the result can be other mode bits set.<br/>
+          mode is Optional: mode bits used to set permissions on this file. Must be an octal value between 0000 and 0777 or a decimal value between 0 and 511. YAML accepts both octal and decimal values, JSON requires decimal values for mode bits. If not specified, the volume defaultMode will be used. This might be in conflict with other options that affect the file mode, like fsGroup, and the result can be other mode bits set.<br/>
           <br/>
             <i>Format</i>: int32<br/>
         </td>
@@ -49507,7 +45173,7 @@ Maps a string key to a path within a volume.
 
 
 
-information about the serviceAccountToken data to project
+serviceAccountToken is information about the serviceAccountToken data to project
 
 <table>
     <thead>
@@ -49522,21 +45188,21 @@ information about the serviceAccountToken data to project
         <td><b>path</b></td>
         <td>string</td>
         <td>
-          Path is the path relative to the mount point of the file to project the token into.<br/>
+          path is the path relative to the mount point of the file to project the token into.<br/>
         </td>
         <td>true</td>
       </tr><tr>
         <td><b>audience</b></td>
         <td>string</td>
         <td>
-          Audience is the intended audience of the token. A recipient of a token must identify itself with an identifier specified in the audience of the token, and otherwise should reject the token. The audience defaults to the identifier of the apiserver.<br/>
+          audience is the intended audience of the token. A recipient of a token must identify itself with an identifier specified in the audience of the token, and otherwise should reject the token. The audience defaults to the identifier of the apiserver.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>expirationSeconds</b></td>
         <td>integer</td>
         <td>
-          ExpirationSeconds is the requested duration of validity of the service account token. As the token approaches expiration, the kubelet volume plugin will proactively rotate the service account token. The kubelet will start trying to rotate the token if the token is older than 80 percent of its time to live or if the token is older than 24 hours.Defaults to 1 hour and must be at least 10 minutes.<br/>
+          expirationSeconds is the requested duration of validity of the service account token. As the token approaches expiration, the kubelet volume plugin will proactively rotate the service account token. The kubelet will start trying to rotate the token if the token is older than 80 percent of its time to live or if the token is older than 24 hours.Defaults to 1 hour and must be at least 10 minutes.<br/>
           <br/>
             <i>Format</i>: int64<br/>
         </td>
@@ -49550,7 +45216,7 @@ information about the serviceAccountToken data to project
 
 
 
-Quobyte represents a Quobyte mount on the host that shares a pod's lifetime
+quobyte represents a Quobyte mount on the host that shares a pod's lifetime
 
 <table>
     <thead>
@@ -49565,42 +45231,42 @@ Quobyte represents a Quobyte mount on the host that shares a pod's lifetime
         <td><b>registry</b></td>
         <td>string</td>
         <td>
-          Registry represents a single or multiple Quobyte Registry services specified as a string as host:port pair (multiple entries are separated with commas) which acts as the central registry for volumes<br/>
+          registry represents a single or multiple Quobyte Registry services specified as a string as host:port pair (multiple entries are separated with commas) which acts as the central registry for volumes<br/>
         </td>
         <td>true</td>
       </tr><tr>
         <td><b>volume</b></td>
         <td>string</td>
         <td>
-          Volume is a string that references an already created Quobyte volume by name.<br/>
+          volume is a string that references an already created Quobyte volume by name.<br/>
         </td>
         <td>true</td>
       </tr><tr>
         <td><b>group</b></td>
         <td>string</td>
         <td>
-          Group to map volume access to Default is no group<br/>
+          group to map volume access to Default is no group<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>readOnly</b></td>
         <td>boolean</td>
         <td>
-          ReadOnly here will force the Quobyte volume to be mounted with read-only permissions. Defaults to false.<br/>
+          readOnly here will force the Quobyte volume to be mounted with read-only permissions. Defaults to false.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>tenant</b></td>
         <td>string</td>
         <td>
-          Tenant owning the given Quobyte volume in the Backend Used with dynamically provisioned Quobyte volumes, value is set by the plugin<br/>
+          tenant owning the given Quobyte volume in the Backend Used with dynamically provisioned Quobyte volumes, value is set by the plugin<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>user</b></td>
         <td>string</td>
         <td>
-          User to map volume access to Defaults to serivceaccount user<br/>
+          user to map volume access to Defaults to serivceaccount user<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -49612,7 +45278,7 @@ Quobyte represents a Quobyte mount on the host that shares a pod's lifetime
 
 
 
-RBD represents a Rados Block Device mount on the host that shares a pod's lifetime. More info: https://examples.k8s.io/volumes/rbd/README.md
+rbd represents a Rados Block Device mount on the host that shares a pod's lifetime. More info: https://examples.k8s.io/volumes/rbd/README.md
 
 <table>
     <thead>
@@ -49627,56 +45293,56 @@ RBD represents a Rados Block Device mount on the host that shares a pod's lifeti
         <td><b>image</b></td>
         <td>string</td>
         <td>
-          The rados image name. More info: https://examples.k8s.io/volumes/rbd/README.md#how-to-use-it<br/>
+          image is the rados image name. More info: https://examples.k8s.io/volumes/rbd/README.md#how-to-use-it<br/>
         </td>
         <td>true</td>
       </tr><tr>
         <td><b>monitors</b></td>
         <td>[]string</td>
         <td>
-          A collection of Ceph monitors. More info: https://examples.k8s.io/volumes/rbd/README.md#how-to-use-it<br/>
+          monitors is a collection of Ceph monitors. More info: https://examples.k8s.io/volumes/rbd/README.md#how-to-use-it<br/>
         </td>
         <td>true</td>
       </tr><tr>
         <td><b>fsType</b></td>
         <td>string</td>
         <td>
-          Filesystem type of the volume that you want to mount. Tip: Ensure that the filesystem type is supported by the host operating system. Examples: "ext4", "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified. More info: https://kubernetes.io/docs/concepts/storage/volumes#rbd TODO: how do we prevent errors in the filesystem from compromising the machine<br/>
+          fsType is the filesystem type of the volume that you want to mount. Tip: Ensure that the filesystem type is supported by the host operating system. Examples: "ext4", "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified. More info: https://kubernetes.io/docs/concepts/storage/volumes#rbd TODO: how do we prevent errors in the filesystem from compromising the machine<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>keyring</b></td>
         <td>string</td>
         <td>
-          Keyring is the path to key ring for RBDUser. Default is /etc/ceph/keyring. More info: https://examples.k8s.io/volumes/rbd/README.md#how-to-use-it<br/>
+          keyring is the path to key ring for RBDUser. Default is /etc/ceph/keyring. More info: https://examples.k8s.io/volumes/rbd/README.md#how-to-use-it<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>pool</b></td>
         <td>string</td>
         <td>
-          The rados pool name. Default is rbd. More info: https://examples.k8s.io/volumes/rbd/README.md#how-to-use-it<br/>
+          pool is the rados pool name. Default is rbd. More info: https://examples.k8s.io/volumes/rbd/README.md#how-to-use-it<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>readOnly</b></td>
         <td>boolean</td>
         <td>
-          ReadOnly here will force the ReadOnly setting in VolumeMounts. Defaults to false. More info: https://examples.k8s.io/volumes/rbd/README.md#how-to-use-it<br/>
+          readOnly here will force the ReadOnly setting in VolumeMounts. Defaults to false. More info: https://examples.k8s.io/volumes/rbd/README.md#how-to-use-it<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#cassandrabackupstatuscassdctemplatespecspecpodtemplatespecspecvolumesindexrbdsecretref">secretRef</a></b></td>
         <td>object</td>
         <td>
-          SecretRef is name of the authentication secret for RBDUser. If provided overrides keyring. Default is nil. More info: https://examples.k8s.io/volumes/rbd/README.md#how-to-use-it<br/>
+          secretRef is name of the authentication secret for RBDUser. If provided overrides keyring. Default is nil. More info: https://examples.k8s.io/volumes/rbd/README.md#how-to-use-it<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>user</b></td>
         <td>string</td>
         <td>
-          The rados user name. Default is admin. More info: https://examples.k8s.io/volumes/rbd/README.md#how-to-use-it<br/>
+          user is the rados user name. Default is admin. More info: https://examples.k8s.io/volumes/rbd/README.md#how-to-use-it<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -49688,7 +45354,7 @@ RBD represents a Rados Block Device mount on the host that shares a pod's lifeti
 
 
 
-SecretRef is name of the authentication secret for RBDUser. If provided overrides keyring. Default is nil. More info: https://examples.k8s.io/volumes/rbd/README.md#how-to-use-it
+secretRef is name of the authentication secret for RBDUser. If provided overrides keyring. Default is nil. More info: https://examples.k8s.io/volumes/rbd/README.md#how-to-use-it
 
 <table>
     <thead>
@@ -49715,7 +45381,7 @@ SecretRef is name of the authentication secret for RBDUser. If provided override
 
 
 
-ScaleIO represents a ScaleIO persistent volume attached and mounted on Kubernetes nodes.
+scaleIO represents a ScaleIO persistent volume attached and mounted on Kubernetes nodes.
 
 <table>
     <thead>
@@ -49730,70 +45396,70 @@ ScaleIO represents a ScaleIO persistent volume attached and mounted on Kubernete
         <td><b>gateway</b></td>
         <td>string</td>
         <td>
-          The host address of the ScaleIO API Gateway.<br/>
+          gateway is the host address of the ScaleIO API Gateway.<br/>
         </td>
         <td>true</td>
       </tr><tr>
         <td><b><a href="#cassandrabackupstatuscassdctemplatespecspecpodtemplatespecspecvolumesindexscaleiosecretref">secretRef</a></b></td>
         <td>object</td>
         <td>
-          SecretRef references to the secret for ScaleIO user and other sensitive information. If this is not provided, Login operation will fail.<br/>
+          secretRef references to the secret for ScaleIO user and other sensitive information. If this is not provided, Login operation will fail.<br/>
         </td>
         <td>true</td>
       </tr><tr>
         <td><b>system</b></td>
         <td>string</td>
         <td>
-          The name of the storage system as configured in ScaleIO.<br/>
+          system is the name of the storage system as configured in ScaleIO.<br/>
         </td>
         <td>true</td>
       </tr><tr>
         <td><b>fsType</b></td>
         <td>string</td>
         <td>
-          Filesystem type to mount. Must be a filesystem type supported by the host operating system. Ex. "ext4", "xfs", "ntfs". Default is "xfs".<br/>
+          fsType is the filesystem type to mount. Must be a filesystem type supported by the host operating system. Ex. "ext4", "xfs", "ntfs". Default is "xfs".<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>protectionDomain</b></td>
         <td>string</td>
         <td>
-          The name of the ScaleIO Protection Domain for the configured storage.<br/>
+          protectionDomain is the name of the ScaleIO Protection Domain for the configured storage.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>readOnly</b></td>
         <td>boolean</td>
         <td>
-          Defaults to false (read/write). ReadOnly here will force the ReadOnly setting in VolumeMounts.<br/>
+          readOnly Defaults to false (read/write). ReadOnly here will force the ReadOnly setting in VolumeMounts.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>sslEnabled</b></td>
         <td>boolean</td>
         <td>
-          Flag to enable/disable SSL communication with Gateway, default false<br/>
+          sslEnabled Flag enable/disable SSL communication with Gateway, default false<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>storageMode</b></td>
         <td>string</td>
         <td>
-          Indicates whether the storage for a volume should be ThickProvisioned or ThinProvisioned. Default is ThinProvisioned.<br/>
+          storageMode indicates whether the storage for a volume should be ThickProvisioned or ThinProvisioned. Default is ThinProvisioned.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>storagePool</b></td>
         <td>string</td>
         <td>
-          The ScaleIO Storage Pool associated with the protection domain.<br/>
+          storagePool is the ScaleIO Storage Pool associated with the protection domain.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>volumeName</b></td>
         <td>string</td>
         <td>
-          The name of a volume already created in the ScaleIO system that is associated with this volume source.<br/>
+          volumeName is the name of a volume already created in the ScaleIO system that is associated with this volume source.<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -49805,7 +45471,7 @@ ScaleIO represents a ScaleIO persistent volume attached and mounted on Kubernete
 
 
 
-SecretRef references to the secret for ScaleIO user and other sensitive information. If this is not provided, Login operation will fail.
+secretRef references to the secret for ScaleIO user and other sensitive information. If this is not provided, Login operation will fail.
 
 <table>
     <thead>
@@ -49832,7 +45498,7 @@ SecretRef references to the secret for ScaleIO user and other sensitive informat
 
 
 
-Secret represents a secret that should populate this volume. More info: https://kubernetes.io/docs/concepts/storage/volumes#secret
+secret represents a secret that should populate this volume. More info: https://kubernetes.io/docs/concepts/storage/volumes#secret
 
 <table>
     <thead>
@@ -49847,7 +45513,7 @@ Secret represents a secret that should populate this volume. More info: https://
         <td><b>defaultMode</b></td>
         <td>integer</td>
         <td>
-          Optional: mode bits used to set permissions on created files by default. Must be an octal value between 0000 and 0777 or a decimal value between 0 and 511. YAML accepts both octal and decimal values, JSON requires decimal values for mode bits. Defaults to 0644. Directories within the path are not affected by this setting. This might be in conflict with other options that affect the file mode, like fsGroup, and the result can be other mode bits set.<br/>
+          defaultMode is Optional: mode bits used to set permissions on created files by default. Must be an octal value between 0000 and 0777 or a decimal value between 0 and 511. YAML accepts both octal and decimal values, JSON requires decimal values for mode bits. Defaults to 0644. Directories within the path are not affected by this setting. This might be in conflict with other options that affect the file mode, like fsGroup, and the result can be other mode bits set.<br/>
           <br/>
             <i>Format</i>: int32<br/>
         </td>
@@ -49856,21 +45522,21 @@ Secret represents a secret that should populate this volume. More info: https://
         <td><b><a href="#cassandrabackupstatuscassdctemplatespecspecpodtemplatespecspecvolumesindexsecretitemsindex">items</a></b></td>
         <td>[]object</td>
         <td>
-          If unspecified, each key-value pair in the Data field of the referenced Secret will be projected into the volume as a file whose name is the key and content is the value. If specified, the listed keys will be projected into the specified paths, and unlisted keys will not be present. If a key is specified which is not present in the Secret, the volume setup will error unless it is marked optional. Paths must be relative and may not contain the '..' path or start with '..'.<br/>
+          items If unspecified, each key-value pair in the Data field of the referenced Secret will be projected into the volume as a file whose name is the key and content is the value. If specified, the listed keys will be projected into the specified paths, and unlisted keys will not be present. If a key is specified which is not present in the Secret, the volume setup will error unless it is marked optional. Paths must be relative and may not contain the '..' path or start with '..'.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>optional</b></td>
         <td>boolean</td>
         <td>
-          Specify whether the Secret or its keys must be defined<br/>
+          optional field specify whether the Secret or its keys must be defined<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>secretName</b></td>
         <td>string</td>
         <td>
-          Name of the secret in the pod's namespace to use. More info: https://kubernetes.io/docs/concepts/storage/volumes#secret<br/>
+          secretName is the name of the secret in the pod's namespace to use. More info: https://kubernetes.io/docs/concepts/storage/volumes#secret<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -49897,21 +45563,21 @@ Maps a string key to a path within a volume.
         <td><b>key</b></td>
         <td>string</td>
         <td>
-          The key to project.<br/>
+          key is the key to project.<br/>
         </td>
         <td>true</td>
       </tr><tr>
         <td><b>path</b></td>
         <td>string</td>
         <td>
-          The relative path of the file to map the key to. May not be an absolute path. May not contain the path element '..'. May not start with the string '..'.<br/>
+          path is the relative path of the file to map the key to. May not be an absolute path. May not contain the path element '..'. May not start with the string '..'.<br/>
         </td>
         <td>true</td>
       </tr><tr>
         <td><b>mode</b></td>
         <td>integer</td>
         <td>
-          Optional: mode bits used to set permissions on this file. Must be an octal value between 0000 and 0777 or a decimal value between 0 and 511. YAML accepts both octal and decimal values, JSON requires decimal values for mode bits. If not specified, the volume defaultMode will be used. This might be in conflict with other options that affect the file mode, like fsGroup, and the result can be other mode bits set.<br/>
+          mode is Optional: mode bits used to set permissions on this file. Must be an octal value between 0000 and 0777 or a decimal value between 0 and 511. YAML accepts both octal and decimal values, JSON requires decimal values for mode bits. If not specified, the volume defaultMode will be used. This might be in conflict with other options that affect the file mode, like fsGroup, and the result can be other mode bits set.<br/>
           <br/>
             <i>Format</i>: int32<br/>
         </td>
@@ -49925,7 +45591,7 @@ Maps a string key to a path within a volume.
 
 
 
-StorageOS represents a StorageOS volume attached and mounted on Kubernetes nodes.
+storageOS represents a StorageOS volume attached and mounted on Kubernetes nodes.
 
 <table>
     <thead>
@@ -49940,35 +45606,35 @@ StorageOS represents a StorageOS volume attached and mounted on Kubernetes nodes
         <td><b>fsType</b></td>
         <td>string</td>
         <td>
-          Filesystem type to mount. Must be a filesystem type supported by the host operating system. Ex. "ext4", "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified.<br/>
+          fsType is the filesystem type to mount. Must be a filesystem type supported by the host operating system. Ex. "ext4", "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>readOnly</b></td>
         <td>boolean</td>
         <td>
-          Defaults to false (read/write). ReadOnly here will force the ReadOnly setting in VolumeMounts.<br/>
+          readOnly defaults to false (read/write). ReadOnly here will force the ReadOnly setting in VolumeMounts.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b><a href="#cassandrabackupstatuscassdctemplatespecspecpodtemplatespecspecvolumesindexstorageossecretref">secretRef</a></b></td>
         <td>object</td>
         <td>
-          SecretRef specifies the secret to use for obtaining the StorageOS API credentials.  If not specified, default values will be attempted.<br/>
+          secretRef specifies the secret to use for obtaining the StorageOS API credentials.  If not specified, default values will be attempted.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>volumeName</b></td>
         <td>string</td>
         <td>
-          VolumeName is the human-readable name of the StorageOS volume.  Volume names are only unique within a namespace.<br/>
+          volumeName is the human-readable name of the StorageOS volume.  Volume names are only unique within a namespace.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>volumeNamespace</b></td>
         <td>string</td>
         <td>
-          VolumeNamespace specifies the scope of the volume within StorageOS.  If no namespace is specified then the Pod's namespace will be used.  This allows the Kubernetes name scoping to be mirrored within StorageOS for tighter integration. Set VolumeName to any name to override the default behaviour. Set to "default" if you are not using namespaces within StorageOS. Namespaces that do not pre-exist within StorageOS will be created.<br/>
+          volumeNamespace specifies the scope of the volume within StorageOS.  If no namespace is specified then the Pod's namespace will be used.  This allows the Kubernetes name scoping to be mirrored within StorageOS for tighter integration. Set VolumeName to any name to override the default behaviour. Set to "default" if you are not using namespaces within StorageOS. Namespaces that do not pre-exist within StorageOS will be created.<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -49980,7 +45646,7 @@ StorageOS represents a StorageOS volume attached and mounted on Kubernetes nodes
 
 
 
-SecretRef specifies the secret to use for obtaining the StorageOS API credentials.  If not specified, default values will be attempted.
+secretRef specifies the secret to use for obtaining the StorageOS API credentials.  If not specified, default values will be attempted.
 
 <table>
     <thead>
@@ -50007,7 +45673,7 @@ SecretRef specifies the secret to use for obtaining the StorageOS API credential
 
 
 
-VsphereVolume represents a vSphere volume attached and mounted on kubelets host machine
+vsphereVolume represents a vSphere volume attached and mounted on kubelets host machine
 
 <table>
     <thead>
@@ -50022,28 +45688,28 @@ VsphereVolume represents a vSphere volume attached and mounted on kubelets host 
         <td><b>volumePath</b></td>
         <td>string</td>
         <td>
-          Path that identifies vSphere volume vmdk<br/>
+          volumePath is the path that identifies vSphere volume vmdk<br/>
         </td>
         <td>true</td>
       </tr><tr>
         <td><b>fsType</b></td>
         <td>string</td>
         <td>
-          Filesystem type to mount. Must be a filesystem type supported by the host operating system. Ex. "ext4", "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified.<br/>
+          fsType is filesystem type to mount. Must be a filesystem type supported by the host operating system. Ex. "ext4", "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>storagePolicyID</b></td>
         <td>string</td>
         <td>
-          Storage Policy Based Management (SPBM) profile ID associated with the StoragePolicyName.<br/>
+          storagePolicyID is the storage Policy Based Management (SPBM) profile ID associated with the StoragePolicyName.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>storagePolicyName</b></td>
         <td>string</td>
         <td>
-          Storage Policy Based Management (SPBM) profile name.<br/>
+          storagePolicyName is the storage Policy Based Management (SPBM) profile name.<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -52097,6 +47763,16 @@ ReaperSpec defines the desired state of Reaper
         </td>
         <td>false</td>
       </tr><tr>
+        <td><b>secretsProvider</b></td>
+        <td>enum</td>
+        <td>
+          SecretsProvider defines whether the secrets used for credentials and certs will be backed by an external secret backend. This moves the responsibility of generating and storing secrets from the operators to the user and will rely on a mutating webhook to inject the secrets into the necessary resources<br/>
+          <br/>
+            <i>Enum</i>: internal, external<br/>
+            <i>Default</i>: internal<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
         <td><b><a href="#reaperspecsecuritycontext">securityContext</a></b></td>
         <td>object</td>
         <td>
@@ -52645,14 +48321,14 @@ Required. A pod affinity term, associated with the corresponding weight.
         <td><b><a href="#reaperspecaffinitypodaffinitypreferredduringschedulingignoredduringexecutionindexpodaffinitytermnamespaceselector">namespaceSelector</a></b></td>
         <td>object</td>
         <td>
-          A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces. This field is beta-level and is only honored when PodAffinityNamespaceSelector feature is enabled.<br/>
+          A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>namespaces</b></td>
         <td>[]string</td>
         <td>
-          namespaces specifies a static list of namespace names that the term applies to. The term is applied to the union of the namespaces listed in this field and the ones selected by namespaceSelector. null or empty namespaces list and null namespaceSelector means "this pod's namespace"<br/>
+          namespaces specifies a static list of namespace names that the term applies to. The term is applied to the union of the namespaces listed in this field and the ones selected by namespaceSelector. null or empty namespaces list and null namespaceSelector means "this pod's namespace".<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -52739,7 +48415,7 @@ A label selector requirement is a selector that contains values, a key, and an o
 
 
 
-A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces. This field is beta-level and is only honored when PodAffinityNamespaceSelector feature is enabled.
+A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces.
 
 <table>
     <thead>
@@ -52843,14 +48519,14 @@ Defines a set of pods (namely those matching the labelSelector relative to the g
         <td><b><a href="#reaperspecaffinitypodaffinityrequiredduringschedulingignoredduringexecutionindexnamespaceselector">namespaceSelector</a></b></td>
         <td>object</td>
         <td>
-          A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces. This field is beta-level and is only honored when PodAffinityNamespaceSelector feature is enabled.<br/>
+          A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>namespaces</b></td>
         <td>[]string</td>
         <td>
-          namespaces specifies a static list of namespace names that the term applies to. The term is applied to the union of the namespaces listed in this field and the ones selected by namespaceSelector. null or empty namespaces list and null namespaceSelector means "this pod's namespace"<br/>
+          namespaces specifies a static list of namespace names that the term applies to. The term is applied to the union of the namespaces listed in this field and the ones selected by namespaceSelector. null or empty namespaces list and null namespaceSelector means "this pod's namespace".<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -52937,7 +48613,7 @@ A label selector requirement is a selector that contains values, a key, and an o
 
 
 
-A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces. This field is beta-level and is only honored when PodAffinityNamespaceSelector feature is enabled.
+A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces.
 
 <table>
     <thead>
@@ -53111,14 +48787,14 @@ Required. A pod affinity term, associated with the corresponding weight.
         <td><b><a href="#reaperspecaffinitypodantiaffinitypreferredduringschedulingignoredduringexecutionindexpodaffinitytermnamespaceselector">namespaceSelector</a></b></td>
         <td>object</td>
         <td>
-          A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces. This field is beta-level and is only honored when PodAffinityNamespaceSelector feature is enabled.<br/>
+          A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>namespaces</b></td>
         <td>[]string</td>
         <td>
-          namespaces specifies a static list of namespace names that the term applies to. The term is applied to the union of the namespaces listed in this field and the ones selected by namespaceSelector. null or empty namespaces list and null namespaceSelector means "this pod's namespace"<br/>
+          namespaces specifies a static list of namespace names that the term applies to. The term is applied to the union of the namespaces listed in this field and the ones selected by namespaceSelector. null or empty namespaces list and null namespaceSelector means "this pod's namespace".<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -53205,7 +48881,7 @@ A label selector requirement is a selector that contains values, a key, and an o
 
 
 
-A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces. This field is beta-level and is only honored when PodAffinityNamespaceSelector feature is enabled.
+A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces.
 
 <table>
     <thead>
@@ -53309,14 +48985,14 @@ Defines a set of pods (namely those matching the labelSelector relative to the g
         <td><b><a href="#reaperspecaffinitypodantiaffinityrequiredduringschedulingignoredduringexecutionindexnamespaceselector">namespaceSelector</a></b></td>
         <td>object</td>
         <td>
-          A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces. This field is beta-level and is only honored when PodAffinityNamespaceSelector feature is enabled.<br/>
+          A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>namespaces</b></td>
         <td>[]string</td>
         <td>
-          namespaces specifies a static list of namespace names that the term applies to. The term is applied to the union of the namespaces listed in this field and the ones selected by namespaceSelector. null or empty namespaces list and null namespaceSelector means "this pod's namespace"<br/>
+          namespaces specifies a static list of namespace names that the term applies to. The term is applied to the union of the namespaces listed in this field and the ones selected by namespaceSelector. null or empty namespaces list and null namespaceSelector means "this pod's namespace".<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -53403,7 +49079,7 @@ A label selector requirement is a selector that contains values, a key, and an o
 
 
 
-A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces. This field is beta-level and is only honored when PodAffinityNamespaceSelector feature is enabled.
+A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces.
 
 <table>
     <thead>
@@ -53620,16 +49296,30 @@ Client encryption stores which are used by Cassandra and Reaper.
         <td><b><a href="#reaperspecclientencryptionstoreskeystoresecretref">keystoreSecretRef</a></b></td>
         <td>object</td>
         <td>
-          ref to the secret that contains the keystore and its password the expected format of the secret is a "keystore" entry and a "keystore-password" entry<br/>
+          ref to the secret that contains the keystore and optionally its password (which can also be specified through the keystorePasswordSecretRef field) if keys are not specified, "keystore" entry and a "keystore-password" entry will be used<br/>
         </td>
         <td>true</td>
       </tr><tr>
         <td><b><a href="#reaperspecclientencryptionstorestruststoresecretref">truststoreSecretRef</a></b></td>
         <td>object</td>
         <td>
-          ref to the secret that contains the truststore and its password the expected format of the secret is a "truststore" entry and a "truststore-password" entry<br/>
+          ref to the secret that contains the truststore and optionally its password (which can also be specified through the truststorePasswordSecretRef field) if keys are not specified explicitly, "keystore" entry and a "keystore-password" entry will be used<br/>
         </td>
         <td>true</td>
+      </tr><tr>
+        <td><b><a href="#reaperspecclientencryptionstoreskeystorepasswordsecretref">keystorePasswordSecretRef</a></b></td>
+        <td>object</td>
+        <td>
+          ref to the secret that contains the keystore password if password stored in different secret than keystoreSecretRef if key isn't specified explicitly, "keystore-password" entry will be used<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#reaperspecclientencryptionstorestruststorepasswordsecretref">truststorePasswordSecretRef</a></b></td>
+        <td>object</td>
+        <td>
+          ref to the secret that contains the truststore password if password stored in different secret than keystoreSecretRef if key isn't specified  explicitly, "truststore-password" entry will be used<br/>
+        </td>
+        <td>false</td>
       </tr></tbody>
 </table>
 
@@ -53639,7 +49329,7 @@ Client encryption stores which are used by Cassandra and Reaper.
 
 
 
-ref to the secret that contains the keystore and its password the expected format of the secret is a "keystore" entry and a "keystore-password" entry
+ref to the secret that contains the keystore and optionally its password (which can also be specified through the keystorePasswordSecretRef field) if keys are not specified, "keystore" entry and a "keystore-password" entry will be used
 
 <table>
     <thead>
@@ -53651,6 +49341,13 @@ ref to the secret that contains the keystore and its password the expected forma
         </tr>
     </thead>
     <tbody><tr>
+        <td><b>key</b></td>
+        <td>string</td>
+        <td>
+          The key of the entry in the Secret resource's `data` field to be used.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
         <td><b>name</b></td>
         <td>string</td>
         <td>
@@ -53666,7 +49363,7 @@ ref to the secret that contains the keystore and its password the expected forma
 
 
 
-ref to the secret that contains the truststore and its password the expected format of the secret is a "truststore" entry and a "truststore-password" entry
+ref to the secret that contains the truststore and optionally its password (which can also be specified through the truststorePasswordSecretRef field) if keys are not specified explicitly, "keystore" entry and a "keystore-password" entry will be used
 
 <table>
     <thead>
@@ -53678,6 +49375,81 @@ ref to the secret that contains the truststore and its password the expected for
         </tr>
     </thead>
     <tbody><tr>
+        <td><b>key</b></td>
+        <td>string</td>
+        <td>
+          The key of the entry in the Secret resource's `data` field to be used.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>name</b></td>
+        <td>string</td>
+        <td>
+          Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### Reaper.spec.clientEncryptionStores.keystorePasswordSecretRef
+<sup><sup>[↩ Parent](#reaperspecclientencryptionstores)</sup></sup>
+
+
+
+ref to the secret that contains the keystore password if password stored in different secret than keystoreSecretRef if key isn't specified explicitly, "keystore-password" entry will be used
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>key</b></td>
+        <td>string</td>
+        <td>
+          The key of the entry in the Secret resource's `data` field to be used.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>name</b></td>
+        <td>string</td>
+        <td>
+          Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### Reaper.spec.clientEncryptionStores.truststorePasswordSecretRef
+<sup><sup>[↩ Parent](#reaperspecclientencryptionstores)</sup></sup>
+
+
+
+ref to the secret that contains the truststore password if password stored in different secret than keystoreSecretRef if key isn't specified  explicitly, "truststore-password" entry will be used
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>key</b></td>
+        <td>string</td>
+        <td>
+          The key of the entry in the Secret resource's `data` field to be used.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
         <td><b>name</b></td>
         <td>string</td>
         <td>
@@ -54241,7 +50013,7 @@ LivenessProbe sets the Reaper liveness probe. Leave nil to use defaults.
         <td><b><a href="#reaperspeclivenessprobegrpc">grpc</a></b></td>
         <td>object</td>
         <td>
-          GRPC specifies an action involving a GRPC port. This is an alpha field and requires enabling GRPCContainerProbe feature gate.<br/>
+          GRPC specifies an action involving a GRPC port. This is a beta field and requires enabling GRPCContainerProbe feature gate.<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -54339,7 +50111,7 @@ Exec specifies the action to take.
 
 
 
-GRPC specifies an action involving a GRPC port. This is an alpha field and requires enabling GRPCContainerProbe feature gate.
+GRPC specifies an action involving a GRPC port. This is a beta field and requires enabling GRPCContainerProbe feature gate.
 
 <table>
     <thead>
@@ -54793,7 +50565,7 @@ ReadinessProbe sets the Reaper readiness probe. Leave nil to use defaults.
         <td><b><a href="#reaperspecreadinessprobegrpc">grpc</a></b></td>
         <td>object</td>
         <td>
-          GRPC specifies an action involving a GRPC port. This is an alpha field and requires enabling GRPCContainerProbe feature gate.<br/>
+          GRPC specifies an action involving a GRPC port. This is a beta field and requires enabling GRPCContainerProbe feature gate.<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -54891,7 +50663,7 @@ Exec specifies the action to take.
 
 
 
-GRPC specifies an action involving a GRPC port. This is an alpha field and requires enabling GRPCContainerProbe feature gate.
+GRPC specifies an action involving a GRPC port. This is a beta field and requires enabling GRPCContainerProbe feature gate.
 
 <table>
     <thead>
@@ -55400,7 +51172,7 @@ Telemetry defines the desired telemetry integrations to deploy targeting the Rea
         <td><b>metricFilters</b></td>
         <td>[]string</td>
         <td>
-          MetricFilters allows passing filters to MCAC in order to reduce the amount of extracted metrics. Not setting this field will result in the default filters being used. Setting it to an empty list will result in all metrics being extracted. Examples: - "deny:org.apache.cassandra.metrics.Table" - "deny:org.apache.cassandra.metrics.table" - "allow:org.apache.cassandra.metrics.table.live_ss_table_count" - "allow:org.apache.cassandra.metrics.Table.LiveSSTableCount" - "allow:org.apache.cassandra.metrics.table.live_disk_space_used"<br/>
+          MetricFilters allows passing filters to MCAC in order to reduce the amount of extracted metrics. Not setting this field will result in the default filters being used: - "deny:org.apache.cassandra.metrics.Table" - "deny:org.apache.cassandra.metrics.table" - "allow:org.apache.cassandra.metrics.table.live_ss_table_count" - "allow:org.apache.cassandra.metrics.Table.LiveSSTableCount" - "allow:org.apache.cassandra.metrics.table.live_disk_space_used" - "allow:org.apache.cassandra.metrics.table.LiveDiskSpaceUsed" - "allow:org.apache.cassandra.metrics.Table.Pending" - "allow:org.apache.cassandra.metrics.Table.Memtable" - "allow:org.apache.cassandra.metrics.Table.Compaction" - "allow:org.apache.cassandra.metrics.table.read" - "allow:org.apache.cassandra.metrics.table.write" - "allow:org.apache.cassandra.metrics.table.range" - "allow:org.apache.cassandra.metrics.table.coordinator" - "allow:org.apache.cassandra.metrics.table.dropped_mutations" Setting it to an empty list will result in all metrics being extracted.<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -56082,6 +51854,16 @@ Specification of the desired behavior of this Stargate resource.
         </td>
         <td>false</td>
       </tr><tr>
+        <td><b>secretsProvider</b></td>
+        <td>enum</td>
+        <td>
+          SecretsProvider defines whether the secrets used for credentials and certs will be backed by an external secret backend. This moves the responsibility of generating and storing secrets from the operators to the user and will rely on a mutating webhook to inject the secrets into the necessary resources<br/>
+          <br/>
+            <i>Enum</i>: internal, external<br/>
+            <i>Default</i>: internal<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
         <td><b>serviceAccount</b></td>
         <td>string</td>
         <td>
@@ -56609,14 +52391,14 @@ Required. A pod affinity term, associated with the corresponding weight.
         <td><b><a href="#stargatespecaffinitypodaffinitypreferredduringschedulingignoredduringexecutionindexpodaffinitytermnamespaceselector">namespaceSelector</a></b></td>
         <td>object</td>
         <td>
-          A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces. This field is beta-level and is only honored when PodAffinityNamespaceSelector feature is enabled.<br/>
+          A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>namespaces</b></td>
         <td>[]string</td>
         <td>
-          namespaces specifies a static list of namespace names that the term applies to. The term is applied to the union of the namespaces listed in this field and the ones selected by namespaceSelector. null or empty namespaces list and null namespaceSelector means "this pod's namespace"<br/>
+          namespaces specifies a static list of namespace names that the term applies to. The term is applied to the union of the namespaces listed in this field and the ones selected by namespaceSelector. null or empty namespaces list and null namespaceSelector means "this pod's namespace".<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -56703,7 +52485,7 @@ A label selector requirement is a selector that contains values, a key, and an o
 
 
 
-A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces. This field is beta-level and is only honored when PodAffinityNamespaceSelector feature is enabled.
+A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces.
 
 <table>
     <thead>
@@ -56807,14 +52589,14 @@ Defines a set of pods (namely those matching the labelSelector relative to the g
         <td><b><a href="#stargatespecaffinitypodaffinityrequiredduringschedulingignoredduringexecutionindexnamespaceselector">namespaceSelector</a></b></td>
         <td>object</td>
         <td>
-          A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces. This field is beta-level and is only honored when PodAffinityNamespaceSelector feature is enabled.<br/>
+          A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>namespaces</b></td>
         <td>[]string</td>
         <td>
-          namespaces specifies a static list of namespace names that the term applies to. The term is applied to the union of the namespaces listed in this field and the ones selected by namespaceSelector. null or empty namespaces list and null namespaceSelector means "this pod's namespace"<br/>
+          namespaces specifies a static list of namespace names that the term applies to. The term is applied to the union of the namespaces listed in this field and the ones selected by namespaceSelector. null or empty namespaces list and null namespaceSelector means "this pod's namespace".<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -56901,7 +52683,7 @@ A label selector requirement is a selector that contains values, a key, and an o
 
 
 
-A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces. This field is beta-level and is only honored when PodAffinityNamespaceSelector feature is enabled.
+A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces.
 
 <table>
     <thead>
@@ -57075,14 +52857,14 @@ Required. A pod affinity term, associated with the corresponding weight.
         <td><b><a href="#stargatespecaffinitypodantiaffinitypreferredduringschedulingignoredduringexecutionindexpodaffinitytermnamespaceselector">namespaceSelector</a></b></td>
         <td>object</td>
         <td>
-          A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces. This field is beta-level and is only honored when PodAffinityNamespaceSelector feature is enabled.<br/>
+          A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>namespaces</b></td>
         <td>[]string</td>
         <td>
-          namespaces specifies a static list of namespace names that the term applies to. The term is applied to the union of the namespaces listed in this field and the ones selected by namespaceSelector. null or empty namespaces list and null namespaceSelector means "this pod's namespace"<br/>
+          namespaces specifies a static list of namespace names that the term applies to. The term is applied to the union of the namespaces listed in this field and the ones selected by namespaceSelector. null or empty namespaces list and null namespaceSelector means "this pod's namespace".<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -57169,7 +52951,7 @@ A label selector requirement is a selector that contains values, a key, and an o
 
 
 
-A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces. This field is beta-level and is only honored when PodAffinityNamespaceSelector feature is enabled.
+A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces.
 
 <table>
     <thead>
@@ -57273,14 +53055,14 @@ Defines a set of pods (namely those matching the labelSelector relative to the g
         <td><b><a href="#stargatespecaffinitypodantiaffinityrequiredduringschedulingignoredduringexecutionindexnamespaceselector">namespaceSelector</a></b></td>
         <td>object</td>
         <td>
-          A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces. This field is beta-level and is only honored when PodAffinityNamespaceSelector feature is enabled.<br/>
+          A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>namespaces</b></td>
         <td>[]string</td>
         <td>
-          namespaces specifies a static list of namespace names that the term applies to. The term is applied to the union of the namespaces listed in this field and the ones selected by namespaceSelector. null or empty namespaces list and null namespaceSelector means "this pod's namespace"<br/>
+          namespaces specifies a static list of namespace names that the term applies to. The term is applied to the union of the namespaces listed in this field and the ones selected by namespaceSelector. null or empty namespaces list and null namespaceSelector means "this pod's namespace".<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -57367,7 +53149,7 @@ A label selector requirement is a selector that contains values, a key, and an o
 
 
 
-A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces. This field is beta-level and is only honored when PodAffinityNamespaceSelector feature is enabled.
+A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces.
 
 <table>
     <thead>
@@ -57564,16 +53346,30 @@ Client encryption stores which are used by Cassandra and Reaper.
         <td><b><a href="#stargatespeccassandraencryptionclientencryptionstoreskeystoresecretref">keystoreSecretRef</a></b></td>
         <td>object</td>
         <td>
-          ref to the secret that contains the keystore and its password the expected format of the secret is a "keystore" entry and a "keystore-password" entry<br/>
+          ref to the secret that contains the keystore and optionally its password (which can also be specified through the keystorePasswordSecretRef field) if keys are not specified, "keystore" entry and a "keystore-password" entry will be used<br/>
         </td>
         <td>true</td>
       </tr><tr>
         <td><b><a href="#stargatespeccassandraencryptionclientencryptionstorestruststoresecretref">truststoreSecretRef</a></b></td>
         <td>object</td>
         <td>
-          ref to the secret that contains the truststore and its password the expected format of the secret is a "truststore" entry and a "truststore-password" entry<br/>
+          ref to the secret that contains the truststore and optionally its password (which can also be specified through the truststorePasswordSecretRef field) if keys are not specified explicitly, "keystore" entry and a "keystore-password" entry will be used<br/>
         </td>
         <td>true</td>
+      </tr><tr>
+        <td><b><a href="#stargatespeccassandraencryptionclientencryptionstoreskeystorepasswordsecretref">keystorePasswordSecretRef</a></b></td>
+        <td>object</td>
+        <td>
+          ref to the secret that contains the keystore password if password stored in different secret than keystoreSecretRef if key isn't specified explicitly, "keystore-password" entry will be used<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#stargatespeccassandraencryptionclientencryptionstorestruststorepasswordsecretref">truststorePasswordSecretRef</a></b></td>
+        <td>object</td>
+        <td>
+          ref to the secret that contains the truststore password if password stored in different secret than keystoreSecretRef if key isn't specified  explicitly, "truststore-password" entry will be used<br/>
+        </td>
+        <td>false</td>
       </tr></tbody>
 </table>
 
@@ -57583,7 +53379,7 @@ Client encryption stores which are used by Cassandra and Reaper.
 
 
 
-ref to the secret that contains the keystore and its password the expected format of the secret is a "keystore" entry and a "keystore-password" entry
+ref to the secret that contains the keystore and optionally its password (which can also be specified through the keystorePasswordSecretRef field) if keys are not specified, "keystore" entry and a "keystore-password" entry will be used
 
 <table>
     <thead>
@@ -57595,6 +53391,13 @@ ref to the secret that contains the keystore and its password the expected forma
         </tr>
     </thead>
     <tbody><tr>
+        <td><b>key</b></td>
+        <td>string</td>
+        <td>
+          The key of the entry in the Secret resource's `data` field to be used.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
         <td><b>name</b></td>
         <td>string</td>
         <td>
@@ -57610,7 +53413,7 @@ ref to the secret that contains the keystore and its password the expected forma
 
 
 
-ref to the secret that contains the truststore and its password the expected format of the secret is a "truststore" entry and a "truststore-password" entry
+ref to the secret that contains the truststore and optionally its password (which can also be specified through the truststorePasswordSecretRef field) if keys are not specified explicitly, "keystore" entry and a "keystore-password" entry will be used
 
 <table>
     <thead>
@@ -57622,6 +53425,81 @@ ref to the secret that contains the truststore and its password the expected for
         </tr>
     </thead>
     <tbody><tr>
+        <td><b>key</b></td>
+        <td>string</td>
+        <td>
+          The key of the entry in the Secret resource's `data` field to be used.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>name</b></td>
+        <td>string</td>
+        <td>
+          Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### Stargate.spec.cassandraEncryption.clientEncryptionStores.keystorePasswordSecretRef
+<sup><sup>[↩ Parent](#stargatespeccassandraencryptionclientencryptionstores)</sup></sup>
+
+
+
+ref to the secret that contains the keystore password if password stored in different secret than keystoreSecretRef if key isn't specified explicitly, "keystore-password" entry will be used
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>key</b></td>
+        <td>string</td>
+        <td>
+          The key of the entry in the Secret resource's `data` field to be used.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>name</b></td>
+        <td>string</td>
+        <td>
+          Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### Stargate.spec.cassandraEncryption.clientEncryptionStores.truststorePasswordSecretRef
+<sup><sup>[↩ Parent](#stargatespeccassandraencryptionclientencryptionstores)</sup></sup>
+
+
+
+ref to the secret that contains the truststore password if password stored in different secret than keystoreSecretRef if key isn't specified  explicitly, "truststore-password" entry will be used
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>key</b></td>
+        <td>string</td>
+        <td>
+          The key of the entry in the Secret resource's `data` field to be used.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
         <td><b>name</b></td>
         <td>string</td>
         <td>
@@ -57652,16 +53530,30 @@ Internode encryption stores which are used by Cassandra and Stargate.
         <td><b><a href="#stargatespeccassandraencryptionserverencryptionstoreskeystoresecretref">keystoreSecretRef</a></b></td>
         <td>object</td>
         <td>
-          ref to the secret that contains the keystore and its password the expected format of the secret is a "keystore" entry and a "keystore-password" entry<br/>
+          ref to the secret that contains the keystore and optionally its password (which can also be specified through the keystorePasswordSecretRef field) if keys are not specified, "keystore" entry and a "keystore-password" entry will be used<br/>
         </td>
         <td>true</td>
       </tr><tr>
         <td><b><a href="#stargatespeccassandraencryptionserverencryptionstorestruststoresecretref">truststoreSecretRef</a></b></td>
         <td>object</td>
         <td>
-          ref to the secret that contains the truststore and its password the expected format of the secret is a "truststore" entry and a "truststore-password" entry<br/>
+          ref to the secret that contains the truststore and optionally its password (which can also be specified through the truststorePasswordSecretRef field) if keys are not specified explicitly, "keystore" entry and a "keystore-password" entry will be used<br/>
         </td>
         <td>true</td>
+      </tr><tr>
+        <td><b><a href="#stargatespeccassandraencryptionserverencryptionstoreskeystorepasswordsecretref">keystorePasswordSecretRef</a></b></td>
+        <td>object</td>
+        <td>
+          ref to the secret that contains the keystore password if password stored in different secret than keystoreSecretRef if key isn't specified explicitly, "keystore-password" entry will be used<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#stargatespeccassandraencryptionserverencryptionstorestruststorepasswordsecretref">truststorePasswordSecretRef</a></b></td>
+        <td>object</td>
+        <td>
+          ref to the secret that contains the truststore password if password stored in different secret than keystoreSecretRef if key isn't specified  explicitly, "truststore-password" entry will be used<br/>
+        </td>
+        <td>false</td>
       </tr></tbody>
 </table>
 
@@ -57671,7 +53563,7 @@ Internode encryption stores which are used by Cassandra and Stargate.
 
 
 
-ref to the secret that contains the keystore and its password the expected format of the secret is a "keystore" entry and a "keystore-password" entry
+ref to the secret that contains the keystore and optionally its password (which can also be specified through the keystorePasswordSecretRef field) if keys are not specified, "keystore" entry and a "keystore-password" entry will be used
 
 <table>
     <thead>
@@ -57683,6 +53575,13 @@ ref to the secret that contains the keystore and its password the expected forma
         </tr>
     </thead>
     <tbody><tr>
+        <td><b>key</b></td>
+        <td>string</td>
+        <td>
+          The key of the entry in the Secret resource's `data` field to be used.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
         <td><b>name</b></td>
         <td>string</td>
         <td>
@@ -57698,7 +53597,7 @@ ref to the secret that contains the keystore and its password the expected forma
 
 
 
-ref to the secret that contains the truststore and its password the expected format of the secret is a "truststore" entry and a "truststore-password" entry
+ref to the secret that contains the truststore and optionally its password (which can also be specified through the truststorePasswordSecretRef field) if keys are not specified explicitly, "keystore" entry and a "keystore-password" entry will be used
 
 <table>
     <thead>
@@ -57710,6 +53609,81 @@ ref to the secret that contains the truststore and its password the expected for
         </tr>
     </thead>
     <tbody><tr>
+        <td><b>key</b></td>
+        <td>string</td>
+        <td>
+          The key of the entry in the Secret resource's `data` field to be used.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>name</b></td>
+        <td>string</td>
+        <td>
+          Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### Stargate.spec.cassandraEncryption.serverEncryptionStores.keystorePasswordSecretRef
+<sup><sup>[↩ Parent](#stargatespeccassandraencryptionserverencryptionstores)</sup></sup>
+
+
+
+ref to the secret that contains the keystore password if password stored in different secret than keystoreSecretRef if key isn't specified explicitly, "keystore-password" entry will be used
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>key</b></td>
+        <td>string</td>
+        <td>
+          The key of the entry in the Secret resource's `data` field to be used.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>name</b></td>
+        <td>string</td>
+        <td>
+          Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### Stargate.spec.cassandraEncryption.serverEncryptionStores.truststorePasswordSecretRef
+<sup><sup>[↩ Parent](#stargatespeccassandraencryptionserverencryptionstores)</sup></sup>
+
+
+
+ref to the secret that contains the truststore password if password stored in different secret than keystoreSecretRef if key isn't specified  explicitly, "truststore-password" entry will be used
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>key</b></td>
+        <td>string</td>
+        <td>
+          The key of the entry in the Secret resource's `data` field to be used.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
         <td><b>name</b></td>
         <td>string</td>
         <td>
@@ -57851,7 +53825,7 @@ LivenessProbe sets the Stargate liveness probe. Leave nil to use defaults.
         <td><b><a href="#stargatespeclivenessprobegrpc">grpc</a></b></td>
         <td>object</td>
         <td>
-          GRPC specifies an action involving a GRPC port. This is an alpha field and requires enabling GRPCContainerProbe feature gate.<br/>
+          GRPC specifies an action involving a GRPC port. This is a beta field and requires enabling GRPCContainerProbe feature gate.<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -57949,7 +53923,7 @@ Exec specifies the action to take.
 
 
 
-GRPC specifies an action involving a GRPC port. This is an alpha field and requires enabling GRPCContainerProbe feature gate.
+GRPC specifies an action involving a GRPC port. This is a beta field and requires enabling GRPCContainerProbe feature gate.
 
 <table>
     <thead>
@@ -58201,6 +54175,16 @@ StargateRackTemplate defines custom rules for Stargate pods in a given rack. The
         <td>object</td>
         <td>
           Resources is the Kubernetes resource requests and limits to apply, per Stargate pod. Leave nil to use defaults.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>secretsProvider</b></td>
+        <td>enum</td>
+        <td>
+          SecretsProvider defines whether the secrets used for credentials and certs will be backed by an external secret backend. This moves the responsibility of generating and storing secrets from the operators to the user and will rely on a mutating webhook to inject the secrets into the necessary resources<br/>
+          <br/>
+            <i>Enum</i>: internal, external<br/>
+            <i>Default</i>: internal<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -58704,14 +54688,14 @@ Required. A pod affinity term, associated with the corresponding weight.
         <td><b><a href="#stargatespecracksindexaffinitypodaffinitypreferredduringschedulingignoredduringexecutionindexpodaffinitytermnamespaceselector">namespaceSelector</a></b></td>
         <td>object</td>
         <td>
-          A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces. This field is beta-level and is only honored when PodAffinityNamespaceSelector feature is enabled.<br/>
+          A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>namespaces</b></td>
         <td>[]string</td>
         <td>
-          namespaces specifies a static list of namespace names that the term applies to. The term is applied to the union of the namespaces listed in this field and the ones selected by namespaceSelector. null or empty namespaces list and null namespaceSelector means "this pod's namespace"<br/>
+          namespaces specifies a static list of namespace names that the term applies to. The term is applied to the union of the namespaces listed in this field and the ones selected by namespaceSelector. null or empty namespaces list and null namespaceSelector means "this pod's namespace".<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -58798,7 +54782,7 @@ A label selector requirement is a selector that contains values, a key, and an o
 
 
 
-A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces. This field is beta-level and is only honored when PodAffinityNamespaceSelector feature is enabled.
+A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces.
 
 <table>
     <thead>
@@ -58902,14 +54886,14 @@ Defines a set of pods (namely those matching the labelSelector relative to the g
         <td><b><a href="#stargatespecracksindexaffinitypodaffinityrequiredduringschedulingignoredduringexecutionindexnamespaceselector">namespaceSelector</a></b></td>
         <td>object</td>
         <td>
-          A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces. This field is beta-level and is only honored when PodAffinityNamespaceSelector feature is enabled.<br/>
+          A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>namespaces</b></td>
         <td>[]string</td>
         <td>
-          namespaces specifies a static list of namespace names that the term applies to. The term is applied to the union of the namespaces listed in this field and the ones selected by namespaceSelector. null or empty namespaces list and null namespaceSelector means "this pod's namespace"<br/>
+          namespaces specifies a static list of namespace names that the term applies to. The term is applied to the union of the namespaces listed in this field and the ones selected by namespaceSelector. null or empty namespaces list and null namespaceSelector means "this pod's namespace".<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -58996,7 +54980,7 @@ A label selector requirement is a selector that contains values, a key, and an o
 
 
 
-A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces. This field is beta-level and is only honored when PodAffinityNamespaceSelector feature is enabled.
+A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces.
 
 <table>
     <thead>
@@ -59170,14 +55154,14 @@ Required. A pod affinity term, associated with the corresponding weight.
         <td><b><a href="#stargatespecracksindexaffinitypodantiaffinitypreferredduringschedulingignoredduringexecutionindexpodaffinitytermnamespaceselector">namespaceSelector</a></b></td>
         <td>object</td>
         <td>
-          A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces. This field is beta-level and is only honored when PodAffinityNamespaceSelector feature is enabled.<br/>
+          A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>namespaces</b></td>
         <td>[]string</td>
         <td>
-          namespaces specifies a static list of namespace names that the term applies to. The term is applied to the union of the namespaces listed in this field and the ones selected by namespaceSelector. null or empty namespaces list and null namespaceSelector means "this pod's namespace"<br/>
+          namespaces specifies a static list of namespace names that the term applies to. The term is applied to the union of the namespaces listed in this field and the ones selected by namespaceSelector. null or empty namespaces list and null namespaceSelector means "this pod's namespace".<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -59264,7 +55248,7 @@ A label selector requirement is a selector that contains values, a key, and an o
 
 
 
-A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces. This field is beta-level and is only honored when PodAffinityNamespaceSelector feature is enabled.
+A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces.
 
 <table>
     <thead>
@@ -59368,14 +55352,14 @@ Defines a set of pods (namely those matching the labelSelector relative to the g
         <td><b><a href="#stargatespecracksindexaffinitypodantiaffinityrequiredduringschedulingignoredduringexecutionindexnamespaceselector">namespaceSelector</a></b></td>
         <td>object</td>
         <td>
-          A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces. This field is beta-level and is only honored when PodAffinityNamespaceSelector feature is enabled.<br/>
+          A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces.<br/>
         </td>
         <td>false</td>
       </tr><tr>
         <td><b>namespaces</b></td>
         <td>[]string</td>
         <td>
-          namespaces specifies a static list of namespace names that the term applies to. The term is applied to the union of the namespaces listed in this field and the ones selected by namespaceSelector. null or empty namespaces list and null namespaceSelector means "this pod's namespace"<br/>
+          namespaces specifies a static list of namespace names that the term applies to. The term is applied to the union of the namespaces listed in this field and the ones selected by namespaceSelector. null or empty namespaces list and null namespaceSelector means "this pod's namespace".<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -59462,7 +55446,7 @@ A label selector requirement is a selector that contains values, a key, and an o
 
 
 
-A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces. This field is beta-level and is only honored when PodAffinityNamespaceSelector feature is enabled.
+A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces.
 
 <table>
     <thead>
@@ -59736,7 +55720,7 @@ LivenessProbe sets the Stargate liveness probe. Leave nil to use defaults.
         <td><b><a href="#stargatespecracksindexlivenessprobegrpc">grpc</a></b></td>
         <td>object</td>
         <td>
-          GRPC specifies an action involving a GRPC port. This is an alpha field and requires enabling GRPCContainerProbe feature gate.<br/>
+          GRPC specifies an action involving a GRPC port. This is a beta field and requires enabling GRPCContainerProbe feature gate.<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -59834,7 +55818,7 @@ Exec specifies the action to take.
 
 
 
-GRPC specifies an action involving a GRPC port. This is an alpha field and requires enabling GRPCContainerProbe feature gate.
+GRPC specifies an action involving a GRPC port. This is a beta field and requires enabling GRPCContainerProbe feature gate.
 
 <table>
     <thead>
@@ -60025,7 +56009,7 @@ ReadinessProbe sets the Stargate readiness probe. Leave nil to use defaults.
         <td><b><a href="#stargatespecracksindexreadinessprobegrpc">grpc</a></b></td>
         <td>object</td>
         <td>
-          GRPC specifies an action involving a GRPC port. This is an alpha field and requires enabling GRPCContainerProbe feature gate.<br/>
+          GRPC specifies an action involving a GRPC port. This is a beta field and requires enabling GRPCContainerProbe feature gate.<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -60123,7 +56107,7 @@ Exec specifies the action to take.
 
 
 
-GRPC specifies an action involving a GRPC port. This is an alpha field and requires enabling GRPCContainerProbe feature gate.
+GRPC specifies an action involving a GRPC port. This is a beta field and requires enabling GRPCContainerProbe feature gate.
 
 <table>
     <thead>
@@ -60366,7 +56350,7 @@ Telemetry defines the desired telemetry integrations to deploy targeting the Sta
         <td><b>metricFilters</b></td>
         <td>[]string</td>
         <td>
-          MetricFilters allows passing filters to MCAC in order to reduce the amount of extracted metrics. Not setting this field will result in the default filters being used. Setting it to an empty list will result in all metrics being extracted. Examples: - "deny:org.apache.cassandra.metrics.Table" - "deny:org.apache.cassandra.metrics.table" - "allow:org.apache.cassandra.metrics.table.live_ss_table_count" - "allow:org.apache.cassandra.metrics.Table.LiveSSTableCount" - "allow:org.apache.cassandra.metrics.table.live_disk_space_used"<br/>
+          MetricFilters allows passing filters to MCAC in order to reduce the amount of extracted metrics. Not setting this field will result in the default filters being used: - "deny:org.apache.cassandra.metrics.Table" - "deny:org.apache.cassandra.metrics.table" - "allow:org.apache.cassandra.metrics.table.live_ss_table_count" - "allow:org.apache.cassandra.metrics.Table.LiveSSTableCount" - "allow:org.apache.cassandra.metrics.table.live_disk_space_used" - "allow:org.apache.cassandra.metrics.table.LiveDiskSpaceUsed" - "allow:org.apache.cassandra.metrics.Table.Pending" - "allow:org.apache.cassandra.metrics.Table.Memtable" - "allow:org.apache.cassandra.metrics.Table.Compaction" - "allow:org.apache.cassandra.metrics.table.read" - "allow:org.apache.cassandra.metrics.table.write" - "allow:org.apache.cassandra.metrics.table.range" - "allow:org.apache.cassandra.metrics.table.coordinator" - "allow:org.apache.cassandra.metrics.table.dropped_mutations" Setting it to an empty list will result in all metrics being extracted.<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -60500,7 +56484,7 @@ ReadinessProbe sets the Stargate readiness probe. Leave nil to use defaults.
         <td><b><a href="#stargatespecreadinessprobegrpc">grpc</a></b></td>
         <td>object</td>
         <td>
-          GRPC specifies an action involving a GRPC port. This is an alpha field and requires enabling GRPCContainerProbe feature gate.<br/>
+          GRPC specifies an action involving a GRPC port. This is a beta field and requires enabling GRPCContainerProbe feature gate.<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -60598,7 +56582,7 @@ Exec specifies the action to take.
 
 
 
-GRPC specifies an action involving a GRPC port. This is an alpha field and requires enabling GRPCContainerProbe feature gate.
+GRPC specifies an action involving a GRPC port. This is a beta field and requires enabling GRPCContainerProbe feature gate.
 
 <table>
     <thead>
@@ -60841,7 +56825,7 @@ Telemetry defines the desired telemetry integrations to deploy targeting the Sta
         <td><b>metricFilters</b></td>
         <td>[]string</td>
         <td>
-          MetricFilters allows passing filters to MCAC in order to reduce the amount of extracted metrics. Not setting this field will result in the default filters being used. Setting it to an empty list will result in all metrics being extracted. Examples: - "deny:org.apache.cassandra.metrics.Table" - "deny:org.apache.cassandra.metrics.table" - "allow:org.apache.cassandra.metrics.table.live_ss_table_count" - "allow:org.apache.cassandra.metrics.Table.LiveSSTableCount" - "allow:org.apache.cassandra.metrics.table.live_disk_space_used"<br/>
+          MetricFilters allows passing filters to MCAC in order to reduce the amount of extracted metrics. Not setting this field will result in the default filters being used: - "deny:org.apache.cassandra.metrics.Table" - "deny:org.apache.cassandra.metrics.table" - "allow:org.apache.cassandra.metrics.table.live_ss_table_count" - "allow:org.apache.cassandra.metrics.Table.LiveSSTableCount" - "allow:org.apache.cassandra.metrics.table.live_disk_space_used" - "allow:org.apache.cassandra.metrics.table.LiveDiskSpaceUsed" - "allow:org.apache.cassandra.metrics.Table.Pending" - "allow:org.apache.cassandra.metrics.Table.Memtable" - "allow:org.apache.cassandra.metrics.Table.Compaction" - "allow:org.apache.cassandra.metrics.table.read" - "allow:org.apache.cassandra.metrics.table.write" - "allow:org.apache.cassandra.metrics.table.range" - "allow:org.apache.cassandra.metrics.table.coordinator" - "allow:org.apache.cassandra.metrics.table.dropped_mutations" Setting it to an empty list will result in all metrics being extracted.<br/>
         </td>
         <td>false</td>
       </tr></tbody>
