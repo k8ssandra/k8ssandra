@@ -12707,7 +12707,7 @@ Stargate defines the desired deployment characteristics for Stargate in this dat
         <td>
           ContainerImage is the image characteristics to use for Stargate containers. Leave nil to use a default image.<br/>
           <br/>
-            <i>Default</i>: map[repository:stargateio tag:v1.0.45]<br/>
+            <i>Default</i>: map[repository:stargateio tag:v1.0.66]<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -14609,7 +14609,7 @@ StargateRackTemplate defines custom rules for Stargate pods in a given rack. The
         <td>
           ContainerImage is the image characteristics to use for Stargate containers. Leave nil to use a default image.<br/>
           <br/>
-            <i>Default</i>: map[repository:stargateio tag:v1.0.45]<br/>
+            <i>Default</i>: map[repository:stargateio tag:v1.0.66]<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -29136,7 +29136,7 @@ Stargate defines the desired deployment characteristics for Stargate in this K8s
         <td>
           ContainerImage is the image characteristics to use for Stargate containers. Leave nil to use a default image.<br/>
           <br/>
-            <i>Default</i>: map[repository:stargateio tag:v1.0.45]<br/>
+            <i>Default</i>: map[repository:stargateio tag:v1.0.66]<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -51806,7 +51806,7 @@ Specification of the desired behavior of this Stargate resource.
         <td>
           ContainerImage is the image characteristics to use for Stargate containers. Leave nil to use a default image.<br/>
           <br/>
-            <i>Default</i>: map[repository:stargateio tag:v1.0.45]<br/>
+            <i>Default</i>: map[repository:stargateio tag:v1.0.66]<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -54137,7 +54137,7 @@ StargateRackTemplate defines custom rules for Stargate pods in a given rack. The
         <td>
           ContainerImage is the image characteristics to use for Stargate containers. Leave nil to use a default image.<br/>
           <br/>
-            <i>Default</i>: map[repository:stargateio tag:v1.0.45]<br/>
+            <i>Default</i>: map[repository:stargateio tag:v1.0.66]<br/>
         </td>
         <td>false</td>
       </tr><tr>
