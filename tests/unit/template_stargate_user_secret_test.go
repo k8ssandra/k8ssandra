@@ -4,6 +4,7 @@ import (
 	"path/filepath"
 
 	"github.com/gruntwork-io/terratest/modules/helm"
+	helmUtils "github.com/k8ssandra/k8ssandra/tests/unit/utils/helm"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	corev1 "k8s.io/api/core/v1"
@@ -23,15 +24,11 @@ var _ = Describe("Verify stargate user secret template", func() {
 	})
 
 	renderTemplate := func(options *helm.Options) error {
-		renderedOutput, err := helm.RenderTemplateE(
-			GinkgoT(), options, helmChartPath, HelmReleaseName,
-			[]string{"templates/stargate/stargate-user-secret.yaml"},
-		)
-
-		if err == nil {
-			err = helm.UnmarshalK8SYamlE(GinkgoT(), renderedOutput, secret)
-		}
-		return err
+		return helmUtils.RenderAndUnmarshall("templates/stargate/stargate-user-secret.yaml",
+			options, helmChartPath, HelmReleaseName,
+			func(renderedYaml string) error {
+				return helm.UnmarshalK8SYamlE(GinkgoT(), renderedYaml, secret)
+			})
 	}
 
 	Context("generating stargate user secret", func() {
