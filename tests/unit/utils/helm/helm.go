@@ -32,6 +32,10 @@ func RenderAndUnmarshall(templatePath string, options *helm.Options, helmChartPa
 
 	// Use CLI option: --rendertmpl={"dir":"/tmp/foo", "name":"my-test.yaml"}
 	opt := options.SetValues
+	if opt == nil {
+		opt = make(map[string]string)
+	}
+	opt["admissionWebhooks.enabled"] = "false"
 	if opt != nil && opt[OPT_RENDER_TEMPLATE] != "" {
 
 		fmt.Println("opt[OPT_RENDER_TEMPLATE]: ", opt[OPT_RENDER_TEMPLATE])
