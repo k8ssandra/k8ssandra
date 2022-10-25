@@ -1,4 +1,4 @@
-{{- if .Values.stargate.enabled }}
+{{- if and .Values.stargate.enabled and .Values.kube-prometheus-stack.enabled}}
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
