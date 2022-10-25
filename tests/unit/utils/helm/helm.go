@@ -25,6 +25,14 @@ type OutputDirective struct {
 func RenderAndUnmarshall(templatePath string, options *helm.Options, helmChartPath string, HelmReleaseName string,
 	unmarshallFunction func(string) error) error {
 
+	if options == nil {
+		options = &helm.Options{}
+	}
+	if options.SetValues == nil {
+		options.SetValues = make(map[string]string)
+	}
+	options.SetValues["admissionWebhooks.enabled"] = "false"
+
 	renderedOutput, renderErr := helm.RenderTemplateE(
 		GinkgoT(), options, helmChartPath, HelmReleaseName,
 		[]string{templatePath},
@@ -32,10 +40,6 @@ func RenderAndUnmarshall(templatePath string, options *helm.Options, helmChartPa
 
 	// Use CLI option: --rendertmpl={"dir":"/tmp/foo", "name":"my-test.yaml"}
 	opt := options.SetValues
-	if opt == nil {
-		opt = make(map[string]string)
-	}
-	opt["admissionWebhooks.enabled"] = "false"
 	if opt != nil && opt[OPT_RENDER_TEMPLATE] != "" {
 
 		fmt.Println("opt[OPT_RENDER_TEMPLATE]: ", opt[OPT_RENDER_TEMPLATE])
