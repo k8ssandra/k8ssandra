@@ -53,6 +53,7 @@ jobs:
           cp -rv charts/* build/
       - name: Lint charts
         run: |
+          find cass-operator/templates -name '*.yaml' | xargs sed -i -e 's/.Capabilities.APIVersions.Has "cert-manager.io\/v1"/true/g'
           ls | while read c; do
             if [[ -d $c ]]; then
               helm lint $c
@@ -89,5 +90,6 @@ jobs:
           scripts/update-helm-deps.sh
       - name: Run unit tests
         run: |
+          find charts/cass-operator/templates -name '*.yaml' | xargs sed -i -e 's/.Capabilities.APIVersions.Has "cert-manager.io\/v1"/true/g'
           export PATH=$GOROOT/bin:$GOPATH/bin:$PATH
           make test
