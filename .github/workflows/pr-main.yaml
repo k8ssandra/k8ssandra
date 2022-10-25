@@ -29,7 +29,7 @@ jobs:
         run: ./.github/scripts/env_variables.sh
 
       - name: Install Helm
-        uses: azure/setup-helm@v1
+        uses: azure/setup-helm@v3
         with:
           version: ${{ env.HELM_VERSION }}
 
@@ -51,9 +51,9 @@ jobs:
         run: |
           mkdir build
           cp -rv charts/* build/
+          find build/cass-operator/templates -name '*.yaml' | xargs sed -i -e 's/.Capabilities.APIVersions.Has "cert-manager.io\/v1"/true/g'
       - name: Lint charts
         run: |
-          find k8ssandra/charts/cass-operator/templates -name '*.yaml' | xargs sed -i -e 's/.Capabilities.APIVersions.Has "cert-manager.io\/v1"/true/g'
           ls | while read c; do
             if [[ -d $c ]]; then
               helm lint $c
@@ -85,11 +85,15 @@ jobs:
           key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
           restore-keys: |
             ${{ runner.os }}-go
+      - name: Install Helm
+        uses: azure/setup-helm@v3
+        with:
+          version: ${{ env.HELM_VERSION }}
       - name: Update chart dependencies
         run: |
           scripts/update-helm-deps.sh
       - name: Run unit tests
         run: |
-          find k8ssandra/charts/cass-operator/templates -name '*.yaml' | xargs sed -i -e 's/.Capabilities.APIVersions.Has "cert-manager.io\/v1"/true/g'
+          find charts/cass-operator/templates -name '*.yaml' | xargs sed -i -e 's/.Capabilities.APIVersions.Has "cert-manager.io\/v1"/true/g'
           export PATH=$GOROOT/bin:$GOPATH/bin:$PATH
           make test
