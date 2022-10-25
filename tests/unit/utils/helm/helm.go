@@ -35,7 +35,7 @@ func RenderAndUnmarshall(templatePath string, options *helm.Options, helmChartPa
 
 	renderedOutput, renderErr := helm.RenderTemplateE(
 		GinkgoT(), options, helmChartPath, HelmReleaseName,
-		[]string{templatePath},
+		[]string{templatePath}, "--api-versions", "cert-manager.io/v1",
 	)
 
 	// Use CLI option: --rendertmpl={"dir":"/tmp/foo", "name":"my-test.yaml"}
