@@ -21,7 +21,7 @@ dependencies:
     version: 0.28.6
     repository: file://../k8ssandra-common
   - name: kube-prometheus-stack
-    version: 20.0.1
+    version: 41.6.1
     repository: https://prometheus-community.github.io/helm-charts
     condition: kube-prometheus-stack.enabled
 home: https://k8ssandra.io/
