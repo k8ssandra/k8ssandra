@@ -1,4 +1,4 @@
-{{- if and .Values.monitoring.prometheus.provision_service_monitors .Values.kube-prometheus-stack.enabled }}
+{{- if and .Values.monitoring.prometheus.provision_service_monitors (.Capabilities.APIVersions.Has "monitoring.coreos.com/v1") }}
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
