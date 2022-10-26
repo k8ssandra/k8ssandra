@@ -877,10 +877,31 @@ CassandraConfig contains configuration settings that are applied to cassandra.ya
         </tr>
     </thead>
     <tbody><tr>
+        <td><b>additionalJvm11ServerOptions</b></td>
+        <td>[]string</td>
+        <td>
+          Jvm11ServerOptions are additional options that will be passed on to the jvm11-server-options file.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>additionalJvm8ServerOptions</b></td>
+        <td>[]string</td>
+        <td>
+          Jvm8ServerOptions are additional options that will be passed on to the jvm8-server-options file.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>additionalJvmServerOptions</b></td>
+        <td>[]string</td>
+        <td>
+          JvmServerOptions are additional options that will be passed on to the jvm-server-options file.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
         <td><b>additionalOptions</b></td>
         <td>[]string</td>
         <td>
-          Additional, arbitrary JVM options (advanced).<br/>
+          Additional, arbitrary JVM options which are written into the cassandra-env.sh file.<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -4078,10 +4099,31 @@ CassandraConfig contains configuration settings that are applied to cassandra.ya
         </tr>
     </thead>
     <tbody><tr>
+        <td><b>additionalJvm11ServerOptions</b></td>
+        <td>[]string</td>
+        <td>
+          Jvm11ServerOptions are additional options that will be passed on to the jvm11-server-options file.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>additionalJvm8ServerOptions</b></td>
+        <td>[]string</td>
+        <td>
+          Jvm8ServerOptions are additional options that will be passed on to the jvm8-server-options file.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>additionalJvmServerOptions</b></td>
+        <td>[]string</td>
+        <td>
+          JvmServerOptions are additional options that will be passed on to the jvm-server-options file.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
         <td><b>additionalOptions</b></td>
         <td>[]string</td>
         <td>
-          Additional, arbitrary JVM options (advanced).<br/>
+          Additional, arbitrary JVM options which are written into the cassandra-env.sh file.<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -12707,7 +12749,7 @@ Stargate defines the desired deployment characteristics for Stargate in this dat
         <td>
           ContainerImage is the image characteristics to use for Stargate containers. Leave nil to use a default image.<br/>
           <br/>
-            <i>Default</i>: map[repository:stargateio tag:v1.0.45]<br/>
+            <i>Default</i>: map[repository:stargateio tag:v1.0.66]<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -14609,7 +14651,7 @@ StargateRackTemplate defines custom rules for Stargate pods in a given rack. The
         <td>
           ContainerImage is the image characteristics to use for Stargate containers. Leave nil to use a default image.<br/>
           <br/>
-            <i>Default</i>: map[repository:stargateio tag:v1.0.45]<br/>
+            <i>Default</i>: map[repository:stargateio tag:v1.0.66]<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -29136,7 +29178,7 @@ Stargate defines the desired deployment characteristics for Stargate in this K8s
         <td>
           ContainerImage is the image characteristics to use for Stargate containers. Leave nil to use a default image.<br/>
           <br/>
-            <i>Default</i>: map[repository:stargateio tag:v1.0.45]<br/>
+            <i>Default</i>: map[repository:stargateio tag:v1.0.66]<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -51806,7 +51848,7 @@ Specification of the desired behavior of this Stargate resource.
         <td>
           ContainerImage is the image characteristics to use for Stargate containers. Leave nil to use a default image.<br/>
           <br/>
-            <i>Default</i>: map[repository:stargateio tag:v1.0.45]<br/>
+            <i>Default</i>: map[repository:stargateio tag:v1.0.66]<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -54137,7 +54179,7 @@ StargateRackTemplate defines custom rules for Stargate pods in a given rack. The
         <td>
           ContainerImage is the image characteristics to use for Stargate containers. Leave nil to use a default image.<br/>
           <br/>
-            <i>Default</i>: map[repository:stargateio tag:v1.0.45]<br/>
+            <i>Default</i>: map[repository:stargateio tag:v1.0.66]<br/>
         </td>
         <td>false</td>
       </tr><tr>
