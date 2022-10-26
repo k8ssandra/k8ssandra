@@ -807,6 +807,10 @@ cass-operator:
   # -- Enables the cass-operator as part of this release. If this setting is
   # disabled no Cassandra resources will be deployed.
   enabled: true
+  # -- Configures admission webhooks deployed with cass-operator. If admissionWebhooks are enabled, cert-manager is required to be installed. We recommend enabling webhooks.
+  admissionWebhooks:
+    # -- Turns the admission webhooks on or off
+    enabled: false
 reaper-operator:
   # -- Enables the reaper-operator as part of this release. If this setting is
   # disabled no repair resources will be deployed.
