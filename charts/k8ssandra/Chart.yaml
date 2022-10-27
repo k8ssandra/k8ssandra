@@ -10,7 +10,7 @@ dependencies:
     repository: https://helm.k8ssandra.io
     condition: cass-operator.enabled
   - name: reaper-operator
-    version: 0.32.3
+    version: 0.32.4
     repository: file://../reaper-operator
     condition: reaper-operator.enabled
   - name: medusa-operator
