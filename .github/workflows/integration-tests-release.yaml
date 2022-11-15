@@ -108,8 +108,8 @@ jobs:
           - "TestReaperDeploymentScenario"
           - "TestMonitoringDeploymentScenario"
           - "TestStargateDeploymentScenario"
-          - "TestRestoreAfterUpgrade"
-          - "TestUpgradeScenario"
+          #- "TestRestoreAfterUpgrade"
+          #- "TestUpgradeScenario"
           - "TestCustomCassandraConfiguration"
           #- "TestUpgradeK8ssandraOperatorScenario"
         exclude:

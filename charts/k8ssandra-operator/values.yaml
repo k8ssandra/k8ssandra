@@ -25,7 +25,7 @@ image:
   # -- Pull policy for the operator container
   pullPolicy: IfNotPresent
   # -- Tag of the k8ssandra-operator image to pull from image.repository
-  tag: v1.2.1
+  tag: v1.3.0
   # -- Docker registry containing all cass-operator related images. Setting this
   # allows for usage of an internal registry without specifying serverImage,
   # configBuilderImage, and busyboxImage on all CassandraDatacenter objects.
