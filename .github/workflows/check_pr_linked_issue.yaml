@@ -23,5 +23,5 @@ jobs:
       - uses: nearform/github-action-check-linked-issues@v1
         id: check-linked-issues
         with:
-          exclude-branches: "dependabot/**"
+          exclude-branches: "dependabot/**, upgrade/**"
           comment: true
