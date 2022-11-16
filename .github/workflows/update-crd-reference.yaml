@@ -106,7 +106,7 @@ jobs:
           token: ${{ secrets.CREATE_PR_TOKEN }}
           commit-message: Upgrade CRD reference
           delete-branch: true
-          branch: upgrade-crd-reference-${{ env.PR_BRANCH }}
+          branch: upgrade/upgrade-crd-reference-${{ env.PR_BRANCH }}
           base: docs-v2
           title: Upgrade CRD reference ${{ env.PR_BRANCH }}
           body: |
