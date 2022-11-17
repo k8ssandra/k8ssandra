@@ -364,6 +364,13 @@ Cassandra is a specification of the Cassandra cluster. This includes everything 
         </td>
         <td>false</td>
       </tr><tr>
+        <td><b><a href="#k8ssandraclusterspeccassandramanagementapiauth">managementApiAuth</a></b></td>
+        <td>object</td>
+        <td>
+          ManagementApiAuth defines the authentication settings for the management API in the Cassandra pods.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
         <td><b>mgmtAPIHeap</b></td>
         <td>int or string</td>
         <td>
@@ -375,6 +382,13 @@ Cassandra is a specification of the Cassandra cluster. This includes everything 
         <td>object</td>
         <td>
           Networking enables host networking and configures a NodePort ports.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#k8ssandraclusterspeccassandrapodsecuritycontext">podSecurityContext</a></b></td>
+        <td>object</td>
+        <td>
+          PodSecurityContext defines the security context for the Cassandra pods.<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -877,10 +891,31 @@ CassandraConfig contains configuration settings that are applied to cassandra.ya
         </tr>
     </thead>
     <tbody><tr>
+        <td><b>additionalJvm11ServerOptions</b></td>
+        <td>[]string</td>
+        <td>
+          Jvm11ServerOptions are additional options that will be passed on to the jvm11-server-options file.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>additionalJvm8ServerOptions</b></td>
+        <td>[]string</td>
+        <td>
+          Jvm8ServerOptions are additional options that will be passed on to the jvm8-server-options file.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>additionalJvmServerOptions</b></td>
+        <td>[]string</td>
+        <td>
+          JvmServerOptions are additional options that will be passed on to the jvm-server-options file.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
         <td><b>additionalOptions</b></td>
         <td>[]string</td>
         <td>
-          Additional, arbitrary JVM options (advanced).<br/>
+          Additional, arbitrary JVM options which are written into the cassandra-env.sh file.<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -3750,6 +3785,13 @@ VolumeMount describes a mounting of a Volume within a container.
         </td>
         <td>false</td>
       </tr><tr>
+        <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexmanagementapiauth">managementApiAuth</a></b></td>
+        <td>object</td>
+        <td>
+          ManagementApiAuth defines the authentication settings for the management API in the Cassandra pods.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
         <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexmetadata">metadata</a></b></td>
         <td>object</td>
         <td>
@@ -3768,6 +3810,20 @@ VolumeMount describes a mounting of a Volume within a container.
         <td>object</td>
         <td>
           Networking enables host networking and configures a NodePort ports.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexpernodeconfigmapref">perNodeConfigMapRef</a></b></td>
+        <td>object</td>
+        <td>
+          PerNodeConfigMapRef is a reference to a ConfigMap that contains per-node configuration for this DC. The ConfigMap is expected to have entries in the following form: <pod-name>_<file-name>.yaml, where <pod-name> is the name of the pod and <file-name> is the name of a configuration file (typically, cassandra.yaml). The value of the entry is expected to be a YAML fragment that contains the per-node configuration for each pod. When the pod is started, the per-node ConfigMap is mounted and the contents of each entry corresponding to the pod are merged into their respective configuration files.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexpodsecuritycontext">podSecurityContext</a></b></td>
+        <td>object</td>
+        <td>
+          PodSecurityContext defines the security context for the Cassandra pods.<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -4078,10 +4134,31 @@ CassandraConfig contains configuration settings that are applied to cassandra.ya
         </tr>
     </thead>
     <tbody><tr>
+        <td><b>additionalJvm11ServerOptions</b></td>
+        <td>[]string</td>
+        <td>
+          Jvm11ServerOptions are additional options that will be passed on to the jvm11-server-options file.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>additionalJvm8ServerOptions</b></td>
+        <td>[]string</td>
+        <td>
+          Jvm8ServerOptions are additional options that will be passed on to the jvm8-server-options file.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>additionalJvmServerOptions</b></td>
+        <td>[]string</td>
+        <td>
+          JvmServerOptions are additional options that will be passed on to the jvm-server-options file.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
         <td><b>additionalOptions</b></td>
         <td>[]string</td>
         <td>
-          Additional, arbitrary JVM options (advanced).<br/>
+          Additional, arbitrary JVM options which are written into the cassandra-env.sh file.<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -12439,6 +12516,81 @@ The secret to use when pulling the image from private repositories. If specified
 </table>
 
 
+#### K8ssandraCluster.spec.cassandra.datacenters[index].managementApiAuth
+<sup><sup>[↩ Parent](#k8ssandraclusterspeccassandradatacentersindex)</sup></sup>
+
+
+
+ManagementApiAuth defines the authentication settings for the management API in the Cassandra pods.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>insecure</b></td>
+        <td>object</td>
+        <td>
+          <br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexmanagementapiauthmanual">manual</a></b></td>
+        <td>object</td>
+        <td>
+          <br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### K8ssandraCluster.spec.cassandra.datacenters[index].managementApiAuth.manual
+<sup><sup>[↩ Parent](#k8ssandraclusterspeccassandradatacentersindexmanagementapiauth)</sup></sup>
+
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>clientSecretName</b></td>
+        <td>string</td>
+        <td>
+          <br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>serverSecretName</b></td>
+        <td>string</td>
+        <td>
+          <br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>skipSecretValidation</b></td>
+        <td>boolean</td>
+        <td>
+          <br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
 #### K8ssandraCluster.spec.cassandra.datacenters[index].metadata
 <sup><sup>[↩ Parent](#k8ssandraclusterspeccassandradatacentersindex)</sup></sup>
 
@@ -12563,6 +12715,296 @@ Networking enables host networking and configures a NodePort ports.
         <td>integer</td>
         <td>
           <br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### K8ssandraCluster.spec.cassandra.datacenters[index].perNodeConfigMapRef
+<sup><sup>[↩ Parent](#k8ssandraclusterspeccassandradatacentersindex)</sup></sup>
+
+
+
+PerNodeConfigMapRef is a reference to a ConfigMap that contains per-node configuration for this DC. The ConfigMap is expected to have entries in the following form: <pod-name>_<file-name>.yaml, where <pod-name> is the name of the pod and <file-name> is the name of a configuration file (typically, cassandra.yaml). The value of the entry is expected to be a YAML fragment that contains the per-node configuration for each pod. When the pod is started, the per-node ConfigMap is mounted and the contents of each entry corresponding to the pod are merged into their respective configuration files.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>name</b></td>
+        <td>string</td>
+        <td>
+          Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### K8ssandraCluster.spec.cassandra.datacenters[index].podSecurityContext
+<sup><sup>[↩ Parent](#k8ssandraclusterspeccassandradatacentersindex)</sup></sup>
+
+
+
+PodSecurityContext defines the security context for the Cassandra pods.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>fsGroup</b></td>
+        <td>integer</td>
+        <td>
+          A special supplemental group that applies to all containers in a pod. Some volume types allow the Kubelet to change the ownership of that volume to be owned by the pod: 
+ 1. The owning GID will be the FSGroup 2. The setgid bit is set (new files created in the volume will be owned by FSGroup) 3. The permission bits are OR'd with rw-rw---- 
+ If unset, the Kubelet will not modify the ownership and permissions of any volume. Note that this field cannot be set when spec.os.name is windows.<br/>
+          <br/>
+            <i>Format</i>: int64<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>fsGroupChangePolicy</b></td>
+        <td>string</td>
+        <td>
+          fsGroupChangePolicy defines behavior of changing ownership and permission of the volume before being exposed inside Pod. This field will only apply to volume types which support fsGroup based ownership(and permissions). It will have no effect on ephemeral volume types such as: secret, configmaps and emptydir. Valid values are "OnRootMismatch" and "Always". If not specified, "Always" is used. Note that this field cannot be set when spec.os.name is windows.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>runAsGroup</b></td>
+        <td>integer</td>
+        <td>
+          The GID to run the entrypoint of the container process. Uses runtime default if unset. May also be set in SecurityContext.  If set in both SecurityContext and PodSecurityContext, the value specified in SecurityContext takes precedence for that container. Note that this field cannot be set when spec.os.name is windows.<br/>
+          <br/>
+            <i>Format</i>: int64<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>runAsNonRoot</b></td>
+        <td>boolean</td>
+        <td>
+          Indicates that the container must run as a non-root user. If true, the Kubelet will validate the image at runtime to ensure that it does not run as UID 0 (root) and fail to start the container if it does. If unset or false, no such validation will be performed. May also be set in SecurityContext.  If set in both SecurityContext and PodSecurityContext, the value specified in SecurityContext takes precedence.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>runAsUser</b></td>
+        <td>integer</td>
+        <td>
+          The UID to run the entrypoint of the container process. Defaults to user specified in image metadata if unspecified. May also be set in SecurityContext.  If set in both SecurityContext and PodSecurityContext, the value specified in SecurityContext takes precedence for that container. Note that this field cannot be set when spec.os.name is windows.<br/>
+          <br/>
+            <i>Format</i>: int64<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexpodsecuritycontextselinuxoptions">seLinuxOptions</a></b></td>
+        <td>object</td>
+        <td>
+          The SELinux context to be applied to all containers. If unspecified, the container runtime will allocate a random SELinux context for each container.  May also be set in SecurityContext.  If set in both SecurityContext and PodSecurityContext, the value specified in SecurityContext takes precedence for that container. Note that this field cannot be set when spec.os.name is windows.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexpodsecuritycontextseccompprofile">seccompProfile</a></b></td>
+        <td>object</td>
+        <td>
+          The seccomp options to use by the containers in this pod. Note that this field cannot be set when spec.os.name is windows.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>supplementalGroups</b></td>
+        <td>[]integer</td>
+        <td>
+          A list of groups applied to the first process run in each container, in addition to the container's primary GID.  If unspecified, no groups will be added to any container. Note that this field cannot be set when spec.os.name is windows.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexpodsecuritycontextsysctlsindex">sysctls</a></b></td>
+        <td>[]object</td>
+        <td>
+          Sysctls hold a list of namespaced sysctls used for the pod. Pods with unsupported sysctls (by the container runtime) might fail to launch. Note that this field cannot be set when spec.os.name is windows.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexpodsecuritycontextwindowsoptions">windowsOptions</a></b></td>
+        <td>object</td>
+        <td>
+          The Windows specific settings applied to all containers. If unspecified, the options within a container's SecurityContext will be used. If set in both SecurityContext and PodSecurityContext, the value specified in SecurityContext takes precedence. Note that this field cannot be set when spec.os.name is linux.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### K8ssandraCluster.spec.cassandra.datacenters[index].podSecurityContext.seLinuxOptions
+<sup><sup>[↩ Parent](#k8ssandraclusterspeccassandradatacentersindexpodsecuritycontext)</sup></sup>
+
+
+
+The SELinux context to be applied to all containers. If unspecified, the container runtime will allocate a random SELinux context for each container.  May also be set in SecurityContext.  If set in both SecurityContext and PodSecurityContext, the value specified in SecurityContext takes precedence for that container. Note that this field cannot be set when spec.os.name is windows.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>level</b></td>
+        <td>string</td>
+        <td>
+          Level is SELinux level label that applies to the container.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>role</b></td>
+        <td>string</td>
+        <td>
+          Role is a SELinux role label that applies to the container.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>type</b></td>
+        <td>string</td>
+        <td>
+          Type is a SELinux type label that applies to the container.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>user</b></td>
+        <td>string</td>
+        <td>
+          User is a SELinux user label that applies to the container.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### K8ssandraCluster.spec.cassandra.datacenters[index].podSecurityContext.seccompProfile
+<sup><sup>[↩ Parent](#k8ssandraclusterspeccassandradatacentersindexpodsecuritycontext)</sup></sup>
+
+
+
+The seccomp options to use by the containers in this pod. Note that this field cannot be set when spec.os.name is windows.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>type</b></td>
+        <td>string</td>
+        <td>
+          type indicates which kind of seccomp profile will be applied. Valid options are: 
+ Localhost - a profile defined in a file on the node should be used. RuntimeDefault - the container runtime default profile should be used. Unconfined - no profile should be applied.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>localhostProfile</b></td>
+        <td>string</td>
+        <td>
+          localhostProfile indicates a profile defined in a file on the node should be used. The profile must be preconfigured on the node to work. Must be a descending path, relative to the kubelet's configured seccomp profile location. Must only be set if type is "Localhost".<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### K8ssandraCluster.spec.cassandra.datacenters[index].podSecurityContext.sysctls[index]
+<sup><sup>[↩ Parent](#k8ssandraclusterspeccassandradatacentersindexpodsecuritycontext)</sup></sup>
+
+
+
+Sysctl defines a kernel parameter to be set
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>name</b></td>
+        <td>string</td>
+        <td>
+          Name of a property to set<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>value</b></td>
+        <td>string</td>
+        <td>
+          Value of a property to set<br/>
+        </td>
+        <td>true</td>
+      </tr></tbody>
+</table>
+
+
+#### K8ssandraCluster.spec.cassandra.datacenters[index].podSecurityContext.windowsOptions
+<sup><sup>[↩ Parent](#k8ssandraclusterspeccassandradatacentersindexpodsecuritycontext)</sup></sup>
+
+
+
+The Windows specific settings applied to all containers. If unspecified, the options within a container's SecurityContext will be used. If set in both SecurityContext and PodSecurityContext, the value specified in SecurityContext takes precedence. Note that this field cannot be set when spec.os.name is linux.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>gmsaCredentialSpec</b></td>
+        <td>string</td>
+        <td>
+          GMSACredentialSpec is where the GMSA admission webhook (https://github.com/kubernetes-sigs/windows-gmsa) inlines the contents of the GMSA credential spec named by the GMSACredentialSpecName field.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>gmsaCredentialSpecName</b></td>
+        <td>string</td>
+        <td>
+          GMSACredentialSpecName is the name of the GMSA credential spec to use.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>hostProcess</b></td>
+        <td>boolean</td>
+        <td>
+          HostProcess determines if a container should be run as a 'Host Process' container. This field is alpha-level and will only be honored by components that enable the WindowsHostProcessContainers feature flag. Setting this field without the feature flag will result in errors when validating the Pod. All of a Pod's containers must have the same effective HostProcess value (it is not allowed to have a mix of HostProcess containers and non-HostProcess containers).  In addition, if HostProcess is true then HostNetwork must also be set to true.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>runAsUserName</b></td>
+        <td>string</td>
+        <td>
+          The UserName in Windows to run the entrypoint of the container process. Defaults to the user specified in image metadata if unspecified. May also be set in PodSecurityContext. If set in both SecurityContext and PodSecurityContext, the value specified in SecurityContext takes precedence.<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -12707,7 +13149,7 @@ Stargate defines the desired deployment characteristics for Stargate in this dat
         <td>
           ContainerImage is the image characteristics to use for Stargate containers. Leave nil to use a default image.<br/>
           <br/>
-            <i>Default</i>: map[repository:stargateio tag:v1.0.45]<br/>
+            <i>Default</i>: map[repository:stargateio tag:v1.0.67]<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -14609,7 +15051,7 @@ StargateRackTemplate defines custom rules for Stargate pods in a given rack. The
         <td>
           ContainerImage is the image characteristics to use for Stargate containers. Leave nil to use a default image.<br/>
           <br/>
-            <i>Default</i>: map[repository:stargateio tag:v1.0.45]<br/>
+            <i>Default</i>: map[repository:stargateio tag:v1.0.67]<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -23729,6 +24171,81 @@ The secret to use when pulling the image from private repositories. If specified
 </table>
 
 
+#### K8ssandraCluster.spec.cassandra.managementApiAuth
+<sup><sup>[↩ Parent](#k8ssandraclusterspeccassandra)</sup></sup>
+
+
+
+ManagementApiAuth defines the authentication settings for the management API in the Cassandra pods.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>insecure</b></td>
+        <td>object</td>
+        <td>
+          <br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#k8ssandraclusterspeccassandramanagementapiauthmanual">manual</a></b></td>
+        <td>object</td>
+        <td>
+          <br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### K8ssandraCluster.spec.cassandra.managementApiAuth.manual
+<sup><sup>[↩ Parent](#k8ssandraclusterspeccassandramanagementapiauth)</sup></sup>
+
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>clientSecretName</b></td>
+        <td>string</td>
+        <td>
+          <br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>serverSecretName</b></td>
+        <td>string</td>
+        <td>
+          <br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>skipSecretValidation</b></td>
+        <td>boolean</td>
+        <td>
+          <br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
 #### K8ssandraCluster.spec.cassandra.networking
 <sup><sup>[↩ Parent](#k8ssandraclusterspeccassandra)</sup></sup>
 
@@ -23805,6 +24322,269 @@ Networking enables host networking and configures a NodePort ports.
         <td>integer</td>
         <td>
           <br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### K8ssandraCluster.spec.cassandra.podSecurityContext
+<sup><sup>[↩ Parent](#k8ssandraclusterspeccassandra)</sup></sup>
+
+
+
+PodSecurityContext defines the security context for the Cassandra pods.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>fsGroup</b></td>
+        <td>integer</td>
+        <td>
+          A special supplemental group that applies to all containers in a pod. Some volume types allow the Kubelet to change the ownership of that volume to be owned by the pod: 
+ 1. The owning GID will be the FSGroup 2. The setgid bit is set (new files created in the volume will be owned by FSGroup) 3. The permission bits are OR'd with rw-rw---- 
+ If unset, the Kubelet will not modify the ownership and permissions of any volume. Note that this field cannot be set when spec.os.name is windows.<br/>
+          <br/>
+            <i>Format</i>: int64<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>fsGroupChangePolicy</b></td>
+        <td>string</td>
+        <td>
+          fsGroupChangePolicy defines behavior of changing ownership and permission of the volume before being exposed inside Pod. This field will only apply to volume types which support fsGroup based ownership(and permissions). It will have no effect on ephemeral volume types such as: secret, configmaps and emptydir. Valid values are "OnRootMismatch" and "Always". If not specified, "Always" is used. Note that this field cannot be set when spec.os.name is windows.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>runAsGroup</b></td>
+        <td>integer</td>
+        <td>
+          The GID to run the entrypoint of the container process. Uses runtime default if unset. May also be set in SecurityContext.  If set in both SecurityContext and PodSecurityContext, the value specified in SecurityContext takes precedence for that container. Note that this field cannot be set when spec.os.name is windows.<br/>
+          <br/>
+            <i>Format</i>: int64<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>runAsNonRoot</b></td>
+        <td>boolean</td>
+        <td>
+          Indicates that the container must run as a non-root user. If true, the Kubelet will validate the image at runtime to ensure that it does not run as UID 0 (root) and fail to start the container if it does. If unset or false, no such validation will be performed. May also be set in SecurityContext.  If set in both SecurityContext and PodSecurityContext, the value specified in SecurityContext takes precedence.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>runAsUser</b></td>
+        <td>integer</td>
+        <td>
+          The UID to run the entrypoint of the container process. Defaults to user specified in image metadata if unspecified. May also be set in SecurityContext.  If set in both SecurityContext and PodSecurityContext, the value specified in SecurityContext takes precedence for that container. Note that this field cannot be set when spec.os.name is windows.<br/>
+          <br/>
+            <i>Format</i>: int64<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#k8ssandraclusterspeccassandrapodsecuritycontextselinuxoptions">seLinuxOptions</a></b></td>
+        <td>object</td>
+        <td>
+          The SELinux context to be applied to all containers. If unspecified, the container runtime will allocate a random SELinux context for each container.  May also be set in SecurityContext.  If set in both SecurityContext and PodSecurityContext, the value specified in SecurityContext takes precedence for that container. Note that this field cannot be set when spec.os.name is windows.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#k8ssandraclusterspeccassandrapodsecuritycontextseccompprofile">seccompProfile</a></b></td>
+        <td>object</td>
+        <td>
+          The seccomp options to use by the containers in this pod. Note that this field cannot be set when spec.os.name is windows.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>supplementalGroups</b></td>
+        <td>[]integer</td>
+        <td>
+          A list of groups applied to the first process run in each container, in addition to the container's primary GID.  If unspecified, no groups will be added to any container. Note that this field cannot be set when spec.os.name is windows.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#k8ssandraclusterspeccassandrapodsecuritycontextsysctlsindex">sysctls</a></b></td>
+        <td>[]object</td>
+        <td>
+          Sysctls hold a list of namespaced sysctls used for the pod. Pods with unsupported sysctls (by the container runtime) might fail to launch. Note that this field cannot be set when spec.os.name is windows.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#k8ssandraclusterspeccassandrapodsecuritycontextwindowsoptions">windowsOptions</a></b></td>
+        <td>object</td>
+        <td>
+          The Windows specific settings applied to all containers. If unspecified, the options within a container's SecurityContext will be used. If set in both SecurityContext and PodSecurityContext, the value specified in SecurityContext takes precedence. Note that this field cannot be set when spec.os.name is linux.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### K8ssandraCluster.spec.cassandra.podSecurityContext.seLinuxOptions
+<sup><sup>[↩ Parent](#k8ssandraclusterspeccassandrapodsecuritycontext)</sup></sup>
+
+
+
+The SELinux context to be applied to all containers. If unspecified, the container runtime will allocate a random SELinux context for each container.  May also be set in SecurityContext.  If set in both SecurityContext and PodSecurityContext, the value specified in SecurityContext takes precedence for that container. Note that this field cannot be set when spec.os.name is windows.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>level</b></td>
+        <td>string</td>
+        <td>
+          Level is SELinux level label that applies to the container.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>role</b></td>
+        <td>string</td>
+        <td>
+          Role is a SELinux role label that applies to the container.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>type</b></td>
+        <td>string</td>
+        <td>
+          Type is a SELinux type label that applies to the container.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>user</b></td>
+        <td>string</td>
+        <td>
+          User is a SELinux user label that applies to the container.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### K8ssandraCluster.spec.cassandra.podSecurityContext.seccompProfile
+<sup><sup>[↩ Parent](#k8ssandraclusterspeccassandrapodsecuritycontext)</sup></sup>
+
+
+
+The seccomp options to use by the containers in this pod. Note that this field cannot be set when spec.os.name is windows.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>type</b></td>
+        <td>string</td>
+        <td>
+          type indicates which kind of seccomp profile will be applied. Valid options are: 
+ Localhost - a profile defined in a file on the node should be used. RuntimeDefault - the container runtime default profile should be used. Unconfined - no profile should be applied.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>localhostProfile</b></td>
+        <td>string</td>
+        <td>
+          localhostProfile indicates a profile defined in a file on the node should be used. The profile must be preconfigured on the node to work. Must be a descending path, relative to the kubelet's configured seccomp profile location. Must only be set if type is "Localhost".<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### K8ssandraCluster.spec.cassandra.podSecurityContext.sysctls[index]
+<sup><sup>[↩ Parent](#k8ssandraclusterspeccassandrapodsecuritycontext)</sup></sup>
+
+
+
+Sysctl defines a kernel parameter to be set
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>name</b></td>
+        <td>string</td>
+        <td>
+          Name of a property to set<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>value</b></td>
+        <td>string</td>
+        <td>
+          Value of a property to set<br/>
+        </td>
+        <td>true</td>
+      </tr></tbody>
+</table>
+
+
+#### K8ssandraCluster.spec.cassandra.podSecurityContext.windowsOptions
+<sup><sup>[↩ Parent](#k8ssandraclusterspeccassandrapodsecuritycontext)</sup></sup>
+
+
+
+The Windows specific settings applied to all containers. If unspecified, the options within a container's SecurityContext will be used. If set in both SecurityContext and PodSecurityContext, the value specified in SecurityContext takes precedence. Note that this field cannot be set when spec.os.name is linux.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>gmsaCredentialSpec</b></td>
+        <td>string</td>
+        <td>
+          GMSACredentialSpec is where the GMSA admission webhook (https://github.com/kubernetes-sigs/windows-gmsa) inlines the contents of the GMSA credential spec named by the GMSACredentialSpecName field.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>gmsaCredentialSpecName</b></td>
+        <td>string</td>
+        <td>
+          GMSACredentialSpecName is the name of the GMSA credential spec to use.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>hostProcess</b></td>
+        <td>boolean</td>
+        <td>
+          HostProcess determines if a container should be run as a 'Host Process' container. This field is alpha-level and will only be honored by components that enable the WindowsHostProcessContainers feature flag. Setting this field without the feature flag will result in errors when validating the Pod. All of a Pod's containers must have the same effective HostProcess value (it is not allowed to have a mix of HostProcess containers and non-HostProcess containers).  In addition, if HostProcess is true then HostNetwork must also be set to true.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>runAsUserName</b></td>
+        <td>string</td>
+        <td>
+          The UserName in Windows to run the entrypoint of the container process. Defaults to the user specified in image metadata if unspecified. May also be set in PodSecurityContext. If set in both SecurityContext and PodSecurityContext, the value specified in SecurityContext takes precedence.<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -29136,7 +29916,7 @@ Stargate defines the desired deployment characteristics for Stargate in this K8s
         <td>
           ContainerImage is the image characteristics to use for Stargate containers. Leave nil to use a default image.<br/>
           <br/>
-            <i>Default</i>: map[repository:stargateio tag:v1.0.45]<br/>
+            <i>Default</i>: map[repository:stargateio tag:v1.0.67]<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -51806,7 +52586,7 @@ Specification of the desired behavior of this Stargate resource.
         <td>
           ContainerImage is the image characteristics to use for Stargate containers. Leave nil to use a default image.<br/>
           <br/>
-            <i>Default</i>: map[repository:stargateio tag:v1.0.45]<br/>
+            <i>Default</i>: map[repository:stargateio tag:v1.0.67]<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -54137,7 +54917,7 @@ StargateRackTemplate defines custom rules for Stargate pods in a given rack. The
         <td>
           ContainerImage is the image characteristics to use for Stargate containers. Leave nil to use a default image.<br/>
           <br/>
-            <i>Default</i>: map[repository:stargateio tag:v1.0.45]<br/>
+            <i>Default</i>: map[repository:stargateio tag:v1.0.67]<br/>
         </td>
         <td>false</td>
       </tr><tr>

@@ -14345,6 +14345,13 @@ Arguments are additional parameters for the command
         </td>
         <td>false</td>
       </tr><tr>
+        <td><b>new_tokens</b></td>
+        <td>map[string]string</td>
+        <td>
+          NewTokens is a map of pod names to their newly-assigned tokens. Required for the move command, ignored otherwise. Pods referenced in this map must exist; any existing pod not referenced in this map will not be moved.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
         <td><b>pod_name</b></td>
         <td>string</td>
         <td>
