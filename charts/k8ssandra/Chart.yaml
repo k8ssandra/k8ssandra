@@ -6,7 +6,7 @@ type: application
 version: 1.5.2-SNAPSHOT
 dependencies:
   - name: cass-operator
-    version: 0.35.3
+    version: 0.35.4
     repository: file://../cass-operator
     condition: cass-operator.enabled
   - name: reaper-operator
