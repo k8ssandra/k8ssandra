@@ -62,7 +62,7 @@ cassandra:
       # -- Repository for cass-config-builder image
       repository: datastax/cass-config-builder
       # -- Tag of the config builder image to pull from image repository
-      tag: 1.0.4
+      tag: 1.0.5
       # -- Pull policy for the config builder image
       pullPolicy: IfNotPresent
   # -- The apply-custom-config init container that is deployed when the cassandraYaml
@@ -212,7 +212,7 @@ cassandra:
       # -- Repository for the system-logger image
       repository: k8ssandra/system-logger
       # -- Tag of the system-logger image to pull from image repository
-      tag: 6c64f9c4
+      tag: v1.13.1
       # -- Pull policy for the system-logger image
       pullPolicy: IfNotPresent
   # -- Optional cluster-level heap configuration, can be overridden at `datacenters` level.
