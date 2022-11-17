@@ -20,6 +20,9 @@ and date `## vX.Y.Z - YYYY-MM-DD` and create a new placeholder section for  `unr
 
 * [CHANGE] Upgrade Stargate to v1.0.63
 * [CHANGE] Upgrade cass-operator to v1.10.4
+* [CHANGE] Deprecate all K8ssandra v1.x charts, refer users to k8ssandra-operator.
+* [CHANGE] Upgrade Stargate to v1.0.61
+* [CHANGE] Upgrade cass-operator to v1.12.0
 * [CHANGE] Upgrade Reaper to v3.2.0
 * [ENHANCEMENT] Added s3_rgw support
 * [CHANGE] cass-operator HELM-Chart: Upgrade requires manual action if registryOverride was used before. registryOverride is now repositoryOverride.
