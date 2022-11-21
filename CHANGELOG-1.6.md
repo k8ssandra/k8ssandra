@@ -20,11 +20,11 @@ and date `## vX.Y.Z - YYYY-MM-DD` and create a new placeholder section for  `unr
 
 * [CHANGE] Upgrade Stargate to v1.0.63
 * [CHANGE] Upgrade cass-operator to v1.10.4
+* [CHANGE] Update cass-config-builder and system-logger to newer base images. 
 * [CHANGE] Upgrade Reaper to v3.2.0
 * [ENHANCEMENT] Added s3_rgw support
 * [CHANGE] cass-operator HELM-Chart: Upgrade requires manual action if registryOverride was used before. registryOverride is now repositoryOverride.
 * [ENHANCEMENT] Enable webhook functionality in cass-operator if cert-manager is installed.
-* [CHANGE] [#1409](https://github.com/k8ssandra/k8ssandra/pull/1409) Upgrade cass-operator to v1.11.0
 * [ENHANCEMENT] [#1415](https://github.com/k8ssandra/k8ssandra/pull/1415) Added s3_rgw support
 * [BUGFIX] [#1380](https://github.com/k8ssandra/k8ssandra/issues/1380) Enable webhook functionality in cass-operator if cert-manager is installed.
 * [BUGFIX] [#1404](https://github.com/k8ssandra/k8ssandra/issues/1404) Fix `garbage_collector` property to use G1GC
