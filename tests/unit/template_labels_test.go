@@ -6,6 +6,7 @@ import (
 
 	"github.com/gruntwork-io/terratest/modules/helm"
 	"github.com/gruntwork-io/terratest/modules/k8s"
+	helmUtils "github.com/k8ssandra/k8ssandra/tests/unit/utils/helm"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
@@ -64,12 +65,13 @@ var _ = Describe("Verify k8ssandra and dependent template labels", func() {
 					continue
 				}
 
-				templateOutput, err := helm.RenderTemplateE(GinkgoT(), options,
-					localChartsPath, HelmReleaseName, []string{filepath.Join(".", template[idx:])})
+				err := helmUtils.RenderAndUnmarshall(filepath.Join(".", template[idx:]),
+					options, localChartsPath, HelmReleaseName,
+					func(renderedYaml string) error {
+						return helm.UnmarshalK8SYamlE(GinkgoT(), renderedYaml, &k8ssandraTemplates)
+					})
 
 				Expect(err).To(BeNil())
-				Expect(templateOutput).ToNot(BeEmpty())
-				Expect(helm.UnmarshalK8SYamlE(GinkgoT(), templateOutput, &k8ssandraTemplates)).To(BeNil())
 
 				Expect(k8ssandraTemplates["metadata"]).ToNot(BeNil())
 				for k, v := range requiredLabels {
@@ -77,41 +79,6 @@ var _ = Describe("Verify k8ssandra and dependent template labels", func() {
 				}
 			}
 
-		})
-	})
-
-	Context("by rendering cass-operator templates having k8ssandra common labels", func() {
-		It("using default options", func() {
-
-			path, err := filepath.Abs(CassOperatorChartsPath)
-			Expect(err).To(BeNil())
-			localChartsPath = path
-
-			options := &helm.Options{
-				KubectlOptions: defaultKubeCtlOptions,
-			}
-
-			// Verify required labels for ea. template
-			requiredLabels := GetRequiredLabels(localChartsPath)
-			templates := GetTemplates(localChartsPath)
-			for _, template := range templates {
-
-				var k8ssandraTemplates map[string]interface{}
-				idx := strings.Index(template, "templates")
-
-				templateOutput, err := helm.RenderTemplateE(GinkgoT(), options,
-					localChartsPath, HelmReleaseName, []string{filepath.Join(".", template[idx:])})
-
-				Expect(err).To(BeNil())
-				Expect(templateOutput).ToNot(BeEmpty())
-
-				Expect(helm.UnmarshalK8SYamlE(GinkgoT(), templateOutput, &k8ssandraTemplates)).To(BeNil())
-				Expect(k8ssandraTemplates["metadata"]).ToNot(BeNil())
-
-				for k, v := range requiredLabels {
-					Expect(k8ssandraTemplates["metadata"].(map[string]interface{})["labels"]).To(HaveKeyWithValue(k, v))
-				}
-			}
 		})
 	})
 
@@ -134,13 +101,14 @@ var _ = Describe("Verify k8ssandra and dependent template labels", func() {
 				var k8ssandraTemplates map[string]interface{}
 				idx := strings.Index(template, "templates")
 
-				templateOutput, err := helm.RenderTemplateE(GinkgoT(), options,
-					localChartsPath, HelmReleaseName, []string{filepath.Join(".", template[idx:])})
+				err := helmUtils.RenderAndUnmarshall(filepath.Join(".", template[idx:]),
+					options, localChartsPath, HelmReleaseName,
+					func(renderedYaml string) error {
+						return helm.UnmarshalK8SYamlE(GinkgoT(), renderedYaml, &k8ssandraTemplates)
+					})
 
 				Expect(err).To(BeNil())
-				Expect(templateOutput).ToNot(BeEmpty())
 
-				Expect(helm.UnmarshalK8SYamlE(GinkgoT(), templateOutput, &k8ssandraTemplates)).To(BeNil())
 				Expect(k8ssandraTemplates["metadata"]).ToNot(BeNil())
 
 				for k, v := range requiredLabels {
@@ -169,13 +137,13 @@ var _ = Describe("Verify k8ssandra and dependent template labels", func() {
 				var k8ssandraTemplates map[string]interface{}
 				idx := strings.Index(template, "templates")
 
-				templateOutput, err := helm.RenderTemplateE(GinkgoT(), options,
-					localChartsPath, HelmReleaseName, []string{filepath.Join(".", template[idx:])})
+				err := helmUtils.RenderAndUnmarshall(filepath.Join(".", template[idx:]),
+					options, localChartsPath, HelmReleaseName,
+					func(renderedYaml string) error {
+						return helm.UnmarshalK8SYamlE(GinkgoT(), renderedYaml, &k8ssandraTemplates)
+					})
 
 				Expect(err).To(BeNil())
-				Expect(templateOutput).ToNot(BeEmpty())
-
-				Expect(helm.UnmarshalK8SYamlE(GinkgoT(), templateOutput, &k8ssandraTemplates)).To(BeNil())
 				Expect(k8ssandraTemplates["metadata"]).ToNot(BeNil())
 
 				for k, v := range requiredLabels {

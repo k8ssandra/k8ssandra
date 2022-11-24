@@ -29,7 +29,7 @@ jobs:
         run: ./.github/scripts/env_variables.sh
 
       - name: Install Helm
-        uses: azure/setup-helm@v1
+        uses: azure/setup-helm@v3
         with:
           version: ${{ env.HELM_VERSION }}
 
@@ -51,6 +51,7 @@ jobs:
         run: |
           mkdir build
           cp -rv charts/* build/
+          find build/cass-operator/templates -name '*.yaml' | xargs sed -i -e 's/.Capabilities.APIVersions.Has "cert-manager.io\/v1"/true/g'
       - name: Lint charts
         run: |
           ls | while read c; do
@@ -84,6 +85,10 @@ jobs:
           key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
           restore-keys: |
             ${{ runner.os }}-go
+      - name: Install Helm
+        uses: azure/setup-helm@v3
+        with:
+          version: ${{ env.HELM_VERSION }}
       - name: Update chart dependencies
         run: |
           scripts/update-helm-deps.sh

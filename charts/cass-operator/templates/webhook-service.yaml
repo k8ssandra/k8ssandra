@@ -1,0 +1,20 @@
+{{- $certmanager := .Capabilities.APIVersions.Has "cert-manager.io/v1" -}}
+{{- $webhooks := .Values.admissionWebhooks.enabled -}}
+
+{{- if and $webhooks (not $certmanager) -}}
+  {{- fail (print "cass-operator webhooks require cert-manager to be installed in the cluster") }}
+{{- end -}}
+
+{{ if $webhooks }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-webhook-service
+  labels: {{ include "k8ssandra-common.labels" . | indent 4 }}
+spec:
+  ports:
+    - port: 443
+      targetPort: 9443
+  selector:
+    control-plane: {{ .Release.Name }}-controller-manager
+{{- end -}}

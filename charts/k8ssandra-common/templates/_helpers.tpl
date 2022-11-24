@@ -51,6 +51,10 @@ kind: ServiceAccount
 metadata:
   name: {{ include "k8ssandra-common.serviceAccountName" . }}
   labels: {{ include "k8ssandra-common.labels" . | indent 4 }}
+  {{- with .Values.serviceAccount.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
 {{- if .Values.imagePullSecrets }}
 imagePullSecrets:
 {{ toYaml .Values.imagePullSecrets }}

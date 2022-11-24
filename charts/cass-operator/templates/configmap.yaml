@@ -1,3 +1,10 @@
+{{- $certmanager := .Capabilities.APIVersions.Has "cert-manager.io/v1" -}}
+{{- $webhooks := .Values.admissionWebhooks.enabled -}}
+
+{{- if and $webhooks (not $certmanager) -}}
+  {{- fail (print "cass-operator webhooks require cert-manager to be installed in the cluster") }}
+{{- end -}}
+
 kind: ConfigMap
 metadata:
   name: {{ include "k8ssandra-common.fullname" . }}-manager-config
@@ -16,11 +23,10 @@ data:
     leaderElection:
       leaderElect: true
       resourceName: b569adb7.cassandra.datastax.com
-{{- if .Values.admissionWebhooks.enabled }}
+{{- if $webhooks }}
     disableWebhooks: false
 {{- else }}
     disableWebhooks: true
-
 {{- end }}
     imageConfigFile: /configs/image_config.yaml
   image_config.yaml: |
@@ -29,15 +35,19 @@ data:
     images:
       system-logger: "k8ssandra/system-logger:v1.10.0"
       config-builder: "datastax/cass-config-builder:1.0.4-ubi7"
-{{- if .Values.image.registryOverride }}
-    {{ indent 2 (cat "imageRegistry:" .Values.image.registryOverride) }}
+{{- if .Values.image.repositoryOverride }}
+    {{- with .Values.image.repositoryOverride }}
+      {{- toYaml . | nindent 6 }}
+    {{- end }}
 {{- end }}
-{{- with .Values.imagePullSecrets }}
-    imagePullSecrets:
-      {{- toYaml . | nindent 8 }}
+{{- if .Values.image.registryOverride }}
+    imageRegistry: {{ .Values.image.registryOverride }}
+{{- end }}
+{{- if .Values.imagePullSecret }}
+    imagePullSecret: {{ .Values.imagePullSecret }}
 {{- end }}
 {{- if .Values.image.pullPolicy }}
-    {{ indent 2 (cat "imagePullPolicy:" .Values.image.pullPolicy) }}
+    {{ (cat "imagePullPolicy:" .Values.image.pullPolicy) }}
 {{- end }}
     defaults:
       # Note, postfix is ignored if repository is not set

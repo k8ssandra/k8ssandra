@@ -32,7 +32,7 @@ Here's how the modules fit together:
 ## Next steps
 
 * For comprehensive information about Stargate, visit the [stargate.io](https://stargate.io/) site.
-* For details on the API calls, see the Stargate [API reference](https://stargate.io/docs/stargate/1.0/api.html).
+* For details on the API calls, see the Stargate [API reference](https://stargate.io/docs/latest/api.html).
 * For an introduction to using Stargate with K8ssandra, see [Develop with Stargate APIs]({{< relref "/tasks/develop/" >}}). 
 * For information about using a superuser and secrets with Stargate authentication, see [Stargate security]({{< relref "/tasks/secure/#stargate-security" >}}).
 * Also see the topics covering other [components]({{< relref "/components/" >}}) deployed by K8ssandra. 

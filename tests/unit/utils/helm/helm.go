@@ -26,9 +26,17 @@ type OutputDirective struct {
 func RenderAndUnmarshall(templatePath string, options *helm.Options, helmChartPath string, HelmReleaseName string,
 	unmarshallFunction func(string) error) error {
 
+	if options == nil {
+		options = &helm.Options{}
+	}
+	if options.SetValues == nil {
+		options.SetValues = make(map[string]string)
+	}
+	options.SetValues["admissionWebhooks.enabled"] = "false"
+
 	renderedOutput, renderErr := helm.RenderTemplateE(
 		GinkgoT(), options, helmChartPath, HelmReleaseName,
-		[]string{templatePath},
+		[]string{templatePath}, "--api-versions=cert-manager.io/v1", "--api-versions=monitoring.coreos.com/v1",
 	)
 	renderedOutput = strings.TrimPrefix(renderedOutput, "WARNING: This chart is deprecated\n")
 

@@ -445,7 +445,7 @@ stargate:
   enabled: true
   # -- version of Stargate to deploy. This is used in conjunction with cassandra.version to select the Stargate container image.
   # If stargate.image is set, this value has no effect.
-  version: "1.0.52"
+  version: "1.0.63"
   # -- Sets the Stargate container image. This value must be compatible
   # with the value provided for stargate.clusterVersion. If left blank (recommended),
   # k8ssandra will derive an appropriate image based on cassandra.clusterVersion.
@@ -625,7 +625,7 @@ reaper:
     # -- Image repository for reaper
     repository: thelastpickle/cassandra-reaper
     # -- Tag of the reaper image to pull from
-    tag: 3.1.1
+    tag: 3.2.0
     # -- Pull policy for the reaper container
     pullPolicy: IfNotPresent
   # -- Configures the Cassandra user used by Reaper when authentication is
@@ -807,6 +807,10 @@ cass-operator:
   # -- Enables the cass-operator as part of this release. If this setting is
   # disabled no Cassandra resources will be deployed.
   enabled: true
+  # -- Configures admission webhooks deployed with cass-operator. If admissionWebhooks are enabled, cert-manager is required to be installed. We recommend enabling webhooks.
+  admissionWebhooks:
+    # -- Turns the admission webhooks on or off
+    enabled: false
 reaper-operator:
   # -- Enables the reaper-operator as part of this release. If this setting is
   # disabled no repair resources will be deployed.

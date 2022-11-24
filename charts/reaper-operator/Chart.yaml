@@ -9,7 +9,7 @@ version: 0.32.3
 appVersion: 0.1.0
 dependencies:
   - name: k8ssandra-common
-    version: 0.28.5
+    version: 0.28.6
     repository: file://../k8ssandra-common
 home: https://k8ssandra.io/
 sources:

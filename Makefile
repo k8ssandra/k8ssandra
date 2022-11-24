@@ -18,6 +18,8 @@ BUILDX_PARAMS=--load
 TESTS=all
 GO_FLAGS=
 ENVTEST_ASSETS_DIR=$(shell pwd)/testbin
+ENVTEST=$(shell pwd)/testbin/setup-envtest
+ENVTEST_K8S_VERSION=1.21
 # Possible values: always, success, never
 CLUSTER_CLEANUP=always
 KIND_CLUSTER=k8ssandra-it
@@ -26,15 +28,18 @@ test: fmt vet unit-test pkg-test
 
 unit-test:
 ifeq ($(TESTS), all)
-	go test $(GO_FLAGS) -test.timeout=5m ./tests/unit/... -coverprofile cover.out
+	go test $(GO_FLAGS) -test.timeout=10m ./tests/unit/... -coverprofile cover.out
 else
-	go test $(GO_FLAGS) -test.timeout=5m ./tests/unit/... -coverprofile cover.out -args -ginkgo.focus="$(TESTS)"
+	go test $(GO_FLAGS) -test.timeout=10m ./tests/unit/... -coverprofile cover.out -args -ginkgo.focus="$(TESTS)"
 endif
 
-pkg-test:
-	mkdir -p ${ENVTEST_ASSETS_DIR}
-	test -f ${ENVTEST_ASSETS_DIR}/setup-envtest.sh || curl -sSLo ${ENVTEST_ASSETS_DIR}/setup-envtest.sh https://raw.githubusercontent.com/kubernetes-sigs/controller-runtime/v0.8.3/hack/setup-envtest.sh
-	source ${ENVTEST_ASSETS_DIR}/setup-envtest.sh && fetch_envtest_tools $(ENVTEST_ASSETS_DIR) && setup_envtest_env $(ENVTEST_ASSETS_DIR) && go test $(GO_FLAGS) -test.timeout=3m ./pkg/... -coverprofile cover.out
+.PHONY: envtest
+envtest: ## Download envtest-setup locally if necessary.
+	$(call go-get-tool,$(ENVTEST),sigs.k8s.io/controller-runtime/tools/setup-envtest@latest)
+
+.PHONY: pkg-test
+pkg-test: envtest
+	export KUBEBUILDER_ASSETS="$(shell $(ENVTEST) use $(ENVTEST_K8S_VERSION) --use-env -p path )" && go test $(GO_FLAGS) -test.timeout=3m ./pkg/... -coverprofile cover.out
 
 integ-test:
 ifeq ($(TESTS), all)
@@ -43,7 +48,13 @@ else
 	CLUSTER_CLEANUP=$(CLUSTER_CLEANUP) go test $(GO_FLAGS) -test.timeout=30m ./tests/integration -run=$(TESTS)
 endif
 
-kind-integ-test: create-kind-cluster tools-docker-kind-load integ-test
+.PHONY: cert-manager
+cert-manager: ## Install cert-manager to the cluster
+	kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.7.1/cert-manager.yaml
+	kubectl wait --for=condition=Established crd certificates.cert-manager.io
+	kubectl rollout status deployment cert-manager-webhook -n cert-manager
+
+kind-integ-test: create-kind-cluster cert-manager tools-docker-kind-load integ-test 
 
 create-kind-cluster:
 	kind delete cluster --name $(KIND_CLUSTER)
@@ -70,3 +81,17 @@ tools-docker-kind-load: tools-docker-build
 	@echo Loading tools to kind
 	kind load docker-image ${TOOLS_IMG} --name $(KIND_CLUSTER)
 
+
+# go-get-tool will 'go get' any package $2 and install it to $1.
+PROJECT_DIR := $(shell dirname $(abspath $(lastword $(MAKEFILE_LIST))))
+define go-get-tool
+@[ -f $(1) ] || { \
+set -e ;\
+TMP_DIR=$$(mktemp -d) ;\
+cd $$TMP_DIR ;\
+go mod init tmp ;\
+echo "Downloading $(2)" ;\
+GOBIN=$(PROJECT_DIR)/testbin go get $(2) ;\
+rm -rf $$TMP_DIR ;\
+}
+endef
