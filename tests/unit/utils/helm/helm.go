@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/gruntwork-io/terratest/modules/helm"
 	. "github.com/onsi/ginkgo"
@@ -29,6 +30,7 @@ func RenderAndUnmarshall(templatePath string, options *helm.Options, helmChartPa
 		GinkgoT(), options, helmChartPath, HelmReleaseName,
 		[]string{templatePath},
 	)
+	renderedOutput = strings.TrimPrefix(renderedOutput, "WARNING: This chart is deprecated\n")
 
 	// Use CLI option: --rendertmpl={"dir":"/tmp/foo", "name":"my-test.yaml"}
 	opt := options.SetValues

@@ -532,6 +532,8 @@ func InstallTraefik(t *testing.T) {
 		"-n",
 		"traefik",
 		"--create-namespace",
+		"--version",
+		"10.33.0",
 		"-f",
 		valuesPath,
 	)

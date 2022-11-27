@@ -17,6 +17,7 @@ When cutting a new release of the parent `k8ssandra` chart update the `unrelease
 and date `## vX.Y.Z - YYYY-MM-DD` and create a new placeholder section for  `unreleased` entries.
 
 ## unreleased
+* [CHANGE] Deprecate all K8ssandra v1.x charts, refer users to k8ssandra-operator.
 
 ## v1.5.1 - 2022-07-08
 

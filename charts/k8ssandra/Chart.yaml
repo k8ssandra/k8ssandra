@@ -1,6 +1,7 @@
 apiVersion: v2
 name: k8ssandra
 description: |
+  DEPRECATED please see https://github.com/k8ssandra/k8ssandra-operator
   Provisions and configures an instance of the entire K8ssandra stack. This includes Apache Cassandra, Stargate, Reaper, Medusa, Prometheus, and Grafana.
 type: application
 version: 1.5.2-SNAPSHOT
@@ -32,4 +33,4 @@ maintainers:
   - name: K8ssandra Team
     email: k8ssandra-developers@googlegroups.com
     url: https://github.com/k8ssandra
-deprecated: false
+deprecated: true
