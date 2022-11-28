@@ -19,6 +19,8 @@ and date `## vX.Y.Z - YYYY-MM-DD` and create a new placeholder section for  `unr
 ## unreleased
 * [CHANGE] Deprecate all K8ssandra v1.x charts, refer users to k8ssandra-operator.
 
+* [CHANGE] Update cass-operator to v1.10.5 as well as system-logger to v1.13.1 and cass-config-builder to 1.0.5
+
 ## v1.5.1 - 2022-07-08
 
 * [CHANGE] Upgrade cass-operator to v1.10.4
