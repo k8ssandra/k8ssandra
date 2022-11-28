@@ -9,7 +9,7 @@
 apiVersion: admissionregistration.k8s.io/v1
 kind: ValidatingWebhookConfiguration
 metadata:
-  name: {{ .Release.Name }}-validating-webhook-configuration
+  name: {{ include "k8ssandra-common.fullname" . }}-validating-webhook-configuration
   labels: {{ include "k8ssandra-common.labels" . | indent 4 }}
   annotations:
     cert-manager.io/inject-ca-from: {{ include "cass-operator-certificate" . }}
@@ -18,7 +18,7 @@ webhooks:
   - v1
   clientConfig:
     service:
-      name: {{ .Release.Name }}-webhook-service
+      name: {{ include "k8ssandra-common.fullname" . }}-webhook-service
       namespace: {{ .Release.Namespace }}
       path: /validate-cassandra-datastax-com-v1beta1-cassandradatacenter
   failurePolicy: Fail
@@ -40,21 +40,23 @@ webhooks:
 apiVersion: cert-manager.io/v1
 kind: Issuer
 metadata:
-  name: {{ .Release.Name }}-selfsigned-issuer
+  name: {{ include "k8ssandra-common.fullname" . }}-selfsigned-issuer
+  labels: {{ include "k8ssandra-common.labels" . | indent 4 }}
 spec:
   selfSigned: {}
 ---
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
-  name: {{ .Release.Name }}-serving-cert  # this name should match the one appeared in kustomizeconfig.yaml
+  name: {{ include "k8ssandra-common.fullname" . }}-serving-cert  # this name should match the one appeared in kustomizeconfig.yaml
+  labels: {{ include "k8ssandra-common.labels" . | indent 4 }}
 spec:
   # $(SERVICE_NAME) and $(SERVICE_NAMESPACE) will be substituted by kustomize
   dnsNames:
-  - {{ printf "%s-webhook-service.%s.svc" .Release.Name .Release.Namespace }}
-  - {{ printf "%s-webhook-service.%s.svc.cluster.local" .Release.Name .Release.Namespace }}
+    -  {{ include "k8ssandra-common.fullname" . }}-webhook-service.{{ .Release.Namespace }}.svc
+    -  {{ include "k8ssandra-common.fullname" . }}-webhook-service.{{ .Release.Namespace }}.svc.cluster.local
   issuerRef:
     kind: Issuer
-    name: {{ .Release.Name }}-selfsigned-issuer
-  secretName: {{ .Release.Name }}-webhook-server-cert # this secret will not be prefixed, since it's not managed by kustomize
+    name: {{ include "k8ssandra-common.fullname" . }}-selfsigned-issuer
+  secretName: {{ include "k8ssandra-common.fullname" . }}-webhook-server-cert # this secret will not be prefixed, since it's not managed by kustomize
 {{ end }}
