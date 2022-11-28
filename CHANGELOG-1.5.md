@@ -21,10 +21,13 @@ and date `## vX.Y.Z - YYYY-MM-DD` and create a new placeholder section for  `unr
 
 * [CHANGE] Update cass-operator to v1.10.5 as well as system-logger to v1.13.1 and cass-config-builder to 1.0.5
 
+* [CHANGE] Upgrade Reaper to v3.2.1
+* [CHANGE] Upgrade cass-operator to v1.10.5
+* [CHANGE] Upgrade Stargate to v1.0.68
+
 ## v1.5.1 - 2022-07-08
 
-* [CHANGE] Upgrade Stargate to v1.0.68
-* [CHANGE] Upgrade cass-operator to v1.10.5
+* [CHANGE] Upgrade cass-operator to v1.10.4
 
 ## v1.5.0 - 2022-04-09
 
