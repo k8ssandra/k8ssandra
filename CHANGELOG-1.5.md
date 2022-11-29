@@ -18,6 +18,7 @@ and date `## vX.Y.Z - YYYY-MM-DD` and create a new placeholder section for  `unr
 
 ## unreleased
 
+* [CHANGE] Upgrade Grafana to v7.5.17
 * [CHANGE] Upgrade Reaper to v3.2.1
 * [CHANGE] Upgrade cass-operator to v1.10.5
 * [CHANGE] Upgrade Stargate to v1.0.68
