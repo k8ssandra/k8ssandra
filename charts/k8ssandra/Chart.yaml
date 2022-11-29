@@ -4,7 +4,7 @@ description: |
   DEPRECATED please see https://github.com/k8ssandra/k8ssandra-operator
   Provisions and configures an instance of the entire K8ssandra stack. This includes Apache Cassandra, Stargate, Reaper, Medusa, Prometheus, and Grafana.
 type: application
-version: 1.5.2
+version: 1.5.3-SNAPSHOT
 dependencies:
   - name: cass-operator
     version: 0.35.4
