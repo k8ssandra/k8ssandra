@@ -38,13 +38,12 @@ cd k8ssandra-operator
 Invoke `make` with the following parameters for a single cluster: 
 
 ```bash
-make NUM_CLUSTERS=1 create-kind-multicluster
+scripts/setup-kind-multicluster.sh --clusters 1 --kind-worker-nodes 4
 ```
 
 **Output:**
 
 ```bash
-scripts/setup-kind-multicluster.sh --clusters 1 --kind-worker-nodes 4
 Creating 1 clusters...
 Creating cluster 1 out of 1
 Creating cluster "k8ssandra-0" ...
@@ -95,7 +94,7 @@ helm repo add jetstack https://charts.jetstack.io
 
 helm repo update
 
-kubectx kind-k8ssandra-0
+kubectl config use-context kind-k8ssandra-0
 ```
 
 **The output includes:**
