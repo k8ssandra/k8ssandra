@@ -1,9 +1,9 @@
 ---
-title: "K8ssandra-operator CRDs latest build"
-linkTitle: "K8ssandra-operator CRDs latest build"
+title: "K8ssandra-operator CRDs v1.4"
+linkTitle: "K8ssandra-operator CRDs v1.4"
 weight: 1
 description: >
-  Configuration reference for the CRDs used with K8ssandra-operator latest build.  
+  Configuration reference for the CRDs used with K8ssandra-operator v1.4.  
 ---
 
 Packages:
@@ -1514,7 +1514,7 @@ A single application container that you want to run within a pod.
         <td><b><a href="#k8ssandraclusterspeccassandracontainersindexportsindex">ports</a></b></td>
         <td>[]object</td>
         <td>
-          List of ports to expose from the container. Not specifying a port here DOES NOT prevent that port from being exposed. Any port which is listening on the default "0.0.0.0" address inside a container will be accessible from the network. Modifying this array with strategic merge patch may corrupt the data. For more information See https://github.com/kubernetes/kubernetes/issues/108255. Cannot be updated.<br/>
+          List of ports to expose from the container. Exposing a port here gives the system additional information about the network connections a container uses, but is primarily informational. Not specifying a port here DOES NOT prevent that port from being exposed. Any port which is listening on the default "0.0.0.0" address inside a container will be accessible from the network. Cannot be updated.<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -4757,7 +4757,7 @@ A single application container that you want to run within a pod.
         <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexcontainersindexportsindex">ports</a></b></td>
         <td>[]object</td>
         <td>
-          List of ports to expose from the container. Not specifying a port here DOES NOT prevent that port from being exposed. Any port which is listening on the default "0.0.0.0" address inside a container will be accessible from the network. Modifying this array with strategic merge patch may corrupt the data. For more information See https://github.com/kubernetes/kubernetes/issues/108255. Cannot be updated.<br/>
+          List of ports to expose from the container. Exposing a port here gives the system additional information about the network connections a container uses, but is primarily informational. Not specifying a port here DOES NOT prevent that port from being exposed. Any port which is listening on the default "0.0.0.0" address inside a container will be accessible from the network. Cannot be updated.<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -10235,7 +10235,7 @@ A single application container that you want to run within a pod.
         <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexinitcontainersindexportsindex">ports</a></b></td>
         <td>[]object</td>
         <td>
-          List of ports to expose from the container. Not specifying a port here DOES NOT prevent that port from being exposed. Any port which is listening on the default "0.0.0.0" address inside a container will be accessible from the network. Modifying this array with strategic merge patch may corrupt the data. For more information See https://github.com/kubernetes/kubernetes/issues/108255. Cannot be updated.<br/>
+          List of ports to expose from the container. Exposing a port here gives the system additional information about the network connections a container uses, but is primarily informational. Not specifying a port here DOES NOT prevent that port from being exposed. Any port which is listening on the default "0.0.0.0" address inside a container will be accessible from the network. Cannot be updated.<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -21890,7 +21890,7 @@ A single application container that you want to run within a pod.
         <td><b><a href="#k8ssandraclusterspeccassandrainitcontainersindexportsindex">ports</a></b></td>
         <td>[]object</td>
         <td>
-          List of ports to expose from the container. Not specifying a port here DOES NOT prevent that port from being exposed. Any port which is listening on the default "0.0.0.0" address inside a container will be accessible from the network. Modifying this array with strategic merge patch may corrupt the data. For more information See https://github.com/kubernetes/kubernetes/issues/108255. Cannot be updated.<br/>
+          List of ports to expose from the container. Exposing a port here gives the system additional information about the network connections a container uses, but is primarily informational. Not specifying a port here DOES NOT prevent that port from being exposed. Any port which is listening on the default "0.0.0.0" address inside a container will be accessible from the network. Cannot be updated.<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -26505,7 +26505,7 @@ Reaper defines the desired deployment characteristics for Reaper in this K8ssand
         <td><b><a href="#k8ssandraclusterspecreaperjmxusersecretref">jmxUserSecretRef</a></b></td>
         <td>object</td>
         <td>
-          Deprecated: JMX security is now based on CQL roles. Reaper will use cassandraUsefSecretRef for authentication, this field is ignored.<br/>
+          Defines the username and password that Reaper will use to authenticate JMX connections to Cassandra clusters. These credentials will be automatically passed to each Cassandra node in the datacenter, as well as to the Reaper instance, so that the latter can authenticate against the former. If JMX authentication is not required, leave this field empty. The secret must be in the same namespace as Reaper itself and must contain two keys: "username" and "password".<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -28511,7 +28511,7 @@ The Windows specific settings applied to all containers. If unspecified, the opt
 
 
 
-Deprecated: JMX security is now based on CQL roles. Reaper will use cassandraUsefSecretRef for authentication, this field is ignored.
+Defines the username and password that Reaper will use to authenticate JMX connections to Cassandra clusters. These credentials will be automatically passed to each Cassandra node in the datacenter, as well as to the Reaper instance, so that the latter can authenticate against the former. If JMX authentication is not required, leave this field empty. The secret must be in the same namespace as Reaper itself and must contain two keys: "username" and "password".
 
 <table>
     <thead>
@@ -32560,8 +32560,7 @@ CassandraDatacenterStatus defines the observed state of CassandraDatacenter
 
 
 
-ObjectReference contains enough information to let you inspect or modify the referred object. --- New uses of this type are discouraged because of difficulty describing its usage when embedded in APIs. 1. Ignored fields.  It includes many fields which are not generally honored.  For instance, ResourceVersion and FieldPath are both very rarely valid in actual usage. 2. Invalid usage help.  It is impossible to add specific help for individual usage.  In most embedded usages, there are particular restrictions like, "must refer only to types A and B" or "UID not honored" or "name must be restricted". Those cannot be well described when embedded. 3. Inconsistent validation.  Because the usages are different, the validation rules are different by usage, which makes it hard for users to predict what will happen. 4. The fields are both imprecise and overly precise.  Kind is not a precise mapping to a URL. This can produce ambiguity during interpretation and require a REST mapping.  In most cases, the dependency is on the group,resource tuple and the version of the actual struct is irrelevant. 5. We cannot easily change it.  Because this type is embedded in many locations, updates to this type will affect numerous schemas.  Don't make new APIs embed an underspecified API type they do not control. 
- Instead of using this type, create a locally provided and used type that is well-focused on your reference. For example, ServiceReferences for admission registration: https://github.com/kubernetes/api/blob/release-1.17/admissionregistration/v1/types.go#L533 .
+ObjectReference contains enough information to let you inspect or modify the referred object. --- New uses of this type are discouraged because of difficulty describing its usage when embedded in APIs. 1. Ignored fields.  It includes many fields which are not generally honored.  For instance, ResourceVersion and FieldPath are both very rarely valid in actual usage. 2. Invalid usage help.  It is impossible to add specific help for individual usage.  In most embedded usages, there are particular restrictions like, "must refer only to types A and B" or "UID not honored" or "name must be restricted". Those cannot be well described when embedded. 3. Inconsistent validation.  Because the usages are different, the validation rules are different by usage, which makes it hard for users to predict what will happen. 4. The fields are both imprecise and overly precise.  Kind is not a precise mapping to a URL. This can produce ambiguity during interpretation and require a REST mapping.  In most cases, the dependency is on the group,resource tuple and the version of the actual struct is irrelevant. 5. We cannot easily change it.  Because this type is embedded in many locations, updates to this type will affect numerous schemas.  Don't make new APIs embed an underspecified API type they do not control. Instead of using this type, create a locally provided and used type that is well-focused on your reference. For example, ServiceReferences for admission registration: https://github.com/kubernetes/api/blob/release-1.17/admissionregistration/v1/types.go#L533 .
 
 <table>
     <thead>
@@ -34695,7 +34694,7 @@ Specification of the desired behavior of the pod. More info: https://git.k8s.io/
         <td><b><a href="#cassandrabackupstatuscassdctemplatespecspecpodtemplatespecspecephemeralcontainersindex">ephemeralContainers</a></b></td>
         <td>[]object</td>
         <td>
-          List of ephemeral containers run in this pod. Ephemeral containers may be run in an existing pod to perform user-initiated actions such as debugging. This list cannot be specified when creating a pod, and it cannot be modified by updating the pod spec. In order to add an ephemeral container to an existing pod, use the pod's ephemeralcontainers subresource.<br/>
+          List of ephemeral containers run in this pod. Ephemeral containers may be run in an existing pod to perform user-initiated actions such as debugging. This list cannot be specified when creating a pod, and it cannot be modified by updating the pod spec. In order to add an ephemeral container to an existing pod, use the pod's ephemeralcontainers subresource. This field is beta-level and available on clusters that haven't disabled the EphemeralContainers feature gate.<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -34724,13 +34723,6 @@ Specification of the desired behavior of the pod. More info: https://git.k8s.io/
         <td>boolean</td>
         <td>
           Use the host's pid namespace. Optional: Default to false.<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>hostUsers</b></td>
-        <td>boolean</td>
-        <td>
-          Use the host's user namespace. Optional: Default to true. If set to true or not present, the pod will be run in the host user namespace, useful for when the pod needs a feature only available to the host user namespace, such as loading a kernel module with CAP_SYS_MODULE. When set to false, a new userns is created for the pod. Setting false is useful for mitigating container breakout vulnerabilities even allowing users to run their containers as root without actually having root privileges on the host. This field is alpha-level and is only honored by servers that enable the UserNamespacesSupport feature.<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -34774,7 +34766,7 @@ Specification of the desired behavior of the pod. More info: https://git.k8s.io/
         <td>
           Specifies the OS of the containers in the pod. Some pod and container fields are restricted if this is set. 
  If the OS field is set to linux, the following fields must be unset: -securityContext.windowsOptions 
- If the OS field is set to windows, following fields must be unset: - spec.hostPID - spec.hostIPC - spec.hostUsers - spec.securityContext.seLinuxOptions - spec.securityContext.seccompProfile - spec.securityContext.fsGroup - spec.securityContext.fsGroupChangePolicy - spec.securityContext.sysctls - spec.shareProcessNamespace - spec.securityContext.runAsUser - spec.securityContext.runAsGroup - spec.securityContext.supplementalGroups - spec.containers[*].securityContext.seLinuxOptions - spec.containers[*].securityContext.seccompProfile - spec.containers[*].securityContext.capabilities - spec.containers[*].securityContext.readOnlyRootFilesystem - spec.containers[*].securityContext.privileged - spec.containers[*].securityContext.allowPrivilegeEscalation - spec.containers[*].securityContext.procMount - spec.containers[*].securityContext.runAsUser - spec.containers[*].securityContext.runAsGroup<br/>
+ If the OS field is set to windows, following fields must be unset: - spec.hostPID - spec.hostIPC - spec.securityContext.seLinuxOptions - spec.securityContext.seccompProfile - spec.securityContext.fsGroup - spec.securityContext.fsGroupChangePolicy - spec.securityContext.sysctls - spec.shareProcessNamespace - spec.securityContext.runAsUser - spec.securityContext.runAsGroup - spec.securityContext.supplementalGroups - spec.containers[*].securityContext.seLinuxOptions - spec.containers[*].securityContext.seccompProfile - spec.containers[*].securityContext.capabilities - spec.containers[*].securityContext.readOnlyRootFilesystem - spec.containers[*].securityContext.privileged - spec.containers[*].securityContext.allowPrivilegeEscalation - spec.containers[*].securityContext.procMount - spec.containers[*].securityContext.runAsUser - spec.containers[*].securityContext.runAsGroup This is a beta field and requires the IdentifyPodOS feature<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -34994,7 +34986,7 @@ A single application container that you want to run within a pod.
         <td><b><a href="#cassandrabackupstatuscassdctemplatespecspecpodtemplatespecspeccontainersindexportsindex">ports</a></b></td>
         <td>[]object</td>
         <td>
-          List of ports to expose from the container. Not specifying a port here DOES NOT prevent that port from being exposed. Any port which is listening on the default "0.0.0.0" address inside a container will be accessible from the network. Modifying this array with strategic merge patch may corrupt the data. For more information See https://github.com/kubernetes/kubernetes/issues/108255. Cannot be updated.<br/>
+          List of ports to expose from the container. Exposing a port here gives the system additional information about the network connections a container uses, but is primarily informational. Not specifying a port here DOES NOT prevent that port from being exposed. Any port which is listening on the default "0.0.0.0" address inside a container will be accessible from the network. Cannot be updated.<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -38563,7 +38555,8 @@ PodDNSConfigOption defines DNS resolver options of a pod.
 
 
 An EphemeralContainer is a temporary container that you may add to an existing Pod for user-initiated activities such as debugging. Ephemeral containers have no resource or scheduling guarantees, and they will not be restarted when they exit or when a Pod is removed or restarted. The kubelet may evict a Pod if an ephemeral container causes the Pod to exceed its resource allocation. 
- To add an ephemeral container, use the ephemeralcontainers subresource of an existing Pod. Ephemeral containers may not be removed or restarted.
+ To add an ephemeral container, use the ephemeralcontainers subresource of an existing Pod. Ephemeral containers may not be removed or restarted. 
+ This is a beta feature available on clusters that haven't disabled the EphemeralContainers feature gate.
 
 <table>
     <thead>
@@ -40979,7 +40972,7 @@ A single application container that you want to run within a pod.
         <td><b><a href="#cassandrabackupstatuscassdctemplatespecspecpodtemplatespecspecinitcontainersindexportsindex">ports</a></b></td>
         <td>[]object</td>
         <td>
-          List of ports to expose from the container. Not specifying a port here DOES NOT prevent that port from being exposed. Any port which is listening on the default "0.0.0.0" address inside a container will be accessible from the network. Modifying this array with strategic merge patch may corrupt the data. For more information See https://github.com/kubernetes/kubernetes/issues/108255. Cannot be updated.<br/>
+          List of ports to expose from the container. Exposing a port here gives the system additional information about the network connections a container uses, but is primarily informational. Not specifying a port here DOES NOT prevent that port from being exposed. Any port which is listening on the default "0.0.0.0" address inside a container will be accessible from the network. Cannot be updated.<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -43172,7 +43165,7 @@ VolumeMount describes a mounting of a Volume within a container.
 
 Specifies the OS of the containers in the pod. Some pod and container fields are restricted if this is set. 
  If the OS field is set to linux, the following fields must be unset: -securityContext.windowsOptions 
- If the OS field is set to windows, following fields must be unset: - spec.hostPID - spec.hostIPC - spec.hostUsers - spec.securityContext.seLinuxOptions - spec.securityContext.seccompProfile - spec.securityContext.fsGroup - spec.securityContext.fsGroupChangePolicy - spec.securityContext.sysctls - spec.shareProcessNamespace - spec.securityContext.runAsUser - spec.securityContext.runAsGroup - spec.securityContext.supplementalGroups - spec.containers[*].securityContext.seLinuxOptions - spec.containers[*].securityContext.seccompProfile - spec.containers[*].securityContext.capabilities - spec.containers[*].securityContext.readOnlyRootFilesystem - spec.containers[*].securityContext.privileged - spec.containers[*].securityContext.allowPrivilegeEscalation - spec.containers[*].securityContext.procMount - spec.containers[*].securityContext.runAsUser - spec.containers[*].securityContext.runAsGroup
+ If the OS field is set to windows, following fields must be unset: - spec.hostPID - spec.hostIPC - spec.securityContext.seLinuxOptions - spec.securityContext.seccompProfile - spec.securityContext.fsGroup - spec.securityContext.fsGroupChangePolicy - spec.securityContext.sysctls - spec.shareProcessNamespace - spec.securityContext.runAsUser - spec.securityContext.runAsGroup - spec.securityContext.supplementalGroups - spec.containers[*].securityContext.seLinuxOptions - spec.containers[*].securityContext.seccompProfile - spec.containers[*].securityContext.capabilities - spec.containers[*].securityContext.readOnlyRootFilesystem - spec.containers[*].securityContext.privileged - spec.containers[*].securityContext.allowPrivilegeEscalation - spec.containers[*].securityContext.procMount - spec.containers[*].securityContext.runAsUser - spec.containers[*].securityContext.runAsGroup This is a beta field and requires the IdentifyPodOS feature
 
 <table>
     <thead>
@@ -43570,7 +43563,7 @@ TopologySpreadConstraint specifies how to spread matching pods among the given t
         <td><b>topologyKey</b></td>
         <td>string</td>
         <td>
-          TopologyKey is the key of node labels. Nodes that have a label with this key and identical values are considered to be in the same topology. We consider each <key, value> as a "bucket", and try to put balanced number of pods into each bucket. We define a domain as a particular instance of a topology. Also, we define an eligible domain as a domain whose nodes meet the requirements of nodeAffinityPolicy and nodeTaintsPolicy. e.g. If TopologyKey is "kubernetes.io/hostname", each Node is a domain of that topology. And, if TopologyKey is "topology.kubernetes.io/zone", each zone is a domain of that topology. It's a required field.<br/>
+          TopologyKey is the key of node labels. Nodes that have a label with this key and identical values are considered to be in the same topology. We consider each <key, value> as a "bucket", and try to put balanced number of pods into each bucket. We define a domain as a particular instance of a topology. Also, we define an eligible domain as a domain whose nodes match the node selector. e.g. If TopologyKey is "kubernetes.io/hostname", each Node is a domain of that topology. And, if TopologyKey is "topology.kubernetes.io/zone", each zone is a domain of that topology. It's a required field.<br/>
         </td>
         <td>true</td>
       </tr><tr>
@@ -43588,37 +43581,14 @@ TopologySpreadConstraint specifies how to spread matching pods among the given t
         </td>
         <td>false</td>
       </tr><tr>
-        <td><b>matchLabelKeys</b></td>
-        <td>[]string</td>
-        <td>
-          MatchLabelKeys is a set of pod label keys to select the pods over which spreading will be calculated. The keys are used to lookup values from the incoming pod labels, those key-value labels are ANDed with labelSelector to select the group of existing pods over which spreading will be calculated for the incoming pod. Keys that don't exist in the incoming pod labels will be ignored. A null or empty list means only match against labelSelector.<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
         <td><b>minDomains</b></td>
         <td>integer</td>
         <td>
           MinDomains indicates a minimum number of eligible domains. When the number of eligible domains with matching topology keys is less than minDomains, Pod Topology Spread treats "global minimum" as 0, and then the calculation of Skew is performed. And when the number of eligible domains with matching topology keys equals or greater than minDomains, this value has no effect on scheduling. As a result, when the number of eligible domains is less than minDomains, scheduler won't schedule more than maxSkew Pods to those domains. If value is nil, the constraint behaves as if MinDomains is equal to 1. Valid values are integers greater than 0. When value is not nil, WhenUnsatisfiable must be DoNotSchedule. 
  For example, in a 3-zone cluster, MaxSkew is set to 2, MinDomains is set to 5 and pods with the same labelSelector spread as 2/2/2: | zone1 | zone2 | zone3 | |  P P  |  P P  |  P P  | The number of domains is less than 5(MinDomains), so "global minimum" is treated as 0. In this situation, new pod with the same labelSelector cannot be scheduled, because computed skew will be 3(3 - 0) if new Pod is scheduled to any of the three zones, it will violate MaxSkew. 
- This is a beta field and requires the MinDomainsInPodTopologySpread feature gate to be enabled (enabled by default).<br/>
+ This is an alpha field and requires enabling MinDomainsInPodTopologySpread feature gate.<br/>
           <br/>
             <i>Format</i>: int32<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>nodeAffinityPolicy</b></td>
-        <td>string</td>
-        <td>
-          NodeAffinityPolicy indicates how we will treat Pod's nodeAffinity/nodeSelector when calculating pod topology spread skew. Options are: - Honor: only nodes matching nodeAffinity/nodeSelector are included in the calculations. - Ignore: nodeAffinity/nodeSelector are ignored. All nodes are included in the calculations. 
- If this value is nil, the behavior is equivalent to the Honor policy. This is a alpha-level feature enabled by the NodeInclusionPolicyInPodTopologySpread feature flag.<br/>
-        </td>
-        <td>false</td>
-      </tr><tr>
-        <td><b>nodeTaintsPolicy</b></td>
-        <td>string</td>
-        <td>
-          NodeTaintsPolicy indicates how we will treat node taints when calculating pod topology spread skew. Options are: - Honor: nodes without taints, along with tainted nodes for which the incoming pod has a toleration, are included. - Ignore: node taints are ignored. All nodes are included. 
- If this value is nil, the behavior is equivalent to the Ignore policy. This is a alpha-level feature enabled by the NodeInclusionPolicyInPodTopologySpread feature flag.<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -48532,7 +48502,7 @@ ReaperSpec defines the desired state of Reaper
         <td><b><a href="#reaperspecjmxusersecretref">jmxUserSecretRef</a></b></td>
         <td>object</td>
         <td>
-          Deprecated: JMX security is now based on CQL roles. Reaper will use cassandraUsefSecretRef for authentication, this field is ignored.<br/>
+          Defines the username and password that Reaper will use to authenticate JMX connections to Cassandra clusters. These credentials will be automatically passed to each Cassandra node in the datacenter, as well as to the Reaper instance, so that the latter can authenticate against the former. If JMX authentication is not required, leave this field empty. The secret must be in the same namespace as Reaper itself and must contain two keys: "username" and "password".<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -50765,7 +50735,7 @@ The Windows specific settings applied to all containers. If unspecified, the opt
 
 
 
-Deprecated: JMX security is now based on CQL roles. Reaper will use cassandraUsefSecretRef for authentication, this field is ignored.
+Defines the username and password that Reaper will use to authenticate JMX connections to Cassandra clusters. These credentials will be automatically passed to each Cassandra node in the datacenter, as well as to the Reaper instance, so that the latter can authenticate against the former. If JMX authentication is not required, leave this field empty. The secret must be in the same namespace as Reaper itself and must contain two keys: "username" and "password".
 
 <table>
     <thead>
