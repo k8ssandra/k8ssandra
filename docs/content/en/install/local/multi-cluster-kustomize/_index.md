@@ -36,7 +36,7 @@ will run on the same Docker network, which means that they will have routable IP
 Run `setup-kind-multicluster.sh` as follows:
 
 ```sh
-./setup-kind-multicluster.sh --clusters 2 --kind-worker-nodes 4
+scripts/setup-kind-multicluster.sh --clusters 2 --kind-worker-nodes 4
 ```
 
 When creating a cluster, kind generates a kubeconfig with the address of the API server 
@@ -44,35 +44,37 @@ set to localhost. We need a kubeconfig that has the API server address set to it
 internal ip address. `setup-kind-multi-cluster.sh` takes care of this for us. Generated 
 files are written into a `build` directory.
 
-Run `kubectx` without any arguments and verify that you see the following contexts 
+Run `kubectl config get-contexts` without any arguments and verify that you see the following contexts 
 listed in the output:
 
-* kind-k8ssandra-0
-* kind-k8ssandra-1
+```
+          kind-k8ssandra-0                                            kind-k8ssandra-0                                            kind-k8ssandra-0                                               
+          kind-k8ssandra-1                                            kind-k8ssandra-1                                            kind-k8ssandra-1 
+```
 
 ### Install Cert Manager
 Set the active context to `kind-k8ssandra-0`:
 
 ```console
-kubectx kind-k8ssandra-0
+kubectl config use-context kind-k8ssandra-0
 ```
 
 Install Cert Manager:
 
 ```console
-kubectl apply -f https://github.com/jetstack/cert-manager/releases/download/v1.7.1/cert-manager.yaml
+kubectl apply -f https://github.com/jetstack/cert-manager/releases/download/v1.9.1/cert-manager.yaml
 ```
 
 Set the active context to `kind-k8ssandra-1`:
 
 ```console
-kubectx kind-k8ssandra-1
+kubectl config use-context kind-k8ssandra-1
 ```
 
 Install Cert Manager:
 
 ```console
-kubectl apply -f https://github.com/jetstack/cert-manager/releases/download/v1.7.1/cert-manager.yaml
+kubectl apply -f https://github.com/jetstack/cert-manager/releases/download/v1.9.1/cert-manager.yaml
 ```
 
 ### Install the control plane
@@ -80,12 +82,12 @@ We will install the control plane in `kind-k8ssandra-0`. Make sure your active c
 configured correctly:
 
 ```console
-kubectx kind-k8ssandra-0
+kubectl config use-context kind-k8ssandra-0
 ```
-Now install the operator:
+Now install the operator (replace `X.X.X` with [the release](https://github.com/k8ssandra/k8ssandra-operator/releases) you which to install):
 
 ```console
-kustomize build "github.com/k8ssandra/k8ssandra-operator/config/deployments/control-plane?ref=v1.1.1" | k apply --server-side -f -
+kustomize build "github.com/k8ssandra/k8ssandra-operator/config/deployments/control-plane?ref=vX.X.X" | kubectl apply --server-side -f -
 ```
 
 This installs the operator in the `k8ssandra-operator` namespace.
@@ -93,15 +95,16 @@ This installs the operator in the `k8ssandra-operator` namespace.
 Verify that the following CRDs are installed:
 
 * `cassandrabackups.medusa.k8ssandra.io`
+* `cassandradatacenters.cassandra.datastax.com`
 * `cassandrarestores.medusa.k8ssandra.io`
-* `certificaterequests.cert-manager.io`
-* `certificates.cert-manager.io`
-* `challenges.acme.cert-manager.io`
+* `cassandratasks.control.k8ssandra.io`
 * `clientconfigs.config.k8ssandra.io`
-* `clusterissuers.cert-manager.io`
-* `issuers.cert-manager.io`
 * `k8ssandraclusters.k8ssandra.io`
-* `orders.acme.cert-manager.io`
+* `medusabackupjobs.medusa.k8ssandra.io`
+* `medusabackups.medusa.k8ssandra.io`
+* `medusabackupschedules.medusa.k8ssandra.io`
+* `medusarestorejobs.medusa.k8ssandra.io`
+* `medusatasks.medusa.k8ssandra.io`
 * `reapers.reaper.k8ssandra.io`
 * `replicatedsecrets.replication.k8ssandra.io`
 * `stargates.stargate.k8ssandra.io`
@@ -109,13 +112,13 @@ Verify that the following CRDs are installed:
 Check that there are two Deployments. The output should look similar to this:
 
 ```console
-kubectl get deployment
+kubectl get deployment -n k8ssandra-operator
 ```
 
 ```console
 NAME                 READY   UP-TO-DATE   AVAILABLE   AGE
 cass-operator-controller-manager   1/1     1            1           2m
-k8ssandra-operator                 1/1     1            1           2m```
+k8ssandra-operator                 1/1     1            1           2m
 ```
 
 The operator looks for an environment variable named `K8SSANDRA_CONTROL_PLANE`. When set 
@@ -131,13 +134,13 @@ kubectl -n k8ssandra-operator get deployment k8ssandra-operator -o jsonpath='{.s
 Now we will install the data plane in `kind-k8ssandra-1`. Switch the active context:
 
 ```
-kubectx kind-k8ssandra-1
+kubectl config use-context kind-k8ssandra-1
 ```
 
-Now install the operator:
+Now install the operator (using the same release as the control plane deployment):
 
 ```console
-kustomize build "github.com/k8ssandra/k8ssandra-operator/config/deployments/data-plane?ref=v1.1.1" | k apply --server-side -f -
+kustomize build "github.com/k8ssandra/k8ssandra-operator/config/deployments/data-plane?ref=vX.X.X" | kubectl apply --server-side -f -
 ```
 
 This installs the operator in the `k8ssandra-operator` namespace.
@@ -145,15 +148,16 @@ This installs the operator in the `k8ssandra-operator` namespace.
 Verify that the following CRDs are installed:
 
 * `cassandrabackups.medusa.k8ssandra.io`
+* `cassandradatacenters.cassandra.datastax.com`
 * `cassandrarestores.medusa.k8ssandra.io`
-* `certificaterequests.cert-manager.io`
-* `certificates.cert-manager.io`
-* `challenges.acme.cert-manager.io`
+* `cassandratasks.control.k8ssandra.io`
 * `clientconfigs.config.k8ssandra.io`
-* `clusterissuers.cert-manager.io`
-* `issuers.cert-manager.io`
 * `k8ssandraclusters.k8ssandra.io`
-* `orders.acme.cert-manager.io`
+* `medusabackupjobs.medusa.k8ssandra.io`
+* `medusabackups.medusa.k8ssandra.io`
+* `medusabackupschedules.medusa.k8ssandra.io`
+* `medusarestorejobs.medusa.k8ssandra.io`
+* `medusatasks.medusa.k8ssandra.io`
 * `reapers.reaper.k8ssandra.io`
 * `replicatedsecrets.replication.k8ssandra.io`
 * `stargates.stargate.k8ssandra.io`
@@ -193,11 +197,14 @@ Create a `ClientConfig` in the `kind-k8ssandra-0` cluster using the service acco
 token and CA cert from `kind-k8ssandra-1`:
 
 ```sh
-./create-clientconfig.sh --namespace k8ssandra-operator --src-kubeconfig build/kubeconfigs/k8ssandra-1.yaml --dest-kubeconfig build/kubeconfigs/k8ssandra-0.yaml --in-cluster-kubeconfig build/kubeconfigs/updated/k8ssandra-1.yaml --output-dir clientconfig
+scripts/create-clientconfig.sh --namespace k8ssandra-operator \
+    --src-kubeconfig ./build/kind-kubeconfig \
+    --dest-kubeconfig ./build/kind-kubeconfig \
+    --src-context kind-k8ssandra-1 \
+    --dest-context kind-k8ssandra-0 \
+    --output-dir clientconfig
 ```
 The script stores all of the artifacts that it generates in a directory which is specified with the `--output-dir` option. If not specified, a temp directory is created.
-
-The `--in-cluster-kubeconfig` option is required for clusters that run locally like kind.
 
 ### Restart the control plane
 

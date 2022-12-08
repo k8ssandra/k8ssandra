@@ -38,7 +38,7 @@ cd k8ssandra-operator
 Invoke `make` with the following parameters: 
 
 ```bash
-make NUM_CLUSTERS=3 create-kind-multicluster
+scripts/setup-kind-multicluster.sh --clusters 3 --kind-worker-nodes 4
 ```
 
 ### Verify the deployments 
@@ -46,7 +46,7 @@ make NUM_CLUSTERS=3 create-kind-multicluster
 Set the context to each of the four created clusters, and get node information for each cluster. Examples:
 
 ```bash
-kubectx kind-k8ssandra-0
+kubectl config use-context kind-k8ssandra-0
 ```
 
 **Output:**
@@ -75,7 +75,7 @@ k8ssandra-0-worker4         Ready    <none>                 5h14m   v1.22.1
 Then enter:
 
 ```bash
-kubectx kind-k8ssandra-1
+kubectl config use-context kind-k8ssandra-1
 
 kubectl get nodes
 ```
@@ -94,7 +94,7 @@ k8ssandra-1-worker4         Ready    <none>                 5h13m   v1.22.1
 Then enter:
 
 ```bash
-kubectx kind-k8ssandra-2
+kubectl config use-context kind-k8ssandra-2
 
 kubectl get nodes
 ```
@@ -123,7 +123,7 @@ helm repo update
 Set the per-cluster context and install `jetstack/cert-manager`. Examples:
 
 ```bash
-kubectx kind-k8ssandra-0
+kubectl config use-context kind-k8ssandra-0
 
 helm install cert-manager jetstack/cert-manager --namespace cert-manager \
      --create-namespace --set installCRDs=true
@@ -145,7 +145,7 @@ cert-manager v1.7.0 has been deployed successfully!
 Then enter:
 
 ```bash
-kubectx kind-k8ssandra-1
+kubectl config use-context kind-k8ssandra-1
 
 helm install cert-manager jetstack/cert-manager --namespace cert-manager \
      --create-namespace --set installCRDs=true
@@ -167,7 +167,7 @@ cert-manager v1.7.0 has been deployed successfully!
 Then enter:
 
 ```bash
-kubectx kind-k8ssandra-2
+kubectl config use-context kind-k8ssandra-2
 
 helm install cert-manager jetstack/cert-manager --namespace cert-manager \
      --create-namespace --set installCRDs=true
@@ -211,7 +211,7 @@ helm search repo k8ssandra-operator
 In the following example, of the three clusters we've created in the section above, we'll use `kind-k8ssandra-0` as our control-plane.
 
 ```bash
-kubectx kind-k8ssandra-0
+kubectl config use-context kind-k8ssandra-0
 
 helm install k8ssandra-operator k8ssandra/k8ssandra-operator -n k8ssandra-operator \
      --create-namespace
@@ -222,11 +222,11 @@ helm install k8ssandra-operator k8ssandra/k8ssandra-operator -n k8ssandra-operat
 In this example, we'll use the three other clusters as data-planes.
 
 ```bash
-kubectx kind-k8ssandra-1
+kubectl config use-context kind-k8ssandra-1
 helm install k8ssandra-operator k8ssandra/k8ssandra-operator -n k8ssandra-operator \
  --create-namespace --set controlPlane=false
 
-kubectx kind-k8ssandra-2
+kubectl config use-context kind-k8ssandra-2
 helm install k8ssandra-operator k8ssandra/k8ssandra-operator -n k8ssandra-operator \
  --create-namespace --set controlPlane=false
  ```
@@ -234,7 +234,7 @@ helm install k8ssandra-operator k8ssandra/k8ssandra-operator -n k8ssandra-operat
 ### Verify control-plane configuration
 
 ```bash
-kubectx kind-k8ssandra-0
+kubectl config use-context kind-k8ssandra-0
 
 kubectl -n k8ssandra-operator get deployment k8ssandra-operator \
  -o jsonpath='{.spec.template.spec.containers[0].env[?(@.name=="K8SSANDRA_CONTROL_PLANE")].value}'
@@ -251,7 +251,7 @@ true
 We could test for `K8SSANDRA_CONTROL_PLANE`, which for each of the three clusters in our example serving as data-planes, should return `false`. Just one example:
 
 ```
-kubectx kind-k8ssandra-1
+kubectl config use-context kind-k8ssandra-1
 
 kubectl -n k8ssandra-operator get deployment k8ssandra-operator \
  -o jsonpath='{.spec.template.spec.containers[0].env[?(@.name=="K8SSANDRA_CONTROL_PLANE")].value}'
@@ -272,17 +272,18 @@ false
 First, set the context to `kind-k8ssandra-0`, the control plane cluster. 
 
 ```bash
-kubectx kind-k8ssandra-0
+kubectl config use-context kind-k8ssandra-0
 ```
 
 Run the create-clientconfig.sh script, once per data plane cluster.  
 
 ```bash
-./scripts/create-clientconfig.sh --namespace k8ssandra-operator \
-  --src-kubeconfig build/kubeconfigs/k8ssandra-1.yaml \
-  --dest-kubeconfig build/kubeconfigs/k8ssandra-0.yaml \
-  --in-cluster-kubeconfig build/kubeconfigs/updated/k8ssandra-1.yaml \
-  --output-dir clientconfig
+scripts/create-clientconfig.sh --namespace k8ssandra-operator \
+    --src-kubeconfig ./build/kind-kubeconfig \
+    --dest-kubeconfig ./build/kind-kubeconfig \
+    --src-context kind-k8ssandra-1 \
+    --dest-context kind-k8ssandra-0 \
+    --output-dir clientconfig
 ```
 
 **Output:**
@@ -299,11 +300,12 @@ clientconfig.config.k8ssandra.io/kind-k8ssandra-1 created
 Then enter:
 
 ```bash
-./scripts/create-clientconfig.sh --namespace k8ssandra-operator \
- --src-kubeconfig build/kubeconfigs/k8ssandra-2.yaml \
- --dest-kubeconfig build/kubeconfigs/k8ssandra-0.yaml \
- --in-cluster-kubeconfig build/kubeconfigs/updated/k8ssandra-2.yaml 
- --output-dir clientconfig
+scripts/create-clientconfig.sh --namespace k8ssandra-operator \
+    --src-kubeconfig ./build/kind-kubeconfig \
+    --dest-kubeconfig ./build/kind-kubeconfig \
+    --src-context kind-k8ssandra-2 \
+    --dest-context kind-k8ssandra-0 \
+    --output-dir clientconfig
 ```
 
 **Output:**
@@ -359,7 +361,7 @@ spec:
 Verify again that your context is set to the control plane cluster, which is in this example:
 
 ```bash
-kubectx kind-k8ssandra-0
+kubectl config use-context kind-k8ssandra-0
 ```
 
 Apply the YAML to the already deployed K8ssandra Operator. 
@@ -373,17 +375,17 @@ kubectl apply -n k8ssandra-operator -f k8cm1.yml
 Initially the rollout will begin in dc1 and work across the full cluster:
 
 ```bash
-kubectx kind-k8ssandra-1
+kubectl config use-context kind-k8ssandra-1
 
 kubectl get pods -n k8ssandra-operator
 ```
 
-Do the same the other cluster by setting the kubectx context to kind-k8ssandra-2, check the pods status.
+Do the same the other cluster by setting the kubectl config use-context context to kind-k8ssandra-2, check the pods status.
 
 Eventually the datacenters will be fully deployed:
 
 ```bash
-kubectx kind-k8ssandra-0
+kubectl config use-context kind-k8ssandra-0
 
 kubectl get pods -n k8ssandra-operator
 ```
@@ -397,7 +399,7 @@ k8ssandra-operator-cass-operator-794f65d9f4-kqrpf   1/1     Running   0         
 ```
 
 ```bash
-kubectx kind-k8ssandra-1
+kubectl config use-context kind-k8ssandra-1
 
 kubectl get pods -n k8ssandra-operator
 ```
@@ -415,7 +417,7 @@ k8ssandra-operator-cass-operator-794f65d9f4-s697p       1/1     Running   0     
 ```
 
 ```bash
-kubectx kind-k8ssandra-2
+kubectl config use-context kind-k8ssandra-2
 
 kubectl get pods -n k8ssandra-operator
 ```
@@ -437,7 +439,7 @@ k8ssandra-operator-cass-operator-794f65d9f4-79z6z       1/1     Running   0     
 While deployment is still in progress, you can check the status:
 
 ```bash
-kubectx kind-k8ssandra-0
+kubectl config use-context kind-k8ssandra-0
 
 kubectl describe k8cs demo -n k8ssandra-operator
 ```
@@ -558,7 +560,7 @@ Events:                       <none>
 On the control plane, use the following commands to extract the username and password.
 
 ```bash
-kubectx kind-k8ssandra-0
+kubectl config use-context kind-k8ssandra-0
 
 CASS_USERNAME=$(kubectl get secret demo-superuser -n k8ssandra-operator -o=jsonpath='{.data.username}' | base64 --decode)
 
@@ -592,7 +594,7 @@ You'll use the extracted credentials for subsequent authentication in deployed c
 On one of the data plane clusters, verify the cluster status. Example:
 
 ```bash
-kubectx kind-k8ssandra-1
+kubectl config use-context kind-k8ssandra-1
 
 kubectl exec -it demo-dc1-default-sts-0 -n k8ssandra-operator -c cassandra -- nodetool -u $CASS_USERNAME -pw $CASS_PASSWORD status
 ```
@@ -625,7 +627,7 @@ All nodes should have the status UN, which stands for "Up Normal".
 ### Test a few operations
 
 ```bash
-kubectx kind-k8ssandra-1
+kubectl config use-context kind-k8ssandra-1
 
 kubectl exec -it demo-dc1-default-sts-0 -n k8ssandra-operator -- /bin/bash
 ```
@@ -671,7 +673,7 @@ Try another cqlsh operation on a different cluster.
 
 
 ```bash
-kubectx kind-k8ssandra-2
+kubectl config use-context kind-k8ssandra-2
 
 kubectl exec -it demo-dc2-default-sts-0 -n k8ssandra-operator -- /bin/bash
 ```
@@ -705,7 +707,7 @@ Now use the Stargate API.
 **Output plus cqlsh &amp; stargate-service example:**
 
 ```bash
-kubectx kind-k8ssandra-2
+kubectl config use-context kind-k8ssandra-2
 
 kubectl exec -it demo-dc2-default-sts-0 -n k8ssandra-operator -- /bin/bash
 

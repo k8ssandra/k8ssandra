@@ -39,14 +39,14 @@ Run `setup-kind-multicluster.sh` as follows:
 We need to first install Cert Manager because it is a dependency of cass-operator:
 
 ```console
-kubectl apply -f https://github.com/jetstack/cert-manager/releases/download/v1.7.1/cert-manager.yaml
+kubectl apply -f https://github.com/jetstack/cert-manager/releases/download/v1.9.1/cert-manager.yaml
 ```
 
 ### Install K8ssandra Operator
-Install with:
+Install with (replace `X.X.X` with [the release](https://github.com/k8ssandra/k8ssandra-operator/releases) you which to install):
 
 ```console
-kustomize build "github.com/k8ssandra/k8ssandra-operator/config/deployments/control-plane?ref=v1.1.1" | k apply --server-side -f -
+kustomize build "github.com/k8ssandra/k8ssandra-operator/config/deployments/control-plane?ref=vX.X.X" | kubectl apply --server-side -f -
 
 Verify that the following CRDs are installed:
 
