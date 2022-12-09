@@ -385,6 +385,15 @@ Cassandra is a specification of the Cassandra cluster. This includes everything 
         </td>
         <td>false</td>
       </tr><tr>
+        <td><b>perNodeConfigInitContainerImage</b></td>
+        <td>string</td>
+        <td>
+          The image to use in each Cassandra pod for the (short-lived) init container that merges global and perNodeConfig configuration. This is only useful when PerNodeConfigMapRef is set. The default is "mikefarah/yq:4".<br/>
+          <br/>
+            <i>Default</i>: mikefarah/yq:4<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
         <td><b><a href="#k8ssandraclusterspeccassandrapodsecuritycontext">podSecurityContext</a></b></td>
         <td>object</td>
         <td>
@@ -3810,6 +3819,15 @@ VolumeMount describes a mounting of a Volume within a container.
         <td>object</td>
         <td>
           Networking enables host networking and configures a NodePort ports.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>perNodeConfigInitContainerImage</b></td>
+        <td>string</td>
+        <td>
+          The image to use in each Cassandra pod for the (short-lived) init container that merges global and perNodeConfig configuration. This is only useful when PerNodeConfigMapRef is set. The default is "mikefarah/yq:4".<br/>
+          <br/>
+            <i>Default</i>: mikefarah/yq:4<br/>
         </td>
         <td>false</td>
       </tr><tr>
