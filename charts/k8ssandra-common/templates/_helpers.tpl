@@ -55,6 +55,10 @@ metadata:
   annotations:
     {{- toYaml . | nindent 4 }}
   {{- end }}
+{{- if semverCompare ">=1.24-0" .Capabilities.KubeVersion.GitVersion }}
+secrets:
+  - name: {{ include "k8ssandra-common.serviceAccountName" . }}-token
+{{- end }}
 {{- if .Values.imagePullSecrets }}
 imagePullSecrets:
 {{ toYaml .Values.imagePullSecrets }}
