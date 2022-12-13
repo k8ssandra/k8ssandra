@@ -317,10 +317,14 @@ jobs:
           done
         working-directory: build/${{ steps.compute_next_version.outputs.RELEASE_VERSION }}
 
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.8'
       # Helm Release
       - uses: google-github-actions/setup-gcloud@v0
         with:
-          version: '290.0.1'
+          version: '318.0.0'
           project_id: ${{ secrets.GCP_PROJECT_ID }}
           service_account_key: ${{ secrets.GCP_SA_KEY }}
           export_default_credentials: true
