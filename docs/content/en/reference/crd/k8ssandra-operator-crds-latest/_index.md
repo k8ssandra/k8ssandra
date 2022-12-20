@@ -385,6 +385,15 @@ Cassandra is a specification of the Cassandra cluster. This includes everything 
         </td>
         <td>false</td>
       </tr><tr>
+        <td><b>perNodeConfigInitContainerImage</b></td>
+        <td>string</td>
+        <td>
+          The image to use in each Cassandra pod for the (short-lived) init container that merges global and perNodeConfig configuration. This is only useful when PerNodeConfigMapRef is set. The default is "mikefarah/yq:4".<br/>
+          <br/>
+            <i>Default</i>: mikefarah/yq:4<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
         <td><b><a href="#k8ssandraclusterspeccassandrapodsecuritycontext">podSecurityContext</a></b></td>
         <td>object</td>
         <td>
@@ -3810,6 +3819,15 @@ VolumeMount describes a mounting of a Volume within a container.
         <td>object</td>
         <td>
           Networking enables host networking and configures a NodePort ports.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>perNodeConfigInitContainerImage</b></td>
+        <td>string</td>
+        <td>
+          The image to use in each Cassandra pod for the (short-lived) init container that merges global and perNodeConfig configuration. This is only useful when PerNodeConfigMapRef is set. The default is "mikefarah/yq:4".<br/>
+          <br/>
+            <i>Default</i>: mikefarah/yq:4<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -17240,6 +17258,13 @@ Telemetry defines the desired telemetry integrations to deploy targeting the Sta
           <br/>
         </td>
         <td>false</td>
+      </tr><tr>
+        <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexstargateracksindextelemetryvector">vector</a></b></td>
+        <td>object</td>
+        <td>
+          <br/>
+        </td>
+        <td>false</td>
       </tr></tbody>
 </table>
 
@@ -17299,6 +17324,122 @@ Telemetry defines the desired telemetry integrations to deploy targeting the Sta
         <td>boolean</td>
         <td>
           Enable the creation of Prometheus serviceMonitors for this resource (Cassandra or Stargate).<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### K8ssandraCluster.spec.cassandra.datacenters[index].stargate.racks[index].telemetry.vector
+<sup><sup>[↩ Parent](#k8ssandraclusterspeccassandradatacentersindexstargateracksindextelemetry)</sup></sup>
+
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexstargateracksindextelemetryvectorconfig">config</a></b></td>
+        <td>object</td>
+        <td>
+          Config is the name of the configmap containing custom sinks and transformers for the Vector agent. The configmap must be in the same namespace as the CassandraDatacenter and contain a vector.toml entry with the Vector configuration in toml format. The agent is already configured with a "cassandra_metrics" source that needs to be used as input for the sinks. If not set, the default console sink will be used.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>enabled</b></td>
+        <td>boolean</td>
+        <td>
+          Enabled enables the Vector agent for this resource (Cassandra, Reaper or Stargate). Enabling the vector agent will inject a sidecar container into the pod.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>image</b></td>
+        <td>string</td>
+        <td>
+          Image is the name of the Vector image to use. If not set, the default image will be used. kube:default="timberio/vector:0.26.0-alpine"<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexstargateracksindextelemetryvectorresources">resources</a></b></td>
+        <td>object</td>
+        <td>
+          Resources is the resource requirements for the Vector agent.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>scrapeInterval</b></td>
+        <td>string</td>
+        <td>
+          ScrapeInterval is the interval at which the Vector agent will scrape the metrics endpoint. Use values like 30s, 1m, 5m. kube:default=30s<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### K8ssandraCluster.spec.cassandra.datacenters[index].stargate.racks[index].telemetry.vector.config
+<sup><sup>[↩ Parent](#k8ssandraclusterspeccassandradatacentersindexstargateracksindextelemetryvector)</sup></sup>
+
+
+
+Config is the name of the configmap containing custom sinks and transformers for the Vector agent. The configmap must be in the same namespace as the CassandraDatacenter and contain a vector.toml entry with the Vector configuration in toml format. The agent is already configured with a "cassandra_metrics" source that needs to be used as input for the sinks. If not set, the default console sink will be used.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>name</b></td>
+        <td>string</td>
+        <td>
+          Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### K8ssandraCluster.spec.cassandra.datacenters[index].stargate.racks[index].telemetry.vector.resources
+<sup><sup>[↩ Parent](#k8ssandraclusterspeccassandradatacentersindexstargateracksindextelemetryvector)</sup></sup>
+
+
+
+Resources is the resource requirements for the Vector agent.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>limits</b></td>
+        <td>map[string]int or string</td>
+        <td>
+          Limits describes the maximum amount of compute resources allowed. More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>requests</b></td>
+        <td>map[string]int or string</td>
+        <td>
+          Requests describes the minimum amount of compute resources required. If Requests is omitted for a container, it defaults to Limits if that is explicitly specified, otherwise to an implementation-defined value. More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -17715,6 +17856,13 @@ Telemetry defines the desired telemetry integrations to deploy targeting the Sta
           <br/>
         </td>
         <td>false</td>
+      </tr><tr>
+        <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexstargatetelemetryvector">vector</a></b></td>
+        <td>object</td>
+        <td>
+          <br/>
+        </td>
+        <td>false</td>
       </tr></tbody>
 </table>
 
@@ -17774,6 +17922,122 @@ Telemetry defines the desired telemetry integrations to deploy targeting the Sta
         <td>boolean</td>
         <td>
           Enable the creation of Prometheus serviceMonitors for this resource (Cassandra or Stargate).<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### K8ssandraCluster.spec.cassandra.datacenters[index].stargate.telemetry.vector
+<sup><sup>[↩ Parent](#k8ssandraclusterspeccassandradatacentersindexstargatetelemetry)</sup></sup>
+
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexstargatetelemetryvectorconfig">config</a></b></td>
+        <td>object</td>
+        <td>
+          Config is the name of the configmap containing custom sinks and transformers for the Vector agent. The configmap must be in the same namespace as the CassandraDatacenter and contain a vector.toml entry with the Vector configuration in toml format. The agent is already configured with a "cassandra_metrics" source that needs to be used as input for the sinks. If not set, the default console sink will be used.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>enabled</b></td>
+        <td>boolean</td>
+        <td>
+          Enabled enables the Vector agent for this resource (Cassandra, Reaper or Stargate). Enabling the vector agent will inject a sidecar container into the pod.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>image</b></td>
+        <td>string</td>
+        <td>
+          Image is the name of the Vector image to use. If not set, the default image will be used. kube:default="timberio/vector:0.26.0-alpine"<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexstargatetelemetryvectorresources">resources</a></b></td>
+        <td>object</td>
+        <td>
+          Resources is the resource requirements for the Vector agent.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>scrapeInterval</b></td>
+        <td>string</td>
+        <td>
+          ScrapeInterval is the interval at which the Vector agent will scrape the metrics endpoint. Use values like 30s, 1m, 5m. kube:default=30s<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### K8ssandraCluster.spec.cassandra.datacenters[index].stargate.telemetry.vector.config
+<sup><sup>[↩ Parent](#k8ssandraclusterspeccassandradatacentersindexstargatetelemetryvector)</sup></sup>
+
+
+
+Config is the name of the configmap containing custom sinks and transformers for the Vector agent. The configmap must be in the same namespace as the CassandraDatacenter and contain a vector.toml entry with the Vector configuration in toml format. The agent is already configured with a "cassandra_metrics" source that needs to be used as input for the sinks. If not set, the default console sink will be used.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>name</b></td>
+        <td>string</td>
+        <td>
+          Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### K8ssandraCluster.spec.cassandra.datacenters[index].stargate.telemetry.vector.resources
+<sup><sup>[↩ Parent](#k8ssandraclusterspeccassandradatacentersindexstargatetelemetryvector)</sup></sup>
+
+
+
+Resources is the resource requirements for the Vector agent.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>limits</b></td>
+        <td>map[string]int or string</td>
+        <td>
+          Limits describes the maximum amount of compute resources allowed. More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>requests</b></td>
+        <td>map[string]int or string</td>
+        <td>
+          Requests describes the minimum amount of compute resources required. If Requests is omitted for a container, it defaults to Limits if that is explicitly specified, otherwise to an implementation-defined value. More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -18476,6 +18740,13 @@ Telemetry defines the desired state for telemetry resources in this datacenter. 
           <br/>
         </td>
         <td>false</td>
+      </tr><tr>
+        <td><b><a href="#k8ssandraclusterspeccassandradatacentersindextelemetryvector">vector</a></b></td>
+        <td>object</td>
+        <td>
+          <br/>
+        </td>
+        <td>false</td>
       </tr></tbody>
 </table>
 
@@ -18535,6 +18806,122 @@ Telemetry defines the desired state for telemetry resources in this datacenter. 
         <td>boolean</td>
         <td>
           Enable the creation of Prometheus serviceMonitors for this resource (Cassandra or Stargate).<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### K8ssandraCluster.spec.cassandra.datacenters[index].telemetry.vector
+<sup><sup>[↩ Parent](#k8ssandraclusterspeccassandradatacentersindextelemetry)</sup></sup>
+
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b><a href="#k8ssandraclusterspeccassandradatacentersindextelemetryvectorconfig">config</a></b></td>
+        <td>object</td>
+        <td>
+          Config is the name of the configmap containing custom sinks and transformers for the Vector agent. The configmap must be in the same namespace as the CassandraDatacenter and contain a vector.toml entry with the Vector configuration in toml format. The agent is already configured with a "cassandra_metrics" source that needs to be used as input for the sinks. If not set, the default console sink will be used.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>enabled</b></td>
+        <td>boolean</td>
+        <td>
+          Enabled enables the Vector agent for this resource (Cassandra, Reaper or Stargate). Enabling the vector agent will inject a sidecar container into the pod.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>image</b></td>
+        <td>string</td>
+        <td>
+          Image is the name of the Vector image to use. If not set, the default image will be used. kube:default="timberio/vector:0.26.0-alpine"<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#k8ssandraclusterspeccassandradatacentersindextelemetryvectorresources">resources</a></b></td>
+        <td>object</td>
+        <td>
+          Resources is the resource requirements for the Vector agent.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>scrapeInterval</b></td>
+        <td>string</td>
+        <td>
+          ScrapeInterval is the interval at which the Vector agent will scrape the metrics endpoint. Use values like 30s, 1m, 5m. kube:default=30s<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### K8ssandraCluster.spec.cassandra.datacenters[index].telemetry.vector.config
+<sup><sup>[↩ Parent](#k8ssandraclusterspeccassandradatacentersindextelemetryvector)</sup></sup>
+
+
+
+Config is the name of the configmap containing custom sinks and transformers for the Vector agent. The configmap must be in the same namespace as the CassandraDatacenter and contain a vector.toml entry with the Vector configuration in toml format. The agent is already configured with a "cassandra_metrics" source that needs to be used as input for the sinks. If not set, the default console sink will be used.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>name</b></td>
+        <td>string</td>
+        <td>
+          Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### K8ssandraCluster.spec.cassandra.datacenters[index].telemetry.vector.resources
+<sup><sup>[↩ Parent](#k8ssandraclusterspeccassandradatacentersindextelemetryvector)</sup></sup>
+
+
+
+Resources is the resource requirements for the Vector agent.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>limits</b></td>
+        <td>map[string]int or string</td>
+        <td>
+          Limits describes the maximum amount of compute resources allowed. More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>requests</b></td>
+        <td>map[string]int or string</td>
+        <td>
+          Requests describes the minimum amount of compute resources required. If Requests is omitted for a container, it defaults to Limits if that is explicitly specified, otherwise to an implementation-defined value. More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -25516,6 +25903,13 @@ Telemetry defines the desired state for telemetry resources in this datacenter. 
           <br/>
         </td>
         <td>false</td>
+      </tr><tr>
+        <td><b><a href="#k8ssandraclusterspeccassandratelemetryvector">vector</a></b></td>
+        <td>object</td>
+        <td>
+          <br/>
+        </td>
+        <td>false</td>
       </tr></tbody>
 </table>
 
@@ -25575,6 +25969,122 @@ Telemetry defines the desired state for telemetry resources in this datacenter. 
         <td>boolean</td>
         <td>
           Enable the creation of Prometheus serviceMonitors for this resource (Cassandra or Stargate).<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### K8ssandraCluster.spec.cassandra.telemetry.vector
+<sup><sup>[↩ Parent](#k8ssandraclusterspeccassandratelemetry)</sup></sup>
+
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b><a href="#k8ssandraclusterspeccassandratelemetryvectorconfig">config</a></b></td>
+        <td>object</td>
+        <td>
+          Config is the name of the configmap containing custom sinks and transformers for the Vector agent. The configmap must be in the same namespace as the CassandraDatacenter and contain a vector.toml entry with the Vector configuration in toml format. The agent is already configured with a "cassandra_metrics" source that needs to be used as input for the sinks. If not set, the default console sink will be used.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>enabled</b></td>
+        <td>boolean</td>
+        <td>
+          Enabled enables the Vector agent for this resource (Cassandra, Reaper or Stargate). Enabling the vector agent will inject a sidecar container into the pod.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>image</b></td>
+        <td>string</td>
+        <td>
+          Image is the name of the Vector image to use. If not set, the default image will be used. kube:default="timberio/vector:0.26.0-alpine"<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#k8ssandraclusterspeccassandratelemetryvectorresources">resources</a></b></td>
+        <td>object</td>
+        <td>
+          Resources is the resource requirements for the Vector agent.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>scrapeInterval</b></td>
+        <td>string</td>
+        <td>
+          ScrapeInterval is the interval at which the Vector agent will scrape the metrics endpoint. Use values like 30s, 1m, 5m. kube:default=30s<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### K8ssandraCluster.spec.cassandra.telemetry.vector.config
+<sup><sup>[↩ Parent](#k8ssandraclusterspeccassandratelemetryvector)</sup></sup>
+
+
+
+Config is the name of the configmap containing custom sinks and transformers for the Vector agent. The configmap must be in the same namespace as the CassandraDatacenter and contain a vector.toml entry with the Vector configuration in toml format. The agent is already configured with a "cassandra_metrics" source that needs to be used as input for the sinks. If not set, the default console sink will be used.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>name</b></td>
+        <td>string</td>
+        <td>
+          Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### K8ssandraCluster.spec.cassandra.telemetry.vector.resources
+<sup><sup>[↩ Parent](#k8ssandraclusterspeccassandratelemetryvector)</sup></sup>
+
+
+
+Resources is the resource requirements for the Vector agent.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>limits</b></td>
+        <td>map[string]int or string</td>
+        <td>
+          Limits describes the maximum amount of compute resources allowed. More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>requests</b></td>
+        <td>map[string]int or string</td>
+        <td>
+          Requests describes the minimum amount of compute resources required. If Requests is omitted for a container, it defaults to Limits if that is explicitly specified, otherwise to an implementation-defined value. More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -29704,6 +30214,13 @@ Telemetry defines the desired telemetry integrations to deploy targeting the Rea
           <br/>
         </td>
         <td>false</td>
+      </tr><tr>
+        <td><b><a href="#k8ssandraclusterspecreapertelemetryvector">vector</a></b></td>
+        <td>object</td>
+        <td>
+          <br/>
+        </td>
+        <td>false</td>
       </tr></tbody>
 </table>
 
@@ -29763,6 +30280,122 @@ Telemetry defines the desired telemetry integrations to deploy targeting the Rea
         <td>boolean</td>
         <td>
           Enable the creation of Prometheus serviceMonitors for this resource (Cassandra or Stargate).<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### K8ssandraCluster.spec.reaper.telemetry.vector
+<sup><sup>[↩ Parent](#k8ssandraclusterspecreapertelemetry)</sup></sup>
+
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b><a href="#k8ssandraclusterspecreapertelemetryvectorconfig">config</a></b></td>
+        <td>object</td>
+        <td>
+          Config is the name of the configmap containing custom sinks and transformers for the Vector agent. The configmap must be in the same namespace as the CassandraDatacenter and contain a vector.toml entry with the Vector configuration in toml format. The agent is already configured with a "cassandra_metrics" source that needs to be used as input for the sinks. If not set, the default console sink will be used.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>enabled</b></td>
+        <td>boolean</td>
+        <td>
+          Enabled enables the Vector agent for this resource (Cassandra, Reaper or Stargate). Enabling the vector agent will inject a sidecar container into the pod.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>image</b></td>
+        <td>string</td>
+        <td>
+          Image is the name of the Vector image to use. If not set, the default image will be used. kube:default="timberio/vector:0.26.0-alpine"<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#k8ssandraclusterspecreapertelemetryvectorresources">resources</a></b></td>
+        <td>object</td>
+        <td>
+          Resources is the resource requirements for the Vector agent.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>scrapeInterval</b></td>
+        <td>string</td>
+        <td>
+          ScrapeInterval is the interval at which the Vector agent will scrape the metrics endpoint. Use values like 30s, 1m, 5m. kube:default=30s<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### K8ssandraCluster.spec.reaper.telemetry.vector.config
+<sup><sup>[↩ Parent](#k8ssandraclusterspecreapertelemetryvector)</sup></sup>
+
+
+
+Config is the name of the configmap containing custom sinks and transformers for the Vector agent. The configmap must be in the same namespace as the CassandraDatacenter and contain a vector.toml entry with the Vector configuration in toml format. The agent is already configured with a "cassandra_metrics" source that needs to be used as input for the sinks. If not set, the default console sink will be used.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>name</b></td>
+        <td>string</td>
+        <td>
+          Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### K8ssandraCluster.spec.reaper.telemetry.vector.resources
+<sup><sup>[↩ Parent](#k8ssandraclusterspecreapertelemetryvector)</sup></sup>
+
+
+
+Resources is the resource requirements for the Vector agent.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>limits</b></td>
+        <td>map[string]int or string</td>
+        <td>
+          Limits describes the maximum amount of compute resources allowed. More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>requests</b></td>
+        <td>map[string]int or string</td>
+        <td>
+          Requests describes the minimum amount of compute resources required. If Requests is omitted for a container, it defaults to Limits if that is explicitly specified, otherwise to an implementation-defined value. More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -32105,6 +32738,13 @@ Telemetry defines the desired telemetry integrations to deploy targeting the Sta
           <br/>
         </td>
         <td>false</td>
+      </tr><tr>
+        <td><b><a href="#k8ssandraclusterspecstargatetelemetryvector">vector</a></b></td>
+        <td>object</td>
+        <td>
+          <br/>
+        </td>
+        <td>false</td>
       </tr></tbody>
 </table>
 
@@ -32164,6 +32804,122 @@ Telemetry defines the desired telemetry integrations to deploy targeting the Sta
         <td>boolean</td>
         <td>
           Enable the creation of Prometheus serviceMonitors for this resource (Cassandra or Stargate).<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### K8ssandraCluster.spec.stargate.telemetry.vector
+<sup><sup>[↩ Parent](#k8ssandraclusterspecstargatetelemetry)</sup></sup>
+
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b><a href="#k8ssandraclusterspecstargatetelemetryvectorconfig">config</a></b></td>
+        <td>object</td>
+        <td>
+          Config is the name of the configmap containing custom sinks and transformers for the Vector agent. The configmap must be in the same namespace as the CassandraDatacenter and contain a vector.toml entry with the Vector configuration in toml format. The agent is already configured with a "cassandra_metrics" source that needs to be used as input for the sinks. If not set, the default console sink will be used.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>enabled</b></td>
+        <td>boolean</td>
+        <td>
+          Enabled enables the Vector agent for this resource (Cassandra, Reaper or Stargate). Enabling the vector agent will inject a sidecar container into the pod.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>image</b></td>
+        <td>string</td>
+        <td>
+          Image is the name of the Vector image to use. If not set, the default image will be used. kube:default="timberio/vector:0.26.0-alpine"<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#k8ssandraclusterspecstargatetelemetryvectorresources">resources</a></b></td>
+        <td>object</td>
+        <td>
+          Resources is the resource requirements for the Vector agent.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>scrapeInterval</b></td>
+        <td>string</td>
+        <td>
+          ScrapeInterval is the interval at which the Vector agent will scrape the metrics endpoint. Use values like 30s, 1m, 5m. kube:default=30s<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### K8ssandraCluster.spec.stargate.telemetry.vector.config
+<sup><sup>[↩ Parent](#k8ssandraclusterspecstargatetelemetryvector)</sup></sup>
+
+
+
+Config is the name of the configmap containing custom sinks and transformers for the Vector agent. The configmap must be in the same namespace as the CassandraDatacenter and contain a vector.toml entry with the Vector configuration in toml format. The agent is already configured with a "cassandra_metrics" source that needs to be used as input for the sinks. If not set, the default console sink will be used.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>name</b></td>
+        <td>string</td>
+        <td>
+          Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### K8ssandraCluster.spec.stargate.telemetry.vector.resources
+<sup><sup>[↩ Parent](#k8ssandraclusterspecstargatetelemetryvector)</sup></sup>
+
+
+
+Resources is the resource requirements for the Vector agent.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>limits</b></td>
+        <td>map[string]int or string</td>
+        <td>
+          Limits describes the maximum amount of compute resources allowed. More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>requests</b></td>
+        <td>map[string]int or string</td>
+        <td>
+          Requests describes the minimum amount of compute resources required. If Requests is omitted for a container, it defaults to Limits if that is explicitly specified, otherwise to an implementation-defined value. More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -51958,6 +52714,13 @@ Telemetry defines the desired telemetry integrations to deploy targeting the Rea
           <br/>
         </td>
         <td>false</td>
+      </tr><tr>
+        <td><b><a href="#reaperspectelemetryvector">vector</a></b></td>
+        <td>object</td>
+        <td>
+          <br/>
+        </td>
+        <td>false</td>
       </tr></tbody>
 </table>
 
@@ -52017,6 +52780,122 @@ Telemetry defines the desired telemetry integrations to deploy targeting the Rea
         <td>boolean</td>
         <td>
           Enable the creation of Prometheus serviceMonitors for this resource (Cassandra or Stargate).<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### Reaper.spec.telemetry.vector
+<sup><sup>[↩ Parent](#reaperspectelemetry)</sup></sup>
+
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b><a href="#reaperspectelemetryvectorconfig">config</a></b></td>
+        <td>object</td>
+        <td>
+          Config is the name of the configmap containing custom sinks and transformers for the Vector agent. The configmap must be in the same namespace as the CassandraDatacenter and contain a vector.toml entry with the Vector configuration in toml format. The agent is already configured with a "cassandra_metrics" source that needs to be used as input for the sinks. If not set, the default console sink will be used.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>enabled</b></td>
+        <td>boolean</td>
+        <td>
+          Enabled enables the Vector agent for this resource (Cassandra, Reaper or Stargate). Enabling the vector agent will inject a sidecar container into the pod.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>image</b></td>
+        <td>string</td>
+        <td>
+          Image is the name of the Vector image to use. If not set, the default image will be used. kube:default="timberio/vector:0.26.0-alpine"<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#reaperspectelemetryvectorresources">resources</a></b></td>
+        <td>object</td>
+        <td>
+          Resources is the resource requirements for the Vector agent.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>scrapeInterval</b></td>
+        <td>string</td>
+        <td>
+          ScrapeInterval is the interval at which the Vector agent will scrape the metrics endpoint. Use values like 30s, 1m, 5m. kube:default=30s<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### Reaper.spec.telemetry.vector.config
+<sup><sup>[↩ Parent](#reaperspectelemetryvector)</sup></sup>
+
+
+
+Config is the name of the configmap containing custom sinks and transformers for the Vector agent. The configmap must be in the same namespace as the CassandraDatacenter and contain a vector.toml entry with the Vector configuration in toml format. The agent is already configured with a "cassandra_metrics" source that needs to be used as input for the sinks. If not set, the default console sink will be used.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>name</b></td>
+        <td>string</td>
+        <td>
+          Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### Reaper.spec.telemetry.vector.resources
+<sup><sup>[↩ Parent](#reaperspectelemetryvector)</sup></sup>
+
+
+
+Resources is the resource requirements for the Vector agent.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>limits</b></td>
+        <td>map[string]int or string</td>
+        <td>
+          Limits describes the maximum amount of compute resources allowed. More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>requests</b></td>
+        <td>map[string]int or string</td>
+        <td>
+          Requests describes the minimum amount of compute resources required. If Requests is omitted for a container, it defaults to Limits if that is explicitly specified, otherwise to an implementation-defined value. More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -57136,6 +58015,13 @@ Telemetry defines the desired telemetry integrations to deploy targeting the Sta
           <br/>
         </td>
         <td>false</td>
+      </tr><tr>
+        <td><b><a href="#stargatespecracksindextelemetryvector">vector</a></b></td>
+        <td>object</td>
+        <td>
+          <br/>
+        </td>
+        <td>false</td>
       </tr></tbody>
 </table>
 
@@ -57195,6 +58081,122 @@ Telemetry defines the desired telemetry integrations to deploy targeting the Sta
         <td>boolean</td>
         <td>
           Enable the creation of Prometheus serviceMonitors for this resource (Cassandra or Stargate).<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### Stargate.spec.racks[index].telemetry.vector
+<sup><sup>[↩ Parent](#stargatespecracksindextelemetry)</sup></sup>
+
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b><a href="#stargatespecracksindextelemetryvectorconfig">config</a></b></td>
+        <td>object</td>
+        <td>
+          Config is the name of the configmap containing custom sinks and transformers for the Vector agent. The configmap must be in the same namespace as the CassandraDatacenter and contain a vector.toml entry with the Vector configuration in toml format. The agent is already configured with a "cassandra_metrics" source that needs to be used as input for the sinks. If not set, the default console sink will be used.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>enabled</b></td>
+        <td>boolean</td>
+        <td>
+          Enabled enables the Vector agent for this resource (Cassandra, Reaper or Stargate). Enabling the vector agent will inject a sidecar container into the pod.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>image</b></td>
+        <td>string</td>
+        <td>
+          Image is the name of the Vector image to use. If not set, the default image will be used. kube:default="timberio/vector:0.26.0-alpine"<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#stargatespecracksindextelemetryvectorresources">resources</a></b></td>
+        <td>object</td>
+        <td>
+          Resources is the resource requirements for the Vector agent.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>scrapeInterval</b></td>
+        <td>string</td>
+        <td>
+          ScrapeInterval is the interval at which the Vector agent will scrape the metrics endpoint. Use values like 30s, 1m, 5m. kube:default=30s<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### Stargate.spec.racks[index].telemetry.vector.config
+<sup><sup>[↩ Parent](#stargatespecracksindextelemetryvector)</sup></sup>
+
+
+
+Config is the name of the configmap containing custom sinks and transformers for the Vector agent. The configmap must be in the same namespace as the CassandraDatacenter and contain a vector.toml entry with the Vector configuration in toml format. The agent is already configured with a "cassandra_metrics" source that needs to be used as input for the sinks. If not set, the default console sink will be used.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>name</b></td>
+        <td>string</td>
+        <td>
+          Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### Stargate.spec.racks[index].telemetry.vector.resources
+<sup><sup>[↩ Parent](#stargatespecracksindextelemetryvector)</sup></sup>
+
+
+
+Resources is the resource requirements for the Vector agent.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>limits</b></td>
+        <td>map[string]int or string</td>
+        <td>
+          Limits describes the maximum amount of compute resources allowed. More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>requests</b></td>
+        <td>map[string]int or string</td>
+        <td>
+          Requests describes the minimum amount of compute resources required. If Requests is omitted for a container, it defaults to Limits if that is explicitly specified, otherwise to an implementation-defined value. More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -57611,6 +58613,13 @@ Telemetry defines the desired telemetry integrations to deploy targeting the Sta
           <br/>
         </td>
         <td>false</td>
+      </tr><tr>
+        <td><b><a href="#stargatespectelemetryvector">vector</a></b></td>
+        <td>object</td>
+        <td>
+          <br/>
+        </td>
+        <td>false</td>
       </tr></tbody>
 </table>
 
@@ -57670,6 +58679,122 @@ Telemetry defines the desired telemetry integrations to deploy targeting the Sta
         <td>boolean</td>
         <td>
           Enable the creation of Prometheus serviceMonitors for this resource (Cassandra or Stargate).<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### Stargate.spec.telemetry.vector
+<sup><sup>[↩ Parent](#stargatespectelemetry)</sup></sup>
+
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b><a href="#stargatespectelemetryvectorconfig">config</a></b></td>
+        <td>object</td>
+        <td>
+          Config is the name of the configmap containing custom sinks and transformers for the Vector agent. The configmap must be in the same namespace as the CassandraDatacenter and contain a vector.toml entry with the Vector configuration in toml format. The agent is already configured with a "cassandra_metrics" source that needs to be used as input for the sinks. If not set, the default console sink will be used.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>enabled</b></td>
+        <td>boolean</td>
+        <td>
+          Enabled enables the Vector agent for this resource (Cassandra, Reaper or Stargate). Enabling the vector agent will inject a sidecar container into the pod.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>image</b></td>
+        <td>string</td>
+        <td>
+          Image is the name of the Vector image to use. If not set, the default image will be used. kube:default="timberio/vector:0.26.0-alpine"<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#stargatespectelemetryvectorresources">resources</a></b></td>
+        <td>object</td>
+        <td>
+          Resources is the resource requirements for the Vector agent.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>scrapeInterval</b></td>
+        <td>string</td>
+        <td>
+          ScrapeInterval is the interval at which the Vector agent will scrape the metrics endpoint. Use values like 30s, 1m, 5m. kube:default=30s<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### Stargate.spec.telemetry.vector.config
+<sup><sup>[↩ Parent](#stargatespectelemetryvector)</sup></sup>
+
+
+
+Config is the name of the configmap containing custom sinks and transformers for the Vector agent. The configmap must be in the same namespace as the CassandraDatacenter and contain a vector.toml entry with the Vector configuration in toml format. The agent is already configured with a "cassandra_metrics" source that needs to be used as input for the sinks. If not set, the default console sink will be used.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>name</b></td>
+        <td>string</td>
+        <td>
+          Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### Stargate.spec.telemetry.vector.resources
+<sup><sup>[↩ Parent](#stargatespectelemetryvector)</sup></sup>
+
+
+
+Resources is the resource requirements for the Vector agent.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>limits</b></td>
+        <td>map[string]int or string</td>
+        <td>
+          Limits describes the maximum amount of compute resources allowed. More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>requests</b></td>
+        <td>map[string]int or string</td>
+        <td>
+          Requests describes the minimum amount of compute resources required. If Requests is omitted for a container, it defaults to Limits if that is explicitly specified, otherwise to an implementation-defined value. More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/<br/>
         </td>
         <td>false</td>
       </tr></tbody>
