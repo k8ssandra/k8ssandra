@@ -371,6 +371,13 @@ Cassandra is a specification of the Cassandra cluster. This includes everything 
         </td>
         <td>false</td>
       </tr><tr>
+        <td><b><a href="#k8ssandraclusterspeccassandrametadata">metadata</a></b></td>
+        <td>object</td>
+        <td>
+          Struct to hold labels and annotations for a CassandraDatacenter<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
         <td><b>mgmtAPIHeap</b></td>
         <td>int or string</td>
         <td>
@@ -382,6 +389,15 @@ Cassandra is a specification of the Cassandra cluster. This includes everything 
         <td>object</td>
         <td>
           Networking enables host networking and configures a NodePort ports.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>perNodeConfigInitContainerImage</b></td>
+        <td>string</td>
+        <td>
+          The image to use in each Cassandra pod for the (short-lived) init container that merges global and perNodeConfig configuration. This is only useful when PerNodeConfigMapRef is set. The default is "mikefarah/yq:4".<br/>
+          <br/>
+            <i>Default</i>: mikefarah/yq:4<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -3810,6 +3826,15 @@ VolumeMount describes a mounting of a Volume within a container.
         <td>object</td>
         <td>
           Networking enables host networking and configures a NodePort ports.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>perNodeConfigInitContainerImage</b></td>
+        <td>string</td>
+        <td>
+          The image to use in each Cassandra pod for the (short-lived) init container that merges global and perNodeConfig configuration. This is only useful when PerNodeConfigMapRef is set. The default is "mikefarah/yq:4".<br/>
+          <br/>
+            <i>Default</i>: mikefarah/yq:4<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -12622,6 +12647,13 @@ ManagementApiAuth defines the authentication settings for the management API in 
         </td>
         <td>false</td>
       </tr><tr>
+        <td><b>commonLabels</b></td>
+        <td>map[string]string</td>
+        <td>
+          labels/annotations that will be applied to all components created by the CRD<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
         <td><b>labels</b></td>
         <td>map[string]string</td>
         <td>
@@ -12631,6 +12663,279 @@ ManagementApiAuth defines the authentication settings for the management API in 
       </tr><tr>
         <td><b>namespace</b></td>
         <td>string</td>
+        <td>
+          <br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexmetadatapods">pods</a></b></td>
+        <td>object</td>
+        <td>
+          labels/annotations for the pod components<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexmetadataservices">services</a></b></td>
+        <td>object</td>
+        <td>
+          labels/annotations for all of the CassandraDatacenter service components<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### K8ssandraCluster.spec.cassandra.datacenters[index].metadata.pods
+<sup><sup>[↩ Parent](#k8ssandraclusterspeccassandradatacentersindexmetadata)</sup></sup>
+
+
+
+labels/annotations for the pod components
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>annotations</b></td>
+        <td>map[string]string</td>
+        <td>
+          <br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>labels</b></td>
+        <td>map[string]string</td>
+        <td>
+          <br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### K8ssandraCluster.spec.cassandra.datacenters[index].metadata.services
+<sup><sup>[↩ Parent](#k8ssandraclusterspeccassandradatacentersindexmetadata)</sup></sup>
+
+
+
+labels/annotations for all of the CassandraDatacenter service components
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexmetadataservicesadditionalseedservice">additionalSeedService</a></b></td>
+        <td>object</td>
+        <td>
+          <br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexmetadataservicesallpodsservice">allPodsService</a></b></td>
+        <td>object</td>
+        <td>
+          <br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexmetadataservicesdcservice">dcService</a></b></td>
+        <td>object</td>
+        <td>
+          <br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexmetadataservicesnodeportservice">nodePortService</a></b></td>
+        <td>object</td>
+        <td>
+          <br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexmetadataservicesseedservice">seedService</a></b></td>
+        <td>object</td>
+        <td>
+          <br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### K8ssandraCluster.spec.cassandra.datacenters[index].metadata.services.additionalSeedService
+<sup><sup>[↩ Parent](#k8ssandraclusterspeccassandradatacentersindexmetadataservices)</sup></sup>
+
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>annotations</b></td>
+        <td>map[string]string</td>
+        <td>
+          <br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>labels</b></td>
+        <td>map[string]string</td>
+        <td>
+          <br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### K8ssandraCluster.spec.cassandra.datacenters[index].metadata.services.allPodsService
+<sup><sup>[↩ Parent](#k8ssandraclusterspeccassandradatacentersindexmetadataservices)</sup></sup>
+
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>annotations</b></td>
+        <td>map[string]string</td>
+        <td>
+          <br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>labels</b></td>
+        <td>map[string]string</td>
+        <td>
+          <br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### K8ssandraCluster.spec.cassandra.datacenters[index].metadata.services.dcService
+<sup><sup>[↩ Parent](#k8ssandraclusterspeccassandradatacentersindexmetadataservices)</sup></sup>
+
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>annotations</b></td>
+        <td>map[string]string</td>
+        <td>
+          <br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>labels</b></td>
+        <td>map[string]string</td>
+        <td>
+          <br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### K8ssandraCluster.spec.cassandra.datacenters[index].metadata.services.nodePortService
+<sup><sup>[↩ Parent](#k8ssandraclusterspeccassandradatacentersindexmetadataservices)</sup></sup>
+
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>annotations</b></td>
+        <td>map[string]string</td>
+        <td>
+          <br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>labels</b></td>
+        <td>map[string]string</td>
+        <td>
+          <br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### K8ssandraCluster.spec.cassandra.datacenters[index].metadata.services.seedService
+<sup><sup>[↩ Parent](#k8ssandraclusterspeccassandradatacentersindexmetadataservices)</sup></sup>
+
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>annotations</b></td>
+        <td>map[string]string</td>
+        <td>
+          <br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>labels</b></td>
+        <td>map[string]string</td>
         <td>
           <br/>
         </td>
@@ -13166,6 +13471,13 @@ Stargate defines the desired deployment characteristics for Stargate in this dat
         <td>object</td>
         <td>
           LivenessProbe sets the Stargate liveness probe. Leave nil to use defaults.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexstargatemetadata">metadata</a></b></td>
+        <td>object</td>
+        <td>
+          labels and annotations for Stargate resources<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -14992,6 +15304,129 @@ TCPSocket specifies an action involving a TCP port.
 </table>
 
 
+#### K8ssandraCluster.spec.cassandra.datacenters[index].stargate.metadata
+<sup><sup>[↩ Parent](#k8ssandraclusterspeccassandradatacentersindexstargate)</sup></sup>
+
+
+
+labels and annotations for Stargate resources
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>annotations</b></td>
+        <td>map[string]string</td>
+        <td>
+          <br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>commonLabels</b></td>
+        <td>map[string]string</td>
+        <td>
+          labels/annotations that will be applied to all components created by the CRD<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>labels</b></td>
+        <td>map[string]string</td>
+        <td>
+          <br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexstargatemetadatapods">pods</a></b></td>
+        <td>object</td>
+        <td>
+          labels/annotations for the pod components<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexstargatemetadataservice">service</a></b></td>
+        <td>object</td>
+        <td>
+          labels/annotations for the service component<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### K8ssandraCluster.spec.cassandra.datacenters[index].stargate.metadata.pods
+<sup><sup>[↩ Parent](#k8ssandraclusterspeccassandradatacentersindexstargatemetadata)</sup></sup>
+
+
+
+labels/annotations for the pod components
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>annotations</b></td>
+        <td>map[string]string</td>
+        <td>
+          <br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>labels</b></td>
+        <td>map[string]string</td>
+        <td>
+          <br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### K8ssandraCluster.spec.cassandra.datacenters[index].stargate.metadata.service
+<sup><sup>[↩ Parent](#k8ssandraclusterspeccassandradatacentersindexstargatemetadata)</sup></sup>
+
+
+
+labels/annotations for the service component
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>annotations</b></td>
+        <td>map[string]string</td>
+        <td>
+          <br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>labels</b></td>
+        <td>map[string]string</td>
+        <td>
+          <br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
 #### K8ssandraCluster.spec.cassandra.datacenters[index].stargate.racks[index]
 <sup><sup>[↩ Parent](#k8ssandraclusterspeccassandradatacentersindexstargate)</sup></sup>
 
@@ -15068,6 +15503,13 @@ StargateRackTemplate defines custom rules for Stargate pods in a given rack. The
         <td>object</td>
         <td>
           LivenessProbe sets the Stargate liveness probe. Leave nil to use defaults.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexstargateracksindexmetadata">metadata</a></b></td>
+        <td>object</td>
+        <td>
+          labels and annotations for Stargate resources<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -16887,6 +17329,129 @@ TCPSocket specifies an action involving a TCP port.
 </table>
 
 
+#### K8ssandraCluster.spec.cassandra.datacenters[index].stargate.racks[index].metadata
+<sup><sup>[↩ Parent](#k8ssandraclusterspeccassandradatacentersindexstargateracksindex)</sup></sup>
+
+
+
+labels and annotations for Stargate resources
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>annotations</b></td>
+        <td>map[string]string</td>
+        <td>
+          <br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>commonLabels</b></td>
+        <td>map[string]string</td>
+        <td>
+          labels/annotations that will be applied to all components created by the CRD<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>labels</b></td>
+        <td>map[string]string</td>
+        <td>
+          <br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexstargateracksindexmetadatapods">pods</a></b></td>
+        <td>object</td>
+        <td>
+          labels/annotations for the pod components<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexstargateracksindexmetadataservice">service</a></b></td>
+        <td>object</td>
+        <td>
+          labels/annotations for the service component<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### K8ssandraCluster.spec.cassandra.datacenters[index].stargate.racks[index].metadata.pods
+<sup><sup>[↩ Parent](#k8ssandraclusterspeccassandradatacentersindexstargateracksindexmetadata)</sup></sup>
+
+
+
+labels/annotations for the pod components
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>annotations</b></td>
+        <td>map[string]string</td>
+        <td>
+          <br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>labels</b></td>
+        <td>map[string]string</td>
+        <td>
+          <br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### K8ssandraCluster.spec.cassandra.datacenters[index].stargate.racks[index].metadata.service
+<sup><sup>[↩ Parent](#k8ssandraclusterspeccassandradatacentersindexstargateracksindexmetadata)</sup></sup>
+
+
+
+labels/annotations for the service component
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>annotations</b></td>
+        <td>map[string]string</td>
+        <td>
+          <br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>labels</b></td>
+        <td>map[string]string</td>
+        <td>
+          <br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
 #### K8ssandraCluster.spec.cassandra.datacenters[index].stargate.racks[index].readinessProbe
 <sup><sup>[↩ Parent](#k8ssandraclusterspeccassandradatacentersindexstargateracksindex)</sup></sup>
 
@@ -17240,6 +17805,13 @@ Telemetry defines the desired telemetry integrations to deploy targeting the Sta
           <br/>
         </td>
         <td>false</td>
+      </tr><tr>
+        <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexstargateracksindextelemetryvector">vector</a></b></td>
+        <td>object</td>
+        <td>
+          <br/>
+        </td>
+        <td>false</td>
       </tr></tbody>
 </table>
 
@@ -17299,6 +17871,122 @@ Telemetry defines the desired telemetry integrations to deploy targeting the Sta
         <td>boolean</td>
         <td>
           Enable the creation of Prometheus serviceMonitors for this resource (Cassandra or Stargate).<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### K8ssandraCluster.spec.cassandra.datacenters[index].stargate.racks[index].telemetry.vector
+<sup><sup>[↩ Parent](#k8ssandraclusterspeccassandradatacentersindexstargateracksindextelemetry)</sup></sup>
+
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexstargateracksindextelemetryvectorconfig">config</a></b></td>
+        <td>object</td>
+        <td>
+          Config is the name of the configmap containing custom sinks and transformers for the Vector agent. The configmap must be in the same namespace as the CassandraDatacenter and contain a vector.toml entry with the Vector configuration in toml format. The agent is already configured with a "cassandra_metrics" source that needs to be used as input for the sinks. If not set, the default console sink will be used.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>enabled</b></td>
+        <td>boolean</td>
+        <td>
+          Enabled enables the Vector agent for this resource (Cassandra, Reaper or Stargate). Enabling the vector agent will inject a sidecar container into the pod.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>image</b></td>
+        <td>string</td>
+        <td>
+          Image is the name of the Vector image to use. If not set, the default image will be used. kube:default="timberio/vector:0.26.0-alpine"<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexstargateracksindextelemetryvectorresources">resources</a></b></td>
+        <td>object</td>
+        <td>
+          Resources is the resource requirements for the Vector agent.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>scrapeInterval</b></td>
+        <td>string</td>
+        <td>
+          ScrapeInterval is the interval at which the Vector agent will scrape the metrics endpoint. Use values like 30s, 1m, 5m. kube:default=30s<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### K8ssandraCluster.spec.cassandra.datacenters[index].stargate.racks[index].telemetry.vector.config
+<sup><sup>[↩ Parent](#k8ssandraclusterspeccassandradatacentersindexstargateracksindextelemetryvector)</sup></sup>
+
+
+
+Config is the name of the configmap containing custom sinks and transformers for the Vector agent. The configmap must be in the same namespace as the CassandraDatacenter and contain a vector.toml entry with the Vector configuration in toml format. The agent is already configured with a "cassandra_metrics" source that needs to be used as input for the sinks. If not set, the default console sink will be used.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>name</b></td>
+        <td>string</td>
+        <td>
+          Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### K8ssandraCluster.spec.cassandra.datacenters[index].stargate.racks[index].telemetry.vector.resources
+<sup><sup>[↩ Parent](#k8ssandraclusterspeccassandradatacentersindexstargateracksindextelemetryvector)</sup></sup>
+
+
+
+Resources is the resource requirements for the Vector agent.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>limits</b></td>
+        <td>map[string]int or string</td>
+        <td>
+          Limits describes the maximum amount of compute resources allowed. More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>requests</b></td>
+        <td>map[string]int or string</td>
+        <td>
+          Requests describes the minimum amount of compute resources required. If Requests is omitted for a container, it defaults to Limits if that is explicitly specified, otherwise to an implementation-defined value. More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -17715,6 +18403,13 @@ Telemetry defines the desired telemetry integrations to deploy targeting the Sta
           <br/>
         </td>
         <td>false</td>
+      </tr><tr>
+        <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexstargatetelemetryvector">vector</a></b></td>
+        <td>object</td>
+        <td>
+          <br/>
+        </td>
+        <td>false</td>
       </tr></tbody>
 </table>
 
@@ -17774,6 +18469,122 @@ Telemetry defines the desired telemetry integrations to deploy targeting the Sta
         <td>boolean</td>
         <td>
           Enable the creation of Prometheus serviceMonitors for this resource (Cassandra or Stargate).<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### K8ssandraCluster.spec.cassandra.datacenters[index].stargate.telemetry.vector
+<sup><sup>[↩ Parent](#k8ssandraclusterspeccassandradatacentersindexstargatetelemetry)</sup></sup>
+
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexstargatetelemetryvectorconfig">config</a></b></td>
+        <td>object</td>
+        <td>
+          Config is the name of the configmap containing custom sinks and transformers for the Vector agent. The configmap must be in the same namespace as the CassandraDatacenter and contain a vector.toml entry with the Vector configuration in toml format. The agent is already configured with a "cassandra_metrics" source that needs to be used as input for the sinks. If not set, the default console sink will be used.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>enabled</b></td>
+        <td>boolean</td>
+        <td>
+          Enabled enables the Vector agent for this resource (Cassandra, Reaper or Stargate). Enabling the vector agent will inject a sidecar container into the pod.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>image</b></td>
+        <td>string</td>
+        <td>
+          Image is the name of the Vector image to use. If not set, the default image will be used. kube:default="timberio/vector:0.26.0-alpine"<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexstargatetelemetryvectorresources">resources</a></b></td>
+        <td>object</td>
+        <td>
+          Resources is the resource requirements for the Vector agent.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>scrapeInterval</b></td>
+        <td>string</td>
+        <td>
+          ScrapeInterval is the interval at which the Vector agent will scrape the metrics endpoint. Use values like 30s, 1m, 5m. kube:default=30s<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### K8ssandraCluster.spec.cassandra.datacenters[index].stargate.telemetry.vector.config
+<sup><sup>[↩ Parent](#k8ssandraclusterspeccassandradatacentersindexstargatetelemetryvector)</sup></sup>
+
+
+
+Config is the name of the configmap containing custom sinks and transformers for the Vector agent. The configmap must be in the same namespace as the CassandraDatacenter and contain a vector.toml entry with the Vector configuration in toml format. The agent is already configured with a "cassandra_metrics" source that needs to be used as input for the sinks. If not set, the default console sink will be used.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>name</b></td>
+        <td>string</td>
+        <td>
+          Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### K8ssandraCluster.spec.cassandra.datacenters[index].stargate.telemetry.vector.resources
+<sup><sup>[↩ Parent](#k8ssandraclusterspeccassandradatacentersindexstargatetelemetryvector)</sup></sup>
+
+
+
+Resources is the resource requirements for the Vector agent.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>limits</b></td>
+        <td>map[string]int or string</td>
+        <td>
+          Limits describes the maximum amount of compute resources allowed. More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>requests</b></td>
+        <td>map[string]int or string</td>
+        <td>
+          Requests describes the minimum amount of compute resources required. If Requests is omitted for a container, it defaults to Limits if that is explicitly specified, otherwise to an implementation-defined value. More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -18476,6 +19287,13 @@ Telemetry defines the desired state for telemetry resources in this datacenter. 
           <br/>
         </td>
         <td>false</td>
+      </tr><tr>
+        <td><b><a href="#k8ssandraclusterspeccassandradatacentersindextelemetryvector">vector</a></b></td>
+        <td>object</td>
+        <td>
+          <br/>
+        </td>
+        <td>false</td>
       </tr></tbody>
 </table>
 
@@ -18535,6 +19353,122 @@ Telemetry defines the desired state for telemetry resources in this datacenter. 
         <td>boolean</td>
         <td>
           Enable the creation of Prometheus serviceMonitors for this resource (Cassandra or Stargate).<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### K8ssandraCluster.spec.cassandra.datacenters[index].telemetry.vector
+<sup><sup>[↩ Parent](#k8ssandraclusterspeccassandradatacentersindextelemetry)</sup></sup>
+
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b><a href="#k8ssandraclusterspeccassandradatacentersindextelemetryvectorconfig">config</a></b></td>
+        <td>object</td>
+        <td>
+          Config is the name of the configmap containing custom sinks and transformers for the Vector agent. The configmap must be in the same namespace as the CassandraDatacenter and contain a vector.toml entry with the Vector configuration in toml format. The agent is already configured with a "cassandra_metrics" source that needs to be used as input for the sinks. If not set, the default console sink will be used.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>enabled</b></td>
+        <td>boolean</td>
+        <td>
+          Enabled enables the Vector agent for this resource (Cassandra, Reaper or Stargate). Enabling the vector agent will inject a sidecar container into the pod.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>image</b></td>
+        <td>string</td>
+        <td>
+          Image is the name of the Vector image to use. If not set, the default image will be used. kube:default="timberio/vector:0.26.0-alpine"<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#k8ssandraclusterspeccassandradatacentersindextelemetryvectorresources">resources</a></b></td>
+        <td>object</td>
+        <td>
+          Resources is the resource requirements for the Vector agent.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>scrapeInterval</b></td>
+        <td>string</td>
+        <td>
+          ScrapeInterval is the interval at which the Vector agent will scrape the metrics endpoint. Use values like 30s, 1m, 5m. kube:default=30s<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### K8ssandraCluster.spec.cassandra.datacenters[index].telemetry.vector.config
+<sup><sup>[↩ Parent](#k8ssandraclusterspeccassandradatacentersindextelemetryvector)</sup></sup>
+
+
+
+Config is the name of the configmap containing custom sinks and transformers for the Vector agent. The configmap must be in the same namespace as the CassandraDatacenter and contain a vector.toml entry with the Vector configuration in toml format. The agent is already configured with a "cassandra_metrics" source that needs to be used as input for the sinks. If not set, the default console sink will be used.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>name</b></td>
+        <td>string</td>
+        <td>
+          Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### K8ssandraCluster.spec.cassandra.datacenters[index].telemetry.vector.resources
+<sup><sup>[↩ Parent](#k8ssandraclusterspeccassandradatacentersindextelemetryvector)</sup></sup>
+
+
+
+Resources is the resource requirements for the Vector agent.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>limits</b></td>
+        <td>map[string]int or string</td>
+        <td>
+          Limits describes the maximum amount of compute resources allowed. More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>requests</b></td>
+        <td>map[string]int or string</td>
+        <td>
+          Requests describes the minimum amount of compute resources required. If Requests is omitted for a container, it defaults to Limits if that is explicitly specified, otherwise to an implementation-defined value. More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -24246,6 +25180,320 @@ ManagementApiAuth defines the authentication settings for the management API in 
 </table>
 
 
+#### K8ssandraCluster.spec.cassandra.metadata
+<sup><sup>[↩ Parent](#k8ssandraclusterspeccassandra)</sup></sup>
+
+
+
+Struct to hold labels and annotations for a CassandraDatacenter
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>annotations</b></td>
+        <td>map[string]string</td>
+        <td>
+          <br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>commonLabels</b></td>
+        <td>map[string]string</td>
+        <td>
+          labels/annotations that will be applied to all components created by the CRD<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>labels</b></td>
+        <td>map[string]string</td>
+        <td>
+          <br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#k8ssandraclusterspeccassandrametadatapods">pods</a></b></td>
+        <td>object</td>
+        <td>
+          labels/annotations for the pod components<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#k8ssandraclusterspeccassandrametadataservices">services</a></b></td>
+        <td>object</td>
+        <td>
+          labels/annotations for all of the CassandraDatacenter service components<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### K8ssandraCluster.spec.cassandra.metadata.pods
+<sup><sup>[↩ Parent](#k8ssandraclusterspeccassandrametadata)</sup></sup>
+
+
+
+labels/annotations for the pod components
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>annotations</b></td>
+        <td>map[string]string</td>
+        <td>
+          <br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>labels</b></td>
+        <td>map[string]string</td>
+        <td>
+          <br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### K8ssandraCluster.spec.cassandra.metadata.services
+<sup><sup>[↩ Parent](#k8ssandraclusterspeccassandrametadata)</sup></sup>
+
+
+
+labels/annotations for all of the CassandraDatacenter service components
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b><a href="#k8ssandraclusterspeccassandrametadataservicesadditionalseedservice">additionalSeedService</a></b></td>
+        <td>object</td>
+        <td>
+          <br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#k8ssandraclusterspeccassandrametadataservicesallpodsservice">allPodsService</a></b></td>
+        <td>object</td>
+        <td>
+          <br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#k8ssandraclusterspeccassandrametadataservicesdcservice">dcService</a></b></td>
+        <td>object</td>
+        <td>
+          <br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#k8ssandraclusterspeccassandrametadataservicesnodeportservice">nodePortService</a></b></td>
+        <td>object</td>
+        <td>
+          <br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#k8ssandraclusterspeccassandrametadataservicesseedservice">seedService</a></b></td>
+        <td>object</td>
+        <td>
+          <br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### K8ssandraCluster.spec.cassandra.metadata.services.additionalSeedService
+<sup><sup>[↩ Parent](#k8ssandraclusterspeccassandrametadataservices)</sup></sup>
+
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>annotations</b></td>
+        <td>map[string]string</td>
+        <td>
+          <br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>labels</b></td>
+        <td>map[string]string</td>
+        <td>
+          <br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### K8ssandraCluster.spec.cassandra.metadata.services.allPodsService
+<sup><sup>[↩ Parent](#k8ssandraclusterspeccassandrametadataservices)</sup></sup>
+
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>annotations</b></td>
+        <td>map[string]string</td>
+        <td>
+          <br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>labels</b></td>
+        <td>map[string]string</td>
+        <td>
+          <br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### K8ssandraCluster.spec.cassandra.metadata.services.dcService
+<sup><sup>[↩ Parent](#k8ssandraclusterspeccassandrametadataservices)</sup></sup>
+
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>annotations</b></td>
+        <td>map[string]string</td>
+        <td>
+          <br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>labels</b></td>
+        <td>map[string]string</td>
+        <td>
+          <br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### K8ssandraCluster.spec.cassandra.metadata.services.nodePortService
+<sup><sup>[↩ Parent](#k8ssandraclusterspeccassandrametadataservices)</sup></sup>
+
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>annotations</b></td>
+        <td>map[string]string</td>
+        <td>
+          <br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>labels</b></td>
+        <td>map[string]string</td>
+        <td>
+          <br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### K8ssandraCluster.spec.cassandra.metadata.services.seedService
+<sup><sup>[↩ Parent](#k8ssandraclusterspeccassandrametadataservices)</sup></sup>
+
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>annotations</b></td>
+        <td>map[string]string</td>
+        <td>
+          <br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>labels</b></td>
+        <td>map[string]string</td>
+        <td>
+          <br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
 #### K8ssandraCluster.spec.cassandra.networking
 <sup><sup>[↩ Parent](#k8ssandraclusterspeccassandra)</sup></sup>
 
@@ -25516,6 +26764,13 @@ Telemetry defines the desired state for telemetry resources in this datacenter. 
           <br/>
         </td>
         <td>false</td>
+      </tr><tr>
+        <td><b><a href="#k8ssandraclusterspeccassandratelemetryvector">vector</a></b></td>
+        <td>object</td>
+        <td>
+          <br/>
+        </td>
+        <td>false</td>
       </tr></tbody>
 </table>
 
@@ -25575,6 +26830,122 @@ Telemetry defines the desired state for telemetry resources in this datacenter. 
         <td>boolean</td>
         <td>
           Enable the creation of Prometheus serviceMonitors for this resource (Cassandra or Stargate).<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### K8ssandraCluster.spec.cassandra.telemetry.vector
+<sup><sup>[↩ Parent](#k8ssandraclusterspeccassandratelemetry)</sup></sup>
+
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b><a href="#k8ssandraclusterspeccassandratelemetryvectorconfig">config</a></b></td>
+        <td>object</td>
+        <td>
+          Config is the name of the configmap containing custom sinks and transformers for the Vector agent. The configmap must be in the same namespace as the CassandraDatacenter and contain a vector.toml entry with the Vector configuration in toml format. The agent is already configured with a "cassandra_metrics" source that needs to be used as input for the sinks. If not set, the default console sink will be used.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>enabled</b></td>
+        <td>boolean</td>
+        <td>
+          Enabled enables the Vector agent for this resource (Cassandra, Reaper or Stargate). Enabling the vector agent will inject a sidecar container into the pod.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>image</b></td>
+        <td>string</td>
+        <td>
+          Image is the name of the Vector image to use. If not set, the default image will be used. kube:default="timberio/vector:0.26.0-alpine"<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#k8ssandraclusterspeccassandratelemetryvectorresources">resources</a></b></td>
+        <td>object</td>
+        <td>
+          Resources is the resource requirements for the Vector agent.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>scrapeInterval</b></td>
+        <td>string</td>
+        <td>
+          ScrapeInterval is the interval at which the Vector agent will scrape the metrics endpoint. Use values like 30s, 1m, 5m. kube:default=30s<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### K8ssandraCluster.spec.cassandra.telemetry.vector.config
+<sup><sup>[↩ Parent](#k8ssandraclusterspeccassandratelemetryvector)</sup></sup>
+
+
+
+Config is the name of the configmap containing custom sinks and transformers for the Vector agent. The configmap must be in the same namespace as the CassandraDatacenter and contain a vector.toml entry with the Vector configuration in toml format. The agent is already configured with a "cassandra_metrics" source that needs to be used as input for the sinks. If not set, the default console sink will be used.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>name</b></td>
+        <td>string</td>
+        <td>
+          Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### K8ssandraCluster.spec.cassandra.telemetry.vector.resources
+<sup><sup>[↩ Parent](#k8ssandraclusterspeccassandratelemetryvector)</sup></sup>
+
+
+
+Resources is the resource requirements for the Vector agent.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>limits</b></td>
+        <td>map[string]int or string</td>
+        <td>
+          Limits describes the maximum amount of compute resources allowed. More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>requests</b></td>
+        <td>map[string]int or string</td>
+        <td>
+          Requests describes the minimum amount of compute resources required. If Requests is omitted for a container, it defaults to Limits if that is explicitly specified, otherwise to an implementation-defined value. More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -26522,6 +27893,13 @@ Reaper defines the desired deployment characteristics for Reaper in this K8ssand
         <td>object</td>
         <td>
           LivenessProbe sets the Reaper liveness probe. Leave nil to use defaults.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#k8ssandraclusterspecreapermetadata">metadata</a></b></td>
+        <td>object</td>
+        <td>
+          labels and annotations for Reaper resources<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -28822,6 +30200,129 @@ TCPSocket specifies an action involving a TCP port.
 </table>
 
 
+#### K8ssandraCluster.spec.reaper.metadata
+<sup><sup>[↩ Parent](#k8ssandraclusterspecreaper)</sup></sup>
+
+
+
+labels and annotations for Reaper resources
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>annotations</b></td>
+        <td>map[string]string</td>
+        <td>
+          <br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>commonLabels</b></td>
+        <td>map[string]string</td>
+        <td>
+          labels/annotations that will be applied to all components created by the CRD<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>labels</b></td>
+        <td>map[string]string</td>
+        <td>
+          <br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#k8ssandraclusterspecreapermetadatapods">pods</a></b></td>
+        <td>object</td>
+        <td>
+          labels/annotations for the pod components<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#k8ssandraclusterspecreapermetadataservice">service</a></b></td>
+        <td>object</td>
+        <td>
+          labels/annotations for the service component<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### K8ssandraCluster.spec.reaper.metadata.pods
+<sup><sup>[↩ Parent](#k8ssandraclusterspecreapermetadata)</sup></sup>
+
+
+
+labels/annotations for the pod components
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>annotations</b></td>
+        <td>map[string]string</td>
+        <td>
+          <br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>labels</b></td>
+        <td>map[string]string</td>
+        <td>
+          <br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### K8ssandraCluster.spec.reaper.metadata.service
+<sup><sup>[↩ Parent](#k8ssandraclusterspecreapermetadata)</sup></sup>
+
+
+
+labels/annotations for the service component
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>annotations</b></td>
+        <td>map[string]string</td>
+        <td>
+          <br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>labels</b></td>
+        <td>map[string]string</td>
+        <td>
+          <br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
 #### K8ssandraCluster.spec.reaper.podSecurityContext
 <sup><sup>[↩ Parent](#k8ssandraclusterspecreaper)</sup></sup>
 
@@ -29704,6 +31205,13 @@ Telemetry defines the desired telemetry integrations to deploy targeting the Rea
           <br/>
         </td>
         <td>false</td>
+      </tr><tr>
+        <td><b><a href="#k8ssandraclusterspecreapertelemetryvector">vector</a></b></td>
+        <td>object</td>
+        <td>
+          <br/>
+        </td>
+        <td>false</td>
       </tr></tbody>
 </table>
 
@@ -29763,6 +31271,122 @@ Telemetry defines the desired telemetry integrations to deploy targeting the Rea
         <td>boolean</td>
         <td>
           Enable the creation of Prometheus serviceMonitors for this resource (Cassandra or Stargate).<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### K8ssandraCluster.spec.reaper.telemetry.vector
+<sup><sup>[↩ Parent](#k8ssandraclusterspecreapertelemetry)</sup></sup>
+
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b><a href="#k8ssandraclusterspecreapertelemetryvectorconfig">config</a></b></td>
+        <td>object</td>
+        <td>
+          Config is the name of the configmap containing custom sinks and transformers for the Vector agent. The configmap must be in the same namespace as the CassandraDatacenter and contain a vector.toml entry with the Vector configuration in toml format. The agent is already configured with a "cassandra_metrics" source that needs to be used as input for the sinks. If not set, the default console sink will be used.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>enabled</b></td>
+        <td>boolean</td>
+        <td>
+          Enabled enables the Vector agent for this resource (Cassandra, Reaper or Stargate). Enabling the vector agent will inject a sidecar container into the pod.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>image</b></td>
+        <td>string</td>
+        <td>
+          Image is the name of the Vector image to use. If not set, the default image will be used. kube:default="timberio/vector:0.26.0-alpine"<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#k8ssandraclusterspecreapertelemetryvectorresources">resources</a></b></td>
+        <td>object</td>
+        <td>
+          Resources is the resource requirements for the Vector agent.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>scrapeInterval</b></td>
+        <td>string</td>
+        <td>
+          ScrapeInterval is the interval at which the Vector agent will scrape the metrics endpoint. Use values like 30s, 1m, 5m. kube:default=30s<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### K8ssandraCluster.spec.reaper.telemetry.vector.config
+<sup><sup>[↩ Parent](#k8ssandraclusterspecreapertelemetryvector)</sup></sup>
+
+
+
+Config is the name of the configmap containing custom sinks and transformers for the Vector agent. The configmap must be in the same namespace as the CassandraDatacenter and contain a vector.toml entry with the Vector configuration in toml format. The agent is already configured with a "cassandra_metrics" source that needs to be used as input for the sinks. If not set, the default console sink will be used.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>name</b></td>
+        <td>string</td>
+        <td>
+          Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### K8ssandraCluster.spec.reaper.telemetry.vector.resources
+<sup><sup>[↩ Parent](#k8ssandraclusterspecreapertelemetryvector)</sup></sup>
+
+
+
+Resources is the resource requirements for the Vector agent.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>limits</b></td>
+        <td>map[string]int or string</td>
+        <td>
+          Limits describes the maximum amount of compute resources allowed. More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>requests</b></td>
+        <td>map[string]int or string</td>
+        <td>
+          Requests describes the minimum amount of compute resources required. If Requests is omitted for a container, it defaults to Limits if that is explicitly specified, otherwise to an implementation-defined value. More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -29933,6 +31557,13 @@ Stargate defines the desired deployment characteristics for Stargate in this K8s
         <td>object</td>
         <td>
           LivenessProbe sets the Stargate liveness probe. Leave nil to use defaults.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#k8ssandraclusterspecstargatemetadata">metadata</a></b></td>
+        <td>object</td>
+        <td>
+          labels and annotations for Stargate resources<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -31752,6 +33383,129 @@ TCPSocket specifies an action involving a TCP port.
 </table>
 
 
+#### K8ssandraCluster.spec.stargate.metadata
+<sup><sup>[↩ Parent](#k8ssandraclusterspecstargate)</sup></sup>
+
+
+
+labels and annotations for Stargate resources
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>annotations</b></td>
+        <td>map[string]string</td>
+        <td>
+          <br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>commonLabels</b></td>
+        <td>map[string]string</td>
+        <td>
+          labels/annotations that will be applied to all components created by the CRD<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>labels</b></td>
+        <td>map[string]string</td>
+        <td>
+          <br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#k8ssandraclusterspecstargatemetadatapods">pods</a></b></td>
+        <td>object</td>
+        <td>
+          labels/annotations for the pod components<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#k8ssandraclusterspecstargatemetadataservice">service</a></b></td>
+        <td>object</td>
+        <td>
+          labels/annotations for the service component<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### K8ssandraCluster.spec.stargate.metadata.pods
+<sup><sup>[↩ Parent](#k8ssandraclusterspecstargatemetadata)</sup></sup>
+
+
+
+labels/annotations for the pod components
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>annotations</b></td>
+        <td>map[string]string</td>
+        <td>
+          <br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>labels</b></td>
+        <td>map[string]string</td>
+        <td>
+          <br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### K8ssandraCluster.spec.stargate.metadata.service
+<sup><sup>[↩ Parent](#k8ssandraclusterspecstargatemetadata)</sup></sup>
+
+
+
+labels/annotations for the service component
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>annotations</b></td>
+        <td>map[string]string</td>
+        <td>
+          <br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>labels</b></td>
+        <td>map[string]string</td>
+        <td>
+          <br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
 #### K8ssandraCluster.spec.stargate.readinessProbe
 <sup><sup>[↩ Parent](#k8ssandraclusterspecstargate)</sup></sup>
 
@@ -32105,6 +33859,13 @@ Telemetry defines the desired telemetry integrations to deploy targeting the Sta
           <br/>
         </td>
         <td>false</td>
+      </tr><tr>
+        <td><b><a href="#k8ssandraclusterspecstargatetelemetryvector">vector</a></b></td>
+        <td>object</td>
+        <td>
+          <br/>
+        </td>
+        <td>false</td>
       </tr></tbody>
 </table>
 
@@ -32164,6 +33925,122 @@ Telemetry defines the desired telemetry integrations to deploy targeting the Sta
         <td>boolean</td>
         <td>
           Enable the creation of Prometheus serviceMonitors for this resource (Cassandra or Stargate).<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### K8ssandraCluster.spec.stargate.telemetry.vector
+<sup><sup>[↩ Parent](#k8ssandraclusterspecstargatetelemetry)</sup></sup>
+
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b><a href="#k8ssandraclusterspecstargatetelemetryvectorconfig">config</a></b></td>
+        <td>object</td>
+        <td>
+          Config is the name of the configmap containing custom sinks and transformers for the Vector agent. The configmap must be in the same namespace as the CassandraDatacenter and contain a vector.toml entry with the Vector configuration in toml format. The agent is already configured with a "cassandra_metrics" source that needs to be used as input for the sinks. If not set, the default console sink will be used.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>enabled</b></td>
+        <td>boolean</td>
+        <td>
+          Enabled enables the Vector agent for this resource (Cassandra, Reaper or Stargate). Enabling the vector agent will inject a sidecar container into the pod.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>image</b></td>
+        <td>string</td>
+        <td>
+          Image is the name of the Vector image to use. If not set, the default image will be used. kube:default="timberio/vector:0.26.0-alpine"<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#k8ssandraclusterspecstargatetelemetryvectorresources">resources</a></b></td>
+        <td>object</td>
+        <td>
+          Resources is the resource requirements for the Vector agent.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>scrapeInterval</b></td>
+        <td>string</td>
+        <td>
+          ScrapeInterval is the interval at which the Vector agent will scrape the metrics endpoint. Use values like 30s, 1m, 5m. kube:default=30s<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### K8ssandraCluster.spec.stargate.telemetry.vector.config
+<sup><sup>[↩ Parent](#k8ssandraclusterspecstargatetelemetryvector)</sup></sup>
+
+
+
+Config is the name of the configmap containing custom sinks and transformers for the Vector agent. The configmap must be in the same namespace as the CassandraDatacenter and contain a vector.toml entry with the Vector configuration in toml format. The agent is already configured with a "cassandra_metrics" source that needs to be used as input for the sinks. If not set, the default console sink will be used.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>name</b></td>
+        <td>string</td>
+        <td>
+          Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### K8ssandraCluster.spec.stargate.telemetry.vector.resources
+<sup><sup>[↩ Parent](#k8ssandraclusterspecstargatetelemetryvector)</sup></sup>
+
+
+
+Resources is the resource requirements for the Vector agent.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>limits</b></td>
+        <td>map[string]int or string</td>
+        <td>
+          Limits describes the maximum amount of compute resources allowed. More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>requests</b></td>
+        <td>map[string]int or string</td>
+        <td>
+          Requests describes the minimum amount of compute resources required. If Requests is omitted for a container, it defaults to Limits if that is explicitly specified, otherwise to an implementation-defined value. More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -48552,6 +50429,13 @@ ReaperSpec defines the desired state of Reaper
         </td>
         <td>false</td>
       </tr><tr>
+        <td><b><a href="#reaperspecmetadata">metadata</a></b></td>
+        <td>object</td>
+        <td>
+          labels and annotations for Reaper resources<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
         <td><b><a href="#reaperspecpodsecuritycontext">podSecurityContext</a></b></td>
         <td>object</td>
         <td>
@@ -51076,6 +52960,129 @@ TCPSocket specifies an action involving a TCP port.
 </table>
 
 
+#### Reaper.spec.metadata
+<sup><sup>[↩ Parent](#reaperspec)</sup></sup>
+
+
+
+labels and annotations for Reaper resources
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>annotations</b></td>
+        <td>map[string]string</td>
+        <td>
+          <br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>commonLabels</b></td>
+        <td>map[string]string</td>
+        <td>
+          labels/annotations that will be applied to all components created by the CRD<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>labels</b></td>
+        <td>map[string]string</td>
+        <td>
+          <br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#reaperspecmetadatapods">pods</a></b></td>
+        <td>object</td>
+        <td>
+          labels/annotations for the pod components<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#reaperspecmetadataservice">service</a></b></td>
+        <td>object</td>
+        <td>
+          labels/annotations for the service component<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### Reaper.spec.metadata.pods
+<sup><sup>[↩ Parent](#reaperspecmetadata)</sup></sup>
+
+
+
+labels/annotations for the pod components
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>annotations</b></td>
+        <td>map[string]string</td>
+        <td>
+          <br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>labels</b></td>
+        <td>map[string]string</td>
+        <td>
+          <br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### Reaper.spec.metadata.service
+<sup><sup>[↩ Parent](#reaperspecmetadata)</sup></sup>
+
+
+
+labels/annotations for the service component
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>annotations</b></td>
+        <td>map[string]string</td>
+        <td>
+          <br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>labels</b></td>
+        <td>map[string]string</td>
+        <td>
+          <br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
 #### Reaper.spec.podSecurityContext
 <sup><sup>[↩ Parent](#reaperspec)</sup></sup>
 
@@ -51958,6 +53965,13 @@ Telemetry defines the desired telemetry integrations to deploy targeting the Rea
           <br/>
         </td>
         <td>false</td>
+      </tr><tr>
+        <td><b><a href="#reaperspectelemetryvector">vector</a></b></td>
+        <td>object</td>
+        <td>
+          <br/>
+        </td>
+        <td>false</td>
       </tr></tbody>
 </table>
 
@@ -52017,6 +54031,122 @@ Telemetry defines the desired telemetry integrations to deploy targeting the Rea
         <td>boolean</td>
         <td>
           Enable the creation of Prometheus serviceMonitors for this resource (Cassandra or Stargate).<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### Reaper.spec.telemetry.vector
+<sup><sup>[↩ Parent](#reaperspectelemetry)</sup></sup>
+
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b><a href="#reaperspectelemetryvectorconfig">config</a></b></td>
+        <td>object</td>
+        <td>
+          Config is the name of the configmap containing custom sinks and transformers for the Vector agent. The configmap must be in the same namespace as the CassandraDatacenter and contain a vector.toml entry with the Vector configuration in toml format. The agent is already configured with a "cassandra_metrics" source that needs to be used as input for the sinks. If not set, the default console sink will be used.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>enabled</b></td>
+        <td>boolean</td>
+        <td>
+          Enabled enables the Vector agent for this resource (Cassandra, Reaper or Stargate). Enabling the vector agent will inject a sidecar container into the pod.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>image</b></td>
+        <td>string</td>
+        <td>
+          Image is the name of the Vector image to use. If not set, the default image will be used. kube:default="timberio/vector:0.26.0-alpine"<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#reaperspectelemetryvectorresources">resources</a></b></td>
+        <td>object</td>
+        <td>
+          Resources is the resource requirements for the Vector agent.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>scrapeInterval</b></td>
+        <td>string</td>
+        <td>
+          ScrapeInterval is the interval at which the Vector agent will scrape the metrics endpoint. Use values like 30s, 1m, 5m. kube:default=30s<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### Reaper.spec.telemetry.vector.config
+<sup><sup>[↩ Parent](#reaperspectelemetryvector)</sup></sup>
+
+
+
+Config is the name of the configmap containing custom sinks and transformers for the Vector agent. The configmap must be in the same namespace as the CassandraDatacenter and contain a vector.toml entry with the Vector configuration in toml format. The agent is already configured with a "cassandra_metrics" source that needs to be used as input for the sinks. If not set, the default console sink will be used.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>name</b></td>
+        <td>string</td>
+        <td>
+          Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### Reaper.spec.telemetry.vector.resources
+<sup><sup>[↩ Parent](#reaperspectelemetryvector)</sup></sup>
+
+
+
+Resources is the resource requirements for the Vector agent.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>limits</b></td>
+        <td>map[string]int or string</td>
+        <td>
+          Limits describes the maximum amount of compute resources allowed. More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>requests</b></td>
+        <td>map[string]int or string</td>
+        <td>
+          Requests describes the minimum amount of compute resources required. If Requests is omitted for a container, it defaults to Limits if that is explicitly specified, otherwise to an implementation-defined value. More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -52633,6 +54763,13 @@ Specification of the desired behavior of this Stargate resource.
         <td>object</td>
         <td>
           LivenessProbe sets the Stargate liveness probe. Leave nil to use defaults.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#stargatespecmetadata">metadata</a></b></td>
+        <td>object</td>
+        <td>
+          labels and annotations for Stargate resources<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -54888,6 +57025,129 @@ TCPSocket specifies an action involving a TCP port.
 </table>
 
 
+#### Stargate.spec.metadata
+<sup><sup>[↩ Parent](#stargatespec)</sup></sup>
+
+
+
+labels and annotations for Stargate resources
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>annotations</b></td>
+        <td>map[string]string</td>
+        <td>
+          <br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>commonLabels</b></td>
+        <td>map[string]string</td>
+        <td>
+          labels/annotations that will be applied to all components created by the CRD<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>labels</b></td>
+        <td>map[string]string</td>
+        <td>
+          <br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#stargatespecmetadatapods">pods</a></b></td>
+        <td>object</td>
+        <td>
+          labels/annotations for the pod components<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#stargatespecmetadataservice">service</a></b></td>
+        <td>object</td>
+        <td>
+          labels/annotations for the service component<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### Stargate.spec.metadata.pods
+<sup><sup>[↩ Parent](#stargatespecmetadata)</sup></sup>
+
+
+
+labels/annotations for the pod components
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>annotations</b></td>
+        <td>map[string]string</td>
+        <td>
+          <br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>labels</b></td>
+        <td>map[string]string</td>
+        <td>
+          <br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### Stargate.spec.metadata.service
+<sup><sup>[↩ Parent](#stargatespecmetadata)</sup></sup>
+
+
+
+labels/annotations for the service component
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>annotations</b></td>
+        <td>map[string]string</td>
+        <td>
+          <br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>labels</b></td>
+        <td>map[string]string</td>
+        <td>
+          <br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
 #### Stargate.spec.racks[index]
 <sup><sup>[↩ Parent](#stargatespec)</sup></sup>
 
@@ -54964,6 +57224,13 @@ StargateRackTemplate defines custom rules for Stargate pods in a given rack. The
         <td>object</td>
         <td>
           LivenessProbe sets the Stargate liveness probe. Leave nil to use defaults.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#stargatespecracksindexmetadata">metadata</a></b></td>
+        <td>object</td>
+        <td>
+          labels and annotations for Stargate resources<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -56783,6 +59050,129 @@ TCPSocket specifies an action involving a TCP port.
 </table>
 
 
+#### Stargate.spec.racks[index].metadata
+<sup><sup>[↩ Parent](#stargatespecracksindex)</sup></sup>
+
+
+
+labels and annotations for Stargate resources
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>annotations</b></td>
+        <td>map[string]string</td>
+        <td>
+          <br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>commonLabels</b></td>
+        <td>map[string]string</td>
+        <td>
+          labels/annotations that will be applied to all components created by the CRD<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>labels</b></td>
+        <td>map[string]string</td>
+        <td>
+          <br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#stargatespecracksindexmetadatapods">pods</a></b></td>
+        <td>object</td>
+        <td>
+          labels/annotations for the pod components<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#stargatespecracksindexmetadataservice">service</a></b></td>
+        <td>object</td>
+        <td>
+          labels/annotations for the service component<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### Stargate.spec.racks[index].metadata.pods
+<sup><sup>[↩ Parent](#stargatespecracksindexmetadata)</sup></sup>
+
+
+
+labels/annotations for the pod components
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>annotations</b></td>
+        <td>map[string]string</td>
+        <td>
+          <br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>labels</b></td>
+        <td>map[string]string</td>
+        <td>
+          <br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### Stargate.spec.racks[index].metadata.service
+<sup><sup>[↩ Parent](#stargatespecracksindexmetadata)</sup></sup>
+
+
+
+labels/annotations for the service component
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>annotations</b></td>
+        <td>map[string]string</td>
+        <td>
+          <br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>labels</b></td>
+        <td>map[string]string</td>
+        <td>
+          <br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
 #### Stargate.spec.racks[index].readinessProbe
 <sup><sup>[↩ Parent](#stargatespecracksindex)</sup></sup>
 
@@ -57136,6 +59526,13 @@ Telemetry defines the desired telemetry integrations to deploy targeting the Sta
           <br/>
         </td>
         <td>false</td>
+      </tr><tr>
+        <td><b><a href="#stargatespecracksindextelemetryvector">vector</a></b></td>
+        <td>object</td>
+        <td>
+          <br/>
+        </td>
+        <td>false</td>
       </tr></tbody>
 </table>
 
@@ -57195,6 +59592,122 @@ Telemetry defines the desired telemetry integrations to deploy targeting the Sta
         <td>boolean</td>
         <td>
           Enable the creation of Prometheus serviceMonitors for this resource (Cassandra or Stargate).<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### Stargate.spec.racks[index].telemetry.vector
+<sup><sup>[↩ Parent](#stargatespecracksindextelemetry)</sup></sup>
+
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b><a href="#stargatespecracksindextelemetryvectorconfig">config</a></b></td>
+        <td>object</td>
+        <td>
+          Config is the name of the configmap containing custom sinks and transformers for the Vector agent. The configmap must be in the same namespace as the CassandraDatacenter and contain a vector.toml entry with the Vector configuration in toml format. The agent is already configured with a "cassandra_metrics" source that needs to be used as input for the sinks. If not set, the default console sink will be used.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>enabled</b></td>
+        <td>boolean</td>
+        <td>
+          Enabled enables the Vector agent for this resource (Cassandra, Reaper or Stargate). Enabling the vector agent will inject a sidecar container into the pod.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>image</b></td>
+        <td>string</td>
+        <td>
+          Image is the name of the Vector image to use. If not set, the default image will be used. kube:default="timberio/vector:0.26.0-alpine"<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#stargatespecracksindextelemetryvectorresources">resources</a></b></td>
+        <td>object</td>
+        <td>
+          Resources is the resource requirements for the Vector agent.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>scrapeInterval</b></td>
+        <td>string</td>
+        <td>
+          ScrapeInterval is the interval at which the Vector agent will scrape the metrics endpoint. Use values like 30s, 1m, 5m. kube:default=30s<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### Stargate.spec.racks[index].telemetry.vector.config
+<sup><sup>[↩ Parent](#stargatespecracksindextelemetryvector)</sup></sup>
+
+
+
+Config is the name of the configmap containing custom sinks and transformers for the Vector agent. The configmap must be in the same namespace as the CassandraDatacenter and contain a vector.toml entry with the Vector configuration in toml format. The agent is already configured with a "cassandra_metrics" source that needs to be used as input for the sinks. If not set, the default console sink will be used.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>name</b></td>
+        <td>string</td>
+        <td>
+          Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### Stargate.spec.racks[index].telemetry.vector.resources
+<sup><sup>[↩ Parent](#stargatespecracksindextelemetryvector)</sup></sup>
+
+
+
+Resources is the resource requirements for the Vector agent.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>limits</b></td>
+        <td>map[string]int or string</td>
+        <td>
+          Limits describes the maximum amount of compute resources allowed. More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>requests</b></td>
+        <td>map[string]int or string</td>
+        <td>
+          Requests describes the minimum amount of compute resources required. If Requests is omitted for a container, it defaults to Limits if that is explicitly specified, otherwise to an implementation-defined value. More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -57611,6 +60124,13 @@ Telemetry defines the desired telemetry integrations to deploy targeting the Sta
           <br/>
         </td>
         <td>false</td>
+      </tr><tr>
+        <td><b><a href="#stargatespectelemetryvector">vector</a></b></td>
+        <td>object</td>
+        <td>
+          <br/>
+        </td>
+        <td>false</td>
       </tr></tbody>
 </table>
 
@@ -57670,6 +60190,122 @@ Telemetry defines the desired telemetry integrations to deploy targeting the Sta
         <td>boolean</td>
         <td>
           Enable the creation of Prometheus serviceMonitors for this resource (Cassandra or Stargate).<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### Stargate.spec.telemetry.vector
+<sup><sup>[↩ Parent](#stargatespectelemetry)</sup></sup>
+
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b><a href="#stargatespectelemetryvectorconfig">config</a></b></td>
+        <td>object</td>
+        <td>
+          Config is the name of the configmap containing custom sinks and transformers for the Vector agent. The configmap must be in the same namespace as the CassandraDatacenter and contain a vector.toml entry with the Vector configuration in toml format. The agent is already configured with a "cassandra_metrics" source that needs to be used as input for the sinks. If not set, the default console sink will be used.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>enabled</b></td>
+        <td>boolean</td>
+        <td>
+          Enabled enables the Vector agent for this resource (Cassandra, Reaper or Stargate). Enabling the vector agent will inject a sidecar container into the pod.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>image</b></td>
+        <td>string</td>
+        <td>
+          Image is the name of the Vector image to use. If not set, the default image will be used. kube:default="timberio/vector:0.26.0-alpine"<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#stargatespectelemetryvectorresources">resources</a></b></td>
+        <td>object</td>
+        <td>
+          Resources is the resource requirements for the Vector agent.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>scrapeInterval</b></td>
+        <td>string</td>
+        <td>
+          ScrapeInterval is the interval at which the Vector agent will scrape the metrics endpoint. Use values like 30s, 1m, 5m. kube:default=30s<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### Stargate.spec.telemetry.vector.config
+<sup><sup>[↩ Parent](#stargatespectelemetryvector)</sup></sup>
+
+
+
+Config is the name of the configmap containing custom sinks and transformers for the Vector agent. The configmap must be in the same namespace as the CassandraDatacenter and contain a vector.toml entry with the Vector configuration in toml format. The agent is already configured with a "cassandra_metrics" source that needs to be used as input for the sinks. If not set, the default console sink will be used.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>name</b></td>
+        <td>string</td>
+        <td>
+          Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### Stargate.spec.telemetry.vector.resources
+<sup><sup>[↩ Parent](#stargatespectelemetryvector)</sup></sup>
+
+
+
+Resources is the resource requirements for the Vector agent.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>limits</b></td>
+        <td>map[string]int or string</td>
+        <td>
+          Limits describes the maximum amount of compute resources allowed. More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>requests</b></td>
+        <td>map[string]int or string</td>
+        <td>
+          Requests describes the minimum amount of compute resources required. If Requests is omitted for a container, it defaults to Limits if that is explicitly specified, otherwise to an implementation-defined value. More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/<br/>
         </td>
         <td>false</td>
       </tr></tbody>
