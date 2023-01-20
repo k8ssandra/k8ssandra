@@ -18500,10 +18500,10 @@ Telemetry defines the desired telemetry integrations to deploy targeting the Sta
         </tr>
     </thead>
     <tbody><tr>
-        <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexstargateracksindextelemetryvectorconfig">config</a></b></td>
+        <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexstargateracksindextelemetryvectorcomponents">components</a></b></td>
         <td>object</td>
         <td>
-          Config is the name of the configmap containing custom sinks and transformers for the Vector agent. The configmap must be in the same namespace as the CassandraDatacenter and contain a vector.toml entry with the Vector configuration in toml format. The agent is already configured with a "cassandra_metrics" source that needs to be used as input for the sinks. If not set, the default console sink will be used.<br/>
+          <br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -18538,12 +18538,53 @@ Telemetry defines the desired telemetry integrations to deploy targeting the Sta
 </table>
 
 
-#### K8ssandraCluster.spec.cassandra.datacenters[index].stargate.racks[index].telemetry.vector.config
+#### K8ssandraCluster.spec.cassandra.datacenters[index].stargate.racks[index].telemetry.vector.components
 <sup><sup>[↩ Parent](#k8ssandraclusterspeccassandradatacentersindexstargateracksindextelemetryvector)</sup></sup>
 
 
 
-Config is the name of the configmap containing custom sinks and transformers for the Vector agent. The configmap must be in the same namespace as the CassandraDatacenter and contain a vector.toml entry with the Vector configuration in toml format. The agent is already configured with a "cassandra_metrics" source that needs to be used as input for the sinks. If not set, the default console sink will be used.
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexstargateracksindextelemetryvectorcomponentssinksindex">sinks</a></b></td>
+        <td>[]object</td>
+        <td>
+          Sinks is the list of sinks to use for the Vector agent.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexstargateracksindextelemetryvectorcomponentssourcesindex">sources</a></b></td>
+        <td>[]object</td>
+        <td>
+          Sources is the list of sources to use for the Vector agent.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexstargateracksindextelemetryvectorcomponentstransformsindex">transforms</a></b></td>
+        <td>[]object</td>
+        <td>
+          Transforms is the list of transforms to use for the Vector agent.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### K8ssandraCluster.spec.cassandra.datacenters[index].stargate.racks[index].telemetry.vector.components.sinks[index]
+<sup><sup>[↩ Parent](#k8ssandraclusterspeccassandradatacentersindexstargateracksindextelemetryvectorcomponents)</sup></sup>
+
+
+
+
 
 <table>
     <thead>
@@ -18558,7 +18599,117 @@ Config is the name of the configmap containing custom sinks and transformers for
         <td><b>name</b></td>
         <td>string</td>
         <td>
-          Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?<br/>
+          Name is the name of the sink.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>type</b></td>
+        <td>string</td>
+        <td>
+          Type is the type of the sink.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>config</b></td>
+        <td>string</td>
+        <td>
+          Config is the configuration for the sink.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>inputs</b></td>
+        <td>[]string</td>
+        <td>
+          Inputs is the list of inputs for the transform.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### K8ssandraCluster.spec.cassandra.datacenters[index].stargate.racks[index].telemetry.vector.components.sources[index]
+<sup><sup>[↩ Parent](#k8ssandraclusterspeccassandradatacentersindexstargateracksindextelemetryvectorcomponents)</sup></sup>
+
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>name</b></td>
+        <td>string</td>
+        <td>
+          Name is the name of the source.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>type</b></td>
+        <td>string</td>
+        <td>
+          Type is the type of the source.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>config</b></td>
+        <td>string</td>
+        <td>
+          Config is the configuration for the source.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### K8ssandraCluster.spec.cassandra.datacenters[index].stargate.racks[index].telemetry.vector.components.transforms[index]
+<sup><sup>[↩ Parent](#k8ssandraclusterspeccassandradatacentersindexstargateracksindextelemetryvectorcomponents)</sup></sup>
+
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>name</b></td>
+        <td>string</td>
+        <td>
+          Name is the name of the transform.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>type</b></td>
+        <td>string</td>
+        <td>
+          Type is the type of the transform.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>config</b></td>
+        <td>string</td>
+        <td>
+          Config is the configuration for the transform.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>inputs</b></td>
+        <td>[]string</td>
+        <td>
+          Inputs is the list of inputs for the transform.<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -19098,10 +19249,10 @@ Telemetry defines the desired telemetry integrations to deploy targeting the Sta
         </tr>
     </thead>
     <tbody><tr>
-        <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexstargatetelemetryvectorconfig">config</a></b></td>
+        <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexstargatetelemetryvectorcomponents">components</a></b></td>
         <td>object</td>
         <td>
-          Config is the name of the configmap containing custom sinks and transformers for the Vector agent. The configmap must be in the same namespace as the CassandraDatacenter and contain a vector.toml entry with the Vector configuration in toml format. The agent is already configured with a "cassandra_metrics" source that needs to be used as input for the sinks. If not set, the default console sink will be used.<br/>
+          <br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -19136,12 +19287,53 @@ Telemetry defines the desired telemetry integrations to deploy targeting the Sta
 </table>
 
 
-#### K8ssandraCluster.spec.cassandra.datacenters[index].stargate.telemetry.vector.config
+#### K8ssandraCluster.spec.cassandra.datacenters[index].stargate.telemetry.vector.components
 <sup><sup>[↩ Parent](#k8ssandraclusterspeccassandradatacentersindexstargatetelemetryvector)</sup></sup>
 
 
 
-Config is the name of the configmap containing custom sinks and transformers for the Vector agent. The configmap must be in the same namespace as the CassandraDatacenter and contain a vector.toml entry with the Vector configuration in toml format. The agent is already configured with a "cassandra_metrics" source that needs to be used as input for the sinks. If not set, the default console sink will be used.
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexstargatetelemetryvectorcomponentssinksindex">sinks</a></b></td>
+        <td>[]object</td>
+        <td>
+          Sinks is the list of sinks to use for the Vector agent.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexstargatetelemetryvectorcomponentssourcesindex">sources</a></b></td>
+        <td>[]object</td>
+        <td>
+          Sources is the list of sources to use for the Vector agent.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#k8ssandraclusterspeccassandradatacentersindexstargatetelemetryvectorcomponentstransformsindex">transforms</a></b></td>
+        <td>[]object</td>
+        <td>
+          Transforms is the list of transforms to use for the Vector agent.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### K8ssandraCluster.spec.cassandra.datacenters[index].stargate.telemetry.vector.components.sinks[index]
+<sup><sup>[↩ Parent](#k8ssandraclusterspeccassandradatacentersindexstargatetelemetryvectorcomponents)</sup></sup>
+
+
+
+
 
 <table>
     <thead>
@@ -19156,7 +19348,117 @@ Config is the name of the configmap containing custom sinks and transformers for
         <td><b>name</b></td>
         <td>string</td>
         <td>
-          Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?<br/>
+          Name is the name of the sink.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>type</b></td>
+        <td>string</td>
+        <td>
+          Type is the type of the sink.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>config</b></td>
+        <td>string</td>
+        <td>
+          Config is the configuration for the sink.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>inputs</b></td>
+        <td>[]string</td>
+        <td>
+          Inputs is the list of inputs for the transform.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### K8ssandraCluster.spec.cassandra.datacenters[index].stargate.telemetry.vector.components.sources[index]
+<sup><sup>[↩ Parent](#k8ssandraclusterspeccassandradatacentersindexstargatetelemetryvectorcomponents)</sup></sup>
+
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>name</b></td>
+        <td>string</td>
+        <td>
+          Name is the name of the source.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>type</b></td>
+        <td>string</td>
+        <td>
+          Type is the type of the source.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>config</b></td>
+        <td>string</td>
+        <td>
+          Config is the configuration for the source.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### K8ssandraCluster.spec.cassandra.datacenters[index].stargate.telemetry.vector.components.transforms[index]
+<sup><sup>[↩ Parent](#k8ssandraclusterspeccassandradatacentersindexstargatetelemetryvectorcomponents)</sup></sup>
+
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>name</b></td>
+        <td>string</td>
+        <td>
+          Name is the name of the transform.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>type</b></td>
+        <td>string</td>
+        <td>
+          Type is the type of the transform.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>config</b></td>
+        <td>string</td>
+        <td>
+          Config is the configuration for the transform.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>inputs</b></td>
+        <td>[]string</td>
+        <td>
+          Inputs is the list of inputs for the transform.<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -19982,10 +20284,10 @@ Telemetry defines the desired state for telemetry resources in this datacenter. 
         </tr>
     </thead>
     <tbody><tr>
-        <td><b><a href="#k8ssandraclusterspeccassandradatacentersindextelemetryvectorconfig">config</a></b></td>
+        <td><b><a href="#k8ssandraclusterspeccassandradatacentersindextelemetryvectorcomponents">components</a></b></td>
         <td>object</td>
         <td>
-          Config is the name of the configmap containing custom sinks and transformers for the Vector agent. The configmap must be in the same namespace as the CassandraDatacenter and contain a vector.toml entry with the Vector configuration in toml format. The agent is already configured with a "cassandra_metrics" source that needs to be used as input for the sinks. If not set, the default console sink will be used.<br/>
+          <br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -20020,12 +20322,53 @@ Telemetry defines the desired state for telemetry resources in this datacenter. 
 </table>
 
 
-#### K8ssandraCluster.spec.cassandra.datacenters[index].telemetry.vector.config
+#### K8ssandraCluster.spec.cassandra.datacenters[index].telemetry.vector.components
 <sup><sup>[↩ Parent](#k8ssandraclusterspeccassandradatacentersindextelemetryvector)</sup></sup>
 
 
 
-Config is the name of the configmap containing custom sinks and transformers for the Vector agent. The configmap must be in the same namespace as the CassandraDatacenter and contain a vector.toml entry with the Vector configuration in toml format. The agent is already configured with a "cassandra_metrics" source that needs to be used as input for the sinks. If not set, the default console sink will be used.
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b><a href="#k8ssandraclusterspeccassandradatacentersindextelemetryvectorcomponentssinksindex">sinks</a></b></td>
+        <td>[]object</td>
+        <td>
+          Sinks is the list of sinks to use for the Vector agent.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#k8ssandraclusterspeccassandradatacentersindextelemetryvectorcomponentssourcesindex">sources</a></b></td>
+        <td>[]object</td>
+        <td>
+          Sources is the list of sources to use for the Vector agent.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#k8ssandraclusterspeccassandradatacentersindextelemetryvectorcomponentstransformsindex">transforms</a></b></td>
+        <td>[]object</td>
+        <td>
+          Transforms is the list of transforms to use for the Vector agent.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### K8ssandraCluster.spec.cassandra.datacenters[index].telemetry.vector.components.sinks[index]
+<sup><sup>[↩ Parent](#k8ssandraclusterspeccassandradatacentersindextelemetryvectorcomponents)</sup></sup>
+
+
+
+
 
 <table>
     <thead>
@@ -20040,7 +20383,117 @@ Config is the name of the configmap containing custom sinks and transformers for
         <td><b>name</b></td>
         <td>string</td>
         <td>
-          Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?<br/>
+          Name is the name of the sink.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>type</b></td>
+        <td>string</td>
+        <td>
+          Type is the type of the sink.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>config</b></td>
+        <td>string</td>
+        <td>
+          Config is the configuration for the sink.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>inputs</b></td>
+        <td>[]string</td>
+        <td>
+          Inputs is the list of inputs for the transform.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### K8ssandraCluster.spec.cassandra.datacenters[index].telemetry.vector.components.sources[index]
+<sup><sup>[↩ Parent](#k8ssandraclusterspeccassandradatacentersindextelemetryvectorcomponents)</sup></sup>
+
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>name</b></td>
+        <td>string</td>
+        <td>
+          Name is the name of the source.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>type</b></td>
+        <td>string</td>
+        <td>
+          Type is the type of the source.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>config</b></td>
+        <td>string</td>
+        <td>
+          Config is the configuration for the source.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### K8ssandraCluster.spec.cassandra.datacenters[index].telemetry.vector.components.transforms[index]
+<sup><sup>[↩ Parent](#k8ssandraclusterspeccassandradatacentersindextelemetryvectorcomponents)</sup></sup>
+
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>name</b></td>
+        <td>string</td>
+        <td>
+          Name is the name of the transform.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>type</b></td>
+        <td>string</td>
+        <td>
+          Type is the type of the transform.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>config</b></td>
+        <td>string</td>
+        <td>
+          Config is the configuration for the transform.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>inputs</b></td>
+        <td>[]string</td>
+        <td>
+          Inputs is the list of inputs for the transform.<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -27459,10 +27912,10 @@ Telemetry defines the desired state for telemetry resources in this datacenter. 
         </tr>
     </thead>
     <tbody><tr>
-        <td><b><a href="#k8ssandraclusterspeccassandratelemetryvectorconfig">config</a></b></td>
+        <td><b><a href="#k8ssandraclusterspeccassandratelemetryvectorcomponents">components</a></b></td>
         <td>object</td>
         <td>
-          Config is the name of the configmap containing custom sinks and transformers for the Vector agent. The configmap must be in the same namespace as the CassandraDatacenter and contain a vector.toml entry with the Vector configuration in toml format. The agent is already configured with a "cassandra_metrics" source that needs to be used as input for the sinks. If not set, the default console sink will be used.<br/>
+          <br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -27497,12 +27950,53 @@ Telemetry defines the desired state for telemetry resources in this datacenter. 
 </table>
 
 
-#### K8ssandraCluster.spec.cassandra.telemetry.vector.config
+#### K8ssandraCluster.spec.cassandra.telemetry.vector.components
 <sup><sup>[↩ Parent](#k8ssandraclusterspeccassandratelemetryvector)</sup></sup>
 
 
 
-Config is the name of the configmap containing custom sinks and transformers for the Vector agent. The configmap must be in the same namespace as the CassandraDatacenter and contain a vector.toml entry with the Vector configuration in toml format. The agent is already configured with a "cassandra_metrics" source that needs to be used as input for the sinks. If not set, the default console sink will be used.
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b><a href="#k8ssandraclusterspeccassandratelemetryvectorcomponentssinksindex">sinks</a></b></td>
+        <td>[]object</td>
+        <td>
+          Sinks is the list of sinks to use for the Vector agent.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#k8ssandraclusterspeccassandratelemetryvectorcomponentssourcesindex">sources</a></b></td>
+        <td>[]object</td>
+        <td>
+          Sources is the list of sources to use for the Vector agent.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#k8ssandraclusterspeccassandratelemetryvectorcomponentstransformsindex">transforms</a></b></td>
+        <td>[]object</td>
+        <td>
+          Transforms is the list of transforms to use for the Vector agent.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### K8ssandraCluster.spec.cassandra.telemetry.vector.components.sinks[index]
+<sup><sup>[↩ Parent](#k8ssandraclusterspeccassandratelemetryvectorcomponents)</sup></sup>
+
+
+
+
 
 <table>
     <thead>
@@ -27517,7 +28011,117 @@ Config is the name of the configmap containing custom sinks and transformers for
         <td><b>name</b></td>
         <td>string</td>
         <td>
-          Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?<br/>
+          Name is the name of the sink.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>type</b></td>
+        <td>string</td>
+        <td>
+          Type is the type of the sink.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>config</b></td>
+        <td>string</td>
+        <td>
+          Config is the configuration for the sink.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>inputs</b></td>
+        <td>[]string</td>
+        <td>
+          Inputs is the list of inputs for the transform.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### K8ssandraCluster.spec.cassandra.telemetry.vector.components.sources[index]
+<sup><sup>[↩ Parent](#k8ssandraclusterspeccassandratelemetryvectorcomponents)</sup></sup>
+
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>name</b></td>
+        <td>string</td>
+        <td>
+          Name is the name of the source.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>type</b></td>
+        <td>string</td>
+        <td>
+          Type is the type of the source.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>config</b></td>
+        <td>string</td>
+        <td>
+          Config is the configuration for the source.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### K8ssandraCluster.spec.cassandra.telemetry.vector.components.transforms[index]
+<sup><sup>[↩ Parent](#k8ssandraclusterspeccassandratelemetryvectorcomponents)</sup></sup>
+
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>name</b></td>
+        <td>string</td>
+        <td>
+          Name is the name of the transform.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>type</b></td>
+        <td>string</td>
+        <td>
+          Type is the type of the transform.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>config</b></td>
+        <td>string</td>
+        <td>
+          Config is the configuration for the transform.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>inputs</b></td>
+        <td>[]string</td>
+        <td>
+          Inputs is the list of inputs for the transform.<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -31900,10 +32504,10 @@ Telemetry defines the desired telemetry integrations to deploy targeting the Rea
         </tr>
     </thead>
     <tbody><tr>
-        <td><b><a href="#k8ssandraclusterspecreapertelemetryvectorconfig">config</a></b></td>
+        <td><b><a href="#k8ssandraclusterspecreapertelemetryvectorcomponents">components</a></b></td>
         <td>object</td>
         <td>
-          Config is the name of the configmap containing custom sinks and transformers for the Vector agent. The configmap must be in the same namespace as the CassandraDatacenter and contain a vector.toml entry with the Vector configuration in toml format. The agent is already configured with a "cassandra_metrics" source that needs to be used as input for the sinks. If not set, the default console sink will be used.<br/>
+          <br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -31938,12 +32542,53 @@ Telemetry defines the desired telemetry integrations to deploy targeting the Rea
 </table>
 
 
-#### K8ssandraCluster.spec.reaper.telemetry.vector.config
+#### K8ssandraCluster.spec.reaper.telemetry.vector.components
 <sup><sup>[↩ Parent](#k8ssandraclusterspecreapertelemetryvector)</sup></sup>
 
 
 
-Config is the name of the configmap containing custom sinks and transformers for the Vector agent. The configmap must be in the same namespace as the CassandraDatacenter and contain a vector.toml entry with the Vector configuration in toml format. The agent is already configured with a "cassandra_metrics" source that needs to be used as input for the sinks. If not set, the default console sink will be used.
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b><a href="#k8ssandraclusterspecreapertelemetryvectorcomponentssinksindex">sinks</a></b></td>
+        <td>[]object</td>
+        <td>
+          Sinks is the list of sinks to use for the Vector agent.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#k8ssandraclusterspecreapertelemetryvectorcomponentssourcesindex">sources</a></b></td>
+        <td>[]object</td>
+        <td>
+          Sources is the list of sources to use for the Vector agent.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#k8ssandraclusterspecreapertelemetryvectorcomponentstransformsindex">transforms</a></b></td>
+        <td>[]object</td>
+        <td>
+          Transforms is the list of transforms to use for the Vector agent.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### K8ssandraCluster.spec.reaper.telemetry.vector.components.sinks[index]
+<sup><sup>[↩ Parent](#k8ssandraclusterspecreapertelemetryvectorcomponents)</sup></sup>
+
+
+
+
 
 <table>
     <thead>
@@ -31958,7 +32603,117 @@ Config is the name of the configmap containing custom sinks and transformers for
         <td><b>name</b></td>
         <td>string</td>
         <td>
-          Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?<br/>
+          Name is the name of the sink.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>type</b></td>
+        <td>string</td>
+        <td>
+          Type is the type of the sink.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>config</b></td>
+        <td>string</td>
+        <td>
+          Config is the configuration for the sink.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>inputs</b></td>
+        <td>[]string</td>
+        <td>
+          Inputs is the list of inputs for the transform.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### K8ssandraCluster.spec.reaper.telemetry.vector.components.sources[index]
+<sup><sup>[↩ Parent](#k8ssandraclusterspecreapertelemetryvectorcomponents)</sup></sup>
+
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>name</b></td>
+        <td>string</td>
+        <td>
+          Name is the name of the source.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>type</b></td>
+        <td>string</td>
+        <td>
+          Type is the type of the source.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>config</b></td>
+        <td>string</td>
+        <td>
+          Config is the configuration for the source.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### K8ssandraCluster.spec.reaper.telemetry.vector.components.transforms[index]
+<sup><sup>[↩ Parent](#k8ssandraclusterspecreapertelemetryvectorcomponents)</sup></sup>
+
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>name</b></td>
+        <td>string</td>
+        <td>
+          Name is the name of the transform.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>type</b></td>
+        <td>string</td>
+        <td>
+          Type is the type of the transform.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>config</b></td>
+        <td>string</td>
+        <td>
+          Config is the configuration for the transform.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>inputs</b></td>
+        <td>[]string</td>
+        <td>
+          Inputs is the list of inputs for the transform.<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -34554,10 +35309,10 @@ Telemetry defines the desired telemetry integrations to deploy targeting the Sta
         </tr>
     </thead>
     <tbody><tr>
-        <td><b><a href="#k8ssandraclusterspecstargatetelemetryvectorconfig">config</a></b></td>
+        <td><b><a href="#k8ssandraclusterspecstargatetelemetryvectorcomponents">components</a></b></td>
         <td>object</td>
         <td>
-          Config is the name of the configmap containing custom sinks and transformers for the Vector agent. The configmap must be in the same namespace as the CassandraDatacenter and contain a vector.toml entry with the Vector configuration in toml format. The agent is already configured with a "cassandra_metrics" source that needs to be used as input for the sinks. If not set, the default console sink will be used.<br/>
+          <br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -34592,12 +35347,53 @@ Telemetry defines the desired telemetry integrations to deploy targeting the Sta
 </table>
 
 
-#### K8ssandraCluster.spec.stargate.telemetry.vector.config
+#### K8ssandraCluster.spec.stargate.telemetry.vector.components
 <sup><sup>[↩ Parent](#k8ssandraclusterspecstargatetelemetryvector)</sup></sup>
 
 
 
-Config is the name of the configmap containing custom sinks and transformers for the Vector agent. The configmap must be in the same namespace as the CassandraDatacenter and contain a vector.toml entry with the Vector configuration in toml format. The agent is already configured with a "cassandra_metrics" source that needs to be used as input for the sinks. If not set, the default console sink will be used.
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b><a href="#k8ssandraclusterspecstargatetelemetryvectorcomponentssinksindex">sinks</a></b></td>
+        <td>[]object</td>
+        <td>
+          Sinks is the list of sinks to use for the Vector agent.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#k8ssandraclusterspecstargatetelemetryvectorcomponentssourcesindex">sources</a></b></td>
+        <td>[]object</td>
+        <td>
+          Sources is the list of sources to use for the Vector agent.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#k8ssandraclusterspecstargatetelemetryvectorcomponentstransformsindex">transforms</a></b></td>
+        <td>[]object</td>
+        <td>
+          Transforms is the list of transforms to use for the Vector agent.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### K8ssandraCluster.spec.stargate.telemetry.vector.components.sinks[index]
+<sup><sup>[↩ Parent](#k8ssandraclusterspecstargatetelemetryvectorcomponents)</sup></sup>
+
+
+
+
 
 <table>
     <thead>
@@ -34612,7 +35408,117 @@ Config is the name of the configmap containing custom sinks and transformers for
         <td><b>name</b></td>
         <td>string</td>
         <td>
-          Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?<br/>
+          Name is the name of the sink.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>type</b></td>
+        <td>string</td>
+        <td>
+          Type is the type of the sink.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>config</b></td>
+        <td>string</td>
+        <td>
+          Config is the configuration for the sink.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>inputs</b></td>
+        <td>[]string</td>
+        <td>
+          Inputs is the list of inputs for the transform.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### K8ssandraCluster.spec.stargate.telemetry.vector.components.sources[index]
+<sup><sup>[↩ Parent](#k8ssandraclusterspecstargatetelemetryvectorcomponents)</sup></sup>
+
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>name</b></td>
+        <td>string</td>
+        <td>
+          Name is the name of the source.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>type</b></td>
+        <td>string</td>
+        <td>
+          Type is the type of the source.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>config</b></td>
+        <td>string</td>
+        <td>
+          Config is the configuration for the source.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### K8ssandraCluster.spec.stargate.telemetry.vector.components.transforms[index]
+<sup><sup>[↩ Parent](#k8ssandraclusterspecstargatetelemetryvectorcomponents)</sup></sup>
+
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>name</b></td>
+        <td>string</td>
+        <td>
+          Name is the name of the transform.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>type</b></td>
+        <td>string</td>
+        <td>
+          Type is the type of the transform.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>config</b></td>
+        <td>string</td>
+        <td>
+          Config is the configuration for the transform.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>inputs</b></td>
+        <td>[]string</td>
+        <td>
+          Inputs is the list of inputs for the transform.<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -54660,10 +55566,10 @@ Telemetry defines the desired telemetry integrations to deploy targeting the Rea
         </tr>
     </thead>
     <tbody><tr>
-        <td><b><a href="#reaperspectelemetryvectorconfig">config</a></b></td>
+        <td><b><a href="#reaperspectelemetryvectorcomponents">components</a></b></td>
         <td>object</td>
         <td>
-          Config is the name of the configmap containing custom sinks and transformers for the Vector agent. The configmap must be in the same namespace as the CassandraDatacenter and contain a vector.toml entry with the Vector configuration in toml format. The agent is already configured with a "cassandra_metrics" source that needs to be used as input for the sinks. If not set, the default console sink will be used.<br/>
+          <br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -54698,12 +55604,53 @@ Telemetry defines the desired telemetry integrations to deploy targeting the Rea
 </table>
 
 
-#### Reaper.spec.telemetry.vector.config
+#### Reaper.spec.telemetry.vector.components
 <sup><sup>[↩ Parent](#reaperspectelemetryvector)</sup></sup>
 
 
 
-Config is the name of the configmap containing custom sinks and transformers for the Vector agent. The configmap must be in the same namespace as the CassandraDatacenter and contain a vector.toml entry with the Vector configuration in toml format. The agent is already configured with a "cassandra_metrics" source that needs to be used as input for the sinks. If not set, the default console sink will be used.
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b><a href="#reaperspectelemetryvectorcomponentssinksindex">sinks</a></b></td>
+        <td>[]object</td>
+        <td>
+          Sinks is the list of sinks to use for the Vector agent.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#reaperspectelemetryvectorcomponentssourcesindex">sources</a></b></td>
+        <td>[]object</td>
+        <td>
+          Sources is the list of sources to use for the Vector agent.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#reaperspectelemetryvectorcomponentstransformsindex">transforms</a></b></td>
+        <td>[]object</td>
+        <td>
+          Transforms is the list of transforms to use for the Vector agent.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### Reaper.spec.telemetry.vector.components.sinks[index]
+<sup><sup>[↩ Parent](#reaperspectelemetryvectorcomponents)</sup></sup>
+
+
+
+
 
 <table>
     <thead>
@@ -54718,7 +55665,117 @@ Config is the name of the configmap containing custom sinks and transformers for
         <td><b>name</b></td>
         <td>string</td>
         <td>
-          Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?<br/>
+          Name is the name of the sink.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>type</b></td>
+        <td>string</td>
+        <td>
+          Type is the type of the sink.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>config</b></td>
+        <td>string</td>
+        <td>
+          Config is the configuration for the sink.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>inputs</b></td>
+        <td>[]string</td>
+        <td>
+          Inputs is the list of inputs for the transform.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### Reaper.spec.telemetry.vector.components.sources[index]
+<sup><sup>[↩ Parent](#reaperspectelemetryvectorcomponents)</sup></sup>
+
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>name</b></td>
+        <td>string</td>
+        <td>
+          Name is the name of the source.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>type</b></td>
+        <td>string</td>
+        <td>
+          Type is the type of the source.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>config</b></td>
+        <td>string</td>
+        <td>
+          Config is the configuration for the source.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### Reaper.spec.telemetry.vector.components.transforms[index]
+<sup><sup>[↩ Parent](#reaperspectelemetryvectorcomponents)</sup></sup>
+
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>name</b></td>
+        <td>string</td>
+        <td>
+          Name is the name of the transform.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>type</b></td>
+        <td>string</td>
+        <td>
+          Type is the type of the transform.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>config</b></td>
+        <td>string</td>
+        <td>
+          Config is the configuration for the transform.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>inputs</b></td>
+        <td>[]string</td>
+        <td>
+          Inputs is the list of inputs for the transform.<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -60221,10 +61278,10 @@ Telemetry defines the desired telemetry integrations to deploy targeting the Sta
         </tr>
     </thead>
     <tbody><tr>
-        <td><b><a href="#stargatespecracksindextelemetryvectorconfig">config</a></b></td>
+        <td><b><a href="#stargatespecracksindextelemetryvectorcomponents">components</a></b></td>
         <td>object</td>
         <td>
-          Config is the name of the configmap containing custom sinks and transformers for the Vector agent. The configmap must be in the same namespace as the CassandraDatacenter and contain a vector.toml entry with the Vector configuration in toml format. The agent is already configured with a "cassandra_metrics" source that needs to be used as input for the sinks. If not set, the default console sink will be used.<br/>
+          <br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -60259,12 +61316,53 @@ Telemetry defines the desired telemetry integrations to deploy targeting the Sta
 </table>
 
 
-#### Stargate.spec.racks[index].telemetry.vector.config
+#### Stargate.spec.racks[index].telemetry.vector.components
 <sup><sup>[↩ Parent](#stargatespecracksindextelemetryvector)</sup></sup>
 
 
 
-Config is the name of the configmap containing custom sinks and transformers for the Vector agent. The configmap must be in the same namespace as the CassandraDatacenter and contain a vector.toml entry with the Vector configuration in toml format. The agent is already configured with a "cassandra_metrics" source that needs to be used as input for the sinks. If not set, the default console sink will be used.
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b><a href="#stargatespecracksindextelemetryvectorcomponentssinksindex">sinks</a></b></td>
+        <td>[]object</td>
+        <td>
+          Sinks is the list of sinks to use for the Vector agent.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#stargatespecracksindextelemetryvectorcomponentssourcesindex">sources</a></b></td>
+        <td>[]object</td>
+        <td>
+          Sources is the list of sources to use for the Vector agent.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#stargatespecracksindextelemetryvectorcomponentstransformsindex">transforms</a></b></td>
+        <td>[]object</td>
+        <td>
+          Transforms is the list of transforms to use for the Vector agent.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### Stargate.spec.racks[index].telemetry.vector.components.sinks[index]
+<sup><sup>[↩ Parent](#stargatespecracksindextelemetryvectorcomponents)</sup></sup>
+
+
+
+
 
 <table>
     <thead>
@@ -60279,7 +61377,117 @@ Config is the name of the configmap containing custom sinks and transformers for
         <td><b>name</b></td>
         <td>string</td>
         <td>
-          Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?<br/>
+          Name is the name of the sink.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>type</b></td>
+        <td>string</td>
+        <td>
+          Type is the type of the sink.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>config</b></td>
+        <td>string</td>
+        <td>
+          Config is the configuration for the sink.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>inputs</b></td>
+        <td>[]string</td>
+        <td>
+          Inputs is the list of inputs for the transform.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### Stargate.spec.racks[index].telemetry.vector.components.sources[index]
+<sup><sup>[↩ Parent](#stargatespecracksindextelemetryvectorcomponents)</sup></sup>
+
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>name</b></td>
+        <td>string</td>
+        <td>
+          Name is the name of the source.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>type</b></td>
+        <td>string</td>
+        <td>
+          Type is the type of the source.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>config</b></td>
+        <td>string</td>
+        <td>
+          Config is the configuration for the source.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### Stargate.spec.racks[index].telemetry.vector.components.transforms[index]
+<sup><sup>[↩ Parent](#stargatespecracksindextelemetryvectorcomponents)</sup></sup>
+
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>name</b></td>
+        <td>string</td>
+        <td>
+          Name is the name of the transform.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>type</b></td>
+        <td>string</td>
+        <td>
+          Type is the type of the transform.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>config</b></td>
+        <td>string</td>
+        <td>
+          Config is the configuration for the transform.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>inputs</b></td>
+        <td>[]string</td>
+        <td>
+          Inputs is the list of inputs for the transform.<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -60819,10 +62027,10 @@ Telemetry defines the desired telemetry integrations to deploy targeting the Sta
         </tr>
     </thead>
     <tbody><tr>
-        <td><b><a href="#stargatespectelemetryvectorconfig">config</a></b></td>
+        <td><b><a href="#stargatespectelemetryvectorcomponents">components</a></b></td>
         <td>object</td>
         <td>
-          Config is the name of the configmap containing custom sinks and transformers for the Vector agent. The configmap must be in the same namespace as the CassandraDatacenter and contain a vector.toml entry with the Vector configuration in toml format. The agent is already configured with a "cassandra_metrics" source that needs to be used as input for the sinks. If not set, the default console sink will be used.<br/>
+          <br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -60857,12 +62065,53 @@ Telemetry defines the desired telemetry integrations to deploy targeting the Sta
 </table>
 
 
-#### Stargate.spec.telemetry.vector.config
+#### Stargate.spec.telemetry.vector.components
 <sup><sup>[↩ Parent](#stargatespectelemetryvector)</sup></sup>
 
 
 
-Config is the name of the configmap containing custom sinks and transformers for the Vector agent. The configmap must be in the same namespace as the CassandraDatacenter and contain a vector.toml entry with the Vector configuration in toml format. The agent is already configured with a "cassandra_metrics" source that needs to be used as input for the sinks. If not set, the default console sink will be used.
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b><a href="#stargatespectelemetryvectorcomponentssinksindex">sinks</a></b></td>
+        <td>[]object</td>
+        <td>
+          Sinks is the list of sinks to use for the Vector agent.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#stargatespectelemetryvectorcomponentssourcesindex">sources</a></b></td>
+        <td>[]object</td>
+        <td>
+          Sources is the list of sources to use for the Vector agent.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#stargatespectelemetryvectorcomponentstransformsindex">transforms</a></b></td>
+        <td>[]object</td>
+        <td>
+          Transforms is the list of transforms to use for the Vector agent.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### Stargate.spec.telemetry.vector.components.sinks[index]
+<sup><sup>[↩ Parent](#stargatespectelemetryvectorcomponents)</sup></sup>
+
+
+
+
 
 <table>
     <thead>
@@ -60877,7 +62126,117 @@ Config is the name of the configmap containing custom sinks and transformers for
         <td><b>name</b></td>
         <td>string</td>
         <td>
-          Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?<br/>
+          Name is the name of the sink.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>type</b></td>
+        <td>string</td>
+        <td>
+          Type is the type of the sink.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>config</b></td>
+        <td>string</td>
+        <td>
+          Config is the configuration for the sink.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>inputs</b></td>
+        <td>[]string</td>
+        <td>
+          Inputs is the list of inputs for the transform.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### Stargate.spec.telemetry.vector.components.sources[index]
+<sup><sup>[↩ Parent](#stargatespectelemetryvectorcomponents)</sup></sup>
+
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>name</b></td>
+        <td>string</td>
+        <td>
+          Name is the name of the source.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>type</b></td>
+        <td>string</td>
+        <td>
+          Type is the type of the source.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>config</b></td>
+        <td>string</td>
+        <td>
+          Config is the configuration for the source.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### Stargate.spec.telemetry.vector.components.transforms[index]
+<sup><sup>[↩ Parent](#stargatespectelemetryvectorcomponents)</sup></sup>
+
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>name</b></td>
+        <td>string</td>
+        <td>
+          Name is the name of the transform.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>type</b></td>
+        <td>string</td>
+        <td>
+          Type is the type of the transform.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>config</b></td>
+        <td>string</td>
+        <td>
+          Config is the configuration for the transform.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>inputs</b></td>
+        <td>[]string</td>
+        <td>
+          Inputs is the list of inputs for the transform.<br/>
         </td>
         <td>false</td>
       </tr></tbody>
