@@ -8,8 +8,17 @@ You need to manually modify and verify the labels and metadata names, these step
 
 #### CRDs from cass-operator:
 
+From cass-operator directory:
+
 ```
 kustomize build config/crd  --output ../k8ssandra/charts/cass-operator/crds/
+```
+
+In this chart directory:
+
+```
+mv crds/apiextensions.k8s.io_v1_customresourcedefinition_cassandradatacenters.cassandra.datastax.com.yaml crds/cassandradatacenter.yaml
+mv crds/apiextensions.k8s.io_v1_customresourcedefinition_cassandratasks.control.k8ssandra.io.yaml crds/cassandratasks.yaml
 ```
 
 #### To build RBACs:
