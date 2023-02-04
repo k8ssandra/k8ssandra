@@ -77,6 +77,38 @@ rules:
   - update
   - watch
 - apiGroups:
+  - control.k8ssandra.io
+  resources:
+  - cassandratasks/status
+  verbs:
+  - get
+- apiGroups:
+  - control.k8ssandra.io
+  resources:
+  - k8ssandratasks
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - control.k8ssandra.io
+  resources:
+  - k8ssandratasks/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - control.k8ssandra.io
+  resources:
+  - k8ssandratasks/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
   - ""
   resources:
   - configmaps
