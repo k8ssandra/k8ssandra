@@ -10,7 +10,7 @@ dependencies:
     version: 0.29.0
     repository: file://../k8ssandra-common
   - name: cass-operator
-    version: 0.39.0
+    version: 0.40.0
     repository: https://helm.k8ssandra.io
 home: https://github.com/k8ssandra/k8ssandra-operator
 sources:
