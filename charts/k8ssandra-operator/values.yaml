@@ -48,6 +48,9 @@ securityContext:
   runAsGroup: 65534
   # -- User for running the k8ssandra-operator container / process
   runAsUser: 65534
+# -- Node Selector to schedule k8ssandra-operator on specific nodes  
+nodeSelector:
+  kubernetes.io/os: linux
 # -- Resources requests and limits for the cass-operator pod. We usually
 # recommend not to specify default resources and to leave this as a conscious
 # choice for the user. This also increases chances charts run on environments
