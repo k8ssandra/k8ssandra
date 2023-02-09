@@ -155,7 +155,7 @@ CassandraDatacenterSpec defines the desired state of a CassandraDatacenter
         <td><b>allowMultipleNodesPerWorker</b></td>
         <td>boolean</td>
         <td>
-          Turning this option on allows multiple server pods to be created on a k8s worker node. By default the operator creates just one server pod per k8s worker node using k8s podAntiAffinity and requiredDuringSchedulingIgnoredDuringExecution.<br/>
+          Turning this option on allows multiple server pods to be created on a k8s worker node, by removing the default pod anti affinity rules. By default the operator creates just one server pod per k8s worker node. Using custom affinity rules might require turning this option on in which case the defaults are not set.<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -211,6 +211,13 @@ CassandraDatacenterSpec defines the desired state of a CassandraDatacenter
           ConfigSecret is the name of a secret that contains configuration for Cassandra. The secret is expected to have a property named config whose value should be a JSON formatted string that should look like this: 
  config: |- { "cassandra-yaml": { "read_request_timeout_in_ms": 10000 }, "jmv-options": { "max_heap_size": 1024M } } 
  ConfigSecret is mutually exclusive with Config. ConfigSecret takes precedence and will be used exclusively if both properties are set. The operator sets a watch such that an update to the secret will trigger an update of the StatefulSets.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>datacenterName</b></td>
+        <td>string</td>
+        <td>
+          DatacenterName allows to override the name of the Cassandra datacenter. Kubernetes objects will be named after a sanitized version of it if set, and if not metadata.name. In Cassandra the DC name will be overridden by this value. It may generate some confusion as objects created for the DC will have a different name than the CasandraDatacenter object itself. This setting can create conflicts if multiple DCs coexist in the same namespace if metadata.name for a DC with no override is set to the same value as the override name of another DC. Use cautiously.<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -425,16 +432,23 @@ AdditionalVolumes defines additional storage configurations
         <td><b>name</b></td>
         <td>string</td>
         <td>
-          Name of the pvc<br/>
+          Name of the pvc / volume<br/>
         </td>
         <td>true</td>
       </tr><tr>
         <td><b><a href="#cassandradatacenterspecstorageconfigadditionalvolumesindexpvcspec">pvcSpec</a></b></td>
         <td>object</td>
         <td>
-          Persistent volume claim spec<br/>
+          PVCSpec is a persistent volume claim spec. Either this or VolumeSource is required.<br/>
         </td>
-        <td>true</td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#cassandradatacenterspecstorageconfigadditionalvolumesindexvolumesource">volumeSource</a></b></td>
+        <td>object</td>
+        <td>
+          VolumeSource to mount the volume from (such as ConfigMap / Secret). This or PVCSpec is required.<br/>
+        </td>
+        <td>false</td>
       </tr></tbody>
 </table>
 
@@ -444,7 +458,7 @@ AdditionalVolumes defines additional storage configurations
 
 
 
-Persistent volume claim spec
+PVCSpec is a persistent volume claim spec. Either this or VolumeSource is required.
 
 <table>
     <thead>
@@ -700,6 +714,2880 @@ A label selector requirement is a selector that contains values, a key, and an o
         <td>[]string</td>
         <td>
           values is an array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. This array is replaced during a strategic merge patch.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### CassandraDatacenter.spec.storageConfig.additionalVolumes[index].volumeSource
+<sup><sup>[↩ Parent](#cassandradatacenterspecstorageconfigadditionalvolumesindex)</sup></sup>
+
+
+
+VolumeSource to mount the volume from (such as ConfigMap / Secret). This or PVCSpec is required.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b><a href="#cassandradatacenterspecstorageconfigadditionalvolumesindexvolumesourceawselasticblockstore">awsElasticBlockStore</a></b></td>
+        <td>object</td>
+        <td>
+          awsElasticBlockStore represents an AWS Disk resource that is attached to a kubelet's host machine and then exposed to the pod. More info: https://kubernetes.io/docs/concepts/storage/volumes#awselasticblockstore<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#cassandradatacenterspecstorageconfigadditionalvolumesindexvolumesourceazuredisk">azureDisk</a></b></td>
+        <td>object</td>
+        <td>
+          azureDisk represents an Azure Data Disk mount on the host and bind mount to the pod.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#cassandradatacenterspecstorageconfigadditionalvolumesindexvolumesourceazurefile">azureFile</a></b></td>
+        <td>object</td>
+        <td>
+          azureFile represents an Azure File Service mount on the host and bind mount to the pod.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#cassandradatacenterspecstorageconfigadditionalvolumesindexvolumesourcecephfs">cephfs</a></b></td>
+        <td>object</td>
+        <td>
+          cephFS represents a Ceph FS mount on the host that shares a pod's lifetime<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#cassandradatacenterspecstorageconfigadditionalvolumesindexvolumesourcecinder">cinder</a></b></td>
+        <td>object</td>
+        <td>
+          cinder represents a cinder volume attached and mounted on kubelets host machine. More info: https://examples.k8s.io/mysql-cinder-pd/README.md<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#cassandradatacenterspecstorageconfigadditionalvolumesindexvolumesourceconfigmap">configMap</a></b></td>
+        <td>object</td>
+        <td>
+          configMap represents a configMap that should populate this volume<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#cassandradatacenterspecstorageconfigadditionalvolumesindexvolumesourcecsi">csi</a></b></td>
+        <td>object</td>
+        <td>
+          csi (Container Storage Interface) represents ephemeral storage that is handled by certain external CSI drivers (Beta feature).<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#cassandradatacenterspecstorageconfigadditionalvolumesindexvolumesourcedownwardapi">downwardAPI</a></b></td>
+        <td>object</td>
+        <td>
+          downwardAPI represents downward API about the pod that should populate this volume<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#cassandradatacenterspecstorageconfigadditionalvolumesindexvolumesourceemptydir">emptyDir</a></b></td>
+        <td>object</td>
+        <td>
+          emptyDir represents a temporary directory that shares a pod's lifetime. More info: https://kubernetes.io/docs/concepts/storage/volumes#emptydir<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#cassandradatacenterspecstorageconfigadditionalvolumesindexvolumesourceephemeral">ephemeral</a></b></td>
+        <td>object</td>
+        <td>
+          ephemeral represents a volume that is handled by a cluster storage driver. The volume's lifecycle is tied to the pod that defines it - it will be created before the pod starts, and deleted when the pod is removed. 
+ Use this if: a) the volume is only needed while the pod runs, b) features of normal volumes like restoring from snapshot or capacity tracking are needed, c) the storage driver is specified through a storage class, and d) the storage driver supports dynamic volume provisioning through a PersistentVolumeClaim (see EphemeralVolumeSource for more information on the connection between this volume type and PersistentVolumeClaim). 
+ Use PersistentVolumeClaim or one of the vendor-specific APIs for volumes that persist for longer than the lifecycle of an individual pod. 
+ Use CSI for light-weight local ephemeral volumes if the CSI driver is meant to be used that way - see the documentation of the driver for more information. 
+ A pod can use both types of ephemeral volumes and persistent volumes at the same time.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#cassandradatacenterspecstorageconfigadditionalvolumesindexvolumesourcefc">fc</a></b></td>
+        <td>object</td>
+        <td>
+          fc represents a Fibre Channel resource that is attached to a kubelet's host machine and then exposed to the pod.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#cassandradatacenterspecstorageconfigadditionalvolumesindexvolumesourceflexvolume">flexVolume</a></b></td>
+        <td>object</td>
+        <td>
+          flexVolume represents a generic volume resource that is provisioned/attached using an exec based plugin.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#cassandradatacenterspecstorageconfigadditionalvolumesindexvolumesourceflocker">flocker</a></b></td>
+        <td>object</td>
+        <td>
+          flocker represents a Flocker volume attached to a kubelet's host machine. This depends on the Flocker control service being running<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#cassandradatacenterspecstorageconfigadditionalvolumesindexvolumesourcegcepersistentdisk">gcePersistentDisk</a></b></td>
+        <td>object</td>
+        <td>
+          gcePersistentDisk represents a GCE Disk resource that is attached to a kubelet's host machine and then exposed to the pod. More info: https://kubernetes.io/docs/concepts/storage/volumes#gcepersistentdisk<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#cassandradatacenterspecstorageconfigadditionalvolumesindexvolumesourcegitrepo">gitRepo</a></b></td>
+        <td>object</td>
+        <td>
+          gitRepo represents a git repository at a particular revision. DEPRECATED: GitRepo is deprecated. To provision a container with a git repo, mount an EmptyDir into an InitContainer that clones the repo using git, then mount the EmptyDir into the Pod's container.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#cassandradatacenterspecstorageconfigadditionalvolumesindexvolumesourceglusterfs">glusterfs</a></b></td>
+        <td>object</td>
+        <td>
+          glusterfs represents a Glusterfs mount on the host that shares a pod's lifetime. More info: https://examples.k8s.io/volumes/glusterfs/README.md<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#cassandradatacenterspecstorageconfigadditionalvolumesindexvolumesourcehostpath">hostPath</a></b></td>
+        <td>object</td>
+        <td>
+          hostPath represents a pre-existing file or directory on the host machine that is directly exposed to the container. This is generally used for system agents or other privileged things that are allowed to see the host machine. Most containers will NOT need this. More info: https://kubernetes.io/docs/concepts/storage/volumes#hostpath --- TODO(jonesdl) We need to restrict who can use host directory mounts and who can/can not mount host directories as read/write.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#cassandradatacenterspecstorageconfigadditionalvolumesindexvolumesourceiscsi">iscsi</a></b></td>
+        <td>object</td>
+        <td>
+          iscsi represents an ISCSI Disk resource that is attached to a kubelet's host machine and then exposed to the pod. More info: https://examples.k8s.io/volumes/iscsi/README.md<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#cassandradatacenterspecstorageconfigadditionalvolumesindexvolumesourcenfs">nfs</a></b></td>
+        <td>object</td>
+        <td>
+          nfs represents an NFS mount on the host that shares a pod's lifetime More info: https://kubernetes.io/docs/concepts/storage/volumes#nfs<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#cassandradatacenterspecstorageconfigadditionalvolumesindexvolumesourcepersistentvolumeclaim">persistentVolumeClaim</a></b></td>
+        <td>object</td>
+        <td>
+          persistentVolumeClaimVolumeSource represents a reference to a PersistentVolumeClaim in the same namespace. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#persistentvolumeclaims<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#cassandradatacenterspecstorageconfigadditionalvolumesindexvolumesourcephotonpersistentdisk">photonPersistentDisk</a></b></td>
+        <td>object</td>
+        <td>
+          photonPersistentDisk represents a PhotonController persistent disk attached and mounted on kubelets host machine<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#cassandradatacenterspecstorageconfigadditionalvolumesindexvolumesourceportworxvolume">portworxVolume</a></b></td>
+        <td>object</td>
+        <td>
+          portworxVolume represents a portworx volume attached and mounted on kubelets host machine<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#cassandradatacenterspecstorageconfigadditionalvolumesindexvolumesourceprojected">projected</a></b></td>
+        <td>object</td>
+        <td>
+          projected items for all in one resources secrets, configmaps, and downward API<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#cassandradatacenterspecstorageconfigadditionalvolumesindexvolumesourcequobyte">quobyte</a></b></td>
+        <td>object</td>
+        <td>
+          quobyte represents a Quobyte mount on the host that shares a pod's lifetime<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#cassandradatacenterspecstorageconfigadditionalvolumesindexvolumesourcerbd">rbd</a></b></td>
+        <td>object</td>
+        <td>
+          rbd represents a Rados Block Device mount on the host that shares a pod's lifetime. More info: https://examples.k8s.io/volumes/rbd/README.md<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#cassandradatacenterspecstorageconfigadditionalvolumesindexvolumesourcescaleio">scaleIO</a></b></td>
+        <td>object</td>
+        <td>
+          scaleIO represents a ScaleIO persistent volume attached and mounted on Kubernetes nodes.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#cassandradatacenterspecstorageconfigadditionalvolumesindexvolumesourcesecret">secret</a></b></td>
+        <td>object</td>
+        <td>
+          secret represents a secret that should populate this volume. More info: https://kubernetes.io/docs/concepts/storage/volumes#secret<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#cassandradatacenterspecstorageconfigadditionalvolumesindexvolumesourcestorageos">storageos</a></b></td>
+        <td>object</td>
+        <td>
+          storageOS represents a StorageOS volume attached and mounted on Kubernetes nodes.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#cassandradatacenterspecstorageconfigadditionalvolumesindexvolumesourcevspherevolume">vsphereVolume</a></b></td>
+        <td>object</td>
+        <td>
+          vsphereVolume represents a vSphere volume attached and mounted on kubelets host machine<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### CassandraDatacenter.spec.storageConfig.additionalVolumes[index].volumeSource.awsElasticBlockStore
+<sup><sup>[↩ Parent](#cassandradatacenterspecstorageconfigadditionalvolumesindexvolumesource)</sup></sup>
+
+
+
+awsElasticBlockStore represents an AWS Disk resource that is attached to a kubelet's host machine and then exposed to the pod. More info: https://kubernetes.io/docs/concepts/storage/volumes#awselasticblockstore
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>volumeID</b></td>
+        <td>string</td>
+        <td>
+          volumeID is unique ID of the persistent disk resource in AWS (Amazon EBS volume). More info: https://kubernetes.io/docs/concepts/storage/volumes#awselasticblockstore<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>fsType</b></td>
+        <td>string</td>
+        <td>
+          fsType is the filesystem type of the volume that you want to mount. Tip: Ensure that the filesystem type is supported by the host operating system. Examples: "ext4", "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified. More info: https://kubernetes.io/docs/concepts/storage/volumes#awselasticblockstore TODO: how do we prevent errors in the filesystem from compromising the machine<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>partition</b></td>
+        <td>integer</td>
+        <td>
+          partition is the partition in the volume that you want to mount. If omitted, the default is to mount by volume name. Examples: For volume /dev/sda1, you specify the partition as "1". Similarly, the volume partition for /dev/sda is "0" (or you can leave the property empty).<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>readOnly</b></td>
+        <td>boolean</td>
+        <td>
+          readOnly value true will force the readOnly setting in VolumeMounts. More info: https://kubernetes.io/docs/concepts/storage/volumes#awselasticblockstore<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### CassandraDatacenter.spec.storageConfig.additionalVolumes[index].volumeSource.azureDisk
+<sup><sup>[↩ Parent](#cassandradatacenterspecstorageconfigadditionalvolumesindexvolumesource)</sup></sup>
+
+
+
+azureDisk represents an Azure Data Disk mount on the host and bind mount to the pod.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>diskName</b></td>
+        <td>string</td>
+        <td>
+          diskName is the Name of the data disk in the blob storage<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>diskURI</b></td>
+        <td>string</td>
+        <td>
+          diskURI is the URI of data disk in the blob storage<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>cachingMode</b></td>
+        <td>string</td>
+        <td>
+          cachingMode is the Host Caching mode: None, Read Only, Read Write.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>fsType</b></td>
+        <td>string</td>
+        <td>
+          fsType is Filesystem type to mount. Must be a filesystem type supported by the host operating system. Ex. "ext4", "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>kind</b></td>
+        <td>string</td>
+        <td>
+          kind expected values are Shared: multiple blob disks per storage account  Dedicated: single blob disk per storage account  Managed: azure managed data disk (only in managed availability set). defaults to shared<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>readOnly</b></td>
+        <td>boolean</td>
+        <td>
+          readOnly Defaults to false (read/write). ReadOnly here will force the ReadOnly setting in VolumeMounts.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### CassandraDatacenter.spec.storageConfig.additionalVolumes[index].volumeSource.azureFile
+<sup><sup>[↩ Parent](#cassandradatacenterspecstorageconfigadditionalvolumesindexvolumesource)</sup></sup>
+
+
+
+azureFile represents an Azure File Service mount on the host and bind mount to the pod.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>secretName</b></td>
+        <td>string</td>
+        <td>
+          secretName is the  name of secret that contains Azure Storage Account Name and Key<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>shareName</b></td>
+        <td>string</td>
+        <td>
+          shareName is the azure share Name<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>readOnly</b></td>
+        <td>boolean</td>
+        <td>
+          readOnly defaults to false (read/write). ReadOnly here will force the ReadOnly setting in VolumeMounts.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### CassandraDatacenter.spec.storageConfig.additionalVolumes[index].volumeSource.cephfs
+<sup><sup>[↩ Parent](#cassandradatacenterspecstorageconfigadditionalvolumesindexvolumesource)</sup></sup>
+
+
+
+cephFS represents a Ceph FS mount on the host that shares a pod's lifetime
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>monitors</b></td>
+        <td>[]string</td>
+        <td>
+          monitors is Required: Monitors is a collection of Ceph monitors More info: https://examples.k8s.io/volumes/cephfs/README.md#how-to-use-it<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>path</b></td>
+        <td>string</td>
+        <td>
+          path is Optional: Used as the mounted root, rather than the full Ceph tree, default is /<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>readOnly</b></td>
+        <td>boolean</td>
+        <td>
+          readOnly is Optional: Defaults to false (read/write). ReadOnly here will force the ReadOnly setting in VolumeMounts. More info: https://examples.k8s.io/volumes/cephfs/README.md#how-to-use-it<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>secretFile</b></td>
+        <td>string</td>
+        <td>
+          secretFile is Optional: SecretFile is the path to key ring for User, default is /etc/ceph/user.secret More info: https://examples.k8s.io/volumes/cephfs/README.md#how-to-use-it<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#cassandradatacenterspecstorageconfigadditionalvolumesindexvolumesourcecephfssecretref">secretRef</a></b></td>
+        <td>object</td>
+        <td>
+          secretRef is Optional: SecretRef is reference to the authentication secret for User, default is empty. More info: https://examples.k8s.io/volumes/cephfs/README.md#how-to-use-it<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>user</b></td>
+        <td>string</td>
+        <td>
+          user is optional: User is the rados user name, default is admin More info: https://examples.k8s.io/volumes/cephfs/README.md#how-to-use-it<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### CassandraDatacenter.spec.storageConfig.additionalVolumes[index].volumeSource.cephfs.secretRef
+<sup><sup>[↩ Parent](#cassandradatacenterspecstorageconfigadditionalvolumesindexvolumesourcecephfs)</sup></sup>
+
+
+
+secretRef is Optional: SecretRef is reference to the authentication secret for User, default is empty. More info: https://examples.k8s.io/volumes/cephfs/README.md#how-to-use-it
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>name</b></td>
+        <td>string</td>
+        <td>
+          Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### CassandraDatacenter.spec.storageConfig.additionalVolumes[index].volumeSource.cinder
+<sup><sup>[↩ Parent](#cassandradatacenterspecstorageconfigadditionalvolumesindexvolumesource)</sup></sup>
+
+
+
+cinder represents a cinder volume attached and mounted on kubelets host machine. More info: https://examples.k8s.io/mysql-cinder-pd/README.md
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>volumeID</b></td>
+        <td>string</td>
+        <td>
+          volumeID used to identify the volume in cinder. More info: https://examples.k8s.io/mysql-cinder-pd/README.md<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>fsType</b></td>
+        <td>string</td>
+        <td>
+          fsType is the filesystem type to mount. Must be a filesystem type supported by the host operating system. Examples: "ext4", "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified. More info: https://examples.k8s.io/mysql-cinder-pd/README.md<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>readOnly</b></td>
+        <td>boolean</td>
+        <td>
+          readOnly defaults to false (read/write). ReadOnly here will force the ReadOnly setting in VolumeMounts. More info: https://examples.k8s.io/mysql-cinder-pd/README.md<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#cassandradatacenterspecstorageconfigadditionalvolumesindexvolumesourcecindersecretref">secretRef</a></b></td>
+        <td>object</td>
+        <td>
+          secretRef is optional: points to a secret object containing parameters used to connect to OpenStack.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### CassandraDatacenter.spec.storageConfig.additionalVolumes[index].volumeSource.cinder.secretRef
+<sup><sup>[↩ Parent](#cassandradatacenterspecstorageconfigadditionalvolumesindexvolumesourcecinder)</sup></sup>
+
+
+
+secretRef is optional: points to a secret object containing parameters used to connect to OpenStack.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>name</b></td>
+        <td>string</td>
+        <td>
+          Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### CassandraDatacenter.spec.storageConfig.additionalVolumes[index].volumeSource.configMap
+<sup><sup>[↩ Parent](#cassandradatacenterspecstorageconfigadditionalvolumesindexvolumesource)</sup></sup>
+
+
+
+configMap represents a configMap that should populate this volume
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>defaultMode</b></td>
+        <td>integer</td>
+        <td>
+          defaultMode is optional: mode bits used to set permissions on created files by default. Must be an octal value between 0000 and 0777 or a decimal value between 0 and 511. YAML accepts both octal and decimal values, JSON requires decimal values for mode bits. Defaults to 0644. Directories within the path are not affected by this setting. This might be in conflict with other options that affect the file mode, like fsGroup, and the result can be other mode bits set.<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#cassandradatacenterspecstorageconfigadditionalvolumesindexvolumesourceconfigmapitemsindex">items</a></b></td>
+        <td>[]object</td>
+        <td>
+          items if unspecified, each key-value pair in the Data field of the referenced ConfigMap will be projected into the volume as a file whose name is the key and content is the value. If specified, the listed keys will be projected into the specified paths, and unlisted keys will not be present. If a key is specified which is not present in the ConfigMap, the volume setup will error unless it is marked optional. Paths must be relative and may not contain the '..' path or start with '..'.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>name</b></td>
+        <td>string</td>
+        <td>
+          Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>optional</b></td>
+        <td>boolean</td>
+        <td>
+          optional specify whether the ConfigMap or its keys must be defined<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### CassandraDatacenter.spec.storageConfig.additionalVolumes[index].volumeSource.configMap.items[index]
+<sup><sup>[↩ Parent](#cassandradatacenterspecstorageconfigadditionalvolumesindexvolumesourceconfigmap)</sup></sup>
+
+
+
+Maps a string key to a path within a volume.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>key</b></td>
+        <td>string</td>
+        <td>
+          key is the key to project.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>path</b></td>
+        <td>string</td>
+        <td>
+          path is the relative path of the file to map the key to. May not be an absolute path. May not contain the path element '..'. May not start with the string '..'.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>mode</b></td>
+        <td>integer</td>
+        <td>
+          mode is Optional: mode bits used to set permissions on this file. Must be an octal value between 0000 and 0777 or a decimal value between 0 and 511. YAML accepts both octal and decimal values, JSON requires decimal values for mode bits. If not specified, the volume defaultMode will be used. This might be in conflict with other options that affect the file mode, like fsGroup, and the result can be other mode bits set.<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### CassandraDatacenter.spec.storageConfig.additionalVolumes[index].volumeSource.csi
+<sup><sup>[↩ Parent](#cassandradatacenterspecstorageconfigadditionalvolumesindexvolumesource)</sup></sup>
+
+
+
+csi (Container Storage Interface) represents ephemeral storage that is handled by certain external CSI drivers (Beta feature).
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>driver</b></td>
+        <td>string</td>
+        <td>
+          driver is the name of the CSI driver that handles this volume. Consult with your admin for the correct name as registered in the cluster.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>fsType</b></td>
+        <td>string</td>
+        <td>
+          fsType to mount. Ex. "ext4", "xfs", "ntfs". If not provided, the empty value is passed to the associated CSI driver which will determine the default filesystem to apply.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#cassandradatacenterspecstorageconfigadditionalvolumesindexvolumesourcecsinodepublishsecretref">nodePublishSecretRef</a></b></td>
+        <td>object</td>
+        <td>
+          nodePublishSecretRef is a reference to the secret object containing sensitive information to pass to the CSI driver to complete the CSI NodePublishVolume and NodeUnpublishVolume calls. This field is optional, and  may be empty if no secret is required. If the secret object contains more than one secret, all secret references are passed.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>readOnly</b></td>
+        <td>boolean</td>
+        <td>
+          readOnly specifies a read-only configuration for the volume. Defaults to false (read/write).<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>volumeAttributes</b></td>
+        <td>map[string]string</td>
+        <td>
+          volumeAttributes stores driver-specific properties that are passed to the CSI driver. Consult your driver's documentation for supported values.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### CassandraDatacenter.spec.storageConfig.additionalVolumes[index].volumeSource.csi.nodePublishSecretRef
+<sup><sup>[↩ Parent](#cassandradatacenterspecstorageconfigadditionalvolumesindexvolumesourcecsi)</sup></sup>
+
+
+
+nodePublishSecretRef is a reference to the secret object containing sensitive information to pass to the CSI driver to complete the CSI NodePublishVolume and NodeUnpublishVolume calls. This field is optional, and  may be empty if no secret is required. If the secret object contains more than one secret, all secret references are passed.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>name</b></td>
+        <td>string</td>
+        <td>
+          Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### CassandraDatacenter.spec.storageConfig.additionalVolumes[index].volumeSource.downwardAPI
+<sup><sup>[↩ Parent](#cassandradatacenterspecstorageconfigadditionalvolumesindexvolumesource)</sup></sup>
+
+
+
+downwardAPI represents downward API about the pod that should populate this volume
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>defaultMode</b></td>
+        <td>integer</td>
+        <td>
+          Optional: mode bits to use on created files by default. Must be a Optional: mode bits used to set permissions on created files by default. Must be an octal value between 0000 and 0777 or a decimal value between 0 and 511. YAML accepts both octal and decimal values, JSON requires decimal values for mode bits. Defaults to 0644. Directories within the path are not affected by this setting. This might be in conflict with other options that affect the file mode, like fsGroup, and the result can be other mode bits set.<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#cassandradatacenterspecstorageconfigadditionalvolumesindexvolumesourcedownwardapiitemsindex">items</a></b></td>
+        <td>[]object</td>
+        <td>
+          Items is a list of downward API volume file<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### CassandraDatacenter.spec.storageConfig.additionalVolumes[index].volumeSource.downwardAPI.items[index]
+<sup><sup>[↩ Parent](#cassandradatacenterspecstorageconfigadditionalvolumesindexvolumesourcedownwardapi)</sup></sup>
+
+
+
+DownwardAPIVolumeFile represents information to create the file containing the pod field
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>path</b></td>
+        <td>string</td>
+        <td>
+          Required: Path is  the relative path name of the file to be created. Must not be absolute or contain the '..' path. Must be utf-8 encoded. The first item of the relative path must not start with '..'<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b><a href="#cassandradatacenterspecstorageconfigadditionalvolumesindexvolumesourcedownwardapiitemsindexfieldref">fieldRef</a></b></td>
+        <td>object</td>
+        <td>
+          Required: Selects a field of the pod: only annotations, labels, name and namespace are supported.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>mode</b></td>
+        <td>integer</td>
+        <td>
+          Optional: mode bits used to set permissions on this file, must be an octal value between 0000 and 0777 or a decimal value between 0 and 511. YAML accepts both octal and decimal values, JSON requires decimal values for mode bits. If not specified, the volume defaultMode will be used. This might be in conflict with other options that affect the file mode, like fsGroup, and the result can be other mode bits set.<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#cassandradatacenterspecstorageconfigadditionalvolumesindexvolumesourcedownwardapiitemsindexresourcefieldref">resourceFieldRef</a></b></td>
+        <td>object</td>
+        <td>
+          Selects a resource of the container: only resources limits and requests (limits.cpu, limits.memory, requests.cpu and requests.memory) are currently supported.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### CassandraDatacenter.spec.storageConfig.additionalVolumes[index].volumeSource.downwardAPI.items[index].fieldRef
+<sup><sup>[↩ Parent](#cassandradatacenterspecstorageconfigadditionalvolumesindexvolumesourcedownwardapiitemsindex)</sup></sup>
+
+
+
+Required: Selects a field of the pod: only annotations, labels, name and namespace are supported.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>fieldPath</b></td>
+        <td>string</td>
+        <td>
+          Path of the field to select in the specified API version.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>apiVersion</b></td>
+        <td>string</td>
+        <td>
+          Version of the schema the FieldPath is written in terms of, defaults to "v1".<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### CassandraDatacenter.spec.storageConfig.additionalVolumes[index].volumeSource.downwardAPI.items[index].resourceFieldRef
+<sup><sup>[↩ Parent](#cassandradatacenterspecstorageconfigadditionalvolumesindexvolumesourcedownwardapiitemsindex)</sup></sup>
+
+
+
+Selects a resource of the container: only resources limits and requests (limits.cpu, limits.memory, requests.cpu and requests.memory) are currently supported.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>resource</b></td>
+        <td>string</td>
+        <td>
+          Required: resource to select<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>containerName</b></td>
+        <td>string</td>
+        <td>
+          Container name: required for volumes, optional for env vars<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>divisor</b></td>
+        <td>int or string</td>
+        <td>
+          Specifies the output format of the exposed resources, defaults to "1"<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### CassandraDatacenter.spec.storageConfig.additionalVolumes[index].volumeSource.emptyDir
+<sup><sup>[↩ Parent](#cassandradatacenterspecstorageconfigadditionalvolumesindexvolumesource)</sup></sup>
+
+
+
+emptyDir represents a temporary directory that shares a pod's lifetime. More info: https://kubernetes.io/docs/concepts/storage/volumes#emptydir
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>medium</b></td>
+        <td>string</td>
+        <td>
+          medium represents what type of storage medium should back this directory. The default is "" which means to use the node's default medium. Must be an empty string (default) or Memory. More info: https://kubernetes.io/docs/concepts/storage/volumes#emptydir<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>sizeLimit</b></td>
+        <td>int or string</td>
+        <td>
+          sizeLimit is the total amount of local storage required for this EmptyDir volume. The size limit is also applicable for memory medium. The maximum usage on memory medium EmptyDir would be the minimum value between the SizeLimit specified here and the sum of memory limits of all containers in a pod. The default is nil which means that the limit is undefined. More info: http://kubernetes.io/docs/user-guide/volumes#emptydir<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### CassandraDatacenter.spec.storageConfig.additionalVolumes[index].volumeSource.ephemeral
+<sup><sup>[↩ Parent](#cassandradatacenterspecstorageconfigadditionalvolumesindexvolumesource)</sup></sup>
+
+
+
+ephemeral represents a volume that is handled by a cluster storage driver. The volume's lifecycle is tied to the pod that defines it - it will be created before the pod starts, and deleted when the pod is removed. 
+ Use this if: a) the volume is only needed while the pod runs, b) features of normal volumes like restoring from snapshot or capacity tracking are needed, c) the storage driver is specified through a storage class, and d) the storage driver supports dynamic volume provisioning through a PersistentVolumeClaim (see EphemeralVolumeSource for more information on the connection between this volume type and PersistentVolumeClaim). 
+ Use PersistentVolumeClaim or one of the vendor-specific APIs for volumes that persist for longer than the lifecycle of an individual pod. 
+ Use CSI for light-weight local ephemeral volumes if the CSI driver is meant to be used that way - see the documentation of the driver for more information. 
+ A pod can use both types of ephemeral volumes and persistent volumes at the same time.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b><a href="#cassandradatacenterspecstorageconfigadditionalvolumesindexvolumesourceephemeralvolumeclaimtemplate">volumeClaimTemplate</a></b></td>
+        <td>object</td>
+        <td>
+          Will be used to create a stand-alone PVC to provision the volume. The pod in which this EphemeralVolumeSource is embedded will be the owner of the PVC, i.e. the PVC will be deleted together with the pod.  The name of the PVC will be `<pod name>-<volume name>` where `<volume name>` is the name from the `PodSpec.Volumes` array entry. Pod validation will reject the pod if the concatenated name is not valid for a PVC (for example, too long). 
+ An existing PVC with that name that is not owned by the pod will *not* be used for the pod to avoid using an unrelated volume by mistake. Starting the pod is then blocked until the unrelated PVC is removed. If such a pre-created PVC is meant to be used by the pod, the PVC has to updated with an owner reference to the pod once the pod exists. Normally this should not be necessary, but it may be useful when manually reconstructing a broken cluster. 
+ This field is read-only and no changes will be made by Kubernetes to the PVC after it has been created. 
+ Required, must not be nil.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### CassandraDatacenter.spec.storageConfig.additionalVolumes[index].volumeSource.ephemeral.volumeClaimTemplate
+<sup><sup>[↩ Parent](#cassandradatacenterspecstorageconfigadditionalvolumesindexvolumesourceephemeral)</sup></sup>
+
+
+
+Will be used to create a stand-alone PVC to provision the volume. The pod in which this EphemeralVolumeSource is embedded will be the owner of the PVC, i.e. the PVC will be deleted together with the pod.  The name of the PVC will be `<pod name>-<volume name>` where `<volume name>` is the name from the `PodSpec.Volumes` array entry. Pod validation will reject the pod if the concatenated name is not valid for a PVC (for example, too long). 
+ An existing PVC with that name that is not owned by the pod will *not* be used for the pod to avoid using an unrelated volume by mistake. Starting the pod is then blocked until the unrelated PVC is removed. If such a pre-created PVC is meant to be used by the pod, the PVC has to updated with an owner reference to the pod once the pod exists. Normally this should not be necessary, but it may be useful when manually reconstructing a broken cluster. 
+ This field is read-only and no changes will be made by Kubernetes to the PVC after it has been created. 
+ Required, must not be nil.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b><a href="#cassandradatacenterspecstorageconfigadditionalvolumesindexvolumesourceephemeralvolumeclaimtemplatespec">spec</a></b></td>
+        <td>object</td>
+        <td>
+          The specification for the PersistentVolumeClaim. The entire content is copied unchanged into the PVC that gets created from this template. The same fields as in a PersistentVolumeClaim are also valid here.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b><a href="#cassandradatacenterspecstorageconfigadditionalvolumesindexvolumesourceephemeralvolumeclaimtemplatemetadata">metadata</a></b></td>
+        <td>object</td>
+        <td>
+          May contain labels and annotations that will be copied into the PVC when creating it. No other fields are allowed and will be rejected during validation.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### CassandraDatacenter.spec.storageConfig.additionalVolumes[index].volumeSource.ephemeral.volumeClaimTemplate.spec
+<sup><sup>[↩ Parent](#cassandradatacenterspecstorageconfigadditionalvolumesindexvolumesourceephemeralvolumeclaimtemplate)</sup></sup>
+
+
+
+The specification for the PersistentVolumeClaim. The entire content is copied unchanged into the PVC that gets created from this template. The same fields as in a PersistentVolumeClaim are also valid here.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>accessModes</b></td>
+        <td>[]string</td>
+        <td>
+          accessModes contains the desired access modes the volume should have. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#access-modes-1<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#cassandradatacenterspecstorageconfigadditionalvolumesindexvolumesourceephemeralvolumeclaimtemplatespecdatasource">dataSource</a></b></td>
+        <td>object</td>
+        <td>
+          dataSource field can be used to specify either: * An existing VolumeSnapshot object (snapshot.storage.k8s.io/VolumeSnapshot) * An existing PVC (PersistentVolumeClaim) If the provisioner or an external controller can support the specified data source, it will create a new volume based on the contents of the specified data source. If the AnyVolumeDataSource feature gate is enabled, this field will always have the same contents as the DataSourceRef field.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#cassandradatacenterspecstorageconfigadditionalvolumesindexvolumesourceephemeralvolumeclaimtemplatespecdatasourceref">dataSourceRef</a></b></td>
+        <td>object</td>
+        <td>
+          dataSourceRef specifies the object from which to populate the volume with data, if a non-empty volume is desired. This may be any local object from a non-empty API group (non core object) or a PersistentVolumeClaim object. When this field is specified, volume binding will only succeed if the type of the specified object matches some installed volume populator or dynamic provisioner. This field will replace the functionality of the DataSource field and as such if both fields are non-empty, they must have the same value. For backwards compatibility, both fields (DataSource and DataSourceRef) will be set to the same value automatically if one of them is empty and the other is non-empty. There are two important differences between DataSource and DataSourceRef: * While DataSource only allows two specific types of objects, DataSourceRef allows any non-core object, as well as PersistentVolumeClaim objects. * While DataSource ignores disallowed values (dropping them), DataSourceRef preserves all values, and generates an error if a disallowed value is specified. (Beta) Using this field requires the AnyVolumeDataSource feature gate to be enabled.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#cassandradatacenterspecstorageconfigadditionalvolumesindexvolumesourceephemeralvolumeclaimtemplatespecresources">resources</a></b></td>
+        <td>object</td>
+        <td>
+          resources represents the minimum resources the volume should have. If RecoverVolumeExpansionFailure feature is enabled users are allowed to specify resource requirements that are lower than previous value but must still be higher than capacity recorded in the status field of the claim. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#resources<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#cassandradatacenterspecstorageconfigadditionalvolumesindexvolumesourceephemeralvolumeclaimtemplatespecselector">selector</a></b></td>
+        <td>object</td>
+        <td>
+          selector is a label query over volumes to consider for binding.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>storageClassName</b></td>
+        <td>string</td>
+        <td>
+          storageClassName is the name of the StorageClass required by the claim. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#class-1<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>volumeMode</b></td>
+        <td>string</td>
+        <td>
+          volumeMode defines what type of volume is required by the claim. Value of Filesystem is implied when not included in claim spec.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>volumeName</b></td>
+        <td>string</td>
+        <td>
+          volumeName is the binding reference to the PersistentVolume backing this claim.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### CassandraDatacenter.spec.storageConfig.additionalVolumes[index].volumeSource.ephemeral.volumeClaimTemplate.spec.dataSource
+<sup><sup>[↩ Parent](#cassandradatacenterspecstorageconfigadditionalvolumesindexvolumesourceephemeralvolumeclaimtemplatespec)</sup></sup>
+
+
+
+dataSource field can be used to specify either: * An existing VolumeSnapshot object (snapshot.storage.k8s.io/VolumeSnapshot) * An existing PVC (PersistentVolumeClaim) If the provisioner or an external controller can support the specified data source, it will create a new volume based on the contents of the specified data source. If the AnyVolumeDataSource feature gate is enabled, this field will always have the same contents as the DataSourceRef field.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>kind</b></td>
+        <td>string</td>
+        <td>
+          Kind is the type of resource being referenced<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>name</b></td>
+        <td>string</td>
+        <td>
+          Name is the name of resource being referenced<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>apiGroup</b></td>
+        <td>string</td>
+        <td>
+          APIGroup is the group for the resource being referenced. If APIGroup is not specified, the specified Kind must be in the core API group. For any other third-party types, APIGroup is required.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### CassandraDatacenter.spec.storageConfig.additionalVolumes[index].volumeSource.ephemeral.volumeClaimTemplate.spec.dataSourceRef
+<sup><sup>[↩ Parent](#cassandradatacenterspecstorageconfigadditionalvolumesindexvolumesourceephemeralvolumeclaimtemplatespec)</sup></sup>
+
+
+
+dataSourceRef specifies the object from which to populate the volume with data, if a non-empty volume is desired. This may be any local object from a non-empty API group (non core object) or a PersistentVolumeClaim object. When this field is specified, volume binding will only succeed if the type of the specified object matches some installed volume populator or dynamic provisioner. This field will replace the functionality of the DataSource field and as such if both fields are non-empty, they must have the same value. For backwards compatibility, both fields (DataSource and DataSourceRef) will be set to the same value automatically if one of them is empty and the other is non-empty. There are two important differences between DataSource and DataSourceRef: * While DataSource only allows two specific types of objects, DataSourceRef allows any non-core object, as well as PersistentVolumeClaim objects. * While DataSource ignores disallowed values (dropping them), DataSourceRef preserves all values, and generates an error if a disallowed value is specified. (Beta) Using this field requires the AnyVolumeDataSource feature gate to be enabled.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>kind</b></td>
+        <td>string</td>
+        <td>
+          Kind is the type of resource being referenced<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>name</b></td>
+        <td>string</td>
+        <td>
+          Name is the name of resource being referenced<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>apiGroup</b></td>
+        <td>string</td>
+        <td>
+          APIGroup is the group for the resource being referenced. If APIGroup is not specified, the specified Kind must be in the core API group. For any other third-party types, APIGroup is required.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### CassandraDatacenter.spec.storageConfig.additionalVolumes[index].volumeSource.ephemeral.volumeClaimTemplate.spec.resources
+<sup><sup>[↩ Parent](#cassandradatacenterspecstorageconfigadditionalvolumesindexvolumesourceephemeralvolumeclaimtemplatespec)</sup></sup>
+
+
+
+resources represents the minimum resources the volume should have. If RecoverVolumeExpansionFailure feature is enabled users are allowed to specify resource requirements that are lower than previous value but must still be higher than capacity recorded in the status field of the claim. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#resources
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>limits</b></td>
+        <td>map[string]int or string</td>
+        <td>
+          Limits describes the maximum amount of compute resources allowed. More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>requests</b></td>
+        <td>map[string]int or string</td>
+        <td>
+          Requests describes the minimum amount of compute resources required. If Requests is omitted for a container, it defaults to Limits if that is explicitly specified, otherwise to an implementation-defined value. More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### CassandraDatacenter.spec.storageConfig.additionalVolumes[index].volumeSource.ephemeral.volumeClaimTemplate.spec.selector
+<sup><sup>[↩ Parent](#cassandradatacenterspecstorageconfigadditionalvolumesindexvolumesourceephemeralvolumeclaimtemplatespec)</sup></sup>
+
+
+
+selector is a label query over volumes to consider for binding.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b><a href="#cassandradatacenterspecstorageconfigadditionalvolumesindexvolumesourceephemeralvolumeclaimtemplatespecselectormatchexpressionsindex">matchExpressions</a></b></td>
+        <td>[]object</td>
+        <td>
+          matchExpressions is a list of label selector requirements. The requirements are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>matchLabels</b></td>
+        <td>map[string]string</td>
+        <td>
+          matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels map is equivalent to an element of matchExpressions, whose key field is "key", the operator is "In", and the values array contains only "value". The requirements are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### CassandraDatacenter.spec.storageConfig.additionalVolumes[index].volumeSource.ephemeral.volumeClaimTemplate.spec.selector.matchExpressions[index]
+<sup><sup>[↩ Parent](#cassandradatacenterspecstorageconfigadditionalvolumesindexvolumesourceephemeralvolumeclaimtemplatespecselector)</sup></sup>
+
+
+
+A label selector requirement is a selector that contains values, a key, and an operator that relates the key and values.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>key</b></td>
+        <td>string</td>
+        <td>
+          key is the label key that the selector applies to.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>operator</b></td>
+        <td>string</td>
+        <td>
+          operator represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists and DoesNotExist.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          values is an array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. This array is replaced during a strategic merge patch.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### CassandraDatacenter.spec.storageConfig.additionalVolumes[index].volumeSource.ephemeral.volumeClaimTemplate.metadata
+<sup><sup>[↩ Parent](#cassandradatacenterspecstorageconfigadditionalvolumesindexvolumesourceephemeralvolumeclaimtemplate)</sup></sup>
+
+
+
+May contain labels and annotations that will be copied into the PVC when creating it. No other fields are allowed and will be rejected during validation.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>annotations</b></td>
+        <td>map[string]string</td>
+        <td>
+          <br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>finalizers</b></td>
+        <td>[]string</td>
+        <td>
+          <br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>labels</b></td>
+        <td>map[string]string</td>
+        <td>
+          <br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>name</b></td>
+        <td>string</td>
+        <td>
+          <br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>namespace</b></td>
+        <td>string</td>
+        <td>
+          <br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### CassandraDatacenter.spec.storageConfig.additionalVolumes[index].volumeSource.fc
+<sup><sup>[↩ Parent](#cassandradatacenterspecstorageconfigadditionalvolumesindexvolumesource)</sup></sup>
+
+
+
+fc represents a Fibre Channel resource that is attached to a kubelet's host machine and then exposed to the pod.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>fsType</b></td>
+        <td>string</td>
+        <td>
+          fsType is the filesystem type to mount. Must be a filesystem type supported by the host operating system. Ex. "ext4", "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified. TODO: how do we prevent errors in the filesystem from compromising the machine<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>lun</b></td>
+        <td>integer</td>
+        <td>
+          lun is Optional: FC target lun number<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>readOnly</b></td>
+        <td>boolean</td>
+        <td>
+          readOnly is Optional: Defaults to false (read/write). ReadOnly here will force the ReadOnly setting in VolumeMounts.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>targetWWNs</b></td>
+        <td>[]string</td>
+        <td>
+          targetWWNs is Optional: FC target worldwide names (WWNs)<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>wwids</b></td>
+        <td>[]string</td>
+        <td>
+          wwids Optional: FC volume world wide identifiers (wwids) Either wwids or combination of targetWWNs and lun must be set, but not both simultaneously.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### CassandraDatacenter.spec.storageConfig.additionalVolumes[index].volumeSource.flexVolume
+<sup><sup>[↩ Parent](#cassandradatacenterspecstorageconfigadditionalvolumesindexvolumesource)</sup></sup>
+
+
+
+flexVolume represents a generic volume resource that is provisioned/attached using an exec based plugin.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>driver</b></td>
+        <td>string</td>
+        <td>
+          driver is the name of the driver to use for this volume.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>fsType</b></td>
+        <td>string</td>
+        <td>
+          fsType is the filesystem type to mount. Must be a filesystem type supported by the host operating system. Ex. "ext4", "xfs", "ntfs". The default filesystem depends on FlexVolume script.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>options</b></td>
+        <td>map[string]string</td>
+        <td>
+          options is Optional: this field holds extra command options if any.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>readOnly</b></td>
+        <td>boolean</td>
+        <td>
+          readOnly is Optional: defaults to false (read/write). ReadOnly here will force the ReadOnly setting in VolumeMounts.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#cassandradatacenterspecstorageconfigadditionalvolumesindexvolumesourceflexvolumesecretref">secretRef</a></b></td>
+        <td>object</td>
+        <td>
+          secretRef is Optional: secretRef is reference to the secret object containing sensitive information to pass to the plugin scripts. This may be empty if no secret object is specified. If the secret object contains more than one secret, all secrets are passed to the plugin scripts.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### CassandraDatacenter.spec.storageConfig.additionalVolumes[index].volumeSource.flexVolume.secretRef
+<sup><sup>[↩ Parent](#cassandradatacenterspecstorageconfigadditionalvolumesindexvolumesourceflexvolume)</sup></sup>
+
+
+
+secretRef is Optional: secretRef is reference to the secret object containing sensitive information to pass to the plugin scripts. This may be empty if no secret object is specified. If the secret object contains more than one secret, all secrets are passed to the plugin scripts.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>name</b></td>
+        <td>string</td>
+        <td>
+          Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### CassandraDatacenter.spec.storageConfig.additionalVolumes[index].volumeSource.flocker
+<sup><sup>[↩ Parent](#cassandradatacenterspecstorageconfigadditionalvolumesindexvolumesource)</sup></sup>
+
+
+
+flocker represents a Flocker volume attached to a kubelet's host machine. This depends on the Flocker control service being running
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>datasetName</b></td>
+        <td>string</td>
+        <td>
+          datasetName is Name of the dataset stored as metadata -> name on the dataset for Flocker should be considered as deprecated<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>datasetUUID</b></td>
+        <td>string</td>
+        <td>
+          datasetUUID is the UUID of the dataset. This is unique identifier of a Flocker dataset<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### CassandraDatacenter.spec.storageConfig.additionalVolumes[index].volumeSource.gcePersistentDisk
+<sup><sup>[↩ Parent](#cassandradatacenterspecstorageconfigadditionalvolumesindexvolumesource)</sup></sup>
+
+
+
+gcePersistentDisk represents a GCE Disk resource that is attached to a kubelet's host machine and then exposed to the pod. More info: https://kubernetes.io/docs/concepts/storage/volumes#gcepersistentdisk
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>pdName</b></td>
+        <td>string</td>
+        <td>
+          pdName is unique name of the PD resource in GCE. Used to identify the disk in GCE. More info: https://kubernetes.io/docs/concepts/storage/volumes#gcepersistentdisk<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>fsType</b></td>
+        <td>string</td>
+        <td>
+          fsType is filesystem type of the volume that you want to mount. Tip: Ensure that the filesystem type is supported by the host operating system. Examples: "ext4", "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified. More info: https://kubernetes.io/docs/concepts/storage/volumes#gcepersistentdisk TODO: how do we prevent errors in the filesystem from compromising the machine<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>partition</b></td>
+        <td>integer</td>
+        <td>
+          partition is the partition in the volume that you want to mount. If omitted, the default is to mount by volume name. Examples: For volume /dev/sda1, you specify the partition as "1". Similarly, the volume partition for /dev/sda is "0" (or you can leave the property empty). More info: https://kubernetes.io/docs/concepts/storage/volumes#gcepersistentdisk<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>readOnly</b></td>
+        <td>boolean</td>
+        <td>
+          readOnly here will force the ReadOnly setting in VolumeMounts. Defaults to false. More info: https://kubernetes.io/docs/concepts/storage/volumes#gcepersistentdisk<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### CassandraDatacenter.spec.storageConfig.additionalVolumes[index].volumeSource.gitRepo
+<sup><sup>[↩ Parent](#cassandradatacenterspecstorageconfigadditionalvolumesindexvolumesource)</sup></sup>
+
+
+
+gitRepo represents a git repository at a particular revision. DEPRECATED: GitRepo is deprecated. To provision a container with a git repo, mount an EmptyDir into an InitContainer that clones the repo using git, then mount the EmptyDir into the Pod's container.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>repository</b></td>
+        <td>string</td>
+        <td>
+          repository is the URL<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>directory</b></td>
+        <td>string</td>
+        <td>
+          directory is the target directory name. Must not contain or start with '..'.  If '.' is supplied, the volume directory will be the git repository.  Otherwise, if specified, the volume will contain the git repository in the subdirectory with the given name.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>revision</b></td>
+        <td>string</td>
+        <td>
+          revision is the commit hash for the specified revision.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### CassandraDatacenter.spec.storageConfig.additionalVolumes[index].volumeSource.glusterfs
+<sup><sup>[↩ Parent](#cassandradatacenterspecstorageconfigadditionalvolumesindexvolumesource)</sup></sup>
+
+
+
+glusterfs represents a Glusterfs mount on the host that shares a pod's lifetime. More info: https://examples.k8s.io/volumes/glusterfs/README.md
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>endpoints</b></td>
+        <td>string</td>
+        <td>
+          endpoints is the endpoint name that details Glusterfs topology. More info: https://examples.k8s.io/volumes/glusterfs/README.md#create-a-pod<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>path</b></td>
+        <td>string</td>
+        <td>
+          path is the Glusterfs volume path. More info: https://examples.k8s.io/volumes/glusterfs/README.md#create-a-pod<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>readOnly</b></td>
+        <td>boolean</td>
+        <td>
+          readOnly here will force the Glusterfs volume to be mounted with read-only permissions. Defaults to false. More info: https://examples.k8s.io/volumes/glusterfs/README.md#create-a-pod<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### CassandraDatacenter.spec.storageConfig.additionalVolumes[index].volumeSource.hostPath
+<sup><sup>[↩ Parent](#cassandradatacenterspecstorageconfigadditionalvolumesindexvolumesource)</sup></sup>
+
+
+
+hostPath represents a pre-existing file or directory on the host machine that is directly exposed to the container. This is generally used for system agents or other privileged things that are allowed to see the host machine. Most containers will NOT need this. More info: https://kubernetes.io/docs/concepts/storage/volumes#hostpath --- TODO(jonesdl) We need to restrict who can use host directory mounts and who can/can not mount host directories as read/write.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>path</b></td>
+        <td>string</td>
+        <td>
+          path of the directory on the host. If the path is a symlink, it will follow the link to the real path. More info: https://kubernetes.io/docs/concepts/storage/volumes#hostpath<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>type</b></td>
+        <td>string</td>
+        <td>
+          type for HostPath Volume Defaults to "" More info: https://kubernetes.io/docs/concepts/storage/volumes#hostpath<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### CassandraDatacenter.spec.storageConfig.additionalVolumes[index].volumeSource.iscsi
+<sup><sup>[↩ Parent](#cassandradatacenterspecstorageconfigadditionalvolumesindexvolumesource)</sup></sup>
+
+
+
+iscsi represents an ISCSI Disk resource that is attached to a kubelet's host machine and then exposed to the pod. More info: https://examples.k8s.io/volumes/iscsi/README.md
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>iqn</b></td>
+        <td>string</td>
+        <td>
+          iqn is the target iSCSI Qualified Name.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>lun</b></td>
+        <td>integer</td>
+        <td>
+          lun represents iSCSI Target Lun number.<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>targetPortal</b></td>
+        <td>string</td>
+        <td>
+          targetPortal is iSCSI Target Portal. The Portal is either an IP or ip_addr:port if the port is other than default (typically TCP ports 860 and 3260).<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>chapAuthDiscovery</b></td>
+        <td>boolean</td>
+        <td>
+          chapAuthDiscovery defines whether support iSCSI Discovery CHAP authentication<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>chapAuthSession</b></td>
+        <td>boolean</td>
+        <td>
+          chapAuthSession defines whether support iSCSI Session CHAP authentication<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>fsType</b></td>
+        <td>string</td>
+        <td>
+          fsType is the filesystem type of the volume that you want to mount. Tip: Ensure that the filesystem type is supported by the host operating system. Examples: "ext4", "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified. More info: https://kubernetes.io/docs/concepts/storage/volumes#iscsi TODO: how do we prevent errors in the filesystem from compromising the machine<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>initiatorName</b></td>
+        <td>string</td>
+        <td>
+          initiatorName is the custom iSCSI Initiator Name. If initiatorName is specified with iscsiInterface simultaneously, new iSCSI interface <target portal>:<volume name> will be created for the connection.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>iscsiInterface</b></td>
+        <td>string</td>
+        <td>
+          iscsiInterface is the interface Name that uses an iSCSI transport. Defaults to 'default' (tcp).<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>portals</b></td>
+        <td>[]string</td>
+        <td>
+          portals is the iSCSI Target Portal List. The portal is either an IP or ip_addr:port if the port is other than default (typically TCP ports 860 and 3260).<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>readOnly</b></td>
+        <td>boolean</td>
+        <td>
+          readOnly here will force the ReadOnly setting in VolumeMounts. Defaults to false.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#cassandradatacenterspecstorageconfigadditionalvolumesindexvolumesourceiscsisecretref">secretRef</a></b></td>
+        <td>object</td>
+        <td>
+          secretRef is the CHAP Secret for iSCSI target and initiator authentication<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### CassandraDatacenter.spec.storageConfig.additionalVolumes[index].volumeSource.iscsi.secretRef
+<sup><sup>[↩ Parent](#cassandradatacenterspecstorageconfigadditionalvolumesindexvolumesourceiscsi)</sup></sup>
+
+
+
+secretRef is the CHAP Secret for iSCSI target and initiator authentication
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>name</b></td>
+        <td>string</td>
+        <td>
+          Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### CassandraDatacenter.spec.storageConfig.additionalVolumes[index].volumeSource.nfs
+<sup><sup>[↩ Parent](#cassandradatacenterspecstorageconfigadditionalvolumesindexvolumesource)</sup></sup>
+
+
+
+nfs represents an NFS mount on the host that shares a pod's lifetime More info: https://kubernetes.io/docs/concepts/storage/volumes#nfs
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>path</b></td>
+        <td>string</td>
+        <td>
+          path that is exported by the NFS server. More info: https://kubernetes.io/docs/concepts/storage/volumes#nfs<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>server</b></td>
+        <td>string</td>
+        <td>
+          server is the hostname or IP address of the NFS server. More info: https://kubernetes.io/docs/concepts/storage/volumes#nfs<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>readOnly</b></td>
+        <td>boolean</td>
+        <td>
+          readOnly here will force the NFS export to be mounted with read-only permissions. Defaults to false. More info: https://kubernetes.io/docs/concepts/storage/volumes#nfs<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### CassandraDatacenter.spec.storageConfig.additionalVolumes[index].volumeSource.persistentVolumeClaim
+<sup><sup>[↩ Parent](#cassandradatacenterspecstorageconfigadditionalvolumesindexvolumesource)</sup></sup>
+
+
+
+persistentVolumeClaimVolumeSource represents a reference to a PersistentVolumeClaim in the same namespace. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#persistentvolumeclaims
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>claimName</b></td>
+        <td>string</td>
+        <td>
+          claimName is the name of a PersistentVolumeClaim in the same namespace as the pod using this volume. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#persistentvolumeclaims<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>readOnly</b></td>
+        <td>boolean</td>
+        <td>
+          readOnly Will force the ReadOnly setting in VolumeMounts. Default false.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### CassandraDatacenter.spec.storageConfig.additionalVolumes[index].volumeSource.photonPersistentDisk
+<sup><sup>[↩ Parent](#cassandradatacenterspecstorageconfigadditionalvolumesindexvolumesource)</sup></sup>
+
+
+
+photonPersistentDisk represents a PhotonController persistent disk attached and mounted on kubelets host machine
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>pdID</b></td>
+        <td>string</td>
+        <td>
+          pdID is the ID that identifies Photon Controller persistent disk<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>fsType</b></td>
+        <td>string</td>
+        <td>
+          fsType is the filesystem type to mount. Must be a filesystem type supported by the host operating system. Ex. "ext4", "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### CassandraDatacenter.spec.storageConfig.additionalVolumes[index].volumeSource.portworxVolume
+<sup><sup>[↩ Parent](#cassandradatacenterspecstorageconfigadditionalvolumesindexvolumesource)</sup></sup>
+
+
+
+portworxVolume represents a portworx volume attached and mounted on kubelets host machine
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>volumeID</b></td>
+        <td>string</td>
+        <td>
+          volumeID uniquely identifies a Portworx volume<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>fsType</b></td>
+        <td>string</td>
+        <td>
+          fSType represents the filesystem type to mount Must be a filesystem type supported by the host operating system. Ex. "ext4", "xfs". Implicitly inferred to be "ext4" if unspecified.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>readOnly</b></td>
+        <td>boolean</td>
+        <td>
+          readOnly defaults to false (read/write). ReadOnly here will force the ReadOnly setting in VolumeMounts.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### CassandraDatacenter.spec.storageConfig.additionalVolumes[index].volumeSource.projected
+<sup><sup>[↩ Parent](#cassandradatacenterspecstorageconfigadditionalvolumesindexvolumesource)</sup></sup>
+
+
+
+projected items for all in one resources secrets, configmaps, and downward API
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>defaultMode</b></td>
+        <td>integer</td>
+        <td>
+          defaultMode are the mode bits used to set permissions on created files by default. Must be an octal value between 0000 and 0777 or a decimal value between 0 and 511. YAML accepts both octal and decimal values, JSON requires decimal values for mode bits. Directories within the path are not affected by this setting. This might be in conflict with other options that affect the file mode, like fsGroup, and the result can be other mode bits set.<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#cassandradatacenterspecstorageconfigadditionalvolumesindexvolumesourceprojectedsourcesindex">sources</a></b></td>
+        <td>[]object</td>
+        <td>
+          sources is the list of volume projections<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### CassandraDatacenter.spec.storageConfig.additionalVolumes[index].volumeSource.projected.sources[index]
+<sup><sup>[↩ Parent](#cassandradatacenterspecstorageconfigadditionalvolumesindexvolumesourceprojected)</sup></sup>
+
+
+
+Projection that may be projected along with other supported volume types
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b><a href="#cassandradatacenterspecstorageconfigadditionalvolumesindexvolumesourceprojectedsourcesindexconfigmap">configMap</a></b></td>
+        <td>object</td>
+        <td>
+          configMap information about the configMap data to project<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#cassandradatacenterspecstorageconfigadditionalvolumesindexvolumesourceprojectedsourcesindexdownwardapi">downwardAPI</a></b></td>
+        <td>object</td>
+        <td>
+          downwardAPI information about the downwardAPI data to project<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#cassandradatacenterspecstorageconfigadditionalvolumesindexvolumesourceprojectedsourcesindexsecret">secret</a></b></td>
+        <td>object</td>
+        <td>
+          secret information about the secret data to project<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#cassandradatacenterspecstorageconfigadditionalvolumesindexvolumesourceprojectedsourcesindexserviceaccounttoken">serviceAccountToken</a></b></td>
+        <td>object</td>
+        <td>
+          serviceAccountToken is information about the serviceAccountToken data to project<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### CassandraDatacenter.spec.storageConfig.additionalVolumes[index].volumeSource.projected.sources[index].configMap
+<sup><sup>[↩ Parent](#cassandradatacenterspecstorageconfigadditionalvolumesindexvolumesourceprojectedsourcesindex)</sup></sup>
+
+
+
+configMap information about the configMap data to project
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b><a href="#cassandradatacenterspecstorageconfigadditionalvolumesindexvolumesourceprojectedsourcesindexconfigmapitemsindex">items</a></b></td>
+        <td>[]object</td>
+        <td>
+          items if unspecified, each key-value pair in the Data field of the referenced ConfigMap will be projected into the volume as a file whose name is the key and content is the value. If specified, the listed keys will be projected into the specified paths, and unlisted keys will not be present. If a key is specified which is not present in the ConfigMap, the volume setup will error unless it is marked optional. Paths must be relative and may not contain the '..' path or start with '..'.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>name</b></td>
+        <td>string</td>
+        <td>
+          Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>optional</b></td>
+        <td>boolean</td>
+        <td>
+          optional specify whether the ConfigMap or its keys must be defined<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### CassandraDatacenter.spec.storageConfig.additionalVolumes[index].volumeSource.projected.sources[index].configMap.items[index]
+<sup><sup>[↩ Parent](#cassandradatacenterspecstorageconfigadditionalvolumesindexvolumesourceprojectedsourcesindexconfigmap)</sup></sup>
+
+
+
+Maps a string key to a path within a volume.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>key</b></td>
+        <td>string</td>
+        <td>
+          key is the key to project.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>path</b></td>
+        <td>string</td>
+        <td>
+          path is the relative path of the file to map the key to. May not be an absolute path. May not contain the path element '..'. May not start with the string '..'.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>mode</b></td>
+        <td>integer</td>
+        <td>
+          mode is Optional: mode bits used to set permissions on this file. Must be an octal value between 0000 and 0777 or a decimal value between 0 and 511. YAML accepts both octal and decimal values, JSON requires decimal values for mode bits. If not specified, the volume defaultMode will be used. This might be in conflict with other options that affect the file mode, like fsGroup, and the result can be other mode bits set.<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### CassandraDatacenter.spec.storageConfig.additionalVolumes[index].volumeSource.projected.sources[index].downwardAPI
+<sup><sup>[↩ Parent](#cassandradatacenterspecstorageconfigadditionalvolumesindexvolumesourceprojectedsourcesindex)</sup></sup>
+
+
+
+downwardAPI information about the downwardAPI data to project
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b><a href="#cassandradatacenterspecstorageconfigadditionalvolumesindexvolumesourceprojectedsourcesindexdownwardapiitemsindex">items</a></b></td>
+        <td>[]object</td>
+        <td>
+          Items is a list of DownwardAPIVolume file<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### CassandraDatacenter.spec.storageConfig.additionalVolumes[index].volumeSource.projected.sources[index].downwardAPI.items[index]
+<sup><sup>[↩ Parent](#cassandradatacenterspecstorageconfigadditionalvolumesindexvolumesourceprojectedsourcesindexdownwardapi)</sup></sup>
+
+
+
+DownwardAPIVolumeFile represents information to create the file containing the pod field
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>path</b></td>
+        <td>string</td>
+        <td>
+          Required: Path is  the relative path name of the file to be created. Must not be absolute or contain the '..' path. Must be utf-8 encoded. The first item of the relative path must not start with '..'<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b><a href="#cassandradatacenterspecstorageconfigadditionalvolumesindexvolumesourceprojectedsourcesindexdownwardapiitemsindexfieldref">fieldRef</a></b></td>
+        <td>object</td>
+        <td>
+          Required: Selects a field of the pod: only annotations, labels, name and namespace are supported.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>mode</b></td>
+        <td>integer</td>
+        <td>
+          Optional: mode bits used to set permissions on this file, must be an octal value between 0000 and 0777 or a decimal value between 0 and 511. YAML accepts both octal and decimal values, JSON requires decimal values for mode bits. If not specified, the volume defaultMode will be used. This might be in conflict with other options that affect the file mode, like fsGroup, and the result can be other mode bits set.<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#cassandradatacenterspecstorageconfigadditionalvolumesindexvolumesourceprojectedsourcesindexdownwardapiitemsindexresourcefieldref">resourceFieldRef</a></b></td>
+        <td>object</td>
+        <td>
+          Selects a resource of the container: only resources limits and requests (limits.cpu, limits.memory, requests.cpu and requests.memory) are currently supported.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### CassandraDatacenter.spec.storageConfig.additionalVolumes[index].volumeSource.projected.sources[index].downwardAPI.items[index].fieldRef
+<sup><sup>[↩ Parent](#cassandradatacenterspecstorageconfigadditionalvolumesindexvolumesourceprojectedsourcesindexdownwardapiitemsindex)</sup></sup>
+
+
+
+Required: Selects a field of the pod: only annotations, labels, name and namespace are supported.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>fieldPath</b></td>
+        <td>string</td>
+        <td>
+          Path of the field to select in the specified API version.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>apiVersion</b></td>
+        <td>string</td>
+        <td>
+          Version of the schema the FieldPath is written in terms of, defaults to "v1".<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### CassandraDatacenter.spec.storageConfig.additionalVolumes[index].volumeSource.projected.sources[index].downwardAPI.items[index].resourceFieldRef
+<sup><sup>[↩ Parent](#cassandradatacenterspecstorageconfigadditionalvolumesindexvolumesourceprojectedsourcesindexdownwardapiitemsindex)</sup></sup>
+
+
+
+Selects a resource of the container: only resources limits and requests (limits.cpu, limits.memory, requests.cpu and requests.memory) are currently supported.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>resource</b></td>
+        <td>string</td>
+        <td>
+          Required: resource to select<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>containerName</b></td>
+        <td>string</td>
+        <td>
+          Container name: required for volumes, optional for env vars<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>divisor</b></td>
+        <td>int or string</td>
+        <td>
+          Specifies the output format of the exposed resources, defaults to "1"<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### CassandraDatacenter.spec.storageConfig.additionalVolumes[index].volumeSource.projected.sources[index].secret
+<sup><sup>[↩ Parent](#cassandradatacenterspecstorageconfigadditionalvolumesindexvolumesourceprojectedsourcesindex)</sup></sup>
+
+
+
+secret information about the secret data to project
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b><a href="#cassandradatacenterspecstorageconfigadditionalvolumesindexvolumesourceprojectedsourcesindexsecretitemsindex">items</a></b></td>
+        <td>[]object</td>
+        <td>
+          items if unspecified, each key-value pair in the Data field of the referenced Secret will be projected into the volume as a file whose name is the key and content is the value. If specified, the listed keys will be projected into the specified paths, and unlisted keys will not be present. If a key is specified which is not present in the Secret, the volume setup will error unless it is marked optional. Paths must be relative and may not contain the '..' path or start with '..'.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>name</b></td>
+        <td>string</td>
+        <td>
+          Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>optional</b></td>
+        <td>boolean</td>
+        <td>
+          optional field specify whether the Secret or its key must be defined<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### CassandraDatacenter.spec.storageConfig.additionalVolumes[index].volumeSource.projected.sources[index].secret.items[index]
+<sup><sup>[↩ Parent](#cassandradatacenterspecstorageconfigadditionalvolumesindexvolumesourceprojectedsourcesindexsecret)</sup></sup>
+
+
+
+Maps a string key to a path within a volume.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>key</b></td>
+        <td>string</td>
+        <td>
+          key is the key to project.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>path</b></td>
+        <td>string</td>
+        <td>
+          path is the relative path of the file to map the key to. May not be an absolute path. May not contain the path element '..'. May not start with the string '..'.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>mode</b></td>
+        <td>integer</td>
+        <td>
+          mode is Optional: mode bits used to set permissions on this file. Must be an octal value between 0000 and 0777 or a decimal value between 0 and 511. YAML accepts both octal and decimal values, JSON requires decimal values for mode bits. If not specified, the volume defaultMode will be used. This might be in conflict with other options that affect the file mode, like fsGroup, and the result can be other mode bits set.<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### CassandraDatacenter.spec.storageConfig.additionalVolumes[index].volumeSource.projected.sources[index].serviceAccountToken
+<sup><sup>[↩ Parent](#cassandradatacenterspecstorageconfigadditionalvolumesindexvolumesourceprojectedsourcesindex)</sup></sup>
+
+
+
+serviceAccountToken is information about the serviceAccountToken data to project
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>path</b></td>
+        <td>string</td>
+        <td>
+          path is the path relative to the mount point of the file to project the token into.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>audience</b></td>
+        <td>string</td>
+        <td>
+          audience is the intended audience of the token. A recipient of a token must identify itself with an identifier specified in the audience of the token, and otherwise should reject the token. The audience defaults to the identifier of the apiserver.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>expirationSeconds</b></td>
+        <td>integer</td>
+        <td>
+          expirationSeconds is the requested duration of validity of the service account token. As the token approaches expiration, the kubelet volume plugin will proactively rotate the service account token. The kubelet will start trying to rotate the token if the token is older than 80 percent of its time to live or if the token is older than 24 hours.Defaults to 1 hour and must be at least 10 minutes.<br/>
+          <br/>
+            <i>Format</i>: int64<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### CassandraDatacenter.spec.storageConfig.additionalVolumes[index].volumeSource.quobyte
+<sup><sup>[↩ Parent](#cassandradatacenterspecstorageconfigadditionalvolumesindexvolumesource)</sup></sup>
+
+
+
+quobyte represents a Quobyte mount on the host that shares a pod's lifetime
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>registry</b></td>
+        <td>string</td>
+        <td>
+          registry represents a single or multiple Quobyte Registry services specified as a string as host:port pair (multiple entries are separated with commas) which acts as the central registry for volumes<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>volume</b></td>
+        <td>string</td>
+        <td>
+          volume is a string that references an already created Quobyte volume by name.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>group</b></td>
+        <td>string</td>
+        <td>
+          group to map volume access to Default is no group<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>readOnly</b></td>
+        <td>boolean</td>
+        <td>
+          readOnly here will force the Quobyte volume to be mounted with read-only permissions. Defaults to false.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>tenant</b></td>
+        <td>string</td>
+        <td>
+          tenant owning the given Quobyte volume in the Backend Used with dynamically provisioned Quobyte volumes, value is set by the plugin<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>user</b></td>
+        <td>string</td>
+        <td>
+          user to map volume access to Defaults to serivceaccount user<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### CassandraDatacenter.spec.storageConfig.additionalVolumes[index].volumeSource.rbd
+<sup><sup>[↩ Parent](#cassandradatacenterspecstorageconfigadditionalvolumesindexvolumesource)</sup></sup>
+
+
+
+rbd represents a Rados Block Device mount on the host that shares a pod's lifetime. More info: https://examples.k8s.io/volumes/rbd/README.md
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>image</b></td>
+        <td>string</td>
+        <td>
+          image is the rados image name. More info: https://examples.k8s.io/volumes/rbd/README.md#how-to-use-it<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>monitors</b></td>
+        <td>[]string</td>
+        <td>
+          monitors is a collection of Ceph monitors. More info: https://examples.k8s.io/volumes/rbd/README.md#how-to-use-it<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>fsType</b></td>
+        <td>string</td>
+        <td>
+          fsType is the filesystem type of the volume that you want to mount. Tip: Ensure that the filesystem type is supported by the host operating system. Examples: "ext4", "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified. More info: https://kubernetes.io/docs/concepts/storage/volumes#rbd TODO: how do we prevent errors in the filesystem from compromising the machine<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>keyring</b></td>
+        <td>string</td>
+        <td>
+          keyring is the path to key ring for RBDUser. Default is /etc/ceph/keyring. More info: https://examples.k8s.io/volumes/rbd/README.md#how-to-use-it<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>pool</b></td>
+        <td>string</td>
+        <td>
+          pool is the rados pool name. Default is rbd. More info: https://examples.k8s.io/volumes/rbd/README.md#how-to-use-it<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>readOnly</b></td>
+        <td>boolean</td>
+        <td>
+          readOnly here will force the ReadOnly setting in VolumeMounts. Defaults to false. More info: https://examples.k8s.io/volumes/rbd/README.md#how-to-use-it<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#cassandradatacenterspecstorageconfigadditionalvolumesindexvolumesourcerbdsecretref">secretRef</a></b></td>
+        <td>object</td>
+        <td>
+          secretRef is name of the authentication secret for RBDUser. If provided overrides keyring. Default is nil. More info: https://examples.k8s.io/volumes/rbd/README.md#how-to-use-it<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>user</b></td>
+        <td>string</td>
+        <td>
+          user is the rados user name. Default is admin. More info: https://examples.k8s.io/volumes/rbd/README.md#how-to-use-it<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### CassandraDatacenter.spec.storageConfig.additionalVolumes[index].volumeSource.rbd.secretRef
+<sup><sup>[↩ Parent](#cassandradatacenterspecstorageconfigadditionalvolumesindexvolumesourcerbd)</sup></sup>
+
+
+
+secretRef is name of the authentication secret for RBDUser. If provided overrides keyring. Default is nil. More info: https://examples.k8s.io/volumes/rbd/README.md#how-to-use-it
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>name</b></td>
+        <td>string</td>
+        <td>
+          Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### CassandraDatacenter.spec.storageConfig.additionalVolumes[index].volumeSource.scaleIO
+<sup><sup>[↩ Parent](#cassandradatacenterspecstorageconfigadditionalvolumesindexvolumesource)</sup></sup>
+
+
+
+scaleIO represents a ScaleIO persistent volume attached and mounted on Kubernetes nodes.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>gateway</b></td>
+        <td>string</td>
+        <td>
+          gateway is the host address of the ScaleIO API Gateway.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b><a href="#cassandradatacenterspecstorageconfigadditionalvolumesindexvolumesourcescaleiosecretref">secretRef</a></b></td>
+        <td>object</td>
+        <td>
+          secretRef references to the secret for ScaleIO user and other sensitive information. If this is not provided, Login operation will fail.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>system</b></td>
+        <td>string</td>
+        <td>
+          system is the name of the storage system as configured in ScaleIO.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>fsType</b></td>
+        <td>string</td>
+        <td>
+          fsType is the filesystem type to mount. Must be a filesystem type supported by the host operating system. Ex. "ext4", "xfs", "ntfs". Default is "xfs".<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>protectionDomain</b></td>
+        <td>string</td>
+        <td>
+          protectionDomain is the name of the ScaleIO Protection Domain for the configured storage.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>readOnly</b></td>
+        <td>boolean</td>
+        <td>
+          readOnly Defaults to false (read/write). ReadOnly here will force the ReadOnly setting in VolumeMounts.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>sslEnabled</b></td>
+        <td>boolean</td>
+        <td>
+          sslEnabled Flag enable/disable SSL communication with Gateway, default false<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>storageMode</b></td>
+        <td>string</td>
+        <td>
+          storageMode indicates whether the storage for a volume should be ThickProvisioned or ThinProvisioned. Default is ThinProvisioned.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>storagePool</b></td>
+        <td>string</td>
+        <td>
+          storagePool is the ScaleIO Storage Pool associated with the protection domain.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>volumeName</b></td>
+        <td>string</td>
+        <td>
+          volumeName is the name of a volume already created in the ScaleIO system that is associated with this volume source.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### CassandraDatacenter.spec.storageConfig.additionalVolumes[index].volumeSource.scaleIO.secretRef
+<sup><sup>[↩ Parent](#cassandradatacenterspecstorageconfigadditionalvolumesindexvolumesourcescaleio)</sup></sup>
+
+
+
+secretRef references to the secret for ScaleIO user and other sensitive information. If this is not provided, Login operation will fail.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>name</b></td>
+        <td>string</td>
+        <td>
+          Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### CassandraDatacenter.spec.storageConfig.additionalVolumes[index].volumeSource.secret
+<sup><sup>[↩ Parent](#cassandradatacenterspecstorageconfigadditionalvolumesindexvolumesource)</sup></sup>
+
+
+
+secret represents a secret that should populate this volume. More info: https://kubernetes.io/docs/concepts/storage/volumes#secret
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>defaultMode</b></td>
+        <td>integer</td>
+        <td>
+          defaultMode is Optional: mode bits used to set permissions on created files by default. Must be an octal value between 0000 and 0777 or a decimal value between 0 and 511. YAML accepts both octal and decimal values, JSON requires decimal values for mode bits. Defaults to 0644. Directories within the path are not affected by this setting. This might be in conflict with other options that affect the file mode, like fsGroup, and the result can be other mode bits set.<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#cassandradatacenterspecstorageconfigadditionalvolumesindexvolumesourcesecretitemsindex">items</a></b></td>
+        <td>[]object</td>
+        <td>
+          items If unspecified, each key-value pair in the Data field of the referenced Secret will be projected into the volume as a file whose name is the key and content is the value. If specified, the listed keys will be projected into the specified paths, and unlisted keys will not be present. If a key is specified which is not present in the Secret, the volume setup will error unless it is marked optional. Paths must be relative and may not contain the '..' path or start with '..'.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>optional</b></td>
+        <td>boolean</td>
+        <td>
+          optional field specify whether the Secret or its keys must be defined<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>secretName</b></td>
+        <td>string</td>
+        <td>
+          secretName is the name of the secret in the pod's namespace to use. More info: https://kubernetes.io/docs/concepts/storage/volumes#secret<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### CassandraDatacenter.spec.storageConfig.additionalVolumes[index].volumeSource.secret.items[index]
+<sup><sup>[↩ Parent](#cassandradatacenterspecstorageconfigadditionalvolumesindexvolumesourcesecret)</sup></sup>
+
+
+
+Maps a string key to a path within a volume.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>key</b></td>
+        <td>string</td>
+        <td>
+          key is the key to project.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>path</b></td>
+        <td>string</td>
+        <td>
+          path is the relative path of the file to map the key to. May not be an absolute path. May not contain the path element '..'. May not start with the string '..'.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>mode</b></td>
+        <td>integer</td>
+        <td>
+          mode is Optional: mode bits used to set permissions on this file. Must be an octal value between 0000 and 0777 or a decimal value between 0 and 511. YAML accepts both octal and decimal values, JSON requires decimal values for mode bits. If not specified, the volume defaultMode will be used. This might be in conflict with other options that affect the file mode, like fsGroup, and the result can be other mode bits set.<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### CassandraDatacenter.spec.storageConfig.additionalVolumes[index].volumeSource.storageos
+<sup><sup>[↩ Parent](#cassandradatacenterspecstorageconfigadditionalvolumesindexvolumesource)</sup></sup>
+
+
+
+storageOS represents a StorageOS volume attached and mounted on Kubernetes nodes.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>fsType</b></td>
+        <td>string</td>
+        <td>
+          fsType is the filesystem type to mount. Must be a filesystem type supported by the host operating system. Ex. "ext4", "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>readOnly</b></td>
+        <td>boolean</td>
+        <td>
+          readOnly defaults to false (read/write). ReadOnly here will force the ReadOnly setting in VolumeMounts.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#cassandradatacenterspecstorageconfigadditionalvolumesindexvolumesourcestorageossecretref">secretRef</a></b></td>
+        <td>object</td>
+        <td>
+          secretRef specifies the secret to use for obtaining the StorageOS API credentials.  If not specified, default values will be attempted.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>volumeName</b></td>
+        <td>string</td>
+        <td>
+          volumeName is the human-readable name of the StorageOS volume.  Volume names are only unique within a namespace.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>volumeNamespace</b></td>
+        <td>string</td>
+        <td>
+          volumeNamespace specifies the scope of the volume within StorageOS.  If no namespace is specified then the Pod's namespace will be used.  This allows the Kubernetes name scoping to be mirrored within StorageOS for tighter integration. Set VolumeName to any name to override the default behaviour. Set to "default" if you are not using namespaces within StorageOS. Namespaces that do not pre-exist within StorageOS will be created.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### CassandraDatacenter.spec.storageConfig.additionalVolumes[index].volumeSource.storageos.secretRef
+<sup><sup>[↩ Parent](#cassandradatacenterspecstorageconfigadditionalvolumesindexvolumesourcestorageos)</sup></sup>
+
+
+
+secretRef specifies the secret to use for obtaining the StorageOS API credentials.  If not specified, default values will be attempted.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>name</b></td>
+        <td>string</td>
+        <td>
+          Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### CassandraDatacenter.spec.storageConfig.additionalVolumes[index].volumeSource.vsphereVolume
+<sup><sup>[↩ Parent](#cassandradatacenterspecstorageconfigadditionalvolumesindexvolumesource)</sup></sup>
+
+
+
+vsphereVolume represents a vSphere volume attached and mounted on kubelets host machine
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>volumePath</b></td>
+        <td>string</td>
+        <td>
+          volumePath is the path that identifies vSphere volume vmdk<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>fsType</b></td>
+        <td>string</td>
+        <td>
+          fsType is filesystem type to mount. Must be a filesystem type supported by the host operating system. Ex. "ext4", "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>storagePolicyID</b></td>
+        <td>string</td>
+        <td>
+          storagePolicyID is the storage Policy Based Management (SPBM) profile ID associated with the StoragePolicyName.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>storagePolicyName</b></td>
+        <td>string</td>
+        <td>
+          storagePolicyName is the storage Policy Based Management (SPBM) profile name.<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -13674,6 +16562,13 @@ Rack ...
         </td>
         <td>true</td>
       </tr><tr>
+        <td><b><a href="#cassandradatacenterspecracksindexaffinity">affinity</a></b></td>
+        <td>object</td>
+        <td>
+          Affinity rules to set for this rack only. Merged with values from PodTemplateSpec Affinity as well as NodeAffinityLabels. If you wish to override all the default PodAntiAffinity rules, set allowMultipleWorkers to true, otherwise defaults are applied and then these Affinity settings are merged.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
         <td><b>nodeAffinityLabels</b></td>
         <td>map[string]string</td>
         <td>
@@ -13685,6 +16580,1308 @@ Rack ...
         <td>string</td>
         <td>
           Deprecated. Use nodeAffinityLabels instead. Zone name to pin the rack, using node affinity<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### CassandraDatacenter.spec.racks[index].affinity
+<sup><sup>[↩ Parent](#cassandradatacenterspecracksindex)</sup></sup>
+
+
+
+Affinity rules to set for this rack only. Merged with values from PodTemplateSpec Affinity as well as NodeAffinityLabels. If you wish to override all the default PodAntiAffinity rules, set allowMultipleWorkers to true, otherwise defaults are applied and then these Affinity settings are merged.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b><a href="#cassandradatacenterspecracksindexaffinitynodeaffinity">nodeAffinity</a></b></td>
+        <td>object</td>
+        <td>
+          Describes node affinity scheduling rules for the pod.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#cassandradatacenterspecracksindexaffinitypodaffinity">podAffinity</a></b></td>
+        <td>object</td>
+        <td>
+          Describes pod affinity scheduling rules (e.g. co-locate this pod in the same node, zone, etc. as some other pod(s)).<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#cassandradatacenterspecracksindexaffinitypodantiaffinity">podAntiAffinity</a></b></td>
+        <td>object</td>
+        <td>
+          Describes pod anti-affinity scheduling rules (e.g. avoid putting this pod in the same node, zone, etc. as some other pod(s)).<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### CassandraDatacenter.spec.racks[index].affinity.nodeAffinity
+<sup><sup>[↩ Parent](#cassandradatacenterspecracksindexaffinity)</sup></sup>
+
+
+
+Describes node affinity scheduling rules for the pod.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b><a href="#cassandradatacenterspecracksindexaffinitynodeaffinitypreferredduringschedulingignoredduringexecutionindex">preferredDuringSchedulingIgnoredDuringExecution</a></b></td>
+        <td>[]object</td>
+        <td>
+          The scheduler will prefer to schedule pods to nodes that satisfy the affinity expressions specified by this field, but it may choose a node that violates one or more of the expressions. The node that is most preferred is the one with the greatest sum of weights, i.e. for each node that meets all of the scheduling requirements (resource request, requiredDuringScheduling affinity expressions, etc.), compute a sum by iterating through the elements of this field and adding "weight" to the sum if the node matches the corresponding matchExpressions; the node(s) with the highest sum are the most preferred.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#cassandradatacenterspecracksindexaffinitynodeaffinityrequiredduringschedulingignoredduringexecution">requiredDuringSchedulingIgnoredDuringExecution</a></b></td>
+        <td>object</td>
+        <td>
+          If the affinity requirements specified by this field are not met at scheduling time, the pod will not be scheduled onto the node. If the affinity requirements specified by this field cease to be met at some point during pod execution (e.g. due to an update), the system may or may not try to eventually evict the pod from its node.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### CassandraDatacenter.spec.racks[index].affinity.nodeAffinity.preferredDuringSchedulingIgnoredDuringExecution[index]
+<sup><sup>[↩ Parent](#cassandradatacenterspecracksindexaffinitynodeaffinity)</sup></sup>
+
+
+
+An empty preferred scheduling term matches all objects with implicit weight 0 (i.e. it's a no-op). A null preferred scheduling term matches no objects (i.e. is also a no-op).
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b><a href="#cassandradatacenterspecracksindexaffinitynodeaffinitypreferredduringschedulingignoredduringexecutionindexpreference">preference</a></b></td>
+        <td>object</td>
+        <td>
+          A node selector term, associated with the corresponding weight.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>weight</b></td>
+        <td>integer</td>
+        <td>
+          Weight associated with matching the corresponding nodeSelectorTerm, in the range 1-100.<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>true</td>
+      </tr></tbody>
+</table>
+
+
+#### CassandraDatacenter.spec.racks[index].affinity.nodeAffinity.preferredDuringSchedulingIgnoredDuringExecution[index].preference
+<sup><sup>[↩ Parent](#cassandradatacenterspecracksindexaffinitynodeaffinitypreferredduringschedulingignoredduringexecutionindex)</sup></sup>
+
+
+
+A node selector term, associated with the corresponding weight.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b><a href="#cassandradatacenterspecracksindexaffinitynodeaffinitypreferredduringschedulingignoredduringexecutionindexpreferencematchexpressionsindex">matchExpressions</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of node selector requirements by node's labels.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#cassandradatacenterspecracksindexaffinitynodeaffinitypreferredduringschedulingignoredduringexecutionindexpreferencematchfieldsindex">matchFields</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of node selector requirements by node's fields.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### CassandraDatacenter.spec.racks[index].affinity.nodeAffinity.preferredDuringSchedulingIgnoredDuringExecution[index].preference.matchExpressions[index]
+<sup><sup>[↩ Parent](#cassandradatacenterspecracksindexaffinitynodeaffinitypreferredduringschedulingignoredduringexecutionindexpreference)</sup></sup>
+
+
+
+A node selector requirement is a selector that contains values, a key, and an operator that relates the key and values.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>key</b></td>
+        <td>string</td>
+        <td>
+          The label key that the selector applies to.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>operator</b></td>
+        <td>string</td>
+        <td>
+          Represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists, DoesNotExist. Gt, and Lt.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          An array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. If the operator is Gt or Lt, the values array must have a single element, which will be interpreted as an integer. This array is replaced during a strategic merge patch.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### CassandraDatacenter.spec.racks[index].affinity.nodeAffinity.preferredDuringSchedulingIgnoredDuringExecution[index].preference.matchFields[index]
+<sup><sup>[↩ Parent](#cassandradatacenterspecracksindexaffinitynodeaffinitypreferredduringschedulingignoredduringexecutionindexpreference)</sup></sup>
+
+
+
+A node selector requirement is a selector that contains values, a key, and an operator that relates the key and values.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>key</b></td>
+        <td>string</td>
+        <td>
+          The label key that the selector applies to.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>operator</b></td>
+        <td>string</td>
+        <td>
+          Represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists, DoesNotExist. Gt, and Lt.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          An array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. If the operator is Gt or Lt, the values array must have a single element, which will be interpreted as an integer. This array is replaced during a strategic merge patch.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### CassandraDatacenter.spec.racks[index].affinity.nodeAffinity.requiredDuringSchedulingIgnoredDuringExecution
+<sup><sup>[↩ Parent](#cassandradatacenterspecracksindexaffinitynodeaffinity)</sup></sup>
+
+
+
+If the affinity requirements specified by this field are not met at scheduling time, the pod will not be scheduled onto the node. If the affinity requirements specified by this field cease to be met at some point during pod execution (e.g. due to an update), the system may or may not try to eventually evict the pod from its node.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b><a href="#cassandradatacenterspecracksindexaffinitynodeaffinityrequiredduringschedulingignoredduringexecutionnodeselectortermsindex">nodeSelectorTerms</a></b></td>
+        <td>[]object</td>
+        <td>
+          Required. A list of node selector terms. The terms are ORed.<br/>
+        </td>
+        <td>true</td>
+      </tr></tbody>
+</table>
+
+
+#### CassandraDatacenter.spec.racks[index].affinity.nodeAffinity.requiredDuringSchedulingIgnoredDuringExecution.nodeSelectorTerms[index]
+<sup><sup>[↩ Parent](#cassandradatacenterspecracksindexaffinitynodeaffinityrequiredduringschedulingignoredduringexecution)</sup></sup>
+
+
+
+A null or empty node selector term matches no objects. The requirements of them are ANDed. The TopologySelectorTerm type implements a subset of the NodeSelectorTerm.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b><a href="#cassandradatacenterspecracksindexaffinitynodeaffinityrequiredduringschedulingignoredduringexecutionnodeselectortermsindexmatchexpressionsindex">matchExpressions</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of node selector requirements by node's labels.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#cassandradatacenterspecracksindexaffinitynodeaffinityrequiredduringschedulingignoredduringexecutionnodeselectortermsindexmatchfieldsindex">matchFields</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of node selector requirements by node's fields.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### CassandraDatacenter.spec.racks[index].affinity.nodeAffinity.requiredDuringSchedulingIgnoredDuringExecution.nodeSelectorTerms[index].matchExpressions[index]
+<sup><sup>[↩ Parent](#cassandradatacenterspecracksindexaffinitynodeaffinityrequiredduringschedulingignoredduringexecutionnodeselectortermsindex)</sup></sup>
+
+
+
+A node selector requirement is a selector that contains values, a key, and an operator that relates the key and values.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>key</b></td>
+        <td>string</td>
+        <td>
+          The label key that the selector applies to.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>operator</b></td>
+        <td>string</td>
+        <td>
+          Represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists, DoesNotExist. Gt, and Lt.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          An array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. If the operator is Gt or Lt, the values array must have a single element, which will be interpreted as an integer. This array is replaced during a strategic merge patch.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### CassandraDatacenter.spec.racks[index].affinity.nodeAffinity.requiredDuringSchedulingIgnoredDuringExecution.nodeSelectorTerms[index].matchFields[index]
+<sup><sup>[↩ Parent](#cassandradatacenterspecracksindexaffinitynodeaffinityrequiredduringschedulingignoredduringexecutionnodeselectortermsindex)</sup></sup>
+
+
+
+A node selector requirement is a selector that contains values, a key, and an operator that relates the key and values.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>key</b></td>
+        <td>string</td>
+        <td>
+          The label key that the selector applies to.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>operator</b></td>
+        <td>string</td>
+        <td>
+          Represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists, DoesNotExist. Gt, and Lt.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          An array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. If the operator is Gt or Lt, the values array must have a single element, which will be interpreted as an integer. This array is replaced during a strategic merge patch.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### CassandraDatacenter.spec.racks[index].affinity.podAffinity
+<sup><sup>[↩ Parent](#cassandradatacenterspecracksindexaffinity)</sup></sup>
+
+
+
+Describes pod affinity scheduling rules (e.g. co-locate this pod in the same node, zone, etc. as some other pod(s)).
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b><a href="#cassandradatacenterspecracksindexaffinitypodaffinitypreferredduringschedulingignoredduringexecutionindex">preferredDuringSchedulingIgnoredDuringExecution</a></b></td>
+        <td>[]object</td>
+        <td>
+          The scheduler will prefer to schedule pods to nodes that satisfy the affinity expressions specified by this field, but it may choose a node that violates one or more of the expressions. The node that is most preferred is the one with the greatest sum of weights, i.e. for each node that meets all of the scheduling requirements (resource request, requiredDuringScheduling affinity expressions, etc.), compute a sum by iterating through the elements of this field and adding "weight" to the sum if the node has pods which matches the corresponding podAffinityTerm; the node(s) with the highest sum are the most preferred.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#cassandradatacenterspecracksindexaffinitypodaffinityrequiredduringschedulingignoredduringexecutionindex">requiredDuringSchedulingIgnoredDuringExecution</a></b></td>
+        <td>[]object</td>
+        <td>
+          If the affinity requirements specified by this field are not met at scheduling time, the pod will not be scheduled onto the node. If the affinity requirements specified by this field cease to be met at some point during pod execution (e.g. due to a pod label update), the system may or may not try to eventually evict the pod from its node. When there are multiple elements, the lists of nodes corresponding to each podAffinityTerm are intersected, i.e. all terms must be satisfied.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### CassandraDatacenter.spec.racks[index].affinity.podAffinity.preferredDuringSchedulingIgnoredDuringExecution[index]
+<sup><sup>[↩ Parent](#cassandradatacenterspecracksindexaffinitypodaffinity)</sup></sup>
+
+
+
+The weights of all of the matched WeightedPodAffinityTerm fields are added per-node to find the most preferred node(s)
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b><a href="#cassandradatacenterspecracksindexaffinitypodaffinitypreferredduringschedulingignoredduringexecutionindexpodaffinityterm">podAffinityTerm</a></b></td>
+        <td>object</td>
+        <td>
+          Required. A pod affinity term, associated with the corresponding weight.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>weight</b></td>
+        <td>integer</td>
+        <td>
+          weight associated with matching the corresponding podAffinityTerm, in the range 1-100.<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>true</td>
+      </tr></tbody>
+</table>
+
+
+#### CassandraDatacenter.spec.racks[index].affinity.podAffinity.preferredDuringSchedulingIgnoredDuringExecution[index].podAffinityTerm
+<sup><sup>[↩ Parent](#cassandradatacenterspecracksindexaffinitypodaffinitypreferredduringschedulingignoredduringexecutionindex)</sup></sup>
+
+
+
+Required. A pod affinity term, associated with the corresponding weight.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>topologyKey</b></td>
+        <td>string</td>
+        <td>
+          This pod should be co-located (affinity) or not co-located (anti-affinity) with the pods matching the labelSelector in the specified namespaces, where co-located is defined as running on a node whose value of the label with key topologyKey matches that of any node on which any of the selected pods is running. Empty topologyKey is not allowed.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b><a href="#cassandradatacenterspecracksindexaffinitypodaffinitypreferredduringschedulingignoredduringexecutionindexpodaffinitytermlabelselector">labelSelector</a></b></td>
+        <td>object</td>
+        <td>
+          A label query over a set of resources, in this case pods.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#cassandradatacenterspecracksindexaffinitypodaffinitypreferredduringschedulingignoredduringexecutionindexpodaffinitytermnamespaceselector">namespaceSelector</a></b></td>
+        <td>object</td>
+        <td>
+          A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>namespaces</b></td>
+        <td>[]string</td>
+        <td>
+          namespaces specifies a static list of namespace names that the term applies to. The term is applied to the union of the namespaces listed in this field and the ones selected by namespaceSelector. null or empty namespaces list and null namespaceSelector means "this pod's namespace".<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### CassandraDatacenter.spec.racks[index].affinity.podAffinity.preferredDuringSchedulingIgnoredDuringExecution[index].podAffinityTerm.labelSelector
+<sup><sup>[↩ Parent](#cassandradatacenterspecracksindexaffinitypodaffinitypreferredduringschedulingignoredduringexecutionindexpodaffinityterm)</sup></sup>
+
+
+
+A label query over a set of resources, in this case pods.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b><a href="#cassandradatacenterspecracksindexaffinitypodaffinitypreferredduringschedulingignoredduringexecutionindexpodaffinitytermlabelselectormatchexpressionsindex">matchExpressions</a></b></td>
+        <td>[]object</td>
+        <td>
+          matchExpressions is a list of label selector requirements. The requirements are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>matchLabels</b></td>
+        <td>map[string]string</td>
+        <td>
+          matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels map is equivalent to an element of matchExpressions, whose key field is "key", the operator is "In", and the values array contains only "value". The requirements are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### CassandraDatacenter.spec.racks[index].affinity.podAffinity.preferredDuringSchedulingIgnoredDuringExecution[index].podAffinityTerm.labelSelector.matchExpressions[index]
+<sup><sup>[↩ Parent](#cassandradatacenterspecracksindexaffinitypodaffinitypreferredduringschedulingignoredduringexecutionindexpodaffinitytermlabelselector)</sup></sup>
+
+
+
+A label selector requirement is a selector that contains values, a key, and an operator that relates the key and values.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>key</b></td>
+        <td>string</td>
+        <td>
+          key is the label key that the selector applies to.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>operator</b></td>
+        <td>string</td>
+        <td>
+          operator represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists and DoesNotExist.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          values is an array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. This array is replaced during a strategic merge patch.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### CassandraDatacenter.spec.racks[index].affinity.podAffinity.preferredDuringSchedulingIgnoredDuringExecution[index].podAffinityTerm.namespaceSelector
+<sup><sup>[↩ Parent](#cassandradatacenterspecracksindexaffinitypodaffinitypreferredduringschedulingignoredduringexecutionindexpodaffinityterm)</sup></sup>
+
+
+
+A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b><a href="#cassandradatacenterspecracksindexaffinitypodaffinitypreferredduringschedulingignoredduringexecutionindexpodaffinitytermnamespaceselectormatchexpressionsindex">matchExpressions</a></b></td>
+        <td>[]object</td>
+        <td>
+          matchExpressions is a list of label selector requirements. The requirements are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>matchLabels</b></td>
+        <td>map[string]string</td>
+        <td>
+          matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels map is equivalent to an element of matchExpressions, whose key field is "key", the operator is "In", and the values array contains only "value". The requirements are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### CassandraDatacenter.spec.racks[index].affinity.podAffinity.preferredDuringSchedulingIgnoredDuringExecution[index].podAffinityTerm.namespaceSelector.matchExpressions[index]
+<sup><sup>[↩ Parent](#cassandradatacenterspecracksindexaffinitypodaffinitypreferredduringschedulingignoredduringexecutionindexpodaffinitytermnamespaceselector)</sup></sup>
+
+
+
+A label selector requirement is a selector that contains values, a key, and an operator that relates the key and values.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>key</b></td>
+        <td>string</td>
+        <td>
+          key is the label key that the selector applies to.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>operator</b></td>
+        <td>string</td>
+        <td>
+          operator represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists and DoesNotExist.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          values is an array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. This array is replaced during a strategic merge patch.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### CassandraDatacenter.spec.racks[index].affinity.podAffinity.requiredDuringSchedulingIgnoredDuringExecution[index]
+<sup><sup>[↩ Parent](#cassandradatacenterspecracksindexaffinitypodaffinity)</sup></sup>
+
+
+
+Defines a set of pods (namely those matching the labelSelector relative to the given namespace(s)) that this pod should be co-located (affinity) or not co-located (anti-affinity) with, where co-located is defined as running on a node whose value of the label with key <topologyKey> matches that of any node on which a pod of the set of pods is running
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>topologyKey</b></td>
+        <td>string</td>
+        <td>
+          This pod should be co-located (affinity) or not co-located (anti-affinity) with the pods matching the labelSelector in the specified namespaces, where co-located is defined as running on a node whose value of the label with key topologyKey matches that of any node on which any of the selected pods is running. Empty topologyKey is not allowed.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b><a href="#cassandradatacenterspecracksindexaffinitypodaffinityrequiredduringschedulingignoredduringexecutionindexlabelselector">labelSelector</a></b></td>
+        <td>object</td>
+        <td>
+          A label query over a set of resources, in this case pods.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#cassandradatacenterspecracksindexaffinitypodaffinityrequiredduringschedulingignoredduringexecutionindexnamespaceselector">namespaceSelector</a></b></td>
+        <td>object</td>
+        <td>
+          A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>namespaces</b></td>
+        <td>[]string</td>
+        <td>
+          namespaces specifies a static list of namespace names that the term applies to. The term is applied to the union of the namespaces listed in this field and the ones selected by namespaceSelector. null or empty namespaces list and null namespaceSelector means "this pod's namespace".<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### CassandraDatacenter.spec.racks[index].affinity.podAffinity.requiredDuringSchedulingIgnoredDuringExecution[index].labelSelector
+<sup><sup>[↩ Parent](#cassandradatacenterspecracksindexaffinitypodaffinityrequiredduringschedulingignoredduringexecutionindex)</sup></sup>
+
+
+
+A label query over a set of resources, in this case pods.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b><a href="#cassandradatacenterspecracksindexaffinitypodaffinityrequiredduringschedulingignoredduringexecutionindexlabelselectormatchexpressionsindex">matchExpressions</a></b></td>
+        <td>[]object</td>
+        <td>
+          matchExpressions is a list of label selector requirements. The requirements are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>matchLabels</b></td>
+        <td>map[string]string</td>
+        <td>
+          matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels map is equivalent to an element of matchExpressions, whose key field is "key", the operator is "In", and the values array contains only "value". The requirements are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### CassandraDatacenter.spec.racks[index].affinity.podAffinity.requiredDuringSchedulingIgnoredDuringExecution[index].labelSelector.matchExpressions[index]
+<sup><sup>[↩ Parent](#cassandradatacenterspecracksindexaffinitypodaffinityrequiredduringschedulingignoredduringexecutionindexlabelselector)</sup></sup>
+
+
+
+A label selector requirement is a selector that contains values, a key, and an operator that relates the key and values.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>key</b></td>
+        <td>string</td>
+        <td>
+          key is the label key that the selector applies to.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>operator</b></td>
+        <td>string</td>
+        <td>
+          operator represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists and DoesNotExist.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          values is an array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. This array is replaced during a strategic merge patch.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### CassandraDatacenter.spec.racks[index].affinity.podAffinity.requiredDuringSchedulingIgnoredDuringExecution[index].namespaceSelector
+<sup><sup>[↩ Parent](#cassandradatacenterspecracksindexaffinitypodaffinityrequiredduringschedulingignoredduringexecutionindex)</sup></sup>
+
+
+
+A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b><a href="#cassandradatacenterspecracksindexaffinitypodaffinityrequiredduringschedulingignoredduringexecutionindexnamespaceselectormatchexpressionsindex">matchExpressions</a></b></td>
+        <td>[]object</td>
+        <td>
+          matchExpressions is a list of label selector requirements. The requirements are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>matchLabels</b></td>
+        <td>map[string]string</td>
+        <td>
+          matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels map is equivalent to an element of matchExpressions, whose key field is "key", the operator is "In", and the values array contains only "value". The requirements are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### CassandraDatacenter.spec.racks[index].affinity.podAffinity.requiredDuringSchedulingIgnoredDuringExecution[index].namespaceSelector.matchExpressions[index]
+<sup><sup>[↩ Parent](#cassandradatacenterspecracksindexaffinitypodaffinityrequiredduringschedulingignoredduringexecutionindexnamespaceselector)</sup></sup>
+
+
+
+A label selector requirement is a selector that contains values, a key, and an operator that relates the key and values.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>key</b></td>
+        <td>string</td>
+        <td>
+          key is the label key that the selector applies to.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>operator</b></td>
+        <td>string</td>
+        <td>
+          operator represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists and DoesNotExist.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          values is an array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. This array is replaced during a strategic merge patch.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### CassandraDatacenter.spec.racks[index].affinity.podAntiAffinity
+<sup><sup>[↩ Parent](#cassandradatacenterspecracksindexaffinity)</sup></sup>
+
+
+
+Describes pod anti-affinity scheduling rules (e.g. avoid putting this pod in the same node, zone, etc. as some other pod(s)).
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b><a href="#cassandradatacenterspecracksindexaffinitypodantiaffinitypreferredduringschedulingignoredduringexecutionindex">preferredDuringSchedulingIgnoredDuringExecution</a></b></td>
+        <td>[]object</td>
+        <td>
+          The scheduler will prefer to schedule pods to nodes that satisfy the anti-affinity expressions specified by this field, but it may choose a node that violates one or more of the expressions. The node that is most preferred is the one with the greatest sum of weights, i.e. for each node that meets all of the scheduling requirements (resource request, requiredDuringScheduling anti-affinity expressions, etc.), compute a sum by iterating through the elements of this field and adding "weight" to the sum if the node has pods which matches the corresponding podAffinityTerm; the node(s) with the highest sum are the most preferred.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#cassandradatacenterspecracksindexaffinitypodantiaffinityrequiredduringschedulingignoredduringexecutionindex">requiredDuringSchedulingIgnoredDuringExecution</a></b></td>
+        <td>[]object</td>
+        <td>
+          If the anti-affinity requirements specified by this field are not met at scheduling time, the pod will not be scheduled onto the node. If the anti-affinity requirements specified by this field cease to be met at some point during pod execution (e.g. due to a pod label update), the system may or may not try to eventually evict the pod from its node. When there are multiple elements, the lists of nodes corresponding to each podAffinityTerm are intersected, i.e. all terms must be satisfied.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### CassandraDatacenter.spec.racks[index].affinity.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution[index]
+<sup><sup>[↩ Parent](#cassandradatacenterspecracksindexaffinitypodantiaffinity)</sup></sup>
+
+
+
+The weights of all of the matched WeightedPodAffinityTerm fields are added per-node to find the most preferred node(s)
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b><a href="#cassandradatacenterspecracksindexaffinitypodantiaffinitypreferredduringschedulingignoredduringexecutionindexpodaffinityterm">podAffinityTerm</a></b></td>
+        <td>object</td>
+        <td>
+          Required. A pod affinity term, associated with the corresponding weight.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>weight</b></td>
+        <td>integer</td>
+        <td>
+          weight associated with matching the corresponding podAffinityTerm, in the range 1-100.<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>true</td>
+      </tr></tbody>
+</table>
+
+
+#### CassandraDatacenter.spec.racks[index].affinity.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution[index].podAffinityTerm
+<sup><sup>[↩ Parent](#cassandradatacenterspecracksindexaffinitypodantiaffinitypreferredduringschedulingignoredduringexecutionindex)</sup></sup>
+
+
+
+Required. A pod affinity term, associated with the corresponding weight.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>topologyKey</b></td>
+        <td>string</td>
+        <td>
+          This pod should be co-located (affinity) or not co-located (anti-affinity) with the pods matching the labelSelector in the specified namespaces, where co-located is defined as running on a node whose value of the label with key topologyKey matches that of any node on which any of the selected pods is running. Empty topologyKey is not allowed.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b><a href="#cassandradatacenterspecracksindexaffinitypodantiaffinitypreferredduringschedulingignoredduringexecutionindexpodaffinitytermlabelselector">labelSelector</a></b></td>
+        <td>object</td>
+        <td>
+          A label query over a set of resources, in this case pods.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#cassandradatacenterspecracksindexaffinitypodantiaffinitypreferredduringschedulingignoredduringexecutionindexpodaffinitytermnamespaceselector">namespaceSelector</a></b></td>
+        <td>object</td>
+        <td>
+          A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>namespaces</b></td>
+        <td>[]string</td>
+        <td>
+          namespaces specifies a static list of namespace names that the term applies to. The term is applied to the union of the namespaces listed in this field and the ones selected by namespaceSelector. null or empty namespaces list and null namespaceSelector means "this pod's namespace".<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### CassandraDatacenter.spec.racks[index].affinity.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution[index].podAffinityTerm.labelSelector
+<sup><sup>[↩ Parent](#cassandradatacenterspecracksindexaffinitypodantiaffinitypreferredduringschedulingignoredduringexecutionindexpodaffinityterm)</sup></sup>
+
+
+
+A label query over a set of resources, in this case pods.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b><a href="#cassandradatacenterspecracksindexaffinitypodantiaffinitypreferredduringschedulingignoredduringexecutionindexpodaffinitytermlabelselectormatchexpressionsindex">matchExpressions</a></b></td>
+        <td>[]object</td>
+        <td>
+          matchExpressions is a list of label selector requirements. The requirements are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>matchLabels</b></td>
+        <td>map[string]string</td>
+        <td>
+          matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels map is equivalent to an element of matchExpressions, whose key field is "key", the operator is "In", and the values array contains only "value". The requirements are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### CassandraDatacenter.spec.racks[index].affinity.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution[index].podAffinityTerm.labelSelector.matchExpressions[index]
+<sup><sup>[↩ Parent](#cassandradatacenterspecracksindexaffinitypodantiaffinitypreferredduringschedulingignoredduringexecutionindexpodaffinitytermlabelselector)</sup></sup>
+
+
+
+A label selector requirement is a selector that contains values, a key, and an operator that relates the key and values.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>key</b></td>
+        <td>string</td>
+        <td>
+          key is the label key that the selector applies to.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>operator</b></td>
+        <td>string</td>
+        <td>
+          operator represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists and DoesNotExist.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          values is an array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. This array is replaced during a strategic merge patch.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### CassandraDatacenter.spec.racks[index].affinity.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution[index].podAffinityTerm.namespaceSelector
+<sup><sup>[↩ Parent](#cassandradatacenterspecracksindexaffinitypodantiaffinitypreferredduringschedulingignoredduringexecutionindexpodaffinityterm)</sup></sup>
+
+
+
+A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b><a href="#cassandradatacenterspecracksindexaffinitypodantiaffinitypreferredduringschedulingignoredduringexecutionindexpodaffinitytermnamespaceselectormatchexpressionsindex">matchExpressions</a></b></td>
+        <td>[]object</td>
+        <td>
+          matchExpressions is a list of label selector requirements. The requirements are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>matchLabels</b></td>
+        <td>map[string]string</td>
+        <td>
+          matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels map is equivalent to an element of matchExpressions, whose key field is "key", the operator is "In", and the values array contains only "value". The requirements are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### CassandraDatacenter.spec.racks[index].affinity.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution[index].podAffinityTerm.namespaceSelector.matchExpressions[index]
+<sup><sup>[↩ Parent](#cassandradatacenterspecracksindexaffinitypodantiaffinitypreferredduringschedulingignoredduringexecutionindexpodaffinitytermnamespaceselector)</sup></sup>
+
+
+
+A label selector requirement is a selector that contains values, a key, and an operator that relates the key and values.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>key</b></td>
+        <td>string</td>
+        <td>
+          key is the label key that the selector applies to.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>operator</b></td>
+        <td>string</td>
+        <td>
+          operator represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists and DoesNotExist.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          values is an array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. This array is replaced during a strategic merge patch.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### CassandraDatacenter.spec.racks[index].affinity.podAntiAffinity.requiredDuringSchedulingIgnoredDuringExecution[index]
+<sup><sup>[↩ Parent](#cassandradatacenterspecracksindexaffinitypodantiaffinity)</sup></sup>
+
+
+
+Defines a set of pods (namely those matching the labelSelector relative to the given namespace(s)) that this pod should be co-located (affinity) or not co-located (anti-affinity) with, where co-located is defined as running on a node whose value of the label with key <topologyKey> matches that of any node on which a pod of the set of pods is running
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>topologyKey</b></td>
+        <td>string</td>
+        <td>
+          This pod should be co-located (affinity) or not co-located (anti-affinity) with the pods matching the labelSelector in the specified namespaces, where co-located is defined as running on a node whose value of the label with key topologyKey matches that of any node on which any of the selected pods is running. Empty topologyKey is not allowed.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b><a href="#cassandradatacenterspecracksindexaffinitypodantiaffinityrequiredduringschedulingignoredduringexecutionindexlabelselector">labelSelector</a></b></td>
+        <td>object</td>
+        <td>
+          A label query over a set of resources, in this case pods.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#cassandradatacenterspecracksindexaffinitypodantiaffinityrequiredduringschedulingignoredduringexecutionindexnamespaceselector">namespaceSelector</a></b></td>
+        <td>object</td>
+        <td>
+          A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>namespaces</b></td>
+        <td>[]string</td>
+        <td>
+          namespaces specifies a static list of namespace names that the term applies to. The term is applied to the union of the namespaces listed in this field and the ones selected by namespaceSelector. null or empty namespaces list and null namespaceSelector means "this pod's namespace".<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### CassandraDatacenter.spec.racks[index].affinity.podAntiAffinity.requiredDuringSchedulingIgnoredDuringExecution[index].labelSelector
+<sup><sup>[↩ Parent](#cassandradatacenterspecracksindexaffinitypodantiaffinityrequiredduringschedulingignoredduringexecutionindex)</sup></sup>
+
+
+
+A label query over a set of resources, in this case pods.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b><a href="#cassandradatacenterspecracksindexaffinitypodantiaffinityrequiredduringschedulingignoredduringexecutionindexlabelselectormatchexpressionsindex">matchExpressions</a></b></td>
+        <td>[]object</td>
+        <td>
+          matchExpressions is a list of label selector requirements. The requirements are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>matchLabels</b></td>
+        <td>map[string]string</td>
+        <td>
+          matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels map is equivalent to an element of matchExpressions, whose key field is "key", the operator is "In", and the values array contains only "value". The requirements are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### CassandraDatacenter.spec.racks[index].affinity.podAntiAffinity.requiredDuringSchedulingIgnoredDuringExecution[index].labelSelector.matchExpressions[index]
+<sup><sup>[↩ Parent](#cassandradatacenterspecracksindexaffinitypodantiaffinityrequiredduringschedulingignoredduringexecutionindexlabelselector)</sup></sup>
+
+
+
+A label selector requirement is a selector that contains values, a key, and an operator that relates the key and values.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>key</b></td>
+        <td>string</td>
+        <td>
+          key is the label key that the selector applies to.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>operator</b></td>
+        <td>string</td>
+        <td>
+          operator represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists and DoesNotExist.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          values is an array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. This array is replaced during a strategic merge patch.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### CassandraDatacenter.spec.racks[index].affinity.podAntiAffinity.requiredDuringSchedulingIgnoredDuringExecution[index].namespaceSelector
+<sup><sup>[↩ Parent](#cassandradatacenterspecracksindexaffinitypodantiaffinityrequiredduringschedulingignoredduringexecutionindex)</sup></sup>
+
+
+
+A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b><a href="#cassandradatacenterspecracksindexaffinitypodantiaffinityrequiredduringschedulingignoredduringexecutionindexnamespaceselectormatchexpressionsindex">matchExpressions</a></b></td>
+        <td>[]object</td>
+        <td>
+          matchExpressions is a list of label selector requirements. The requirements are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>matchLabels</b></td>
+        <td>map[string]string</td>
+        <td>
+          matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels map is equivalent to an element of matchExpressions, whose key field is "key", the operator is "In", and the values array contains only "value". The requirements are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+#### CassandraDatacenter.spec.racks[index].affinity.podAntiAffinity.requiredDuringSchedulingIgnoredDuringExecution[index].namespaceSelector.matchExpressions[index]
+<sup><sup>[↩ Parent](#cassandradatacenterspecracksindexaffinitypodantiaffinityrequiredduringschedulingignoredduringexecutionindexnamespaceselector)</sup></sup>
+
+
+
+A label selector requirement is a selector that contains values, a key, and an operator that relates the key and values.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>key</b></td>
+        <td>string</td>
+        <td>
+          key is the label key that the selector applies to.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>operator</b></td>
+        <td>string</td>
+        <td>
+          operator represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists and DoesNotExist.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          values is an array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. This array is replaced during a strategic merge patch.<br/>
         </td>
         <td>false</td>
       </tr></tbody>
@@ -13878,6 +18075,13 @@ CassandraDatacenterStatus defines the observed state of CassandraDatacenter
         <td>[]object</td>
         <td>
           <br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>datacenterName</b></td>
+        <td>string</td>
+        <td>
+          DatacenterName is the name of the override used for the CassandraDatacenter This field is used to perform validation checks preventing a user from changing the override<br/>
         </td>
         <td>false</td>
       </tr><tr>
