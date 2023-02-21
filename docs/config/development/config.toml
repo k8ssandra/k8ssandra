@@ -9,6 +9,6 @@ url_latest_version = "http://localhost:1313/"
 
 [[params.versions]]
   version = "v1"
-  fullversion = "k8ssandra-v1 (deprecated)"
+  fullversion = "K8ssandra v1 (deprecated)"
   githubbranch = "docs-v1"
   url = "http://localhost:1313"
