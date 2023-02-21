@@ -49,14 +49,6 @@ jobs:
             sed -i "s/RELEASE_VERSION/$version/g" ../k8ssandra/docs/content/en/reference/crd/releases/k8ssandra-operator-releases/k8ssandra-operator-crds-$version/_index.md
           done
 
-          # Generate CRD reference for K8ssandra-operator main branch (latest)
-          git checkout -f main
-          mkdir -p ../k8ssandra/docs/content/en/reference/crd/k8ssandra-operator-crds-latest/ > /dev/null 2>&1
-          ~/go/bin/crdoc --resources config/crd/bases --output ../k8ssandra/docs/content/en/reference/crd/k8ssandra-operator-crds-latest/_index.md --template ../k8ssandra/docs/config/crdoc-templates/k8c.tmpl
-          sed -i "s/vRELEASE_VERSION/latest build/g" ../k8ssandra/docs/content/en/reference/crd/k8ssandra-operator-crds-latest/_index.md
-
-          cp ../k8ssandra/docs/config/crdoc-templates/_index_k8ssandra_operator_crds.md ../k8ssandra/docs/content/en/reference/crd/releases/k8ssandra-operator-releases/_index.md
-
           # Fetch and cycle through cass-operator release branches to generate CRD references.
           cd ../cass-operator
           git fetch
