@@ -9,7 +9,7 @@ url_latest_version = "https://docs-staging-v1.k8ssandra.io"
 
 [[params.versions]]
   version = "v1"
-  fullversion = "k8ssandra-v1 (deprecated)"
+  fullversion = "K8ssandra v1 (deprecated)"
   githubbranch = "docs-v1"
   url = "https://docs-staging-v1.k8ssandra.io"
 
