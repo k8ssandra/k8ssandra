@@ -21,11 +21,6 @@ jobs:
           repository: k8ssandra/cass-operator
           ref: master
           path: cass-operator
-      - name: Checkout K8ssandra
-        uses: actions/checkout@v2
-        with:
-          ref: docs-v2
-          path: k8ssandra
       
       - name: Install crdoc
         run: |
