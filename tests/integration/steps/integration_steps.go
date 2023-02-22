@@ -522,7 +522,7 @@ func InstallTraefik(t *testing.T) {
 	helm.RunHelmCommandAndGetOutputE(t, options, "repo", "update")
 
 	// Deploy traefik
-	valuesPath, _ := filepath.Abs("../kind/traefik.values.yaml")
+	valuesPath, _ := filepath.Abs("../integration/kind/traefik.values.yaml")
 	_, err := helm.RunHelmCommandAndGetOutputE(
 		t,
 		options,
