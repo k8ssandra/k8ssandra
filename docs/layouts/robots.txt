@@ -1,2 +1,0 @@
-User-agent: *
-{{ if and (ne hugo.Environment "production") (ne hugo.Environment "production-v1") (ne hugo.Environment "production-v2") }}Disallow: /{{ end }}
