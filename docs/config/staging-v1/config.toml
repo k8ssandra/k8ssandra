@@ -2,6 +2,12 @@ baseURL = "https://docs-staging-v1.k8ssandra.io/"
 url_latest_version = "https://docs-staging-v1.k8ssandra.io"
 
 [[params.versions]]
+  version = "k8ssandra-operator (current)""
+  fullversion = "k8ssandra-operator"
+  githubbranch = "docs"
+  url = "https://docs-staging.k8ssandra.io"
+
+[[params.versions]]
   version = "K8ssandra v1 (deprecated)"
   fullversion = "k8ssandra-v1"
   githubbranch = "docs-v1"
