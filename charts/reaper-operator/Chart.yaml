@@ -1,12 +1,9 @@
 apiVersion: v2
 name: reaper-operator
-description: |
-  DEPRECATED - please see https://github.com/k8ssandra/k8ssandra-operator 
-  Configures and installs the Reaper Operator for Apache Cassandra. This tool 
-  manages an external repair process for Apache Cassandra clusters.
+description: "DEPRECATED - please see https://github.com/k8ssandra/k8ssandra-operator \nConfigures and installs the Reaper Operator for Apache Cassandra. This tool \nmanages an external repair process for Apache Cassandra clusters.\n"
 type: application
-version: 0.32.3
-appVersion: 0.1.0
+version: 0.32.4
+appVersion: 0.3.6
 dependencies:
   - name: k8ssandra-common
     version: 0.29.0
