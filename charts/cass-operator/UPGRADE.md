@@ -1,7 +1,5 @@
 # cass-operator
 
-The following instructions work for k8ssandra-operator chart also
-
 ### Steps to renegerate using kustomize in cass-operator
 
 You need to manually modify and verify the labels and metadata names, these steps do not automate them.
