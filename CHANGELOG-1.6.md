@@ -18,6 +18,7 @@ and date `## vX.Y.Z - YYYY-MM-DD` and create a new placeholder section for  `unr
 
 ## unreleased
 
+* [CHANGE] Remove k8ssandra-operator helm charts and references throughout the repo
 * [CHANGE] Upgrade Stargate to v1.0.63
 * [CHANGE] Upgrade cass-operator to v1.10.4
 * [CHANGE] Deprecate all K8ssandra v1.x charts, refer users to k8ssandra-operator.
