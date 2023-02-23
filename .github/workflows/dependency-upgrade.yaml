@@ -3,7 +3,7 @@ name: Dependency Upgrade Check
 
 on:
   schedule:
-    # Runs daily at noon UTC (I guess)
+    # Runs daily at noon UTC
     - cron:  '0 12 * * *'
   workflow_dispatch:
 
@@ -13,26 +13,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        dependency: ["Stargate", "Medusa", "Reaper", "cass-operator", "k8ssandra-operator", "medusa-operator", "reaper-operator"]
+        # We only need to check for cass-operator upgrades, in order to perform helm releases
+        dependency: ["cass-operator"]
         include:
-          - dependency: Stargate
-            version_path: ".stargate.version"
-            values_file: "charts/k8ssandra/values.yaml"
-            operator: false
-            docker_hub_url: "https://registry.hub.docker.com/v2/repositories/stargateio/stargate-3_11/tags?page_size=100"
-            version_character: ""
-          - dependency: Medusa
-            version_path: ".medusa.image.tag"
-            values_file: "charts/k8ssandra/values.yaml"
-            operator: false
-            docker_hub_url: "https://registry.hub.docker.com/v2/repositories/k8ssandra/medusa/tags?page_size=100"
-            version_character: ""
-          - dependency: Reaper
-            version_path: ".reaper.image.tag"
-            values_file: "charts/k8ssandra/values.yaml"
-            operator: false
-            docker_hub_url: "https://registry.hub.docker.com/v2/repositories/thelastpickle/cassandra-reaper/tags?page_size=100"
-            version_character: ""
           - dependency: cass-operator
             app_version_path: ".appVersion"
             version_path: ".image.tag"
@@ -41,33 +24,6 @@ jobs:
             chart_file: "charts/cass-operator/Chart.yaml"
             operator: true
             docker_hub_url: "https://registry.hub.docker.com/v2/repositories/k8ssandra/cass-operator/tags?page_size=100"
-            version_character: "v"
-          - dependency: k8ssandra-operator
-            app_version_path: ".appVersion"
-            version_path: ".image.tag"
-            values_file: "charts/k8ssandra-operator/values.yaml"
-            chart_version_path: ".version"
-            chart_file: "charts/k8ssandra-operator/Chart.yaml"
-            operator: true
-            docker_hub_url: "https://registry.hub.docker.com/v2/repositories/k8ssandra/k8ssandra-operator/tags?page_size=100"
-            version_character: "v"
-          - dependency: medusa-operator
-            app_version_path: ".appVersion"
-            version_path: ".image.tag"
-            values_file: "charts/medusa-operator/values.yaml"
-            chart_version_path: ".version"
-            chart_file: "charts/medusa-operator/Chart.yaml"
-            operator: true
-            docker_hub_url: "https://registry.hub.docker.com/v2/repositories/k8ssandra/medusa-operator/tags?page_size=100"
-            version_character: "v"
-          - dependency: reaper-operator
-            app_version_path: ".appVersion"
-            version_path: ".image.tag"
-            values_file: "charts/reaper-operator/values.yaml"
-            chart_version_path: ".version"
-            chart_file: "charts/reaper-operator/Chart.yaml"
-            operator: true
-            docker_hub_url: "https://registry.hub.docker.com/v2/repositories/k8ssandra/reaper-operator/tags?page_size=100"
             version_character: "v"
     steps:
       - name: Checkout
