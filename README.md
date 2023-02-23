@@ -1,3 +1,11 @@
+# [DEPRECATED]
+
+**This project is deprecated and replaced by [k8ssandra-operator](https://github.com/k8ssandra/k8ssandra-operator)**
+
+Read [this blog post](https://k8ssandra.io/blog/other/comparing-for-clarity-k8ssandra-v1-x-and-the-k8ssandra-operator/) to see what differences exist between K8ssandra and k8ssandra-operator, and why we decided to build an operator.  
+Follow our [migration guide](https://k8ssandra.io/blog/tutorials/how-to/how-to-migrate-an-existing-cluster-to-k8ssandra-operator-without-any-downtime/) to migrate from K8ssandra (and Apache Cassandra®) to k8ssandra-operator.
+
+
 # K8ssandra
 [K8ssandra](https://k8ssandra.io/) is a simple to manage, production-ready,
 distribution of [Apache Cassandra](https://cassandra.apache.org/) and
