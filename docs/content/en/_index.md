@@ -16,11 +16,10 @@ The K8ssandra 1.4.x documentation covers everything from install details, deploy
 
 **Tip:** Starting with the March 2022 introduction of K8ssandra Operator, the K8ssandra Operator custom resource, and its support for single- or **multi-cluster** deployments, the documentation site has been organized into three areas. 
 
-* [docs.k8ssandra.io](https://docs.k8ssandra.io/) provides topics that are of common interest to users of K8ssandra Operator and K8ssandra, such as FAQs, Release Notes, Components, and a Glossary.
-* [docs-v1.k8ssandra.io](https://docs-v1.k8ssandra.io/) (**you are here**) provides topics that are specific to K8ssandra 1.4.x users (the initial project releases).
-* [docs-v2.k8ssandra.io](https://docs-v2.k8ssandra.io/) provides topics that are specific to the more recent (and recommended) K8ssandra Operator software, including single- or multi-cluster installs.
+* [docs.k8ssandra.io](https://docs.k8ssandra.io/) provides current documentation of K8ssandra Operator, such as FAQs, Release Notes, Components, and a Glossary.
+* [docs-v1.k8ssandra.io](https://docs-v1.k8ssandra.io/) (**you are here**) provides topics that are specific to K8ssandra 1.4.x users (the initial project releases which is deprecated now).
 
-From each page’s top banner, use the **Versions** menu to navigate back to the Common, v1, or v2 documentation Home.
+From each page’s top banner, use the **Versions** menu to navigate back to the k8ssandra-operator (current) or K8ssandra v1 (deprecated).
 
 ![K8ssandra documentation Versions](k8ssandra-doc-versions.png)
 
