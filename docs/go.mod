@@ -1,4 +1,4 @@
-module github.com/k8ssandra/k8ssandra/docs-v1
+module github.com/k8ssandra/k8ssandra/docs
 
 go 1.19
 
