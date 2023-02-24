@@ -1,4 +1,4 @@
-{{$file := (printf "%s/%s" .Page.Dir (.Get "file"))}}
+{{$file := (printf "%s/%s" .Page.File.Dir (.Get "file"))}}
 {{- if eq (.Get "markdown") "true" -}}
 {{- $file  | readFile | markdownify -}}
 {{- else if  (.Get "highlight") -}}
