@@ -6,18 +6,13 @@ You need to manually modify and verify the labels and metadata names, these step
 
 #### CRDs from cass-operator:
 
-From cass-operator directory:
+From cass-operator directory, assuming k8ssandra is checked out at ../k8ssandra:
 
 ```
-kustomize build config/crd  --output ../k8ssandra/charts/cass-operator/crds/
+scripts/release-helm-chart.sh version
 ```
 
-In this chart directory:
-
-```
-mv crds/apiextensions.k8s.io_v1_customresourcedefinition_cassandradatacenters.cassandra.datastax.com.yaml crds/cassandradatacenter.yaml
-mv crds/apiextensions.k8s.io_v1_customresourcedefinition_cassandratasks.control.k8ssandra.io.yaml crds/cassandratasks.yaml
-```
+Replace version with the intended tag, without the "v" prefix.
 
 #### To build RBACs:
 
