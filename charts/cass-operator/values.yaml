@@ -42,7 +42,7 @@ image:
   registryOverride:
 # -- References to secrets to use when pulling images. See:
 # https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
-# imagePullSecret: []
+imagePullSecret:
 serviceAccount:
   # -- Annotations to add to the service account.
   annotations: {}
