@@ -29,11 +29,12 @@ data:
     disableWebhooks: true
 {{- end }}
     imageConfigFile: /configs/image_config.yaml
+    olmDeployment: false
   image_config.yaml: |
     apiVersion: config.k8ssandra.io/v1beta1
     kind: ImageConfig
     images:
-      system-logger: "k8ssandra/system-logger:v1.15.0"
+      system-logger: "k8ssandra/system-logger:v1.16.0"
       config-builder: "datastax/cass-config-builder:1.0-ubi7"
 {{- if .Values.image.repositoryOverride }}
     {{- with .Values.image.repositoryOverride }}
