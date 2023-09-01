@@ -34,8 +34,9 @@ data:
     apiVersion: config.k8ssandra.io/v1beta1
     kind: ImageConfig
     images:
-      system-logger: "k8ssandra/system-logger:v1.16.0"
+      system-logger: "k8ssandra/system-logger:v1.17.0"
       config-builder: "datastax/cass-config-builder:1.0-ubi7"
+      k8ssandra-client: "k8ssandra/k8ssandra-client:v0.2.0"
 {{- if .Values.image.repositoryOverride }}
     {{- with .Values.image.repositoryOverride }}
       {{- toYaml . | nindent 6 }}

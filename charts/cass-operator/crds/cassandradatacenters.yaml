@@ -278,8 +278,8 @@ spec:
                   container. Our default is to have it enabled.
                 type: boolean
               dockerImageRunsAsCassandra:
-                description: Does the Server Docker image run as the Cassandra user?
-                  Defaults to true
+                description: DEPRECATED This setting does nothing and defaults to
+                  true. Use SecurityContext instead.
                 type: boolean
               dseWorkloads:
                 properties:
