@@ -17,7 +17,7 @@ data:
     health:
       healthProbeBindAddress: :8081
     metrics:
-      bindAddress: 127.0.0.1:8080
+      bindAddress: {{ .Values.metrics.address }}
     webhook:
       port: 9443
     leaderElection:
@@ -29,14 +29,13 @@ data:
     disableWebhooks: true
 {{- end }}
     imageConfigFile: /configs/image_config.yaml
-    olmDeployment: false
   image_config.yaml: |
     apiVersion: config.k8ssandra.io/v1beta1
     kind: ImageConfig
     images:
-      system-logger: "k8ssandra/system-logger:v1.17.0"
-      config-builder: "datastax/cass-config-builder:1.0-ubi7"
-      k8ssandra-client: "k8ssandra/k8ssandra-client:v0.2.0"
+      system-logger: {{ .Values.imageConfig.systemLogger }}
+      config-builder: {{ .Values.imageConfig.configBuilder }}
+      k8ssandra-client: {{ .Values.imageConfig.k8ssandraClient }}
 {{- if .Values.image.repositoryOverride }}
     {{- with .Values.image.repositoryOverride }}
       {{- toYaml . | nindent 6 }}
@@ -57,5 +56,5 @@ data:
       cassandra:
         repository: "k8ssandra/cass-management-api"
       dse:
-        repository: "datastax/dse-server"
-        suffix: "-ubi7"
+        repository: "datastax/dse-mgmtapi-6_8"
+        suffix: "-ubi8"
