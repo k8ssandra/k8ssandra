@@ -67,3 +67,11 @@ securityContext:
 # `requests` and `limits` for `cpu` and `memory` while removing the existing
 # `{}`
 resources: {}
+# -- Node labels for operator pod assignment.
+# Ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/
+#
+nodeSelector: {}
+# -- Node tolerations for server scheduling to nodes with taints.
+# Ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/
+#
+tolerations: []
