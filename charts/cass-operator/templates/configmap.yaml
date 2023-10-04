@@ -32,6 +32,13 @@ data:
   image_config.yaml: |
     apiVersion: config.k8ssandra.io/v1beta1
     kind: ImageConfig
+    defaults:
+      # Note, postfix is ignored if repository is not set
+      cassandra:
+        repository: "k8ssandra/cass-management-api"
+      dse:
+        repository: "datastax/dse-mgmtapi-6_8"
+        suffix: "-ubi7"
     images:
       system-logger: {{ .Values.imageConfig.systemLogger }}
       config-builder: {{ .Values.imageConfig.configBuilder }}
