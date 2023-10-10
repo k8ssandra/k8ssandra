@@ -2,9 +2,6 @@
 name: K8s version test
 
 on:
-  schedule:
-    # Runs weekly on sundays at noon UTC (I guess)
-    - cron:  '0 12 * * 6'
   workflow_dispatch:
 
 jobs:
