@@ -36,7 +36,9 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
       
       - name: Update PATH
         run: |
@@ -46,7 +48,7 @@ jobs:
         run: ./.github/scripts/env_variables.sh
 
       - name: Install Helm
-        uses: azure/setup-helm@v1
+        uses: azure/setup-helm@v3
         with:
           version: ${{ env.HELM_VERSION }}
 
@@ -80,10 +82,10 @@ jobs:
           cp -rv charts/* build/$RELEASE_VERSION/
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
+        uses: docker/setup-buildx-action@v2
 
       - name: Cache Docker layers
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: /tmp/.buildx-cache
           key: ${{ runner.os }}-buildx-integ-${{ github.sha }}
@@ -95,20 +97,20 @@ jobs:
           yq eval ".cleaner.image.tag |= \"${RELEASE_VERSION}\"" charts/k8ssandra/values.yaml -i
 
       - name: Login to DockerHub
-        uses: docker/login-action@v1
+        uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_PASSWORD }}
 
       - name: Build and push
         id: docker_build
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v3
         with:
           context: .
           file: cmd/k8ssandra-client/Dockerfile
           push: true
           tags: k8ssandra/k8ssandra-tools:latest, k8ssandra/k8ssandra-tools:${{ steps.compute_next_version.outputs.RELEASE_VERSION }}
-          platforms: linux/amd64
+          platforms: linux/amd64,linux/arm64
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
 
@@ -126,12 +128,15 @@ jobs:
         with:
           python-version: '3.8'
       # Helm Release
-      - uses: google-github-actions/setup-gcloud@v0
+      - id: 'auth'
+        uses: 'google-github-actions/auth@v1'
         with:
-          version: '318.0.0'
+          credentials_json: '${{ secrets.GCP_SA_KEY }}'
+
+      - name: 'Set up Cloud SDK'
+        uses: google-github-actions/setup-gcloud@v1
+        with:
           project_id: ${{ secrets.GCP_PROJECT_ID }}
-          service_account_key: ${{ secrets.GCP_SA_KEY }}
-          export_default_credentials: true
 
       - name: Download current index from Google Cloud
         env:
@@ -152,11 +157,3 @@ jobs:
           gsutil cp ./*.tgz gs://$GCP_HELM_BUCKET_NAME/stable/
           gsutil cp ./index.yaml gs://$GCP_HELM_BUCKET_NAME/stable/
         working-directory: build/${{ steps.compute_next_version.outputs.RELEASE_VERSION }}
-
-      # GitHub Release
-      - name: Upload chart package to GitHub Release
-        uses: fnkr/github-action-ghr@v1
-        if: github.event_name == 'release' && github.event.action == 'published'
-        env:
-          GHR_PATH: build/${{ steps.compute_next_version.outputs.RELEASE_VERSION }}/k8ssandra-${{ env.RELEASE_VERSION }}.tgz
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
