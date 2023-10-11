@@ -2,9 +2,6 @@
 name: Dependency Upgrade Check
 
 on:
-  schedule:
-    # Runs daily at noon UTC
-    - cron:  '0 12 * * *'
   workflow_dispatch:
 
 jobs:
