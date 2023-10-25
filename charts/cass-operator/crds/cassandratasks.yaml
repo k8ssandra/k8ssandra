@@ -107,6 +107,10 @@ spec:
                     args:
                       description: Arguments are additional parameters for the command
                       properties:
+                        end_token:
+                          type: string
+                        jobs:
+                          type: integer
                         keyspace_name:
                           type: string
                         new_tokens:
@@ -117,12 +121,28 @@ spec:
                             Pods referenced in this map must exist; any existing pod
                             not referenced in this map will not be moved.
                           type: object
+                        no_snapshot:
+                          type: boolean
+                        no_validate:
+                          description: Scrub arguments
+                          type: boolean
                         pod_name:
                           type: string
                         rack:
                           type: string
+                        skip_corrupted:
+                          type: boolean
                         source_datacenter:
                           type: string
+                        split_output:
+                          description: Compaction arguments
+                          type: boolean
+                        start_token:
+                          type: string
+                        tables:
+                          items:
+                            type: string
+                          type: array
                       type: object
                     command:
                       description: Command defines what is run against Cassandra pods
@@ -175,30 +195,68 @@ spec:
                   one of the conditions will have type "Complete" and status true.
                   More info: https://kubernetes.io/docs/concepts/workloads/controllers/jobs-run-to-completion/'
                 items:
+                  description: "Condition contains details for one aspect of the current
+                    state of this API Resource. --- This struct is intended for direct
+                    use as an array at the field path .status.conditions.  For example,
+                    \n type FooStatus struct{ // Represents the observations of a
+                    foo's current state. // Known .status.conditions.type are: \"Available\",
+                    \"Progressing\", and \"Degraded\" // +patchMergeKey=type // +patchStrategy=merge
+                    // +listType=map // +listMapKey=type Conditions []metav1.Condition
+                    `json:\"conditions,omitempty\" patchStrategy:\"merge\" patchMergeKey:\"type\"
+                    protobuf:\"bytes,1,rep,name=conditions\"` \n // other fields }"
                   properties:
-                    lastProbeTime:
-                      description: Last time the condition was checked.
-                      format: date-time
-                      type: string
                     lastTransitionTime:
-                      description: Last time the condition transit from one status
-                        to another.
+                      description: lastTransitionTime is the last time the condition
+                        transitioned from one status to another. This should be when
+                        the underlying condition changed.  If that is not known, then
+                        using the time when the API field changed is acceptable.
                       format: date-time
                       type: string
                     message:
-                      description: Human readable message indicating details about
-                        last transition.
+                      description: message is a human readable message indicating
+                        details about the transition. This may be an empty string.
+                      maxLength: 32768
                       type: string
+                    observedGeneration:
+                      description: observedGeneration represents the .metadata.generation
+                        that the condition was set based upon. For instance, if .metadata.generation
+                        is currently 12, but the .status.conditions[x].observedGeneration
+                        is 9, the condition is out of date with respect to the current
+                        state of the instance.
+                      format: int64
+                      minimum: 0
+                      type: integer
                     reason:
-                      description: (brief) reason for the condition's last transition.
+                      description: reason contains a programmatic identifier indicating
+                        the reason for the condition's last transition. Producers
+                        of specific condition types may define expected values and
+                        meanings for this field, and whether the values are considered
+                        a guaranteed API. The value should be a CamelCase string.
+                        This field may not be empty.
+                      maxLength: 1024
+                      minLength: 1
+                      pattern: ^[A-Za-z]([A-Za-z0-9_,:]*[A-Za-z0-9_])?$
                       type: string
                     status:
-                      description: Status of the condition, one of True, False, Unknown.
+                      description: status of the condition, one of True, False, Unknown.
+                      enum:
+                      - "True"
+                      - "False"
+                      - Unknown
                       type: string
                     type:
-                      description: Type of job condition, Complete or Failed.
+                      description: type of condition in CamelCase or in foo.example.com/CamelCase.
+                        --- Many .condition.type values are consistent across resources
+                        like Available, but because arbitrary conditions can be useful
+                        (see .node.status.conditions), the ability to deconflict is
+                        important. The regex it matches is (dns1123SubdomainFmt/)?(qualifiedNameFmt)
+                      maxLength: 316
+                      pattern: ^([a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*/)?(([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9])$
                       type: string
                   required:
+                  - lastTransitionTime
+                  - message
+                  - reason
                   - status
                   - type
                   type: object

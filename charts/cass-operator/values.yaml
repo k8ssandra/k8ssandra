@@ -29,7 +29,7 @@ image:
   # -- Pull policy for the operator container
   pullPolicy: IfNotPresent
   # -- Tag of the cass-operator image to pull from image.repository
-  tag: v1.17.2
+  tag: v1.18.1
   # -- Docker registry containing all cass-operator related images. Setting this
   # allows for usage of an internal registry without specifying serverImage,
   # configBuilderImage, and busyboxImage on all CassandraDatacenter objects.
@@ -79,9 +79,9 @@ tolerations: []
 # systemLogger is our Vector image, configBuilder creates valid Cassandra configuration for
 # 3.11/4.0 and DSE 6.8, while k8ssandraClient is used to build configs for 4.1
 imageConfig:
-  systemLogger: k8ssandra/system-logger:v1.17.2
+  systemLogger: k8ssandra/system-logger:v1.18.1
   configBuilder: datastax/cass-config-builder:1.0-ubi7
-  k8ssandraClient: k8ssandra/k8ssandra-client:v0.2.0
+  k8ssandraClient: k8ssandra/k8ssandra-client:v0.2.1
 # -- metrics allows to change the configuration of how metrics are exposed. Default is
 # to expose /metrics endpoint at port :8080. If you wish to make this available only on
 # localhost (such as when using kube-rbac-proxy to secure access to them), set the value
