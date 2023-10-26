@@ -12,10 +12,6 @@ on:
   push:
     branches:
       - main
-    branches-ignore:
-      - 'docs'
-      - 'docs-v1'
-      - 'docs-v2'
     paths:
       - 'pkg/**'
       - 'cmd/**'
