@@ -5,6 +5,10 @@
   {{- fail (print "cass-operator webhooks require cert-manager to be installed in the cluster") }}
 {{- end -}}
 
+{{- $metricsHostname := regexFind "[^:]*" .Values.metrics.address -}}
+{{- $metricsPort := regexFind "(?:)(\\d*)$" .Values.metrics.address -}}
+{{- $exposeMetrics := and $metricsPort (not (eq "127.0.0.1" $metricsHostname )) -}}
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -42,11 +46,18 @@ spec:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: {{ include "k8ssandra-common.flattenedImage" .Values.image }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          {{- if $webhooks }}
+          {{- if or $webhooks $exposeMetrics}}
           ports:
+          {{- if $webhooks }}
             - containerPort: 9443
               name: webhook-server
               protocol: TCP
+          {{- end }}
+          {{- if and $metricsPort (not (eq "127.0.0.1" $metricsHostname )) }}
+            - containerPort: {{ $metricsPort }}
+              name: metrics
+              protocol: TCP
+          {{- end }}
           {{- end }}
           volumeMounts:
             {{- if $webhooks }}
