@@ -88,3 +88,5 @@ imageConfig:
 # to 127.0.0.1:8080
 metrics:
   address: ":8080"
+# --- Allow this Helm chart to automatically install and/or update the CRDs
+manageCrds: true
