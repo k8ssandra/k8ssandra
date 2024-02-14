@@ -1,7 +1,8 @@
 {{- $certmanager := .Capabilities.APIVersions.Has "cert-manager.io/v1" -}}
 {{- $webhooks := .Values.admissionWebhooks.enabled -}}
+{{- $disableCertManagerCheck := .Values.disableCertManagerCheck -}}
 
-{{- if and $webhooks (not $certmanager) -}}
+{{- if and $webhooks (not $certmanager) (not $disableCertManagerCheck) -}}
   {{- fail (print "cass-operator webhooks require cert-manager to be installed in the cluster") }}
 {{- end -}}
 ---
