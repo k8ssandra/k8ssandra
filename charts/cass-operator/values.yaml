@@ -6,6 +6,7 @@ global:
 # -- A name in place of the chart name which is used in the metadata.name of
 # objects created by this chart.
 nameOverride: ''
+
 # -- A name in place of the value used for metadata.name in objects created by
 # this chart. The default value has the form releaseName-chartName.
 fullnameOverride: ''
@@ -88,3 +89,6 @@ imageConfig:
 # to 127.0.0.1:8080
 metrics:
   address: ":8080"
+# -- Allows to disable the check for cert-manager.
+# This is useful when the helm templates are rendered without a cluster.
+# disableCertManagerCheck: true
