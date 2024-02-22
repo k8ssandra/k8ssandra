@@ -6,7 +6,6 @@ global:
 # -- A name in place of the chart name which is used in the metadata.name of
 # objects created by this chart.
 nameOverride: ''
-
 # -- A name in place of the value used for metadata.name in objects created by
 # this chart. The default value has the form releaseName-chartName.
 fullnameOverride: ''
@@ -30,7 +29,7 @@ image:
   # -- Pull policy for the operator container
   pullPolicy: IfNotPresent
   # -- Tag of the cass-operator image to pull from image.repository
-  tag: v1.18.2
+  tag: v1.19.0
   # -- Docker registry containing all cass-operator related images. Setting this
   # allows for usage of an internal registry without specifying serverImage,
   # configBuilderImage, and busyboxImage on all CassandraDatacenter objects.
@@ -80,7 +79,7 @@ tolerations: []
 # systemLogger is our Vector image, configBuilder creates valid Cassandra configuration for
 # 3.11/4.0 and DSE 6.8, while k8ssandraClient is used to build configs for 4.1
 imageConfig:
-  systemLogger: cr.k8ssandra.io/k8ssandra/system-logger:v1.18.2
+  systemLogger: cr.k8ssandra.io/k8ssandra/system-logger:v1.19.0
   configBuilder: cr.dtsx.io/datastax/cass-config-builder:1.0-ubi8
   k8ssandraClient: cr.k8ssandra.io/k8ssandra/k8ssandra-client:v0.2.2
 # -- metrics allows to change the configuration of how metrics are exposed. Default is
