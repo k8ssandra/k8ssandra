@@ -8869,16 +8869,17 @@ spec:
                   More info: https://kubernetes.io/docs/concepts/containers/images
                 type: string
               serverType:
-                description: 'Server type: "cassandra" or "dse"'
+                description: 'Server type: "cassandra", "dse" or "hcd"'
                 enum:
                 - cassandra
                 - dse
+                - hcd
                 type: string
               serverVersion:
                 description: |-
                   Version string for config builder,
                   used to generate Cassandra server configuration
-                pattern: (6\.8\.\d+)|(3\.11\.\d+)|(4\.\d+\.\d+)|(5\.\d+\.\d+)|(7\.\d+\.\d+)
+                pattern: (6\.[89]\.\d+)|(3\.11\.\d+)|(4\.\d+\.\d+)|(5\.\d+\.\d+)|(1\.\d+\.\d+)
                 type: string
               serviceAccount:
                 description: Deprecated DeprecatedServiceAccount Use ServiceAccountName
