@@ -60,3 +60,6 @@ data:
       dse:
         repository: "cr.dtsx.io/datastax/dse-mgmtapi-6_8"
         suffix: "-ubi8"
+      hcd:
+        repository: "cr.dtsx.io/datastax/hcd"
+        suffix: "-ubi"
