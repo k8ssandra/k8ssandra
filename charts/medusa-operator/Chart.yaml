@@ -1,11 +1,9 @@
 apiVersion: v2
 name: medusa-operator
-description: |
-  DEPRECATED - see https://github.com/k8ssandra/k8ssandra-operator 
-  Installs and configures the Medusa Operator for managing Apache Cassandra backups
+description: "DEPRECATED - see https://github.com/k8ssandra/k8ssandra-operator \nInstalls and configures the Medusa Operator for managing Apache Cassandra backups\n"
 type: application
-version: 0.32.0
-appVersion: 0.1.0
+version: 0.32.1
+appVersion: 0.4.0
 dependencies:
   - name: k8ssandra-common
     version: 0.29.0
