@@ -82,6 +82,18 @@ imageConfig:
   systemLogger: cr.k8ssandra.io/k8ssandra/system-logger:v1.22.4
   configBuilder: cr.dtsx.io/datastax/cass-config-builder:1.0-ubi8
   k8ssandraClient: cr.k8ssandra.io/k8ssandra/k8ssandra-client:v0.5.0
+  defaults:
+    # Note, postfix is ignored if repository is not set
+    cassandra:
+      repository: "cr.k8ssandra.io/k8ssandra/cass-management-api"
+      suffix: "-ubi"
+    dse:
+      repository: "cr.dtsx.io/datastax/dse-mgmtapi-6_8"
+      suffix: "-ubi8"
+    hcd:
+      repository: "cr.dtsx.io/datastax/hcd"
+      suffix: "-ubi"
+
 # -- metrics allows to change the configuration of how metrics are exposed. Default is
 # to expose /metrics endpoint at port :8080. If you wish to make this available only on
 # localhost (such as when using kube-rbac-proxy to secure access to them), set the value
