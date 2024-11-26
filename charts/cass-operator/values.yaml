@@ -29,7 +29,7 @@ image:
   # -- Pull policy for the operator container
   pullPolicy: IfNotPresent
   # -- Tag of the cass-operator image to pull from image.repository
-  tag: v1.22.4
+  tag: v1.23.0
   # -- Docker registry containing all cass-operator related images. Setting this
   # allows for usage of an internal registry without specifying serverImage,
   # configBuilderImage, and busyboxImage on all CassandraDatacenter objects.
@@ -40,6 +40,8 @@ image:
   #     "6.8.999": "datastax/dse-server-prototype:latest"
   # Overrides the global Image repository for Cassandra container
   registryOverride:
+  # -- Overrides the namespace for all the images
+  namespaceOverride:
 # -- References to secrets to use when pulling images. See:
 # https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
 # imagePullSecret: secretName
@@ -79,7 +81,7 @@ tolerations: []
 # systemLogger is our Vector image, configBuilder creates valid Cassandra configuration for
 # 3.11/4.0 and DSE 6.8, while k8ssandraClient is used to build configs for 4.1
 imageConfig:
-  systemLogger: cr.k8ssandra.io/k8ssandra/system-logger:v1.22.4
+  systemLogger: cr.k8ssandra.io/k8ssandra/system-logger:v1.23.0
   configBuilder: cr.dtsx.io/datastax/cass-config-builder:1.0-ubi8
   k8ssandraClient: cr.k8ssandra.io/k8ssandra/k8ssandra-client:v0.5.0
   defaults:
@@ -93,7 +95,6 @@ imageConfig:
     hcd:
       repository: "cr.dtsx.io/datastax/hcd"
       suffix: "-ubi"
-
 # -- metrics allows to change the configuration of how metrics are exposed. Default is
 # to expose /metrics endpoint at port :8080. If you wish to make this available only on
 # localhost (such as when using kube-rbac-proxy to secure access to them), set the value

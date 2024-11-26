@@ -45,6 +45,9 @@ data:
 {{- if .Values.image.registryOverride }}
     imageRegistry: {{ .Values.image.registryOverride }}
 {{- end }}
+{{- if Values.image.namespaceOverride }}
+    imageNamespace: {{ .Values.image.namespaceOverride }}
+{{- end }}
 {{- if .Values.imagePullSecret }}
     imagePullSecret:
       name: {{ .Values.imagePullSecret }}
