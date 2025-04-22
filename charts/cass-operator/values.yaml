@@ -62,6 +62,8 @@ securityContext:
   runAsUser: 65534
   # -- Run cass-operator container having read-only root file system permissions.
   readOnlyRootFilesystem: true
+  # -- Do not allow privilege escalation for the cass-operator container.
+  allowPrivilegeEscalation: false
 # -- Resources requests and limits for the cass-operator pod. We usually
 # recommend not to specify default resources and to leave this as a conscious
 # choice for the user. This also increases chances charts run on environments
@@ -83,7 +85,7 @@ tolerations: []
 imageConfig:
   systemLogger: cr.k8ssandra.io/k8ssandra/system-logger:v1.23.2
   configBuilder: cr.dtsx.io/datastax/cass-config-builder:1.0-ubi8
-  k8ssandraClient: cr.k8ssandra.io/k8ssandra/k8ssandra-client:v0.6.1
+  k8ssandraClient: cr.k8ssandra.io/k8ssandra/k8ssandra-client:v0.6.4
   defaults:
     # Note, postfix is ignored if repository is not set
     cassandra:
