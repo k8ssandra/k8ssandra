@@ -22,6 +22,30 @@ rules:
       - list
       - watch
   - apiGroups:
+      - ""
+    resources:
+      - configmaps
+      - endpoints
+      - events
+      - persistentvolumeclaims
+      - pods
+      - secrets
+      - services
+    verbs:
+      - create
+      - delete
+      - get
+      - list
+      - patch
+      - update
+      - watch
+  - apiGroups:
+      - ""
+    resources:
+      - namespaces
+    verbs:
+      - get
+  - apiGroups:
       - apps
     resources:
       - daemonsets
@@ -73,6 +97,7 @@ rules:
       - control.k8ssandra.io
     resources:
       - cassandratasks
+      - scheduledtasks
     verbs:
       - create
       - delete
@@ -85,53 +110,18 @@ rules:
       - control.k8ssandra.io
     resources:
       - cassandratasks/finalizers
+      - scheduledtasks/finalizers
     verbs:
       - update
   - apiGroups:
       - control.k8ssandra.io
     resources:
       - cassandratasks/status
+      - scheduledtasks/status
     verbs:
       - get
       - patch
       - update
-  - apiGroups:
-      - ""
-    resources:
-      - configmaps
-      - endpoints
-      - events
-      - persistentvolumeclaims
-      - pods
-      - secrets
-      - services
-    verbs:
-      - create
-      - delete
-      - get
-      - list
-      - patch
-      - update
-      - watch
-  - apiGroups:
-      - ""
-    resources:
-      - events
-      - pods
-    verbs:
-      - create
-      - delete
-      - get
-      - list
-      - patch
-      - update
-      - watch
-  - apiGroups:
-      - ""
-    resources:
-      - namespaces
-    verbs:
-      - get
   - apiGroups:
       - policy
     resources:
@@ -170,6 +160,30 @@ metadata:
   labels: {{ include "k8ssandra-common.labels" . | indent 4 }}
 rules:
   - apiGroups:
+      - ""
+    resources:
+      - configmaps
+      - endpoints
+      - events
+      - persistentvolumeclaims
+      - pods
+      - secrets
+      - services
+    verbs:
+      - create
+      - delete
+      - get
+      - list
+      - patch
+      - update
+      - watch
+  - apiGroups:
+      - ""
+    resources:
+      - namespaces
+    verbs:
+      - get
+  - apiGroups:
       - apps
     resources:
       - daemonsets
@@ -221,6 +235,7 @@ rules:
       - control.k8ssandra.io
     resources:
       - cassandratasks
+      - scheduledtasks
     verbs:
       - create
       - delete
@@ -233,53 +248,18 @@ rules:
       - control.k8ssandra.io
     resources:
       - cassandratasks/finalizers
+      - scheduledtasks/finalizers
     verbs:
       - update
   - apiGroups:
       - control.k8ssandra.io
     resources:
       - cassandratasks/status
+      - scheduledtasks/status
     verbs:
       - get
       - patch
       - update
-  - apiGroups:
-      - ""
-    resources:
-      - configmaps
-      - endpoints
-      - events
-      - persistentvolumeclaims
-      - pods
-      - secrets
-      - services
-    verbs:
-      - create
-      - delete
-      - get
-      - list
-      - patch
-      - update
-      - watch
-  - apiGroups:
-      - ""
-    resources:
-      - events
-      - pods
-    verbs:
-      - create
-      - delete
-      - get
-      - list
-      - patch
-      - update
-      - watch
-  - apiGroups:
-      - ""
-    resources:
-      - namespaces
-    verbs:
-      - get
   - apiGroups:
       - policy
     resources:
