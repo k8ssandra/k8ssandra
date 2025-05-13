@@ -50,7 +50,7 @@ data:
 {{- end }}
 {{- if .Values.imagePullSecret }}
     imagePullSecret:
-      name: {{ .Values.imagePullSecret }}
+      name: {{ tpl .Values.imagePullSecret . }}
 {{- end }}
 {{- if .Values.image.pullPolicy }}
     {{ (cat "imagePullPolicy:" .Values.image.pullPolicy) }}
