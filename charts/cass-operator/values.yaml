@@ -44,7 +44,9 @@ image:
   namespaceOverride:
 # -- References to secrets to use when pulling images. See:
 # https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
-# imagePullSecret: secretName
+# imagePullSecret: "{{ .Release.Name }}-registry"
+# imagePullSecrets:
+#   - name: "{{ .Release.Name }}-registry"
 serviceAccount:
   # -- Annotations to add to the service account.
   annotations: {}

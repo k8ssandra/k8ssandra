@@ -30,9 +30,9 @@ spec:
       labels: {{- include "k8ssandra-common.labels" . | indent 8 }}
         control-plane: {{ include "k8ssandra-common.fullname" . }}-controller-manager
     spec:
-      {{- with .Values.imagePullSecrets }}
+      {{- if .Values.imagePullSecrets }}
       imagePullSecrets:
-        {{- toYaml . | nindent 8 }}
+        {{- tpl (toYaml .Values.imagePullSecrets) . | nindent 8 }}
       {{- end }}
       serviceAccountName: {{ include "k8ssandra-common.serviceAccountName" . }}
       securityContext:

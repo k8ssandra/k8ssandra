@@ -61,7 +61,7 @@ secrets:
 {{- end }}
 {{- if .Values.imagePullSecrets }}
 imagePullSecrets:
-{{ toYaml .Values.imagePullSecrets }}
+{{ tpl (toYaml .Values.imagePullSecrets) . }}
 {{- end }}
 {{- end }}
 
