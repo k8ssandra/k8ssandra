@@ -85,7 +85,7 @@ spec:
           env:
             {{- if .Values.global.clusterScoped }}
             - name: WATCH_NAMESPACE
-              value: ""
+              value: {{ include "cass-operator.watchNamespaces" . }}
             {{- else }}
             - name: WATCH_NAMESPACE
               valueFrom:
