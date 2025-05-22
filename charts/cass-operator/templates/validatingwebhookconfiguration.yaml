@@ -13,7 +13,7 @@ metadata:
   name: {{ include "k8ssandra-common.fullname" . }}-validating-webhook-configuration
   labels: {{ include "k8ssandra-common.labels" . | indent 4 }}
   annotations:
-    cert-manager.io/inject-ca-from: {{ include "cass-operator-certificate" . }}
+    cert-manager.io/inject-ca-from: {{ include "cass-operator.certificateName" . }}
 webhooks:
 - admissionReviewVersions:
   - v1

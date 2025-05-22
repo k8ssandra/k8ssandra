@@ -3,6 +3,9 @@ global:
   # CassandraDatacenters in the same namespace in which the operator is deployed
   # or if watches and manages CassandraDatacenters across all namespaces.
   clusterScoped: false
+  # -- List of namespaces to watch for CassandraDatacenter resources.
+  # If empty, the operator will watch all namespaces in cluster-scope installation.
+  # watchNamespaces: []
 # -- A name in place of the chart name which is used in the metadata.name of
 # objects created by this chart.
 nameOverride: ''
