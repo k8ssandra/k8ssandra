@@ -3,6 +3,10 @@ kind: RoleBinding
 metadata:
   name: {{ include "k8ssandra-common.fullname" . }}-leader
   labels: {{ include "k8ssandra-common.labels" . | indent 4 }}
+  {{- with include "k8ssandra-common.annotations" . }}
+  annotations:
+    {{- . | nindent 4 }}
+  {{- end }}
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role

@@ -14,6 +14,9 @@ metadata:
   labels: {{ include "k8ssandra-common.labels" . | indent 4 }}
   annotations:
     cert-manager.io/inject-ca-from: {{ include "cass-operator.certificateName" . }}
+    {{- with include "k8ssandra-common.annotations" . }}
+    {{- . | nindent 4 }}
+    {{- end }}
 webhooks:
 - admissionReviewVersions:
   - v1
@@ -43,6 +46,10 @@ kind: Issuer
 metadata:
   name: {{ include "k8ssandra-common.fullname" . }}-selfsigned-issuer
   labels: {{ include "k8ssandra-common.labels" . | indent 4 }}
+  {{- with include "k8ssandra-common.annotations" . }}
+  annotations:
+    {{- . | nindent 4 }}
+  {{- end }}
 spec:
   selfSigned: {}
 ---
@@ -51,6 +58,10 @@ kind: Certificate
 metadata:
   name: {{ include "k8ssandra-common.fullname" . }}-serving-cert  # this name should match the one appeared in kustomizeconfig.yaml
   labels: {{ include "k8ssandra-common.labels" . | indent 4 }}
+  {{- with include "k8ssandra-common.annotations" . }}
+  annotations:
+    {{- . | nindent 4 }}
+  {{- end }}
 spec:
   # $(SERVICE_NAME) and $(SERVICE_NAMESPACE) will be substituted by kustomize
   dnsNames:

@@ -6,6 +6,10 @@ global:
   # -- List of namespaces to watch for CassandraDatacenter resources.
   # If empty, the operator will watch all namespaces in cluster-scope installation.
   # watchNamespaces: []
+  # -- Annotations to be added to all deployed resources.
+  commonAnnotations: {}
+  # -- Labels to be added to all deployed resources.
+  commonLabels: {}
 # -- A name in place of the chart name which is used in the metadata.name of
 # objects created by this chart.
 nameOverride: ''

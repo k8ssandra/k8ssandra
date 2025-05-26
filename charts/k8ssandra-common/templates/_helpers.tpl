@@ -24,6 +24,36 @@ Create chart name and version as used by the chart label.
 {{- define "k8ssandra-common.labels" }}
 {{ include "common.labels.standard" . }}
 app.kubernetes.io/part-of: k8ssandra-{{ .Release.Name }}-{{ .Release.Namespace }}
+{{- $commonLabels := dict -}}
+{{- if .Values.global.commonLabels -}}
+{{- $commonLabels = merge $commonLabels .Values.global.commonLabels -}}
+{{- end -}}
+{{- if .Values.commonLabels -}}
+{{- $commonLabels = merge $commonLabels .Values.commonLabels -}}
+{{- end -}}
+{{- if $commonLabels }}
+{{ toYaml $commonLabels | trim }}
+{{- end }}
+{{- end }}
+
+{{- define "k8ssandra-common.annotations" }}
+{{- $context := . -}}
+{{- if .context -}}
+{{- $context = .context -}}
+{{- end -}}
+{{- $commonAnnotations := dict -}}
+{{- if $context.Values.global.commonAnnotations -}}
+{{- $commonAnnotations = merge $commonAnnotations $context.Values.global.commonAnnotations -}}
+{{- end -}}
+{{- if $context.Values.commonAnnotations -}}
+{{- $commonAnnotations = merge $commonAnnotations $context.Values.commonAnnotations -}}
+{{- end -}}
+{{- if .annotations -}}
+{{- $commonAnnotations = merge $commonAnnotations .annotations -}}
+{{- end -}}
+{{- if $commonAnnotations -}}
+{{- toYaml $commonAnnotations | trim }}
+{{- end -}}
 {{- end }}
 
 {{/*
@@ -51,9 +81,10 @@ kind: ServiceAccount
 metadata:
   name: {{ include "k8ssandra-common.serviceAccountName" . }}
   labels: {{ include "k8ssandra-common.labels" . | indent 4 }}
-  {{- with .Values.serviceAccount.annotations }}
+  {{- $annotations := include "k8ssandra-common.annotations" (dict "context" . "annotations" .Values.serviceAccount.annotations) }}
+  {{- if $annotations }}
   annotations:
-    {{- toYaml . | nindent 4 }}
+    {{- $annotations | nindent 4 }}
   {{- end }}
 {{- if semverCompare ">=1.24-0" .Capabilities.KubeVersion.GitVersion }}
 secrets:
