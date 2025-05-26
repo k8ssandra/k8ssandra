@@ -81,9 +81,10 @@ kind: ServiceAccount
 metadata:
   name: {{ include "k8ssandra-common.serviceAccountName" . }}
   labels: {{ include "k8ssandra-common.labels" . | indent 4 }}
-  {{- with .Values.serviceAccount.annotations }}
+  {{- $annotations := include "k8ssandra-common.annotations" (dict "context" . "annotations" .Values.serviceAccount.annotations) }}
+  {{- if $annotations }}
   annotations:
-    {{- toYaml . | nindent 4 }}
+    {{- $annotations | nindent 4 }}
   {{- end }}
 {{- if semverCompare ">=1.24-0" .Capabilities.KubeVersion.GitVersion }}
 secrets:
