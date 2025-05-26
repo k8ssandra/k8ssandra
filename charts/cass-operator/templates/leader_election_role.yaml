@@ -3,6 +3,10 @@ kind: Role
 metadata:
   name: {{ include "k8ssandra-common.fullname" . }}-leader
   labels: {{ include "k8ssandra-common.labels" . | indent 4 }}
+  {{- with include "k8ssandra-common.annotations" . }}
+  annotations:
+    {{- . | nindent 4 }}
+  {{- end }}
 rules:
   - apiGroups:
       - ""

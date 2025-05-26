@@ -10,6 +10,10 @@ kind: ConfigMap
 metadata:
   name: {{ include "k8ssandra-common.fullname" . }}-manager-config
   labels: {{ include "k8ssandra-common.labels" . | indent 4 }}
+  {{- with include "k8ssandra-common.annotations" . }}
+  annotations:
+    {{- . | nindent 4 }}
+  {{- end }}
 apiVersion: v1
 data:
   controller_manager_config.yaml: |

@@ -24,6 +24,36 @@ Create chart name and version as used by the chart label.
 {{- define "k8ssandra-common.labels" }}
 {{ include "common.labels.standard" . }}
 app.kubernetes.io/part-of: k8ssandra-{{ .Release.Name }}-{{ .Release.Namespace }}
+{{- $commonLabels := dict -}}
+{{- if .Values.global.commonLabels -}}
+{{- $commonLabels = merge $commonLabels .Values.global.commonLabels -}}
+{{- end -}}
+{{- if .Values.commonLabels -}}
+{{- $commonLabels = merge $commonLabels .Values.commonLabels -}}
+{{- end -}}
+{{- if $commonLabels }}
+{{ toYaml $commonLabels | trim }}
+{{- end }}
+{{- end }}
+
+{{- define "k8ssandra-common.annotations" }}
+{{- $context := . -}}
+{{- if .context -}}
+{{- $context = .context -}}
+{{- end -}}
+{{- $commonAnnotations := dict -}}
+{{- if $context.Values.global.commonAnnotations -}}
+{{- $commonAnnotations = merge $commonAnnotations $context.Values.global.commonAnnotations -}}
+{{- end -}}
+{{- if $context.Values.commonAnnotations -}}
+{{- $commonAnnotations = merge $commonAnnotations $context.Values.commonAnnotations -}}
+{{- end -}}
+{{- if .annotations -}}
+{{- $commonAnnotations = merge $commonAnnotations .annotations -}}
+{{- end -}}
+{{- if $commonAnnotations -}}
+{{- toYaml $commonAnnotations | trim }}
+{{- end -}}
 {{- end }}
 
 {{/*

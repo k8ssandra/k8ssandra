@@ -12,6 +12,10 @@ kind: Service
 metadata:
   name: {{ include "k8ssandra-common.fullname" . }}-webhook-service
   labels: {{ include "k8ssandra-common.labels" . | indent 4 }}
+  {{- with include "k8ssandra-common.annotations" . }}
+  annotations:
+    {{- . | nindent 4 }}
+  {{- end }}
 spec:
   ports:
     - port: 443

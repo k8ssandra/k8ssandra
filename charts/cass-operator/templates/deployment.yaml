@@ -16,6 +16,10 @@ metadata:
   name: {{ include "k8ssandra-common.fullname" . }}
   labels: {{ include "k8ssandra-common.labels" . | indent 4 }}
     control-plane: {{ include "k8ssandra-common.fullname" . }}-controller-manager
+  {{- with include "k8ssandra-common.annotations" . }}
+  annotations:
+    {{- . | nindent 4 }}
+  {{- end }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
@@ -23,11 +27,11 @@ spec:
       {{- include "k8ssandra-common.selectorLabels" . | nindent 6 }}
   template:
     metadata:
-      {{- with .Values.podAnnotations }}
+      {{- with include "k8ssandra-common.annotations" (dict "context" . "annotations" .Values.podAnnotations) }}
       annotations:
-        {{- toYaml . | nindent 8 }}
+        {{- . | nindent 8 }}
       {{- end }}
-      labels: {{- include "k8ssandra-common.labels" . | indent 8 }}
+      labels: {{ include "k8ssandra-common.labels" . | indent 8 }}
         control-plane: {{ include "k8ssandra-common.fullname" . }}-controller-manager
     spec:
       {{- if .Values.imagePullSecrets }}
