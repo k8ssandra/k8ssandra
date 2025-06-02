@@ -1,3 +1,4 @@
+{{- if .Values.global.clusterScopedResources }}
 kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
@@ -15,8 +16,9 @@ roleRef:
   kind: ClusterRole
   name: {{ template "k8ssandra-common.fullname" . }}
   apiGroup: rbac.authorization.k8s.io
-{{- if not .Values.global.clusterScoped }}
+{{- end}}
 ---
+{{- if not .Values.global.clusterScoped }}
 kind: RoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
