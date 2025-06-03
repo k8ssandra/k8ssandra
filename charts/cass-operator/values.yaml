@@ -10,6 +10,8 @@ global:
   commonAnnotations: {}
   # -- Labels to be added to all deployed resources.
   commonLabels: {}
+  # -- Should we install cluster-scoped resources such as ClusterRole, ClusterRoleBinding
+  clusterScopedResources: true
 # -- A name in place of the chart name which is used in the metadata.name of
 # objects created by this chart.
 nameOverride: ''
