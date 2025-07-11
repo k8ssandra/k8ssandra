@@ -7,6 +7,7 @@
 {{- end -}}
 ---
 {{ if $webhooks }}
+{{- if .Values.global.clusterScopedResources }}
 apiVersion: admissionregistration.k8s.io/v1
 kind: ValidatingWebhookConfiguration
 metadata:
@@ -38,6 +39,7 @@ webhooks:
     resources:
     - cassandradatacenters
   sideEffects: None
+{{- end }}
 {{ end }}
 {{ if $webhooks }}
 ---
