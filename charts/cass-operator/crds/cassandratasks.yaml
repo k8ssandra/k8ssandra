@@ -2,7 +2,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.16.4
+    controller-gen.kubebuilder.io/version: v0.18.0
   name: cassandratasks.control.k8ssandra.io
 spec:
   group: control.k8ssandra.io
@@ -68,7 +68,7 @@ spec:
                 type: string
               datacenter:
                 description: |-
-                  Which datacenter this task is targetting. Note, this must be a datacenter which the current cass-operator
+                  Which datacenter this task is targeting. Note, this must be a datacenter which the current cass-operator
                   can access
                 properties:
                   apiVersion:
