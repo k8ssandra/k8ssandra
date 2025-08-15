@@ -1,0 +1,12 @@
+{{- if .Values.monitoring.grafana.provision_dashboards }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-cassandra-overview-dashboard
+  labels:
+    grafana_dashboard: "true"
+{{ include "k8ssandra.labels" . | indent 4 }}
+data:
+  cassandra-overview.json: |
+{{ .Files.Get "dashboards/overview.json" | indent 4 }}
+{{- end }}
