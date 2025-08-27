@@ -10,6 +10,7 @@ kind: ConfigMap
 metadata:
   name: {{ include "k8ssandra-common.fullname" . }}-manager-config
   labels: {{ include "k8ssandra-common.labels" . | indent 4 }}
+    k8ssandra.io/config: "manager"
   {{- with include "k8ssandra-common.annotations" . }}
   annotations:
     {{- . | nindent 4 }}
@@ -33,6 +34,7 @@ data:
 {{- else }}
     disableWebhooks: true
 {{- end }}
+{{- if not .Values.images }}
     imageConfigFile: /configs/image_config.yaml
   image_config.yaml: |
     apiVersion: config.k8ssandra.io/v1beta1
@@ -63,3 +65,24 @@ data:
     {{- with .Values.imageConfig.defaults }}
       {{- toYaml . | nindent 6 }}
     {{- end }}
+{{- end }}
+---
+{{- if .Values.images }}
+kind: ConfigMap
+metadata:
+  name: {{ include "k8ssandra-common.fullname" . }}-manager-config
+  labels: {{ include "k8ssandra-common.labels" . | indent 4 }}
+    k8ssandra.io/config: "image"
+  {{- with include "k8ssandra-common.annotations" . }}
+  annotations:
+    {{- . | nindent 4 }}
+  {{- end }}
+apiVersion: v1
+data:
+  image_config.yaml: |
+    apiVersion: config.k8ssandra.io/v1beta2
+    kind: ImageConfig
+    metadata:
+      name: image-config
+{{-  tpl (toYaml .Values.images) . | nindent 4 }}
+{{- end }}
