@@ -12,6 +12,53 @@ global:
   commonLabels: {}
   # -- Should we install cluster-scoped resources such as ClusterRole, ClusterRoleBinding
   clusterScopedResources: true
+  # -- When set, this replaces the legacy imageConfig settings above. Set the default images used by
+  # all the k8ssandra operators.
+  imageConfig:
+    images:
+      system-logger:
+        registry: cr.k8ssandra.io
+        repository: k8ssandra
+        name: system-logger
+        tag: v1.26.0
+      config-builder:
+        registry: cr.dtsx.io
+        repository: datastax
+        name: cass-config-builder
+        tag: 1.0-ubi
+      k8ssandra-client:
+        repository: k8ssandra
+        name: k8ssandra-client
+        tag: v0.8.2
+    # -- defaults are used when other no override is present for the configured image or image type. All these values can be overridden under any image or image type.
+    defaults:
+      registry: docker.io
+      pullPolicy: IfNotPresent
+      # pullSecrets:
+      #   - my-secret-pull-registry
+    # -- overrides will apply to all images discarding the settings in defaults or what individual images might have.
+    # overrides:
+      # -- registry to pull from
+      # registry: "private-registry.local"
+      # -- repository to use discarding all the other settings. If set to empty, repository part will be removed from the image path.
+      # repository: "enterprise"
+      # -- pullPolicy override the pullPolicy of images
+      # pullPolicy: Never
+      # -- pullSecrets removes all the other pullSecrets when used. Setting as empty array will remove pullSecrets from use.
+      # pullSecrets:
+      #   - "my-secret-pull-registry"
+    # -- types are used as building blocks when serverVersion + serverType in the CassandraDatacenter is used
+    types:
+      cassandra:
+        registry: cr.k8ssandra.io
+        repository: k8ssandra
+        name: cass-management-api
+        suffix: -ubi
+      dse:
+        registry: cr.dtsx.io
+        repository: datastax
+        name: dse-mgmtapi-6_8
+        suffix: -ubi
 # -- A name in place of the chart name which is used in the metadata.name of
 # objects created by this chart.
 nameOverride: ''
@@ -108,53 +155,6 @@ imageConfig:
     hcd:
       repository: "cr.dtsx.io/datastax/hcd"
       suffix: "-ubi"
-# -- When set, this replaces the legacy imageConfig settings above. Set the default images used by
-# all the k8ssandra operators.
-images:
-  images:
-    system-logger:
-      registry: cr.k8ssandra.io
-      repository: k8ssandra
-      name: system-logger
-      tag: v1.26.0
-    config-builder:
-      registry: cr.dtsx.io
-      repository: datastax
-      name: cass-config-builder
-      tag: 1.0-ubi
-    k8ssandra-client:
-      repository: k8ssandra
-      name: k8ssandra-client
-      tag: v0.8.2
-  # -- defaults are used when other no override is present for the configured image or image type. All these values can be overridden under any image or image type.
-  defaults:
-    registry: docker.io
-    pullPolicy: IfNotPresent
-    # pullSecrets:
-    #   - my-secret-pull-registry
-  # -- overrides will apply to all images discarding the settings in defaults or what individual images might have.
-  # overrides:
-    # -- registry to pull from
-    # registry: "private-registry.local"
-    # -- repository to use discarding all the other settings. If set to empty, repository part will be removed from the image path.
-    # repository: "enterprise"
-    # -- pullPolicy override the pullPolicy of images
-    # pullPolicy: Never
-    # -- pullSecrets removes all the other pullSecrets when used. Setting as empty array will remove pullSecrets from use.
-    # pullSecrets:
-    #   - "my-secret-pull-registry"
-  # -- types are used as building blocks when serverVersion + serverType in the CassandraDatacenter is used
-  types:
-    cassandra:
-      registry: cr.k8ssandra.io
-      repository: k8ssandra
-      name: cass-management-api
-      suffix: -ubi
-    dse:
-      registry: cr.dtsx.io
-      repository: datastax
-      name: dse-mgmtapi-6_8
-      suffix: -ubi
 # -- metrics allows to change the configuration of how metrics are exposed. Default is
 # to expose /metrics endpoint at port :8080. If you wish to make this available only on
 # localhost (such as when using kube-rbac-proxy to secure access to them), set the value

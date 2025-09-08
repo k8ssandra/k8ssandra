@@ -67,7 +67,7 @@ data:
     {{- end }}
 {{- end }}
 ---
-{{- if .Values.images }}
+{{- if .Values.global.imageConfig }}
 kind: ConfigMap
 metadata:
   name: {{ include "k8ssandra-common.fullname" . }}-manager-config
@@ -84,5 +84,5 @@ data:
     kind: ImageConfig
     metadata:
       name: image-config
-{{-  tpl (toYaml .Values.images) . | nindent 4 }}
+{{-  tpl (toYaml .Values.global.imageConfig) . | nindent 4 }}
 {{- end }}
