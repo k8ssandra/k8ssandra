@@ -17,48 +17,59 @@ global:
   imageConfig:
     images:
       system-logger:
-        registry: cr.k8ssandra.io
-        repository: k8ssandra
-        name: system-logger
-        tag: v1.26.0
+        registry: "cr.k8ssandra.io"
+        repository: "k8ssandra"
+        name: "system-logger"
+        tag: "v1.27.0"
       config-builder:
+        repository: "datastax"
+        name: "cass-config-builder"
+        tag: "1.0-ubi"
         registry: cr.dtsx.io
-        repository: datastax
-        name: cass-config-builder
-        tag: 1.0-ubi
       k8ssandra-client:
-        repository: k8ssandra
-        name: k8ssandra-client
-        tag: v0.8.2
+        repository: "k8ssandra"
+        name: "k8ssandra-client"
+        tag: "v0.8.3"
+        # pullSecret: "k8ssandra-client-pull-secret" # Use of pullSecret removes the default pullSecrets for this image
+        # pullPolicy: Always
+
+        registry: cr.k8ssandra.io
     # -- defaults are used when other no override is present for the configured image or image type. All these values can be overridden under any image or image type.
     defaults:
-      registry: docker.io
+      registry: "docker.io"
       pullPolicy: IfNotPresent
+      # -- pullSecrets allow configuring the secret to use for pulling images from private registries.
       # pullSecrets:
       #   - my-secret-pull-registry
     # -- overrides will apply to all images discarding the settings in defaults or what individual images might have.
     # overrides:
-      # -- registry to pull from
-      # registry: "private-registry.local"
-      # -- repository to use discarding all the other settings. If set to empty, repository part will be removed from the image path.
-      # repository: "enterprise"
-      # -- pullPolicy override the pullPolicy of images
-      # pullPolicy: Never
-      # -- pullSecrets removes all the other pullSecrets when used. Setting as empty array will remove pullSecrets from use.
-      # pullSecrets:
-      #   - "my-secret-pull-registry"
+    # -- registry to pull from
+    # registry: "private-registry.local"
+    # -- repository to use discarding all the other settings. If set to empty, repository part will be removed from the image path.
+    # repository: "enterprise"
+    # -- pullPolicy override the pullPolicy of images
+    # pullPolicy: Never
+    # -- pullSecrets removes all the other pullSecrets when used. Setting as empty array will remove pullSecrets from use.
+    # pullSecrets:
+    #   - "my-secret-pull-registry"
     # -- types are used as building blocks when serverVersion + serverType in the CassandraDatacenter is used
     types:
       cassandra:
-        registry: cr.k8ssandra.io
-        repository: k8ssandra
-        name: cass-management-api
-        suffix: -ubi
+        registry: "cr.k8ssandra.io"
+        repository: "k8ssandra"
+        name: "cass-management-api"
+        suffix: "-ubi"
       dse:
+        repository: "datastax"
+        name: "dse-mgmtapi-6_8"
+        suffix: "-ubi"
         registry: cr.dtsx.io
-        repository: datastax
-        name: dse-mgmtapi-6_8
-        suffix: -ubi
+        # hcd:
+        #   repository: "datastax"
+        #   name: "hcd"
+        #   suffix: "-ubi"
+        #   pullSecret: "hcd-pull-secret" # Use of pullSecret removes the default pullSecrets for this image
+        #   pullPolicy: IfNotPresent
 # -- A name in place of the chart name which is used in the metadata.name of
 # objects created by this chart.
 nameOverride: ''
@@ -85,7 +96,7 @@ image:
   # -- Pull policy for the operator container
   pullPolicy: IfNotPresent
   # -- Tag of the cass-operator image to pull from image.repository
-  tag: v1.26.0
+  tag: v1.27.0
   # -- Docker registry containing all cass-operator related images. Setting this
   # allows for usage of an internal registry without specifying serverImage,
   # configBuilderImage, and busyboxImage on all CassandraDatacenter objects.
@@ -137,13 +148,13 @@ nodeSelector: {}
 # Ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/
 #
 tolerations: []
-# -- Deprecated Use images below instead. Set the default images that cass-operator uses to deploy the Cassandra cluster. 
+# -- Deprecated Use .global.imageConfig instead. Set the default images that cass-operator uses to deploy the Cassandra cluster. 
 # systemLogger is our Vector image, configBuilder creates valid Cassandra configuration for
-# 3.11/4.0 and DSE 6.8, while k8ssandraClient is used to build configs for 4.1
+# 3.11/4.0 and DSE 6.8, while k8ssandraClient is used to build configs for 4.1 and newer
 imageConfig:
-  systemLogger: cr.k8ssandra.io/k8ssandra/system-logger:v1.26.0
+  systemLogger: cr.k8ssandra.io/k8ssandra/system-logger:v1.27.0
   configBuilder: cr.dtsx.io/datastax/cass-config-builder:1.0-ubi
-  k8ssandraClient: cr.k8ssandra.io/k8ssandra/k8ssandra-client:v0.8.2
+  k8ssandraClient: cr.k8ssandra.io/k8ssandra/k8ssandra-client:v0.8.3
   defaults:
     # Note, postfix is ignored if repository is not set
     cassandra:
@@ -151,7 +162,7 @@ imageConfig:
       suffix: "-ubi"
     dse:
       repository: "cr.dtsx.io/datastax/dse-mgmtapi-6_8"
-      suffix: "-ubi8"
+      suffix: "-ubi"
     hcd:
       repository: "cr.dtsx.io/datastax/hcd"
       suffix: "-ubi"

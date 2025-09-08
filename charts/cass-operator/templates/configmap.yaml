@@ -70,7 +70,7 @@ data:
 {{- if .Values.global.imageConfig }}
 kind: ConfigMap
 metadata:
-  name: {{ include "k8ssandra-common.fullname" . }}-manager-config
+  name: {{ include "k8ssandra-common.fullname" . }}-image-config
   labels: {{ include "k8ssandra-common.labels" . | indent 4 }}
     k8ssandra.io/config: "image"
   {{- with include "k8ssandra-common.annotations" . }}

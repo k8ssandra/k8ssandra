@@ -34,6 +34,7 @@ rules:
     resources:
       - configmaps
       - endpoints
+      - endpoints/restricted
       - events
       - persistentvolumeclaims
       - pods
@@ -56,9 +57,6 @@ rules:
   - apiGroups:
       - apps
     resources:
-      - daemonsets
-      - deployments
-      - replicasets
       - statefulsets
     verbs:
       - create
@@ -68,12 +66,6 @@ rules:
       - patch
       - update
       - watch
-  - apiGroups:
-      - apps
-    resources:
-      - deployments/finalizers
-    verbs:
-      - update
   - apiGroups:
       - cassandra.datastax.com
     resources:
@@ -134,6 +126,7 @@ rules:
       - discovery.k8s.io
     resources:
       - endpointslices
+      - endpointslices/restricted
     verbs:
       - create
       - delete
@@ -191,6 +184,7 @@ rules:
     resources:
       - configmaps
       - endpoints
+      - endpoints/restricted
       - events
       - persistentvolumeclaims
       - pods
@@ -213,9 +207,6 @@ rules:
   - apiGroups:
       - apps
     resources:
-      - daemonsets
-      - deployments
-      - replicasets
       - statefulsets
     verbs:
       - create
@@ -225,12 +216,6 @@ rules:
       - patch
       - update
       - watch
-  - apiGroups:
-      - apps
-    resources:
-      - deployments/finalizers
-    verbs:
-      - update
   - apiGroups:
       - cassandra.datastax.com
     resources:
@@ -291,6 +276,7 @@ rules:
       - discovery.k8s.io
     resources:
       - endpointslices
+      - endpointslices/restricted
     verbs:
       - create
       - delete
