@@ -1,0 +1,33 @@
+{{- if and (.Values.stargate.enabled) (.Values.cassandra.enabled) }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-{{ include "k8ssandra.datacenterName" . }}-stargate-service
+  labels:
+    release: {{ .Release.Name }}
+    app: {{ .Release.Name }}-{{ include "k8ssandra.datacenterName" . }}-stargate
+{{ include "k8ssandra.labels" . | indent 4 }}
+spec:
+  type: ClusterIP
+  ports:
+    - name: graphql
+      port: 8080
+      protocol: TCP
+    - name: authorization
+      port: 8081
+      protocol: TCP
+    - name: rest
+      port: 8082
+      protocol: TCP
+    - name: health
+      port: 8084
+      protocol: TCP
+    - name: metrics
+      port: 8085
+      protocol: TCP
+    - name: cassandra
+      protocol: TCP
+      port: 9042
+  selector:
+    app: {{ .Release.Name }}-{{ include "k8ssandra.datacenterName" . }}-stargate
+{{- end }}
