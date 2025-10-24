@@ -14,14 +14,6 @@ metadata:
 {{- if .Values.global.clusterScoped }}
 rules:
   - apiGroups:
-      - ""
-    resources:
-      - persistentvolumes
-    verbs:
-      - get
-      - list
-      - watch
-  - apiGroups:
       - storage.k8s.io
     resources:
       - storageclasses
@@ -149,14 +141,6 @@ rules:
       - watch
 {{- else }}
 rules:
-  - apiGroups:
-      - ""
-    resources:
-      - persistentvolumes
-    verbs:
-      - get
-      - list
-      - watch
   - apiGroups:
       - storage.k8s.io
     resources:
