@@ -1,0 +1,53 @@
+{{- $webhooks := .Values.admissionWebhooks.enabled -}}
+{{- $metricsTLSEnabled := .Values.metrics.tls.enabled | default false -}}
+
+{{ if or $webhooks $metricsTLSEnabled }}
+---
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: {{ include "k8ssandra-common.fullname" . }}-selfsigned-issuer
+  labels: {{ include "k8ssandra-common.labels" . | indent 4 }}
+  {{- with include "k8ssandra-common.annotations" . }}
+  annotations:
+    {{- . | nindent 4 }}
+  {{- end }}
+spec:
+  selfSigned: {}
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: {{ include "k8ssandra-common.fullname" . }}-serving-cert
+  labels: {{ include "k8ssandra-common.labels" . | indent 4 }}
+  {{- with include "k8ssandra-common.annotations" . }}
+  annotations:
+    {{- . | nindent 4 }}
+  {{- end }}
+spec:
+  dnsNames:
+    -  {{ include "k8ssandra-common.fullname" . }}-webhook-service.{{ .Release.Namespace }}.svc
+    -  {{ include "k8ssandra-common.fullname" . }}-webhook-service.{{ .Release.Namespace }}.svc.cluster.local
+  issuerRef:
+    kind: Issuer
+    name: {{ include "k8ssandra-common.fullname" . }}-selfsigned-issuer
+  secretName: {{ include "k8ssandra-common.fullname" . }}-webhook-server-cert
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: {{ include "k8ssandra-common.fullname" . }}-metrics-serving-cert
+  labels: {{ include "k8ssandra-common.labels" . | indent 4 }}
+  {{- with include "k8ssandra-common.annotations" . }}
+  annotations:
+    {{- . | nindent 4 }}
+  {{- end }}
+spec:
+  dnsNames:
+    -  {{ include "k8ssandra-common.fullname" . }}-metrics-webhook-service.{{ .Release.Namespace }}.svc
+    -  {{ include "k8ssandra-common.fullname" . }}-metrics-webhook-service.{{ .Release.Namespace }}.svc.cluster.local
+  issuerRef:
+    kind: Issuer
+    name: {{ include "k8ssandra-common.fullname" . }}-selfsigned-issuer
+  secretName: {{ include "k8ssandra-common.fullname" . }}-metrics-webhook-server-cert
+{{ end }}
