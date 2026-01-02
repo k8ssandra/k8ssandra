@@ -23,3 +23,19 @@ spec:
   selector:
     control-plane: {{ include "k8ssandra-common.fullname" . }}-controller-manager
 {{- end -}}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "k8ssandra-common.fullname" . }}-metrics-webhook-service
+  labels: {{ include "k8ssandra-common.labels" . | indent 4 }}
+  {{- with include "k8ssandra-common.annotations" . }}
+  annotations:
+    {{- . | nindent 4 }}
+  {{- end }}
+spec:
+  ports:
+    - port: 8443
+      targetPort: 8443
+  selector:
+    control-plane: {{ include "k8ssandra-common.fullname" . }}-controller-manager

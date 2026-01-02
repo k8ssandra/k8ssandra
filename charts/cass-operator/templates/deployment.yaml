@@ -9,6 +9,7 @@
 {{- $metricsHostname := regexFind "[^:]*" .Values.metrics.address -}}
 {{- $metricsPort := regexFind "(?:)(\\d*)$" .Values.metrics.address -}}
 {{- $exposeMetrics := and $metricsPort (not (eq "127.0.0.1" $metricsHostname )) -}}
+{{- $metricsTLSEnabled := .Values.metrics.tls.enabled | default false -}}
 
 apiVersion: apps/v1
 kind: Deployment
@@ -45,6 +46,12 @@ spec:
         - name: {{ .Chart.Name }}
           args:
           - --config=/configs/controller_manager_config.yaml
+          {{- if $webhooks }}
+          - --webhook-cert-path=/tmp/k8s-webhook-server/serving-certs
+          {{- end }}
+          {{- if $metricsTLSEnabled }}
+          - --metrics-cert-path=/tmp/k8s-metrics-server/metrics-certs
+          {{- end }}
           command:
           - /manager
           securityContext:
@@ -68,6 +75,11 @@ spec:
             {{- if $webhooks }}
             - mountPath: /tmp/k8s-webhook-server/serving-certs
               name: cass-operator-certs-volume
+              readOnly: true
+            {{- end }}
+            {{- if $metricsTLSEnabled }}
+            - mountPath: /tmp/k8s-metrics-server/metrics-certs
+              name: cass-operator-metrics-certs-volume
               readOnly: true
             {{- end }}
             - mountPath: /configs
@@ -108,6 +120,12 @@ spec:
           secret:
             defaultMode: 420
             secretName: {{ include "k8ssandra-common.fullname" . }}-webhook-server-cert
+      {{- end }}
+      {{- if $metricsTLSEnabled }}
+        - name: cass-operator-metrics-certs-volume
+          secret:
+            defaultMode: 420
+            secretName: {{ include "k8ssandra-common.fullname" . }}-metrics-server-cert
       {{- end }}
         - configMap:
             name: {{ include "k8ssandra-common.fullname" . }}-manager-config

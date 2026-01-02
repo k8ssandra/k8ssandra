@@ -27,7 +27,7 @@ global:
       k8ssandra-client:
         repository: "k8ssandra"
         name: "k8ssandra-client"
-        tag: "v0.8.3"
+        tag: "v0.8.4"
         # pullSecret: "k8ssandra-client-pull-secret" # Use of pullSecret removes the default pullSecrets for this image
         # pullPolicy: Always
     # -- defaults are used when other no override is present for the configured image or image type. All these values can be overridden under any image or image type.
@@ -166,5 +166,8 @@ imageConfig:
 # to 127.0.0.1:8080
 metrics:
   address: ":8080"
+  tls:
+    # -- Enable TLS for metrics endpoint
+    enabled: false
 # -- Allows to disable the check for cert-manager. For helm template, use --api-versions=cert-manager.io/v1 instead
 # disableCertManagerCheck: true
