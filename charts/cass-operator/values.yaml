@@ -27,7 +27,7 @@ global:
       k8ssandra-client:
         repository: "k8ssandra"
         name: "k8ssandra-client"
-        tag: "v0.8.4"
+        tag: "v0.8.5"
         # pullSecret: "k8ssandra-client-pull-secret" # Use of pullSecret removes the default pullSecrets for this image
         # pullPolicy: Always
     # -- defaults are used when other no override is present for the configured image or image type. All these values can be overridden under any image or image type.
