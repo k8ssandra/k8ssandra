@@ -6,7 +6,7 @@
   {{- fail (print "cass-operator webhooks require cert-manager to be installed in the cluster") }}
 {{- end -}}
 
-{{ if $webhooks }}
+{{- if $webhooks }}
 apiVersion: v1
 kind: Service
 metadata:
@@ -22,7 +22,7 @@ spec:
       targetPort: 9443
   selector:
     control-plane: {{ include "k8ssandra-common.fullname" . }}-controller-manager
-{{- end -}}
+{{- end }}
 ---
 apiVersion: v1
 kind: Service
