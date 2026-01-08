@@ -148,7 +148,7 @@ tolerations: []
 imageConfig:
   systemLogger: k8ssandra/system-logger:v1.28.0
   configBuilder: docker.io/datastax/cass-config-builder:1.0-ubi
-  k8ssandraClient: docker.io/k8ssandra/k8ssandra-client:v0.8.3
+  k8ssandraClient: docker.io/k8ssandra/k8ssandra-client:v0.8.5
   defaults:
     # Note, postfix is ignored if repository is not set
     cassandra:

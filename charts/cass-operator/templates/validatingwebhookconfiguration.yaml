@@ -6,8 +6,7 @@
   {{- fail (print "cass-operator webhooks require cert-manager to be installed in the cluster") }}
 {{- end -}}
 ---
-{{ if $webhooks }}
-{{- if .Values.global.clusterScopedResources }}
+{{- if and $webhooks .Values.global.clusterScopedResources }}
 apiVersion: admissionregistration.k8s.io/v1
 kind: ValidatingWebhookConfiguration
 metadata:
@@ -40,37 +39,3 @@ webhooks:
     - cassandradatacenters
   sideEffects: None
 {{- end }}
-{{ end }}
-{{ if $webhooks }}
----
-apiVersion: cert-manager.io/v1
-kind: Issuer
-metadata:
-  name: {{ include "k8ssandra-common.fullname" . }}-selfsigned-issuer
-  labels: {{ include "k8ssandra-common.labels" . | indent 4 }}
-  {{- with include "k8ssandra-common.annotations" . }}
-  annotations:
-    {{- . | nindent 4 }}
-  {{- end }}
-spec:
-  selfSigned: {}
----
-apiVersion: cert-manager.io/v1
-kind: Certificate
-metadata:
-  name: {{ include "k8ssandra-common.fullname" . }}-serving-cert  # this name should match the one appeared in kustomizeconfig.yaml
-  labels: {{ include "k8ssandra-common.labels" . | indent 4 }}
-  {{- with include "k8ssandra-common.annotations" . }}
-  annotations:
-    {{- . | nindent 4 }}
-  {{- end }}
-spec:
-  # $(SERVICE_NAME) and $(SERVICE_NAMESPACE) will be substituted by kustomize
-  dnsNames:
-    -  {{ include "k8ssandra-common.fullname" . }}-webhook-service.{{ .Release.Namespace }}.svc
-    -  {{ include "k8ssandra-common.fullname" . }}-webhook-service.{{ .Release.Namespace }}.svc.cluster.local
-  issuerRef:
-    kind: Issuer
-    name: {{ include "k8ssandra-common.fullname" . }}-selfsigned-issuer
-  secretName: {{ include "k8ssandra-common.fullname" . }}-webhook-server-cert # this secret will not be prefixed, since it's not managed by kustomize
-{{ end }}
