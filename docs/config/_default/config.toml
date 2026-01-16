@@ -266,11 +266,6 @@ gzip = true
   url = "https://k8ssandra.io/community"
 
 [[menu.main]]
-  name = "Forum"
-  weight = 70
-  url = "https://forum.k8ssandra.io/"
-
-[[menu.main]]
   name = "Blog"
   weight = 80
   url = "https://k8ssandra.io/blog"
@@ -294,11 +289,6 @@ gzip = true
   name = "Community"
   weight = 80
   url = "https://k8ssandra.io/community"
-
-[[menu.second]]
-  name = "Forum"
-  weight = 70
-  url = "https://forum.k8ssandra.io/"
 
 [[menu.second]]
   name = "Blog"
