@@ -19,7 +19,7 @@ global:
       system-logger:
         repository: "k8ssandra"
         name: "system-logger"
-        tag: "v1.28.1"
+        tag: "v1.29.0"
       config-builder:
         repository: "datastax"
         name: "cass-config-builder"
@@ -27,7 +27,7 @@ global:
       k8ssandra-client:
         repository: "k8ssandra"
         name: "k8ssandra-client"
-        tag: "v0.8.6"
+        tag: "v0.8.8"
         # pullSecret: "k8ssandra-client-pull-secret" # Use of pullSecret removes the default pullSecrets for this image
         # pullPolicy: Always
     # -- defaults are used when other no override is present for the configured image or image type. All these values can be overridden under any image or image type.
@@ -90,7 +90,7 @@ image:
   # -- Pull policy for the operator container
   pullPolicy: IfNotPresent
   # -- Tag of the cass-operator image to pull from image.repository
-  tag: v1.28.1
+  tag: v1.29.0
   # -- Docker registry containing all cass-operator related images. Setting this
   # allows for usage of an internal registry without specifying serverImage,
   # configBuilderImage, and busyboxImage on all CassandraDatacenter objects.
@@ -142,24 +142,6 @@ nodeSelector: {}
 # Ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/
 #
 tolerations: []
-# -- Deprecated Use .global.imageConfig instead. Set the default images that cass-operator uses to deploy the Cassandra cluster. 
-# systemLogger is our Vector image, configBuilder creates valid Cassandra configuration for
-# 3.11/4.0 and DSE 6.8, while k8ssandraClient is used to build configs for 4.1 and newer
-imageConfig:
-  systemLogger: k8ssandra/system-logger:v1.28.1
-  configBuilder: docker.io/datastax/cass-config-builder:1.0-ubi
-  k8ssandraClient: docker.io/k8ssandra/k8ssandra-client:v0.8.6
-  defaults:
-    # Note, postfix is ignored if repository is not set
-    cassandra:
-      repository: "docker.io/k8ssandra/cass-management-api"
-      suffix: "-ubi"
-    dse:
-      repository: "docker.io/datastax/dse-mgmtapi-6_8"
-      suffix: "-ubi"
-      # hcd:
-      #   repository: "docker.io/datastax/hcd"
-      #   suffix: "-ubi"
 # -- metrics allows to change the configuration of how metrics are exposed. Default is
 # to expose /metrics endpoint at port :8080. If you wish to make this available only on
 # localhost (such as when using kube-rbac-proxy to secure access to them), set the value
