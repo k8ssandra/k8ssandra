@@ -2,7 +2,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.18.0
+    controller-gen.kubebuilder.io/version: v0.19.0
   name: cassandratasks.control.k8ssandra.io
 spec:
   group: control.k8ssandra.io
@@ -121,6 +121,15 @@ spec:
                       properties:
                         end_token:
                           type: string
+                        fast:
+                          description: |-
+                            Fast modifies the behavior of rolling restart to restart multiple nodes (or entire rack) at the same time.
+                            If the cluster is degraded in availability, the fast path isn't used
+                          type: boolean
+                        force:
+                          description: Force is used to force the execution of a command
+                            even if the operator thinks it is unsafe
+                          type: boolean
                         jobs:
                           type: integer
                         keyspace_name:
@@ -166,10 +175,21 @@ spec:
                   - name
                   type: object
                 type: array
+              maxConcurrentPods:
+                description: |-
+                  MaxConcurrentPods specifies the maximum number of pods to process concurrently in a rack.
+                  If not set or set to 0 defaults to 1.
+                type: integer
               restartPolicy:
                 description: RestartPolicy indicates the behavior n case of failure.
-                  Default is Never.
+                  Default is OnFailure.
                 type: string
+              retries:
+                description: |-
+                  Retries specifies the maximum number of times a failed pod operation can be retried.
+                  This is only relevant if the RestartPolicy is set to OnFailure. If not set,
+                  the default value is 1.
+                type: integer
               scheduledTime:
                 description: |-
                   ScheduledTime indicates the earliest possible time this task is executed. This does not necessarily
@@ -266,6 +286,40 @@ spec:
               failed:
                 description: The number of pods which reached phase Failed.
                 type: integer
+              podStatuses:
+                additionalProperties:
+                  description: PodProcessingStatus represents the status of a pod
+                    being processed by a CassandraTask.
+                  properties:
+                    completionTime:
+                      description: Represents time when the pod was completed (success
+                        or fail).
+                      format: date-time
+                      type: string
+                    error:
+                      description: Error message if failed.
+                      type: string
+                    jobId:
+                      description: JobID for async operations (mgmt-api).
+                      type: string
+                    retries:
+                      description: Retry count
+                      type: integer
+                    startTime:
+                      description: Represents time when the job controller started
+                        processing this pod.
+                      format: date-time
+                      type: string
+                    status:
+                      description: Status of the pod processing.
+                      type: string
+                  required:
+                  - status
+                  type: object
+                description: |-
+                  PodStatuses tracks the processing status of each pod for bookkeeping.
+                  Keys are pod names (not including pod UID to handle recreation scenarios).
+                type: object
               startTime:
                 description: |-
                   Represents time when the job controller started processing a job. When a
