@@ -69678,7 +69678,7 @@ MedusaBackupScheduleSpec defines the desired state of MedusaBackupSchedule
         <td><b><a href="#medusabackupschedulespecbackupspec">backupSpec</a></b></td>
         <td>object</td>
         <td>
-          BackupSpec defines the CassandraBackup to be created for this job<br/>
+          BackupSpec defines the MedusaBackup to be created for this job<br/>
         </td>
         <td>true</td>
       </tr><tr>
@@ -69704,7 +69704,7 @@ MedusaBackupScheduleSpec defines the desired state of MedusaBackupSchedule
 
 
 
-BackupSpec defines the CassandraBackup to be created for this job
+BackupSpec defines the MedusaBackup to be created for this job
 
 <table>
     <thead>
@@ -69847,7 +69847,7 @@ MedusaRestoreJobSpec defines the desired state of MedusaRestoreJob
         <td><b>backup</b></td>
         <td>string</td>
         <td>
-          The name of the CassandraBackup to restore.<br/>
+          The name of the MedusaBackup to restore.<br/>
         </td>
         <td>true</td>
       </tr><tr>
