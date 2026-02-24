@@ -933,6 +933,13 @@ Cassandra is a specification of the Cassandra cluster. This includes everything 
         </td>
         <td>false</td>
       </tr><tr>
+        <td><b>datacenterName</b></td>
+        <td>string</td>
+        <td>
+          DatacenterName allows to override the name of the Cassandra datacenter. Kubernetes objects will be named after a sanitized version of it if set, and if not metadata.name. In Cassandra the DC name will be overridden by this value. It may generate some confusion as objects created for the DC will have a different name than the CasandraDatacenter object itself. This setting can create conflicts if multiple DCs coexist in the same namespace if metadata.name for a DC with no override is set to the same value as the override name of another DC. Use cautiously.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
         <td><b><a href="#k8ssandraclusterspeccassandradatacentersindex">datacenters</a></b></td>
         <td>[]object</td>
         <td>
@@ -4374,6 +4381,13 @@ VolumeMount describes a mounting of a Volume within a container.
         <td>[]object</td>
         <td>
           Containers defines containers to be deployed in each Cassandra pod. K8ssandra-operator and cass-operator will create their own containers, which can be referenced here to override specific settings, such as mounts or resources request/limits for example. Example: containers: - name: server-system-logger - name: custom-container image: busybox - name: cassandra<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>datacenterName</b></td>
+        <td>string</td>
+        <td>
+          DatacenterName allows to override the name of the Cassandra datacenter. Kubernetes objects will be named after a sanitized version of it if set, and if not metadata.name. In Cassandra the DC name will be overridden by this value. It may generate some confusion as objects created for the DC will have a different name than the CasandraDatacenter object itself. This setting can create conflicts if multiple DCs coexist in the same namespace if metadata.name for a DC with no override is set to the same value as the override name of another DC. Use cautiously.<br/>
         </td>
         <td>false</td>
       </tr><tr>
@@ -69678,7 +69692,7 @@ MedusaBackupScheduleSpec defines the desired state of MedusaBackupSchedule
         <td><b><a href="#medusabackupschedulespecbackupspec">backupSpec</a></b></td>
         <td>object</td>
         <td>
-          BackupSpec defines the CassandraBackup to be created for this job<br/>
+          BackupSpec defines the MedusaBackup to be created for this job<br/>
         </td>
         <td>true</td>
       </tr><tr>
@@ -69704,7 +69718,7 @@ MedusaBackupScheduleSpec defines the desired state of MedusaBackupSchedule
 
 
 
-BackupSpec defines the CassandraBackup to be created for this job
+BackupSpec defines the MedusaBackup to be created for this job
 
 <table>
     <thead>
@@ -69847,7 +69861,7 @@ MedusaRestoreJobSpec defines the desired state of MedusaRestoreJob
         <td><b>backup</b></td>
         <td>string</td>
         <td>
-          The name of the CassandraBackup to restore.<br/>
+          The name of the MedusaBackup to restore.<br/>
         </td>
         <td>true</td>
       </tr><tr>
