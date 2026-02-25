@@ -81,8 +81,6 @@ spec:
               name: cass-operator-metrics-certs-volume
               readOnly: true
             {{- end }}
-            - mountPath: /configs
-              name: manager-config
           livenessProbe:
             httpGet:
               path: /healthz
@@ -126,6 +124,3 @@ spec:
             defaultMode: 420
             secretName: {{ include "k8ssandra-common.fullname" . }}-metrics-server-cert
       {{- end }}
-        - configMap:
-            name: {{ include "k8ssandra-common.fullname" . }}-manager-config
-          name: manager-config
