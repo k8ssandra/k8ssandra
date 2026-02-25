@@ -45,7 +45,6 @@ spec:
       containers:
         - name: {{ .Chart.Name }}
           args:
-          - --config=/configs/controller_manager_config.yaml
           {{- if $webhooks }}
           - --webhook-cert-path=/tmp/k8s-webhook-server/serving-certs
           {{- end }}
