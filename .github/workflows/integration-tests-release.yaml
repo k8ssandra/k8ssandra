@@ -33,9 +33,9 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v6
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v2
+        uses: docker/setup-qemu-action@v3
       
       - name: Update PATH
         run: |
@@ -43,11 +43,6 @@ jobs:
 
       - name: Create env variables
         run: ./.github/scripts/env_variables.sh
-
-      - name: Install Helm
-        uses: azure/setup-helm@v3
-        with:
-          version: ${{ env.HELM_VERSION }}
 
       - name: Install and validate tool versions
         run: |
@@ -78,38 +73,12 @@ jobs:
           mkdir -p build/$RELEASE_VERSION
           cp -rv charts/* build/$RELEASE_VERSION/
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
-
-      - name: Cache Docker layers
-        uses: actions/cache@v3
-        with:
-          path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-buildx-integ-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-buildx-integ-
-
-      - name: Update k8ssandra-tools cleaner tag
-        run: |
-          yq eval ".cleaner.image.tag |= \"${RELEASE_VERSION}\"" charts/k8ssandra/values.yaml -i
 
       - name: Login to DockerHub
-        uses: docker/login-action@v2
+        uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_PASSWORD }}
-
-      - name: Build and push
-        id: docker_build
-        uses: docker/build-push-action@v3
-        with:
-          context: .
-          file: cmd/k8ssandra-client/Dockerfile
-          push: true
-          tags: k8ssandra/k8ssandra-tools:latest, k8ssandra/k8ssandra-tools:${{ steps.compute_next_version.outputs.RELEASE_VERSION }}
-          platforms: linux/amd64,linux/arm64
-          cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to: type=local,dest=/tmp/.buildx-cache
 
       - name: Generate package archives
         run: |
@@ -121,17 +90,17 @@ jobs:
         working-directory: build/${{ steps.compute_next_version.outputs.RELEASE_VERSION }}
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v6
         with:
           python-version: '3.8'
       # Helm Release
       - id: 'auth'
-        uses: 'google-github-actions/auth@v1'
+        uses: 'google-github-actions/auth@v3'
         with:
           credentials_json: '${{ secrets.GCP_SA_KEY }}'
 
       - name: 'Set up Cloud SDK'
-        uses: google-github-actions/setup-gcloud@v1
+        uses: google-github-actions/setup-gcloud@v3
         with:
           project_id: ${{ secrets.GCP_PROJECT_ID }}
 
