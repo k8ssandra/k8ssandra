@@ -112,14 +112,15 @@ jobs:
 
       - name: Verify deployed resources
         run: |
-          kubectl rollout status deployment/cass-operator -n cass-operator --timeout=10m
-          kubectl get service cass-operator-webhook-service -n cass-operator
-          kubectl get validatingwebhookconfiguration cass-operator-validating-webhook-configuration
+          selector='app.kubernetes.io/name=cass-operator,app.kubernetes.io/instance=cass-operator'
+          kubectl rollout status deployment --selector="$selector" -n cass-operator --timeout=10m
 
       - name: Collect failure diagnostics
         if: failure()
         run: |
+          selector='app.kubernetes.io/name=cass-operator,app.kubernetes.io/instance=cass-operator'
           kubectl get all -n cass-operator || true
-          kubectl describe deployment cass-operator -n cass-operator || true
-          kubectl describe service cass-operator-webhook-service -n cass-operator || true
-          kubectl get validatingwebhookconfiguration cass-operator-validating-webhook-configuration -o yaml || true
+          kubectl get deployment,service -n cass-operator -l "$selector" || true
+          kubectl describe deployment -n cass-operator -l "$selector" || true
+          kubectl describe service -n cass-operator -l "$selector" || true
+          kubectl get validatingwebhookconfiguration -l "$selector" -o yaml || true
