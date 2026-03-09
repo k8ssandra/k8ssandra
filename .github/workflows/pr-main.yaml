@@ -98,15 +98,16 @@ jobs:
           kubectl wait --for=condition=Established crd/certificates.cert-manager.io --timeout=5m
           kubectl rollout status deployment/cert-manager-webhook -n cert-manager --timeout=5m
 
+      - name: Create namespace
+        run: kubectl create namespace cass-operator
+
       - name: Run ct install
         run: |
           ct install \
             --config .ct.yaml \
             --charts charts/cass-operator \
             --namespace cass-operator \
-            --create-namespace \
             --release-name cass-operator \
-            --skip-clean-up \
             --helm-extra-args '--timeout 10m --wait'
 
       - name: Verify deployed resources
