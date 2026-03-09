@@ -29,7 +29,7 @@ jobs:
         run: scripts/update-helm-deps.sh
 
       - name: Install helm-unittest
-        run: helm plugin install https://github.com/helm-unittest/helm-unittest --version "${HELM_UNITTEST_VERSION}" --verify=false
+        run: helm plugin install https://github.com/helm-unittest/helm-unittest --version "${HELM_UNITTEST_VERSION}"
 
       - name: Run helm-unittest
         run: helm unittest --with-subchart=false charts/cass-operator
@@ -103,21 +103,22 @@ jobs:
           ct install \
             --config .ct.yaml \
             --charts charts/cass-operator \
-            --namespace cass-operator-system \
+            --namespace cass-operator \
+            --create-namespace \
             --release-name cass-operator \
             --skip-clean-up \
             --helm-extra-args '--timeout 10m --wait'
 
       - name: Verify deployed resources
         run: |
-          kubectl rollout status deployment/cass-operator -n cass-operator-system --timeout=10m
-          kubectl get service cass-operator-webhook-service -n cass-operator-system
+          kubectl rollout status deployment/cass-operator -n cass-operator --timeout=10m
+          kubectl get service cass-operator-webhook-service -n cass-operator
           kubectl get validatingwebhookconfiguration cass-operator-validating-webhook-configuration
 
       - name: Collect failure diagnostics
         if: failure()
         run: |
-          kubectl get all -n cass-operator-system || true
-          kubectl describe deployment cass-operator -n cass-operator-system || true
-          kubectl describe service cass-operator-webhook-service -n cass-operator-system || true
+          kubectl get all -n cass-operator || true
+          kubectl describe deployment cass-operator -n cass-operator || true
+          kubectl describe service cass-operator-webhook-service -n cass-operator || true
           kubectl get validatingwebhookconfiguration cass-operator-validating-webhook-configuration -o yaml || true
