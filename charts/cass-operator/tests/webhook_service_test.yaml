@@ -1,0 +1,48 @@
+suite: webhook services
+release:
+  name: cass-operator
+templates:
+  - templates/webhook-service.yaml
+tests:
+  - it: renders both services when admission webhooks are enabled
+    set:
+      disableCertManagerCheck: true
+    asserts:
+      - hasDocuments:
+          count: 2
+  - it: renders the webhook service on the webhook port
+    documentSelector:
+      path: metadata.name
+      value: cass-operator-webhook-service
+    set:
+      disableCertManagerCheck: true
+    asserts:
+      - equal:
+          path: spec.ports[0].targetPort
+          value: 9443
+  - it: renders the metrics service on the metrics port
+    documentSelector:
+      path: metadata.name
+      value: cass-operator-metrics-webhook-service
+    set:
+      disableCertManagerCheck: true
+    asserts:
+      - equal:
+          path: spec.ports[0].targetPort
+          value: 8443
+  - it: renders only the metrics service when admission webhooks are disabled
+    set:
+      admissionWebhooks.enabled: false
+    asserts:
+      - hasDocuments:
+          count: 1
+  - it: keeps the metrics service when admission webhooks are disabled
+    documentSelector:
+      path: metadata.name
+      value: cass-operator-metrics-webhook-service
+    set:
+      admissionWebhooks.enabled: false
+    asserts:
+      - equal:
+          path: spec.ports[0].targetPort
+          value: 8443

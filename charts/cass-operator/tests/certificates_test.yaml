@@ -1,0 +1,48 @@
+suite: certificates
+release:
+  name: cass-operator
+templates:
+  - templates/certificates.yaml
+tests:
+  - it: renders webhook certificates when admission webhooks are enabled
+    set:
+      disableCertManagerCheck: true
+    asserts:
+      - hasDocuments:
+          count: 3
+  - it: renders the self-signed issuer
+    documentSelector:
+      path: metadata.name
+      value: cass-operator-selfsigned-issuer
+    set:
+      disableCertManagerCheck: true
+    asserts:
+      - isKind:
+          of: Issuer
+  - it: renders the webhook serving certificate
+    documentSelector:
+      path: metadata.name
+      value: cass-operator-serving-cert
+    set:
+      disableCertManagerCheck: true
+    asserts:
+      - equal:
+          path: spec.secretName
+          value: cass-operator-webhook-server-cert
+  - it: renders the metrics serving certificate
+    documentSelector:
+      path: metadata.name
+      value: cass-operator-metrics-serving-cert
+    set:
+      disableCertManagerCheck: true
+    asserts:
+      - equal:
+          path: spec.secretName
+          value: cass-operator-metrics-webhook-server-cert
+  - it: skips certificates when admission webhooks and metrics tls are disabled
+    set:
+      admissionWebhooks.enabled: false
+      metrics.tls.enabled: false
+    asserts:
+      - hasDocuments:
+          count: 0
