@@ -108,7 +108,7 @@ jobs:
             --charts charts/cass-operator \
             --namespace cass-operator \
             --release-name cass-operator \
-            --helm-extra-args '--timeout 10m --wait'
+            --skip-clean-up
 
       - name: Verify deployed resources
         run: |
