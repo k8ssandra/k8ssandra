@@ -1,5 +1,4 @@
-#!/bin/bash
-echo "YQ_VERSION=v4.6.3" >> $GITHUB_ENV
-echo "HELM_VERSION=v3.10.1" >> $GITHUB_ENV
-echo "GO_VERSION=1.16" >> $GITHUB_ENV
-echo "GOROOT=/usr/local/go1.16" >> $GITHUB_ENV
+#!/usr/bin/env bash
+echo "CT_VERSION=v3.14.0" >> $GITHUB_ENV
+echo "HELM_UNITTEST_VERSION=v1.0.3" >> $GITHUB_ENV
+echo "CERT_MANAGER_VERSION=v1.19.2" >> $GITHUB_ENV

@@ -1,0 +1,24 @@
+suite: deployment
+release:
+  name: cass-operator
+templates:
+  - templates/deployment.yaml
+tests:
+  - it: renders the operator deployment with the expected probes
+    set:
+      disableCertManagerCheck: true
+    asserts:
+      - isKind:
+          of: Deployment
+      - equal:
+          path: spec.replicas
+          value: 1
+      - equal:
+          path: spec.template.spec.containers[0].name
+          value: cass-operator
+      - equal:
+          path: spec.template.spec.containers[0].livenessProbe.httpGet.path
+          value: /healthz
+      - equal:
+          path: spec.template.spec.containers[0].readinessProbe.httpGet.path
+          value: /readyz

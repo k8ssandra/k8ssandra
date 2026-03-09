@@ -1,68 +1,123 @@
 ---
-name: PR Checks
+name: Cass Operator Chart Checks
 
 on:
   pull_request:
     branches:
       - main
-    paths-ignore:
-      - 'docs/**'
+    paths:
+      - '.ct.yaml'
+      - '.ct/**'
+      - '.github/scripts/env_variables.sh'
+      - '.github/workflows/pr-main.yaml'
+      - 'charts/cass-operator/**'
+      - 'charts/k8ssandra-common/**'
+      - 'scripts/update-helm-deps.sh'
 
 jobs:
-  lint-check:
+  cass-operator-helm-unittest:
+    name: cass-operator-helm-unittest
     runs-on: ubuntu-latest
     steps:
-      - name: Cache bin path
-        id: cache
-        uses: actions/cache@v3
-        with:
-          path: bin
-          key: ${{ runner.os }}-${{ env.HELM_VERSION }}-${{ env.YQ_VERSION }}
       - name: Checkout
-        uses: actions/checkout@v3
-      
-      - name: Update PATH
-        run: |
-          echo "$GITHUB_WORKSPACE/bin" >> $GITHUB_PATH
+        uses: actions/checkout@v4
 
       - name: Create env variables
         run: ./.github/scripts/env_variables.sh
 
-      - name: Install Helm
-        uses: azure/setup-helm@v3
-        with:
-          version: ${{ env.HELM_VERSION }}
-
-      - name: Add K8ssandra Helm repo
-        run: |
-          helm repo add k8ssandra https://helm.k8ssandra.io/stable
-          helm repo update
-
-      - name: Install yq and validate tool versions
-        run: |
-          scripts/install-yq.sh ${{ env.YQ_VERSION }}
-          helm version
-          yq -V
-      
       - name: Update chart dependencies
-        run: |
-          scripts/update-helm-deps.sh
-      - name: Setup working directory
-        run: |
-          mkdir build
-          cp -rv charts/* build/
-          find build/cass-operator/templates -name '*.yaml' | xargs sed -i -e 's/.Capabilities.APIVersions.Has "cert-manager.io\/v1"/true/g'
-      - name: Lint charts
-        run: |
-          ls | while read c; do
-            if [[ -d $c ]]; then
-              helm lint $c
+        run: scripts/update-helm-deps.sh
 
-              if [[ $? -ne 0 ]]; then
-                EXIT_CODE=$?
-                echo "::error file=charts/$c::Error linting $c, check job output"
-                exit $EXIT_CODE
-              fi
-            fi
-          done
-        working-directory: build
+      - name: Install helm-unittest
+        run: helm plugin install https://github.com/helm-unittest/helm-unittest --version "${HELM_UNITTEST_VERSION}" --verify=false
+
+      - name: Run helm-unittest
+        run: helm unittest --with-subchart=false charts/cass-operator
+
+  cass-operator-ct-lint:
+    name: cass-operator-ct-lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Create env variables
+        run: ./.github/scripts/env_variables.sh
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Install chart-testing Python dependencies
+        run: python -m pip install --upgrade pip yamale yamllint
+
+      - name: Set up chart-testing
+        uses: helm/chart-testing-action@v2.8.0
+        with:
+          version: ${{ env.CT_VERSION }}
+
+      - name: Update chart dependencies
+        run: scripts/update-helm-deps.sh
+
+      - name: Run ct lint
+        run: ct lint --config .ct.yaml --charts charts/cass-operator --helm-extra-args '--api-versions=cert-manager.io/v1'
+
+  cass-operator-ct-install:
+    name: cass-operator-ct-install
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Create env variables
+        run: ./.github/scripts/env_variables.sh
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Install chart-testing Python dependencies
+        run: python -m pip install --upgrade pip yamale yamllint
+
+      - name: Create Kind cluster
+        uses: helm/kind-action@v1.13.0
+
+      - name: Set up chart-testing
+        uses: helm/chart-testing-action@v2.8.0
+        with:
+          version: ${{ env.CT_VERSION }}
+
+      - name: Update chart dependencies
+        run: scripts/update-helm-deps.sh
+
+      - name: Install cert-manager
+        run: |
+          kubectl apply -f "https://github.com/cert-manager/cert-manager/releases/download/${CERT_MANAGER_VERSION}/cert-manager.yaml"
+          kubectl wait --for=condition=Established crd/certificates.cert-manager.io --timeout=5m
+          kubectl rollout status deployment/cert-manager-webhook -n cert-manager --timeout=5m
+
+      - name: Run ct install
+        run: |
+          ct install \
+            --config .ct.yaml \
+            --charts charts/cass-operator \
+            --namespace cass-operator-system \
+            --release-name cass-operator \
+            --skip-clean-up \
+            --helm-extra-args '--timeout 10m --wait'
+
+      - name: Verify deployed resources
+        run: |
+          kubectl rollout status deployment/cass-operator -n cass-operator-system --timeout=10m
+          kubectl get service cass-operator-webhook-service -n cass-operator-system
+          kubectl get validatingwebhookconfiguration cass-operator-validating-webhook-configuration
+
+      - name: Collect failure diagnostics
+        if: failure()
+        run: |
+          kubectl get all -n cass-operator-system || true
+          kubectl describe deployment cass-operator -n cass-operator-system || true
+          kubectl describe service cass-operator-webhook-service -n cass-operator-system || true
+          kubectl get validatingwebhookconfiguration cass-operator-validating-webhook-configuration -o yaml || true
