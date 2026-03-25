@@ -344,6 +344,14 @@ spec:
                     - serverSecretName
                     type: object
                 type: object
+              maxUnavailable:
+                anyOf:
+                - type: integer
+                - type: string
+                description: |-
+                  MaxUnavailable sets the maximum number of rack pods that can be modified simultaneously during an update. This can at most target a single rack, so values higher than rack size will have no effect. Requires Kubernetes 1.35 or higher. Setting percentage will
+                  calculate against single rack's percentage of pods, not the entire datacenter.
+                x-kubernetes-int-or-string: true
               minReadySeconds:
                 description: |-
                   MinReadySeconds sets the minimum number of seconds for which a newly created pod should be ready without any of its containers crashing, for it to be considered available. Defaults to 5 seconds and is set in the StatefulSet spec.
@@ -9857,7 +9865,7 @@ spec:
                 description: |-
                   Version string for config builder,
                   used to generate Cassandra server configuration
-                pattern: (6\.[89]\.\d+)|(3\.11\.\d+)|(4\.\d+\.\d+)|(5\.\d+\.\d+)|(1\.\d+\.\d+)
+                pattern: (\d+\.\d+\.\d+)
                 type: string
               serviceAccount:
                 description: Deprecated DeprecatedServiceAccount Use ServiceAccountName
