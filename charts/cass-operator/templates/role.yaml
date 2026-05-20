@@ -25,11 +25,38 @@ rules:
       - ""
     resources:
       - configmaps
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - ""
+    resources:
       - endpoints
       - endpoints/restricted
+    verbs:
+      - delete
+      - list
+      - watch
+  - apiGroups:
+      - ""
+    resources:
       - events
+    verbs:
+      - create
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - ""
+    resources:
+      - namespaces
+    verbs:
+      - get
+  - apiGroups:
+      - ""
+    resources:
       - persistentvolumeclaims
-      - pods
       - secrets
       - services
     verbs:
@@ -43,9 +70,14 @@ rules:
   - apiGroups:
       - ""
     resources:
-      - namespaces
+      - pods
     verbs:
+      - delete
       - get
+      - list
+      - patch
+      - update
+      - watch
   - apiGroups:
       - apps
     resources:
@@ -167,11 +199,38 @@ rules:
       - ""
     resources:
       - configmaps
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - ""
+    resources:
       - endpoints
       - endpoints/restricted
+    verbs:
+      - delete
+      - list
+      - watch
+  - apiGroups:
+      - ""
+    resources:
       - events
+    verbs:
+      - create
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - ""
+    resources:
+      - namespaces
+    verbs:
+      - get
+  - apiGroups:
+      - ""
+    resources:
       - persistentvolumeclaims
-      - pods
       - secrets
       - services
     verbs:
@@ -185,9 +244,14 @@ rules:
   - apiGroups:
       - ""
     resources:
-      - namespaces
+      - pods
     verbs:
+      - delete
       - get
+      - list
+      - patch
+      - update
+      - watch
   - apiGroups:
       - apps
     resources:
