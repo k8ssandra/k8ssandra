@@ -5,6 +5,7 @@ on:
   pull_request:
     branches:
       - main
+      - 'release/*'
     paths:
       - '.ct.yaml'
       - '.ct/**'
