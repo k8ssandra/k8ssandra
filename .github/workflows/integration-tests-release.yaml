@@ -25,10 +25,10 @@ on:
 
 jobs:
   release:
-    # Release job should never run on forks and should only trigger on main pushes and published releases
+    # Release job should never run on forks and should only trigger on main, release/* pushes and published releases
     if: |
       ( github.event_name == 'release' && github.event.action == 'published' ) 
-        || ( github.event_name == 'push' && github.ref == 'refs/heads/main' && github.repository_owner == 'k8ssandra' )
+        || ( github.event_name == 'push' && (github.ref == 'refs/heads/main' || startsWith(github.ref,   'refs/heads/release/')) && github.repository_owner == 'k8ssandra' )
         
     runs-on: ubuntu-latest
 
