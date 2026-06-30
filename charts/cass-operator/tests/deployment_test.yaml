@@ -5,8 +5,9 @@ templates:
   - templates/deployment.yaml
 tests:
   - it: renders the operator deployment with the expected probes
-    set:
-      disableCertManagerCheck: true
+    capabilities:
+      apiVersions:
+        - cert-manager.io/v1
     asserts:
       - isKind:
           of: Deployment
@@ -22,3 +23,58 @@ tests:
       - equal:
           path: spec.template.spec.containers[0].readinessProbe.httpGet.path
           value: /readyz
+      - equal:
+          path: spec.template.spec.containers[0].securityContext.runAsUser
+          value: 65534
+      - equal:
+          path: spec.template.spec.containers[0].securityContext.runAsGroup
+          value: 65534
+
+  - it: omits explicit user and group when OpenShift mode is enabled
+    capabilities:
+      apiVersions:
+        - cert-manager.io/v1
+    set:
+      openshift.mode: enabled
+    asserts:
+      - notExists:
+          path: spec.template.spec.containers[0].securityContext.runAsUser
+      - notExists:
+          path: spec.template.spec.containers[0].securityContext.runAsGroup
+      - equal:
+          path: spec.template.spec.containers[0].securityContext.runAsNonRoot
+          value: true
+      - equal:
+          path: spec.template.spec.containers[0].securityContext.capabilities.drop[0]
+          value: ALL
+      - equal:
+          path: spec.template.spec.containers[0].securityContext.seccompProfile.type
+          value: RuntimeDefault
+
+  - it: omits explicit user and group when OpenShift mode auto-detects OpenShift
+    capabilities:
+      apiVersions:
+        - cert-manager.io/v1
+        - security.openshift.io/v1
+    asserts:
+      - notExists:
+          path: spec.template.spec.containers[0].securityContext.runAsUser
+      - notExists:
+          path: spec.template.spec.containers[0].securityContext.runAsGroup
+
+  - it: keeps explicit user and group when OpenShift mode is disabled
+    capabilities:
+      apiVersions:
+        - cert-manager.io/v1
+        - security.openshift.io/v1
+    set:
+      openshift.mode: disabled
+      securityContext.runAsUser: 1000740000
+      securityContext.runAsGroup: 1000740000
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].securityContext.runAsUser
+          value: 1000740000
+      - equal:
+          path: spec.template.spec.containers[0].securityContext.runAsGroup
+          value: 1000740000

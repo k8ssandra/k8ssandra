@@ -44,6 +44,7 @@ Kubernetes operator which handles the provisioning and management of Apache Cass
 | serviceAccount | object | `{"annotations":{}}` | References to secrets to use when pulling images. See: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/ imagePullSecret: secretName |
 | serviceAccount.annotations | object | `{}` | Annotations to add to the service account. |
 | podAnnotations | object | `{}` | Annotations for the cass-operator pod. |
+| openshift.mode | string | `"auto"` | OpenShift behavior mode. Supported values are: auto, enabled, disabled. In auto or enabled mode, cass-operator omits runAsUser and runAsGroup on OpenShift so restricted-v2 SCC can assign the namespace UID/GID range. |
 | podSecurityContext | object | `{}` | PodSecurityContext for the cass-operator pod. See: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/ |
 | securityContext.runAsNonRoot | bool | `true` | Run cass-operator container as non-root user |
 | securityContext.runAsGroup | int | `65534` | Group for the user running the cass-operator container / process |

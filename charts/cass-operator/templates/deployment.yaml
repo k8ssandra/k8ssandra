@@ -10,6 +10,21 @@
 {{- $metricsPort := regexFind "(?:)(\\d*)$" .Values.metrics.address -}}
 {{- $exposeMetrics := and $metricsPort (not (eq "127.0.0.1" $metricsHostname )) -}}
 {{- $metricsTLSEnabled := .Values.metrics.tls.enabled | default false -}}
+{{- $openshiftMode := .Values.openshift.mode | default "auto" -}}
+{{- $validOpenShiftModes := list "auto" "enabled" "disabled" -}}
+{{- if not (has $openshiftMode $validOpenShiftModes) -}}
+  {{- fail (printf "openshift.mode must be one of %s" (join ", " $validOpenShiftModes)) -}}
+{{- end -}}
+{{- $isOpenShift := .Capabilities.APIVersions.Has "security.openshift.io/v1" -}}
+{{- if eq $openshiftMode "enabled" -}}
+  {{- $isOpenShift = true -}}
+{{- else if eq $openshiftMode "disabled" -}}
+  {{- $isOpenShift = false -}}
+{{- end -}}
+{{- $containerSecurityContext := deepCopy .Values.securityContext -}}
+{{- if $isOpenShift -}}
+  {{- $containerSecurityContext = omit $containerSecurityContext "runAsUser" "runAsGroup" -}}
+{{- end -}}
 
 apiVersion: apps/v1
 kind: Deployment
@@ -54,7 +69,7 @@ spec:
           command:
           - /manager
           securityContext:
-            {{- toYaml .Values.securityContext | nindent 12 }}
+            {{- toYaml $containerSecurityContext | nindent 12 }}
           image: {{ include "k8ssandra-common.flattenedImage" .Values.image }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           {{- if or $webhooks $exposeMetrics}}

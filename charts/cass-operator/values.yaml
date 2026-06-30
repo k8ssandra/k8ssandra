@@ -27,7 +27,7 @@ global:
       k8ssandra-client:
         repository: "k8ssandra"
         name: "k8ssandra-client"
-        tag: "v0.8.12"
+        tag: "v0.8.13"
         # pullSecret: "k8ssandra-client-pull-secret" # Use of pullSecret removes the default pullSecrets for this image
         # pullPolicy: Always
     # -- defaults are used when other no override is present for the configured image or image type. All these values can be overridden under any image or image type.
@@ -127,6 +127,11 @@ securityContext:
   readOnlyRootFilesystem: true
   # -- Do not allow privilege escalation for the cass-operator container.
   allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+      - ALL
+  seccompProfile:
+    type: RuntimeDefault
 # -- Resources requests and limits for the cass-operator pod. We usually
 # recommend not to specify default resources and to leave this as a conscious
 # choice for the user. This also increases chances charts run on environments
@@ -153,3 +158,7 @@ metrics:
     enabled: false
 # -- Allows to disable the check for cert-manager. For helm template, use --api-versions=cert-manager.io/v1 instead
 # disableCertManagerCheck: true
+# -- OpenShift-specific behavior for the cass-operator pod.
+openshift:
+  # -- OpenShift behavior mode. Supported values are: auto, enabled, disabled. In auto or enabled mode, cass-operator omits runAsUser and runAsGroup on OpenShift so restricted-v2 SCC can assign the namespace UID/GID range.
+  mode: auto
