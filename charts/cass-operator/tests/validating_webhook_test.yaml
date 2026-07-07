@@ -15,6 +15,34 @@ tests:
       - equal:
           path: metadata.name
           value: cass-operator-validating-webhook-configuration
+      - notExists:
+          path: webhooks[0].namespaceSelector
+  - it: renders a namespace selector for watched namespaces
+    set:
+      disableCertManagerCheck: true
+      global.watchNamespaces:
+        - cass-operator-a
+        - cass-operator-b
+    asserts:
+      - hasDocuments:
+          count: 1
+      - equal:
+          path: webhooks[0].namespaceSelector.matchExpressions[0]
+          value:
+            key: kubernetes.io/metadata.name
+            operator: In
+            values:
+              - cass-operator-a
+              - cass-operator-b
+  - it: renders a cluster-scoped validating webhook when the operator is cluster-scoped
+    set:
+      disableCertManagerCheck: true
+      global.clusterScoped: true
+    asserts:
+      - hasDocuments:
+          count: 1
+      - notExists:
+          path: webhooks[0].namespaceSelector
   - it: skips the validating webhook when cluster-scoped resources are disabled
     set:
       disableCertManagerCheck: true

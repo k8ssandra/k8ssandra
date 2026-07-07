@@ -27,6 +27,16 @@ webhooks:
       path: /validate-cassandra-datastax-com-v1beta1-cassandradatacenter
   failurePolicy: Fail
   name: vcassandradatacenter.kb.io
+  {{- if .Values.global.watchNamespaces }}
+  namespaceSelector:
+    matchExpressions:
+    - key: kubernetes.io/metadata.name
+      operator: In
+      values:
+      {{- range .Values.global.watchNamespaces }}
+      - {{ . | quote }}
+      {{- end }}
+  {{- end }}
   rules:
   - apiGroups:
     - cassandra.datastax.com
