@@ -27,7 +27,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "k8ssandra-common.fullname" . }}-metrics-webhook-service
+  name: {{ include "k8ssandra-common.fullname" . }}-metrics-service
   labels: {{ include "k8ssandra-common.labels" . | indent 4 }}
   {{- with include "k8ssandra-common.annotations" . }}
   annotations:

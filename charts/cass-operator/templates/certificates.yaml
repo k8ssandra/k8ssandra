@@ -36,7 +36,7 @@ spec:
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
-  name: {{ include "k8ssandra-common.fullname" . }}-metrics-serving-cert
+  name: {{ include "k8ssandra-common.fullname" . }}-metrics-cert
   labels: {{ include "k8ssandra-common.labels" . | indent 4 }}
   {{- with include "k8ssandra-common.annotations" . }}
   annotations:
@@ -44,10 +44,10 @@ metadata:
   {{- end }}
 spec:
   dnsNames:
-    -  {{ include "k8ssandra-common.fullname" . }}-metrics-webhook-service.{{ .Release.Namespace }}.svc
-    -  {{ include "k8ssandra-common.fullname" . }}-metrics-webhook-service.{{ .Release.Namespace }}.svc.cluster.local
+    -  {{ include "k8ssandra-common.fullname" . }}-metrics-service.{{ .Release.Namespace }}.svc
+    -  {{ include "k8ssandra-common.fullname" . }}-metrics-service.{{ .Release.Namespace }}.svc.cluster.local
   issuerRef:
     kind: Issuer
     name: {{ include "k8ssandra-common.fullname" . }}-selfsigned-issuer
-  secretName: {{ include "k8ssandra-common.fullname" . }}-metrics-webhook-server-cert
+  secretName: {{ include "k8ssandra-common.fullname" . }}-metrics-server-cert
 {{ end }}

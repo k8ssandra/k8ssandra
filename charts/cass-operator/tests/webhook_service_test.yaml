@@ -23,7 +23,7 @@ tests:
   - it: renders the metrics service on the metrics port
     documentSelector:
       path: metadata.name
-      value: cass-operator-metrics-webhook-service
+      value: cass-operator-metrics-service
     set:
       disableCertManagerCheck: true
     asserts:
@@ -39,7 +39,7 @@ tests:
   - it: keeps the metrics service when admission webhooks are disabled
     documentSelector:
       path: metadata.name
-      value: cass-operator-metrics-webhook-service
+      value: cass-operator-metrics-service
     set:
       admissionWebhooks.enabled: false
     asserts:

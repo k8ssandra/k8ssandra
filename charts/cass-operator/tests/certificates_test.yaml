@@ -29,16 +29,22 @@ tests:
       - equal:
           path: spec.secretName
           value: cass-operator-webhook-server-cert
-  - it: renders the metrics serving certificate
+  - it: renders the metrics certificate
     documentSelector:
       path: metadata.name
-      value: cass-operator-metrics-serving-cert
+      value: cass-operator-metrics-cert
     set:
       disableCertManagerCheck: true
     asserts:
       - equal:
           path: spec.secretName
-          value: cass-operator-metrics-webhook-server-cert
+          value: cass-operator-metrics-server-cert
+      - contains:
+          path: spec.dnsNames
+          content: cass-operator-metrics-service.NAMESPACE.svc
+      - contains:
+          path: spec.dnsNames
+          content: cass-operator-metrics-service.NAMESPACE.svc.cluster.local
   - it: skips certificates when admission webhooks and metrics tls are disabled
     set:
       admissionWebhooks.enabled: false
