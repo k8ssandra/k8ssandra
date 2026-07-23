@@ -1,7 +1,11 @@
 {{- $webhooks := .Values.admissionWebhooks.enabled -}}
-{{- $metricsTLSEnabled := .Values.metrics.tls.enabled | default false -}}
+{{- $manageWebhookCertificate := and $webhooks (not .Values.admissionWebhooks.certificateSecret) -}}
+{{- $metricsPort := regexFind "(?:)(\\d*)$" .Values.metrics.address -}}
+{{- $metricsEnabled := not (eq "0" $metricsPort) -}}
+{{- $metricsTLSEnabled := and $metricsEnabled (.Values.metrics.tls.enabled | default false) -}}
+{{- $selfSignedCertificates := or $manageWebhookCertificate $metricsTLSEnabled -}}
 
-{{ if or $webhooks $metricsTLSEnabled }}
+{{ if $selfSignedCertificates }}
 ---
 apiVersion: cert-manager.io/v1
 kind: Issuer
@@ -14,6 +18,7 @@ metadata:
   {{- end }}
 spec:
   selfSigned: {}
+{{- if $manageWebhookCertificate }}
 ---
 apiVersion: cert-manager.io/v1
 kind: Certificate
@@ -31,7 +36,9 @@ spec:
   issuerRef:
     kind: Issuer
     name: {{ include "k8ssandra-common.fullname" . }}-selfsigned-issuer
-  secretName: {{ include "k8ssandra-common.fullname" . }}-webhook-server-cert
+  secretName: {{ include "cass-operator.webhookCertificateSecret" . }}
+{{- end }}
+{{- if $metricsTLSEnabled }}
 ---
 apiVersion: cert-manager.io/v1
 kind: Certificate
@@ -50,4 +57,5 @@ spec:
     kind: Issuer
     name: {{ include "k8ssandra-common.fullname" . }}-selfsigned-issuer
   secretName: {{ include "k8ssandra-common.fullname" . }}-metrics-server-cert
+{{- end }}
 {{ end }}

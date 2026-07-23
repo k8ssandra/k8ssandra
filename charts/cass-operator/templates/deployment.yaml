@@ -5,11 +5,13 @@
 {{- if and $webhooks (not $certmanager) (not $disableCertManagerCheck) -}}
   {{- fail (print "cass-operator webhooks require cert-manager to be installed in the cluster") }}
 {{- end -}}
-
 {{- $metricsHostname := regexFind "[^:]*" .Values.metrics.address -}}
 {{- $metricsPort := regexFind "(?:)(\\d*)$" .Values.metrics.address -}}
-{{- $exposeMetrics := and $metricsPort (not (eq "127.0.0.1" $metricsHostname )) -}}
-{{- $metricsTLSEnabled := .Values.metrics.tls.enabled | default false -}}
+{{- $metricsEnabled := not (eq "0" $metricsPort) -}}
+{{- $exposeMetrics := and $metricsEnabled $metricsPort (not (eq "127.0.0.1" $metricsHostname)) -}}
+{{- $metricsTLSEnabled := and $metricsEnabled (.Values.metrics.tls.enabled | default false) -}}
+{{- $certificatesRequired := or $webhooks $metricsTLSEnabled -}}
+
 {{- $openshiftMode := .Values.openshift.mode | default "auto" -}}
 {{- $validOpenShiftModes := list "auto" "enabled" "disabled" -}}
 {{- if not (has $openshiftMode $validOpenShiftModes) -}}
@@ -60,6 +62,9 @@ spec:
       containers:
         - name: {{ .Chart.Name }}
           args:
+          - --leader-elect
+          - --metrics-bind-address={{ .Values.metrics.address }}
+          - --metrics-secure={{ $metricsTLSEnabled }}
           {{- if $webhooks }}
           - --webhook-cert-path=/tmp/k8s-webhook-server/serving-certs
           {{- end }}
@@ -79,7 +84,7 @@ spec:
               name: webhook-server
               protocol: TCP
           {{- end }}
-          {{- if and $metricsPort (not (eq "127.0.0.1" $metricsHostname )) }}
+          {{- if $exposeMetrics }}
             - containerPort: {{ $metricsPort }}
               name: metrics
               protocol: TCP
@@ -131,7 +136,7 @@ spec:
         - name: cass-operator-certs-volume
           secret:
             defaultMode: 420
-            secretName: {{ include "k8ssandra-common.fullname" . }}-webhook-server-cert
+            secretName: {{ include "cass-operator.webhookCertificateSecret" . }}
       {{- end }}
       {{- if $metricsTLSEnabled }}
         - name: cass-operator-metrics-certs-volume

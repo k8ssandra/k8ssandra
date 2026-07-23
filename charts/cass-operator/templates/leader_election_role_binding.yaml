@@ -13,4 +13,4 @@ roleRef:
   name: {{ include "k8ssandra-common.fullname" . }}-leader
 subjects:
   - kind: ServiceAccount
-    name: {{ include "k8ssandra-common.fullname" . }}
+    name: {{ include "k8ssandra-common.serviceAccountName" . }}

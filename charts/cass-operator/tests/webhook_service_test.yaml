@@ -29,7 +29,10 @@ tests:
     asserts:
       - equal:
           path: spec.ports[0].targetPort
-          value: 8443
+          value: metrics
+      - equal:
+          path: spec.ports[0].port
+          value: 8080
   - it: renders only the metrics service when admission webhooks are disabled
     set:
       admissionWebhooks.enabled: false
@@ -45,4 +48,29 @@ tests:
     asserts:
       - equal:
           path: spec.ports[0].targetPort
-          value: 8443
+          value: metrics
+  - it: follows a custom metrics port
+    documentSelector:
+      path: metadata.name
+      value: cass-operator-metrics-service
+    set:
+      admissionWebhooks.enabled: false
+      metrics.address: ":9444"
+    asserts:
+      - equal:
+          path: spec.ports[0].port
+          value: 9444
+  - it: skips the metrics service for a localhost-only listener
+    set:
+      admissionWebhooks.enabled: false
+      metrics.address: "127.0.0.1:8080"
+    asserts:
+      - hasDocuments:
+          count: 0
+  - it: skips the metrics service when metrics are disabled
+    set:
+      admissionWebhooks.enabled: false
+      metrics.address: ":0"
+    asserts:
+      - hasDocuments:
+          count: 0

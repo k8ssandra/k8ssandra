@@ -1,6 +1,10 @@
 {{- $certmanager := .Capabilities.APIVersions.Has "cert-manager.io/v1" -}}
 {{- $webhooks := .Values.admissionWebhooks.enabled -}}
 {{- $disableCertManagerCheck := .Values.disableCertManagerCheck -}}
+{{- $metricsHostname := regexFind "[^:]*" .Values.metrics.address -}}
+{{- $metricsPort := regexFind "(?:)(\\d*)$" .Values.metrics.address -}}
+{{- $metricsEnabled := not (eq "0" $metricsPort) -}}
+{{- $exposeMetrics := and $metricsEnabled $metricsPort (not (eq "127.0.0.1" $metricsHostname)) -}}
 
 {{- if and $webhooks (not $certmanager) (not $disableCertManagerCheck) -}}
   {{- fail (print "cass-operator webhooks require cert-manager to be installed in the cluster") }}
@@ -23,6 +27,7 @@ spec:
   selector:
     control-plane: {{ include "k8ssandra-common.fullname" . }}-controller-manager
 {{- end }}
+{{- if $exposeMetrics }}
 ---
 apiVersion: v1
 kind: Service
@@ -35,7 +40,8 @@ metadata:
   {{- end }}
 spec:
   ports:
-    - port: 8443
-      targetPort: 8443
+    - port: {{ $metricsPort }}
+      targetPort: metrics
   selector:
     control-plane: {{ include "k8ssandra-common.fullname" . }}-controller-manager
+{{- end }}
