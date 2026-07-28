@@ -11,7 +11,7 @@ If you wish to disable the cert-manager managed self signed certificate, the pro
 
 This does not remove the requirement to have cert-manager installed in the cluster.
 
-### Steps to renegerate using kustomize in cass-operator
+### Steps to regenerate using kustomize in cass-operator
 
 You need to manually modify and verify the labels and metadata names, these steps do not automate them.
 
