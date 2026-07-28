@@ -29,6 +29,15 @@ tests:
       - equal:
           path: spec.template.spec.containers[0].securityContext.runAsGroup
           value: 65534
+      - contains:
+          path: spec.template.spec.containers[0].args
+          content: --leader-elect
+      - contains:
+          path: spec.template.spec.containers[0].args
+          content: --metrics-bind-address=:8080
+      - contains:
+          path: spec.template.spec.containers[0].args
+          content: --metrics-secure=false
 
   - it: omits explicit user and group when OpenShift mode is enabled
     capabilities:
@@ -78,3 +87,43 @@ tests:
       - equal:
           path: spec.template.spec.containers[0].securityContext.runAsGroup
           value: 1000740000
+
+  - it: configures secure metrics with the requested address
+    capabilities:
+      apiVersions:
+        - cert-manager.io/v1
+    set:
+      metrics.address: ":9444"
+      metrics.tls.enabled: true
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].args
+          content: --metrics-bind-address=:9444
+      - contains:
+          path: spec.template.spec.containers[0].args
+          content: --metrics-secure=true
+      - contains:
+          path: spec.template.spec.containers[0].args
+          content: --metrics-cert-path=/tmp/k8s-metrics-server/metrics-certs
+      - equal:
+          path: spec.template.spec.containers[0].ports[1].containerPort
+          value: 9444
+  - it: mounts the externally managed webhook certificate secret
+    capabilities:
+      apiVersions:
+        - cert-manager.io/v1
+    set:
+      admissionWebhooks.certificateSecret: custom-webhook-cert
+    asserts:
+      - equal:
+          path: spec.template.spec.volumes[0].secret.secretName
+          value: custom-webhook-cert
+  - it: omits the metrics port when metrics are disabled
+    capabilities:
+      apiVersions:
+        - cert-manager.io/v1
+    set:
+      metrics.address: ":0"
+    asserts:
+      - notExists:
+          path: spec.template.spec.containers[0].ports[1]

@@ -1,6 +1,17 @@
 # cass-operator
 
-### Steps to renegerate using kustomize in cass-operator
+## Upgrading to the next chart release (0.66)
+
+This release removes the unused `image.repositoryOverride`, `image.registryOverride`, and `image.namespaceOverride` values. Configure Cassandra image defaults and overrides through `global.imageConfig` instead since the older ImageConfig v1 is removed from the current version of cass-operator.
+
+If you wish to disable the cert-manager managed self signed certificate, the process has changed a little. Set `admissionWebhooks.certificateSecret` to use an externally managed webhook TLS certificates. Setting that secret will override our default method of creating a self-signed certificate for the webhooks. Note that the Secret must have certain structure at this point:
+
+* Must contain `tls.crt`, `tls.key`, and `ca.crt`
+* Have the `cert-manager.io/allow-direct-injection: "true"` annotation.
+
+This does not remove the requirement to have cert-manager installed in the cluster.
+
+### Steps to regenerate using kustomize in cass-operator
 
 You need to manually modify and verify the labels and metadata names, these steps do not automate them.
 

@@ -4,12 +4,12 @@ release:
 templates:
   - templates/certificates.yaml
 tests:
-  - it: renders webhook certificates when admission webhooks are enabled
+  - it: renders only the issuer and webhook certificate by default
     set:
       disableCertManagerCheck: true
     asserts:
       - hasDocuments:
-          count: 3
+          count: 2
   - it: renders the self-signed issuer
     documentSelector:
       path: metadata.name
@@ -29,16 +29,36 @@ tests:
       - equal:
           path: spec.secretName
           value: cass-operator-webhook-server-cert
-  - it: renders the metrics serving certificate
+  - it: renders the metrics certificate
     documentSelector:
       path: metadata.name
-      value: cass-operator-metrics-serving-cert
+      value: cass-operator-metrics-cert
     set:
       disableCertManagerCheck: true
+      metrics.tls.enabled: true
     asserts:
       - equal:
           path: spec.secretName
-          value: cass-operator-metrics-webhook-server-cert
+          value: cass-operator-metrics-server-cert
+      - contains:
+          path: spec.dnsNames
+          content: cass-operator-metrics-service.NAMESPACE.svc
+      - contains:
+          path: spec.dnsNames
+          content: cass-operator-metrics-service.NAMESPACE.svc.cluster.local
+  - it: renders only the issuer and metrics certificate when webhooks are disabled
+    set:
+      admissionWebhooks.enabled: false
+      metrics.tls.enabled: true
+    asserts:
+      - hasDocuments:
+          count: 2
+  - it: leaves webhook certificate management to the configured external secret
+    set:
+      admissionWebhooks.certificateSecret: custom-webhook-cert
+    asserts:
+      - hasDocuments:
+          count: 0
   - it: skips certificates when admission webhooks and metrics tls are disabled
     set:
       admissionWebhooks.enabled: false
