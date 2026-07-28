@@ -10,7 +10,6 @@
 {{- $metricsEnabled := not (eq "0" $metricsPort) -}}
 {{- $exposeMetrics := and $metricsEnabled $metricsPort (not (eq "127.0.0.1" $metricsHostname)) -}}
 {{- $metricsTLSEnabled := and $metricsEnabled (.Values.metrics.tls.enabled | default false) -}}
-{{- $certificatesRequired := or $webhooks $metricsTLSEnabled -}}
 
 {{- $openshiftMode := .Values.openshift.mode | default "auto" -}}
 {{- $validOpenShiftModes := list "auto" "enabled" "disabled" -}}
