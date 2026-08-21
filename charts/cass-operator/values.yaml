@@ -20,7 +20,7 @@ global:
       system-logger:
         repository: "k8ssandra"
         name: "system-logger"
-        tag: "v1.31.0"
+        tag: "v1.32.0"
       config-builder:
         repository: "datastax"
         name: "cass-config-builder"
@@ -28,7 +28,7 @@ global:
       k8ssandra-client:
         repository: "k8ssandra"
         name: "k8ssandra-client"
-        tag: "v0.8.13"
+        tag: "v0.9.0"
         # pullSecret: "k8ssandra-client-pull-secret" # Use of pullSecret removes the default pullSecrets for this image
         # pullPolicy: Always
     # -- defaults are used when other no override is present for the configured image or image type. All these values can be overridden under any image or image type.
@@ -94,7 +94,7 @@ image:
   # -- Pull policy for the operator container
   pullPolicy: IfNotPresent
   # -- Tag of the cass-operator image to pull from image.repository
-  tag: v1.31.0
+  tag: v1.32.0
 # -- References to secrets to use when pulling images. See:
 # https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
 imagePullSecrets: []
