@@ -1,0 +1,18 @@
+dependencies:
+- name: cass-operator
+  repository: file://../cass-operator
+  version: 0.32.0
+- name: reaper-operator
+  repository: file://../reaper-operator
+  version: 0.32.3
+- name: medusa-operator
+  repository: file://../medusa-operator
+  version: 0.32.0
+- name: k8ssandra-common
+  repository: file://../k8ssandra-common
+  version: 0.28.4
+- name: kube-prometheus-stack
+  repository: https://prometheus-community.github.io/helm-charts
+  version: 20.0.1
+digest: sha256:0173d828c5439f1994548b6b568412b7bb651af16cab5afadecf722310aacf83
+generated: "2021-12-02T15:14:12.93332858Z"

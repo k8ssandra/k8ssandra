@@ -1,0 +1,34 @@
+{{- $cassIngress := .Values.cassandra.ingress -}}
+{{- if $cassIngress.enabled }}
+  {{- $stargate := .Values.stargate -}}
+  {{- if $stargate.enabled }}
+    {{- $stargateIngress := $stargate.ingress -}}
+    {{- if $stargateIngress.enabled }}
+      {{- $stargateCassIngress := $stargateIngress.cassandra -}}
+      {{- if and $stargateCassIngress.enabled $cassIngress.enabled }}
+        {{- fail "stargate.ingress.cassandra.enabled and cassandra.ingress.enabled cannot both be true when stargate.enabled and stargate.ingress.enabled are also true." }}
+      {{- end }}
+    {{- end }}
+  {{- end }}
+
+  {{- $releaseName := .Release.Name -}}
+  {{- $datacenterName := include "k8ssandra.datacenterName" . -}}
+  {{- $cassIngressHost := default "*" $cassIngress.host }}
+
+  {{- if eq $cassIngress.method "traefik" }}
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRouteTCP
+metadata:
+  name: {{ $releaseName }}-k8ssandra-cassandra
+  labels:
+{{ include "k8ssandra.labels" . | indent 4 }}
+spec:
+  entryPoints:
+    - {{ $cassIngress.traefik.entrypoint }}
+  routes:
+    - match: HostSNI(`{{ $cassIngressHost }}`)
+      services:
+        - name: {{ include "k8ssandra.clusterName" . }}-{{ $datacenterName }}-service
+          port: 9042
+  {{- end }}
+{{- end }}

@@ -1,0 +1,30 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ .Release.Name }}-crd-upgrader-job-k8ssandra
+  labels: {{ include "k8ssandra.labels" . | indent 4 }}
+  annotations:
+    "helm.sh/hook": pre-upgrade
+    "helm.sh/hook-delete-policy": before-hook-creation
+    "helm.sh/hook-weight": "10"
+spec:
+  backoffLimit: 3
+  template:
+    metadata:
+      labels: {{ include "k8ssandra.labels" . | indent 8 }}
+    spec:
+      restartPolicy: OnFailure
+      serviceAccountName: {{ default (print .Release.Name "-crd-upgrader-k8ssandra") .Values.client.serviceAccount }}
+      containers:
+        - name: crd-upgrade-job-k8ssandra
+          image: {{ include "k8ssandra-common.flattenedImage" .Values.client.image }}
+          imagePullPolicy: {{ .Values.client.image.pullPolicy }}
+          env:
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+          args:
+            - -upgradecrds
+            - --targetVersion
+            - {{ .Chart.Version }}

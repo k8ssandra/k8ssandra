@@ -1,0 +1,45 @@
+{{- if .Values.reaper.enabled }}
+apiVersion: reaper.cassandra-reaper.io/v1alpha1
+kind: Reaper
+metadata:
+  name: {{ .Release.Name }}-reaper
+  labels: {{ include "k8ssandra.labels" . | indent 4 }}
+spec:
+  image: {{ include "k8ssandra-common.flattenedImage" .Values.reaper.image }}
+  ServiceAccountName: {{ default "default" .Values.reaper.serviceAccount }}
+  serverConfig:
+    autoScheduling:
+      enabled: {{ .Values.reaper.autoschedule }}
+      {{- if .Values.reaper.autoschedule }}
+      {{- range $key, $value := .Values.reaper.autoschedule_properties }}
+      {{ $key }}: {{ $value }}
+      {{- end }}
+      {{- end }}
+    storageType: cassandra
+    jmxUserSecretName: {{ include "k8ssandra.reaperJmxUserSecretName" . }}
+    cassandraBackend:
+      {{- if .Values.cassandra.auth.enabled }}
+      cassandraUserSecretName: {{ include "k8ssandra.reaperUserSecretName" . }}
+      {{- end }}
+      cassandraDatacenter:
+        name: {{ include "k8ssandra.datacenterName" . }}
+      replication:
+        networkTopologyStrategy:
+          {{ include "k8ssandra.datacenterName" . }}: {{ min (index .Values.cassandra.datacenters 0).size 3}}
+  {{- if .Values.reaper.affinity }}
+  affinity: {{ toYaml .Values.reaper.affinity | nindent 4 }}
+  {{- end }}
+  {{- if .Values.reaper.tolerations }}
+  tolerations: {{ toYaml .Values.reaper.tolerations | nindent 4 }}
+  {{- end }}
+  {{- if (and .Values.reaper.schemaInitContainerConfig .Values.reaper.schemaInitContainerConfig.securityContext) }}
+  schemaInitContainerConfig:
+    securityContext: {{ toYaml .Values.reaper.schemaInitContainerConfig.securityContext | nindent 6 }}
+  {{- end }}
+  {{- if (and .Values.reaper.configInitContainerConfig .Values.reaper.configInitContainerConfig.securityContext) }}
+  configInitContainerConfig:
+    securityContext: {{ toYaml .Values.reaper.configInitContainerConfig.securityContext | nindent 6 }}
+  {{- end }}
+  podSecurityContext: {{- toYaml .Values.reaper.podSecurityContext | nindent 4 }}
+  securityContext: {{- toYaml .Values.reaper.securityContext | nindent 4 }}
+{{- end }}
