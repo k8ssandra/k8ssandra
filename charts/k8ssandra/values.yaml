@@ -58,9 +58,9 @@ cassandra:
       runAsNonRoot: true
     image:
       # -- Container registry for the config builder
-      registry: docker.io
+      registry: ghcr.io
       # -- Repository for cass-config-builder image
-      repository: datastax/cass-config-builder
+      repository: datastax/cass-config-builder/cass-config-builder
       # -- Tag of the config builder image to pull from image repository
       tag: 1.0.4
       # -- Pull policy for the config builder image
