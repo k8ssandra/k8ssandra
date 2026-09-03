@@ -22,13 +22,14 @@ global:
         name: "system-logger"
         tag: "v1.32.0"
       config-builder:
+        registry: "ghcr.io"
         repository: "datastax"
         name: "cass-config-builder"
         tag: "1.0-ubi"
       k8ssandra-client:
         repository: "k8ssandra"
         name: "k8ssandra-client"
-        tag: "v0.9.0"
+        tag: "v0.9.1"
         # pullSecret: "k8ssandra-client-pull-secret" # Use of pullSecret removes the default pullSecrets for this image
         # pullPolicy: Always
     # -- defaults are used when other no override is present for the configured image or image type. All these values can be overridden under any image or image type.
