@@ -86,6 +86,9 @@ metadata:
   annotations:
     {{- $annotations | nindent 4 }}
   {{- end }}
+{{- if and (.Values.serviceAccount) (hasKey .Values.serviceAccount "automountServiceAccountToken") }}
+automountServiceAccountToken: {{ .Values.serviceAccount.automountServiceAccountToken }}
+{{- end }}
 {{- if semverCompare ">=1.24-0" .Capabilities.KubeVersion.GitVersion }}
 secrets:
   - name: {{ include "k8ssandra-common.serviceAccountName" . }}-token

@@ -105,6 +105,12 @@ serviceAccount:
   name: ""
   # -- Annotations to add to the service account.
   annotations: {}
+  # -- Specifies whether a service account token is automatically mounted into
+  # containers running on pods that use this service account.
+  # automountServiceAccountToken: true
+# -- Specifies whether a service account token is automatically mounted into
+# the operator pod itself.
+# automountServiceAccountToken: true
 # -- Annotations for the cass-operator pod.
 podAnnotations: {}
 # -- PodSecurityContext for the cass-operator pod. See:
