@@ -68,6 +68,8 @@ Kubernetes operator which handles the provisioning and management of Apache Cass
 | resources | object | `{}` | Resources requests and limits for the cass-operator pod. We usually recommend not to specify default resources and to leave this as a conscious choice for the user. This also increases chances charts run on environments with little resources, such as Minikube. If you want to specify resources, add `requests` and `limits` for `cpu` and `memory` while removing the existing `{}` |
 | nodeSelector | object | `{}` | Node labels for operator pod assignment. Ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/  |
 | tolerations | list | `[]` | Node tolerations for server scheduling to nodes with taints. Ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/  |
+| affinity | object | `{}` | Affinity rules for the cass-operator pod assignment. Ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/  |
+| topologySpreadConstraints | list | `[]` | Topology spread constraints for the cass-operator pod. Ref: https://kubernetes.io/docs/concepts/scheduling-eviction/topology-spread-constraints/  |
 | metrics | object | `{"address":":8080","tls":{"enabled":false}}` | metrics allows to change the configuration of how metrics are exposed. Default is to expose /metrics endpoint at port :8080. If you wish to make this available only on localhost (such as when using kube-rbac-proxy to secure access to them), set the value to 127.0.0.1:8080 |
 | metrics.address | string | `":8080"` | Address where the metrics endpoint binds. Use "0" to disable metrics. |
 | metrics.tls | object | `{"enabled":false}` | TLS configuration for the metrics endpoint. |
