@@ -83,11 +83,8 @@ jobs:
 
       - name: Generate package archives
         run: |
-          ls | while read c; do
-            if [[ -d $c ]]; then
-              helm package $c
-            fi
-          done
+          helm package k8ssandra-common
+          helm package cass-operator
         working-directory: build/${{ steps.compute_next_version.outputs.RELEASE_VERSION }}
 
       - name: Set up Python
