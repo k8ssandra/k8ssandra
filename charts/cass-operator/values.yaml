@@ -152,6 +152,14 @@ nodeSelector: {}
 # Ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/
 #
 tolerations: []
+# -- Affinity rules for the cass-operator pod assignment.
+# Ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/
+#
+affinity: {}
+# -- Topology spread constraints for the cass-operator pod.
+# Ref: https://kubernetes.io/docs/concepts/scheduling-eviction/topology-spread-constraints/
+#
+topologySpreadConstraints: []
 # -- metrics allows to change the configuration of how metrics are exposed. Default is
 # to expose /metrics endpoint at port :8080. If you wish to make this available only on
 # localhost (such as when using kube-rbac-proxy to secure access to them), set the value
