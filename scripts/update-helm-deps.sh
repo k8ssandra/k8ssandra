@@ -10,7 +10,7 @@ fi
 cd "$(dirname "$0")/.."
 
 # Update dependencies for each chart, order is important!
-CHARTS=("k8ssandra-common" "backup" "cass-operator" "medusa-operator" "reaper-operator" "restore" "k8ssandra")
+CHARTS=("k8ssandra-common" "cass-operator")
 for CHART in ${CHARTS[@]}; do
   echo "--- Updating $CHART"
   if [[ -d "charts/$CHART" ]]; then
