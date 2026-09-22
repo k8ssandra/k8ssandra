@@ -29,10 +29,6 @@ imagePullSecrets: []
 serviceAccount:
   # -- Annotations for the reaper-operator service account.
   annotations: {}
-  # -- Specifies whether a service account token is automatically mounted into
-  # containers running on pods that use this service account, and into the
-  # operator pod itself.
-  # automountServiceAccountToken: true
 
 # -- Annotations for the reaper-operator pod.
 podAnnotations: {}
