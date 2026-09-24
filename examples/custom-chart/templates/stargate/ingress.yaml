@@ -1,0 +1,141 @@
+{{- $cassIngress := .Values.cassandra.ingress -}}
+{{- $stargate := .Values.stargate -}}
+{{- if $stargate.enabled }}
+  {{- $stargateIngress := $stargate.ingress -}}
+
+  {{- $releaseName := .Release.Name -}}
+  {{- $datacenterName := include "k8ssandra.datacenterName" . -}}
+
+  {{- if $stargateIngress.enabled }}
+    {{- if or $stargateIngress.auth.enabled (or $stargateIngress.rest.enabled $stargateIngress.graphql.enabled) }}
+      {{- if .Capabilities.APIVersions.Has "networking.k8s.io/v1/Ingress" }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ $releaseName }}-k8ssandra-stargate
+  labels:
+{{ include "k8ssandra.labels" . | indent 4 }}
+spec:
+  rules:
+        {{- if $stargateIngress.auth.enabled }}
+          {{- $stargateAuthHost := include "k8ssandra.stargateIngressAuthHost" . }}
+    - http:
+        paths:
+          - path: /v1/auth
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: {{ $releaseName }}-{{ $datacenterName }}-stargate-service
+                port:
+                  number: 8081
+
+          {{- if $stargateAuthHost }}
+      host: "{{ $stargateAuthHost }}"
+          {{- end }}
+        {{- end }}
+        {{- if $stargateIngress.graphql.enabled }}
+          {{- $stargateGraphqlHost := include "k8ssandra.stargateIngressGraphqlHost" . }}
+    - http:
+        paths:
+          - path: /graphql-schema
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: {{ $releaseName }}-{{ $datacenterName }}-stargate-service
+                port:
+                  number: 8080
+          - path: /graphql/
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: {{ $releaseName }}-{{ $datacenterName }}-stargate-service
+                port:
+                  number: 8080
+          {{- if $stargateIngress.graphql.playground.enabled }}
+          - path: /playground
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: {{ $releaseName }}-{{ $datacenterName }}-stargate-service
+                port:
+                  number: 8080
+          {{- end }}
+          {{- if $stargateGraphqlHost }}
+      host: "{{ $stargateGraphqlHost }}"
+          {{- end }}
+        {{- end }}
+        {{- if $stargateIngress.rest.enabled }}
+          {{- $stargateRestHost := include "k8ssandra.stargateIngressRestHost" . }}
+    - http:
+        paths:
+          - path: /v2/
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: {{ $releaseName }}-{{ $datacenterName }}-stargate-service
+                port:
+                  number: 8082
+          {{- if $stargateRestHost }}
+      host: "{{ $stargateRestHost }}"
+          {{- end }}
+        {{- end }}
+      {{- else}}
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: {{ $releaseName }}-k8ssandra-stargate
+  labels:
+{{ include "k8ssandra.labels" . | indent 4 }}
+spec:
+  rules:
+      {{- if $stargateIngress.auth.enabled }}
+        {{- $stargateAuthHost := include "k8ssandra.stargateIngressAuthHost" . }}
+    - http:
+        paths:
+          - path: /v1/auth
+            backend:
+              serviceName: {{ $releaseName }}-{{ $datacenterName }}-stargate-service
+              servicePort: 8081
+
+        {{- if $stargateAuthHost }}
+      host: "{{ $stargateAuthHost }}"
+        {{- end }}
+      {{- end }}
+      {{- if $stargateIngress.graphql.enabled }}
+       {{- $stargateGraphqlHost := include "k8ssandra.stargateIngressGraphqlHost" . }}
+    - http:
+        paths:
+          - path: /graphql-schema
+            backend:
+              serviceName: {{ $releaseName }}-{{ $datacenterName }}-stargate-service
+              servicePort: 8080
+          - path: /graphql/
+            backend:
+              serviceName: {{ $releaseName }}-{{ $datacenterName }}-stargate-service
+              servicePort: 8080
+        {{- if $stargateIngress.graphql.playground.enabled }}
+          - path: /playground
+            backend:
+              serviceName: {{ $releaseName }}-{{ $datacenterName }}-stargate-service
+              servicePort: 8080
+        {{- end }}
+        {{- if $stargateGraphqlHost }}
+      host: "{{ $stargateGraphqlHost }}"
+        {{- end }}
+      {{- end }}
+      {{- if $stargateIngress.rest.enabled }}
+        {{- $stargateRestHost := include "k8ssandra.stargateIngressRestHost" . }}
+    - http:
+        paths:
+          - path: /v2/
+            backend:
+              serviceName: {{ $releaseName }}-{{ $datacenterName }}-stargate-service
+              servicePort: 8082
+        {{- if $stargateRestHost }}
+      host: "{{ $stargateRestHost }}"
+        {{- end }}
+      {{- end }}
+      {{- end }}
+    {{- end }}
+  {{- end }}
+{{- end }}

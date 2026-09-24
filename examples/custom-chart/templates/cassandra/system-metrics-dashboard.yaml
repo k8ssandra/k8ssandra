@@ -1,0 +1,12 @@
+{{- if .Values.monitoring.grafana.provision_dashboards }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-system-metrics-dashboard
+  labels:
+    grafana_dashboard: "true"
+{{ include "k8ssandra.labels" . | indent 4 }}
+data:
+  system-metrics.json: |
+{{ .Files.Get "dashboards/system-metrics.json" | indent 4 }}
+{{- end }}
