@@ -18,6 +18,7 @@ and date `## vX.Y.Z - YYYY-MM-DD` and create a new placeholder section for  `unr
 
 ## unreleased
 
+* [ENHANCEMENT] [#1728](https://github.com/k8ssandra/k8ssandra/pull/1728) Add optional `affinity` and `topologySpreadConstraints` support to the cass-operator chart Deployment
 * [CHANGE] Remove k8ssandra-operator helm charts and references throughout the repo
 * [CHANGE] Upgrade Stargate to v1.0.63
 * [CHANGE] Upgrade cass-operator to v1.10.4
