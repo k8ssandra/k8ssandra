@@ -12467,6 +12467,10 @@ spec:
                 format: date-time
                 type: string
               metadataVersion:
+                description: |-
+                  MetadataVersion records the latest completed operator migration.
+                  1: datacenter pod label migration completed.
+                  2: legacy additionalSeeds Endpoints cleanup completed.
                 format: int64
                 type: integer
               nodeReplacements:
