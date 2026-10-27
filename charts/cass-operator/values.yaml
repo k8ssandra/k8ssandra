@@ -20,7 +20,7 @@ global:
       system-logger:
         repository: "k8ssandra"
         name: "system-logger"
-        tag: "v1.33.0"
+        tag: "v1.33.1"
       config-builder:
         repository: "datastax"
         name: "cass-config-builder"
@@ -94,7 +94,7 @@ image:
   # -- Pull policy for the operator container
   pullPolicy: IfNotPresent
   # -- Tag of the cass-operator image to pull from image.repository
-  tag: v1.33.0
+  tag: v1.33.1
 # -- References to secrets to use when pulling images. See:
 # https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
 imagePullSecrets: []
